@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 
-import '../../widgets/constants.dart';
-import '../../widgets/widgets.dart';
+import '../../../widgets/constants.dart';
+import '../../../widgets/widgets.dart';
+
 
 class AboutTheProgram extends StatefulWidget {
   const AboutTheProgram({Key? key}) : super(key: key);

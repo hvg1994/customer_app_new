@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
-import 'package:gwc_customer/dashboard/clap.dart';
-import 'package:gwc_customer/dashboard/list.dart';
-import 'package:gwc_customer/dashboard/track.dart';
+
+import 'clap.dart';
+import 'list.dart';
+import 'track.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({Key? key}) : super(key: key);
