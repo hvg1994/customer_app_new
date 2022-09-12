@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gwc_customer/user_registration/new_user/video_player.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../widgets/constants.dart';
@@ -13,7 +14,6 @@ class AboutTheProgram extends StatefulWidget {
 }
 
 class _AboutTheProgramState extends State<AboutTheProgram> {
-  bool isSelected = false;
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +21,7 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
       child: Scaffold(
         body: Padding(
           padding:
-              EdgeInsets.only(left: 4.w, right: 4.w, top: 2.h, bottom: 1.h),
+              EdgeInsets.only(left: 4.w, right: 4.w, top: 1.h, bottom: 1.h),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -58,7 +58,7 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
                           border: Border.all(color: gPrimaryColor, width: 1),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.grey.withOpacity(0.5),
+                              color: Colors.grey.withOpacity(0.3),
                               blurRadius: 20,
                               offset: const Offset(2, 10),
                             ),
@@ -86,31 +86,7 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
                       SizedBox(
                         height: 2.h,
                       ),
-                      Container(
-                        padding: EdgeInsets.symmetric(
-                            vertical: 1.h, horizontal: 3.w),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(5),
-                          border: Border.all(color: gPrimaryColor, width: 1),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.5),
-                              blurRadius: 20,
-                              offset: const Offset(2, 10),
-                            ),
-                          ],
-                        ),
-                        child: Text(
-                          'Lorem lpsum is simply dummy text of the printing and typesetting industry. Lorem lpsum has been the industry\'s standard dummy text ever since the 1500s,when an unknown printer took a gallery of type and scrambled it to make a type specimen book.',
-                          style: TextStyle(
-                            height: 1.7,
-                            fontFamily: "GothamBook",
-                            color: gTextColor,
-                            fontSize: 9.sp,
-                          ),
-                        ),
-                      ),
+                      buildTestimonial(),
                       SizedBox(height: 2.h),
                       Text(
                         "Feedback",
@@ -120,59 +96,12 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
                             color: gPrimaryColor,
                             fontSize: 11.sp),
                       ),
-                      SizedBox(
-                        height: 2.h,
-                      ),
-                      Container(
-                        padding: EdgeInsets.symmetric(
-                            vertical: 1.h, horizontal: 3.w),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(5),
-                          border: Border.all(color: gPrimaryColor, width: 1),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.5),
-                              blurRadius: 20,
-                              offset: const Offset(2, 10),
-                            ),
-                          ],
-                        ),
-                        child: Text(
-                          'Lorem lpsum is simply dummy text of the printing and typesetting industry. Lorem lpsum has been the industry\'s standard dummy text ever since the 1500s,when an unknown printer took a gallery of type and scrambled it to make a type specimen book.',
-                          style: TextStyle(
-                            height: 1.7,
-                            fontFamily: "GothamBook",
-                            color: gTextColor,
-                            fontSize: 9.sp,
-                          ),
-                        ),
-                      ),
+                      SizedBox(height: 2.h),
+                      buildFeedback(),
                     ],
                   ),
                 ),
               ),
-              //!isSelected
-              // ? Center(
-              //     child: Container(
-              //       padding: EdgeInsets.symmetric(
-              //           vertical: 1.h, horizontal: 25.w),
-              //       decoration: BoxDecoration(
-              //         color: gMainColor,
-              //         borderRadius: BorderRadius.circular(8),
-              //         border: Border.all(color: gMainColor, width: 1),
-              //       ),
-              //       child: Text(
-              //         'NEXT',
-              //         style: TextStyle(
-              //           fontFamily: "GothamRoundedBold_21016",
-              //           color: gPrimaryColor,
-              //           fontSize: 13.sp,
-              //         ),
-              //       ),
-              //     ),
-              //   )
-              // :
               Center(
                 child: GestureDetector(
                   onTap: () {
@@ -203,6 +132,68 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  buildTestimonial() {
+    return GestureDetector(
+      onTap: (){ Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => const VideoPlayer(),
+        ),
+      );},
+      child: Container(
+        height: 24.h,
+        width: double.maxFinite,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(5),
+          border: Border.all(color: gPrimaryColor, width: 1),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.3),
+              blurRadius: 20,
+              offset: const Offset(2, 10),
+            ),
+          ],
+          image: const DecorationImage(
+              image: AssetImage("assets/images/Group 4865.png"),
+              fit: BoxFit.fill),
+        ),
+        child: Center(
+          child: Image(
+            height: 7.h,
+            image: const AssetImage("assets/images/noun-play-icon-3120990.png"),
+          ),
+        ),
+      ),
+    );
+  }
+
+  buildFeedback() {
+    return  Container(
+      padding: EdgeInsets.symmetric(
+          vertical: 1.h, horizontal: 3.w),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(5),
+        border: Border.all(color: gPrimaryColor, width: 1),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.3),
+            blurRadius: 20,
+            offset: const Offset(2, 10),
+          ),
+        ],
+      ),
+      child: Text(
+        'Lorem lpsum is simply dummy text of the printing and typesetting industry. Lorem lpsum has been the industry\'s standard dummy text ever since the 1500s,when an unknown printer took a gallery of type and scrambled it to make a type specimen book.',
+        style: TextStyle(
+          height: 1.7,
+          fontFamily: "GothamBook",
+          color: gTextColor,
+          fontSize: 9.sp,
         ),
       ),
     );
