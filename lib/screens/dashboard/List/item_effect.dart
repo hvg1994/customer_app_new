@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:gwc_customer/dashboard/List/list_bloc.dart';
+import 'list_bloc.dart';
 
 class ItemEffect extends StatefulWidget {
   final int position;

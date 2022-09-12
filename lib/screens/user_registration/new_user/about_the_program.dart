@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:gwc_customer/user_registration/new_user/video_player.dart';
 import 'package:sizer/sizer.dart';
 
-import '../../widgets/constants.dart';
-import '../../widgets/widgets.dart';
+import '../../../widgets/constants.dart';
+import '../../../widgets/widgets.dart';
+
 
 class AboutTheProgram extends StatefulWidget {
   const AboutTheProgram({Key? key}) : super(key: key);

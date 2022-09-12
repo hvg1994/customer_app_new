@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:gwc_customer/dashboard/List/item_effect.dart';
-import 'package:gwc_customer/dashboard/List/list_bloc.dart';
+
+import 'item_effect.dart';
+import 'list_bloc.dart';
+
 
 class ListViewEffect extends StatefulWidget {
   final Duration? duration;

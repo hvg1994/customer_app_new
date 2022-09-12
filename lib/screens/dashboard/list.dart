@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:gwc_customer/dashboard/List/program_stages_datas.dart';
 import 'package:gwc_customer/screens/post_program_screens/post_program_screen.dart';
 import 'package:gwc_customer/screens/program_plans/program_plan_screen.dart';
 import 'package:gwc_customer/widgets/constants.dart';
 import 'package:gwc_customer/widgets/widgets.dart';
 import 'package:sizer/sizer.dart';
-
-import '../screens/ayurveda_screens/ayurveda_calender_time_screen.dart';
-import '../screens/cook_kit_shipping_screens/cook_kit_tracking.dart';
+import '../cook_kit_shipping_screens/cook_kit_tracking.dart';
 import 'List/list_view_effect.dart';
+import 'List/program_stages_datas.dart';
 
 class GutList extends StatefulWidget {
   const GutList({Key? key}) : super(key: key);
@@ -124,11 +122,11 @@ class _GutListState extends State<GutList> {
                   ? InkWell(
                       onTap: () {
                         if (programsData.title == "Consultation") {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => const AyurvedaCalenderTimeScreen(),
-                            ),
-                          );
+                          // Navigator.of(context).push(
+                          //   MaterialPageRoute(
+                          //     builder: (context) => const AyurvedaCalenderTimeScreen(),
+                          //   ),
+                          // );
                         } else if (programsData.title == "Shipping") {
                           Navigator.of(context).push(
                             MaterialPageRoute(

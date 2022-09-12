@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:gwc_customer/dashboard/dashboard_screen.dart';
 import 'package:gwc_customer/widgets/constants.dart';
 import 'package:sizer/sizer.dart';
 
-import 'new_user/choose_your_problem_screen.dart';
+import '../dashboard/dashboard_screen.dart';
 
-class ExcistingUser extends StatefulWidget {
-  const ExcistingUser({Key? key}) : super(key: key);
+
+class ExistingUser extends StatefulWidget {
+  const ExistingUser({Key? key}) : super(key: key);
 
   @override
-  State<ExcistingUser> createState() => _ExcistingUserState();
+  State<ExistingUser> createState() => _ExistingUserState();
 }
 
-class _ExcistingUserState extends State<ExcistingUser> {
+class _ExistingUserState extends State<ExistingUser> {
   final formKey = GlobalKey<FormState>();
   TextEditingController phoneController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
@@ -270,11 +270,11 @@ class _ExcistingUserState extends State<ExcistingUser> {
             Center(
               child: GestureDetector(
                 onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => const ChooseYourProblemScreen(),
-                    ),
-                  );
+                  // Navigator.of(context).push(
+                  //   MaterialPageRoute(
+                  //     builder: (context) => const ChooseYourProblemScreen(),
+                  //   ),
+                  // );
                 },
                 child: Container(
                   margin: EdgeInsets.symmetric(vertical: 4.h),
