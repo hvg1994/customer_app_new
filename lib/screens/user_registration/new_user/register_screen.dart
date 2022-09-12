@@ -1,7 +1,6 @@
-import 'package:country_code_picker/country_code_picker.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:gwc_customer/screens/user_registration/new_user/sit_back_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
 import 'package:http/http.dart' as http;
@@ -91,7 +90,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     height: 2.h,
                   ),
                   Text(
-                    "Registration",
+                    "Enquiry Form",
                     textAlign: TextAlign.center,
                     style: TextStyle(
                         fontFamily: "GothamRoundedBold_21016",
@@ -299,29 +298,29 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             //   //   );
                             //   // },
                             // ),
-                            CountryCodePicker(
-                              // flagDecoration: BoxDecoration(
-                              //   borderRadius: BorderRadius.circular(7),
-                              // ),
-                              showDropDownButton: false,
-                              showFlagDialog: true,
-                              hideMainText: false,
-                              showFlagMain: true,
-                              showCountryOnly: false,
-                              textStyle: TextStyle(
-                                  fontFamily: "GothamBook",
-                                  color: gMainColor,
-                                  fontSize: 11.sp),
-                              padding: EdgeInsets.zero,
-                              favorite: ['+91','IN'],
-                              initialSelection: countryCode,
-                              onChanged: (val){
-                                print(val.code);
-                                setState(() {
-                                  countryCode = val.dialCode.toString();
-                                });
-                              },
-                            ),
+                            // CountryCodePicker(
+                            //   // flagDecoration: BoxDecoration(
+                            //   //   borderRadius: BorderRadius.circular(7),
+                            //   // ),
+                            //   showDropDownButton: false,
+                            //   showFlagDialog: true,
+                            //   hideMainText: false,
+                            //   showFlagMain: true,
+                            //   showCountryOnly: false,
+                            //   textStyle: TextStyle(
+                            //       fontFamily: "GothamBook",
+                            //       color: gMainColor,
+                            //       fontSize: 11.sp),
+                            //   padding: EdgeInsets.zero,
+                            //   favorite: ['+91','IN'],
+                            //   initialSelection: countryCode,
+                            //   onChanged: (val){
+                            //     print(val.code);
+                            //     setState(() {
+                            //       countryCode = val.dialCode.toString();
+                            //     });
+                            //   },
+                            // ),
                             Expanded(
                               child: Form(
                                 autovalidateMode:
@@ -364,29 +363,34 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   Center(
                     child: GestureDetector(
                       onTap: () {
-                        if (nameFormKey.currentState!.validate() &&
-                            ageFormKey.currentState!.validate() &&
-                            emailFormKey.currentState!.validate() &&
-                            mobileFormKey.currentState!.validate()) {
-                          if (nameController.text.isNotEmpty &&
-                              ageController.text.isNotEmpty &&
-                              emailController.text.isNotEmpty &&
-                              mobileController.text.isNotEmpty) {
-                            if (_selectedGender != -1) {
-                              // testingMethod();
-                              registerUser(
-                                  nameController.text,
-                                  ageController.text,
-                                  _selectedGender == 0 ? 'male' : 'female',
-                                  emailController.text,
-                                  mobileController.text);
-                            } else {
-                              AppConfig().showSnackbar(
-                                  context, 'Please Select Gender',
-                                  isError: true);
-                            }
-                          }
-                        }
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const SitBackScreen(),
+                          ),
+                        );
+                        // if (nameFormKey.currentState!.validate() &&
+                        //     ageFormKey.currentState!.validate() &&
+                        //     emailFormKey.currentState!.validate() &&
+                        //     mobileFormKey.currentState!.validate()) {
+                        //   if (nameController.text.isNotEmpty &&
+                        //       ageController.text.isNotEmpty &&
+                        //       emailController.text.isNotEmpty &&
+                        //       mobileController.text.isNotEmpty) {
+                        //     if (_selectedGender != -1) {
+                        //       // testingMethod();
+                        //       registerUser(
+                        //           nameController.text,
+                        //           ageController.text,
+                        //           _selectedGender == 0 ? 'male' : 'female',
+                        //           emailController.text,
+                        //           mobileController.text);
+                        //     } else {
+                        //       AppConfig().showSnackbar(
+                        //           context, 'Please Select Gender',
+                        //           isError: true);
+                        //     }
+                        //   }
+                        // }
                       },
                       child: Container(
                         padding: EdgeInsets.symmetric(
@@ -397,11 +401,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           border: Border.all(color: gMainColor, width: 1),
                         ),
                         child: Text(
-                          'Request OTP',
+                          'Next',
                           style: TextStyle(
                             fontFamily: "GothamRoundedBold_21016",
                             color: gWhiteColor,
-                            fontSize: 13.sp,
+                            fontSize: 11.sp,
                           ),
                         ),
                       ),

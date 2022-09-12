@@ -48,6 +48,10 @@ dependencies:
   platform_device_id: ^1.0.1
   slide_to_confirm: ^1.1.0
   dotted_border: ^2.0.0+2
+  flutter_vlc_player: ^7.1.5
+  country_picker: ^2.0.16
+  smooth_star_rating_null_safety: ^1.0.4+2
+  smooth_page_indicator: ^1.0.0+2
 
 dev_dependencies:
   flutter_test:

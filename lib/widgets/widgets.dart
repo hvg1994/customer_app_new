@@ -78,59 +78,61 @@ Row buildAppBar(VoidCallback func) {
       SizedBox(
         height: 7.h,
         child: const Image(
-          image: AssetImage("assets/images/Gut welness logo.png"),
+          image: AssetImage("assets/images/Gut welness logo green.png"),
         ),
       ),
     ],
   );
 }
 
-List consultation = [
-  const Color(0xffF0FFD8),
-  const Color(0xffFFE6E4),
-  const Color(0xffF0FFD8),
-  const Color(0xffFFE6E4),
-  const Color(0xffF0FFD8),
-  const Color(0xffFFE6E4),
-  const Color(0xffF0FFD8),
-  const Color(0xffFFE6E4),
-  const Color(0xffF0FFD8),
-  const Color(0xffFFE6E4),
-  const Color(0xffF0FFD8),
-  const Color(0xffFFE6E4),
-  const Color(0xffF0FFD8),
-  const Color(0xffFFE6E4),
-  const Color(0xffF0FFD8),
-  const Color(0xffFFE6E4),
-  const Color(0xffF0FFD8),
-  const Color(0xffFFE6E4),
-  const Color(0xffF0FFD8),
-  const Color(0xffFFE6E4),
-  const Color(0xffF0FFD8),
-  const Color(0xffFFE6E4),
-  const Color(0xffF0FFD8),
-  const Color(0xffFFE6E4),
-  const Color(0xffF0FFD8),
-  const Color(0xffFFE6E4),
-  const Color(0xffF0FFD8),
-  const Color(0xffFFE6E4),
-  const Color(0xffF0FFD8),
-  const Color(0xffFFE6E4),
-  const Color(0xffF0FFD8),
-  const Color(0xffFFE6E4),
-  const Color(0xffF0FFD8),
-  const Color(0xffFFE6E4),
-  const Color(0xffF0FFD8),
-  const Color(0xffFFE6E4),
-  const Color(0xffF0FFD8),
-  const Color(0xffFFE6E4),
-  const Color(0xffF0FFD8),
-  const Color(0xffFFE6E4),
-  const Color(0xffF0FFD8),
-  const Color(0xffFFE6E4),
-  const Color(0xffF0FFD8),
-  const Color(0xffFFE6E4),
-  const Color(0xffF0FFD8),
-  const Color(0xffFFE6E4),
-  const Color(0xffF0FFD8),
-];
+class CommonDecoration {
+  static InputDecoration buildInputDecoration(String hintText, TextEditingController controller, {Widget? suffixIcon}) {
+    return InputDecoration(
+        hintText: hintText,
+        hintStyle: TextStyle(
+            fontFamily: "GothamBook", color: gTextColor, fontSize: 10.sp),
+        border: InputBorder.none,
+        suffixIcon: suffixIcon
+      // controller.text.isEmpty
+      //     ? Container(
+      //         width: 0,
+      //       )
+      //     : IconButton(
+      //         onPressed: () {
+      //           controller.clear();
+      //         },
+      //         icon: const Icon(
+      //           Icons.close,
+      //           color: kPrimaryColor,
+      //         ),
+      //       ),
+    );
+  }
+
+  static InputDecoration buildTextInputDecoration(String hintText, TextEditingController controller, {Widget? suffixIcon}) {
+    return InputDecoration(
+        hintText: hintText,
+        hintStyle: TextStyle(
+          fontFamily: "PoppinsRegular",
+          color: Colors.grey,
+          fontSize: 10.sp,
+        ),
+        border: const UnderlineInputBorder(
+          borderSide: BorderSide(
+              color: kPrimaryColor, width: 1.0, style: BorderStyle.solid),
+        ),
+        suffixIcon: suffixIcon
+      // controller.text.isEmpty
+      //     ? const SizedBox()
+      //     : IconButton(
+      //         onPressed: () {
+      //           controller.clear();
+      //         },
+      //         icon: const Icon(
+      //           Icons.close,
+      //           color: kPrimaryColor,
+      //         ),
+      //       ),
+    );
+  }
+}

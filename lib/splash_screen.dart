@@ -1,9 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:gwc_customer/screens/user_registration/existing_user.dart';
 import 'package:gwc_customer/widgets/background_widget.dart';
 import 'package:gwc_customer/widgets/will_pop_widget.dart';
-
-import 'screens/user_registration/existing_user.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);

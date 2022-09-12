@@ -34,7 +34,6 @@ class _VideoPlayerState extends State<VideoPlayer> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
       body: Center(
         child: VlcPlayer(
           virtualDisplay: true,

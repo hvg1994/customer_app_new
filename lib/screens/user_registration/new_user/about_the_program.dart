@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:gwc_customer/user_registration/new_user/video_player.dart';
+import 'package:gwc_customer/screens/user_registration/new_user/register_screen.dart';
+import 'package:gwc_customer/screens/user_registration/new_user/video_player.dart';
 import 'package:sizer/sizer.dart';
-
+import 'package:smooth_star_rating_null_safety/smooth_star_rating_null_safety.dart';
 import '../../../widgets/constants.dart';
 import '../../../widgets/widgets.dart';
-
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class AboutTheProgram extends StatefulWidget {
   const AboutTheProgram({Key? key}) : super(key: key);
@@ -14,6 +15,8 @@ class AboutTheProgram extends StatefulWidget {
 }
 
 class _AboutTheProgramState extends State<AboutTheProgram> {
+  double rating = 4.5;
+  final pageController = PageController();
 
   @override
   Widget build(BuildContext context) {
@@ -98,6 +101,7 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
                       ),
                       SizedBox(height: 2.h),
                       buildFeedback(),
+                      SizedBox(height: 2.h),
                     ],
                   ),
                 ),
@@ -107,7 +111,7 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
                   onTap: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (context) => const AboutTheProgram(),
+                        builder: (context) => const RegisterScreen(),
                       ),
                     );
                   },
@@ -139,11 +143,13 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
 
   buildTestimonial() {
     return GestureDetector(
-      onTap: (){ Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => const VideoPlayer(),
-        ),
-      );},
+      onTap: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => const VideoPlayer(),
+          ),
+        );
+      },
       child: Container(
         height: 24.h,
         width: double.maxFinite,
@@ -172,9 +178,8 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
   }
 
   buildFeedback() {
-    return  Container(
-      padding: EdgeInsets.symmetric(
-          vertical: 1.h, horizontal: 3.w),
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 3.w),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(5),
@@ -187,15 +192,98 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
           ),
         ],
       ),
-      child: Text(
-        'Lorem lpsum is simply dummy text of the printing and typesetting industry. Lorem lpsum has been the industry\'s standard dummy text ever since the 1500s,when an unknown printer took a gallery of type and scrambled it to make a type specimen book.',
-        style: TextStyle(
-          height: 1.7,
-          fontFamily: "GothamBook",
-          color: gTextColor,
-          fontSize: 9.sp,
-        ),
+      child: Column(
+        children: [
+          SizedBox(
+            height: 25.h,
+            child: PageView(
+              controller: pageController,
+              children: [
+                buildFeedbackList(),
+                buildFeedbackList(),
+                buildFeedbackList(),
+              ],
+            ),
+          ),
+          SmoothPageIndicator(
+            controller: pageController,
+            count: 3,
+            axisDirection: Axis.horizontal,
+            effect: JumpingDotEffect(
+              dotColor: Colors.amberAccent,
+              activeDotColor: gsecondaryColor,
+              dotHeight: 1.h,
+              dotWidth: 2.w,
+              jumpScale: 2,
+            ),
+          ),
+        ],
       ),
+    );
+  }
+
+  Widget buildRating() {
+    return SmoothStarRating(
+      color: Colors.amber,
+      borderColor: Colors.amber,
+      rating: rating,
+      size: 2.h,
+      filledIconData: Icons.star_sharp,
+      halfFilledIconData: Icons.star_half_sharp,
+      defaultIconData: Icons.star_outline_sharp,
+      starCount: 5,
+      allowHalfRating: true,
+      spacing: 2.0,
+    );
+  }
+
+  buildFeedbackList() {
+    return Column(
+      children: [
+        Row(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.3),
+                    blurRadius: 20,
+                    offset: const Offset(2, 10),
+                  ),
+                ],
+              ),
+              child: CircleAvatar(
+                radius: 3.h,
+                backgroundImage: AssetImage("assets/images/cheerful.png"),
+              ),
+            ),
+            SizedBox(width: 3.w),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Ms. Lorem Ipsum Daries",
+                  style: TextStyle(
+                      fontFamily: "GothamRoundedBold_21016",
+                      color: gPrimaryColor,
+                      fontSize: 10.sp),
+                ),
+                SizedBox(height: 0.3.h),
+                buildRating(),
+              ],
+            ),
+          ],
+        ),
+        Text(
+          'Lorem lpsum is simply dummy text of the printing and typesetting industry. Lorem lpsum has been the industry\'s standard dummy text ever since the 1500s,when an unknown printer took a gallery of type and scrambled it to make a type specimen book.',
+          style: TextStyle(
+            height: 1.7,
+            fontFamily: "GothamBook",
+            color: gTextColor,
+            fontSize: 9.sp,
+          ),
+        ),
+      ],
     );
   }
 }

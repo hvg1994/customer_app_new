@@ -3,7 +3,7 @@ import 'package:gwc_customer/widgets/constants.dart';
 import 'package:sizer/sizer.dart';
 
 import '../dashboard/dashboard_screen.dart';
-
+import 'new_user/choose_your_problem_screen.dart';
 
 class ExistingUser extends StatefulWidget {
   const ExistingUser({Key? key}) : super(key: key);
@@ -270,11 +270,11 @@ class _ExistingUserState extends State<ExistingUser> {
             Center(
               child: GestureDetector(
                 onTap: () {
-                  // Navigator.of(context).push(
-                  //   MaterialPageRoute(
-                  //     builder: (context) => const ChooseYourProblemScreen(),
-                  //   ),
-                  // );
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const ChooseYourProblemScreen(),
+                    ),
+                  );
                 },
                 child: Container(
                   margin: EdgeInsets.symmetric(vertical: 4.h),
