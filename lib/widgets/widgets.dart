@@ -78,7 +78,7 @@ Row buildAppBar(VoidCallback func) {
       SizedBox(
         height: 7.h,
         child: const Image(
-          image: AssetImage("assets/images/Gut welness logo.png"),
+          image: AssetImage("assets/images/Gut welness logo green.png"),
         ),
       ),
     ],
