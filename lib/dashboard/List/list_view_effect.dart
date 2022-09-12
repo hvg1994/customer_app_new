@@ -31,19 +31,15 @@ class _ListViewEffect extends State<ListViewEffect> {
   Widget build(BuildContext context) {
     _listBloc.startAnimation(widget.children.length, widget.duration!);
 
-    return Scaffold(
-      body: SizedBox(
-        height: MediaQuery.of(context).size.height,
-        child: ListView.builder(
-            scrollDirection: Axis.vertical,
-            itemCount: widget.children.length,
-            itemBuilder: (context, position) {
-              return ItemEffect(
-                  child: widget.children[position],
-                  duration: widget.duration,
-                  position: position);
-            }),
-      ),
-    );
+    return ListView.builder(
+          scrollDirection: Axis.vertical,
+          itemCount: widget.children.length,
+          itemBuilder: (context, position) {
+            return ItemEffect(
+                child: widget.children[position],
+                duration: widget.duration,
+                position: position);
+          });
+
   }
 }

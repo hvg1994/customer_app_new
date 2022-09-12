@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:gwc_customer/dashboard/List/program_stages_datas.dart';
-import 'package:gwc_customer/screens/ship_rocket_screens/tracking_product.dart';
+import 'package:gwc_customer/screens/post_program_screens/post_program_screen.dart';
+import 'package:gwc_customer/screens/program_plans/program_plan_screen.dart';
 import 'package:gwc_customer/widgets/constants.dart';
 import 'package:gwc_customer/widgets/widgets.dart';
 import 'package:sizer/sizer.dart';
 
+import '../screens/ayurveda_screens/ayurveda_calender_time_screen.dart';
+import '../screens/cook_kit_shipping_screens/cook_kit_tracking.dart';
 import 'List/list_view_effect.dart';
 
 class GutList extends StatefulWidget {
@@ -17,14 +20,14 @@ class GutList extends StatefulWidget {
 class _GutListState extends State<GutList> {
   String isSelected = "";
 
-  final Duration _duration = const Duration(milliseconds: 400);
+  final Duration _duration = const Duration(milliseconds: 500);
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
         body: Padding(
-          padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 3.w),
+          padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 5.w),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -121,14 +124,30 @@ class _GutListState extends State<GutList> {
                   ? InkWell(
                       onTap: () {
                         if (programsData.title == "Consultation") {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => const AyurvedaCalenderTimeScreen(),
+                            ),
+                          );
                         } else if (programsData.title == "Shipping") {
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) => const TrackingProduct(),
+                              builder: (context) => const CookKitTracking(),
                             ),
                           );
                         } else if (programsData.title == "Programs") {
-                        } else if (programsData.title == "post Program") {}
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => const ProgramPlanScreen(),
+                            ),
+                          );
+                        } else if (programsData.title == "Post Program") {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => const PostProgramScreen(),
+                            ),
+                          );
+                        }
                       },
                       child: Image(
                         height: 3.h,

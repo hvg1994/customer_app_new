@@ -25,7 +25,7 @@ class _ItemEffect extends State<ItemEffect> with TickerProviderStateMixin {
       duration: widget.duration,
     );
 
-    _offsetFloat = Tween<Offset>(begin: const Offset(-1.0, 0.0), end: Offset.zero)
+    _offsetFloat = Tween<Offset>(begin: const Offset(-2.0, 0.0), end: Offset.zero)
         .animate(_controller);
   }
 

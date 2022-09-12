@@ -22,7 +22,7 @@ class CookKitTracking extends StatefulWidget {
 }
 
 class _CookKitTrackingState extends State<CookKitTracking> {
-
+  double gap = 23.0;
   int activeStep = -1;
 
   Timer? timer;
@@ -59,7 +59,7 @@ class _CookKitTrackingState extends State<CookKitTracking> {
               height: 45.h,
               decoration: const BoxDecoration(
                 image: DecorationImage(
-                  image: AssetImage("assets/images/splash_screen/Group 2541.png",
+                  image: AssetImage("assets/images/Group 2541.png",
                   ),
                   fit: BoxFit.fill
                 ),
@@ -94,7 +94,7 @@ class _CookKitTrackingState extends State<CookKitTracking> {
                     child: SizedBox(
                       height: 25.h,
                       child: const Image(
-                        image: AssetImage("assets/images/splash_screen/G.png"),
+                        image: AssetImage("assets/images/G.png"),
                       ),
                     ),
                   ),
@@ -116,17 +116,19 @@ class _CookKitTrackingState extends State<CookKitTracking> {
                         Expanded(
                           child: AnotherStepper(
                             stepperList: getStepper(),
-                            gap: 25,
+                            gap:gap,
                             isInitialText: true,
                             initialText: getStepperInitialValue(),
-                            scrollPhysics: NeverScrollableScrollPhysics(),
+                            scrollPhysics: const NeverScrollableScrollPhysics(),
                             stepperDirection: Axis.vertical,
                             horizontalStepperHeight: 5,
                             dotWidget: getIcons(),
                             activeBarColor: gPrimaryColor,
                             inActiveBarColor: Colors.grey.shade200,
                             activeIndex: activeStep,
-                            barThickness: 4,
+                            barThickness: 5,
+                            titleTextStyle: TextStyle(fontSize: 10.sp,fontFamily: "GothamMedium",),
+                            subtitleTextStyle: TextStyle(fontSize: 8.sp,),
                           ),
                         ),
                       ],
@@ -212,7 +214,7 @@ class _CookKitTrackingState extends State<CookKitTracking> {
   String awb3 = '14326322704046';
 
   void shippingTracker() async {
-    final result = await ShipTrackService(repository: repository).getUserProfileService(awb2);
+    final result = await ShipTrackService(repository: repository).getUserProfileService(awb1);
     print("shippingTracker: $result");
     print(result.runtimeType);
     ShippingTrackModel data = result;
@@ -226,6 +228,7 @@ class _CookKitTrackingState extends State<CookKitTracking> {
       upperBound = trackerList.length;
       activeStep = 0;
     });
+
 
     timer = Timer.periodic(Duration(seconds: 1), (timer1) {
       print(timer1.tick);
@@ -245,11 +248,17 @@ class _CookKitTrackingState extends State<CookKitTracking> {
   getStepper(){
     List<StepperData> stepper = [];
     trackerList.map((e) {
+      String txt = 'Location: ${e.location}';
+      print("txt.length${txt.length}");
       stepper.add(StepperData(
-        title: e.srStatusLabel!.contains('NA') ? 'Activity: ${e.activity}' : 'Activity: ${e.srStatusLabel}',
+        // title: e.srStatusLabel!.contains('NA') ? 'Activity: ${e.activity}' : 'Activity: ${e.srStatusLabel}',
+        title: 'Activity: ${e.srStatusLabel}',
         subtitle: 'Location: ${e.location}',
       ));
     }).toList();
+    setState(() {
+      gap = trackerList.any((element) => element.location!.length > 60) ? 33 : 23;
+    });
     return stepper;
   }
 
