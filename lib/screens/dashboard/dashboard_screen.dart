@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 
+import '../feeds_sceens/feeds_list.dart';
 import 'clap.dart';
 import 'list.dart';
 import 'track.dart';
@@ -53,7 +54,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         }
       case 1:
         {
-          return const Clap();
+          return const FeedsList();
         }
       case 2:
         {
@@ -85,10 +86,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ),
           ),
           TabItem(
-              icon: Image.asset(
-            "assets/images/Group 3846.png",
-            color: _bottomNavIndex == 1 ? Colors.green : Colors.grey,
-          )),
+            icon: _bottomNavIndex == 1
+                ? Image.asset(
+                    "assets/images/Group 3240.png",
+                  )
+                : Image.asset(
+                    "assets/images/Group 3846.png",
+                  ),
+          ),
           TabItem(
               icon: Image.asset(
             "assets/images/Group 3848.png",
