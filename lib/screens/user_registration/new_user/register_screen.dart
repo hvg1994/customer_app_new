@@ -2,6 +2,7 @@ import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:gwc_customer/widgets/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
 import 'package:http/http.dart' as http;
@@ -14,7 +15,6 @@ import '../../../services/new_user_service/register_screen_service/register_serv
 import '../../../utils/app_config.dart';
 import '../../../widgets/constants.dart';
 import '../../../widgets/unfocus_widget.dart';
-import '../../../widgets/widgets.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key}) : super(key: key);
@@ -91,7 +91,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     height: 2.h,
                   ),
                   Text(
-                    "Registration",
+                    "Enquiry Form",
                     textAlign: TextAlign.center,
                     style: TextStyle(
                         fontFamily: "GothamRoundedBold_21016",
@@ -397,7 +397,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           border: Border.all(color: gMainColor, width: 1),
                         ),
                         child: Text(
-                          'Request OTP',
+                          'Next',
                           style: TextStyle(
                             fontFamily: "GothamRoundedBold_21016",
                             color: gWhiteColor,

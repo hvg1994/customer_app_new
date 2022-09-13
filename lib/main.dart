@@ -1,3 +1,4 @@
+import 'package:country_code_picker/country_localizations.dart';
 import 'package:device_preview/device_preview.dart' hide DeviceType;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -35,6 +36,12 @@ class _MyAppState extends State<MyApp> {
     return Sizer(builder:
         (BuildContext context, Orientation orientation, DeviceType deviceType) {
       return const GetMaterialApp(
+          supportedLocales: [
+            Locale("en"), /// THIS IS FOR COUNTRY CODE PICKER
+          ],
+          localizationsDelegates: [
+            CountryLocalizations.delegate, /// THIS IS FOR COUNTRY CODE PICKER
+          ],
           debugShowCheckedModeBanner: false, home: SplashScreen());
     });
   }

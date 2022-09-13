@@ -190,11 +190,16 @@ class ApiClient {
 
       final json = jsonDecode(response.body);
       print('serverGetAboutProgramDetails result: $json');
-      if (response.statusCode != 200 || json['status'] != '200') {
+      print(json['status'].toString().contains("200"));
+      if (response.statusCode != 200) {
+        print("error: $json");
         result = ErrorModel.fromJson(json);
       }
+      else if(json['status'].toString().contains("200")){
+        result = AboutProgramModel.fromJson(json);
+      }
       else{
-        result = ChooseProblemModel.fromJson(json);
+        result = ErrorModel.fromJson(json);
       }
     }
     catch(e){

@@ -48,6 +48,14 @@ dependencies:
   platform_device_id: ^1.0.1
   slide_to_confirm: ^1.1.0
   dotted_border: ^2.0.0+2
+  flutter_vlc_player: ^7.1.5
+  smooth_star_rating_null_safety: ^1.0.4+2
+  smooth_page_indicator: ^1.0.0+2
+  country_code_picker: any
+  flutter_spinkit: ^5.1.0
+  auto_orientation: any
+  path_provider: any
+
 
 
 dev_dependencies:
