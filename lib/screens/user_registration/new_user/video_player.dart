@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_vlc_player/flutter_vlc_player.dart';
 import 'package:sizer/sizer.dart';
 
+import '../../../widgets/vlc_player/vlc_player_with_controls.dart';
+
 class VideoPlayer extends StatefulWidget {
   const VideoPlayer({Key? key}) : super(key: key);
 
@@ -10,6 +12,8 @@ class VideoPlayer extends StatefulWidget {
 }
 
 class _VideoPlayerState extends State<VideoPlayer> {
+  final _key = GlobalKey<VlcPlayerWithControlsState>();
+
   late VlcPlayerController _videoPlayerController;
 
   @override
@@ -17,10 +21,28 @@ class _VideoPlayerState extends State<VideoPlayer> {
     super.initState();
 
     _videoPlayerController = VlcPlayerController.network(
-      'https://local.clift.mdu1.net/3ABN/index.m3u8',
+      'https://gwc.disol.in/img/small.mp4',
+      // 'https://media.w3.org/2010/05/sintel/trailer.mp4',
       hwAcc: HwAcc.full,
-      autoPlay: false,
-      options: VlcPlayerOptions(),
+      options: VlcPlayerOptions(
+        advanced: VlcAdvancedOptions([
+          VlcAdvancedOptions.networkCaching(2000),
+        ]),
+        subtitle: VlcSubtitleOptions([
+          VlcSubtitleOptions.boldStyle(true),
+          VlcSubtitleOptions.fontSize(30),
+          VlcSubtitleOptions.outlineColor(VlcSubtitleColor.yellow),
+          VlcSubtitleOptions.outlineThickness(VlcSubtitleThickness.normal),
+          // works only on externally added subtitles
+          VlcSubtitleOptions.color(VlcSubtitleColor.navy),
+        ]),
+        http: VlcHttpOptions([
+          VlcHttpOptions.httpReconnect(true),
+        ]),
+        rtp: VlcRtpOptions([
+          VlcRtpOptions.rtpOverRtsp(true),
+        ]),
+      ),
     );
   }
 
@@ -35,12 +57,12 @@ class _VideoPlayerState extends State<VideoPlayer> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
-      body: Center(
-        child: VlcPlayer(
-          virtualDisplay: true,
+      body: AspectRatio(
+        aspectRatio: 16/9,
+        child: VlcPlayerWithControls(
+          key: _key,
           controller: _videoPlayerController,
-          aspectRatio: 16 / 9,
-          placeholder: const Center(child: CircularProgressIndicator()),
+          showVolume: false,
         ),
       ),
     );
