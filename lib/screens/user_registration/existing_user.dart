@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:gwc_customer/screens/user_registration/new_user/about_the_program.dart';
 import 'package:gwc_customer/widgets/constants.dart';
 import 'package:sizer/sizer.dart';
 
@@ -271,11 +270,11 @@ class _ExistingUserState extends State<ExistingUser> {
             Center(
               child: GestureDetector(
                 onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => const AboutTheProgram(),
-                    ),
-                  );
+                  // Navigator.of(context).push(
+                  //   MaterialPageRoute(
+                  //     builder: (context) => const ChooseYourProblemScreen(),
+                  //   ),
+                  // );
                 },
                 child: Container(
                   margin: EdgeInsets.symmetric(vertical: 4.h),

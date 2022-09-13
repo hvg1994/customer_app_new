@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:gwc_customer/screens/consultation_screens/consultation_success.dart';
 import 'package:gwc_customer/screens/post_program_screens/post_program_screen.dart';
 import 'package:gwc_customer/screens/program_plans/program_plan_screen.dart';
 import 'package:gwc_customer/widgets/constants.dart';
 import 'package:gwc_customer/widgets/widgets.dart';
 import 'package:sizer/sizer.dart';
+import '../consultation_screens/consultation_rejected.dart';
+import '../consultation_screens/medical_report_details.dart';
+import '../consultation_screens/medical_report_screen.dart';
+import '../consultation_screens/upload_files.dart';
 import '../cook_kit_shipping_screens/cook_kit_tracking.dart';
 import 'List/list_view_effect.dart';
 import 'List/program_stages_datas.dart';
@@ -93,16 +98,27 @@ class _GutListState extends State<GutList> {
           child: Row(
             children: [
               (isSelected == programsData.title)
-                  ? Image(
-                      height: 9.h,
-                      image: AssetImage(programsData.image),
-                    )
-                  : ColorFiltered(
-                      colorFilter:
-                          const ColorFilter.mode(Colors.grey, BlendMode.darken),
+                  ? Container(
+                      margin:
+                          EdgeInsets.symmetric(horizontal: 2.w, vertical: 1.h),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: gMainColor),
+                      ),
                       child: Image(
                         height: 9.h,
                         image: AssetImage(programsData.image),
+                      ),
+                    )
+                  : ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: ColorFiltered(
+                        colorFilter: const ColorFilter.mode(
+                            Colors.grey, BlendMode.darken),
+                        child: Image(
+                          height: 9.h,
+                          image: AssetImage(programsData.image),
+                        ),
                       ),
                     ),
               SizedBox(width: 3.w),
@@ -122,11 +138,11 @@ class _GutListState extends State<GutList> {
                   ? InkWell(
                       onTap: () {
                         if (programsData.title == "Consultation") {
-                          // Navigator.of(context).push(
-                          //   MaterialPageRoute(
-                          //     builder: (context) => const AyurvedaCalenderTimeScreen(),
-                          //   ),
-                          // );
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => const MedicalReportScreen(),
+                            ),
+                          );
                         } else if (programsData.title == "Shipping") {
                           Navigator.of(context).push(
                             MaterialPageRoute(

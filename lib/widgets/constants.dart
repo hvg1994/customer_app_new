@@ -9,6 +9,7 @@ const gGreyColor = Color(0xff707070);
 const gMainColor = Color(0xffC7A102);
 const gTextColor = Color(0xff2D414B);
 const gTapColor = Color(0xffF8FAFF);
+const gBackgroundColor = Color(0xffFFE889);
 
 
 
