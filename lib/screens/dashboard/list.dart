@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:gwc_customer/screens/consultation_screens/consultation_success.dart';
 import 'package:gwc_customer/screens/post_program_screens/post_program_screen.dart';
 import 'package:gwc_customer/screens/program_plans/program_plan_screen.dart';
 import 'package:gwc_customer/widgets/constants.dart';
 import 'package:gwc_customer/widgets/widgets.dart';
 import 'package:sizer/sizer.dart';
-import '../consultation_screens/consultation_rejected.dart';
-import '../consultation_screens/medical_report_details.dart';
-import '../consultation_screens/medical_report_screen.dart';
-import '../consultation_screens/upload_files.dart';
+import '../appointment_screens/doctor_calender_time_screen.dart';
 import '../cook_kit_shipping_screens/cook_kit_tracking.dart';
 import 'List/list_view_effect.dart';
 import 'List/program_stages_datas.dart';
@@ -140,7 +136,7 @@ class _GutListState extends State<GutList> {
                         if (programsData.title == "Consultation") {
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) => const MedicalReportScreen(),
+                              builder: (context) => const DoctorCalenderTimeScreen(),
                             ),
                           );
                         } else if (programsData.title == "Shipping") {

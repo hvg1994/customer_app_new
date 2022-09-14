@@ -102,6 +102,10 @@ flutter:
       fonts:
         - asset: assets/font/GothamBold.ttf
 
+    - family: Gotham-Black
+      fonts:
+        - asset: assets/font/Gotham-Black.otf
+
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

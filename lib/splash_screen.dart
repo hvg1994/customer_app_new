@@ -70,7 +70,7 @@ class _SplashScreenState extends State<SplashScreen> {
       assetName: 'assets/images/Group 2657.png',
       child: Center(
         child: Image(
-          image: AssetImage("assets/images/Gut welness logo.png"),
+          image: AssetImage("assets/images/Gut welness logo green.png"),
         ),
         // SvgPicture.asset(
         //     "assets/images/splash_screen/Splash screen Logo.svg"),
