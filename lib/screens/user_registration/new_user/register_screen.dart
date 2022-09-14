@@ -2,6 +2,7 @@ import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:gwc_customer/screens/user_registration/new_user/sit_back_screen.dart';
 import 'package:gwc_customer/widgets/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
@@ -374,7 +375,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               mobileController.text.isNotEmpty) {
                             if (_selectedGender != -1) {
                               // testingMethod();
-                              registerUser(
+                              submitEnquiryForm(
                                   nameController.text,
                                   ageController.text,
                                   _selectedGender == 0 ? 'male' : 'female',
@@ -489,7 +490,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool isPhone(String input) =>
       RegExp(r'^(?:[+0]9)?[0-9]{10}$').hasMatch(input);
 
-  void registerUser(String name, String age, String gender, String email,
+  void submitEnquiryForm(String name, String age, String gender, String email,
       String mobileNumber) async {
     final res = await _userRegisterService.registerUserService(
         name: name,
@@ -505,25 +506,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     if (res.runtimeType == RegisterResponse) {
       RegisterResponse response = res;
-      _pref?.setString(AppConfig().registerOTP, response.otp!);
 
-      _pref?.setString(AppConfig().tokenUser, response.accessToken!);
-      AppConfig().bearer = response.accessToken ?? '';
-
-      Map userDetails = {
-        'name': name,
-        'email' : email,
-        'mobile': mobileNumber,
-        'country_code': countryCode
-      };
-
-      // Navigator.of(context).push(
-      //   MaterialPageRoute(
-      //     builder: (context) => VerificationCodeScreen(
-      //       userDetails: userDetails,
-      //     ),
-      //   ),
-      // );
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => SitBackScreen(),
+        ),
+      );
     }
     else {
       String result = (res as ErrorModel).message ?? '';

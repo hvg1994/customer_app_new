@@ -150,14 +150,15 @@ class ApiClient {
       print('serverRegisterUser Response status: ${response.statusCode}');
       print('serverRegisterUser Response body: ${response.body}');
 
-      if (response.statusCode == 201) {
+
+      if (response.statusCode != 200) {
+        final json = jsonDecode(response.body);
+        result = ErrorModel.fromJson(json);
+      } else if (response.statusCode == 201) {
         final json = jsonDecode(response.body);
         print('submitProblemList result: $json');
         result = RegisterResponse.fromJson(json);
-      } else if (response.statusCode == 200) {
-        final json = jsonDecode(response.body);
-        result = ErrorModel.fromJson(json);
-      } else {
+      }else {
         print('submitProblemList error: ${response.reasonPhrase}');
         result = ErrorModel(
             status: response.statusCode.toString(),
