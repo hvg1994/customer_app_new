@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
+import 'package:gwc_customer/screens/profile_screens/settings_screen.dart';
 
 import '../feeds_sceens/feeds_list.dart';
 import 'clap.dart';
@@ -66,7 +67,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         }
       case 4:
         {
-          return const Track();
+          return const SettingsScreen();
         }
     }
   }
@@ -80,10 +81,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
         backgroundColor: Colors.white,
         items: [
           TabItem(
-            icon: Image.asset(
-              "assets/images/Group 3844.png",
-              color: _bottomNavIndex == 0 ? Colors.green : Colors.grey,
-            ),
+            icon: _bottomNavIndex == 0
+                ? Image.asset(
+                    "assets/images/Group 3241.png",
+                  )
+                : Image.asset(
+                    "assets/images/Group 3844.png",
+                  ),
           ),
           TabItem(
             icon: _bottomNavIndex == 1
@@ -95,20 +99,30 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
           ),
           TabItem(
-              icon: Image.asset(
-            "assets/images/Group 3848.png",
-            color: _bottomNavIndex == 2 ? Colors.green : Colors.grey,
-          )),
+              icon: _bottomNavIndex == 2
+                  ? Image.asset(
+                "assets/images/Group 3331.png",
+              )
+                  : Image.asset(
+                "assets/images/Group 3848.png",
+              ),
+            ),
           TabItem(
-              icon: Image.asset(
-            "assets/images/Group 3847.png",
-            color: _bottomNavIndex == 3 ? Colors.green : Colors.grey,
-          )),
+              icon: _bottomNavIndex == 3
+                  ? Image.asset(
+                "assets/images/Path 14368.png",
+              )
+                  : Image.asset(
+                "assets/images/Group 3847.png",
+              ),),
           TabItem(
-              icon: Image.asset(
-            "assets/images/Group 3845.png",
-            color: _bottomNavIndex == 4 ? Colors.green : Colors.grey,
-          )),
+              icon: _bottomNavIndex == 4
+                  ? Image.asset(
+                "assets/images/Group 3239.png",
+              )
+                  : Image.asset(
+                "assets/images/Group 3845.png",
+              ),),
         ],
         initialActiveIndex: _bottomNavIndex,
         onTap: onChangedTab,

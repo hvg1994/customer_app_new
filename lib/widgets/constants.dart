@@ -11,8 +11,6 @@ const gTextColor = Color(0xff2D414B);
 const gTapColor = Color(0xffF8FAFF);
 const gBackgroundColor = Color(0xffFFE889);
 
-
-
 const kPrimaryColor = Color(0xffBB0A36);
 const kSecondaryColor = Color(0xffFFF5F5);
 const kTextColor = Color(0xff000000);
