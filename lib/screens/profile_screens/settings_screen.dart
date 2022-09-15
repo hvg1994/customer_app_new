@@ -50,7 +50,7 @@ class SettingsScreen extends StatelessWidget {
                   height: 1,
                   color: Colors.grey,
                 ),
-                profileTile("assets/images/Group 2753.png", "FAQ", () {
+                profileTile("assets/images/Group 2747.png", "FAQ", () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) => const FaqScreen(),
@@ -62,7 +62,7 @@ class SettingsScreen extends StatelessWidget {
                   color: Colors.grey,
                 ),
                 profileTile(
-                    "assets/images/Group 2753.png", "Terms & Conditions", () {
+                    "assets/images/Group 2748.png", "Terms & Conditions", () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) => const TermsConditionsScreen(),

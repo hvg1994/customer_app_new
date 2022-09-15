@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:sizer/sizer.dart';
 import 'dart:io';
-import '../../widgets/constants.dart';
-import '../../widgets/widgets.dart';
+import '../../../widgets/constants.dart';
+import '../../../widgets/widgets.dart';
 
 class UploadFiles extends StatefulWidget {
   const UploadFiles({Key? key}) : super(key: key);

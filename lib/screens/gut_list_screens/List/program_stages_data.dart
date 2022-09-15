@@ -1,4 +1,4 @@
-const ProgramStages = [
+const programStage = [
   {
     "title": "Consultation",
     "image": "assets/images/Image 2.png",

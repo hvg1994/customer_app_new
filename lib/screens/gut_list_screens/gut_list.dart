@@ -7,7 +7,7 @@ import 'package:sizer/sizer.dart';
 import '../appointment_screens/doctor_calender_time_screen.dart';
 import '../cook_kit_shipping_screens/cook_kit_tracking.dart';
 import 'List/list_view_effect.dart';
-import 'List/program_stages_datas.dart';
+import 'List/program_stages_data.dart';
 
 class GutList extends StatefulWidget {
   const GutList({Key? key}) : super(key: key);
@@ -30,10 +30,13 @@ class _GutListState extends State<GutList> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              buildAppBar(() {
-                Navigator.pop(context);
-              }),
-              SizedBox(height: 3.h),
+              SizedBox(
+                height: 7.h,
+                child: const Image(
+                  image: AssetImage("assets/images/Gut welness logo green.png"),
+                ),
+              ),
+              SizedBox(height: 1.h),
               Text(
                 "Program Stages",
                 textAlign: TextAlign.center,
@@ -46,7 +49,7 @@ class _GutListState extends State<GutList> {
               Expanded(
                 child: ListViewEffect(
                   duration: _duration,
-                  children: ProgramStages.map((s) => _buildWidgetExample(
+                  children: programStage.map((s) => _buildWidgetExample(
                       ProgramsData(s['title']!, s['image']!))).toList(),
                 ),
               ),

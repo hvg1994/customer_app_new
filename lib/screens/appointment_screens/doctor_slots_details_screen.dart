@@ -6,7 +6,6 @@ import 'package:sizer/sizer.dart';
 import '../../widgets/constants.dart';
 import '../../widgets/widgets.dart';
 import 'doctor_calender_time_screen.dart';
-import 'doctor_consultation_completed.dart';
 
 class DoctorSlotsDetailsScreen extends StatelessWidget {
   final String bookingDate;
@@ -33,13 +32,32 @@ class DoctorSlotsDetailsScreen extends StatelessWidget {
                   buildAppBar(() {
                     Navigator.pop(context);
                   }),
-                  const Center(
-                    child: Image(
-                      image: AssetImage("assets/images/Group 4865.png"),
+                  GestureDetector(
+                    onTap: () {},
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 3.w),
+                      child: Stack(
+                        children: [
+                          const Image(
+                            image: AssetImage("assets/images/Group 4865.png"),
+                          ),
+                          Positioned(
+                            top: 7.h,
+                            bottom: 7.h,
+                            left: 0,
+                            right: 0,
+                            child: const Image(
+                              image: AssetImage(
+                                  "assets/images/noun-play-icon-3120990.png"),
+                              color: gWhiteColor,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   SizedBox(
-                    height: 2.h,
+                    height: 3.h,
                   ),
                   Center(
                     child: Text(
@@ -65,24 +83,19 @@ class DoctorSlotsDetailsScreen extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: 3.h),
-                  Center(
-                    child: Row(mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Image(
-                          image: const AssetImage(
-                              "assets/images/noun-chat-5153452.png"),
-                          height: 2.h,
-                        ),
-                        SizedBox(width: 2.w),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      const DoctorCalenderTimeScreen()),
-                            );
-                          },
-                          child: Text(
+                  GestureDetector(
+                    onTap: () {},
+                    child: Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image(
+                            image: const AssetImage(
+                                "assets/images/noun-chat-5153452.png"),
+                            height: 2.h,
+                          ),
+                          SizedBox(width: 2.w),
+                          Text(
                             'Chat Support',
                             style: TextStyle(
                               decoration: TextDecoration.underline,
@@ -91,8 +104,8 @@ class DoctorSlotsDetailsScreen extends StatelessWidget {
                               fontSize: 10.sp,
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ],
@@ -175,17 +188,7 @@ class DoctorSlotsDetailsScreen extends StatelessWidget {
                                 ),
                                 SizedBox(height: 8.h),
                                 GestureDetector(
-                                  onTap: () {
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            DoctorConsultationCompleted(
-                                          bookingDate: bookingDate,
-                                          bookingTime: bookingTime,
-                                        ),
-                                      ),
-                                    );
-                                  },
+                                  onTap: () {},
                                   child: Container(
                                     padding: EdgeInsets.symmetric(
                                         vertical: 1.h, horizontal: 25.w),
@@ -205,6 +208,27 @@ class DoctorSlotsDetailsScreen extends StatelessWidget {
                                     ),
                                   ),
                                 ),
+                                // GestureDetector(
+                                //   onTap: () {},
+                                //   child: Container(
+                                //     padding: EdgeInsets.symmetric(
+                                //         vertical: 1.h, horizontal: 15.w),
+                                //     decoration: BoxDecoration(
+                                //       color: gWhiteColor,
+                                //       borderRadius: BorderRadius.circular(10),
+                                //       border: Border.all(
+                                //           color: gMainColor, width: 1),
+                                //     ),
+                                //     child: Text(
+                                //       'Reschedule',
+                                //       style: TextStyle(
+                                //         fontFamily: "GothamMedium",
+                                //         color: gMainColor,
+                                //         fontSize: 12.sp,
+                                //       ),
+                                //     ),
+                                //   ),
+                                // ),
                                 SizedBox(
                                   height: 4.h,
                                 ),

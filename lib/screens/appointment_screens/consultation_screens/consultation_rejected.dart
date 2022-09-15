@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 
-import '../../widgets/constants.dart';
-import '../../widgets/widgets.dart';
+import '../../../widgets/constants.dart';
+import '../../../widgets/widgets.dart';
 
-class ConsultationSuccess extends StatelessWidget {
-  const ConsultationSuccess({Key? key}) : super(key: key);
+class ConsultationRejected extends StatelessWidget {
+  const ConsultationRejected({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +13,7 @@ class ConsultationSuccess extends StatelessWidget {
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-              colors: [Color(0xff56AB2F), Color(0xffA8E063)],
+              colors: [Color(0xffC10B02), Color(0xffFFA29E)],
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter),
         ),
@@ -33,7 +33,7 @@ class ConsultationSuccess extends StatelessWidget {
 
               Container(
                 margin: EdgeInsets.symmetric(horizontal: 8.w,vertical: 20.h),
-                padding: EdgeInsets.symmetric(vertical: 5.h, horizontal: 3.w),
+                padding: EdgeInsets.symmetric(vertical: 3.h, horizontal: 5.w),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(10),
@@ -49,17 +49,17 @@ class ConsultationSuccess extends StatelessWidget {
                   children: [
                     Image(
                       image: const AssetImage(
-                          "assets/images/noun-party-4210684.png"),
-                      height: 15.h,
+                          "assets/images/noun-sad-emoji-2600928.png"),
+                      height: 13.h,
                     ),
-                    SizedBox(height: 4.h),
+                    SizedBox(height: 2.h),
                     Text(
-                      "You Have Successfully Completed Your Consultation",
+                      "Your consultation has been rejected our success Team will get back to you soon",
                       textAlign: TextAlign.center,
                       style: TextStyle(
                           height: 1.5,
                           fontFamily: "GothamMedium",
-                          color: gPrimaryColor,
+                          color: gsecondaryColor,
                           fontSize: 10.sp),
                     ),
                     SizedBox(height: 1.h),
@@ -69,9 +69,10 @@ class ConsultationSuccess extends StatelessWidget {
                       style: TextStyle(
                           height: 1.5,
                           fontFamily: "GothamMedium",
-                          color: gPrimaryColor,
+                          color: gsecondaryColor,
                           fontSize: 8.sp),
                     ),
+                    SizedBox(height: 2.h),
                   ],
                 ),
               ),

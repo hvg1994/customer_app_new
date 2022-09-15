@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gwc_customer/widgets/constants.dart';
 import 'package:sizer/sizer.dart';
 
-import '../dashboard/dashboard_screen.dart';
+import '../dashboard_screen.dart';
 import 'new_user/choose_your_problem_screen.dart';
 
 class ExistingUser extends StatefulWidget {
@@ -109,7 +109,7 @@ class _ExistingUserState extends State<ExistingUser> {
             TextFormField(
               //  autovalidateMode: AutovalidateMode.onUserInteraction,
               //  maxLength: 10,
-              cursorColor: kSecondaryColor,
+              cursorColor: gPrimaryColor,
               controller: phoneController,
               style: TextStyle(
                   fontFamily: "GothamBook", color: gMainColor, fontSize: 11.sp),
@@ -169,7 +169,7 @@ class _ExistingUserState extends State<ExistingUser> {
             TextFormField(
               // autovalidateMode: AutovalidateMode.onUserInteraction,
               keyboardType: TextInputType.visiblePassword,
-              cursorColor: kSecondaryColor,
+              cursorColor: gPrimaryColor,
               controller: passwordController,
               obscureText: !passwordVisibility,
               style: TextStyle(

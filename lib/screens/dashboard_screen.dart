@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:gwc_customer/screens/profile_screens/settings_screen.dart';
 
-import '../feeds_sceens/feeds_list.dart';
-import 'clap.dart';
-import 'list.dart';
-import 'track.dart';
+import 'clap_screens/clap_screen.dart';
+import 'feed_screens/feeds_list.dart';
+import 'gut_list_screens/gut_list.dart';
+import 'home_screens/home_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({Key? key}) : super(key: key);
@@ -51,7 +51,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     switch (index) {
       case 0:
         {
-          return const Track();
+          return const HomeScreens();
         }
       case 1:
         {
@@ -63,7 +63,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         }
       case 3:
         {
-          return const Clap();
+          return const ClapScreen();
         }
       case 4:
         {

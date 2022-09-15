@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:gwc_customer/screens/program_plans/yoga_plan.dart';
 import 'package:sizer/sizer.dart';
 import 'package:slide_to_confirm/slide_to_confirm.dart';
 import '../../widgets/constants.dart';
@@ -14,113 +13,30 @@ class ProgramPlanScreen extends StatefulWidget {
 }
 
 class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
-  List<Widget> itemsData = [];
-
-  @override
-  void initState() {
-    super.initState();
-    getPostsData();
-  }
-
-  void getPostsData() {
-    List<dynamic> responseList = YOGAPLAN;
-    List<Widget> listItems = [];
-    for (var post in responseList) {
-      listItems.add(
-        GestureDetector(
-          onTap: () {
-            // Navigator.of(context)
-            //     .push(MaterialPageRoute(builder: (ct) => const DashboardPage()));
-          },
-          child: Column(
-            children: [
-              SizedBox(
-                height: 16.h,
-                child: Image(
-                  image: AssetImage(post["image"]),
-                ),
-              ),
-              SizedBox(height: 0.5.h),
-              Text(
-                post["slot_time"],
-                style: TextStyle(
-                    fontFamily: "GothamBook",
-                    color: gTextColor,
-                    fontSize: 9.sp),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-    setState(() {
-      itemsData = listItems;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          child: Padding(
-            padding:
-            EdgeInsets.only(left: 4.w, right: 4.w, top: 1.h, bottom: 5.h),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    buildAppBar(() {
-                      Navigator.pop(context);
-                    }),
-                    Text(
-                      "Program",
-                      style: TextStyle(
-                          fontFamily: "GothamRoundedBold_21016",
-                          color: gPrimaryColor,
-                          fontSize: 12.sp),
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: 3.h,
-                ),
-                Container(
-                  height: 40.h,
-                  width: double.maxFinite,
-                  decoration: const BoxDecoration(
-                    image: DecorationImage(
-                        image: AssetImage("assets/images/Mask Group 2.png"),
-                        fit: BoxFit.fill),
-                  ),
-                  child: Center(
-                    child: Image(
-                      height: 15.h,
-                      image: const AssetImage("assets/images/Gut welness logo.png"),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 8.h),
-                Text(
-                  "Lorem lpsum is simply dummy text of the printing and typesetting idustry",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      height: 1.5,
-                      fontFamily: "GothamBook",
-                      color: gMainColor,
-                      fontSize: 9.sp),
-                ),
-                SizedBox(height: 8.h),
-                ConfirmationSlider(
+        body: Padding(
+          padding:
+              EdgeInsets.only(left: 4.w, right: 4.w, top: 1.h, bottom: 5.h),
+          child: Column(
+            children: [
+              buildAppBar(() {
+                Navigator.pop(context);
+              }),
+              SizedBox(
+                height: 3.h,
+              ),
+              Expanded(
+                child: buildPlans(),
+              ),
+              ConfirmationSlider(
                   width: 95.w,
                   text: "Slide To Start",
                   sliderButtonContent: const Image(
                     image: AssetImage(
-                        "assets/images/splash_screen/noun-arrow-1921075.png"),
+                        "assets/images/noun-arrow-1921075.png"),
                   ),
                   foregroundColor: kPrimaryColor,
                   foregroundShape: BorderRadius.zero,
@@ -131,38 +47,41 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
                     offset: const Offset(2, 10),
                   ),
                   textStyle: TextStyle(
-                      fontFamily: "GothamBook",
+                      fontFamily: "GothamMedium",
                       color: gTextColor,
-                      fontSize: 11.sp),
+                      fontSize: 10.sp),
                   onConfirmation: () {
-                        Navigator.push(
+                    Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => const DaysProgramPlan(),
                       ),
                     );
-                  }
-                ),
-              ],
-            ),
+                  }),
+            ],
           ),
         ),
       ),
     );
   }
 
-  buildYogaPlan() {
-    return SizedBox(
-      height: 20.h,
-      child: ListView.builder(
-        itemCount: itemsData.length,
-        shrinkWrap: true,
-        scrollDirection: Axis.horizontal,
-        physics: const BouncingScrollPhysics(),
-        itemBuilder: (context, index) {
-          return itemsData[index];
-        },
-      ),
+  buildPlans() {
+    return Column(
+      children: [
+        const Image(
+          image: AssetImage("assets/images/Group 4852.png"),
+        ),
+        SizedBox(height: 4.h),
+        Text(
+          "Lorem ipsum is simply dummy text of the printing and typesetting industry.Lorem ipsum has been the industry's standard dummy text ever since the 1500s,when an unknown printer took a gallery of type and scrambled it to make a type specimen book.",
+          textAlign: TextAlign.center,
+          style: TextStyle(
+              height: 1.5,
+              fontFamily: "GothamMedium",
+              color: gTextColor,
+              fontSize: 10.sp),
+        ),
+      ],
     );
   }
 }

@@ -110,25 +110,37 @@ class _ChooseYourProblemScreenState extends State<ChooseYourProblemScreen> {
         scrollDirection: Axis.vertical,
         physics: const ScrollPhysics(),
         shrinkWrap: true,
-        gridDelegate:
-            const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
-        itemCount: ChooseProblemsData.length,
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 3,
+          crossAxisSpacing: 6,
+          mainAxisSpacing: 13,
+          mainAxisExtent: 15.h,
+        ),
+        itemCount: chooseProblemsData.length,
         itemBuilder: (context, index) {
           return InkWell(
             onTap: () {
-              print("Problem: ${ChooseProblemsData[index]["title"]}");
-              doMultiSelection(ChooseProblemsData[index]["title"]);
+              doMultiSelection(chooseProblemsData[index]["title"]);
             },
             onLongPress: () {
               isMultiSelectionEnabled = true;
-              doMultiSelection(ChooseProblemsData[index]["title"]);
+              doMultiSelection(chooseProblemsData[index]["title"]);
             },
             child: Container(
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(5),
+                borderRadius: BorderRadius.circular(10),
+                color: gWhiteColor,
                 image: const DecorationImage(
                     image: AssetImage("assets/images/Group 4855.png"),
-                    fit: BoxFit.fill),
+                    fit: BoxFit.cover),
+                border: Border.all(color: gMainColor, width: 1),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.3),
+                    blurRadius: 5,
+                    offset: const Offset(2, 6),
+                  ),
+                ],
               ),
               child: Stack(
                 children: [
@@ -138,11 +150,11 @@ class _ChooseYourProblemScreenState extends State<ChooseYourProblemScreen> {
                         SizedBox(height: 2.h),
                         Image(
                           height: 8.h,
-                          image: AssetImage(ChooseProblemsData[index]["image"]),
+                          image: AssetImage(chooseProblemsData[index]["image"]),
                         ),
                         SizedBox(height: 1.h),
                         Text(
-                          ChooseProblemsData[index]["title"],
+                          chooseProblemsData[index]["title"],
                           style: TextStyle(
                             fontFamily: "GothamMedium",
                             color: gTextColor,
@@ -155,8 +167,8 @@ class _ChooseYourProblemScreenState extends State<ChooseYourProblemScreen> {
                   Center(
                     child: Visibility(
                       visible: selectItems
-                          .contains(ChooseProblemsData[index]["title"]),
-                      child:  Align(
+                          .contains(chooseProblemsData[index]["title"]),
+                      child: Align(
                         alignment: Alignment.topLeft,
                         child: Icon(
                           Icons.check,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gwc_customer/screens/user_registration/existing_user.dart';
 import 'package:gwc_customer/widgets/constants.dart';
 import 'package:sizer/sizer.dart';
 
@@ -22,7 +23,12 @@ class _SitBackScreenState extends State<SitBackScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             buildAppBar(() {
-              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const ExistingUser(),
+                ),
+              );
             }),
             SizedBox(height: 2.h),
             const Image(
@@ -40,7 +46,7 @@ class _SitBackScreenState extends State<SitBackScreen> {
             Text(
               "Our Success Team Will Contact \nYou Soon ..!!",
               style: TextStyle(
-                height: 1.5,
+                  height: 1.5,
                   fontFamily: "GothamMedium",
                   color: gTextColor,
                   fontSize: 10.sp),
