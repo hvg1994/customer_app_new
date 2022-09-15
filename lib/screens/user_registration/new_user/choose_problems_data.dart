@@ -1,4 +1,4 @@
-List ChooseProblemsData = [
+List chooseProblemsData = [
   {
     "title": "Problem 1",
     "image": "assets/images/Group 4853.png",

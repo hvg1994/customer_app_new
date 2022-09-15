@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 
-import '../../widgets/constants.dart';
-import '../../widgets/widgets.dart';
+import '../../../widgets/constants.dart';
+import '../../../widgets/widgets.dart';
 import 'medical_report_details.dart';
 
 class MedicalReportScreen extends StatelessWidget {
@@ -63,7 +63,7 @@ class MedicalReportScreen extends StatelessWidget {
       children: [
         SizedBox(height: 2.h),
        const  Image(
-          image: const AssetImage("assets/images/Group 3828.png"),
+          image:  AssetImage("assets/images/Group 3828.png"),
         ),
         SizedBox(height: 4.h),
         Padding(

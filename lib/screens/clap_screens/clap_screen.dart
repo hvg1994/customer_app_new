@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:sizer/sizer.dart';
+import 'package:syncfusion_flutter_calendar/calendar.dart';
 
-class Clap extends StatefulWidget {
-  const Clap({Key? key}) : super(key: key);
+import '../../widgets/constants.dart';
 
-  @override
-  State<Clap> createState() => _ClapState();
-}
+class ClapScreen extends StatelessWidget {
+  const ClapScreen({Key? key}) : super(key: key);
 
-class _ClapState extends State<Clap> {
- 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return
+      Scaffold(
         body: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -30,18 +29,17 @@ class _ClapState extends State<Clap> {
   }
 
   Widget getClapButton() {
-    
-    return new GestureDetector(
-        child: new Container(
+    return GestureDetector(
+        child: Container(
       height: 60.0,
       width: 60.0,
-      padding: new EdgeInsets.all(10.0),
-      decoration: new BoxDecoration(
-          border: new Border.all(color: Colors.pink, width: 1.0),
-          borderRadius: new BorderRadius.circular(50.0),
+      padding: const EdgeInsets.all(10.0),
+      decoration: BoxDecoration(
+          border: Border.all(color: Colors.pink, width: 1.0),
+          borderRadius: BorderRadius.circular(50.0),
           color: Colors.white,
-          boxShadow: [new BoxShadow(color: Colors.pink, blurRadius: 8.0)]),
-      child: new ImageIcon(new AssetImage("assets/clap.png"),
+          boxShadow: const [BoxShadow(color: Colors.pink, blurRadius: 8.0)]),
+      child: const ImageIcon(AssetImage("assets/clap.png"),
           color: Colors.pink, size: 40.0),
     ));
   }
