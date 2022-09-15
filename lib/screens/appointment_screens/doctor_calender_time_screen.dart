@@ -1,16 +1,30 @@
 import 'package:date_picker_timeline/date_picker_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
 import 'package:intl/intl.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:smooth_star_rating_null_safety/smooth_star_rating_null_safety.dart';
+import '../../model/consultation_model/appointment_booking/appointment_book_model.dart';
+import '../../model/consultation_model/appointment_slot_model.dart';
+import '../../model/consultation_model/child_slots_model.dart';
+import '../../model/error_model.dart';
+import '../../repository/api_service.dart';
+import '../../repository/consultation_repository/get_slots_list_repository.dart';
+import '../../services/consultation_service/consultation_service.dart';
+import '../../utils/app_config.dart';
 import '../../widgets/constants.dart';
 import '../../widgets/widgets.dart';
 import 'doctor_slots_details_screen.dart';
+import 'package:http/http.dart' as http;
+import 'package:gwc_customer/widgets/dart_extensions.dart';
 
 class DoctorCalenderTimeScreen extends StatefulWidget {
-  const DoctorCalenderTimeScreen({Key? key}) : super(key: key);
+  final bool isReschedule;
+  const DoctorCalenderTimeScreen({Key? key,
+    this.isReschedule = false
+  }) : super(key: key);
 
   @override
   State<DoctorCalenderTimeScreen> createState() =>
@@ -20,12 +34,68 @@ class DoctorCalenderTimeScreen extends StatefulWidget {
 class _DoctorCalenderTimeScreenState extends State<DoctorCalenderTimeScreen> {
   DatePickerController dateController = DatePickerController();
   final pageController = PageController();
-  String isSelected = "";
   double rating = 5.0;
 
   List<String> list = ["09:00", "11:00", "02:00", "04:00"];
 
-  DateTime selectedValue = DateTime.now();
+  final SharedPreferences _pref = AppConfig().preferences!;
+  /// this is for slot selection
+  String isSelected = "";
+  String selectedTimeSlotFullName = "";
+
+  Map<String, ChildSlotModel>? slotList = {};
+
+  DateTime selectedDate = DateTime.now();
+
+  bool isLoading = false;
+  bool showBookingProgress = false;
+  String slotErrorText = AppConfig.slotErrorText;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getSlotsList(selectedDate);
+  }
+
+  getSlotsList(DateTime selectedDate) async{
+    setState(() {
+      isLoading = true;
+    });
+    String appointment_id = '';
+    if(widget.isReschedule) appointment_id = _pref.getString(AppConfig.appointmentId)!;
+    print(appointment_id);
+    final res = await (() => ConsultationService(repository: repository).getAppointmentSlotListService(DateFormat('yyyy-MM-dd').format(selectedDate), appointmentId: (widget.isReschedule) ? appointment_id : null)).withRetries(3);
+    print("getSlotlist" + res.runtimeType.toString());
+    if(res.runtimeType == SlotModel){
+      SlotModel result = res;
+      setState(() {
+        slotList = result.data!;
+        isLoading = false;
+        if(slotList!.isEmpty){
+          slotErrorText = AppConfig.slotErrorText;
+        }
+      });
+    }
+    else{
+      ErrorModel result = res;
+      slotList!.clear();
+      AppConfig().showSnackbar(context, result.message ?? '', isError: true);
+      setState(() {
+        isLoading = false;
+        if(result.message!.toLowerCase().contains("no doctor")){
+          slotErrorText = result.message!;
+        }
+        else if(result.message!.toLowerCase().contains("unauthenticated")){
+          slotErrorText = AppConfig.networkErrorText;
+        }
+        else{
+          slotErrorText = AppConfig.slotErrorText;
+        }
+      });
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -79,62 +149,61 @@ class _DoctorCalenderTimeScreenState extends State<DoctorCalenderTimeScreen> {
                       fontSize: 11.sp),
                 ),
                 SizedBox(height: 2.h),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    buildChooseTime(list[0]),
-                    buildChooseTime(list[1]),
-                    buildChooseTime(list[2]),
-                    buildChooseTime(list[3]),
-                  ],
+                SizedBox(
+                  width: double.infinity,
+                  child: (isLoading) ? Center(
+                    child: buildCircularIndicator(),
+                  ) : (slotList!.isEmpty) ? Center(
+                    child:  Text(
+                      slotErrorText,
+                      style: TextStyle(
+                          fontFamily: "GothamRoundedBold_21016",
+                          color: gPrimaryColor,
+                          fontSize: 10.sp),
+                    ),
+                  ) : Wrap(
+                    alignment: WrapAlignment.center,
+                    runSpacing: 20,
+                    spacing: 20,
+                    children: [
+                      // ...list.map((e) => buildChooseTime(e)).toList(),
+                      ...slotList!.values.map((e) => buildChooseTime(e)).toList()
+                    ],
+                  ),
                 ),
                 SizedBox(
                   height: 6.h,
                 ),
-                isSelected.isEmpty
-                    ? Center(
-                        child: Container(
-                          padding: EdgeInsets.symmetric(
-                              vertical: 1.h, horizontal: 10.w),
-                          decoration: BoxDecoration(
-                            color: gMainColor,
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: gMainColor, width: 1),
-                          ),
-                          child: Text(
-                            'Next',
-                            style: TextStyle(
-                              fontFamily: "GothamRoundedBold_21016",
-                              color: gPrimaryColor,
-                              fontSize: 12.sp,
-                            ),
-                          ),
-                        ),
-                      )
-                    : Center(
-                        child: GestureDetector(
-                          onTap: () {
-                            buildConfirm();
-                          },
-                          child: Container(
-                            padding: EdgeInsets.symmetric(
-                                vertical: 1.h, horizontal: 10.w),
-                            decoration: BoxDecoration(
-                              color: gPrimaryColor,
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(color: gMainColor, width: 1),
-                            ),
-                            child: Text(
-                              'Next',
-                              style: TextStyle(
-                                fontFamily: "GothamRoundedBold_21016",
-                                color: gMainColor,
-                                fontSize: 12.sp,
-                              ),
-                            ),
+                Center(
+                  child: GestureDetector(
+                    onTap: (isSelected.isEmpty || showBookingProgress) ? null : () {
+                      buildConfirm(DateFormat('yyyy-MM-dd').format(selectedDate), selectedTimeSlotFullName);
+                    },
+                    child: Container(
+                      width: 60.w,
+                      height: 5.h,
+                      // padding: EdgeInsets.symmetric(
+                      //     vertical: 1.h, horizontal: 25.w),
+                      decoration: BoxDecoration(
+                        color: isSelected.isEmpty ? gMainColor : gPrimaryColor,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: gMainColor, width: 1),
+                      ),
+                      child: (showBookingProgress)
+                          ? buildThreeBounceIndicator()
+                          : Center(
+                        child: Text(
+                          'Next',
+                          style: TextStyle(
+                            fontFamily: "GothamRoundedBold_21016",
+                            color: isSelected.isEmpty ? gPrimaryColor : gWhiteColor,
+                            fontSize: 13.sp,
                           ),
                         ),
                       ),
+                    ),
+                  ),
+                )
               ],
             ),
           ),
@@ -317,72 +386,113 @@ class _DoctorCalenderTimeScreenState extends State<DoctorCalenderTimeScreen> {
         selectedTextColor: gMainColor,
         onDateChange: (date) {
           setState(() {
-            selectedValue = date;
+            selectedDate = date;
+            isLoading = true;
+            isSelected = "";
           });
+          getSlotsList(selectedDate);
         },
       ),
     );
   }
 
-  void changedIndex(String index) {
-    setState(() {
-      isSelected = index;
-    });
-  }
 
-  Widget buildChooseTime(String txt) {
+  Widget buildChooseTime(ChildSlotModel model) {
+    String slotName = model.slot!.substring(0,5);
     return GestureDetector(
-      onTap: () {
-        changedIndex(txt);
+      onTap: model.isBooked == '1' ? null : () {
+        setState(() {
+          isSelected = slotName;
+          selectedTimeSlotFullName = model.slot ?? '';
+        });
       },
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 1.h),
         decoration: BoxDecoration(
-          color: (isSelected != txt) ? gWhiteColor : gPrimaryColor,
-          borderRadius: BorderRadius.circular(10),
           border: Border.all(color: gMainColor, width: 1),
-          boxShadow: (isSelected != txt)
+          borderRadius: BorderRadius.circular(8),
+          color: (model.isBooked == '0' && isSelected != slotName) ? gWhiteColor : gPrimaryColor,
+          boxShadow: (model.isBooked == '0' && isSelected != slotName)
               ? [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.5),
-                    blurRadius: 1,
-                  ),
-                ]
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.5),
+              blurRadius: 1,
+            ),
+          ]
               : [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.5),
-                    blurRadius: 20,
-                    offset: const Offset(2, 10),
-                  ),
-                ],
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.5),
+              blurRadius: 20,
+              offset: const Offset(2, 10),
+            ),
+          ],
         ),
         child: Text(
-          txt,
+          slotName,
           style: TextStyle(
             fontSize: 10.sp,
             fontFamily: "GothamBook",
-            color: isSelected == txt ? gMainColor : gTextColor,
+            color: (model.isBooked != '0' || isSelected == slotName) ? gMainColor : gTextColor,
           ),
         ),
       ),
     );
   }
 
-  void buildConfirm() {
-    DateTime now = DateTime.parse('$selectedValue');
-    final DateFormat formatter = DateFormat('yyyy-MM-dd');
-    final String formatted = formatter.format(now);
-    if (isSelected.isEmpty) {
-      // buildSnackBar("Failed", "Please Choose Time");
-    } else {
-      Navigator.of(context).push(
+  void buildConfirm(String slotDate, String slotTime) {
+    String? appointmentId;
+    if(widget.isReschedule){
+      appointmentId = _pref.getString(AppConfig.appointmentId);
+    }
+    bookAppointment(slotDate, slotTime, appointmentId: appointmentId);
+  }
+
+  final ConsultationRepository repository = ConsultationRepository(
+    apiClient: ApiClient(
+      httpClient: http.Client(),
+    ),
+  );
+
+  bookAppointment(String date, String slotTime, {String? appointmentId}) async{
+    setState(() {
+      showBookingProgress = true;
+    });
+    final res = await ConsultationService(repository: repository)
+        .bookAppointmentService(date, slotTime,
+        appointmentId: (widget.isReschedule) ? appointmentId : null
+    );
+    print("bookAppointment : " + res.runtimeType.toString());
+    if(res.runtimeType == AppointmentBookingModel){
+      if(widget.isReschedule){
+        _pref.remove(AppConfig.appointmentId);
+      }
+      AppointmentBookingModel result = res;
+      print("result.zoomJoinUrl: ${result.zoomJoinUrl}");
+      print(result.toJson());
+      setState(() {
+        showBookingProgress = false;
+      });
+      _pref.setString(AppConfig.appointmentId, result.appointmentId ?? '');
+      // _pref.setString(AppConfig.doctorId, result.doctorId ?? '');
+
+      // AppConfig().showSnackbar(context, result.message ?? '');
+      Navigator.of(context).pushReplacement(
         MaterialPageRoute(
           builder: (context) => DoctorSlotsDetailsScreen(
-            bookingDate: formatted,
+            bookingDate: date,
             bookingTime: isSelected,
+            data: result,
           ),
-        ),
-      );
+        ),);
+    }
+    else{
+      ErrorModel result = res;
+      AppConfig().showSnackbar(context, result.message ?? '', isError: true);
+      setState(() {
+        showBookingProgress = false;
+      });
     }
   }
+
+
 }

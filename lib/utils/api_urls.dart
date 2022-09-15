@@ -12,6 +12,18 @@ var registerUserUrl = "${AppConfig().BASE_URL}/api/register";
 /// shiprocket Api
 var shippingApiUrl = AppConfig().shipRocket_AWB_URL;
 
+var loginWithOtpUrl = "${AppConfig().BASE_URL}/api/otp_login";
+
+var getOtpUrl = "${AppConfig().BASE_URL}/api/sendOTP";
+
+var getAppointmentSlotsListUrl = "${AppConfig().BASE_URL}/api/getData/slots/";
+
+var bookAppointmentUrl = "${AppConfig().BASE_URL}/api/getData/book";
+
+var enquiryStatusUrl = "${AppConfig().BASE_URL}/api/form/check_enquiry_status";
+
+
+
 
 //  old apis
 // var welcomeTextUrl = "${AppConfig().BASE_URL}/api/list/welcome_text";

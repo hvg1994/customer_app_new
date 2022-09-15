@@ -36,6 +36,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   String? deviceId;
 
+  bool isLoading = false;
+
   late FocusNode _nameFocus, _ageFocus, _emailFocus, mobileFocus;
 
   TextEditingController nameController = TextEditingController();
@@ -364,7 +366,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                   Center(
                     child: GestureDetector(
-                      onTap: () {
+                      onTap: isLoading ? null : () {
                         if (nameFormKey.currentState!.validate() &&
                             ageFormKey.currentState!.validate() &&
                             emailFormKey.currentState!.validate() &&
@@ -390,21 +392,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         }
                       },
                       child: Container(
-                        padding: EdgeInsets.symmetric(
-                            vertical: 1.h, horizontal: 10.w),
+                        width: 40.w,
+                        height: 5.h,
+                        // padding: EdgeInsets.symmetric(
+                        //     vertical: 1.h, horizontal: 10.w),
                         decoration: BoxDecoration(
                           color: gPrimaryColor,
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(color: gMainColor, width: 1),
                         ),
-                        child: Text(
+                        child: (isLoading) ? buildThreeBounceIndicator()
+                            : Center(
+                              child: Text(
                           'Next',
                           style: TextStyle(
-                            fontFamily: "GothamRoundedBold_21016",
-                            color: gWhiteColor,
-                            fontSize: 13.sp,
+                              fontFamily: "GothamRoundedBold_21016",
+                              color: gWhiteColor,
+                              fontSize: 13.sp,
                           ),
                         ),
+                            ),
                       ),
                     ),
                   ),
@@ -492,6 +499,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   void submitEnquiryForm(String name, String age, String gender, String email,
       String mobileNumber) async {
+    setState(() {
+      isLoading = true;
+    });
     final res = await _userRegisterService.registerUserService(
         name: name,
         age: int.parse(age),
@@ -507,33 +517,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (res.runtimeType == RegisterResponse) {
       RegisterResponse response = res;
 
-      Navigator.of(context).push(
+      Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(
-          builder: (context) => SitBackScreen(),
+          builder: (context) => const SitBackScreen(),
         ),
+          (route) => route.isFirst
       );
     }
     else {
       String result = (res as ErrorModel).message ?? '';
-      AppConfig().showSnackbar(context, result, isError: true);
+      AppConfig().showSnackbar(context, result, isError: true, duration: 4);
+
+      Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(
+            builder: (context) => const SitBackScreen(),
+          ),
+              (route) => route.isFirst
+      );
     }
+    setState(() {
+      isLoading = false;
+    });
   }
 
-  void testingMethod() {
-    _pref?.setString(AppConfig().tokenUser, AppConfig().bearerToken);
-    AppConfig().bearer = AppConfig().bearerToken;
-    Map userDetails = {
-      'name': nameController.text,
-      'email' : emailController.text,
-      'mobile': mobileController.text,
-      'country_code': countryCode
-    };
-    // Navigator.of(context).push(
-    //   MaterialPageRoute(
-    //     builder: (context) => VerificationCodeScreen(
-    //       userDetails : userDetails
-    //     ),
-    //   ),
-    // );
-  }
 }

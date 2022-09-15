@@ -11,7 +11,7 @@ class ChooseProblemService extends ChangeNotifier{
     return await repository.getProblemList();
   }
 
-  Future postProblems(List problemList,String deviceId, String otherProblem) async{
-    return await repository.postProblemList(problemList, deviceId, otherProblem);
+  Future postProblems(List problemList,String deviceId) async{
+    return await repository.postProblemList(problemList, deviceId);
   }
 }

@@ -18,10 +18,11 @@ class AppConfig{
 
   final String BEARER_TOKEN = "Bearer";
 
+  static const String isLogin = "login";
   final String deviceId = "deviceId";
   final String registerOTP = "R_OTP";
   final String tokenUser = 'token';
-  String bearerToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiMzlkMTg0Yjk0NTE3MDE2YWE4YzBhZmIzNmEzYjU5NWQ5ZDE4NmIwN2RjNmJmZjhlMzA2NDNkZjYxNzIxNDQ0N2M1M2ZkYjI3ZjAzMzJiMjUiLCJpYXQiOjE2NTkwNzM5NDguMjI1NDY3LCJuYmYiOjE2NTkwNzM5NDguMjI1NDY5LCJleHAiOjE2OTA2MDk5NDguMjIzNTkyLCJzdWIiOiIzMiIsInNjb3BlcyI6W119.AFBwNxPiZbviR4iKlLCl5GiuoOVyChEOGIkDNKqd8OqzNTKZYo12NnwgNVhsVclIGkgkwb3N0a_rG_bWmUihu3UMfOEzo8TWdtrgJlBZauI5qX2C6eTLyCvC70jgj22X4R6vE5m7ef2gncyAZJWnmEoTU4PhQt4XSS6Lb24xDKkJ4hNeDxO49hrMSjh5Gusjq9rPU17QJa0-jTCDwS63ZUYXjicw2j48sEz6k0MnF5WaV0m7Lqp0-uf7Z4SlieBxjStCAz9gCCSDfoJvnptEWWbOpPq_GW7EvI-1qNwThjvIuUnb77BCIQdyOsYDUurrS8gI5AueIlD_hX4sSPWU3BECUi6senj1cjTDbX_L4prnz6J8tz2LNB9f8vAM1F6Nwlm_ibbdN3c3NYXQUyjSz2erXHdFPQQbJF5x8Ck9aD96eVPI0ByZk-syNV5GApUmVA_aSROnSVnjr39nm1sPfS5EPjnjjDnzfDJTB-haE2Fw_DQir7yMyovhN4bywjojlggeRUVWqgeG8HPeza49z3ErPSObXPbgxBEbnQ0RPiZFWCKIoZN8A9qZ5rVnA4KXVDiLH8yLjdHdT2kBJawcTPO_Fu8yXYyNPBFoGEIDdLFfp_3Bsv28ms8LBN8VHx4CR9_EQyIqGBZkrMlDxs-ydusujeV6MUReSK7z8a0-FTw";
+  String bearerToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiYWI0M2RlY2NlMGExMTQyNmMzN2IwZGRkZTMxZGM3N2U3YjNjODVmY2JlNGJjNTk5NDMwNzhiM2JkMDkzYTQzYTI1OTA1Mzk4ZGI4NTRiNWYiLCJpYXQiOjE2NjI3MDExMjEuODYyNzgxLCJuYmYiOjE2NjI3MDExMjEuODYyNzgzLCJleHAiOjE2OTQyMzcxMjEuODYwNzI3LCJzdWIiOiI0NiIsInNjb3BlcyI6W119.G2j2u_5GPeA4qaZtydxb3PBHpePYnmqKeOIBF80es_Hm0lo3NeE0URatUjO8sdiQM-nFuxqO9sk9xiDxk3ONu1zTC23whWhNTm59iDUlxd0CIQZHgOx0blVjNnZYK10dRSkoGafk8GI9i9gYVl1no4ImIch_dBhb92VWPlIJ7ZHk2S1Mvrm5wM9WKObPK3-V1SNu3m2BGYli2DBz-9LEvF3SI3TSmLShFybH6n4xddJYzhZuz73xryQghvKBOGvg9RoXKDHPY0ofkdSzHJVJ5h44PuXDcMUOMTNFUospfmPKq31By9dA7EnKQ6Upnv8x4QhH005Xcpf4FFU1SANDTk--bj_bOgUcB2kvWirzZpQ5r3kqsL8B251Nft0lk4kv5ECqq5HDNM8fzfQL8T7fapcTzniht003XHphxHUPyfRpUELfMLRAz_clQCmCTqXfwFPAeEc74CeHIHXhS2k7pURbG1kdhfgRmI5VXc1e1OPt1RtBM6aBWLdlvlDbQOyBvVbHOVaAy2j8hhjKFT8NUOawpRNsms5kG0EtUKOl-0XXnGhzOPbGQhR1MW6DbiEilaK5m3iNOw4kIs0L594KcrSEoxabKKOiw5NyxI1SO1eYIS8629gvDi8gDM4BlYw_SEMRFBLOMOgw8rX9ok6OVIKe6NiL_8dgqWAySZtVPaM";
   late String bearer = '';
 
   static String slotErrorText = "Slots Not Available Please select different day";
@@ -31,8 +32,9 @@ class AppConfig{
 
   final String program_days = "no_of_days";
 
+  static const String consultationComplete = "IS_COMPLETED";
+
   static String appointmentId = "appoint_id";
-  static String doctorId = "doctor_id";
 
   //---Razorpay secret keys -----------------
   static const KEY_ID = "rzp_test_mGdJGjZKpJswFa";
@@ -45,13 +47,13 @@ class AppConfig{
     return deviceId;
   }
 
-  showSnackbar(BuildContext context, String message,{Duration? duration, bool? isError}){
+  showSnackbar(BuildContext context, String message,{int? duration, bool? isError}){
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         behavior: SnackBarBehavior.floating,
         backgroundColor:(isError == null || isError == false) ? gPrimaryColor : Colors.redAccent,
         content: Text(message),
-        duration: duration ?? Duration(seconds: 2),
+        duration: Duration(seconds: duration ?? 2),
       ),
     );
   }

@@ -1,21 +1,39 @@
 // ignore_for_file: deprecated_member_use
 
+import 'dart:async';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_zoom_sdk/zoom_options.dart';
+import 'package:flutter_zoom_sdk/zoom_view.dart';
+import 'package:gwc_customer/screens/consultation_screens/consultation_success.dart';
+import 'package:gwc_customer/utils/app_config.dart';
 import 'package:sizer/sizer.dart';
+import '../../model/consultation_model/appointment_booking/appointment_book_model.dart';
 import '../../widgets/constants.dart';
 import '../../widgets/widgets.dart';
 import 'doctor_calender_time_screen.dart';
 import 'doctor_consultation_completed.dart';
 
-class DoctorSlotsDetailsScreen extends StatelessWidget {
+class DoctorSlotsDetailsScreen extends StatefulWidget {
+  final AppointmentBookingModel? data;
   final String bookingDate;
   final String bookingTime;
   const DoctorSlotsDetailsScreen({
     Key? key,
+    this.data,
     required this.bookingDate,
     required this.bookingTime,
   }) : super(key: key);
+
+  @override
+  State<DoctorSlotsDetailsScreen> createState() => _DoctorSlotsDetailsScreenState();
+}
+
+class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
+  Timer? timer;
+
+  final _pref = AppConfig().preferences;
 
   @override
   Widget build(BuildContext context) {
@@ -134,7 +152,7 @@ class DoctorSlotsDetailsScreen extends StatelessWidget {
                                           ),
                                         ),
                                         TextSpan(
-                                          text: bookingTime.toString(),
+                                          text: widget.bookingTime.toString(),
                                           style: TextStyle(
                                             height: 1.5,
                                             fontSize: 13.sp,
@@ -152,7 +170,7 @@ class DoctorSlotsDetailsScreen extends StatelessWidget {
                                           ),
                                         ),
                                         TextSpan(
-                                          text: bookingDate.toString(),
+                                          text: widget.bookingDate.toString(),
                                           style: TextStyle(
                                             height: 1.5,
                                             fontSize: 13.sp,
@@ -176,15 +194,16 @@ class DoctorSlotsDetailsScreen extends StatelessWidget {
                                 SizedBox(height: 8.h),
                                 GestureDetector(
                                   onTap: () {
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            DoctorConsultationCompleted(
-                                          bookingDate: bookingDate,
-                                          bookingTime: bookingTime,
-                                        ),
-                                      ),
-                                    );
+                                    joinZoom(context);
+                                    // Navigator.of(context).push(
+                                    //   MaterialPageRoute(
+                                    //     builder: (context) =>
+                                    //         DoctorConsultationCompleted(
+                                    //       bookingDate: widget.bookingDate,
+                                    //       bookingTime: widget.bookingTime,
+                                    //     ),
+                                    //   ),
+                                    // );
                                   },
                                   child: Container(
                                     padding: EdgeInsets.symmetric(
@@ -287,4 +306,103 @@ class DoctorSlotsDetailsScreen extends StatelessWidget {
       ),
     );
   }
+
+  joinZoom(BuildContext context) {
+    String meetingId = widget.data?.zoomId ?? '';
+    String meetingPwd = widget.data?.zoomPassword ?? '';
+    bool _isMeetingEnded(String status) {
+      var result = false;
+
+      if (Platform.isAndroid) {
+        result = status == "MEETING_STATUS_DISCONNECTING" ||
+            status == "MEETING_STATUS_FAILED";
+      } else {
+        result = status == "MEETING_STATUS_IDLE";
+
+      }
+      return result;
+    }
+
+    if (meetingId.isNotEmpty &&
+        meetingPwd.isNotEmpty) {
+      ZoomOptions zoomOptions = ZoomOptions(
+        domain: "zoom.us",
+        appKey:
+        "FxjLOPbhuE5ecpjRS7PCKUWSeCo7Xb3bGjEU", //API KEY FROM ZOOM - Sdk API Key
+        appSecret:
+        "sN2sN5jrXUXzdmBQrGNmdEVzQwBbOlFSas0B", //API SECRET FROM ZOOM - Sdk API Secret
+      );
+      var meetingOptions = ZoomMeetingOptions(
+          userId:
+          'username', //pass username for join meeting only --- Any name eg:- EVILRATT.
+          meetingId: meetingId
+              .toString(), //pass meeting id for join meeting only
+          meetingPassword: meetingPwd
+              .toString(), //pass meeting password for join meeting only
+          disableDialIn: "true",
+          disableDrive: "true",
+          disableInvite: "true",
+          disableShare: "true",
+          disableTitlebar: "false",
+          viewOptions: "true",
+          noAudio: "false",
+          noDisconnectAudio: "false");
+
+      var zoom = ZoomView();
+      zoom.initZoom(zoomOptions).then((results) {
+        if (results[0] == 0) {
+          StreamSubscription? stream;
+          stream = zoom.onMeetingStatus().listen((status) {
+            print("[Meeting Status Stream] : " + status[0] + " - " + status[1]);
+            if (_isMeetingEnded(status[0])) {
+              print("[Meeting Status] :- Ended");
+              timer?.cancel();
+              stream?.cancel();
+              _pref!.setBool(AppConfig.consultationComplete, true);
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(
+                  builder: (context) =>
+                      const ConsultationSuccess()
+                      // DoctorConsultationCompleted(
+                      //   bookingDate: widget.bookingDate,
+                      //   bookingTime: widget.bookingTime,
+                      // ),
+                ), (route) => route.isFirst
+              );
+            }
+            if(status[0] == "MEETING_STATUS_INMEETING"){
+              zoom.meetinDetails().then((meetingDetailsResult) {
+                print("[MeetingDetailsResult] :- " + meetingDetailsResult.toString());
+              });
+            }
+          });
+          print("listen on event channel");
+          zoom.joinMeeting(meetingOptions).then((joinMeetingResult) {
+            timer = Timer.periodic(const Duration(seconds: 2), (timer) {
+              zoom.meetingStatus(meetingOptions.meetingId!).then((status) {
+                print("[Meeting Status Polling] : " +
+                    status[0] +
+                    " - " +
+                    status[1]);
+              });
+            });
+          });
+        }
+      }).catchError((error) {
+        print("[Error Generated] : " + error);
+      });
+    }
+    else {
+      if (meetingId.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text("Enter a valid meeting id to continue."),
+        ));
+      } else if (meetingPwd.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text("Enter a meeting password to start."),
+        ));
+      }
+    }
+  }
+
 }

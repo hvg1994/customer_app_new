@@ -42,8 +42,11 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
     // TODO: implement initState
     super.initState();
     _aboutProgramService = AboutProgramService(repository: repository);
-    _aboutProgramFuture = _aboutProgramService.serverAboutProgramService();
+    getFuture();
+  }
 
+  getFuture(){
+    _aboutProgramFuture = _aboutProgramService.serverAboutProgramService();
   }
 
   addUrlToVideoPlayer(String url){
@@ -78,6 +81,7 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
   @override
   void dispose() async {
     super.dispose();
+    await _videoPlayerController!.stop();
     await _videoPlayerController!.dispose();
   }
 
@@ -214,6 +218,9 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
                       else{
                         ErrorModel data = snapshot.data as ErrorModel;
                         print("data.message: ${data.message}");
+                        if(data.message!.contains("Connection closed before full header was received")){
+                          getFuture();
+                        }
                       }
                     }
                     return buildCircularIndicator();

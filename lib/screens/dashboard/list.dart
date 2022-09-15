@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:gwc_customer/screens/consultation_screens/consultation_success.dart';
 import 'package:gwc_customer/screens/post_program_screens/post_program_screen.dart';
 import 'package:gwc_customer/screens/program_plans/program_plan_screen.dart';
 import 'package:gwc_customer/widgets/constants.dart';
 import 'package:gwc_customer/widgets/widgets.dart';
 import 'package:sizer/sizer.dart';
-import '../appointment_screens/doctor_calender_time_screen.dart';
+import '../../utils/app_config.dart';
 import '../cook_kit_shipping_screens/cook_kit_tracking.dart';
 import 'List/list_view_effect.dart';
 import 'List/program_stages_datas.dart';
+import 'package:gwc_customer/screens/appointment_screens/doctor_calender_time_screen.dart';
 
 class GutList extends StatefulWidget {
   const GutList({Key? key}) : super(key: key);
@@ -17,9 +19,20 @@ class GutList extends StatefulWidget {
 }
 
 class _GutListState extends State<GutList> {
+
+  final _pref = AppConfig().preferences;
   String isSelected = "";
 
+  bool isConsultationCompleted = false;
+
   final Duration _duration = const Duration(milliseconds: 500);
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    isConsultationCompleted = _pref?.getBool(AppConfig.consultationComplete) ?? false;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -136,7 +149,7 @@ class _GutListState extends State<GutList> {
                         if (programsData.title == "Consultation") {
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) => const DoctorCalenderTimeScreen(),
+                              builder: (context) => isConsultationCompleted ? ConsultationSuccess() : const DoctorCalenderTimeScreen(),
                             ),
                           );
                         } else if (programsData.title == "Shipping") {

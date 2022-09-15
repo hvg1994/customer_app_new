@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gwc_customer/screens/profile_screens/faq_screen.dart';
 import 'package:gwc_customer/screens/profile_screens/terms_conditions_screen.dart';
+import 'package:gwc_customer/screens/user_registration/existing_user.dart';
 import 'package:gwc_customer/widgets/constants.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../splash_screen.dart';
+import '../../utils/app_config.dart';
 import '../../widgets/widgets.dart';
 import 'my_profile_details.dart';
 
@@ -14,6 +17,7 @@ class SettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final SharedPreferences _pref = AppConfig().preferences!;
     return SafeArea(
       child: Scaffold(
         body: SingleChildScrollView(
@@ -74,9 +78,10 @@ class SettingsScreen extends StatelessWidget {
                   color: Colors.grey,
                 ),
                 profileTile("assets/images/Group 2744.png", "Logout", () {
+                  _pref.setBool(AppConfig.isLogin, false);
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (context) => const SplashScreen(),
+                      builder: (context) => const ExistingUser(),
                     ),
                   );
                 }),

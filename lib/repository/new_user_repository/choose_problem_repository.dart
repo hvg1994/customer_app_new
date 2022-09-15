@@ -11,7 +11,7 @@ class ChooseProblemRepository{
     return await apiClient.serverGetProblemList();
   }
 
-  Future postProblemList(List problemList,String deviceId, String otherProblem) async{
-    return await apiClient.submitProblemList(problemList, deviceId, otherProblem);
+  Future postProblemList(List problemList,String deviceId) async{
+    return await apiClient.submitProblemList(problemList, deviceId);
   }
 }

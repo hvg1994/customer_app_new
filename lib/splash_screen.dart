@@ -1,8 +1,22 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:gwc_customer/repository/enquiry_status_repository.dart';
+import 'package:gwc_customer/repository/enquiry_status_repository.dart';
+import 'package:gwc_customer/screens/dashboard/dashboard_screen.dart';
 import 'package:gwc_customer/screens/user_registration/existing_user.dart';
+import 'package:gwc_customer/screens/user_registration/new_user/sit_back_screen.dart';
+import 'package:gwc_customer/services/enquiry_status_service.dart';
+import 'package:gwc_customer/utils/app_config.dart';
 import 'package:gwc_customer/widgets/background_widget.dart';
+import 'package:gwc_customer/widgets/dart_extensions.dart';
+import 'package:gwc_customer/widgets/open_alert_box.dart';
 import 'package:gwc_customer/widgets/will_pop_widget.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'model/enquiry_status_model.dart';
+import 'model/error_model.dart';
+import 'repository/api_service.dart';
+import 'package:http/http.dart' as http;
+import 'package:restart_app/restart_app.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -16,8 +30,29 @@ class _SplashScreenState extends State<SplashScreen> {
   int _currentPage = 0;
   Timer? _timer;
 
+  bool isLogin = false;
+
+  final _pref = AppConfig().preferences!;
+
+  String? deviceId;
+
+  /// by default status is 1
+  /// 1 existing user screen
+  /// 0 sitback screen
+  int? enquiryStatus;
+
+  bool isError = false;
+
+  String errorMsg = '';
+
   @override
   void initState() {
+    deviceId = _pref.getString(AppConfig().deviceId);
+    getEnquiryStatus(deviceId!);
+    super.initState();
+  }
+
+  startTimer(){
     _timer = Timer.periodic(const Duration(seconds: 3), (Timer timer) {
       if (_currentPage < 1) {
         _currentPage++;
@@ -31,8 +66,59 @@ class _SplashScreenState extends State<SplashScreen> {
         curve: Curves.easeIn,
       );
     });
-    super.initState();
+    getScreen();
   }
+
+  getEnquiryStatus(String deviceId) async{
+
+    final result = await EnquiryStatusService(repository: repository).enquiryStatusService(deviceId);
+
+    print("getEnquiryStatus: $result");
+    if(result.runtimeType == EnquiryStatusModel){
+      EnquiryStatusModel model = result as EnquiryStatusModel;
+      if(model.errorMsg!.contains("No data found")){
+        setState(() {
+          // show login if new deviceId
+          enquiryStatus = 1;
+        });
+      }
+      else{
+        setState(() {
+          enquiryStatus = model.enquiryStatus ?? 0;
+        });
+      }
+    }
+    else{
+      ErrorModel model = result as ErrorModel;
+      print("getEnquiryStatus error from main: ${model.message}");
+      setState(() {
+        isError = true;
+        if(model.message!.contains("Failed host lookup")){
+          errorMsg = AppConfig.networkErrorText;
+        }
+        else{
+          errorMsg = model.message ?? 'Unauthenticated';
+        }
+      });
+    }
+    startTimer();
+  }
+
+  getScreen(){
+    setState(() {
+      isLogin = _pref.getBool(AppConfig.isLogin) ?? false;
+    });
+    print("_pref.getBool(AppConfig.isLogin): ${_pref.getBool(AppConfig.isLogin)}");
+    print("isLogin: $isLogin");
+    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+      if(isError){
+        showAlert();
+        _timer!.cancel();
+      }
+    });
+  }
+
+
 
   @override
   void dispose() {
@@ -53,10 +139,12 @@ class _SplashScreenState extends State<SplashScreen> {
                   _currentPage = page;
                 });
               },
+              physics: NeverScrollableScrollPhysics(),
               controller: _pageController,
               children: <Widget>[
                 splashImage(),
-                const ExistingUser(),
+                if(enquiryStatus != null)
+                (enquiryStatus!.isEven) ? SitBackScreen() : !isLogin ? ExistingUser() : DashboardScreen()
               ],
             ),
           ],
@@ -75,6 +163,27 @@ class _SplashScreenState extends State<SplashScreen> {
         // SvgPicture.asset(
         //     "assets/images/splash_screen/Splash screen Logo.svg"),
       ),
+    );
+  }
+
+  final EnquiryStatusRepository repository = EnquiryStatusRepository(
+    apiClient: ApiClient(
+      httpClient: http.Client(),
+    ),
+  );
+
+  showAlert(){
+    return openAlertBox(
+        context: context,
+        barrierDismissible: false,
+        content: errorMsg,
+        titleNeeded: false,
+        isSingleButton: true,
+        positiveButtonName: 'Retry',
+        positiveButton: (){
+          getEnquiryStatus(deviceId!);
+          Navigator.pop(context);
+        }
     );
   }
 }

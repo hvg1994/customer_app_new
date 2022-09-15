@@ -56,6 +56,8 @@ dependencies:
   auto_orientation: any
   path_provider: any
   shared_preferences: any
+  flutter_zoom_sdk: ^1.1.0+4
+  restart_app: ^1.1.0
 
 
 

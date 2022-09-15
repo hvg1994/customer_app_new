@@ -4,8 +4,10 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
+import '../../../model/error_model.dart';
 import '../../../model/new_user_model/choose_your_problem/child_choose_problem.dart';
 import '../../../model/new_user_model/choose_your_problem/choose_your_problem_model.dart';
+import '../../../model/new_user_model/choose_your_problem/submit_problem_response.dart';
 import '../../../repository/api_service.dart';
 import '../../../repository/new_user_repository/choose_problem_repository.dart';
 import '../../../services/new_user_service/choose_problem_service.dart';
@@ -95,29 +97,30 @@ class _ChooseYourProblemScreenState extends State<ChooseYourProblemScreen> {
               ),
               Center(
                       child: GestureDetector(
-                        onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => const AboutTheProgram(),
-                            ),
-                          );
+                        onTap: selectedProblems.isEmpty ? null : () {
+                          submitProblems();
                         },
                         child: Container(
-                          padding: EdgeInsets.symmetric(
-                              vertical: 1.h, horizontal: 15.w),
+                          width: 40.w,
+                          height: 5.h,
+                          // padding: EdgeInsets.symmetric(
+                          //     vertical: 1.h, horizontal: 15.w),
                           decoration: BoxDecoration(
                             color: selectedProblems.isEmpty ? gMainColor : gPrimaryColor,
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(color: gMainColor, width: 1),
                           ),
-                          child: Text(
+                          child: (isLoading) ? buildThreeBounceIndicator()
+                              : Center(
+                                child: Text(
                             'Next',
                             style: TextStyle(
-                              fontFamily: "GothamRoundedBold_21016",
-                              color: selectedProblems.isEmpty ? gPrimaryColor : gWhiteColor,
-                              fontSize: 11.sp,
+                                fontFamily: "GothamRoundedBold_21016",
+                                color: selectedProblems.isEmpty ? gPrimaryColor : gWhiteColor,
+                                fontSize: 11.sp,
                             ),
                           ),
+                              ),
                         ),
                       ),
                     ),
@@ -187,8 +190,8 @@ class _ChooseYourProblemScreenState extends State<ChooseYourProblemScreen> {
                                 alignment: Alignment.topLeft,
                                 child: Icon(
                                   Icons.check_circle,
-                                  color: gsecondaryColor,
-                                  size: 10.h,
+                                  color: gMainColor,
+                                  size: 20,
                                 ),
                               ),
                             ),
@@ -233,4 +236,53 @@ class _ChooseYourProblemScreenState extends State<ChooseYourProblemScreen> {
       httpClient: http.Client(),
     ),
   );
+
+  void submitProblems() async {
+    setState(() {
+      isLoading = true;
+    });
+    final res = await _chooseProblemService.postProblems(selectedProblems, deviceId!);
+    print(res);
+    print(res.runtimeType);
+    setState(() {
+      isLoading = false;
+    });
+    if(res.runtimeType == SubmitProblemResponse){
+      SubmitProblemResponse _submitResponse = res;
+      print(_submitResponse);
+      if(_submitResponse.status == "200"){
+        print(_submitResponse.message);
+        // AppConfig().showSnackbar(context, _submitResponse.message!);
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => const AboutTheProgram(),
+          ),
+        );
+      }
+      else {
+        print(_submitResponse.message);
+        AppConfig().showSnackbar(context, _submitResponse.message!, isError: true);
+        // Navigator.of(context).push(
+        //   MaterialPageRoute(
+        //     builder: (context) =>
+        //     const GivenDetailsScreen(),
+        //   ),
+        // );
+      }
+    }
+    else if(res.runtimeType == ErrorModel){
+      ErrorModel response = res;
+      AppConfig().showSnackbar(context, response.message!, isError: true);
+    }
+
+    // if(res){
+    //   Navigator.of(context).push(
+    //     MaterialPageRoute(
+    //       builder: (context) =>
+    //       const GivenDetailsScreen(),
+    //     ),
+    //   );
+    // }
+  }
+
 }

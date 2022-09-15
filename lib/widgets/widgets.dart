@@ -120,10 +120,10 @@ Center buildCircularIndicator() {
   );
 }
 
-buildThreeBounceIndicator(){
-  return const Center(
+buildThreeBounceIndicator({Color? color}){
+  return Center(
     child: SpinKitThreeBounce(
-      color: gMainColor,
+      color: color ?? gMainColor,
       size: 15,
     ),
   );
@@ -341,6 +341,8 @@ showDialogWidget(
         ),
       ));
 }
+
+
 
 // AppBar buildAppBar(String title, VoidCallback fun) {
 //   return AppBar(

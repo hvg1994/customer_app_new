@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
+import 'package:flutter/services.dart';
 import 'package:gwc_customer/screens/profile_screens/settings_screen.dart';
+import 'package:sizer/sizer.dart';
 
+import '../../widgets/constants.dart';
 import '../feeds_sceens/feeds_list.dart';
 import 'clap.dart';
 import 'list.dart';
@@ -16,6 +19,8 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   int _bottomNavIndex = 2;
+
+  final int save_prev_index = 2;
 
   // void _onItemTapped(int index) {
   //   if (index != 3) {
@@ -74,58 +79,61 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: pageCaller(_bottomNavIndex),
-      bottomNavigationBar: ConvexAppBar(
-        style: TabStyle.react,
-        backgroundColor: Colors.white,
-        items: [
-          TabItem(
-            icon: _bottomNavIndex == 0
-                ? Image.asset(
-                    "assets/images/Group 3241.png",
-                  )
-                : Image.asset(
-                    "assets/images/Group 3844.png",
-                  ),
-          ),
-          TabItem(
-            icon: _bottomNavIndex == 1
-                ? Image.asset(
-                    "assets/images/Group 3240.png",
-                  )
-                : Image.asset(
-                    "assets/images/Group 3846.png",
-                  ),
-          ),
-          TabItem(
-              icon: _bottomNavIndex == 2
+    return WillPopScope(
+      onWillPop: _onWillPop,
+      child: Scaffold(
+        body: pageCaller(_bottomNavIndex),
+        bottomNavigationBar: ConvexAppBar(
+          style: TabStyle.react,
+          backgroundColor: Colors.white,
+          items: [
+            TabItem(
+              icon: _bottomNavIndex == 0
                   ? Image.asset(
-                "assets/images/Group 3331.png",
-              )
+                      "assets/images/Group 3241.png",
+                    )
                   : Image.asset(
-                "assets/images/Group 3848.png",
-              ),
+                      "assets/images/Group 3844.png",
+                    ),
             ),
-          TabItem(
-              icon: _bottomNavIndex == 3
+            TabItem(
+              icon: _bottomNavIndex == 1
                   ? Image.asset(
-                "assets/images/Path 14368.png",
-              )
+                      "assets/images/Group 3240.png",
+                    )
                   : Image.asset(
-                "assets/images/Group 3847.png",
-              ),),
-          TabItem(
-              icon: _bottomNavIndex == 4
-                  ? Image.asset(
-                "assets/images/Group 3239.png",
-              )
-                  : Image.asset(
-                "assets/images/Group 3845.png",
-              ),),
-        ],
-        initialActiveIndex: _bottomNavIndex,
-        onTap: onChangedTab,
+                      "assets/images/Group 3846.png",
+                    ),
+            ),
+            TabItem(
+                icon: _bottomNavIndex == 2
+                    ? Image.asset(
+                  "assets/images/Group 3331.png",
+                )
+                    : Image.asset(
+                  "assets/images/Group 3848.png",
+                ),
+              ),
+            TabItem(
+                icon: _bottomNavIndex == 3
+                    ? Image.asset(
+                  "assets/images/Path 14368.png",
+                )
+                    : Image.asset(
+                  "assets/images/Group 3847.png",
+                ),),
+            TabItem(
+                icon: _bottomNavIndex == 4
+                    ? Image.asset(
+                  "assets/images/Group 3239.png",
+                )
+                    : Image.asset(
+                  "assets/images/Group 3845.png",
+                ),),
+          ],
+          initialActiveIndex: _bottomNavIndex,
+          onTap: onChangedTab,
+        ),
       ),
     );
   }
@@ -134,5 +142,108 @@ class _DashboardScreenState extends State<DashboardScreen> {
     setState(() {
       _bottomNavIndex = index;
     });
+  }
+
+  Future<bool> _onWillPop() {
+    print('back pressed');
+    setState(() {
+      if (_bottomNavIndex != 2) {
+        if (_bottomNavIndex > save_prev_index) {
+          _bottomNavIndex--;
+        } else if (_bottomNavIndex < save_prev_index) {
+          _bottomNavIndex++;
+        } else {
+          _bottomNavIndex = 2;
+        }
+      } else{
+        showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              backgroundColor: kPrimaryColor,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(15.0.sp))),
+              contentPadding: EdgeInsets.only(top: 1.h),
+              content: Container(
+                padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 2.h),
+                decoration: BoxDecoration(
+                    color: gWhiteColor, borderRadius: BorderRadius.circular(8)),
+                width: 50.h,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Text(
+                      'Are you sure?',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          fontFamily: "GothamRoundedBold_21016",
+                          color: gPrimaryColor,
+                          fontSize: 13.sp),
+                    ),
+                    Container(
+                      margin: EdgeInsets.symmetric(vertical: 2.h),
+                      height: 1,
+                      color: Colors.grey.withOpacity(0.3),
+                    ),
+                    Text(
+                      'Do you want to exit an App?',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          fontFamily: "GothamMedium",
+                          color: gsecondaryColor,
+                          fontSize: 11.sp),
+                    ),
+                    SizedBox(height: 3.h),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        GestureDetector(
+                          onTap: () => Navigator.of(context).pop(false),
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                                vertical: 1.h, horizontal: 5.w),
+                            decoration: BoxDecoration(
+                                color: gMainColor,
+                                borderRadius: BorderRadius.circular(5)),
+                            child: Text(
+                              "NO",
+                              style: TextStyle(
+                                fontFamily: "GothamRoundedBold_21016",
+                                color: gPrimaryColor,
+                                fontSize: 11.sp,
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 5.w),
+                        GestureDetector(
+                          onTap: () => SystemNavigator.pop(),
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                                vertical: 1.h, horizontal: 5.w),
+                            decoration: BoxDecoration(
+                                color: gPrimaryColor,
+                                borderRadius: BorderRadius.circular(5)),
+                            child: Text(
+                              "YES",
+                              style: TextStyle(
+                                fontFamily: "GothamRoundedBold_21016",
+                                color: gMainColor,
+                                fontSize: 11.sp,
+                              ),
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                    SizedBox(height: 1.h)
+                  ],
+                ),
+              ),
+            ));
+      }
+    });
+    return Future.value(false);
   }
 }
