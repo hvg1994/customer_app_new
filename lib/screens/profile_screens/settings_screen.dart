@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:gwc_customer/screens/evalution_form/personal_details_screen.dart';
 import 'package:gwc_customer/screens/profile_screens/faq_screen.dart';
 import 'package:gwc_customer/screens/profile_screens/terms_conditions_screen.dart';
 import 'package:gwc_customer/screens/user_registration/existing_user.dart';
@@ -10,6 +11,7 @@ import 'package:sizer/sizer.dart';
 import '../../splash_screen.dart';
 import '../../utils/app_config.dart';
 import '../../widgets/widgets.dart';
+import '../evalution_form/evaluation_form_screen.dart';
 import 'my_profile_details.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -23,8 +25,7 @@ class SettingsScreen extends StatelessWidget {
         body: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
           child: Padding(
-            padding:
-                EdgeInsets.only(left: 4.w, right: 4.w, top: 3.h, bottom: 5.h),
+            padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 5.w),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -39,7 +40,7 @@ class SettingsScreen extends StatelessWidget {
                   "Settings",
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                      fontFamily: "GothamBold",
+                      fontFamily: 'GothamRoundedBold_21016',
                       color: gPrimaryColor,
                       fontSize: 12.sp),
                 ),
@@ -77,13 +78,38 @@ class SettingsScreen extends StatelessWidget {
                   height: 1,
                   color: Colors.grey,
                 ),
-                profileTile("assets/images/Group 2744.png", "Logout", () {
-                  _pref.setBool(AppConfig.isLogin, false);
+                profileTile(
+                    "assets/images/Group 2748.png", "My Report", () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (context) => const ExistingUser(),
+                      builder: (context) => const PersonalDetailsScreen(showData: true,),
                     ),
                   );
+                }),
+                Container(
+                  height: 1,
+                  color: Colors.grey,
+                ),
+                profileTile(
+                    "assets/images/Group 2748.png", "Eval form", () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const EvaluationFormScreen(),
+                    ),
+                  );
+                }),
+                Container(
+                  height: 1,
+                  color: Colors.grey,
+                ),
+                profileTile("assets/images/Group 2744.png", "Logout", () {
+                  _pref.setBool(AppConfig.isLogin, false);
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(
+                      builder: (context) => const ExistingUser(),
+                    ));
+                      // (route) => route.
+                  // );
                 }),
                 Container(
                   height: 1,
@@ -106,7 +132,7 @@ class SettingsScreen extends StatelessWidget {
           children: [
             Image(
               image: AssetImage(image),
-              height: 5.h,
+              height: 4.h,
             ),
             SizedBox(
               width: 4.w,
@@ -116,7 +142,7 @@ class SettingsScreen extends StatelessWidget {
               style: TextStyle(
                 color: kTextColor,
                 fontFamily: 'GothamBook',
-                fontSize: 12.sp,
+                fontSize: 11.sp,
               ),
             ),
           ],

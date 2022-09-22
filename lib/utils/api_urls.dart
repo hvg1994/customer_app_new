@@ -10,7 +10,9 @@ var getAboutProgramUrl = "${AppConfig().BASE_URL}/api/list/welcome_screen";
 
 var registerUserUrl = "${AppConfig().BASE_URL}/api/register";
 /// shiprocket Api
-var shippingApiUrl = AppConfig().shipRocket_AWB_URL;
+var shippingApiLoginUrl = "${AppConfig().shipRocket_AWB_URL}/auth/login";
+
+var shippingApiUrl = "${AppConfig().shipRocket_AWB_URL}/courier/track/awb";
 
 var loginWithOtpUrl = "${AppConfig().BASE_URL}/api/otp_login";
 
@@ -22,7 +24,22 @@ var bookAppointmentUrl = "${AppConfig().BASE_URL}/api/getData/book";
 
 var enquiryStatusUrl = "${AppConfig().BASE_URL}/api/form/check_enquiry_status";
 
+var submitEvaluationFormUrl = "${AppConfig().BASE_URL}/api/submitForm/evaluation_form";
 
+var getEvaluationDataUrl = "${AppConfig().BASE_URL}/api/getData/get_evaluation_data";
+
+var getDashboardDataUrl = "${AppConfig().BASE_URL}/api/getData/get_dashboard_data";
+
+var getUserProfileUrl = "${AppConfig().BASE_URL}/api/user";
+
+var termsConditionUrl = "${AppConfig().BASE_URL}/api/list/terms_and_conditions";
+
+var uploadReportUrl = "${AppConfig().BASE_URL}/api/submitForm/user_report";
+
+var getUserReportListUrl = "${AppConfig().BASE_URL}/api/getData/user_reports_list";
+
+/// need to pass day number 1,2,3 ....
+var getMealPlanDataUrl = "${AppConfig().BASE_URL}/api/getDataList/user_day_meal_plan";
 
 
 //  old apis

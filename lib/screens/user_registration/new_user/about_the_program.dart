@@ -82,6 +82,7 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
   void dispose() async {
     super.dispose();
     await _videoPlayerController!.stop();
+    await _videoPlayerController!.stopRendererScanning();
     await _videoPlayerController!.dispose();
   }
 
@@ -185,7 +186,8 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
                               SizedBox(height: 2.h),
                               Center(
                                 child: GestureDetector(
-                                  onTap: () {
+                                  onTap: () async{
+                                    await _videoPlayerController!.stop();
                                     Navigator.of(context).push(
                                       MaterialPageRoute(
                                         builder: (context) => const RegisterScreen(),

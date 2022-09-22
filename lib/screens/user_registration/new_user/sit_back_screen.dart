@@ -28,7 +28,8 @@ class _SitBackScreenState extends State<SitBackScreen> {
                 children: [
                   buildAppBar(() {
                     Navigator.pop(context);
-                  }),
+                  },
+                  isBackEnable: false),
                   SizedBox(height: 2.h),
                   const Image(
                     image: AssetImage("assets/images/Mask Group 2172.png"),
@@ -53,21 +54,21 @@ class _SitBackScreenState extends State<SitBackScreen> {
                 ],
               ),
             ),
-            Center(child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextButton(
-                child: Text("Submit New Query",
-                  style: TextStyle(
-                    fontFamily: "GothamBook",
-                    color: gTextColor,
-                    fontSize: 11.5.sp,
-                  ),
-                ),
-                onPressed: (){
-                  Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (c) => ExistingUser()), (route) => route.isFirst);
-                },
-              ),
-            ))
+            // Center(child: Padding(
+            //   padding: const EdgeInsets.all(8.0),
+            //   child: TextButton(
+            //     child: Text("Submit New Query",
+            //       style: TextStyle(
+            //         fontFamily: "GothamBook",
+            //         color: gTextColor,
+            //         fontSize: 11.5.sp,
+            //       ),
+            //     ),
+            //     onPressed: (){
+            //       Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (c) => ExistingUser()), (route) => route.isFirst);
+            //     },
+            //   ),
+            // ))
           ],
         ),
       ),

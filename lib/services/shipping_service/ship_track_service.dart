@@ -5,6 +5,10 @@ class ShipTrackService{
 
   ShipTrackService({required this.repository}) : assert(repository != null);
 
+  Future getShipRocketTokenService(String email, String password) async{
+    return await repository.getShiprockeTokenRepo(email, password);
+  }
+
   Future getUserProfileService(String awbNumber) async{
     return await repository.getTrackingDetailsRepo(awbNumber);
   }

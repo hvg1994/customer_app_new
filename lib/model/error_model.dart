@@ -5,7 +5,7 @@ class ErrorModel {
   ErrorModel({this.status, this.message});
 
   ErrorModel.fromJson(Map<String, dynamic> json) {
-    status = json['status'].toString();
+    status = json['status_code'] ?? json['status'].toString();
     message = json['message'] ?? json['errorMsg'] ?? json['error'];
   }
 

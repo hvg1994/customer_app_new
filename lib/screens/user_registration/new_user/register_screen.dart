@@ -116,7 +116,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               fontSize: 11.sp,
                               color: gPrimaryColor),
                         ),
-                        SizedBox(height: 1.h),
+                        SizedBox(height: 0.5.h),
                         Form(
                           autovalidateMode: AutovalidateMode.onUserInteraction,
                           key: nameFormKey,
@@ -145,7 +145,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                         ),
                         SizedBox(
-                          height: 4.h,
+                          height: 2.5.h,
                         ),
                         Text(
                           'Age',
@@ -154,7 +154,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               fontSize: 11.sp,
                               color: gPrimaryColor),
                         ),
-                        SizedBox(height: 1.h),
+                        SizedBox(height: 0.5.h),
                         Form(
                           autovalidateMode: AutovalidateMode.onUserInteraction,
                           key: ageFormKey,
@@ -184,7 +184,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                         ),
                         SizedBox(
-                          height: 4.h,
+                          height: 2.5.h,
                         ),
                         Text(
                           'Gender',
@@ -193,13 +193,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               fontSize: 11.sp,
                               color: gPrimaryColor),
                         ),
-                        SizedBox(height: 1.h),
+                        SizedBox(height: 0.5.h),
                         Form(
                           autovalidateMode: AutovalidateMode.onUserInteraction,
                           child: genderSelection(),
                         ),
                         SizedBox(
-                          height: 4.h,
+                          height: 2.5.h,
                         ),
                         Text(
                           'Email',
@@ -208,7 +208,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               fontSize: 11.sp,
                               color: gPrimaryColor),
                         ),
-                        SizedBox(height: 1.h),
+                        SizedBox(height: 0.5.h),
                         Form(
                           autovalidateMode: AutovalidateMode.onUserInteraction,
                           key: emailFormKey,
@@ -235,7 +235,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                         ),
                         SizedBox(
-                          height: 4.h,
+                          height: 2.5.h,
                         ),
                         Text(
                           'Mobile Number',
@@ -245,7 +245,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               color: gPrimaryColor
                           ),
                         ),
-                        SizedBox(height: 1.h),
+                        SizedBox(height: 0.5.h),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -302,28 +302,31 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             //   //   );
                             //   // },
                             // ),
-                            CountryCodePicker(
-                              // flagDecoration: BoxDecoration(
-                              //   borderRadius: BorderRadius.circular(7),
-                              // ),
-                              showDropDownButton: false,
-                              showFlagDialog: true,
-                              hideMainText: false,
-                              showFlagMain: true,
-                              showCountryOnly: false,
-                              textStyle: TextStyle(
-                                  fontFamily: "GothamBook",
-                                  color: gMainColor,
-                                  fontSize: 11.sp),
-                              padding: EdgeInsets.zero,
-                              favorite: ['+91','IN'],
-                              initialSelection: countryCode,
-                              onChanged: (val){
-                                print(val.code);
-                                setState(() {
-                                  countryCode = val.dialCode.toString();
-                                });
-                              },
+                            SizedBox(
+                              width: 40,
+                              child: CountryCodePicker(
+                                // flagDecoration: BoxDecoration(
+                                //   borderRadius: BorderRadius.circular(7),
+                                // ),
+                                showDropDownButton: false,
+                                showFlagDialog: true,
+                                hideMainText: false,
+                                showFlagMain: false,
+                                showCountryOnly: false,
+                                textStyle: TextStyle(
+                                    fontFamily: "GothamBook",
+                                    color: gMainColor,
+                                    fontSize: 11.sp),
+                                padding: EdgeInsets.zero,
+                                favorite: ['+91','IN'],
+                                initialSelection: countryCode,
+                                onChanged: (val){
+                                  print(val.code);
+                                  setState(() {
+                                    countryCode = val.dialCode.toString();
+                                  });
+                                },
+                              ),
                             ),
                             Expanded(
                               child: Form(
@@ -528,12 +531,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
       String result = (res as ErrorModel).message ?? '';
       AppConfig().showSnackbar(context, result, isError: true, duration: 4);
 
-      Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(
-            builder: (context) => const SitBackScreen(),
-          ),
-              (route) => route.isFirst
-      );
+      // Navigator.of(context).pushAndRemoveUntil(
+      //     MaterialPageRoute(
+      //       builder: (context) => const SitBackScreen(),
+      //     ),
+      //         (route) => route.isFirst
+      // );
     }
     setState(() {
       isLoading = false;

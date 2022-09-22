@@ -411,7 +411,7 @@ class _DoctorCalenderTimeScreenState extends State<DoctorCalenderTimeScreen> {
         decoration: BoxDecoration(
           border: Border.all(color: gMainColor, width: 1),
           borderRadius: BorderRadius.circular(8),
-          color: (model.isBooked == '0' && isSelected != slotName) ? gWhiteColor : gPrimaryColor,
+          color: (model.isBooked == '0' && isSelected != slotName) ? gWhiteColor : model.isBooked == '1' ? gGreyColor : gPrimaryColor,
           boxShadow: (model.isBooked == '0' && isSelected != slotName)
               ? [
             BoxShadow(

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:gwc_customer/model/error_model.dart';
 import 'package:gwc_customer/model/login_model/resend_otp_model.dart';
 import 'package:gwc_customer/repository/login_otp_repository.dart';
+import 'package:gwc_customer/screens/evalution_form/evaluation_form_screen.dart';
 import 'package:gwc_customer/services/login_otp_service.dart';
 import 'package:gwc_customer/widgets/constants.dart';
 import 'package:gwc_customer/widgets/unfocus_widget.dart';
@@ -12,10 +14,17 @@ import 'package:http/http.dart' as http;
 import 'package:gwc_customer/repository/api_service.dart';
 import '../../model/login_model/login_otp_model.dart';
 import '../../utils/app_config.dart';
-import '../dashboard/dashboard_screen.dart';
+import '../dashboard_screen.dart';
 import 'new_user/choose_your_problem_screen.dart';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:gwc_customer/widgets/dart_extensions.dart';
+
+enum EvaluationStatus {
+  evaluation_done,
+  no_evaluation
+}
+
+
 class ExistingUser extends StatefulWidget {
   const ExistingUser({Key? key}) : super(key: key);
 
@@ -160,8 +169,8 @@ class _ExistingUserState extends State<ExistingUser> {
                     showDropDownButton: false,
                     showFlagDialog: true,
                     hideMainText: false,
-                    showFlagMain: true,
-                    showCountryOnly: false,
+                    showFlagMain: false,
+                    showCountryOnly: true,
                     textStyle: TextStyle(
                         fontFamily: "GothamBook",
                         color: gMainColor,
@@ -267,10 +276,11 @@ class _ExistingUserState extends State<ExistingUser> {
               autovalidateMode: AutovalidateMode.disabled,
               child: TextFormField(
                 textAlignVertical: TextAlignVertical.center,
-                keyboardType: TextInputType.visiblePassword,
+                keyboardType: TextInputType.number,
                 cursorColor: gPrimaryColor,
                 controller: otpController,
                 obscureText: !otpVisibility,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 style: TextStyle(
                     fontFamily: "GothamBook",
                     color: gPrimaryColor,
@@ -437,8 +447,10 @@ class _ExistingUserState extends State<ExistingUser> {
     final result = await _loginWithOtpService.getOtpService(phoneNumber);
 
     if(result.runtimeType == GetOtpResponse){
+      GetOtpResponse model = result as GetOtpResponse;
       setState(() {
         otpMessage = "OTP Sent";
+        otpController.text = result.otp!;
       });
       Future.delayed(Duration(seconds: 2)).whenComplete(() {
         setState(() {
@@ -467,13 +479,27 @@ class _ExistingUserState extends State<ExistingUser> {
       setState(() {
         showLoginProgress = false;
       });
-      _pref.setBool(AppConfig.isLogin, true);
+
+      print("model.userEvaluationStatus: ${model.userEvaluationStatus}");
+
+      _pref.setString(AppConfig.EVAL_STATUS, model.userEvaluationStatus!);
       storeBearerToken(model.accessToken ?? '');
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (context) => const DashboardScreen(),
-        ),
-      );
+
+      if(model.userEvaluationStatus!.contains("pending"))
+        {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (context) => const EvaluationFormScreen(),
+            ),
+          );
+        }
+      else{
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => const DashboardScreen(),
+          ),
+        );
+      }
     }
     else{
       setState(() {
@@ -483,15 +509,16 @@ class _ExistingUserState extends State<ExistingUser> {
 
       ErrorModel response = result as ErrorModel;
       AppConfig().showSnackbar(context, response.message!, isError: true);
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (context) => const DashboardScreen(),
-        ),
-      );
+      // Navigator.of(context).pushReplacement(
+      //   MaterialPageRoute(
+      //     builder: (context) => const DashboardScreen(),
+      //   ),
+      // );
     }
   }
 
   void storeBearerToken(String token) async {
+    _pref.setBool(AppConfig.isLogin, true);
     await _pref.setString(AppConfig().BEARER_TOKEN, token);
   }
 }

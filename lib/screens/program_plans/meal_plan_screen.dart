@@ -1,9 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:gwc_customer/model/error_model.dart';
+import 'package:gwc_customer/repository/program_repository/program_repository.dart';
+import 'package:gwc_customer/widgets/open_alert_box.dart';
 import 'package:sizer/sizer.dart';
 import 'package:get/get.dart';
+import '../../model/program_model/meal_plan_details_model/child_meal_plan_details_model.dart';
+import '../../model/program_model/meal_plan_details_model/meal_plan_details_model.dart';
+import '../../repository/api_service.dart';
+import '../../services/program_service/program_service.dart';
 import '../../widgets/constants.dart';
 import '../../widgets/widgets.dart';
 import 'meal_plan_data.dart';
+import 'package:http/http.dart' as http;
 
 class MealPlanScreen extends StatefulWidget {
   final String day;
@@ -16,9 +24,15 @@ class MealPlanScreen extends StatefulWidget {
 class _MealPlanScreenState extends State<MealPlanScreen> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   TextEditingController commentController = TextEditingController();
-  int _bottomNavIndex = 0;
+  int planStatus = 0;
   String headerText = "";
   Color? textColor;
+
+  bool isLoading = false;
+
+  String errorMsg = '';
+
+  List<ChildMealPlanDetailsModel>? mealPlanData1;
 
   List<String> list = [
     "Followed",
@@ -27,13 +41,58 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
     "Alternative with Doctor",
   ];
 
+
   @override
   void initState() {
     super.initState();
+    getMeals();
     commentController.addListener(() {
       setState(() {});
     });
   }
+
+  getMeals() async{
+    isLoading = true;
+    final result = await ProgramService(repository: repository).getMealPlanDetailsService(widget.day);
+    print("result: $result");
+
+    if(result.runtimeType == MealPlanDetailsModel){
+      print("meal plan");
+      MealPlanDetailsModel model = result as MealPlanDetailsModel;
+      setState(() {
+        isLoading = false;
+      });
+      mealPlanData1 = model.data!.map((e) => e).toList();
+      print('meal list: $mealPlanData1');
+    }
+    else{
+      ErrorModel model = result as ErrorModel;
+      errorMsg = model.message ?? '';
+      setState(() {
+        isLoading = false;
+      });
+      WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+        showAlert(context);
+      });
+    }
+    print(result);
+  }
+
+  showAlert(BuildContext context){
+    return openAlertBox(
+        context: context,
+        barrierDismissible: false,
+        content: errorMsg,
+        titleNeeded: false,
+        isSingleButton: true,
+        positiveButtonName: 'Retry',
+        positiveButton: (){
+          getMeals();
+          Navigator.pop(context);
+        }
+    );
+  }
+
 
   @override
   void dispose() {
@@ -43,112 +102,113 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: EdgeInsets.only(top: 3.h, left: 3.w),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: 1.h),
-                buildAppBar(() {
-                  Navigator.pop(context);
-                }),
-                SizedBox(height: 1.h),
-                Text(
-                  "Day ${widget.day} Meal Plan",
-                  style: TextStyle(
-                      fontFamily: "GothamBold",
-                      color: gPrimaryColor,
-                      fontSize: 11.sp),
-                ),
-              ],
-            ),
-          ),
-          Expanded(
-            child: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
+    return SafeArea(
+      child: Scaffold(
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: EdgeInsets.only(top: 1.h, left: 4.w),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  buildMealPlan(),
-                  Container(
-                    height: 15.h,
-                    margin:
-                        EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.h),
-                    padding: EdgeInsets.symmetric(horizontal: 3.w),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(5),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.3),
-                          blurRadius: 20,
-                          offset: const Offset(2, 10),
-                        ),
-                      ],
-                    ),
-                    child: TextFormField(
-                      controller: commentController,
-                      cursorColor: gPrimaryColor,
-                      style: TextStyle(
-                          fontFamily: "GothamBook",
-                          color: gTextColor,
-                          fontSize: 11.sp),
-                      decoration: InputDecoration(
-                        suffixIcon: commentController.text.isEmpty
-                            ? Container(width: 0)
-                            : InkWell(
-                                onTap: () {
-                                  commentController.clear();
-                                },
-                                child: const Icon(
-                                  Icons.close,
-                                  color: gTextColor,
-                                ),
-                              ),
-                        hintText: "Comments",
-                        border: InputBorder.none,
-                        hintStyle: TextStyle(
-                          fontFamily: "GothamBook",
-                          color: gTextColor,
-                          fontSize: 9.sp,
-                        ),
-                      ),
-                      textInputAction: TextInputAction.next,
-                      textAlign: TextAlign.start,
-                      keyboardType: TextInputType.emailAddress,
-                    ),
-                  ),
-                  Center(
-                    child: GestureDetector(
-                      onTap: () {},
-                      child: Container(
-                        margin: EdgeInsets.symmetric(vertical: 2.h),
-                        padding: EdgeInsets.symmetric(
-                            vertical: 1.h, horizontal: 5.w),
-                        decoration: BoxDecoration(
-                          color: gPrimaryColor,
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: gMainColor, width: 1),
-                        ),
-                        child: Text(
-                          'Proceed to Day 2',
-                          style: TextStyle(
-                            fontFamily: "GothamBook",
-                            color: gMainColor,
-                            fontSize: 10.sp,
-                          ),
-                        ),
-                      ),
-                    ),
+                  buildAppBar(() {
+                    Navigator.pop(context);
+                  }),
+                  SizedBox(height: 1.h),
+                  Text(
+                    "Day ${widget.day} Meal Plan",
+                    style: TextStyle(
+                        fontFamily: "GothamRoundedBold_21016",
+                        color: gPrimaryColor,
+                        fontSize: 12.sp),
                   ),
                 ],
               ),
             ),
-          ),
-        ],
+            Expanded(
+              child: (isLoading) ? Center(child: buildCircularIndicator(),) : SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                child: Column(
+                  children: [
+                    buildMealPlan(),
+                    Container(
+                      height: 15.h,
+                      margin:
+                          EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.h),
+                      padding: EdgeInsets.symmetric(horizontal: 3.w),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(5),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.3),
+                            blurRadius: 20,
+                            offset: const Offset(2, 10),
+                          ),
+                        ],
+                      ),
+                      child: TextFormField(
+                        controller: commentController,
+                        cursorColor: gPrimaryColor,
+                        style: TextStyle(
+                            fontFamily: "GothamBook",
+                            color: gTextColor,
+                            fontSize: 11.sp),
+                        decoration: InputDecoration(
+                          suffixIcon: commentController.text.isEmpty
+                              ? Container(width: 0)
+                              : InkWell(
+                                  onTap: () {
+                                    commentController.clear();
+                                  },
+                                  child: const Icon(
+                                    Icons.close,
+                                    color: gTextColor,
+                                  ),
+                                ),
+                          hintText: "Comments",
+                          border: InputBorder.none,
+                          hintStyle: TextStyle(
+                            fontFamily: "GothamBook",
+                            color: gTextColor,
+                            fontSize: 9.sp,
+                          ),
+                        ),
+                        textInputAction: TextInputAction.next,
+                        textAlign: TextAlign.start,
+                        keyboardType: TextInputType.emailAddress,
+                      ),
+                    ),
+                    Center(
+                      child: GestureDetector(
+                        onTap: () {},
+                        child: Container(
+                          margin: EdgeInsets.symmetric(vertical: 2.h),
+                          padding: EdgeInsets.symmetric(
+                              vertical: 1.h, horizontal: 5.w),
+                          decoration: BoxDecoration(
+                            color: gPrimaryColor,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: gMainColor, width: 1),
+                          ),
+                          child: Text(
+                            'Proceed to Day 2',
+                            style: TextStyle(
+                              fontFamily: "GothamBook",
+                              color: gMainColor,
+                              fontSize: 10.sp,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -233,145 +293,278 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                 label: Text('  Status  '),
               ),
             ],
-            rows: mealPlanData
-                .map(
-                  (s) => DataRow(
-                    cells: [
-                      DataCell(
-                        Text(
-                          s["time"].toString(),
-                          style: TextStyle(
-                            height: 1.5,
-                            color: gTextColor,
-                            fontSize: 8.sp,
-                            fontFamily: "GothamBold",
-                          ),
-                        ),
-                      ),
-                      DataCell(
-                        Row(
-                          children: [
-                            s["id"] == 1
-                                ? GestureDetector(
-                                    onTap: () {},
-                                    child: Image(
-                                      image: const AssetImage(
-                                          "assets/images/noun-play-1832840.png"),
-                                      height: 2.h,
-                                    ),
-                                  )
-                                : Container(),
-                            SizedBox(width: 2.w),
-                            Expanded(
-                              child: Text(
-                                " ${s["title"].toString()}",
-                                maxLines: 3,
-                                textAlign: TextAlign.start,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  height: 1.5,
-                                  color: gTextColor,
-                                  fontSize: 8.sp,
-                                  fontFamily: "GothamBook",
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        placeholder: true,
-                      ),
-                      DataCell(
-                        PopupMenuButton(
-                          offset: const Offset(0, 30),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5)),
-                          itemBuilder: (context) => [
-                            PopupMenuItem(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  SizedBox(height: 0.6.h),
-                                  buildTabView(
-                                      index: 1,
-                                      title: list[0],
-                                      color: gPrimaryColor),
-                                  Container(
-                                    margin: EdgeInsets.symmetric(vertical: 1.h),
-                                    height: 1,
-                                    color: gGreyColor.withOpacity(0.3),
-                                  ),
-                                  buildTabView(
-                                      index: 2,
-                                      title: list[1],
-                                      color: gsecondaryColor),
-                                  Container(
-                                    margin: EdgeInsets.symmetric(vertical: 1.h),
-                                    height: 1,
-                                    color: gGreyColor.withOpacity(0.3),
-                                  ),
-                                  buildTabView(
-                                      index: 3,
-                                      title: list[2],
-                                      color: gMainColor),
-                                  Container(
-                                    margin: EdgeInsets.symmetric(vertical: 1.h),
-                                    height: 1,
-                                    color: gGreyColor.withOpacity(0.3),
-                                  ),
-                                  buildTabView(
-                                      index: 4,
-                                      title: list[3],
-                                      color: gMainColor),
-                                  SizedBox(height: 0.6.h),
-                                ],
-                              ),
-                            ),
-                          ],
-                          child: Container(
-                            width: 20.w,
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 2.w, vertical: 0.2.h),
-                            decoration: BoxDecoration(
-                              color: gWhiteColor,
-                              borderRadius: BorderRadius.circular(5),
-                              border: Border.all(color: gMainColor, width: 1),
-                            ),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    buildHeaderText(),
-                                    textAlign: TextAlign.start,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                        fontFamily: "GothamBook",
-                                        color: buildTextColor(),
-                                        fontSize: 8.sp),
-                                  ),
-                                ),
-                                Icon(
-                                  Icons.expand_more,
-                                  color: gGreyColor,
-                                  size: 2.h,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                )
-                .toList(),
+            rows: showDataRow(),
           ),
         ],
       ),
     );
   }
 
+  showDataRow(){
+    return mealPlanData1!.map((e) => DataRow(
+      cells: [
+        DataCell(
+          Text(
+            e.mealTime.toString(),
+            style: TextStyle(
+              height: 1.5,
+              color: gTextColor,
+              fontSize: 8.sp,
+              fontFamily: "GothamBold",
+            ),
+          ),
+        ),
+        DataCell(
+          Row(
+            children: [
+              e.type == 'yoga'
+                  ? GestureDetector(
+                onTap: () {},
+                child: Image(
+                  image: const AssetImage(
+                      "assets/images/noun-play-1832840.png"),
+                  height: 2.h,
+                ),
+              )
+                  : const SizedBox(),
+              SizedBox(width: 2.w),
+              Expanded(
+                child: Text(
+                  " ${e.name.toString()}",
+                  maxLines: 3,
+                  textAlign: TextAlign.start,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    height: 1.5,
+                    color: gTextColor,
+                    fontSize: 8.sp,
+                    fontFamily: "GothamBook",
+                  ),
+                ),
+              ),
+            ],
+          ),
+          placeholder: true,
+        ),
+        DataCell(
+          PopupMenuButton(
+            offset: const Offset(0, 30),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(5)),
+            itemBuilder: (context) => [
+              PopupMenuItem(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 0.6.h),
+                    buildTabView(
+                        index: 1,
+                        title: list[0],
+                        color: gPrimaryColor),
+                    Container(
+                      margin: EdgeInsets.symmetric(vertical: 1.h),
+                      height: 1,
+                      color: gGreyColor.withOpacity(0.3),
+                    ),
+                    buildTabView(
+                        index: 2,
+                        title: list[1],
+                        color: gsecondaryColor),
+                    Container(
+                      margin: EdgeInsets.symmetric(vertical: 1.h),
+                      height: 1,
+                      color: gGreyColor.withOpacity(0.3),
+                    ),
+                    buildTabView(
+                        index: 3,
+                        title: list[2],
+                        color: gMainColor),
+                    Container(
+                      margin: EdgeInsets.symmetric(vertical: 1.h),
+                      height: 1,
+                      color: gGreyColor.withOpacity(0.3),
+                    ),
+                    buildTabView(
+                        index: 4,
+                        title: list[3],
+                        color: gMainColor),
+                    SizedBox(height: 0.6.h),
+                  ],
+                ),
+              ),
+            ],
+            child: Container(
+              width: 20.w,
+              padding: EdgeInsets.symmetric(
+                  horizontal: 2.w, vertical: 0.2.h),
+              decoration: BoxDecoration(
+                color: gWhiteColor,
+                borderRadius: BorderRadius.circular(5),
+                border: Border.all(color: gMainColor, width: 1),
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      buildHeaderText(),
+                      textAlign: TextAlign.start,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                          fontFamily: "GothamBook",
+                          color: buildTextColor(),
+                          fontSize: 8.sp),
+                    ),
+                  ),
+                  Icon(
+                    Icons.expand_more,
+                    color: gGreyColor,
+                    size: 2.h,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
+    )).toList();
+  }
+
+  showDummyDataRow(){
+    return mealPlanData
+        .map(
+          (s) => DataRow(
+        cells: [
+          DataCell(
+            Text(
+              s["time"].toString(),
+              style: TextStyle(
+                height: 1.5,
+                color: gTextColor,
+                fontSize: 8.sp,
+                fontFamily: "GothamBold",
+              ),
+            ),
+          ),
+          DataCell(
+            Row(
+              children: [
+                s["id"] == 1
+                    ? GestureDetector(
+                  onTap: () {},
+                  child: Image(
+                    image: const AssetImage(
+                        "assets/images/noun-play-1832840.png"),
+                    height: 2.h,
+                  ),
+                )
+                    : const SizedBox(),
+                SizedBox(width: 2.w),
+                Expanded(
+                  child: Text(
+                    " ${s["title"].toString()}",
+                    maxLines: 3,
+                    textAlign: TextAlign.start,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      height: 1.5,
+                      color: gTextColor,
+                      fontSize: 8.sp,
+                      fontFamily: "GothamBook",
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            placeholder: true,
+          ),
+          DataCell(
+            PopupMenuButton(
+              offset: const Offset(0, 30),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(5)),
+              itemBuilder: (context) => [
+                PopupMenuItem(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: 0.6.h),
+                      buildTabView(
+                          index: 1,
+                          title: list[0],
+                          color: gPrimaryColor),
+                      Container(
+                        margin: EdgeInsets.symmetric(vertical: 1.h),
+                        height: 1,
+                        color: gGreyColor.withOpacity(0.3),
+                      ),
+                      buildTabView(
+                          index: 2,
+                          title: list[1],
+                          color: gsecondaryColor),
+                      Container(
+                        margin: EdgeInsets.symmetric(vertical: 1.h),
+                        height: 1,
+                        color: gGreyColor.withOpacity(0.3),
+                      ),
+                      buildTabView(
+                          index: 3,
+                          title: list[2],
+                          color: gMainColor),
+                      Container(
+                        margin: EdgeInsets.symmetric(vertical: 1.h),
+                        height: 1,
+                        color: gGreyColor.withOpacity(0.3),
+                      ),
+                      buildTabView(
+                          index: 4,
+                          title: list[3],
+                          color: gMainColor),
+                      SizedBox(height: 0.6.h),
+                    ],
+                  ),
+                ),
+              ],
+              child: Container(
+                width: 20.w,
+                padding: EdgeInsets.symmetric(
+                    horizontal: 2.w, vertical: 0.2.h),
+                decoration: BoxDecoration(
+                  color: gWhiteColor,
+                  borderRadius: BorderRadius.circular(5),
+                  border: Border.all(color: gMainColor, width: 1),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        buildHeaderText(),
+                        textAlign: TextAlign.start,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                            fontFamily: "GothamBook",
+                            color: buildTextColor(),
+                            fontSize: 8.sp),
+                      ),
+                    ),
+                    Icon(
+                      Icons.expand_more,
+                      color: gGreyColor,
+                      size: 2.h,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    )
+        .toList();
+  }
+
   void onChangedTab(int index) {
     setState(() {
-      _bottomNavIndex = index;
+      planStatus = index;
     });
   }
 
@@ -389,7 +582,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
         title,
         style: TextStyle(
           fontFamily: "GothamBook",
-          color: (_bottomNavIndex == index) ? color : gTextColor,
+          color: (planStatus == index) ? color : gTextColor,
           fontSize: 8.sp,
         ),
       ),
@@ -397,34 +590,40 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
   }
 
   String buildHeaderText() {
-    if (_bottomNavIndex == 0) {
+    if (planStatus == 0) {
       headerText = "     ";
-    } else if (_bottomNavIndex == 1) {
+    } else if (planStatus == 1) {
       headerText = "Followed";
-    } else if (_bottomNavIndex == 2) {
+    } else if (planStatus == 2) {
       headerText = "UnFollowed";
-    } else if (_bottomNavIndex == 3) {
+    } else if (planStatus == 3) {
       headerText = "Alternative without Doctor";
-    } else if (_bottomNavIndex == 4) {
+    } else if (planStatus == 4) {
       headerText = "Alternative with Doctor";
     }
     return headerText;
   }
 
   Color? buildTextColor() {
-    if (_bottomNavIndex == 0) {
+    if (planStatus == 0) {
       textColor = gWhiteColor;
-    } else if (_bottomNavIndex == 1) {
+    } else if (planStatus == 1) {
       textColor = gPrimaryColor;
-    } else if (_bottomNavIndex == 2) {
+    } else if (planStatus == 2) {
       textColor = gsecondaryColor;
-    } else if (_bottomNavIndex == 3) {
+    } else if (planStatus == 3) {
       textColor = gMainColor;
-    } else if (_bottomNavIndex == 4) {
+    } else if (planStatus == 4) {
       textColor = gMainColor;
     }
     return textColor!;
   }
+
+  final ProgramRepository repository = ProgramRepository(
+    apiClient: ApiClient(
+      httpClient: http.Client(),
+    ),
+  );
 }
 
 class MealPlanData {

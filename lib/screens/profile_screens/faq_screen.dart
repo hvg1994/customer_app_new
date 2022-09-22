@@ -19,8 +19,7 @@ class _FaqScreenState extends State<FaqScreen> {
         body: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
           child: Padding(
-            padding:
-                EdgeInsets.only(left: 4.w, right: 4.w, top: 3.h, bottom: 5.h),
+            padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 5.w),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -28,12 +27,12 @@ class _FaqScreenState extends State<FaqScreen> {
                 buildAppBar(() {
                   Navigator.pop(context);
                 }),
-                SizedBox(height: 1.5.h),
+                SizedBox(height: 3.h),
                 Text(
                   "FAQ",
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                      fontFamily: "GothamBold",
+                      fontFamily: "GothamRoundedBold_21016",
                       color: gPrimaryColor,
                       fontSize: 13.sp),
                 ),

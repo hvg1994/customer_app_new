@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
 
 import 'constants.dart';
+import 'package:im_animations/im_animations.dart';
 
 class CommonDecoration {
   static InputDecoration buildInputDecoration(String hintText, TextEditingController controller, {Widget? suffixIcon}) {
@@ -106,17 +107,28 @@ TextStyle buildTextStyle() {
   );
 }
 
+// Center buildCircularIndicator() {
+//   return Center(
+//     child: SpinKitFadingCircle(
+//         itemBuilder: (BuildContext context, int index) {
+//           return DecoratedBox(
+//             decoration: BoxDecoration(
+//               color: index.isEven ? gPrimaryColor : gMainColor,
+//             ),
+//           );
+//         }
+//     )
+//   );
+// }
+
 Center buildCircularIndicator() {
   return Center(
-    child: SpinKitFadingCircle(
-        itemBuilder: (BuildContext context, int index) {
-          return DecoratedBox(
-            decoration: BoxDecoration(
-              color: index.isEven ? gPrimaryColor : gMainColor,
-            ),
-          );
-        }
-    )
+      child: HeartBeat(
+        child: Image.asset('assets/images/progress_logo.png',
+          width: 75,
+          height: 75,
+        )
+      ),
   );
 }
 
@@ -161,16 +173,19 @@ SnackbarController buildSnackBar(String title, String subTitle) {
   );
 }
 
-Row buildAppBar(VoidCallback func) {
+Row buildAppBar(VoidCallback func, {bool isBackEnable = true}) {
   return Row(
     children: [
-      SizedBox(
-        height: 2.h,
-        child: InkWell(
-          onTap: func,
-          child: const Image(
-            image: AssetImage(
-                "assets/images/Icon ionic-ios-arrow-back.png"),
+      Visibility(
+        visible: isBackEnable,
+        child: SizedBox(
+          height: 2.h,
+          child: InkWell(
+            onTap: func,
+            child: const Image(
+              image: AssetImage(
+                  "assets/images/Icon ionic-ios-arrow-back.png"),
+            ),
           ),
         ),
       ),

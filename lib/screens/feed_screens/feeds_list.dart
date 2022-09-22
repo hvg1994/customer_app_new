@@ -17,18 +17,18 @@ class _FeedsListState extends State<FeedsList> {
     return SafeArea(
       child: Scaffold(
         body: Padding(
-          padding: EdgeInsets.only(left: 4.w, right: 4.w, top: 1.h),
+          padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 5.w),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               buildAppBar(() {
                 Navigator.pop(context);
               }),
-              SizedBox(height: 1.h),
+              SizedBox(height: 3.h),
               Text(
                 "Feeds",
                 style: TextStyle(
-                    fontFamily: "GothamBold",
+                    fontFamily: "GothamRoundedBold_21016",
                     color: gPrimaryColor,
                     fontSize: 12.sp),
               ),

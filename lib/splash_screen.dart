@@ -1,8 +1,21 @@
+/*
+1. check for the enquiry status api
+2. if status: 0 sitback screen
+3. else status: 1 => than we need to check for is already login or not
+ if not login need to show existing user screen else
+4. Need to check for evaluation status(EVAL_STATUS) which will be stored when user login
+if already login we will get from local storage else its null
+5. if eval status is there than we are showing dashboard screen else evaluation screen
+
+API's used in this screen:
+1. EnquiryStatus API
+ */
+
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:gwc_customer/repository/enquiry_status_repository.dart';
 import 'package:gwc_customer/repository/enquiry_status_repository.dart';
-import 'package:gwc_customer/screens/dashboard/dashboard_screen.dart';
+import 'package:gwc_customer/screens/evalution_form/evaluation_form_screen.dart';
 import 'package:gwc_customer/screens/user_registration/existing_user.dart';
 import 'package:gwc_customer/screens/user_registration/new_user/sit_back_screen.dart';
 import 'package:gwc_customer/services/enquiry_status_service.dart';
@@ -16,7 +29,8 @@ import 'model/enquiry_status_model.dart';
 import 'model/error_model.dart';
 import 'repository/api_service.dart';
 import 'package:http/http.dart' as http;
-import 'package:restart_app/restart_app.dart';
+
+import 'screens/dashboard_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -31,6 +45,7 @@ class _SplashScreenState extends State<SplashScreen> {
   Timer? _timer;
 
   bool isLogin = false;
+  String? evalStatus;
 
   final _pref = AppConfig().preferences!;
 
@@ -80,11 +95,13 @@ class _SplashScreenState extends State<SplashScreen> {
         setState(() {
           // show login if new deviceId
           enquiryStatus = 1;
+          isError = false;
         });
       }
       else{
         setState(() {
           enquiryStatus = model.enquiryStatus ?? 0;
+          isError = false;
         });
       }
     }
@@ -107,6 +124,7 @@ class _SplashScreenState extends State<SplashScreen> {
   getScreen(){
     setState(() {
       isLogin = _pref.getBool(AppConfig.isLogin) ?? false;
+      evalStatus = _pref.getString(AppConfig.EVAL_STATUS) ?? '';
     });
     print("_pref.getBool(AppConfig.isLogin): ${_pref.getBool(AppConfig.isLogin)}");
     print("isLogin: $isLogin");
@@ -128,27 +146,25 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopWidget(
-      child: Scaffold(
-        body: Stack(
-          children: <Widget>[
-            PageView(
-              reverse: false,
-              onPageChanged: (int page) {
-                setState(() {
-                  _currentPage = page;
-                });
-              },
-              physics: NeverScrollableScrollPhysics(),
-              controller: _pageController,
-              children: <Widget>[
-                splashImage(),
-                if(enquiryStatus != null)
-                (enquiryStatus!.isEven) ? SitBackScreen() : !isLogin ? ExistingUser() : DashboardScreen()
-              ],
-            ),
-          ],
-        ),
+    return Scaffold(
+      body: Stack(
+        children: <Widget>[
+          PageView(
+            reverse: false,
+            onPageChanged: (int page) {
+              setState(() {
+                _currentPage = page;
+              });
+            },
+            physics: NeverScrollableScrollPhysics(),
+            controller: _pageController,
+            children: <Widget>[
+              splashImage(),
+              if(enquiryStatus != null)
+              (enquiryStatus!.isEven) ? SitBackScreen() : !isLogin ? ExistingUser() : (evalStatus!.contains("no_evaluation")) ? EvaluationFormScreen() : DashboardScreen()
+            ],
+          ),
+        ],
       ),
     );
   }

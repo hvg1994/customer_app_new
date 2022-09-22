@@ -16,6 +16,7 @@ import '../../../widgets/constants.dart';
 import '../../../widgets/widgets.dart';
 import 'about_the_program.dart';
 import 'choose_problems_data.dart';
+import 'package:gwc_customer/widgets/dart_extensions.dart';
 
 class ChooseYourProblemScreen extends StatefulWidget {
   const ChooseYourProblemScreen({Key? key}) : super(key: key);
@@ -143,8 +144,9 @@ class _ChooseYourProblemScreenState extends State<ChooseYourProblemScreen> {
                 scrollDirection: Axis.vertical,
                 physics: const ScrollPhysics(),
                 shrinkWrap: true,
-                gridDelegate:
-                const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3, crossAxisSpacing: 6, mainAxisSpacing: 6),
+                // gridDelegate:SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
                 itemCount: problemList?.length ?? 0,
                 itemBuilder: (context, index) {
                   return InkWell(
@@ -153,8 +155,16 @@ class _ChooseYourProblemScreenState extends State<ChooseYourProblemScreen> {
                       buildChooseProblemOnClick(problemList![index]);
                     },
                     child: Container(
+                      margin: EdgeInsets.symmetric(horizontal: 2, vertical: 2),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(5),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.3),
+                            blurRadius: 5,
+                            offset: const Offset(2, 5),
+                          ),
+                        ],
                         image: DecorationImage(
                             image: AssetImage("assets/images/Group 4855.png"),
                             fit: BoxFit.fill),
@@ -169,9 +179,9 @@ class _ChooseYourProblemScreenState extends State<ChooseYourProblemScreen> {
                                   height: 8.h,
                                   image: NetworkImage(problemList?[index].image ?? ''),
                                 ),
-                                SizedBox(height: 1.h),
+                                SizedBox(height: 1.5.h),
                                 Text(
-                                  problemList?[index].name ?? '',
+                                  problemList?[index].name.toString().capitalize() ?? '',
                                   style: TextStyle(
                                     fontFamily: "GothamMedium",
                                     color: gTextColor,
@@ -286,3 +296,4 @@ class _ChooseYourProblemScreenState extends State<ChooseYourProblemScreen> {
   }
 
 }
+

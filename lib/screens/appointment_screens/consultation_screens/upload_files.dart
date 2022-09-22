@@ -1,10 +1,22 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:http/http.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:sizer/sizer.dart';
 import 'dart:io';
+import '../../../model/dashboard_model/report_upload_model/report_list_model.dart';
+import '../../../model/dashboard_model/report_upload_model/report_upload_model.dart';
+import '../../../model/error_model.dart';
+import '../../../repository/api_service.dart';
+import '../../../repository/consultation_repository/get_report_repository.dart';
+import '../../../services/consultation_service/report_service.dart';
+import '../../../utils/app_config.dart';
 import '../../../widgets/constants.dart';
 import '../../../widgets/widgets.dart';
+import 'package:http/http.dart' as http;
+import 'package:async/async.dart';
+
 
 class UploadFiles extends StatefulWidget {
   const UploadFiles({Key? key}) : super(key: key);
@@ -15,6 +27,11 @@ class UploadFiles extends StatefulWidget {
 
 class _UploadFilesState extends State<UploadFiles> {
   List<PlatformFile> files = [];
+  List<File> fileFormatList = [];
+  List<MultipartFile> newList = <MultipartFile>[];
+
+  File? _image;
+
 
   @override
   Widget build(BuildContext context) {
@@ -27,11 +44,7 @@ class _UploadFilesState extends State<UploadFiles> {
               end: Alignment.bottomCenter),
         ),
         child: Padding(
-          padding: EdgeInsets.only(
-            left: 4.w,
-            right: 4.w,
-            top: 4.h,
-          ),
+          padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 5.w),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -41,7 +54,7 @@ class _UploadFilesState extends State<UploadFiles> {
                   Navigator.pop(context);
                 }),
               ),
-              SizedBox(height: 3.h),
+              SizedBox(height: 5.h),
               Image(
                 image: const AssetImage("assets/images/Group 3306.png"),
                 height: 15.h,
@@ -52,21 +65,16 @@ class _UploadFilesState extends State<UploadFiles> {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                     height: 1.5,
-                    fontFamily: "GothamMedium",
+                    fontFamily: "GothamRoundedBold_21016",
                     color: gTextColor,
-                    fontSize: 11.sp),
+                    fontSize: 12.sp),
               ),
               GestureDetector(
                 onTap: () async {
-                  final result = await FilePicker.platform
-                      .pickFiles(withReadStream: true, allowMultiple: true);
-
-                  if (result == null) return;
-                  files.add(result.files.first);
-                  setState(() {});
+                  showChooserSheet();
                 },
                 child: Container(
-                  margin: EdgeInsets.symmetric(vertical: 3.h, horizontal: 3.w),
+                  margin: EdgeInsets.symmetric(vertical: 5.h, horizontal: 3.w),
                   padding: EdgeInsets.symmetric(vertical: 2.h),
                   decoration: BoxDecoration(
                     color: gMainColor,
@@ -101,7 +109,7 @@ class _UploadFilesState extends State<UploadFiles> {
                 ),
               ),
               SizedBox(
-                height: 1.h,
+                height: 1.8.h,
               ),
               Align(
                 alignment: Alignment.topLeft,
@@ -109,18 +117,21 @@ class _UploadFilesState extends State<UploadFiles> {
                   "Uploaded Report",
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                      fontFamily: "GothamBold",
+                      fontFamily: "GothamRoundedBold_21016",
                       color: gTextColor,
-                      fontSize: 10.sp),
+                      fontSize: 11.sp),
                 ),
               ),
-              (files.isEmpty)
+              SizedBox(
+                height: 20,
+              ),
+              (fileFormatList.isEmpty)
                   ? Container()
                   : ListView.builder(
-                    itemCount: files.length,
+                    itemCount: fileFormatList.length,
                     shrinkWrap: true,
                     itemBuilder: (context, index) {
-                      final file = files[index];
+                      final file = fileFormatList[index];
                       return buildFile(file, index);
                     },
                   ),
@@ -130,6 +141,8 @@ class _UploadFilesState extends State<UploadFiles> {
               Center(
                 child: GestureDetector(
                   onTap: () {
+                    // uploadReport();
+                    getReportList();
                     // Navigator.of(context).push(
                     //   MaterialPageRoute(
                     //       builder: (context) =>
@@ -137,19 +150,22 @@ class _UploadFilesState extends State<UploadFiles> {
                     // );
                   },
                   child: Container(
-                    padding:
-                        EdgeInsets.symmetric(vertical: 1.h, horizontal: 10.w),
+                    width: 60.w,
+                    height: 5.h,
+                    // padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 10.w),
                     decoration: BoxDecoration(
                       color: gPrimaryColor,
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(color: gMainColor, width: 1),
                     ),
-                    child: Text(
-                      'Submit',
-                      style: TextStyle(
-                        fontFamily: "GothamRoundedBold_21016",
-                        color: gWhiteColor,
-                        fontSize: 11.sp,
+                    child: (showUploadProgress) ? buildThreeBounceIndicator() : Center(
+                      child: Text(
+                        'Submit',
+                        style: TextStyle(
+                          fontFamily: "GothamRoundedBold_21016",
+                          color: gWhiteColor,
+                          fontSize: 11.sp,
+                        ),
                       ),
                     ),
                   ),
@@ -162,12 +178,12 @@ class _UploadFilesState extends State<UploadFiles> {
     );
   }
 
-  Widget buildFile(PlatformFile file, int index) {
-    final kb = file.size / 1024;
-    final mb = kb / 1024;
-    final size = (mb >= 1)
-        ? '${mb.toStringAsFixed(2)} MB'
-        : '${kb.toStringAsFixed(2)} KB';
+  Widget buildFile(File file, int index) {
+    // final kb = file.size / 1024;
+    // final mb = kb / 1024;
+    // final size = (mb >= 1)
+    //     ? '${mb.toStringAsFixed(2)} MB'
+    //     : '${kb.toStringAsFixed(2)} KB';
     return Column(
       children: [
         Row(
@@ -187,20 +203,20 @@ class _UploadFilesState extends State<UploadFiles> {
               child: Column(crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    file.name,
+                    file.path.split('/').last,
                     style: TextStyle(
                         fontSize: 10.sp,
                         fontFamily: "GothamMedium",
                         color: gPrimaryColor),
                   ),
                   SizedBox(height: 0.5.h),
-                  Text(
-                    size,
-                    style: TextStyle(
-                        fontSize: 8.sp,
-                        fontFamily: "GothamMedium",
-                        color: gMainColor),
-                  ),
+                  // Text(
+                  //   size,
+                  //   style: TextStyle(
+                  //       fontSize: 8.sp,
+                  //       fontFamily: "GothamMedium",
+                  //       color: gMainColor),
+                  // ),
                 ],
               ),
             ),
@@ -226,7 +242,259 @@ class _UploadFilesState extends State<UploadFiles> {
   }
 
   void _delete(int index) {
-    files.removeAt(index);
+    // files.removeAt(index);
+    fileFormatList.removeAt(index);
     setState(() {});
   }
+
+  bool showUploadProgress = false;
+
+  getReportList() async{
+    setState(() {
+      showUploadProgress = true;
+    });
+    final res = await ReportService(repository: repository).getUploadedReportListListService();
+    if(res.runtimeType == GetReportListModel){
+      GetReportListModel result = res;
+      setState(() {
+        showUploadProgress = false;
+      });
+      print(result.data);
+      // AppConfig().showSnackbar(context, result.message ?? '');
+    }
+    else{
+      ErrorModel result = res;
+      AppConfig().showSnackbar(context, result.message ?? '', isError: true);
+      setState(() {
+        showUploadProgress = false;
+      });
+    }
+  }
+
+  void uploadReport() async{
+    if(fileFormatList.isNotEmpty){
+      setState(() {
+        showUploadProgress = true;
+      });
+      List reportList = fileFormatList.map((e) => e.path).toList();
+
+      fileFormatList.forEach((element) {
+        var size = element.lengthSync();
+        num mb = size / (1024*1024);
+        print("mb:$mb");
+      });
+
+      print("new list $newList");
+      final res = await ReportService(repository: repository).uploadReportListService(newList);
+      print(res.runtimeType);
+      if(res.runtimeType == ErrorModel){
+        ErrorModel result = res;
+        AppConfig().showSnackbar(context, result.message ?? '', isError: true);
+        setState(() {
+          showUploadProgress = false;
+        });
+      }
+      else {
+        ReportUploadModel result = res;
+        setState(() {
+          showUploadProgress = false;
+        });
+        AppConfig().showSnackbar(context, result.errorMsg ?? '');
+        // Navigator.of(context).push(
+        //   MaterialPageRoute(
+        //       builder: (context) =>
+        //       const ReportsUploadedScreen()),
+        // );
+      }
+    }
+    else{
+      AppConfig().showSnackbar(context, 'Please Upload at least 1 report' ?? '', isError: true);
+    }
+  }
+
+  getFileSize(File file){
+    var size = file.lengthSync();
+    num mb = num.parse((size / (1024*1024)).toStringAsFixed(2));
+    return mb;
+  }
+
+  final ReportRepository repository = ReportRepository(
+    apiClient: ApiClient(
+      httpClient: http.Client(),
+    ),
+  );
+
+  // showChooser() {
+  //   return showDialog(
+  //     context: context,
+  //     builder: (context) => AlertDialog(
+  //         content: Text("Choose File Source"),
+  //         actions: [
+  //           ElevatedButton(
+  //             child: Text("Camera"),
+  //             onPressed: () => Navigator.pop(context, ImageSource.camera),
+  //           ),
+  //           ElevatedButton(
+  //             child: Text("File"),
+  //             onPressed: () => Navigator.pop(context, ImageSource.gallery),
+  //           ),
+  //         ]
+  //     ),
+  //   );
+  // }
+
+  showChooserSheet(){
+    return showModalBottomSheet(
+      backgroundColor: Colors.transparent,
+      context: context,
+      enableDrag: false,
+      builder: (ctx){
+        return Wrap(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topRight: Radius.circular(20),
+                  topLeft: Radius.circular(20)
+                ),
+              ),
+              child: Column(
+                children: [
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 2, vertical: 4),
+                    child: Text('Choose File Source'),
+                    decoration: BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(
+                            color: gGreyColor,
+                            width: 3.0,
+                          ),
+                        )
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      TextButton(
+                          onPressed: (){
+                            getImageFromCamera();
+                            Navigator.pop(context);
+                          },
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.camera_enhance_outlined,
+                                color: gMainColor,
+                              ),
+                              Text('Camera'),
+                            ],
+                          )
+                      ),
+                      Container(
+                        width: 5,
+                        height: 10,
+                        decoration: BoxDecoration(
+                            border: Border(
+                              right: BorderSide(
+                                color: gGreyColor,
+                                width: 1,
+                              ),
+                            )
+                        ),
+                      ),
+                      TextButton(
+                          onPressed: (){
+                            pickFromFile();
+                            Navigator.pop(context);
+                          },
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.insert_drive_file,
+                                color: gMainColor,
+                              ),
+                              Text('File'),
+                            ],
+                          )
+                      )
+                    ],
+                  ),
+                ],
+              ),
+            )
+          ],
+        );
+      }
+    );
+  }
+
+
+  void pickFromFile() async{
+    final result = await FilePicker.platform
+        .pickFiles(
+      withReadStream: true,
+      type: FileType.any,
+      // allowedExtensions: ['pdf', 'jpg', 'png'],
+      allowMultiple: false,
+    );
+    if (result == null) return;
+
+    if(result.files.first.extension!.contains("pdf") || result.files.first.extension!.contains("png") || result.files.first.extension!.contains("jpg")){
+      if(getFileSize(File(result.paths.first!)) <= 2){
+        print("filesize: ${getFileSize(File(result.paths.first!))}Mb");
+        files.add(result.files.first);
+        addFilesToList(File(result.paths.first!));
+      }
+      else{
+        AppConfig().showSnackbar(context, "File size must be <2Mb", isError: true);
+      }
+    }
+    else{
+      AppConfig().showSnackbar(context, "Please select png/jpg/Pdf files", isError: true);
+    }
+    setState(() {});
+  }
+
+  addFilesToList(File file) async{
+    newList.clear();
+    setState(() {
+      fileFormatList.add(file);
+    });
+
+    for (int i = 0; i < fileFormatList.length; i++) {
+      var stream = http.ByteStream(DelegatingStream.typed(fileFormatList[i].openRead()));
+      var length = await fileFormatList[i].length();
+      var multipartFile = http.MultipartFile("files[]", stream, length,
+          filename: fileFormatList[i].path);
+      newList.add(multipartFile);
+    }
+
+    setState(() {});
+  }
+
+
+  Future getImageFromCamera() async {
+    var image = await ImagePicker.platform.pickImage(
+      source: ImageSource.camera,
+    );
+
+    setState(() {
+      _image = File(image!.path);
+      if(getFileSize(_image!) <= 2){
+        print("filesize: ${getFileSize(_image!)}Mb");
+        addFilesToList(_image!);
+      }
+      else{
+        print("filesize: ${getFileSize(_image!)}Mb");
+
+        AppConfig().showSnackbar(context, "File size must be <2Mb", isError: true);
+      }
+
+    });
+    print("captured image: ${_image}");
+  }
+
 }

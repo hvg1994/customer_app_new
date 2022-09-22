@@ -13,6 +13,18 @@ Unzip zoom sdk for accessing using below command
 
 ***************************************************
 
+
+file structure:
+
+lib-------
+---model---
+---repository---> apiService and all other repositories
+---screens------> All UI
+---services-----> service class
+---utils--------> All Constants, enums, AppConfig
+---widgets------> Custom Widgets
+
+
 This project is a starting point for a Flutter application.
 
 A few resources to get you started if this is your first Flutter project:

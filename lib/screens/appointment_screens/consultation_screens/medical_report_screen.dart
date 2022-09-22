@@ -6,10 +6,12 @@ import '../../../widgets/widgets.dart';
 import 'medical_report_details.dart';
 
 class MedicalReportScreen extends StatelessWidget {
-  const MedicalReportScreen({Key? key}) : super(key: key);
+  final String pdfLink;
+  const MedicalReportScreen({Key? key, required this.pdfLink}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    print(pdfLink);
     return SafeArea(
       child: Scaffold(
         body: Padding(
@@ -28,7 +30,7 @@ class MedicalReportScreen extends StatelessWidget {
                   onTap: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (context) => const MedicalReportDetails(),
+                        builder: (context) => MedicalReportDetails(pdfLink: this.pdfLink,),
                       ),
                     );
                   },

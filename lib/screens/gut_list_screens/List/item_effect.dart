@@ -41,4 +41,14 @@ class _ItemEffect extends State<ItemEffect> with TickerProviderStateMixin {
           return SlideTransition(position: _offsetFloat, child: widget.child);
         });
   }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    if(mounted){
+      super.dispose();
+      ListBloc().dispose();
+      _controller.dispose();
+    }
+  }
 }

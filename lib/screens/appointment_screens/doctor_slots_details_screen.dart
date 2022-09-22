@@ -6,24 +6,30 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_zoom_sdk/zoom_options.dart';
 import 'package:flutter_zoom_sdk/zoom_view.dart';
-import 'package:gwc_customer/screens/consultation_screens/consultation_success.dart';
+import 'package:gwc_customer/screens/dashboard_screen.dart';
+import 'package:gwc_customer/screens/evalution_form/personal_details_screen.dart';
 import 'package:gwc_customer/utils/app_config.dart';
 import 'package:sizer/sizer.dart';
 import '../../model/consultation_model/appointment_booking/appointment_book_model.dart';
+import '../../model/dashboard_model/get_appointment/child_appintment_details.dart';
 import '../../widgets/constants.dart';
 import '../../widgets/widgets.dart';
+import 'consultation_screens/consultation_success.dart';
 import 'doctor_calender_time_screen.dart';
-import 'doctor_consultation_completed.dart';
 
 class DoctorSlotsDetailsScreen extends StatefulWidget {
   final AppointmentBookingModel? data;
   final String bookingDate;
   final String bookingTime;
+  final bool isFromDashboard;
+  final Map? dashboardValueMap;
   const DoctorSlotsDetailsScreen({
     Key? key,
     this.data,
     required this.bookingDate,
     required this.bookingTime,
+    this.isFromDashboard = false,
+    this.dashboardValueMap
   }) : super(key: key);
 
   @override
@@ -34,6 +40,28 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
   Timer? timer;
 
   final _pref = AppConfig().preferences;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    if(widget.isFromDashboard){
+      var splited = widget.bookingTime.split(':');
+      int hour = int.parse(splited[0]);
+      int minute = int.parse(splited[1]);
+      int second = int.parse(splited[2]);
+      print('$hour $minute');
+    }
+  }
+
+  getTime(){
+    var splited = widget.bookingTime.split(':');
+    print("splited:$splited");
+    String hour = splited[0];
+    String minute = splited[1];
+    int second = int.parse(splited[2]);
+    return '$hour:$minute';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -152,7 +180,7 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
                                           ),
                                         ),
                                         TextSpan(
-                                          text: widget.bookingTime.toString(),
+                                          text: (widget.isFromDashboard) ? getTime() : widget.bookingTime.toString(),
                                           style: TextStyle(
                                             height: 1.5,
                                             fontSize: 13.sp,
@@ -194,6 +222,11 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
                                 SizedBox(height: 8.h),
                                 GestureDetector(
                                   onTap: () {
+                                    ChildAppointmentDetails? model;
+                                    if(widget.isFromDashboard){
+                                      model = ChildAppointmentDetails.fromJson(Map.from(widget.dashboardValueMap!));
+                                    }
+                                    print("model!.teamPatients!.patient!.user!.name: ${model!.teamPatients!.patient!.user!.name}");
                                     joinZoom(context);
                                     // Navigator.of(context).push(
                                     //   MaterialPageRoute(
@@ -232,7 +265,7 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
                                     Navigator.of(context).push(
                                       MaterialPageRoute(
                                           builder: (context) =>
-                                              const DoctorCalenderTimeScreen()),
+                                              const DoctorCalenderTimeScreen(isReschedule: true,)),
                                     );
                                   },
                                   child: Text(
@@ -252,46 +285,48 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
                         Positioned(
                           left: 10.w,
                           right: 10.w,
-                          child: Container(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 3.w, vertical: 1.h),
-                            decoration: BoxDecoration(
-                              color: gWhiteColor,
-                              borderRadius: BorderRadius.circular(20),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.withOpacity(0.3),
-                                  blurRadius: 20,
-                                  offset: const Offset(8, 10),
-                                ),
-                              ],
-                            ),
-                            child: Row(
-                              children: [
-                                Image(
-                                  image: const AssetImage(
-                                      "assets/images/Group 3776.png"),
-                                  height: 8.h,
-                                ),
-                                SizedBox(width: 5.w),
-                                Expanded(
-                                  child: Text(
-                                    "My Evaluation",
-                                    style: TextStyle(
-                                        fontFamily: "GothamMedium",
-                                        color: gTextColor,
-                                        fontSize: 12.sp),
+                          child: GestureDetector(
+                            onTap:(){
+                              getEvaluationReport();
+                            },
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 3.w, vertical: 1.h),
+                              decoration: BoxDecoration(
+                                color: gWhiteColor,
+                                borderRadius: BorderRadius.circular(20),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.3),
+                                    blurRadius: 20,
+                                    offset: const Offset(8, 10),
                                   ),
-                                ),
-                                GestureDetector(
-                                  onTap: () {},
-                                  child: Icon(
+                                ],
+                              ),
+                              child: Row(
+                                children: [
+                                  Image(
+                                    image: const AssetImage(
+                                        "assets/images/Group 3776.png"),
+                                    height: 8.h,
+                                  ),
+                                  SizedBox(width: 5.w),
+                                  Expanded(
+                                    child: Text(
+                                      "My Evaluation",
+                                      style: TextStyle(
+                                          fontFamily: "GothamMedium",
+                                          color: gTextColor,
+                                          fontSize: 12.sp),
+                                    ),
+                                  ),
+                                  Icon(
                                     Icons.arrow_forward_ios_sharp,
                                     color: gMainColor,
                                     size: 2.h,
-                                  ),
-                                )
-                              ],
+                                  )
+                                ],
+                              ),
                             ),
                           ),
                         ),
@@ -308,8 +343,13 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
   }
 
   joinZoom(BuildContext context) {
-    String meetingId = widget.data?.zoomId ?? '';
-    String meetingPwd = widget.data?.zoomPassword ?? '';
+    ChildAppointmentDetails? model;
+    if(widget.isFromDashboard){
+      model = ChildAppointmentDetails.fromJson(Map.from(widget.dashboardValueMap!));
+    }
+    String meetingId = widget.isFromDashboard ? model!.zoomId! : widget.data?.zoomId ?? '';
+    String meetingPwd = widget.isFromDashboard ? model!.zoomPassword! : widget.data?.zoomPassword ?? '';
+    print('$meetingId $meetingPwd');
     bool _isMeetingEnded(String status) {
       var result = false;
 
@@ -334,7 +374,7 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
       );
       var meetingOptions = ZoomMeetingOptions(
           userId:
-          'username', //pass username for join meeting only --- Any name eg:- EVILRATT.
+          model!.teamPatients!.patient!.user!.name ?? model.teamPatientId, //pass username for join meeting only --- Any name eg:- EVILRATT.
           meetingId: meetingId
               .toString(), //pass meeting id for join meeting only
           meetingPassword: meetingPwd
@@ -360,15 +400,28 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
               stream?.cancel();
               _pref!.setBool(AppConfig.consultationComplete, true);
               Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(
-                  builder: (context) =>
-                      const ConsultationSuccess()
-                      // DoctorConsultationCompleted(
-                      //   bookingDate: widget.bookingDate,
-                      //   bookingTime: widget.bookingTime,
-                      // ),
-                ), (route) => route.isFirst
+                  MaterialPageRoute(
+                      builder: (context) =>
+                      const DashboardScreen()
+                    // DoctorConsultationCompleted(
+                    //   bookingDate: widget.bookingDate,
+                    //   bookingTime: widget.bookingTime,
+                    // ),
+                  ), (route) => route.isFirst
               );
+              // if(status[1].toString().toLowerCase().contains('Disconnect the meeting server, user leaves meeting')){
+              //
+              // }
+              // Navigator.of(context).pushAndRemoveUntil(
+              //   MaterialPageRoute(
+              //     builder: (context) =>
+              //         const ConsultationSuccess()
+              //         // DoctorConsultationCompleted(
+              //         //   bookingDate: widget.bookingDate,
+              //         //   bookingTime: widget.bookingTime,
+              //         // ),
+              //   ), (route) => route.isFirst
+              // );
             }
             if(status[0] == "MEETING_STATUS_INMEETING"){
               zoom.meetinDetails().then((meetingDetailsResult) {
@@ -384,6 +437,10 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
                     status[0] +
                     " - " +
                     status[1]);
+                if(status[0] == 'MEETING_STATUS_IDLE'){
+                  stream!.cancel();
+                  timer.cancel();
+                }
               });
             });
           });
@@ -403,6 +460,11 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
         ));
       }
     }
+  }
+
+  void getEvaluationReport() {
+    Navigator.push(context, MaterialPageRoute(builder: (c) => PersonalDetailsScreen(showData: true,)));
+
   }
 
 }

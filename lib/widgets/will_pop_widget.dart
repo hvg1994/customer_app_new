@@ -26,7 +26,7 @@ class _WillPopWidgetState extends State<WillPopWidget> {
 
   Future<bool> _onWillPop() async {
     // ignore: avoid_print
-    print('back pressed');
+    print('back pressed splash');
     return await showDialog(
             context: context,
             builder: (context) => AlertDialog(

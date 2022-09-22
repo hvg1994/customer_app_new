@@ -30,9 +30,9 @@ class _DaysProgramPlanState extends State<DaysProgramPlan> {
               Text(
                 "Program",
                 style: TextStyle(
-                    fontFamily: "GothamBold",
+                    fontFamily: "GothamRoundedBold_21016",
                     color: gPrimaryColor,
-                    fontSize: 11.sp),
+                    fontSize: 12.sp),
               ),
               SizedBox(height: 2.h),
               Expanded(

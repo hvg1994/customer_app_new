@@ -4,6 +4,7 @@ import 'package:rxdart/rxdart.dart';
 
 class ListBloc {
 
+  bool _isDispose = false;
   static ListBloc? _listBloc;
 
   factory ListBloc(){
@@ -30,10 +31,13 @@ class ListBloc {
   }
 
   void _updatePosition(int position){
-    _positionItem.add(position);
+    if(!_isDispose){
+      _positionItem.add(position);
+    }
   }
 
   dispose(){
+    _isDispose = true;
     _listBloc = null;
     _positionItem.close();
   }

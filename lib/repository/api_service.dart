@@ -1,19 +1,25 @@
 import 'dart:convert';
-import 'dart:developer';
-import 'dart:io';
-import 'package:async/async.dart';
 import 'package:flutter/foundation.dart';
+import 'package:gwc_customer/model/dashboard_model/get_appointment/get_appointment_after_appointed.dart';
+import 'package:gwc_customer/model/dashboard_model/gut_model/gut_data_model.dart';
 import 'package:gwc_customer/model/enquiry_status_model.dart';
+import 'package:gwc_customer/model/evaluation_from_models/get_evaluation_model/get_evaluationdata_model.dart';
 import 'package:gwc_customer/model/login_model/login_otp_model.dart';
 import 'package:gwc_customer/model/login_model/resend_otp_model.dart';
 import 'package:gwc_customer/model/new_user_model/about_program_model/about_program_model.dart';
+import 'package:gwc_customer/model/ship_track_model/shiprocket_auth_model/shiprocket_auth_model.dart';
 import 'package:http/http.dart' as http;
 import '../model/consultation_model/appointment_booking/appointment_book_model.dart';
 import '../model/consultation_model/appointment_slot_model.dart';
+import '../model/dashboard_model/report_upload_model/report_list_model.dart';
+import '../model/dashboard_model/report_upload_model/report_upload_model.dart';
 import '../model/error_model.dart';
 import '../model/new_user_model/choose_your_problem/choose_your_problem_model.dart';
 import '../model/new_user_model/choose_your_problem/submit_problem_response.dart';
 import '../model/new_user_model/register/register_model.dart';
+import '../model/profile_model/terms_condition_model.dart';
+import '../model/profile_model/user_profile/user_profile_model.dart';
+import '../model/program_model/meal_plan_details_model/meal_plan_details_model.dart';
 import '../model/ship_track_model/shipping_track_model.dart';
 import '../utils/api_urls.dart';
 import '../utils/app_config.dart';
@@ -30,7 +36,7 @@ final _prefs = AppConfig().preferences;
 
   String getHeaderToken() {
     if (_prefs != null) {
-      final token = _prefs!.getString(AppConfig().tokenUser);
+      final token = _prefs!.getString(AppConfig().BEARER_TOKEN);
       // AppConfig().tokenUser
       // .substring(2, AppConstant().tokenUser.length - 1);
       return "Bearer $token";
@@ -174,7 +180,7 @@ final _prefs = AppConfig().preferences;
         result = ErrorModel.fromJson(json);
       }else {
         print('submitProblemList result: $json');
-        if(json['status'] == '201'){
+        if(json['status'].toString() == '201'){
           result = RegisterResponse.fromJson(json);
         }
         else{
@@ -183,6 +189,7 @@ final _prefs = AppConfig().preferences;
       }
     }
     catch(e){
+      print("catch error: $e");
       result = ErrorModel(status: "0", message: e.toString());
     }
     return result;
@@ -227,6 +234,34 @@ final _prefs = AppConfig().preferences;
     return result;
   }
 
+  Future getShippingTokenApi(String email, String password) async{
+    final path = shippingApiLoginUrl;
+
+    Map bodyParam =  {
+      "email": email,
+      "password": password
+    };
+
+    dynamic result;
+
+    try{
+      final response = await httpClient.post(Uri.parse(path),
+          body: bodyParam
+      ).timeout(Duration(seconds: 45));
+
+      if(response.statusCode != 200){
+        result = ErrorModel.fromJson(jsonDecode(response.body));
+      }
+      else{
+        result = ShipRocketTokenModel.fromJson(jsonDecode(response.body));
+        storeShipRocketToken(result);
+      }
+    }
+    catch(e){
+      result = ErrorModel(status: "0", message: e.toString());
+    }
+    return result;
+  }
 
 
   Future serverShippingTrackerApi(String awbNumber) async {
@@ -301,13 +336,13 @@ final _prefs = AppConfig().preferences;
 
   serverGetOtpApi(String phone) async {
     String path = getOtpUrl;
-    
+
     dynamic result;
 
     Map bodyParam = {
       'phone': phone
     };
-    
+
     try{
       final response = await httpClient.post(
         Uri.parse(path),
@@ -343,13 +378,15 @@ final _prefs = AppConfig().preferences;
   Future getAppointmentSlotListApi(String selectedDate,
       {String? appointmentId}) async {
     final path = getAppointmentSlotsListUrl + selectedDate;
-    var result;
-    print("docId: $appointmentId");
+    var startTime = DateTime.now().millisecondsSinceEpoch;
 
-    Map<String, dynamic> param = {'doctor_id': appointmentId};
+    var result;
+    print("appointmentId: $appointmentId");
+
+    Map<String, dynamic> param = {'appointment_id': appointmentId};
     Map<String, String> header = {
-      "Authorization": "Bearer ${AppConfig().bearerToken}",
-      // "Authorization": getHeaderToken(),
+      // "Authorization": "Bearer ${AppConfig().bearerToken}",
+      "Authorization": getHeaderToken(),
     };
     try {
       if(appointmentId == null){
@@ -358,6 +395,7 @@ final _prefs = AppConfig().preferences;
       else{
         print("Existing Slot");
       }
+
       final response = (appointmentId != null)
           ? await httpClient
           .post(Uri.parse(path),
@@ -375,6 +413,8 @@ final _prefs = AppConfig().preferences;
       print("getAppointmentSlotListApi response code:" +
           response.statusCode.toString());
       print("getAppointmentSlotListApi response body:" + response.body);
+      var totalTime = DateTime.now().millisecondsSinceEpoch - startTime;
+      print("response Time:" + (totalTime / 1000).round().toString());
 
       final res = jsonDecode(response.body);
       print('${res['status'].runtimeType} ${res['status']}');
@@ -394,6 +434,9 @@ final _prefs = AppConfig().preferences;
       {String? appointmentId}) async {
     final path = bookAppointmentUrl;
 
+    var startTime = DateTime.now().millisecondsSinceEpoch;
+
+
     Map param = {'booking_date': date, 'slot': slotTime};
     if (appointmentId != null) {
       param.putIfAbsent('appointment_id', () => appointmentId);
@@ -411,14 +454,16 @@ final _prefs = AppConfig().preferences;
       final response = await httpClient.post(
         Uri.parse(path),
         headers: {
-          "Authorization": "Bearer ${AppConfig().bearerToken}",
-          // "Authorization": getHeaderToken(),
+          // "Authorization": "Bearer ${AppConfig().bearerToken}",
+          "Authorization": getHeaderToken(),
         },
         body: param,
       );
       print(
           "bookAppointmentApi response code:" + response.statusCode.toString());
       print("bookAppointmentApi response body:" + response.body);
+      var totalTime = DateTime.now().millisecondsSinceEpoch - startTime;
+      print("response Time:" + (totalTime / 1000).round().toString());
 
       final res = jsonDecode(response.body);
       print('${res['status'].runtimeType} ${res['status']}');
@@ -440,6 +485,8 @@ final _prefs = AppConfig().preferences;
     Map<String, String> param = {
       'device_id': deviceId,
     };
+
+    final startTime = DateTime.now().millisecondsSinceEpoch;
 
     var result;
 
@@ -470,6 +517,11 @@ final _prefs = AppConfig().preferences;
       print("enquiryStatusApi response code:" + response.statusCode.toString());
       print("enquiryStatusApi response body:" + response.body);
 
+    print("getAppointmentSlotListApi response body:" + response.body);
+    var totalTime = DateTime.now().millisecondsSinceEpoch - startTime;
+
+    print("response: $totalTime");
+
       final res = jsonDecode(response.body);
 
       print('${res['status'].runtimeType} ${res['status']}');
@@ -488,4 +540,357 @@ final _prefs = AppConfig().preferences;
     }
     return result;
   }
+
+  Future submitEvaluationFormApi(Map form, List medicalReports) async {
+    final path = submitEvaluationFormUrl;
+
+    var result;
+    var startTime = DateTime.now().millisecondsSinceEpoch;
+
+    print(getHeaderToken());
+
+    Map<String, String> m2 = Map.from(form);
+    print(m2);
+    // print("form: $form");
+    try {
+      var request = http.MultipartRequest('POST', Uri.parse(path));
+      var headers = {
+        // "Authorization": "Bearer ${AppConfig().bearerToken}",
+        "Authorization": getHeaderToken(),
+      };
+      medicalReports.forEach((element) async {
+        request.files.add(
+            await http.MultipartFile.fromPath('medical_report[]', element));
+      });
+      request.headers.addAll(headers);
+      request.fields.addAll(m2);
+      var response = await http.Response.fromStream(await request.send())
+          .timeout(Duration(seconds: 50));
+
+      print("submitEvaluationFormApi response code:" + path);
+      print("submitEvaluationFormApi response code:" +
+          response.statusCode.toString());
+      print("submitEvaluationFormApi response body:" + response.body);
+      var totalTime = DateTime.now().millisecondsSinceEpoch - startTime;
+      print("response Time:" + (totalTime / 1000).round().toString());
+
+      print(
+          "start: $startTime end: ${DateTime.now().millisecondsSinceEpoch}  total: $totalTime");
+
+      final res = jsonDecode(response.body);
+      print('${res['status'].runtimeType} ${res['status']}');
+      if (res['status'].toString() == '200') {
+        result = ReportUploadModel.fromJson(res);
+      } else {
+        result = ErrorModel.fromJson(res);
+      }
+    } catch (e) {
+      print("catch error: ${e}");
+      result = ErrorModel(status: "0", message: "Unauthenticated");
+    }
+    return result;
+  }
+  jsonToFormData(http.MultipartRequest request, Map<String, dynamic> data) {
+    for (var key in data.keys) {
+      request.fields[key] = data[key].toString();
+    }
+    return request;
+  }
+
+  Future serverGetEvaluationDetails() async {
+    final String path = getEvaluationDataUrl;
+
+    dynamic result;
+
+    var headers = {
+      // "Authorization": "Bearer ${AppConfig().bearerToken}",
+      "Authorization": getHeaderToken(),
+    };
+    try{
+      final response = await httpClient.get(
+        Uri.parse(path),
+        headers: headers,
+      ).timeout(const Duration(seconds: 45));
+
+      print('serverGetEvaluationDetails Response header: $path');
+      print('serverGetEvaluationDetails Response status: ${response.statusCode}');
+      print('serverGetEvaluationDetails Response body: ${response.body}');
+      final json = jsonDecode(response.body);
+
+      print('serverGetEvaluationDetails result: $json');
+
+      if(response.statusCode != 200){
+        result = ErrorModel(
+            status: response.statusCode.toString(),
+            message: "Unauthenticated"
+        );
+      }
+      else{
+        if(json['status'].toString() != '200'){
+          result = ErrorModel.fromJson(json);
+        }
+        else{
+          result = GetEvaluationDataModel.fromJson(json);
+        }
+      }
+    }
+    catch(e){
+      result = ErrorModel(status: "0", message: e.toString());
+    }
+    return result;
+  }
+
+
+  Future serverGetGutData() async {
+    final String path = getDashboardDataUrl;
+
+    dynamic result;
+
+    var headers = {
+      // "Authorization": "Bearer ${AppConfig().bearerToken}",
+      "Authorization": getHeaderToken(),
+    };
+    try{
+      final response = await httpClient.get(
+        Uri.parse(path),
+        headers: headers,
+      ).timeout(const Duration(seconds: 45));
+
+      print('serverGetDashboardData Response header: $path');
+      print('serverGetDashboardData Response status: ${response.statusCode}');
+      print('serverGetDashboardData Response body: ${response.body}');
+      final json = jsonDecode(response.body);
+
+      print('serverGetDashboardData result: $json');
+
+      if(response.statusCode != 200){
+        result = ErrorModel(
+            status: response.statusCode.toString(),
+            message: "Unauthenticated"
+        );
+      }
+      else{
+        if(json['status'].toString() != '200'){
+          result = ErrorModel.fromJson(json);
+        }
+        else{
+          if(json['data'] == 'evaluation_done' || json['data'] == 'pending' || json['data'] == 'consultation_accepted' || json['data'] == 'consultation_rejected' || json['data'] == 'consultation_waiting' || json['data'] == 'report_upload'){
+            result = GutDataModel.fromJson(json);
+          }
+          else if(json['data'] == 'appointment_booked'){
+            result = GetAppointmentDetailsModel.fromJson(json);
+          }
+        }
+      }
+    }
+    catch(e){
+      result = ErrorModel(status: "0", message: e.toString());
+    }
+    return result;
+  }
+
+  Future getUserProfileApi() async {
+    final path = getUserProfileUrl;
+    var result;
+
+    try {
+      final response = await httpClient.get(
+        Uri.parse(path),
+        headers: {
+          "Authorization": "Bearer ${AppConfig().bearerToken}",
+          // "Authorization": getHeaderToken(),
+        },
+      ).timeout(const Duration(seconds: 45));
+
+      print("getUserProfileApi response code:" + response.statusCode.toString());
+      print("getUserProfileApi response body:" + response.body);
+
+      final res = jsonDecode(response.body);
+      print('${res['status'].runtimeType} ${res['status']}');
+      if (res['status'].toString() == '200') {
+        result = UserProfileModel.fromJson(jsonDecode(response.body));
+      } else {
+        result = ErrorModel.fromJson(res);
+      }
+    } catch (e) {
+      print("getUserProfileApi catch error");
+      result = ErrorModel(status: "0", message: "Unauthenticated");
+    }
+    return result;
+  }
+
+  Future<TermsConditionModel> serverGetTermsAndCondition() async {
+    final String path = termsConditionUrl;
+
+    final response = await httpClient.get(
+      Uri.parse(path),
+      headers: {"Content-Type": "application/json"},
+    ).timeout(const Duration(seconds: 45));
+    if (kDebugMode) {
+      print('serverGetTermsAndCondition Response header: $path');
+      print(
+          'serverGetTermsAndCondition Response status: ${response.statusCode}');
+      print('serverGetTermsAndCondition Response body: ${response.body}');
+    }
+    dynamic result;
+    if (response.statusCode == 401) {
+      final json = jsonDecode(response.body);
+      print('serverGetTermsAndCondition error: $json');
+      result = ErrorModel.fromJson(json);
+    } else if (response.statusCode != 200) {
+      throw Exception('error getting quotes');
+    }
+
+    final json = jsonDecode(response.body);
+    print('serverGetTermsAndCondition result: $json');
+    result = TermsConditionModel.fromJson(json);
+    return result;
+  }
+
+  Future uploadReportApi(List reportList) async {
+    final path = uploadReportUrl;
+
+    var result;
+    var startTime = DateTime.now().millisecondsSinceEpoch;
+
+    try {
+      var request = http.MultipartRequest('POST', Uri.parse(path));
+      var headers = {
+        // "Authorization": "Bearer ${AppConfig().bearerToken}",
+        "Authorization": getHeaderToken(),
+      };
+
+      request.files.addAll(reportList as List<http.MultipartFile>);
+
+      // reportList.forEach((element) async {
+      //   request.files.add(await http.MultipartFile.fromPath('files[]', element));
+      // });
+      request.headers.addAll(headers);
+
+      var response = await http.Response.fromStream(await request.send())
+          .timeout(Duration(seconds: 50));
+
+      print("uploadReportApi response code:" + path);
+      print("uploadReportApi response code:" + response.statusCode.toString());
+      print("uploadReportApi response body:" + response.body);
+      var totalTime = DateTime.now().millisecondsSinceEpoch - startTime;
+      print(
+          "start: $startTime end: ${DateTime.now().millisecondsSinceEpoch}  total: $totalTime");
+
+      print("response Time:" + (totalTime / 1000).round().toString());
+
+      final res = jsonDecode(response.body);
+      print('${res['status'].runtimeType} ${res['status']}');
+      if (res['status'].toString() == '200') {
+        result = ReportUploadModel.fromJson(res);
+      } else {
+        result = ErrorModel.fromJson(res);
+      }
+    } catch (e) {
+      print("catch error: ${e}");
+      result = ErrorModel(status: "0", message: "Unauthenticated");
+    }
+    return result;
+  }
+
+  Future getUploadedReportListListApi() async {
+    final path = getUserReportListUrl;
+    var result;
+
+    try {
+      final response = await httpClient.get(
+        Uri.parse(path),
+        headers: {
+          // "Authorization": "Bearer ${AppConfig().bearerToken}",
+          "Authorization": getHeaderToken(),
+        },
+      ).timeout(const Duration(seconds: 45));
+
+      print("getUploadedReportListApi response code:" +
+          response.statusCode.toString());
+      print("getUploadedReportListApi response body:" + response.body);
+
+      final res = jsonDecode(response.body);
+      print('${res['status'].runtimeType} ${res['status']}');
+      if (res['status'].toString() == '200') {
+        result = GetReportListModel.fromJson(jsonDecode(response.body));
+      } else {
+        result = ErrorModel.fromJson(res);
+      }
+    } catch (e) {
+      print("catch error");
+      result = ErrorModel(status: "0", message: "Unauthenticated");
+    }
+    return result;
+  }
+
+  Future getMealProgramListApi() async {
+    final path = getUserReportListUrl;
+    var result;
+
+    try {
+      final response = await httpClient.get(
+        Uri.parse(path),
+        headers: {
+          // "Authorization": "Bearer ${AppConfig().bearerToken}",
+          "Authorization": getHeaderToken(),
+        },
+      ).timeout(const Duration(seconds: 45));
+
+      print("getUploadedReportListApi response code:" +
+          response.statusCode.toString());
+      print("getUploadedReportListApi response body:" + response.body);
+
+      final res = jsonDecode(response.body);
+      print('${res['status'].runtimeType} ${res['status']}');
+      if (res['status'].toString() == '200') {
+        result = GetReportListModel.fromJson(jsonDecode(response.body));
+      } else {
+        result = ErrorModel.fromJson(res);
+      }
+    } catch (e) {
+      print("catch error");
+      result = ErrorModel(status: "0", message: "Unauthenticated");
+    }
+    return result;
+  }
+
+  /// need to pass day 1,2,3,4.......... like this
+  Future getMealPlanDetailsApi(String day) async {
+    final path = '$getMealPlanDataUrl/$day';
+    var result;
+
+    try {
+      final response = await httpClient.get(
+        Uri.parse(path),
+        headers: {
+          // "Authorization": "Bearer ${AppConfig().bearerToken}",
+          "Authorization": getHeaderToken(),
+        },
+      ).timeout(const Duration(seconds: 45));
+
+      print("getMealPlanDetailsApi response code:" + response.statusCode.toString());
+      print("getMealPlanDetailsApi response body:" + response.body);
+
+      final res = jsonDecode(response.body);
+      print('${res['status'].runtimeType} ${res['status']}');
+
+      if (res['status'].toString() == '200') {
+        result = MealPlanDetailsModel.fromJson(jsonDecode(response.body));
+      } else {
+        result = ErrorModel.fromJson(res);
+      }
+    } catch (e) {
+      print("catch error");
+      result = ErrorModel(status: "0", message: "Unauthenticated");
+    }
+    return result;
+  }
+
+
+
+  void storeShipRocketToken(ShipRocketTokenModel result) {
+    _prefs!.setString(AppConfig().shipRocketBearer, result.token ?? '');
+  }
+
 }

@@ -5,10 +5,10 @@ import 'package:gwc_customer/screens/profile_screens/settings_screen.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../widgets/constants.dart';
-import '../feeds_sceens/feeds_list.dart';
-import 'clap.dart';
-import 'list.dart';
-import 'track.dart';
+import 'clap_screens/clap_screen.dart';
+import 'feed_screens/feeds_list.dart';
+import 'gut_list_screens/gut_list.dart';
+import 'home_screens/home_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({Key? key}) : super(key: key);
@@ -18,6 +18,8 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
+  GlobalKey<ConvexAppBarState> _appBarKey = GlobalKey<ConvexAppBarState>();
+
   int _bottomNavIndex = 2;
 
   final int save_prev_index = 2;
@@ -56,7 +58,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     switch (index) {
       case 0:
         {
-          return const Track();
+          return const HomeScreens();
         }
       case 1:
         {
@@ -68,7 +70,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         }
       case 3:
         {
-          return const Clap();
+          return const ClapScreen();
         }
       case 4:
         {
@@ -84,6 +86,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       child: Scaffold(
         body: pageCaller(_bottomNavIndex),
         bottomNavigationBar: ConvexAppBar(
+          key: _appBarKey,
           style: TabStyle.react,
           backgroundColor: Colors.white,
           items: [
@@ -146,14 +149,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   Future<bool> _onWillPop() {
     print('back pressed');
+    print("_bottomNavIndex: $_bottomNavIndex");
     setState(() {
       if (_bottomNavIndex != 2) {
-        if (_bottomNavIndex > save_prev_index) {
-          _bottomNavIndex--;
-        } else if (_bottomNavIndex < save_prev_index) {
-          _bottomNavIndex++;
+        if (_bottomNavIndex > save_prev_index || _bottomNavIndex < save_prev_index) {
+          _bottomNavIndex = save_prev_index;
+          _appBarKey.currentState!.animateTo(_bottomNavIndex);
+          setState(() {
+
+          });
         } else {
           _bottomNavIndex = 2;
+          _appBarKey.currentState!.animateTo(_bottomNavIndex);
+          setState(() {
+
+          });
         }
       } else{
         showDialog(

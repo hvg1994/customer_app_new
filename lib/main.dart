@@ -1,3 +1,9 @@
+/*
+In main.dart we are storing DeviceId to local storage
+
+AppConfig() will be Singleton class so than we can use this as local storage
+*/
+
 import 'package:country_code_picker/country_localizations.dart';
 import 'package:device_preview/device_preview.dart' hide DeviceType;
 import 'package:flutter/foundation.dart';
