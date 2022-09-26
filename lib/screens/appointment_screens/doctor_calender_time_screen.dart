@@ -22,8 +22,12 @@ import 'package:gwc_customer/widgets/dart_extensions.dart';
 
 class DoctorCalenderTimeScreen extends StatefulWidget {
   final bool isReschedule;
+  final String? prevBookingDate;
+  final String? prevBookingTime;
   const DoctorCalenderTimeScreen({Key? key,
-    this.isReschedule = false
+    this.isReschedule = false,
+    this.prevBookingDate,
+    this.prevBookingTime
   }) : super(key: key);
 
   @override
@@ -129,6 +133,44 @@ class _DoctorCalenderTimeScreenState extends State<DoctorCalenderTimeScreen> {
                 ),
                 SizedBox(
                   height: 3.h,
+                ),
+                Visibility(
+                  visible: widget.isReschedule,
+                  child: Padding(
+                    padding:
+                    EdgeInsets.symmetric(horizontal: 13.w),
+                    child: RichText(
+                      textAlign: TextAlign.center,
+                      text: TextSpan(
+                        children: <TextSpan>[
+                          TextSpan(
+                            text: 'Your Previous Appointment was Booked @ ',
+                            style: TextStyle(
+                              height: 1.5,
+                              fontSize: 12.sp,
+                              fontFamily: "GothamBook",
+                              color: gBlackColor,
+                            ),
+                          ),
+                          TextSpan(
+                            text: '${widget.prevBookingTime} ${widget.prevBookingDate}',
+                            style: TextStyle(
+                              height: 1.5,
+                              fontSize: 12.sp,
+                              fontFamily: "GothamMedium",
+                              color: gMainColor,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                Visibility(
+                  visible: widget.isReschedule,
+                  child: SizedBox(
+                    height: 5,
+                  ),
                 ),
                 Text(
                   "Choose Day",

@@ -1,10 +1,20 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:gwc_customer/model/error_model.dart';
+import 'package:gwc_customer/model/program_model/program_days_model/child_program_day.dart';
+import 'package:gwc_customer/model/program_model/program_days_model/program_day_model.dart';
+import 'package:gwc_customer/services/program_service/program_service.dart';
+import 'package:gwc_customer/widgets/open_alert_box.dart';
 import 'package:sizer/sizer.dart';
 
+import '../../repository/api_service.dart';
+import '../../repository/program_repository/program_repository.dart';
+import '../../utils/app_config.dart';
 import '../../widgets/constants.dart';
 import '../../widgets/widgets.dart';
 import 'days_plan_data.dart';
 import 'meal_plan_screen.dart';
+import 'package:http/http.dart' as http;
 
 class DaysProgramPlan extends StatefulWidget {
   const DaysProgramPlan({Key? key}) : super(key: key);
@@ -14,6 +24,30 @@ class DaysProgramPlan extends StatefulWidget {
 }
 
 class _DaysProgramPlanState extends State<DaysProgramPlan> {
+
+  final _pref = AppConfig().preferences;
+
+  Future? _getDaysFuture;
+
+  @override
+  void setState(VoidCallback fn) {
+    // TODO: implement setState
+    if(mounted){
+      super.setState(fn);
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getProgramDays();
+  }
+
+  getProgramDays(){
+    _getDaysFuture = ProgramService(repository: repository).getMealProgramDaysService();
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -36,7 +70,67 @@ class _DaysProgramPlanState extends State<DaysProgramPlan> {
               ),
               SizedBox(height: 2.h),
               Expanded(
-                child: buildDaysPlan(),
+                child: FutureBuilder(
+                  future: _getDaysFuture,
+                  builder: (_, snapshot){
+                    if(snapshot.hasData){
+                      print("snapshot.data: ${snapshot.data}");
+                      if(snapshot.data.runtimeType == ProgramDayModel){
+                        final model = snapshot.data as ProgramDayModel;
+                        // model.data!.forEach((element) {
+                        //   print('${element.dayNumber} -- ${element.color}');
+                        // });
+                        _pref!.setInt(AppConfig.STORE_LENGTH, model.data!.length);
+                        return buildDaysPlan(model.data!);
+                      }
+                      else {
+                        ErrorModel model = snapshot.data as ErrorModel;
+                        print('snapshot.errormodel:${model.message}');
+                        return Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(model.message!,
+                                style: TextStyle(
+                                  fontFamily: "GothamMedium",
+                                  color: gTextColor,
+                                  fontSize: 11.sp,
+                                ),
+                              ),
+                              TextButton(onPressed: (){
+                                getProgramDays();
+                              },
+                                  child: Text('Retry'))
+                            ],
+                          ),
+                        );
+                        // WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+                        //   return openAlertBox(context: context,
+                        //     positiveButtonName: 'Retry',
+                        //     content: model.message,
+                        //       positiveButton: () {
+                        //         getProgramDays();
+                        //         Navigator.pop(context);
+                        //       },
+                        //       isSingleButton: true
+                        //   );
+                        // });
+                      }
+                    }
+                    else if(snapshot.hasError){
+                      print('snapshot.error:${snapshot.error}');
+                      return openAlertBox(context: context,
+                          positiveButtonName: 'Retry',
+                          content: snapshot.error.toString(),
+                          positiveButton: () {
+                            getProgramDays();
+                            Navigator.pop(context);
+                          }
+                      );
+                    }
+                    return buildCircularIndicator();
+                  },
+                ),
               ),
             ],
           ),
@@ -45,8 +139,10 @@ class _DaysProgramPlanState extends State<DaysProgramPlan> {
     );
   }
 
-  buildDaysPlan() {
+  buildDaysPlan(List<ChildProgramDayModel> model) {
     return GridView.builder(
+      // this clip none to show check icon full
+        clipBehavior: Clip.none,
         scrollDirection: Axis.vertical,
         physics: const ScrollPhysics(),
         shrinkWrap: true,
@@ -55,52 +151,77 @@ class _DaysProgramPlanState extends State<DaysProgramPlan> {
             crossAxisSpacing: 8,
             mainAxisSpacing: 20,
             mainAxisExtent: 15.5.h),
-        itemCount: dayPlansData.length,
+        itemCount: model.length ?? dayPlansData.length,
         itemBuilder: (context, index) {
           return GestureDetector(
-            onTap: () {
+            onTap: (model[index].dayNumber != '1') ? null : () {
               //  buildDayCompleted();
              // buildDayNotCompleted();
               Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => MealPlanScreen(
-                    day: dayPlansData[index]["day"],
+                    // day: dayPlansData[index]["day"],
+                    day: model[index].dayNumber!
                   ),
                 ),
               );
             },
-            child: Container(
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(5),
-                  image: DecorationImage(
-                      image: AssetImage(dayPlansData[index]["image"]),
-                      fit: BoxFit.fill),
-                  border: Border.all(color: dayPlansData[index]["color"], width: 2)),
-              child: Stack(
-                children: [
-                  Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Container(
-                      margin: EdgeInsets.symmetric(vertical: 0.5.h),
-                      padding: EdgeInsets.symmetric(
-                          horizontal: 4.w, vertical: 0.5.h),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(3),
-                        color: dayPlansData[index]["color"],
+            child: Stack(
+              alignment: AlignmentDirectional.topEnd,
+              overflow: Overflow.visible,
+              children: [
+                Positioned(
+                  top: -7,
+                    right: -4,
+                    child: Visibility(
+                      visible: model[index].isCompleted == 1,
+                      child: Icon(Icons.check_circle,
+                        color: gPrimaryColor,
+                        size: 18,
                       ),
-                      child: Text(
-                        " DAY ${dayPlansData[index]["day"]}",
-                        style: TextStyle(
-                          fontFamily: "GothamMedium",
-                          color: gTextColor,
-                          fontSize: 8.sp,
+                    )
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                      image: DecorationImage(
+                          alignment: Alignment(-.2, 0),
+                          opacity: (model[index].isCompleted.toString() == '1' || model[index].isCompleted.toString() == '2') ? 1.0 : 0.7,
+                          image: NetworkImage(model[index].image!),
+                          // image: AssetImage(dayPlansData[index]["image"]),
+                          fit: BoxFit.fill),
+                      border: Border.all(
+                          color: model[index].color!,
+                          // color: dayPlansData[index]["color"],
+                          width: 2)),
+                  child: Stack(
+                    children: [
+                      Align(
+                        alignment: Alignment.bottomCenter,
+                        child: Container(
+                          margin: EdgeInsets.symmetric(vertical: 0.5.h),
+                          padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 0.5.h),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(3),
+                            // color: dayPlansData[index]["color"],
+                            color: model[index].color
+                          ),
+                          child: Text(
+                            " DAY ${model[index].dayNumber!}",
+                            // " DAY ${dayPlansData[index]["day"]}",
+                            style: TextStyle(
+                              fontFamily: "GothamMedium",
+                              color: gTextColor,
+                              fontSize: 8.sp,
+                            ),
+                          ),
                         ),
                       ),
-                    ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           );
         });
@@ -289,4 +410,10 @@ class _DaysProgramPlanState extends State<DaysProgramPlan> {
       ),
     );
   }
+
+  final ProgramRepository repository = ProgramRepository(
+    apiClient: ApiClient(
+      httpClient: http.Client(),
+    ),
+  );
 }

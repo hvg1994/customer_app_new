@@ -38,8 +38,12 @@ var uploadReportUrl = "${AppConfig().BASE_URL}/api/submitForm/user_report";
 
 var getUserReportListUrl = "${AppConfig().BASE_URL}/api/getData/user_reports_list";
 
+var getMealProgramDayListUrl = "${AppConfig().BASE_URL}/api/listData/user_program_details";
+
 /// need to pass day number 1,2,3 ....
 var getMealPlanDataUrl = "${AppConfig().BASE_URL}/api/getDataList/user_day_meal_plan";
+
+var submitDayPlanDetailsUrl = "${AppConfig().BASE_URL}/api/submitData/patient_meal_tracking";
 
 
 //  old apis

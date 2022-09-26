@@ -7,6 +7,9 @@ import 'package:gwc_customer/model/evaluation_from_models/get_evaluation_model/g
 import 'package:gwc_customer/model/login_model/login_otp_model.dart';
 import 'package:gwc_customer/model/login_model/resend_otp_model.dart';
 import 'package:gwc_customer/model/new_user_model/about_program_model/about_program_model.dart';
+import 'package:gwc_customer/model/program_model/proceed_model/get_proceed_model.dart';
+import 'package:gwc_customer/model/program_model/proceed_model/send_proceed_program_model.dart';
+import 'package:gwc_customer/model/program_model/program_days_model/program_day_model.dart';
 import 'package:gwc_customer/model/ship_track_model/shiprocket_auth_model/shiprocket_auth_model.dart';
 import 'package:http/http.dart' as http;
 import '../model/consultation_model/appointment_booking/appointment_book_model.dart';
@@ -824,8 +827,8 @@ final _prefs = AppConfig().preferences;
     return result;
   }
 
-  Future getMealProgramListApi() async {
-    final path = getUserReportListUrl;
+  Future getProgramDayListApi() async {
+    final path = getMealProgramDayListUrl;
     var result;
 
     try {
@@ -837,19 +840,26 @@ final _prefs = AppConfig().preferences;
         },
       ).timeout(const Duration(seconds: 45));
 
-      print("getUploadedReportListApi response code:" +
+      print("getProgramDayListApi response code:" +
           response.statusCode.toString());
-      print("getUploadedReportListApi response body:" + response.body);
+      print("getProgramDayListApi response body:" + response.body);
 
-      final res = jsonDecode(response.body);
-      print('${res['status'].runtimeType} ${res['status']}');
-      if (res['status'].toString() == '200') {
-        result = GetReportListModel.fromJson(jsonDecode(response.body));
-      } else {
+      if(response.statusCode != 200){
+        print('status not equal called');
+        final res = jsonDecode(response.body);
         result = ErrorModel.fromJson(res);
       }
+      else{
+        final res = jsonDecode(response.body);
+        print('${res['status'].runtimeType} ${res['status']}');
+        if (res['status'].toString() == '200') {
+          result = ProgramDayModel.fromJson(jsonDecode(response.body));
+        } else {
+          result = ErrorModel.fromJson(res);
+        }
+      }
     } catch (e) {
-      print("catch error");
+      print("catch error::> $e");
       result = ErrorModel(status: "0", message: "Unauthenticated");
     }
     return result;
@@ -881,8 +891,46 @@ final _prefs = AppConfig().preferences;
         result = ErrorModel.fromJson(res);
       }
     } catch (e) {
-      print("catch error");
+      print("catch error$e");
       result = ErrorModel(status: "0", message: "Unauthenticated");
+    }
+    return result;
+  }
+
+  Future proceedDayProgramList(ProceedProgramDayModel model) async {
+    var url = submitDayPlanDetailsUrl;
+
+    dynamic result;
+
+    print("proceedDayProgramList path: $url");
+
+    print("model: ${json.encode(model.toJson()) == jsonEncode(model.toJson())}");
+
+    try {
+      final response = await httpClient.post(
+        Uri.parse(url),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": getHeaderToken(),
+        },
+        body: jsonEncode(model.toJson()),
+      );
+
+      print('proceedDayProgramList Response status: ${response.statusCode}');
+      print('proceedDayProgramList Response body: ${response.body}');
+
+      final json = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        print('proceedDayProgramList result: $json');
+        result = GetProceedModel.fromJson(json);
+      } else {
+        print('proceedDayProgramList error: ${response.reasonPhrase}');
+        result = ErrorModel.fromJson(json);
+      }
+    } catch (e) {
+      print(e);
+      result = ErrorModel(status: "", message: e.toString());
     }
     return result;
   }

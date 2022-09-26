@@ -226,7 +226,7 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
                                     if(widget.isFromDashboard){
                                       model = ChildAppointmentDetails.fromJson(Map.from(widget.dashboardValueMap!));
                                     }
-                                    print("model!.teamPatients!.patient!.user!.name: ${model!.teamPatients!.patient!.user!.name}");
+                                    // print("model!.teamPatients!.patient!.user!.name: ${model!.teamPatients!.patient!.user!.name}");
                                     joinZoom(context);
                                     // Navigator.of(context).push(
                                     //   MaterialPageRoute(
@@ -265,7 +265,11 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
                                     Navigator.of(context).push(
                                       MaterialPageRoute(
                                           builder: (context) =>
-                                              const DoctorCalenderTimeScreen(isReschedule: true,)),
+                                              DoctorCalenderTimeScreen(
+                                                isReschedule: true,
+                                                prevBookingDate: widget.bookingDate,
+                                                prevBookingTime: widget.bookingTime,
+                                              )),
                                     );
                                   },
                                   child: Text(

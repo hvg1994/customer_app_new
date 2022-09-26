@@ -15,12 +15,14 @@ import 'package:gwc_customer/services/enquiry_status_service.dart';
 import 'package:gwc_customer/splash_screen.dart';
 import 'package:gwc_customer/widgets/constants.dart';
 import 'package:gwc_customer/widgets/open_alert_box.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
 import 'package:get/get.dart';
 
 import 'repository/api_service.dart';
 import 'repository/enquiry_status_repository.dart';
+import 'services/vlc_service/check_state.dart';
 import 'utils/app_config.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/widgets.dart';
@@ -85,15 +87,20 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return Sizer(builder:
         (BuildContext context, Orientation orientation, DeviceType deviceType) {
-      return const GetMaterialApp(
-          supportedLocales: [
-            const Locale("en"), /// THIS IS FOR COUNTRY CODE PICKER
-          ],
-          localizationsDelegates: [
-            CountryLocalizations.delegate, /// THIS IS FOR COUNTRY CODE PICKER
-          ],
-          debugShowCheckedModeBanner: false,
-          home: const SplashScreen());
+      return  MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => CheckState())
+        ],
+        child: const GetMaterialApp(
+            supportedLocales: [
+              const Locale("en"), /// THIS IS FOR COUNTRY CODE PICKER
+            ],
+            localizationsDelegates: [
+              CountryLocalizations.delegate, /// THIS IS FOR COUNTRY CODE PICKER
+            ],
+            debugShowCheckedModeBanner: false,
+            home: const SplashScreen()),
+      );
     });
   }
 }

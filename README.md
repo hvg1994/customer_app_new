@@ -13,6 +13,8 @@ Unzip zoom sdk for accessing using below command
 
 ***************************************************
 
+To Open Drive link we need this format
+'https://drive.google.com/uc?export=view&id=1RaM7eOiwLG3dbawaOFsQoR_nl9jtUpPK'
 
 file structure:
 

@@ -485,7 +485,7 @@ class _ExistingUserState extends State<ExistingUser> {
       _pref.setString(AppConfig.EVAL_STATUS, model.userEvaluationStatus!);
       storeBearerToken(model.accessToken ?? '');
 
-      if(model.userEvaluationStatus!.contains("pending"))
+      if(model.userEvaluationStatus!.contains("no_evaluation") || model.userEvaluationStatus!.contains("pending"))
         {
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(

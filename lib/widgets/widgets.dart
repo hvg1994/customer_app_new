@@ -173,31 +173,34 @@ SnackbarController buildSnackBar(String title, String subTitle) {
   );
 }
 
-Row buildAppBar(VoidCallback func, {bool isBackEnable = true}) {
-  return Row(
-    children: [
-      Visibility(
-        visible: isBackEnable,
-        child: SizedBox(
-          height: 2.h,
-          child: InkWell(
-            onTap: func,
-            child: const Image(
-              image: AssetImage(
-                  "assets/images/Icon ionic-ios-arrow-back.png"),
+buildAppBar(VoidCallback func, {bool isBackEnable = true}) {
+  return GestureDetector(
+    onTap: func,
+    child: Row(
+      children: [
+        Visibility(
+          visible: isBackEnable,
+          child: SizedBox(
+            height: 2.h,
+            child: InkWell(
+              onTap: func,
+              child: const Image(
+                image: AssetImage(
+                    "assets/images/Icon ionic-ios-arrow-back.png"),
+              ),
             ),
           ),
         ),
-      ),
-      SizedBox(
-        height: 7.h,
-        child: const Image(
-          image: AssetImage(
-              "assets/images/Gut welness logo (1).png"),
+        SizedBox(
+          height: 7.h,
+          child: const Image(
+            image: AssetImage(
+                "assets/images/Gut welness logo (1).png"),
+          ),
+          //SvgPicture.asset("assets/images/splash_screen/Inside Logo.svg"),
         ),
-        //SvgPicture.asset("assets/images/splash_screen/Inside Logo.svg"),
-      ),
-    ],
+      ],
+    ),
   );
 }
 

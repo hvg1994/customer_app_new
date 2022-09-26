@@ -141,8 +141,8 @@ class _UploadFilesState extends State<UploadFiles> {
               Center(
                 child: GestureDetector(
                   onTap: () {
-                    // uploadReport();
-                    getReportList();
+                    uploadReport();
+                    // getReportList();
                     // Navigator.of(context).push(
                     //   MaterialPageRoute(
                     //       builder: (context) =>

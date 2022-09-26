@@ -61,6 +61,8 @@ dependencies:
   syncfusion_flutter_pdfviewer: any
   image_picker: any
   jwt_decode: ^0.3.1
+  pip_view: ^0.9.7
+  provider: any
 
 
 
@@ -104,6 +106,10 @@ flutter:
     - family: GothamRoundedBold
       fonts:
         - asset: assets/font/GothamRounded-Bold.otf
+
+    - family: GothamBold
+      fonts:
+        - asset: assets/font/GothamBold.ttf
 
     - family: GothamRoundedBold_21016
       fonts:

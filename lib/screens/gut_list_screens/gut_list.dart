@@ -324,6 +324,7 @@ class _GutListState extends State<GutList> {
         break;
       case 'report_upload':
         print(_gutDataModel!.value);
+        // goToScreen(DoctorCalenderTimeScreen(isReschedule: true,prevBookingTime: '23-09-2022', prevBookingDate: '10AM',));
         goToScreen(MedicalReportScreen(pdfLink: _gutDataModel!.value!,));
         break;
       // case 'check_user_reports':

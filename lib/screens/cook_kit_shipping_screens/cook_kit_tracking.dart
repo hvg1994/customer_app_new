@@ -230,7 +230,7 @@ class _CookKitTrackingState extends State<CookKitTracking> {
     });
 
 
-    timer = Timer.periodic(Duration(seconds: 1), (timer1) {
+    timer = Timer.periodic(const Duration(milliseconds: 500), (timer1) {
       print(timer1.tick);
       print('activeStep: $activeStep');
       print('upperBound:$upperBound');

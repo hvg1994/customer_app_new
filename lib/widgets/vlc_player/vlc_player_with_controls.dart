@@ -15,6 +15,7 @@ class VlcPlayerWithControls extends StatefulWidget {
   final double? replayButtonSize;
   final double? playButtonIconSize;
   final double? seekButtonIconSize;
+  final bool showFullscreenBtn;
   final onStopRecordingCallback? onStopRecording;
 
   VlcPlayerWithControls({
@@ -26,7 +27,8 @@ class VlcPlayerWithControls extends StatefulWidget {
     this.onStopRecording,
     this.playButtonIconSize,
     this.replayButtonSize,
-    this.seekButtonIconSize
+    this.seekButtonIconSize,
+    this.showFullscreenBtn = true
   })  : assert(controller != null, 'You must provide a vlc controller'),
         super(key: key);
 
@@ -385,20 +387,23 @@ class VlcPlayerWithControlsState extends State<VlcPlayerWithControls>
                     ],
                   ),
                 ),
-                IconButton(
-                  icon: Icon(Icons.fullscreen),
-                  color: Colors.white,
-                  onPressed: () {
-                    final _ori = MediaQuery.of(context).orientation;
-                    print(_ori.name);
-                    bool isPortrait = _ori == Orientation.portrait;
-                    if(isPortrait){
-                      AutoOrientation.landscapeAutoMode();
-                    }
-                    else{
-                      AutoOrientation.portraitUpMode();
-                    }
-                  },
+                Visibility(
+                  visible: widget.showFullscreenBtn,
+                  child: IconButton(
+                    icon: Icon(Icons.fullscreen),
+                    color: Colors.white,
+                    onPressed: () {
+                      final _ori = MediaQuery.of(context).orientation;
+                      print(_ori.name);
+                      bool isPortrait = _ori == Orientation.portrait;
+                      if(isPortrait){
+                        AutoOrientation.landscapeAutoMode();
+                      }
+                      else{
+                        AutoOrientation.portraitUpMode();
+                      }
+                    },
+                  ),
                 ),
               ],
             ),
