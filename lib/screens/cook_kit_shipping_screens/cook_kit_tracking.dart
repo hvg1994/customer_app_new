@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:gwc_customer/model/ship_track_model/shopping_model/get_shopping_model.dart';
 import 'package:intl/intl.dart';
 import 'package:sizer/sizer.dart';
 import 'package:http/http.dart' as http;
@@ -12,6 +13,7 @@ import '../../../services/shipping_service/ship_track_service.dart';
 import '../../../widgets/stepper/another_stepper.dart';
 import '../../../widgets/stepper/stepper_data.dart';
 import '../../../widgets/widgets.dart';
+import '../../model/ship_track_model/shopping_model/child_get_shopping_model.dart';
 import '../../widgets/constants.dart';
 
 class CookKitTracking extends StatefulWidget {
@@ -34,12 +36,15 @@ class _CookKitTrackingState extends State<CookKitTracking> {
 
   int tabSize = 2;
 
+  List<ChildGetShoppingModel>? shoppingData = [];
+
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     shippingTracker();
-    // getShoppingList();
+    getShoppingList();
   }
 
   @override
@@ -255,35 +260,21 @@ class _CookKitTrackingState extends State<CookKitTracking> {
                     ], begin: Alignment.topLeft, end: Alignment.topRight),
                   ),
                 ),
-                DataTable(
-                    headingTextStyle: TextStyle(
-                      color: gWhiteColor,
-                      fontSize: 5.sp,
-                      fontFamily: "GothamMedium",
-                    ),
-                    headingRowHeight: 5.h,
-                    horizontalMargin: 2.w,
-                    columnSpacing: 40.w,
-                    dataRowHeight: 6.h,
-                    // headingRowColor: MaterialStateProperty.all(const Color(0xffE06666)),
-                    columns:  <DataColumn>[
-                      DataColumn(
-                        label: Text('Meal Name',
-                          style: TextStyle(
-                            height: 1.5,
-                            color: gWhiteColor,
-                            fontSize: 11.sp,
-                            fontFamily: "GothamBold",
-                          ),
-                        ),
+                Center(
+                  child: DataTable(
+                      headingTextStyle: TextStyle(
+                        color: gWhiteColor,
+                        fontSize: 5.sp,
+                        fontFamily: "GothamMedium",
                       ),
-                      DataColumn(
-                        label: ConstrainedBox(
-                          constraints: BoxConstraints(
-                            maxWidth: 80,
-                            minWidth: 20,
-                          ),
-                          child: Text('Weight',
+                      headingRowHeight: 5.h,
+                      horizontalMargin: 2.w,
+                      columnSpacing: 40.w,
+                      dataRowHeight: 6.h,
+                      // headingRowColor: MaterialStateProperty.all(const Color(0xffE06666)),
+                      columns:  <DataColumn>[
+                        DataColumn(
+                          label: Text('Meal Name',
                             style: TextStyle(
                               height: 1.5,
                               color: gWhiteColor,
@@ -292,9 +283,26 @@ class _CookKitTrackingState extends State<CookKitTracking> {
                             ),
                           ),
                         ),
-                      ),
-                    ],
-                    rows: showDataRow()
+                        DataColumn(
+                          label: ConstrainedBox(
+                            constraints: BoxConstraints(
+                              maxWidth: 80,
+                              minWidth: 20,
+                            ),
+                            child: Text('Weight',
+                              textAlign: TextAlign.right,
+                              style: TextStyle(
+                                height: 1.5,
+                                color: gWhiteColor,
+                                fontSize: 11.sp,
+                                fontFamily: "GothamBold",
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                      rows: showDataRow()
+                  ),
                 ),
               ],
             ),
@@ -304,124 +312,14 @@ class _CookKitTrackingState extends State<CookKitTracking> {
     );
   }
 
-  buildMealPlan() {
-    return Container(
-      width: double.maxFinite,
-      margin: EdgeInsets.symmetric(horizontal: 2.w, vertical: 2.h),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.3),
-            blurRadius: 20,
-            offset: const Offset(2, 10),
-          ),
-        ],
-      ),
-      child: Stack(
-        children: [
-          Container(
-            height: 5.h,
-            decoration: const BoxDecoration(
-              borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(8), topRight: Radius.circular(8)),
-              gradient: LinearGradient(colors: [
-                Color(0xffE06666),
-                Color(0xff93C47D),
-                Color(0xffFFD966),
-              ], begin: Alignment.topLeft, end: Alignment.topRight),
-            ),
-            // child: Row(
-            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //   children: [
-            //     Container(
-            //       margin: EdgeInsets.only(left:10),
-            //       child: Text(
-            //         'Time',
-            //         style: TextStyle(
-            //           color: gWhiteColor,
-            //           fontSize: 11.sp,
-            //           fontFamily: "GothamMedium",
-            //         ),
-            //       ),
-            //     ),
-            //     Text(
-            //       'Meal/Yoga',
-            //       style: TextStyle(
-            //         color: gWhiteColor,
-            //         fontSize: 11.sp,
-            //         fontFamily: "GothamMedium",
-            //       ),
-            //     ),
-            //     Container(
-            //       margin: EdgeInsets.only(right:10),
-            //       child: Text(
-            //         'Status',
-            //         style: TextStyle(
-            //           color: gWhiteColor,
-            //           fontSize: 11.sp,
-            //           fontFamily: "GothamMedium",
-            //         ),
-            //       ),
-            //     ),
-            //   ],
-            // ),
-          ),
-          DataTable(
-            headingTextStyle: TextStyle(
-              color: gWhiteColor,
-              fontSize: 5.sp,
-              fontFamily: "GothamMedium",
-            ),
-            headingRowHeight: 5.h,
-            horizontalMargin: 2.w,
-            // columnSpacing: 60,
-            dataRowHeight: 6.h,
-            // headingRowColor: MaterialStateProperty.all(const Color(0xffE06666)),
-            columns:  <DataColumn>[
-              DataColumn(
-                label: Text(' Time',
-                  style: TextStyle(
-                    color: gWhiteColor,
-                    fontSize: 11.sp,
-                    fontFamily: "GothamMedium",
-                  ),
-                ),
-              ),
-              DataColumn(
-                label: Text('Meal/Yoga',
-                  style: TextStyle(
-                    color: gWhiteColor,
-                    fontSize: 11.sp,
-                    fontFamily: "GothamMedium",
-                  ),
-                ),
-              ),
-              DataColumn(
-                label: Text('   Status',
-                  style: TextStyle(
-                    color: gWhiteColor,
-                    fontSize: 11.sp,
-                    fontFamily: "GothamMedium",
-                  ),
-                ),
-              ),
-            ],
-            rows: showDataRow(),
-          ),
-        ],
-      ),
-    );
-  }
 
   showDataRow(){
-    return shoppingData.map(
+    return shoppingData!.map(
             (s) => DataRow(
               cells: [
                 DataCell(
                   Text(
-                    s["title"].toString(),
+                    s.mealItem!.name.toString(),
                     style: TextStyle(
                       height: 1.5,
                       color: gTextColor,
@@ -432,7 +330,7 @@ class _CookKitTrackingState extends State<CookKitTracking> {
                 ),
                 DataCell(
                   Text(
-                    " ${s["weight"].toString()}",
+                    " ${s.itemWeight}" ?? '',
                     maxLines: 3,
                     textAlign: TextAlign.start,
                     overflow: TextOverflow.ellipsis,
@@ -528,6 +426,13 @@ class _CookKitTrackingState extends State<CookKitTracking> {
     final result = await ShipTrackService(repository: repository).getShoppingDetailsListService();
     print("getShoppingList: $result");
     print(result.runtimeType);
+    if(result.runtimeType == GetShoppingListModel){
+      print("meal plan");
+      GetShoppingListModel model = result as GetShoppingListModel;
+
+      shoppingData = model.data!.map((e) => e).toList();
+      print('shopping list: $shoppingData');
+    }
   }
 
   getStepper(){

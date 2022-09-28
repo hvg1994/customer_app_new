@@ -12,6 +12,7 @@ import 'package:gwc_customer/model/program_model/proceed_model/get_proceed_model
 import 'package:gwc_customer/model/program_model/proceed_model/send_proceed_program_model.dart';
 import 'package:gwc_customer/model/program_model/program_days_model/program_day_model.dart';
 import 'package:gwc_customer/model/ship_track_model/shiprocket_auth_model/shiprocket_auth_model.dart';
+import 'package:gwc_customer/model/ship_track_model/shopping_model/get_shopping_model.dart';
 import 'package:http/http.dart' as http;
 import '../model/consultation_model/appointment_booking/appointment_book_model.dart';
 import '../model/consultation_model/appointment_slot_model.dart';
@@ -974,27 +975,33 @@ final _prefs = AppConfig().preferences;
   }
 
   Future shoppingDetailsListApi() async {
-    final String path = '$shippingApiUrl';
+    final String path = shoppingListApiUrl;
     dynamic result;
 
     try{
       final response = await httpClient.get(
         Uri.parse(path),
-        headers: header,
+        headers: {
+          // "Authorization": "Bearer ${AppConfig().bearerToken}",
+          "Authorization": getHeaderToken(),
+        },
       ).timeout(const Duration(seconds: 45));
 
       print('shoppingDetailsListApi Response header: $path');
       print('shoppingDetailsListApi Response status: ${response.statusCode}');
       print('shoppingDetailsListApi Response body: ${response.body}');
 
-      if (response.statusCode != 200) {
-        result = ErrorModel(
-            status: response.statusCode.toString(),
-            message: "Unauthenticated"
-        );
-      } else {
+      if (response.statusCode == 200) {
         final res = jsonDecode(response.body);
-        result = ShippingTrackModel.fromJson(res);
+        if(res['status'] == 200){
+          result = GetShoppingListModel.fromJson(res);
+        }
+        else{
+          result = ErrorModel.fromJson(jsonDecode(response.body));
+        }
+      } else {
+        print('proceedDayProgramList error: ${response.reasonPhrase}');
+        result = ErrorModel.fromJson(jsonDecode(response.body));
       }
     }
     catch(e){
