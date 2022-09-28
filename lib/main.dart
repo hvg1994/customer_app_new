@@ -40,7 +40,9 @@ void main() async {
   runApp(const MyApp());
 }
 
-// void main() {
+// void main() async{
+//   WidgetsFlutterBinding.ensureInitialized();
+//   AppConfig().preferences = await SharedPreferences.getInstance();
 //   SystemChrome.setSystemUIOverlayStyle(
 //     const SystemUiOverlayStyle(statusBarColor: Colors.transparent),
 //   );
@@ -67,6 +69,9 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+
+  final _pref = AppConfig().preferences;
+
   getDeviceId() async{
     final _pref = AppConfig().preferences;
     await AppConfig().getDeviceId().then((id) {
@@ -82,6 +87,7 @@ class _MyAppState extends State<MyApp> {
     // TODO: implement initState
     super.initState();
     getDeviceId();
+    storeLastLogin();
   }
   @override
   Widget build(BuildContext context) {
@@ -102,5 +108,25 @@ class _MyAppState extends State<MyApp> {
             home: const SplashScreen()),
       );
     });
+  }
+
+  void storeLastLogin() {
+    if(_pref!.getInt('last_login') == null){
+      _pref!.setInt('last_login', DateTime.now().millisecondsSinceEpoch);
+    }
+    else{
+      int date = _pref!.getInt('last_login')!;
+      DateTime prev = DateTime.fromMillisecondsSinceEpoch(date);
+      print(prev);
+      print('difference time: ${calculateDifference(prev)}');
+      if(calculateDifference(prev) == -1){
+        _pref!.setBool(AppConfig.isLogin, false);
+      }
+    }
+  }
+
+  int calculateDifference(DateTime date) {
+    DateTime now = DateTime.now();
+    return DateTime(date.year, date.month, date.day).difference(DateTime(now.year, now.month, now.day)).inDays;
   }
 }

@@ -6,7 +6,7 @@ import 'package:gwc_customer/model/program_model/program_days_model/program_day_
 import 'package:gwc_customer/services/program_service/program_service.dart';
 import 'package:gwc_customer/widgets/open_alert_box.dart';
 import 'package:sizer/sizer.dart';
-
+import 'package:cached_network_image/cached_network_image.dart';
 import '../../repository/api_service.dart';
 import '../../repository/program_repository/program_repository.dart';
 import '../../utils/app_config.dart';
@@ -188,7 +188,7 @@ class _DaysProgramPlanState extends State<DaysProgramPlan> {
                       image: DecorationImage(
                           alignment: Alignment(-.2, 0),
                           opacity: (model[index].isCompleted.toString() == '1' || model[index].isCompleted.toString() == '2') ? 1.0 : 0.7,
-                          image: NetworkImage(model[index].image!),
+                          image: CachedNetworkImageProvider(model[index].image!,),
                           // image: AssetImage(dayPlansData[index]["image"]),
                           fit: BoxFit.fill),
                       border: Border.all(

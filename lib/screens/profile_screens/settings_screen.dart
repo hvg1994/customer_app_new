@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:gwc_customer/model/error_model.dart';
+import 'package:gwc_customer/model/profile_model/logout_model.dart';
 import 'package:gwc_customer/screens/evalution_form/personal_details_screen.dart';
 import 'package:gwc_customer/screens/profile_screens/faq_screen.dart';
 import 'package:gwc_customer/screens/profile_screens/terms_conditions_screen.dart';
@@ -7,19 +9,28 @@ import 'package:gwc_customer/screens/user_registration/existing_user.dart';
 import 'package:gwc_customer/widgets/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
-
+import 'package:http/http.dart' as http;
+import '../../repository/api_service.dart';
+import '../../repository/login_otp_repository.dart';
+import '../../services/login_otp_service.dart';
 import '../../splash_screen.dart';
 import '../../utils/app_config.dart';
 import '../../widgets/widgets.dart';
 import '../evalution_form/evaluation_form_screen.dart';
 import 'my_profile_details.dart';
 
-class SettingsScreen extends StatelessWidget {
+class SettingsScreen extends StatefulWidget {
   const SettingsScreen({Key? key}) : super(key: key);
 
   @override
+  State<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
+  final SharedPreferences _pref = AppConfig().preferences!;
+
+  @override
   Widget build(BuildContext context) {
-    final SharedPreferences _pref = AppConfig().preferences!;
     return SafeArea(
       child: Scaffold(
         body: SingleChildScrollView(
@@ -103,13 +114,14 @@ class SettingsScreen extends StatelessWidget {
                   color: Colors.grey,
                 ),
                 profileTile("assets/images/Group 2744.png", "Logout", () {
-                  _pref.setBool(AppConfig.isLogin, false);
-                  Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(
-                      builder: (context) => const ExistingUser(),
-                    ));
-                      // (route) => route.
-                  // );
+                  logOut();
+
+                  // _pref.setBool(AppConfig.isLogin, false);
+                  // _pref.remove(AppConfig().BEARER_TOKEN);
+                  // Navigator.of(context).pushReplacement(
+                  //     MaterialPageRoute(
+                  //       builder: (context) => const ExistingUser(),
+                  //     ));
                 }),
                 Container(
                   height: 1,
@@ -149,5 +161,28 @@ class SettingsScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  final LoginOtpRepository repository = LoginOtpRepository(
+    apiClient: ApiClient(
+      httpClient: http.Client(),
+    ),
+  );
+
+  void logOut() async{
+    final res = await LoginWithOtpService(repository: repository).logoutService();
+
+    if(res.runtimeType == LogoutModel){
+      _pref.setBool(AppConfig.isLogin, false);
+      _pref.remove(AppConfig().BEARER_TOKEN);
+      Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => const ExistingUser(),
+          ));
+    }
+    else{
+      ErrorModel model = res as ErrorModel;
+      AppConfig().showSnackbar(context, model.message!, isError:  true);
+    }
   }
 }

@@ -7,6 +7,7 @@ import 'package:gwc_customer/model/evaluation_from_models/get_evaluation_model/g
 import 'package:gwc_customer/model/login_model/login_otp_model.dart';
 import 'package:gwc_customer/model/login_model/resend_otp_model.dart';
 import 'package:gwc_customer/model/new_user_model/about_program_model/about_program_model.dart';
+import 'package:gwc_customer/model/profile_model/logout_model.dart';
 import 'package:gwc_customer/model/program_model/proceed_model/get_proceed_model.dart';
 import 'package:gwc_customer/model/program_model/proceed_model/send_proceed_program_model.dart';
 import 'package:gwc_customer/model/program_model/program_days_model/program_day_model.dart';
@@ -336,6 +337,43 @@ final _prefs = AppConfig().preferences;
     }
     return result;
   }
+
+  serverLogoutApi() async {
+    var path = logOutUrl;
+
+    dynamic result;
+
+    try{
+      final response = await httpClient.post(Uri.parse(path),
+        headers: {
+          // "Authorization": "Bearer ${AppConfig().bearerToken}",
+          "Authorization": getHeaderToken(),
+        },
+      ).timeout(Duration(seconds: 45));
+
+      print('serverLogoutApi Response header: $path');
+      print('serverLogoutApi Response status: ${response.statusCode}');
+      print('serverLogoutApi Response body: ${response.body}');
+      final res = jsonDecode(response.body);
+
+      if(response.statusCode == 200){
+        if(res['status'] == 200){
+          result = LogoutModel.fromJson(res);
+        }
+        else{
+          result = ErrorModel.fromJson(res);
+        }
+      }
+      else{
+        result = ErrorModel.fromJson(res);
+      }
+    }
+    catch(e){
+      result = ErrorModel(status: "0", message: e.toString());
+    }
+    return result;
+  }
+
 
   serverGetOtpApi(String phone) async {
     String path = getOtpUrl;
@@ -700,8 +738,8 @@ final _prefs = AppConfig().preferences;
       final response = await httpClient.get(
         Uri.parse(path),
         headers: {
-          "Authorization": "Bearer ${AppConfig().bearerToken}",
-          // "Authorization": getHeaderToken(),
+          // "Authorization": "Bearer ${AppConfig().bearerToken}",
+          "Authorization": getHeaderToken(),
         },
       ).timeout(const Duration(seconds: 45));
 
@@ -934,6 +972,38 @@ final _prefs = AppConfig().preferences;
     }
     return result;
   }
+
+  Future shoppingDetailsListApi() async {
+    final String path = '$shippingApiUrl';
+    dynamic result;
+
+    try{
+      final response = await httpClient.get(
+        Uri.parse(path),
+        headers: header,
+      ).timeout(const Duration(seconds: 45));
+
+      print('shoppingDetailsListApi Response header: $path');
+      print('shoppingDetailsListApi Response status: ${response.statusCode}');
+      print('shoppingDetailsListApi Response body: ${response.body}');
+
+      if (response.statusCode != 200) {
+        result = ErrorModel(
+            status: response.statusCode.toString(),
+            message: "Unauthenticated"
+        );
+      } else {
+        final res = jsonDecode(response.body);
+        result = ShippingTrackModel.fromJson(res);
+      }
+    }
+    catch(e){
+      result = ErrorModel(status: "0", message: e.toString());
+    }
+
+    return result;
+  }
+
 
 
 

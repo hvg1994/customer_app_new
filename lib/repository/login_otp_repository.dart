@@ -12,4 +12,8 @@ class LoginOtpRepository{
   Future getOtpRepo(String phone) async{
     return await apiClient.serverGetOtpApi(phone);
   }
+
+  Future logoutRepo() async{
+    return await apiClient.serverLogoutApi();
+  }
 }

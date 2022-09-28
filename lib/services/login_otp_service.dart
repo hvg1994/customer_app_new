@@ -13,4 +13,8 @@ class LoginWithOtpService extends ChangeNotifier{
   Future getOtpService(String phone) async{
     return await repository.getOtpRepo(phone);
   }
+
+  Future logoutService() async{
+    return await repository.logoutRepo();
+  }
 }

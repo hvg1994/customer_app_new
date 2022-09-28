@@ -5,6 +5,7 @@ import 'package:gwc_customer/model/error_model.dart';
 import 'package:gwc_customer/repository/dashboard_repo/gut_repository/dashboard_repository.dart';
 import 'package:gwc_customer/screens/appointment_screens/consultation_screens/consultation_rejected.dart';
 import 'package:gwc_customer/screens/appointment_screens/consultation_screens/upload_files.dart';
+import 'package:gwc_customer/screens/gut_list_screens/meal_popup.dart';
 import 'package:gwc_customer/screens/post_program_screens/post_program_screen.dart';
 import 'package:gwc_customer/screens/program_plans/program_plan_screen.dart';
 import 'package:gwc_customer/services/dashboard_service/gut_service/dashboard_data_service.dart';
@@ -253,6 +254,14 @@ class _GutListState extends State<GutList> {
                           }
                         }
                         else if (programsData.title == "Shipping") {
+                          // Navigator.of(context).push(
+                          //   PageRouteBuilder(
+                          //     opaque: false, // set to false
+                          //     pageBuilder: (_, __, ___) => MealPopup(yesButton: () {
+                          //       Navigator.pop(context);
+                          //     }),
+                          //   ),
+                          // );
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) => const CookKitTracking(),

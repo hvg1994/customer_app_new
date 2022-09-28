@@ -12,4 +12,8 @@ class ShipTrackService{
   Future getUserProfileService(String awbNumber) async{
     return await repository.getTrackingDetailsRepo(awbNumber);
   }
+
+  Future getShoppingDetailsListService() async{
+    return await repository.getShoppingDetailsListRepo();
+  }
 }

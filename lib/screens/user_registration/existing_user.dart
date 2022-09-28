@@ -230,10 +230,17 @@ class _ExistingUserState extends State<ExistingUser> {
                             color: gMainColor,
                           ),
                         )
-                            : Icon(
-                              Icons.keyboard_arrow_right,
-                              color: gMainColor,
-                              size: 22,
+                            : GestureDetector(
+                          onTap:(otpMessage.toLowerCase().contains('otp sent')) ? null : (){
+                            if(isPhone(phoneController.text) && _phoneFocus.hasFocus){
+                              getOtp(phoneController.text);
+                            }
+                          },
+                              child: Icon(
+                                (otpMessage.toLowerCase().contains('otp sent')) ? Icons.check_circle_outline : Icons.keyboard_arrow_right,
+                                color: gMainColor,
+                                size: 22,
+                              ),
                             ),
                         hintText: "MobileNumber",
                         hintStyle: TextStyle(
@@ -354,25 +361,20 @@ class _ExistingUserState extends State<ExistingUser> {
                   padding:
                       EdgeInsets.symmetric(vertical: 1.h, horizontal: 10.w),
                   decoration: BoxDecoration(
-                    color: (!isPhone(phoneController.value.text) ||
-                            !RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{6,20}$')
-                                .hasMatch(otpController.value.text))
+                    color: (phoneController.text.isEmpty || otpController.text.isEmpty)
                         ? gMainColor
                         : gPrimaryColor,
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(color: gMainColor, width: 1),
                   ),
                   child: (showLoginProgress)
-                      ? buildThreeBounceIndicator(color: gPrimaryColor)
+                      ? buildThreeBounceIndicator(color: gMainColor)
                       : Center(
                         child: Text(
                     'LOGIN',
                     style: TextStyle(
                         fontFamily: "GothamRoundedBold_21016",
-                        color: (!RegExp(r'^(?:[+0]9)?[0-9]{10}$')
-                                    .hasMatch(phoneController.value.text) ||
-                                !RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{6,20}$')
-                                    .hasMatch(otpController.value.text))
+                        color: (phoneController.text.isEmpty || otpController.text.isEmpty)
                             ? gPrimaryColor
                             : gMainColor,
                         fontSize: 10.sp,
@@ -505,7 +507,7 @@ class _ExistingUserState extends State<ExistingUser> {
       setState(() {
         showLoginProgress = false;
       });
-      _pref.setBool(AppConfig.isLogin, true);
+      _pref.setBool(AppConfig.isLogin, false);
 
       ErrorModel response = result as ErrorModel;
       AppConfig().showSnackbar(context, response.message!, isError: true);

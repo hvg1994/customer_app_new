@@ -16,6 +16,8 @@ var shippingApiUrl = "${AppConfig().shipRocket_AWB_URL}/courier/track/awb";
 
 var loginWithOtpUrl = "${AppConfig().BASE_URL}/api/otp_login";
 
+var logOutUrl = "${AppConfig().BASE_URL}/api/logout";
+
 var getOtpUrl = "${AppConfig().BASE_URL}/api/sendOTP";
 
 var getAppointmentSlotsListUrl = "${AppConfig().BASE_URL}/api/getData/slots/";

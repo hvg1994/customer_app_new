@@ -86,7 +86,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
     commentController.addListener(() {
       setState(() {});
     });
-    proceedToDay = _pref!.getInt(AppConfig.STORE_LENGTH).toString();
+    proceedToDay = (_pref!.getInt(AppConfig.STORE_LENGTH).toString() == widget.day) ? _pref!.getInt(AppConfig.STORE_LENGTH).toString() : (int.parse(widget.day) + 1).toString();
   }
 
 
@@ -208,6 +208,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
         isEnabled = !isEnabled;
       });
     }
+    // return !isEnabled ? true: false;
     return false;
   }
 
@@ -239,55 +240,59 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
           child: (isLoading) ? Center(child: buildCircularIndicator(),) :
           SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
-            child: (mealPlanData1 != null) ? Column(
+            child: (mealPlanData1 != null)
+                ? Column(
               children: [
                 buildMealPlan(),
-                Container(
-                  height: 15.h,
-                  margin:
-                  EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.h),
-                  padding: EdgeInsets.symmetric(horizontal: 3.w),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(5),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.3),
-                        blurRadius: 20,
-                        offset: const Offset(2, 10),
-                      ),
-                    ],
-                  ),
-                  child: TextFormField(
-                    controller: commentController,
-                    cursorColor: gPrimaryColor,
-                    style: TextStyle(
-                        fontFamily: "GothamBook",
-                        color: gTextColor,
-                        fontSize: 11.sp),
-                    decoration: InputDecoration(
-                      suffixIcon: commentController.text.isEmpty
-                          ? Container(width: 0)
-                          : InkWell(
-                        onTap: () {
-                          commentController.clear();
-                        },
-                        child: const Icon(
-                          Icons.close,
+                Visibility(
+                  visible: statusList.isNotEmpty && statusList.values.any((element) => element.toString().contains('UnFollowed')),
+                  child: Container(
+                    height: 15.h,
+                    margin:
+                    EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.h),
+                    padding: EdgeInsets.symmetric(horizontal: 3.w),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(5),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.3),
+                          blurRadius: 20,
+                          offset: const Offset(2, 10),
+                        ),
+                      ],
+                    ),
+                    child: TextFormField(
+                      controller: commentController,
+                      cursorColor: gPrimaryColor,
+                      style: TextStyle(
+                          fontFamily: "GothamBook",
                           color: gTextColor,
+                          fontSize: 11.sp),
+                      decoration: InputDecoration(
+                        suffixIcon: commentController.text.isEmpty
+                            ? Container(width: 0)
+                            : InkWell(
+                          onTap: () {
+                            commentController.clear();
+                          },
+                          child: const Icon(
+                            Icons.close,
+                            color: gTextColor,
+                          ),
+                        ),
+                        hintText: "Comments",
+                        border: InputBorder.none,
+                        hintStyle: TextStyle(
+                          fontFamily: "GothamBook",
+                          color: gTextColor,
+                          fontSize: 9.sp,
                         ),
                       ),
-                      hintText: "Comments",
-                      border: InputBorder.none,
-                      hintStyle: TextStyle(
-                        fontFamily: "GothamBook",
-                        color: gTextColor,
-                        fontSize: 9.sp,
-                      ),
+                      textInputAction: TextInputAction.next,
+                      textAlign: TextAlign.start,
+                      keyboardType: TextInputType.emailAddress,
                     ),
-                    textInputAction: TextInputAction.next,
-                    textAlign: TextAlign.start,
-                    keyboardType: TextInputType.emailAddress,
                   ),
                 ),
                 Center(
@@ -318,7 +323,8 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                   ),
                 ),
               ],
-            ) : SizedBox.shrink(),
+            )
+                : SizedBox.shrink(),
           ),
         ),
       ],
