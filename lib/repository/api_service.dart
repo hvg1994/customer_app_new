@@ -13,6 +13,7 @@ import 'package:gwc_customer/model/program_model/proceed_model/send_proceed_prog
 import 'package:gwc_customer/model/program_model/program_days_model/program_day_model.dart';
 import 'package:gwc_customer/model/ship_track_model/shiprocket_auth_model/shiprocket_auth_model.dart';
 import 'package:gwc_customer/model/ship_track_model/shopping_model/get_shopping_model.dart';
+import 'package:gwc_customer/model/ship_track_model/sipping_approve_model.dart';
 import 'package:http/http.dart' as http;
 import '../model/consultation_model/appointment_booking/appointment_book_model.dart';
 import '../model/consultation_model/appointment_slot_model.dart';
@@ -716,11 +717,13 @@ final _prefs = AppConfig().preferences;
           result = ErrorModel.fromJson(json);
         }
         else{
-          if(json['data'] == 'evaluation_done' || json['data'] == 'pending' || json['data'] == 'consultation_accepted' || json['data'] == 'consultation_rejected' || json['data'] == 'consultation_waiting' || json['data'] == 'report_upload'){
-            result = GutDataModel.fromJson(json);
-          }
-          else if(json['data'] == 'appointment_booked'){
+          if(json['data'] == 'appointment_booked'){
             result = GetAppointmentDetailsModel.fromJson(json);
+          }
+          else{
+            // if(json['data'] == 'evaluation_done' || json['data'] == 'pending' || json['data'] == 'consultation_accepted' || json['data'] == 'consultation_rejected' || json['data'] == 'consultation_waiting' || json['data'] == 'report_upload'){
+              result = GutDataModel.fromJson(json);
+            // }
           }
         }
       }
@@ -1011,7 +1014,47 @@ final _prefs = AppConfig().preferences;
     return result;
   }
 
+  Future shippingApproveApi(String approveStatus) async {
+    final String path = shoppingApproveApiUrl;
+    dynamic result;
 
+    Map bodyParam = {
+      'status': approveStatus
+    };
+
+    try{
+      final response = await httpClient.post(
+        Uri.parse(path),
+        headers: {
+          // "Authorization": "Bearer ${AppConfig().bearerToken}",
+          "Authorization": getHeaderToken(),
+        },
+        body: bodyParam
+      ).timeout(const Duration(seconds: 45));
+
+      print('shippingApproveApi Response header: $path');
+      print('shippingApproveApi Response status: ${response.statusCode}');
+      print('shippingApproveApi Response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final res = jsonDecode(response.body);
+        if(res['status'] == 200){
+          result = ShippingApproveModel.fromJson(res);
+        }
+        else{
+          result = ErrorModel.fromJson(jsonDecode(response.body));
+        }
+      } else {
+        print('shippingApproveApi error: ${response.reasonPhrase}');
+        result = ErrorModel.fromJson(jsonDecode(response.body));
+      }
+    }
+    catch(e){
+      result = ErrorModel(status: "0", message: e.toString());
+    }
+
+    return result;
+  }
 
 
   void storeShipRocketToken(ShipRocketTokenModel result) {

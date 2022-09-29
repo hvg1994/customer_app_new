@@ -16,6 +16,9 @@ var shippingApiUrl = "${AppConfig().shipRocket_AWB_URL}/courier/track/awb";
 
 var shoppingListApiUrl = "${AppConfig().BASE_URL}/api/getData/get_shopping_list";
 
+var shoppingApproveApiUrl = "${AppConfig().BASE_URL}/api/submitForm/update_shipping_approval";
+
+
 var loginWithOtpUrl = "${AppConfig().BASE_URL}/api/otp_login";
 
 var logOutUrl = "${AppConfig().BASE_URL}/api/logout";

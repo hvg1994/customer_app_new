@@ -15,6 +15,7 @@ import 'package:gwc_customer/widgets/constants.dart';
 import 'package:gwc_customer/widgets/widgets.dart';
 import 'package:jwt_decode/jwt_decode.dart';
 import 'package:sizer/sizer.dart';
+import '../../model/ship_track_model/sipping_approve_model.dart';
 import '../../repository/api_service.dart';
 import '../../repository/shipping_repository/ship_track_repo.dart';
 import '../../utils/app_config.dart';
@@ -39,6 +40,7 @@ class _GutListState extends State<GutList> {
   final _pref = AppConfig().preferences;
   String isSelected = "Consultation";
 
+  bool isShown = false;
 
   final Duration _duration = const Duration(milliseconds: 500);
 
@@ -78,7 +80,6 @@ class _GutListState extends State<GutList> {
 
   }
 
-
   // _showSingleAnimationDialog(BuildContext context) {
   //   BrandLogoLoading.balance(
   //     context: context,
@@ -103,6 +104,7 @@ class _GutListState extends State<GutList> {
     else if(_getData.runtimeType == GutDataModel){
       _gutDataModel = _getData as GutDataModel;
       consultationStage = _gutDataModel!.data;
+      abc();
     }
     else if(_getData.runtimeType == GetAppointmentDetailsModel)
     {
@@ -132,6 +134,13 @@ class _GutListState extends State<GutList> {
   }
 
 
+  @override
+  void setState(VoidCallback fn) {
+    // TODO: implement setState
+    if(mounted){
+      super.setState(fn);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -162,11 +171,52 @@ class _GutListState extends State<GutList> {
                       ProgramsData(s['title']!, s['image']!, s['isCompleted']!), programStage.indexWhere((element) => element.containsValue(s['title']!)))).toList(),
                 ),
               ),
+
             ],
           ),
         ),
       ),
     );
+  }
+
+  abc(){
+    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+        //shipping_approved  shipping_packed
+        if(consultationStage == 'shipping_packed'){
+          if(!isShown){
+            setState(() {
+              isShown = true;
+            });
+            Navigator.of(context).push(
+              PageRouteBuilder(
+                opaque: false, // set to false
+                pageBuilder: (_, __, ___) => MealPopup(
+                  yesButton: () {
+                    sendApproveStatus('yes');
+                    setState(() {
+                      isShown = false;
+                    });
+                  },
+                  noButton: () {
+                    sendApproveStatus('no');
+                    setState(() {
+                      isShown = false;
+                    });
+                  },
+                ),
+              ),
+            ).then((value) {
+              if(value == null){
+                setState(() {
+                  isShown = false;
+                });
+                sendApproveStatus('no', fromNull: true);
+                print("pop: $value");
+              }
+            });
+          }
+        }
+    });
   }
 
   void changedIndex(String index) {
@@ -296,6 +346,22 @@ class _GutListState extends State<GutList> {
           )
       ),
     );
+  }
+
+  sendApproveStatus(String status, {bool fromNull = false}) async{
+    final res = await ShipTrackService(repository: shipTrackRepository).sendSippingApproveStatusService(status);
+
+    if(res.runtimeType == ShippingApproveModel){
+      ShippingApproveModel model = res as ShippingApproveModel;
+      print('success: ${model.message}');
+      AppConfig().showSnackbar(context, model.message!);
+    }
+    else{
+      ErrorModel model = res as ErrorModel;
+      print('error: ${model.message}');
+      AppConfig().showSnackbar(context, model.message!);
+    }
+    if(!fromNull) Navigator.pop(context);
   }
 
   final GutDataRepository repository = GutDataRepository(

@@ -111,11 +111,11 @@ class _MyAppState extends State<MyApp> {
   }
 
   void storeLastLogin() {
-    if(_pref!.getInt('last_login') == null){
-      _pref!.setInt('last_login', DateTime.now().millisecondsSinceEpoch);
+    if(_pref!.getInt(AppConfig.last_login) == null){
+      _pref!.setInt(AppConfig.last_login, DateTime.now().millisecondsSinceEpoch);
     }
     else{
-      int date = _pref!.getInt('last_login')!;
+      int date = _pref!.getInt(AppConfig.last_login)!;
       DateTime prev = DateTime.fromMillisecondsSinceEpoch(date);
       print(prev);
       print('difference time: ${calculateDifference(prev)}');

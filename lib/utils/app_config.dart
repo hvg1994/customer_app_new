@@ -26,6 +26,8 @@ class AppConfig{
 
   static const String isLogin = "login";
   static const String EVAL_STATUS = 'eval_status';
+  static const String last_login = "last_login";
+
 
   /// this is for showing text in meal plan screen proceed to day text
   static const String STORE_LENGTH = 'ChildProgramDayModel_Length';

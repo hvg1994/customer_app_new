@@ -4,7 +4,8 @@ import 'package:sizer/sizer.dart';
 
 class MealPopup extends StatelessWidget {
   final VoidCallback yesButton;
-  const MealPopup({Key? key, required this.yesButton}) : super(key: key);
+  final VoidCallback noButton;
+  const MealPopup({Key? key, required this.yesButton, required this.noButton}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -40,9 +41,7 @@ class MealPopup extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  buildButton('No', () { 
-                    Navigator.pop(context);
-                  }),
+                  buildButton('No', noButton),
                   buildButton('Yes', yesButton, isFilledColor: true)
                 ],
               ),

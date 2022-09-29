@@ -64,6 +64,7 @@ dependencies:
   pip_view: ^0.9.7
   provider: any
   cached_network_image: any
+  csc_picker: ^0.2.6
 
 
 

@@ -1,11 +1,16 @@
 class EvaluationModelFormat1{
-  String name;
+  String fname;
+  String lname;
   String maritalStatus;
   String phone;
   String email;
   String age;
   String gender;
-  String address;
+  String address1;
+  String address2;
+  String state;
+  String city;
+  String country;
   String pincode;
   String weight;
   String height;
@@ -29,13 +34,19 @@ class EvaluationModelFormat1{
   String holistic;
 
   EvaluationModelFormat1(
-      {required this.name,
-      required this.maritalStatus,
+      {
+        required this.fname,
+        required this.lname,
+        required this.maritalStatus,
       required this.phone,
       required this.email,
       required this.age,
       required this.gender,
-      required this.address,
+      required this.address1,
+      required this.address2,
+      required this.state,
+      required this.city,
+      required this.country,
       required this.pincode,
       required this.weight,
       required this.height,
@@ -61,13 +72,18 @@ class EvaluationModelFormat1{
 
   Map<String, dynamic> toMap() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['name'] = this.name;
+    data['first_name'] = this.fname;
+    data['last_name'] = this.lname;
     data['marital_status'] = this.maritalStatus;
     data['phone'] = this.phone;
     data['email'] = this.email;
     data['age'] = this.age;
     data['gender'] = this.gender;
-    data['address'] = this.address;
+    data['address'] = this.address1;
+    data['address2'] = this.address2;
+    data['city'] = this.city;
+    data['state'] = this.state;
+    data['country'] = this.country;
     data['pincode'] = this.pincode;
     data['weight'] = this.weight;
     data['height'] = this.height;

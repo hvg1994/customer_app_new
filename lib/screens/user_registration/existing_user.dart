@@ -521,6 +521,7 @@ class _ExistingUserState extends State<ExistingUser> {
 
   void storeBearerToken(String token) async {
     _pref.setBool(AppConfig.isLogin, true);
+    _pref.setInt(AppConfig.last_login, DateTime.now().millisecondsSinceEpoch);
     await _pref.setString(AppConfig().BEARER_TOKEN, token);
   }
 }
