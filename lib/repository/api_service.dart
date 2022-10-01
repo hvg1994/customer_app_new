@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:gwc_customer/model/dashboard_model/get_appointment/get_appointment_after_appointed.dart';
+import 'package:gwc_customer/model/dashboard_model/get_dashboard_data_model.dart';
 import 'package:gwc_customer/model/dashboard_model/gut_model/gut_data_model.dart';
 import 'package:gwc_customer/model/enquiry_status_model.dart';
 import 'package:gwc_customer/model/evaluation_from_models/get_evaluation_model/get_evaluationdata_model.dart';
@@ -19,7 +20,9 @@ import '../model/consultation_model/appointment_booking/appointment_book_model.d
 import '../model/consultation_model/appointment_slot_model.dart';
 import '../model/dashboard_model/report_upload_model/report_list_model.dart';
 import '../model/dashboard_model/report_upload_model/report_upload_model.dart';
+import '../model/dashboard_model/shipping_approved/ship_approved_model.dart';
 import '../model/error_model.dart';
+import '../model/evaluation_from_models/get_country_details_model.dart';
 import '../model/new_user_model/choose_your_problem/choose_your_problem_model.dart';
 import '../model/new_user_model/choose_your_problem/submit_problem_response.dart';
 import '../model/new_user_model/register/register_model.dart';
@@ -717,14 +720,18 @@ final _prefs = AppConfig().preferences;
           result = ErrorModel.fromJson(json);
         }
         else{
-          if(json['data'] == 'appointment_booked'){
-            result = GetAppointmentDetailsModel.fromJson(json);
-          }
-          else{
-            // if(json['data'] == 'evaluation_done' || json['data'] == 'pending' || json['data'] == 'consultation_accepted' || json['data'] == 'consultation_rejected' || json['data'] == 'consultation_waiting' || json['data'] == 'report_upload'){
-              result = GutDataModel.fromJson(json);
-            // }
-          }
+          result = GetDashboardDataModel.fromJson(json);
+          // if(json['data'] == 'appointment_booked'){
+          //   result = GetAppointmentDetailsModel.fromJson(json);
+          // }
+          // else if(json['data'] == 'shipping_approved'){
+          //   result = ShippingApprovedModel.fromJson(json);
+          // }
+          // else{
+          //   // if(json['data'] == 'evaluation_done' || json['data'] == 'pending' || json['data'] == 'consultation_accepted' || json['data'] == 'consultation_rejected' || json['data'] == 'consultation_waiting' || json['data'] == 'report_upload'){
+          //     result = GutDataModel.fromJson(json);
+          //   // }
+          // }
         }
       }
     }
@@ -1046,6 +1053,48 @@ final _prefs = AppConfig().preferences;
         }
       } else {
         print('shippingApproveApi error: ${response.reasonPhrase}');
+        result = ErrorModel.fromJson(jsonDecode(response.body));
+      }
+    }
+    catch(e){
+      result = ErrorModel(status: "0", message: e.toString());
+    }
+
+    return result;
+  }
+  //https://api.worldpostallocations.com/?postalcode=570008&countrycode=IN
+
+  getCountryDetails(String pincode, String countryCode) async
+  {
+    final String url = "http://www.postalpincode.in/api/pincode/";
+    final String path = url + pincode;
+    // final String url = "https://api.worldpostallocations.com/";
+    // final String path = url + "?postalcode=$pincode&countrycode=$countryCode";
+    dynamic result;
+
+    try{
+      final response = await httpClient.get(
+        Uri.parse(path),
+        headers: {
+          // "Authorization": "Bearer ${AppConfig().bearerToken}",
+          "Authorization": getHeaderToken(),
+        },
+      ).timeout(const Duration(seconds: 45));
+
+      print('getCountryDetails Response header: $path');
+      print('getCountryDetails Response status: ${response.statusCode}');
+      print('getCountryDetails Response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final res = jsonDecode(response.body);
+        if(res['Status'].toString().toLowerCase() == "success"){
+          result = GetCountryDetailsModel.fromJson(res);
+        }
+        else{
+          result = ErrorModel(status: "0", message: "No Data");
+        }
+      } else {
+        print('getCountryDetails error: ${response.reasonPhrase}');
         result = ErrorModel.fromJson(jsonDecode(response.body));
       }
     }

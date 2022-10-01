@@ -203,7 +203,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
     final _ori = MediaQuery.of(context).orientation;
     bool isPortrait = _ori == Orientation.portrait;
     if(!isPortrait){
-      AutoOrientation.portraitUpMode();
+      AutoOrientation.portraitAutoMode();
       setState(() {
         isEnabled = !isEnabled;
       });

@@ -2,22 +2,18 @@ var programStage = [
   {
     "title": "Consultation",
     "image": "assets/images/Image 2.png",
-    "isCompleted": "false"
   },
   {
     "title": "Shipping",
     "image": "assets/images/Image 3.png",
-    "isCompleted": "false"
   },
   {
     "title": "Programs",
     "image": "assets/images/Path 12723.png",
-    "isCompleted": "true"
   },
   {
     "title": "Post Program",
     "image": "assets/images/videocalling-with-therapist_23-2148512091.png",
-    "isCompleted": "false"
   },
 ];
 

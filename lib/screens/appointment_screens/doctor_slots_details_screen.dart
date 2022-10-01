@@ -18,10 +18,13 @@ import 'consultation_screens/consultation_success.dart';
 import 'doctor_calender_time_screen.dart';
 
 class DoctorSlotsDetailsScreen extends StatefulWidget {
+  /// this will be called from consultation date time screen
   final AppointmentBookingModel? data;
   final String bookingDate;
   final String bookingTime;
+  /// this parameter will be called from gutlist screen
   final bool isFromDashboard;
+  /// this parameter will be called from gutlist screen
   final Map? dashboardValueMap;
   const DoctorSlotsDetailsScreen({
     Key? key,

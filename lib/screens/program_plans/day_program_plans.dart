@@ -187,7 +187,9 @@ class _DaysProgramPlanState extends State<DaysProgramPlan> {
                     borderRadius: BorderRadius.circular(8),
                       image: DecorationImage(
                           alignment: Alignment(-.2, 0),
-                          opacity: (model[index].isCompleted.toString() == '1' || model[index].isCompleted.toString() == '2') ? 1.0 : 0.7,
+                          opacity: (model[index].dayNumber.toString() == '1') ? 1.0 : 0.7,
+
+                          // opacity: (model[index].isCompleted.toString() == '1' || model[index].isCompleted.toString() == '2') ? 1.0 : 0.7,
                           image: CachedNetworkImageProvider(model[index].image!,),
                           // image: AssetImage(dayPlansData[index]["image"]),
                           fit: BoxFit.fill),

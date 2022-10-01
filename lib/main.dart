@@ -19,13 +19,14 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
 import 'package:get/get.dart';
-
 import 'repository/api_service.dart';
 import 'repository/enquiry_status_repository.dart';
 import 'services/vlc_service/check_state.dart';
 import 'utils/app_config.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
+import 'package:flutter_sim_country_code/flutter_sim_country_code.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -80,6 +81,13 @@ class _MyAppState extends State<MyApp> {
         _pref!.setString(AppConfig().deviceId, id);
       }
     });
+
+    // this is for getting the state and city name
+    // this was not using currently
+    String? n = await FlutterSimCountryCode.simCountryCode;
+    if(n!= null) _pref!.setString(AppConfig.countryCode, n);
+    // print("country_code:${n}");
+
   }
 
   @override

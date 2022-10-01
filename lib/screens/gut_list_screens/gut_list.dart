@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gwc_customer/model/dashboard_model/get_appointment/get_appointment_after_appointed.dart';
+import 'package:gwc_customer/model/dashboard_model/get_dashboard_data_model.dart';
 import 'package:gwc_customer/model/dashboard_model/gut_model/gut_data_model.dart';
 import 'package:gwc_customer/model/error_model.dart';
 import 'package:gwc_customer/repository/dashboard_repo/gut_repository/dashboard_repository.dart';
@@ -15,6 +16,7 @@ import 'package:gwc_customer/widgets/constants.dart';
 import 'package:gwc_customer/widgets/widgets.dart';
 import 'package:jwt_decode/jwt_decode.dart';
 import 'package:sizer/sizer.dart';
+import '../../model/dashboard_model/shipping_approved/ship_approved_model.dart';
 import '../../model/ship_track_model/sipping_approve_model.dart';
 import '../../repository/api_service.dart';
 import '../../repository/shipping_repository/ship_track_repo.dart';
@@ -50,12 +52,16 @@ class _GutListState extends State<GutList> {
 
   bool? isConsultationDone, isShippingDone, isProgramsDone, isPostProgramDone;
 
-  String? consultationStage;
+  String? consultationStage, shippingStage, programOptionStage, postProgramStage;
 
   /// this is used when data=appointment_booked status
-  GetAppointmentDetailsModel? model;
+  GetAppointmentDetailsModel? _getAppointmentDetailsModel;
 
-  GutDataModel? _gutDataModel;
+  /// ths is used when data = shipping_approved status
+  ShippingApprovedModel? _shippingApprovedModel;
+
+  /// for other status we use this one(except shipping_approved & appointment_booked)
+  GutDataModel? _gutDataModel, _gutShipDataModel;
 
   @override
   void initState() {
@@ -77,7 +83,6 @@ class _GutListState extends State<GutList> {
         getShipRocketToken();
       }
     }
-
   }
 
   // _showSingleAnimationDialog(BuildContext context) {
@@ -101,36 +106,67 @@ class _GutListState extends State<GutList> {
       ErrorModel model = _getData;
       print(model.message);
     }
-    else if(_getData.runtimeType == GutDataModel){
-      _gutDataModel = _getData as GutDataModel;
-      consultationStage = _gutDataModel!.data;
-      abc();
-    }
-    else if(_getData.runtimeType == GetAppointmentDetailsModel)
-    {
-      model = _getData;
+    else{
+      GetDashboardDataModel _getDashboardDataModel = _getData as GetDashboardDataModel;
 
-      ProgramStatus.values.forEach((element) {
-        if(model!.data == element.name){
-          consultationStage = element.name;
+      print("_getDashboardDataModel.app_consulation: ${_getDashboardDataModel.app_consulation}");
+      // checking for the consultation data if data = appointment_booked
+      setState(() {
+        if(_getDashboardDataModel.app_consulation != null){
+          _getAppointmentDetailsModel = _getDashboardDataModel.app_consulation;
+          consultationStage = _getAppointmentDetailsModel?.data ?? '';
+        }
+        else{
+          _gutDataModel = _getDashboardDataModel.normal_consultation;
+          consultationStage = _gutDataModel?.data ?? '';
+        }
+
+        if(_getDashboardDataModel.approved_shipping != null){
+          _shippingApprovedModel = _getDashboardDataModel.approved_shipping;
+          shippingStage = _shippingApprovedModel?.data ?? '';
+        }
+        else{
+          _gutShipDataModel = _getDashboardDataModel.normal_shipping;
+          shippingStage = _gutShipDataModel?.data ?? '';
+          abc();
         }
       });
-      // isConsultationDone = ProgramStatus.medical_report.name == model.data;
-      // isShippingDone = ProgramStatus.shipping.name == model.data;
-      // if(isShippingDone! && isShippingDone != null) isConsultationDone = true;
-      // isProgramsDone = ProgramStatus.programs.name == model.data;
-      // if(isProgramsDone! && isProgramsDone != null) {
-      //   isConsultationDone = true;
-      //   isShippingDone = true;
-      // }
-      // isPostProgramDone = ProgramStatus.post_program.name == model.data;
-      // if(isPostProgramDone! && isPostProgramDone != null) {
-      //   isConsultationDone = true;
-      //   isShippingDone = true;
-      //   isProgramsDone = true;
-      // }
-      // List l = [isConsultationDone, isShippingDone, isProgramsDone, isPostProgramDone];
     }
+    // else if(_getData.runtimeType == GutDataModel){
+    //   _gutDataModel = _getData as GutDataModel;
+    //   consultationStage = _gutDataModel!.data;
+    //   abc();
+    // }
+    // else if(_getData.runtimeType == GetAppointmentDetailsModel)
+    // {
+    //   model = _getData;
+    //
+    //   ProgramStatus.values.forEach((element) {
+    //     if(model!.data == element.name){
+    //       consultationStage = element.name;
+    //     }
+    //   });
+    //   // isConsultationDone = ProgramStatus.medical_report.name == model.data;
+    //   // isShippingDone = ProgramStatus.shipping.name == model.data;
+    //   // if(isShippingDone! && isShippingDone != null) isConsultationDone = true;
+    //   // isProgramsDone = ProgramStatus.programs.name == model.data;
+    //   // if(isProgramsDone! && isProgramsDone != null) {
+    //   //   isConsultationDone = true;
+    //   //   isShippingDone = true;
+    //   // }
+    //   // isPostProgramDone = ProgramStatus.post_program.name == model.data;
+    //   // if(isPostProgramDone! && isPostProgramDone != null) {
+    //   //   isConsultationDone = true;
+    //   //   isShippingDone = true;
+    //   //   isProgramsDone = true;
+    //   // }
+    //   // List l = [isConsultationDone, isShippingDone, isProgramsDone, isPostProgramDone];
+    // }
+    // else if(_getData.runtimeType == ShippingApprovedModel){
+    //   _shippingApprovedModel = _getData;
+    //
+    //   consultationStage = _shippingApprovedModel!.data;
+    // }
   }
 
 
@@ -168,7 +204,10 @@ class _GutListState extends State<GutList> {
                 child: ListViewEffect(
                   duration: _duration,
                   children: programStage.map((s) => _buildWidgetExample(
-                      ProgramsData(s['title']!, s['image']!, s['isCompleted']!), programStage.indexWhere((element) => element.containsValue(s['title']!)))).toList(),
+                      ProgramsData(s['title']!, s['image']!,
+                          isCompleted: getIsCompleted(s['title']!)
+                      ),
+                      programStage.indexWhere((element) => element.containsValue(s['title']!)))).toList(),
                 ),
               ),
 
@@ -182,7 +221,8 @@ class _GutListState extends State<GutList> {
   abc(){
     WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
         //shipping_approved  shipping_packed
-        if(consultationStage == 'shipping_packed'){
+      print("isShown: $isShown $shippingStage");
+        if(shippingStage == 'shipping_packed'){
           if(!isShown){
             setState(() {
               isShown = true;
@@ -228,7 +268,19 @@ class _GutListState extends State<GutList> {
   Widget _buildWidgetExample(ProgramsData programsData, int index) {
     return GestureDetector(
       onTap: () {
-        changedIndex(programsData.title);
+        // changedIndex(programsData.title);
+        if(index == 0){
+          changedIndex(programsData.title);
+        }
+        if(index == 1 && shippingStage != null){
+          changedIndex(programsData.title);
+        }
+        else if(index == 2 && shippingStage == 'shipping_approved'){
+          changedIndex(programsData.title);
+        }
+        else if(index == 3 && programOptionStage != null){
+          changedIndex(programsData.title);
+        }
       },
       child: Container(
           padding:
@@ -236,6 +288,7 @@ class _GutListState extends State<GutList> {
           margin: EdgeInsets.symmetric(vertical: 1.5.h),
           decoration: BoxDecoration(
             color: kWhiteColor,
+            // color: index == 0 ? kWhiteColor : (index == 1 && shippingStage != null) ? kWhiteColor : (index == 2 && shippingStage == 'shipping_approved') ? kWhiteColor : (index == 3 && programOptionStage != null) ? kWhiteColor : gGreyColor.withOpacity(0.2),
             borderRadius: BorderRadius.circular(20),
             border: Border.all(color: gMainColor.withOpacity(0.3), width: 1),
             boxShadow: (isSelected != programsData.title)
@@ -287,7 +340,7 @@ class _GutListState extends State<GutList> {
                     fontFamily: "GothamMedium",
                     color: (isSelected == programsData.title)
                         ? gMainColor
-                        : gsecondaryColor,
+                        : (programsData.isCompleted) ? gPrimaryColor : gsecondaryColor,
                     fontSize: 10.sp,
                   ),
                 ),
@@ -312,35 +365,55 @@ class _GutListState extends State<GutList> {
                           //     }),
                           //   ),
                           // );
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => const CookKitTracking(),
-                            ),
-                          );
-                        } else if (programsData.title == "Programs") {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => const ProgramPlanScreen(),
-                            ),
-                          );
+
+                          if(_shippingApprovedModel != null){
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => CookKitTracking(awb_number: _shippingApprovedModel?.value?.awbCode ?? '',currentStage: shippingStage!,),
+                              ),
+                            );
+                          }
+                          else{
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => CookKitTracking(currentStage: shippingStage ?? ''),
+                              ),
+                            );
+                          }
+                        }
+                        else if (programsData.title == "Programs") {
+                          if(shippingStage == "shipping_approved"){
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => const ProgramPlanScreen(),
+                              ),
+                            );
+                          }
+                          else{
+                            AppConfig().showSnackbar(context, "You can access when Shipping Approved");
+                          }
                         }
                         else if (programsData.title == "Post Program") {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => const PostProgramScreen(),
-                            ),
-                          );
+                          if(programOptionStage != null){
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => const PostProgramScreen(),
+                              ),
+                            );
+                          }
                         }
                       },
-                      // child: (programsData.isCompleted == 'true') ? Icon(Icons.check_circle_outline) :
-                      child: Image(
+                      child: (programsData.isCompleted) ? Icon(Icons.check_circle_outline) :
+                      Image(
                         height: 3.h,
                         image: const AssetImage(
                             "assets/images/noun-arrow-1018952.png"),
                       )
                     )
                   : Container(
+                margin: EdgeInsets.only(right: 6),
                       width: 2.w,
+                child: (programsData.isCompleted) ? Icon(Icons.check_circle_outline, color: gPrimaryColor,) : SizedBox(),
                     ),
             ],
           )
@@ -386,7 +459,8 @@ class _GutListState extends State<GutList> {
         goToScreen(DoctorCalenderTimeScreen());
         break;
       case 'appointment_booked':
-        goToScreen(DoctorSlotsDetailsScreen(bookingDate: model!.value!.date!, bookingTime: model!.value!.slotStartTime!, dashboardValueMap: model!.value!.toJson(),isFromDashboard: true,));
+        final model = _getAppointmentDetailsModel;
+        goToScreen(DoctorSlotsDetailsScreen(bookingDate: model!.value!.date!, bookingTime: model.value!.slotStartTime!, dashboardValueMap: model.value!.toJson(),isFromDashboard: true,));
         break;
       case 'consultation_accepted':
         goToScreen(const ConsultationSuccess());
@@ -398,6 +472,7 @@ class _GutListState extends State<GutList> {
         goToScreen(ConsultationRejected());
         break;
       case 'report_upload':
+        print(_gutDataModel!.toJson());
         print(_gutDataModel!.value);
         // goToScreen(DoctorCalenderTimeScreen(isReschedule: true,prevBookingTime: '23-09-2022', prevBookingDate: '10AM',));
         goToScreen(MedicalReportScreen(pdfLink: _gutDataModel!.value!,));
@@ -438,12 +513,35 @@ class _GutListState extends State<GutList> {
     final getToken = await _shipTrackService.getShipRocketTokenService(AppConfig().shipRocketEmail, AppConfig().shipRocketPassword);
     print(getToken);
   }
+
+  bool getIsCompleted(String name) {
+    bool status = false;
+
+    if(name == 'Consultation'){
+      status = consultationStage == 'report_upload';
+      if(consultationStage == 'report_upload') isSelected = 'Shipping';
+      // print("status of cons $status  ${shippingStage?.isNotEmpty}");
+    }
+    if(name == 'Shipping'){
+      status = shippingStage == 'shipping_approved';
+      if(shippingStage == 'shipping_approved') {isSelected = 'Programs';}
+    }
+    if(name == 'Programs'){
+      status = postProgramStage?.isNotEmpty ?? false;
+    }
+    // if(name == 'Shipping'){
+    //   status = programOptionStage?.isNotEmpty ?? false;
+    // }
+    return status;
+  }
 }
 
 class ProgramsData {
-  ProgramsData(this.title, this.image, this.isCompleted);
-
   String title;
   String image;
-  String isCompleted;
+  bool isCompleted;
+
+  ProgramsData(this.title, this.image, {this.isCompleted = false});
+
+
 }

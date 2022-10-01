@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:csc_picker/csc_picker.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -13,6 +12,7 @@ import '../../../utils/app_config.dart';
 import '../../model/country_model.dart';
 import '../../model/error_model.dart';
 import '../../model/evaluation_from_models/evaluation_model_format1.dart';
+import '../../model/evaluation_from_models/get_country_details_model.dart';
 import '../../model/evaluation_from_models/get_evaluation_model/get_evaluationdata_model.dart';
 import '../../repository/api_service.dart';
 import '../../utils/country_list.dart';
@@ -33,6 +33,7 @@ class PersonalDetailsScreen extends StatefulWidget {
 class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
   Future? _getEvaluationDataFuture;
 
+  final _pref = AppConfig().preferences;
 
 
   final formKey1 = GlobalKey<FormState>();
@@ -644,7 +645,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
               decoration: CommonDecoration.buildTextInputDecoration(
                   "Your answer", ageController),
               textInputAction: TextInputAction.next,
-              maxLength: 3,
+              maxLength: 2,
               textAlign: TextAlign.start,
               keyboardType: TextInputType.number,
             ),
@@ -760,6 +761,37 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
             SizedBox(
               height: 2.h,
             ),
+            buildLabelTextField('Pin Code'),
+            SizedBox(
+              height: 1.h,
+            ),
+            TextFormField(
+              controller: pinCodeController,
+              cursorColor: kPrimaryColor,
+              validator: (value) {
+                if (value!.isEmpty) {
+                  return 'Please enter your Pin Code';
+                } else if (value.length > 7) {
+                  return 'Please enter your valid Pin Code';
+                } else {
+                  return null;
+                }
+              },
+              onFieldSubmitted: (value){
+                String code = _pref?.getString(AppConfig.countryCode) ?? '';
+                if(code.isNotEmpty && code == 'IN'){
+                  fetchCountry(value, code);
+                }
+              },
+              decoration: CommonDecoration.buildTextInputDecoration(
+                  "Your answer", pinCodeController),
+              textInputAction: TextInputAction.next,
+              textAlign: TextAlign.start,
+              keyboardType: TextInputType.number,
+            ),
+            SizedBox(
+              height: 2.h,
+            ),
             buildLabelTextField('City'),
             SizedBox(
               height: 1.h,
@@ -833,31 +865,6 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
               keyboardType: TextInputType.streetAddress,
             ),
             SizedBox(
-              height: 2.h,
-            ),
-            buildLabelTextField('Pin Code'),
-            SizedBox(
-              height: 1.h,
-            ),
-            TextFormField(
-              controller: pinCodeController,
-              cursorColor: kPrimaryColor,
-              validator: (value) {
-                if (value!.isEmpty) {
-                  return 'Please enter your Pin Code';
-                } else if (value.length > 7) {
-                  return 'Please enter your valid Pin Code';
-                } else {
-                  return null;
-                }
-              },
-              decoration: CommonDecoration.buildTextInputDecoration(
-                  "Your answer", pinCodeController),
-              textInputAction: TextInputAction.next,
-              textAlign: TextAlign.start,
-              keyboardType: TextInputType.number,
-            ),
-            SizedBox(
               height: 5.h,
             ),
           ],
@@ -927,6 +934,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
             TextFormField(
               controller: weightController,
               cursorColor: kPrimaryColor,
+              maxLength: 3,
               validator: (value) {
                 if (value!.isEmpty) {
                   return 'Please enter your Weight';
@@ -4218,6 +4226,37 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
   bool isLoading = false;
 
   List<String> newDataList = [];
+
+
+  bool showLoading = false;
+
+  void fetchCountry(String pinCode, String countryCode) async{
+    Navigator.of(context).push(
+      PageRouteBuilder(
+        opaque: false, // set to false
+        pageBuilder: (_, __, ___) => buildCircularIndicator()
+      ),
+    );
+
+    final res = await EvaluationFormService(repository: repository).getCountryDetailsService(pinCode, countryCode);
+    print(res);
+    if(res.runtimeType == GetCountryDetailsModel){
+      GetCountryDetailsModel model = res as GetCountryDetailsModel;
+      if(model.postOffice!.isNotEmpty){
+        print(model.postOffice?.first.state);
+        setState(() {
+          stateController.text = model.postOffice?.first.state ?? '';
+          cityController.text = model.postOffice?.first.district ?? '';
+          countryController.text = model.postOffice?.first.country ?? '';
+        });
+      }
+    }
+    else{
+      ErrorModel model = res as ErrorModel;
+      print(model.message!);
+    }
+    Navigator.pop(context);
+  }
 
 
 }

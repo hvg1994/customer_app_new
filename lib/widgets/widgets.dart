@@ -38,6 +38,7 @@ class CommonDecoration {
         color: Colors.grey,
         fontSize: 10.sp,
       ),
+      counterText: "",
       border: const UnderlineInputBorder(
         borderSide: BorderSide(
             color: kPrimaryColor, width: 1.0, style: BorderStyle.solid),

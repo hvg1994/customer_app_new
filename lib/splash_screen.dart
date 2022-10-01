@@ -63,6 +63,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     deviceId = _pref.getString(AppConfig().deviceId);
+    print("token: ${_pref.getString(AppConfig().BEARER_TOKEN)}");
     getEnquiryStatus(deviceId!);
     super.initState();
   }

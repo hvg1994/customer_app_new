@@ -28,6 +28,10 @@ class AppConfig{
   static const String EVAL_STATUS = 'eval_status';
   static const String last_login = "last_login";
 
+  static const String countryCode = "COUNTRY_CODE";
+  static const String countryName = "COUNTRY_NAME";
+
+
 
   /// this is for showing text in meal plan screen proceed to day text
   static const String STORE_LENGTH = 'ChildProgramDayModel_Length';

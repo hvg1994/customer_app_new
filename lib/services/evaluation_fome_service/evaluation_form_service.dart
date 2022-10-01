@@ -13,6 +13,9 @@ class EvaluationFormService extends ChangeNotifier{
   Future getEvaluationDataService() async{
     return await repository.getEvaluationDataRepo();
   }
+  Future getCountryDetailsService(String pinCode, String countryCode) async{
+    return await repository.getCountryDetailsRepo(pinCode, countryCode);
+  }
 
 
 }
