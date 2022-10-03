@@ -39,6 +39,8 @@ var getDashboardDataUrl = "${AppConfig().BASE_URL}/api/getData/get_dashboard_dat
 
 var getUserProfileUrl = "${AppConfig().BASE_URL}/api/user";
 
+var updateUserProfileUrl = "${AppConfig().BASE_URL}/api/submitForm/update_user_profile";
+
 var termsConditionUrl = "${AppConfig().BASE_URL}/api/list/terms_and_conditions";
 
 var uploadReportUrl = "${AppConfig().BASE_URL}/api/submitForm/user_report";

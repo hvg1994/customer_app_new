@@ -63,6 +63,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
   final _key = GlobalKey<VlcPlayerWithControlsState>();
 
 
+  /// to check enable / disable
   bool isEnabled = false;
 
   String videoName = '';
@@ -204,9 +205,9 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
     bool isPortrait = _ori == Orientation.portrait;
     if(!isPortrait){
       AutoOrientation.portraitAutoMode();
-      setState(() {
-        isEnabled = !isEnabled;
-      });
+      // setState(() {
+      //   isEnabled = !isEnabled;
+      // });
     }
     // return !isEnabled ? true: false;
     return false;
@@ -338,7 +339,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
       pipWidget: isEnabled
           ? Consumer<CheckState>(
         builder: (_, model, __){
-          print("model.isChanged: ${model.isChanged}");
+          print("model.isChanged: ${model.isChanged} $isEnabled");
           return VlcPlayerWithControls(
             key: _key,
             controller: _controller!,

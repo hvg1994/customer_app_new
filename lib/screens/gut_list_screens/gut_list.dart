@@ -120,6 +120,9 @@ class _GutListState extends State<GutList> {
           _gutDataModel = _getDashboardDataModel.normal_consultation;
           consultationStage = _gutDataModel?.data ?? '';
         }
+        if(consultationStage != null && consultationStage == "report_upload"){
+          isSelected = "Shipping";
+        }
 
         if(_getDashboardDataModel.approved_shipping != null){
           _shippingApprovedModel = _getDashboardDataModel.approved_shipping;
@@ -129,6 +132,9 @@ class _GutListState extends State<GutList> {
           _gutShipDataModel = _getDashboardDataModel.normal_shipping;
           shippingStage = _gutShipDataModel?.data ?? '';
           abc();
+        }
+        if(shippingStage != null && shippingStage == "shipping_approved"){
+          isSelected = "Programs";
         }
       });
     }
@@ -519,12 +525,12 @@ class _GutListState extends State<GutList> {
 
     if(name == 'Consultation'){
       status = consultationStage == 'report_upload';
-      if(consultationStage == 'report_upload') isSelected = 'Shipping';
+      // if(consultationStage == 'report_upload') isSelected = 'Shipping';
       // print("status of cons $status  ${shippingStage?.isNotEmpty}");
     }
     if(name == 'Shipping'){
       status = shippingStage == 'shipping_approved';
-      if(shippingStage == 'shipping_approved') {isSelected = 'Programs';}
+      // if(shippingStage == 'shipping_approved') {isSelected = 'Programs';}
     }
     if(name == 'Programs'){
       status = postProgramStage?.isNotEmpty ?? false;

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:gwc_customer/model/profile_model/user_profile/send_user_model.dart';
 import 'package:gwc_customer/widgets/constants.dart';
 import 'package:sizer/sizer.dart';
 import 'package:http/http.dart' as http;
 import '../../model/error_model.dart';
 import '../../model/profile_model/user_profile/child_user_model.dart';
+import '../../model/profile_model/user_profile/update_user_model.dart';
 import '../../model/profile_model/user_profile/user_profile_model.dart';
 import '../../repository/api_service.dart';
 import '../../repository/profile_repository/get_user_profile_repo.dart';
@@ -21,7 +23,9 @@ class MyProfileDetails extends StatefulWidget {
 
 class _MyProfileDetailsState extends State<MyProfileDetails> {
 
-  TextEditingController nameController = TextEditingController();
+  String profile = '';
+  TextEditingController fnameController = TextEditingController();
+  TextEditingController lnameController = TextEditingController();
   TextEditingController ageController = TextEditingController();
   TextEditingController genderController = TextEditingController();
   TextEditingController emailController = TextEditingController();
@@ -47,6 +51,20 @@ class _MyProfileDetailsState extends State<MyProfileDetails> {
 
   getProfileData(){
     getProfileDetails = UserProfileService(repository: repository).getUserProfileService();
+  }
+
+  updateProfileData(Map user) async{
+    final res = await UserProfileService(repository: repository).updateUserProfileService(user);
+
+    if(res.runtimeType == UpdateUserModel){
+      UpdateUserModel model = res as UpdateUserModel;
+      AppConfig().showSnackbar(context, model.message ?? '');
+    }
+    else{
+      ErrorModel model = res as ErrorModel;
+      AppConfig().showSnackbar(context, model.message ?? '', isError: true);
+    }
+
   }
 
 
@@ -113,14 +131,15 @@ class _MyProfileDetailsState extends State<MyProfileDetails> {
                                         child: Column(
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
-                                            InkWell(
+                                            (!isEdit) ? InkWell(
                                               onTap: () {
                                                 toggleEdit();
                                                 if(isEdit){
                                                   setState(() {
                                                     ChildUserModel data = subData!;
                                                     print("${data.name}, ${data.age}");
-                                                    nameController.text = data.name!;
+                                                    fnameController.text = data.fname!;
+                                                    lnameController.text = data.lname!;
                                                     ageController.text = data.age!;
                                                     genderController.text = data.gender!;
                                                     emailController.text = data.email!;
@@ -144,12 +163,47 @@ class _MyProfileDetailsState extends State<MyProfileDetails> {
                                                     fit: BoxFit.contain,
                                                   ),
                                                 ),
+                                              )
+                                            ) : Padding(
+                                              padding: EdgeInsets.only(top: 2.h, right: 3.w),
+                                              child: Align(
+                                                alignment: Alignment.topRight,
+                                                child: Row(
+                                                  mainAxisSize: MainAxisSize.min,
+                                                  children: [
+                                                    GestureDetector(
+                                                      onTap: (){
+                                                        toggleEdit();
+                                                      },
+                                                        child: Icon(Icons.clear)),
+                                                    GestureDetector(
+                                                        onTap: (){
+                                                          SendUserModel user = SendUserModel(
+                                                            fname: fnameController.text,
+                                                            lname: lnameController.text,
+                                                            age: ageController.text,
+                                                            gender: genderController.text,
+                                                            // email: emailController.text,
+                                                            // phone: mobileController.text,
+                                                            profile: profile
+                                                          );
+                                                          updateProfileData(user.toJson());
+                                                          // toggleEdit();
+                                                        },
+                                                        child: Icon(Icons.check))
+                                                  ],
+                                                ),
                                               ),
                                             ),
                                             SizedBox(
                                               height: 4.h,
                                             ),
-                                            profileTile("Name: ", subData?.name ?? "Gut-Wellness Club", controller: nameController),
+                                            profileTile("First Name: ", subData?.fname ?? "Gut-Wellness Club", controller: fnameController),
+                                            Container(
+                                              height: 1,
+                                              color: Colors.grey,
+                                            ),
+                                            profileTile("Last Name: ", subData?.lname ?? "Gut-Wellness Club", controller: lnameController),
                                             Container(
                                               height: 1,
                                               color: Colors.grey,
@@ -165,12 +219,12 @@ class _MyProfileDetailsState extends State<MyProfileDetails> {
                                               color: Colors.grey,
                                             ),
                                             profileTile(
-                                                "Email: ", subData?.email ?? '', controller: emailController),
+                                                "Email: ", subData?.email ?? ''),
                                             Container(
                                               height: 1,
                                               color: Colors.grey,
                                             ),
-                                            profileTile("Mobile Number: ", subData?.phone ?? '', controller: mobileController),
+                                            profileTile("Mobile Number: ", subData?.phone ?? ''),
                                             Container(
                                               height: 1,
                                               color: Colors.grey,
@@ -242,7 +296,7 @@ class _MyProfileDetailsState extends State<MyProfileDetails> {
               fontSize: 11.sp,
             ),
           ),
-          (isEdit) ? Expanded(
+          (isEdit && controller!= null) ? Expanded(
             child: TextField(
               controller: controller,
               readOnly: !isEdit,

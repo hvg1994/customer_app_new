@@ -10,4 +10,8 @@ class UserProfileService extends ChangeNotifier{
   Future getUserProfileService() async{
     return await repository.getUserProfileRepo();
   }
+
+  Future updateUserProfileService(Map user) async{
+    return await repository.updateUserProfileRepo(user);
+  }
 }

@@ -9,4 +9,8 @@ class UserProfileRepository{
   Future getUserProfileRepo() async{
     return await apiClient.getUserProfileApi();
   }
+
+  Future updateUserProfileRepo(Map user) async{
+    return await apiClient.updateUserProfileApi(user);
+  }
 }

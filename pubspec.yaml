@@ -65,7 +65,7 @@ dependencies:
   provider: any
   cached_network_image: any
   flutter_sim_country_code: ^0.1.2
-
+  dropdown_button2: any
 
 dev_dependencies:
   flutter_test:

@@ -1,8 +1,12 @@
 import 'dart:convert';
 
+import 'package:dropdown_button2/custom_dropdown_button2.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart' hide GetStringUtils;
 import 'package:gwc_customer/model/evaluation_from_models/get_evaluation_model/child_get_evaluation_data_model.dart';
 import 'package:gwc_customer/repository/evaluation_form_repository/evanluation_form_repo.dart';
 import 'package:gwc_customer/services/evaluation_fome_service/evaluation_form_service.dart';
@@ -35,6 +39,9 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
 
   final _pref = AppConfig().preferences;
 
+  int ft = -1;
+  int inches = -1;
+  String heightText = '';
 
   final formKey1 = GlobalKey<FormState>();
   final formKey2 = GlobalKey<FormState>();
@@ -51,7 +58,6 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
   TextEditingController countryController = TextEditingController();
   TextEditingController pinCodeController = TextEditingController();
   TextEditingController weightController = TextEditingController();
-  TextEditingController heightController = TextEditingController();
   TextEditingController healController = TextEditingController();
   TextEditingController conditionController = TextEditingController();
   TextEditingController checkbox1OtherController = TextEditingController();
@@ -955,22 +961,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
             SizedBox(
               height: 1.h,
             ),
-            TextFormField(
-              controller: heightController,
-              cursorColor: kPrimaryColor,
-              validator: (value) {
-                if (value!.isEmpty ) {
-                  return 'Please enter your Height';
-                }  else {
-                  return null;
-                }
-              },
-              decoration: CommonDecoration.buildTextInputDecoration(
-                  "Your answer", heightController),
-              textInputAction: TextInputAction.next,
-              textAlign: TextAlign.start,
-              keyboardType: TextInputType.number,
-            ),
+            showDropdown(),
             SizedBox(
               height: 2.h,
             ),
@@ -1701,7 +1692,10 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
   checkFields(BuildContext context){
     print(formKey1.currentState!.validate());
     if(formKey1.currentState!.validate() && formKey2.currentState!.validate()){
-      if(healthCheckBox1.every((element) => element.value == false)){
+      if(ft == -1 || inches == -1){
+        AppConfig().showSnackbar(context, "Please Select Height");
+      }
+      else if(healthCheckBox1.every((element) => element.value == false)){
         AppConfig().showSnackbar(context, "Please Select Atleast 1 option from HealthList1");
       }
       else if(healthCheckBox2.every((element) => element.value == false)){
@@ -1728,10 +1722,14 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
       else if(medicalInterventionsDoneBeforeList.every((element) => element.value == false)  && medicalInterventionsOtherSelected == false){
         AppConfig().showSnackbar(context, "Please Select Atleast 1 Medication Intervention");
       }
-      if(medicalRecords.isEmpty){
+      else if(medicalRecords.isEmpty){
         AppConfig().showSnackbar(context, "Please Upload Medical Records");
       }
       else{
+        if(ft != -1 && inches != -1){
+          heightText = '$ft.$inches';
+          print(heightText);
+        }
         addSelectedValuesToList();
         var eval1 = createFormMap();
         print((eval1 as EvaluationModelFormat1).toMap());
@@ -1756,7 +1754,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
       country: countryController.text,
       pincode: pinCodeController.text,
       weight: weightController.text,
-      height: heightController.text,
+      height: heightText,
       looking_to_heal: healController.text,
       checkList1: selectedHealthCheckBox1.join(','),
       checkList1Other: checkbox1OtherController.text,
@@ -1777,6 +1775,64 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
       holistic: holisticController.text,
     );
   }
+
+  List<String> lst = List.generate(12, (index) => '${index+1}').toList();
+  List<String> lst1 = List.generate(12, (index) => '${index}').toList();
+
+  showDropdown(){
+    return Container(
+      padding: const EdgeInsets.all(8.0),
+      child: Row(
+        // mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          Expanded(
+            child: CustomDropdownButton2(
+              // buttonHeight: 25,
+              // buttonWidth: 45.w,
+              hint: 'Feet',
+              dropdownItems: lst,
+              value: ft == -1 ? null : ft.toString(),
+              onChanged: (value) {
+                setState(() {
+                  ft = int.tryParse(value!) ?? -1;
+                });
+              },
+              buttonDecoration : BoxDecoration(
+                color: gWhiteColor,
+                borderRadius: BorderRadius.circular(5),
+                border: Border.all(color: gMainColor, width: 1),
+              ),
+              icon: Icon(Icons.keyboard_arrow_down_outlined),
+            ),
+          ),
+          SizedBox(width: 10,),
+          Expanded(
+            child: CustomDropdownButton2(
+              // buttonHeight: 25,
+              // buttonWidth: 45.w,
+
+              hint: 'Inches',
+              dropdownItems: lst1,
+              value: (inches == -1) ? null : inches.toString(),
+              onChanged: (value) {
+                setState(() {
+                  inches = int.tryParse(value!) ?? -1;
+                });
+              },
+              buttonDecoration : BoxDecoration(
+                color: gWhiteColor,
+                borderRadius: BorderRadius.circular(5),
+                border: Border.all(color: gMainColor, width: 1),
+              ),
+              icon: Icon(Icons.keyboard_arrow_down_outlined),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
 
   buildFoodHabitsDetails() {
     return Column(
@@ -4046,7 +4102,11 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
 
     pinCodeController.text = model.patient?.user?.pincode ?? '';
     weightController.text = model.weight ?? '';
-    heightController.text = model.height ?? '';
+    heightText = model.height ?? '';
+    if(heightText.isNotEmpty){
+      ft = int.tryParse(heightText.split(".").first) ?? -1;
+      inches = int.tryParse(heightText.split(".").last) ?? -1;
+    }
     healController.text = model.healthProblem ?? '';
     // print("model.listProblems:${jsonDecode(model.listProblems ?? '')}");
     selectedHealthCheckBox1.addAll(List.from(jsonDecode(model.listProblems ?? '')));
@@ -4256,6 +4316,32 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
       print(model.message!);
     }
     Navigator.pop(context);
+  }
+
+  Widget buildTabView({
+    required int index,
+    required String title,
+    required Color color,
+    int? itemId
+  }) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          heightText = title;
+        });
+        // onChangedTab(index, id: itemId, title: title);
+        Get.back();
+      },
+      child: Text(
+        title,
+        style: TextStyle(
+          fontFamily: "GothamBook",
+          color: gTextColor,
+          // color: (statusList[itemId] == title) ? color : gTextColor,
+          fontSize: 8.sp,
+        ),
+      ),
+    );
   }
 
 

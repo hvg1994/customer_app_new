@@ -9,6 +9,7 @@ import 'package:gwc_customer/model/login_model/login_otp_model.dart';
 import 'package:gwc_customer/model/login_model/resend_otp_model.dart';
 import 'package:gwc_customer/model/new_user_model/about_program_model/about_program_model.dart';
 import 'package:gwc_customer/model/profile_model/logout_model.dart';
+import 'package:gwc_customer/model/profile_model/user_profile/update_user_model.dart';
 import 'package:gwc_customer/model/program_model/proceed_model/get_proceed_model.dart';
 import 'package:gwc_customer/model/program_model/proceed_model/send_proceed_program_model.dart';
 import 'package:gwc_customer/model/program_model/program_days_model/program_day_model.dart';
@@ -766,6 +767,36 @@ final _prefs = AppConfig().preferences;
       }
     } catch (e) {
       print("getUserProfileApi catch error");
+      result = ErrorModel(status: "0", message: "Unauthenticated");
+    }
+    return result;
+  }
+
+  Future updateUserProfileApi(Map user) async {
+    final path = updateUserProfileUrl;
+    var result;
+    try {
+      final response = await httpClient.post(
+        Uri.parse(path),
+        headers: {
+          // "Authorization": "Bearer ${AppConfig().bearerToken}",
+          "Authorization": getHeaderToken(),
+        },
+        body: user
+      ).timeout(const Duration(seconds: 45));
+
+      print("updateUserProfileApi response code:" + response.statusCode.toString());
+      print("updateUserProfileApi response body:" + response.body);
+
+      final res = jsonDecode(response.body);
+      print('${res['status'].runtimeType} ${res['status']}');
+      if (res['status'].toString() == '200') {
+        result = UpdateUserModel.fromJson(jsonDecode(response.body));
+      } else {
+        result = ErrorModel.fromJson(res);
+      }
+    } catch (e) {
+      print("updateUserProfileApi catch error $e");
       result = ErrorModel(status: "0", message: "Unauthenticated");
     }
     return result;
