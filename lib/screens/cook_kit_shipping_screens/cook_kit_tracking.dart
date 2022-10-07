@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:gwc_customer/model/error_model.dart';
 import 'package:gwc_customer/model/ship_track_model/shopping_model/get_shopping_model.dart';
+import 'package:gwc_customer/screens/gut_list_screens/gut_list.dart';
 import 'package:intl/intl.dart';
 import 'package:sizer/sizer.dart';
 import 'package:http/http.dart' as http;
@@ -15,6 +17,7 @@ import '../../../widgets/stepper/stepper_data.dart';
 import '../../../widgets/widgets.dart';
 import '../../model/ship_track_model/shopping_model/child_get_shopping_model.dart';
 import '../../widgets/constants.dart';
+import 'package:gwc_customer/screens/gut_list_screens/gut_list.dart' as gut;
 
 class CookKitTracking extends StatefulWidget {
   final String currentStage;
@@ -25,7 +28,7 @@ class CookKitTracking extends StatefulWidget {
   State<CookKitTracking> createState() => _CookKitTrackingState();
 }
 
-class _CookKitTrackingState extends State<CookKitTracking> {
+class _CookKitTrackingState extends State<CookKitTracking>{
   double gap = 23.0;
   int activeStep = -1;
 
@@ -37,6 +40,7 @@ class _CookKitTrackingState extends State<CookKitTracking> {
   String estimatedDay = '';
 
   int tabSize = 2;
+
 
   List<ChildGetShoppingModel> shoppingData = [];
 
@@ -118,7 +122,8 @@ class _CookKitTrackingState extends State<CookKitTracking> {
 
   shipRocketUI(BuildContext context){
     if(widget.currentStage == "shipping_approved"){
-      return SingleChildScrollView(
+      return (!showErrorText)
+          ? SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -227,7 +232,16 @@ class _CookKitTrackingState extends State<CookKitTracking> {
             ),
           ],
         ),
-      );
+      )
+          : Center(child: Text(
+        errorTextResponse,
+        style: TextStyle(
+          height: 1.5,
+          color: gWhiteColor,
+          fontSize: 11.sp,
+          fontFamily: "GothamBold",
+        ),
+      ),);
     }
     else{
       return const Center(
@@ -411,41 +425,61 @@ class _CookKitTrackingState extends State<CookKitTracking> {
 
   bool isDelivered = false;
 
+  bool showErrorText = false;
+
+  String errorTextResponse = '';
+
   void shippingTracker() async {
     final result = await ShipTrackService(repository: repository).getUserProfileService(widget.awb_number ?? '');
     //print("shippingTracker: $result");
     //print(result.runtimeType);
-    ShippingTrackModel data = result;
-    data.trackingData!.shipmentTrackActivities!.forEach((element) {
-      trackerList.add(element);
-      if(element.srStatusLabel!.toLowerCase() == 'delivered'){
+    if(result.runtimeType == ShippingTrackModel){
+      ShippingTrackModel data = result;
+      if(data.trackingData!.error != null){
         setState(() {
-          isDelivered = true;
+          showErrorText = true;
+          errorTextResponse = data.trackingData?.error ?? '';
         });
       }
-    });
-    estimatedDate = data.trackingData!.etd!;
-    estimatedDay = DateFormat('EEEE').format(DateTime.parse(estimatedDate));
-    //print("estimatedDay: $estimatedDay");
-    setState(() {
-      upperBound = trackerList.length;
-      activeStep = 0;
-    });
+      data.trackingData!.shipmentTrackActivities!.forEach((element) {
+        trackerList.add(element);
+        if(element.srStatusLabel!.toLowerCase() == 'delivered'){
+          setState(() {
+            isDelivered = true;
+          });
+        }
+      });
+      estimatedDate = data.trackingData!.etd!;
+      estimatedDay = DateFormat('EEEE').format(DateTime.parse(estimatedDate));
+      //print("estimatedDay: $estimatedDay");
+      setState(() {
+        upperBound = trackerList.length;
+        activeStep = 0;
+      });
 
 
-    timer = Timer.periodic(const Duration(milliseconds: 500), (timer1) {
-      //print(timer1.tick);
-      //print('activeStep: $activeStep');
-      //print('upperBound:$upperBound');
-      if (activeStep < upperBound) {
-        setState(() {
-          activeStep++;
-        });
+      timer = Timer.periodic(const Duration(milliseconds: 500), (timer1) {
+        //print(timer1.tick);
+        //print('activeStep: $activeStep');
+        //print('upperBound:$upperBound');
+        if (activeStep < upperBound) {
+          setState(() {
+            activeStep++;
+          });
+        }
+        else{
+          timer1.cancel();
+        }
+      });
+    }
+    else{
+      ErrorModel error = result as ErrorModel;
+
+      if(error.message!.contains("Token has expired")){
+        print("called shiprocket token from cook kit tracking");
+        GutList().myAppState.getShipRocketToken();
       }
-      else{
-        timer1.cancel();
-      }
-    });
+    }
   }
 
   void getShoppingList() async {

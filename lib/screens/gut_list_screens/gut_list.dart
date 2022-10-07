@@ -31,13 +31,15 @@ import 'package:http/http.dart' as http;
 import 'List/program_stages_data.dart';
 
 class GutList extends StatefulWidget {
-  const GutList({Key? key}) : super(key: key);
+  GutList({Key? key}) : super(key: key);
 
+  final GutListState myAppState=new GutListState();
   @override
-  State<GutList> createState() => _GutListState();
+  State<GutList> createState() => GutListState();
+
 }
 
-class _GutListState extends State<GutList> {
+class GutListState extends State<GutList> {
 
   final _pref = AppConfig().preferences;
   String isSelected = "Consultation";
@@ -133,7 +135,7 @@ class _GutListState extends State<GutList> {
           shippingStage = _gutShipDataModel?.data ?? '';
           abc();
         }
-        if(shippingStage != null && shippingStage == "shipping_approved"){
+        if(shippingStage != null && shippingStage == "shipping_delivered"){
           isSelected = "Programs";
         }
       });
@@ -281,7 +283,7 @@ class _GutListState extends State<GutList> {
         if(index == 1 && shippingStage != null){
           changedIndex(programsData.title);
         }
-        else if(index == 2 && shippingStage == 'shipping_approved'){
+        else if(index == 2 && shippingStage == 'shipping_delivered'){
           changedIndex(programsData.title);
         }
         else if(index == 3 && programOptionStage != null){
@@ -293,8 +295,8 @@ class _GutListState extends State<GutList> {
               EdgeInsets.only(left: 2.w, top: 0.5.h, bottom: 0.5.h, right: 5.w),
           margin: EdgeInsets.symmetric(vertical: 1.5.h),
           decoration: BoxDecoration(
-            color: kWhiteColor,
-            // color: index == 0 ? kWhiteColor : (index == 1 && shippingStage != null) ? kWhiteColor : (index == 2 && shippingStage == 'shipping_approved') ? kWhiteColor : (index == 3 && programOptionStage != null) ? kWhiteColor : gGreyColor.withOpacity(0.2),
+            // color: kWhiteColor,
+            color: index == 0 ? kWhiteColor : (index == 1 && shippingStage != null) ? kWhiteColor : (index == 2 && shippingStage == 'shipping_delivered') ? kWhiteColor : (index == 3 && programOptionStage != null) ? kWhiteColor : gGreyColor.withOpacity(0.05),
             borderRadius: BorderRadius.circular(20),
             border: Border.all(color: gMainColor.withOpacity(0.3), width: 1),
             boxShadow: (isSelected != programsData.title)
@@ -388,7 +390,7 @@ class _GutListState extends State<GutList> {
                           }
                         }
                         else if (programsData.title == "Programs") {
-                          if(shippingStage == "shipping_approved"){
+                          if(shippingStage == "shipping_delivered"){
                             Navigator.of(context).push(
                               MaterialPageRoute(
                                 builder: (context) => const ProgramPlanScreen(),
@@ -464,6 +466,13 @@ class _GutListState extends State<GutList> {
       case 'pending' :
         goToScreen(DoctorCalenderTimeScreen());
         break;
+      case 'consultation_reschedule' :
+        // add this before calling calendertimescreen for reschedule
+        // _pref!.setString(AppConfig.appointmentId , '');
+        goToScreen(DoctorCalenderTimeScreen(
+          // isReschedule: true,
+        ));
+        break;
       case 'appointment_booked':
         final model = _getAppointmentDetailsModel;
         goToScreen(DoctorSlotsDetailsScreen(bookingDate: model!.value!.date!, bookingTime: model.value!.slotStartTime!, dashboardValueMap: model.value!.toJson(),isFromDashboard: true,));
@@ -529,7 +538,7 @@ class _GutListState extends State<GutList> {
       // print("status of cons $status  ${shippingStage?.isNotEmpty}");
     }
     if(name == 'Shipping'){
-      status = shippingStage == 'shipping_approved';
+      status = shippingStage == 'shipping_delivered';
       // if(shippingStage == 'shipping_approved') {isSelected = 'Programs';}
     }
     if(name == 'Programs'){

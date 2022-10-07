@@ -10,6 +10,7 @@ class TrackingData {
   String? trackUrl;
   String? etd;
   QcResponse? qcResponse;
+  String? error;
 
   TrackingData(
       {this.trackStatus,
@@ -18,7 +19,9 @@ class TrackingData {
         this.shipmentTrackActivities,
         this.trackUrl,
         this.etd,
-        this.qcResponse});
+        this.qcResponse,
+        this.error
+      });
 
   TrackingData.fromJson(Map<String, dynamic> json) {
     trackStatus = json['track_status'];
@@ -40,6 +43,7 @@ class TrackingData {
     qcResponse = json['qc_response'] != null
         ? new QcResponse.fromJson(json['qc_response'])
         : null;
+    error = json['error'];
   }
 
   Map<String, dynamic> toJson() {
@@ -59,6 +63,7 @@ class TrackingData {
     if (this.qcResponse != null) {
       data['qc_response'] = this.qcResponse!.toJson();
     }
+    data['error'] = this.error;
     return data;
   }
 }

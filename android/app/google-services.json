@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "728114586270",
+    "project_id": "gwc-customer",
+    "storage_bucket": "gwc-customer.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:728114586270:android:208390bc53a6b15e8e518f",
+        "android_client_info": {
+          "package_name": "com.fembuddy.gwc_customer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "728114586270-2hhilsukerikomfm8gemoa77jqfba57q.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBSzQ1RWDE8xvrA5j6Sf95BTlrE-e0b3ss"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "728114586270-2hhilsukerikomfm8gemoa77jqfba57q.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

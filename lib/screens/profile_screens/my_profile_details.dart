@@ -1,7 +1,14 @@
+import 'dart:io';
+import 'dart:typed_data';
+
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gwc_customer/model/profile_model/user_profile/send_user_model.dart';
 import 'package:gwc_customer/widgets/constants.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:sizer/sizer.dart';
 import 'package:http/http.dart' as http;
 import '../../model/error_model.dart';
@@ -23,6 +30,7 @@ class MyProfileDetails extends StatefulWidget {
 
 class _MyProfileDetailsState extends State<MyProfileDetails> {
 
+  bool photoError = false;
   String profile = '';
   TextEditingController fnameController = TextEditingController();
   TextEditingController lnameController = TextEditingController();
@@ -59,6 +67,8 @@ class _MyProfileDetailsState extends State<MyProfileDetails> {
     if(res.runtimeType == UpdateUserModel){
       UpdateUserModel model = res as UpdateUserModel;
       AppConfig().showSnackbar(context, model.message ?? '');
+      setState(() {isEdit = false;});
+      getProfileData();
     }
     else{
       ErrorModel model = res as ErrorModel;
@@ -176,6 +186,9 @@ class _MyProfileDetailsState extends State<MyProfileDetails> {
                                                         toggleEdit();
                                                       },
                                                         child: Icon(Icons.clear)),
+                                                    SizedBox(
+                                                      width: 10,
+                                                    ),
                                                     GestureDetector(
                                                         onTap: (){
                                                           SendUserModel user = SendUserModel(
@@ -183,9 +196,9 @@ class _MyProfileDetailsState extends State<MyProfileDetails> {
                                                             lname: lnameController.text,
                                                             age: ageController.text,
                                                             gender: genderController.text,
-                                                            // email: emailController.text,
-                                                            // phone: mobileController.text,
-                                                            profile: profile
+                                                            email: subData!.email,
+                                                            phone: subData.phone,
+                                                            profile: _image!.path.split('/').last
                                                           );
                                                           updateProfileData(user.toJson());
                                                           // toggleEdit();
@@ -239,20 +252,45 @@ class _MyProfileDetailsState extends State<MyProfileDetails> {
                                     left: 0,
                                     right: 0,
                                     child: Center(
-                                      child: (subData?.profile == null) ?
-                                      CircleAvatar(
+                                      child: CircleAvatar(
                                         radius: 6.h,
-                                        backgroundColor: Colors.black45,
-                                        backgroundImage: const AssetImage(
-                                            "assets/images/cheerful.png"),
-                                      )
-                                          : CircleAvatar(
-                                        radius: 6.h,
-                                        backgroundColor: Colors.black45,
-                                        backgroundImage: NetworkImage(
-                                            subData!.profile!
+                                        backgroundColor: Colors.black26,
+                                        backgroundImage: (subData!.profile == null || photoError) ? ExactAssetImage(
+                                            "assets/images/cheerful.png") :
+                                        CachedNetworkImageProvider(
+                                            subData.profile!,
+                                          errorListener: (){
+                                              print("image error");
+                                              setState(() => photoError = true);
+                                          }
+                                        ) as ImageProvider,
+                                        child: Stack(
+                                          overflow: Overflow.visible,
+                                            clipBehavior: Clip.none,
+                                            children: [
+                                              Visibility(
+                                                visible: isEdit,
+                                                child: GestureDetector(
+                                                  onTap: showChooserSheet,
+                                                  child: Align(
+                                                    alignment: Alignment.bottomRight,
+                                                    child: CircleAvatar(
+                                                      radius: 11,
+                                                      backgroundColor: gPrimaryColor.withOpacity(0.9),
+                                                      child: Padding(
+                                                        padding: const EdgeInsets.all(4.0),
+                                                        child: Icon(CupertinoIcons.camera,
+                                                          color: gMainColor,
+                                                          size: 14,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ]
                                         ),
-                                      ),
+                                      )
                                     ),
                                   ),
                                 ],
@@ -452,5 +490,138 @@ class _MyProfileDetailsState extends State<MyProfileDetails> {
       }
     });
   }
+
+  File? _image;
+
+
+  showChooserSheet(){
+    return showModalBottomSheet(
+        backgroundColor: Colors.transparent,
+        context: context,
+        enableDrag: false,
+        builder: (ctx){
+          return Wrap(
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                      topRight: Radius.circular(20),
+                      topLeft: Radius.circular(20)
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 2, vertical: 4),
+                      child: Text('Choose Profile Pic',
+                        style: TextStyle(
+                          color: gTextColor,
+                          fontFamily: 'GothamMedium',
+                          fontSize: 12.sp,
+                        ),),
+                      decoration: BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: gGreyColor,
+                              width: 3.0,
+                            ),
+                          )
+                      ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        TextButton(
+                            onPressed: (){
+                              getImageFromCamera();
+                              Navigator.pop(context);
+                            },
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.camera_enhance_outlined,
+                                  color: gMainColor,
+                                ),
+                                Text('Camera',
+                                  style: TextStyle(
+                                    color: gTextColor,
+                                    fontFamily: 'GothamMedium',
+                                    fontSize: 10.sp,
+                                  ),
+                                ),
+                              ],
+                            )
+                        ),
+                        Container(
+                          width: 5,
+                          height: 10,
+                          decoration: BoxDecoration(
+                              border: Border(
+                                right: BorderSide(
+                                  color: gGreyColor,
+                                  width: 1,
+                                ),
+                              )
+                          ),
+                        ),
+                        TextButton(
+                            onPressed: (){
+                              pickFromFile();
+                              Navigator.pop(context);
+                            },
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.photo_library,
+                                  color: gMainColor,
+                                ),
+                                Text('Gallery',
+                                  style: TextStyle(
+                                    color: gTextColor,
+                                    fontFamily: 'GothamMedium',
+                                    fontSize: 10.sp,
+                                  ),
+                                ),
+                              ],
+                            )
+                        )
+                      ],
+                    ),
+                  ],
+                ),
+              )
+            ],
+          );
+        }
+    );
+  }
+
+  Future getImageFromCamera() async {
+    var image = await ImagePicker.platform.pickImage(
+      source: ImageSource.camera,
+      imageQuality: 50
+    );
+
+    setState(() {
+      _image = File(image!.path);
+    });
+    print("captured image: ${_image}");
+  }
+
+  void pickFromFile() async{
+    var image = await ImagePicker.platform.pickImage(
+        source: ImageSource.gallery,
+      imageQuality: 50
+    );
+    setState(() {
+      _image = File(image!.path);
+    });
+    print(_image);
+  }
+
+
 
 }

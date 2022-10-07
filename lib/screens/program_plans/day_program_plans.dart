@@ -77,11 +77,12 @@ class _DaysProgramPlanState extends State<DaysProgramPlan> {
                       print("snapshot.data: ${snapshot.data}");
                       if(snapshot.data.runtimeType == ProgramDayModel){
                         final model = snapshot.data as ProgramDayModel;
+                        print(model.toJson());
                         // model.data!.forEach((element) {
                         //   print('${element.dayNumber} -- ${element.color}');
                         // });
                         _pref!.setInt(AppConfig.STORE_LENGTH, model.data!.length);
-                        return buildDaysPlan(model.data!);
+                        return buildDaysPlan(model);
                       }
                       else {
                         ErrorModel model = snapshot.data as ErrorModel;
@@ -139,7 +140,8 @@ class _DaysProgramPlanState extends State<DaysProgramPlan> {
     );
   }
 
-  buildDaysPlan(List<ChildProgramDayModel> model) {
+  buildDaysPlan(ProgramDayModel model) {
+    List<ChildProgramDayModel> listData = model.data!;
     return GridView.builder(
       // this clip none to show check icon full
         clipBehavior: Clip.none,
@@ -151,10 +153,12 @@ class _DaysProgramPlanState extends State<DaysProgramPlan> {
             crossAxisSpacing: 8,
             mainAxisSpacing: 20,
             mainAxisExtent: 15.5.h),
-        itemCount: model.length ?? dayPlansData.length,
+        itemCount: listData.length ?? dayPlansData.length,
         itemBuilder: (context, index) {
           return GestureDetector(
-            onTap: (model[index].dayNumber != '1') ? null : () {
+            // onTap: ((index == 0) || model.presentDay.toString() == listData[index].dayNumber || listData[index].isCompleted == 1)
+            onTap: ((index == 0) || listData[index-1].isCompleted == 1)
+                ? () {
               //  buildDayCompleted();
              // buildDayNotCompleted();
               Navigator.push(
@@ -162,20 +166,22 @@ class _DaysProgramPlanState extends State<DaysProgramPlan> {
                 MaterialPageRoute(
                   builder: (context) => MealPlanScreen(
                     // day: dayPlansData[index]["day"],
-                    day: model[index].dayNumber!
+                    isCompleted: listData[index].isCompleted == 1 ? true : null,
+                    day: listData[index].dayNumber!
                   ),
                 ),
               );
-            },
+            } : null,
             child: Stack(
               alignment: AlignmentDirectional.topEnd,
               overflow: Overflow.visible,
+              clipBehavior: Clip.antiAlias,
               children: [
                 Positioned(
-                  top: -7,
-                    right: -4,
+                  top: -9,
+                    right: -6,
                     child: Visibility(
-                      visible: model[index].isCompleted == 1,
+                      visible: listData[index].isCompleted == 1,
                       child: Icon(Icons.check_circle,
                         color: gPrimaryColor,
                         size: 18,
@@ -187,14 +193,14 @@ class _DaysProgramPlanState extends State<DaysProgramPlan> {
                     borderRadius: BorderRadius.circular(8),
                       image: DecorationImage(
                           alignment: Alignment(-.2, 0),
-                          opacity: (model[index].dayNumber.toString() == '1') ? 1.0 : 0.7,
-
+                          // opacity: (model.presentDay.toString() == listData[index].dayNumber || listData[index].isCompleted == 1 || listData[index].isCompleted != 2) ? 1.0 : 0.7,
+                          opacity: index == 0 ? 1.0 :  listData[index-1].isCompleted == 1 ? 1.0 : 0.7,
                           // opacity: (model[index].isCompleted.toString() == '1' || model[index].isCompleted.toString() == '2') ? 1.0 : 0.7,
-                          image: CachedNetworkImageProvider(model[index].image!,),
+                          image: CachedNetworkImageProvider(listData[index].image!,),
                           // image: AssetImage(dayPlansData[index]["image"]),
                           fit: BoxFit.fill),
                       border: Border.all(
-                          color: model[index].color!,
+                          color: listData[index].color!,
                           // color: dayPlansData[index]["color"],
                           width: 2)),
                   child: Stack(
@@ -207,10 +213,10 @@ class _DaysProgramPlanState extends State<DaysProgramPlan> {
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(3),
                             // color: dayPlansData[index]["color"],
-                            color: model[index].color
+                            color: listData[index].color
                           ),
                           child: Text(
-                            " DAY ${model[index].dayNumber!}",
+                            " DAY ${listData[index].dayNumber!}",
                             // " DAY ${dayPlansData[index]["day"]}",
                             style: TextStyle(
                               fontFamily: "GothamMedium",

@@ -3,13 +3,15 @@ import 'child_program_day.dart';
 class ProgramDayModel {
   int? status;
   int? errorCode;
+  int? presentDay;
   List<ChildProgramDayModel>? data;
 
-  ProgramDayModel({this.status, this.errorCode, this.data});
+  ProgramDayModel({this.status, this.errorCode, this.data, this.presentDay});
 
   ProgramDayModel.fromJson(Map<String, dynamic> json) {
     status = json['status'];
     errorCode = json['errorCode'];
+    presentDay = json['present_day'];
     if (json['data'] != null) {
       data = <ChildProgramDayModel>[];
       json['data'].forEach((v) {
@@ -22,6 +24,7 @@ class ProgramDayModel {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['status'] = this.status;
     data['errorCode'] = this.errorCode;
+    data['present_day'] = this.presentDay;
     if (this.data != null) {
       data['data'] = this.data!.map((v) => v.toJson()).toList();
     }

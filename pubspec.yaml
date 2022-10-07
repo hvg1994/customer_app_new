@@ -66,6 +66,10 @@ dependencies:
   cached_network_image: any
   flutter_sim_country_code: ^0.1.2
   dropdown_button2: any
+  firebase_core: ^1.15.0
+  firebase_messaging: ^11.2.15
+  flutter_local_notifications: ^9.7.0
+#  change_app_package_name: ^1.1.0
 
 dev_dependencies:
   flutter_test:

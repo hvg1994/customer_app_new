@@ -18,6 +18,8 @@ class AppConfig{
 
   final String BEARER_TOKEN = "Bearer";
 
+
+
   final String shipRocketBearer = "ShipToken";
   final String shipRocketEmail = "bhogesh@fembuddy.com";
   final String shipRocketPassword = "adithya7224";
@@ -30,6 +32,11 @@ class AppConfig{
 
   static const String countryCode = "COUNTRY_CODE";
   static const String countryName = "COUNTRY_NAME";
+
+  // *** firebase ***
+  static const String notification_channelId = 'pushnotificationapp';
+  static const String notification_channelName = 'pushnotificationappchannel';
+
 
 
 
@@ -96,5 +103,6 @@ class AppConfig{
   //   ...trackJson.map((e) => ShipmentTrackActivities.fromJson(e))
   // ];
 
+  /// dummy token
   String shipRocketToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjI5NTcyMzEsImlzcyI6Imh0dHBzOi8vYXBpdjIuc2hpcHJvY2tldC5pbi92MS9leHRlcm5hbC9hdXRoL2xvZ2luIiwiaWF0IjoxNjYzODQ2ODM2LCJleHAiOjE2NjQ3MTA4MzYsIm5iZiI6MTY2Mzg0NjgzNiwianRpIjoidVJHclM0dk83cm9IbllhNiJ9.meifEzRi4u4sAVceDvY-Pyy71TO0K3kYGxnrwtiAQNE';
 }

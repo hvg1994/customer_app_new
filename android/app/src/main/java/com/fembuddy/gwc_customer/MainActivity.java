@@ -1,4 +1,4 @@
-package com.gwc.customer.gwc_customer;
+package com.fembuddy.gwc_customer;
 
 import io.flutter.embedding.android.FlutterActivity;
 

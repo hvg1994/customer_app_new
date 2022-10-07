@@ -54,6 +54,9 @@ var getMealPlanDataUrl = "${AppConfig().BASE_URL}/api/getDataList/user_day_meal_
 
 var submitDayPlanDetailsUrl = "${AppConfig().BASE_URL}/api/submitData/patient_meal_tracking";
 
+/// feedback Url
+var submitFeedbackUrl = "${AppConfig().BASE_URL}/api/submitForm/feedback";
+
 
 //  old apis
 // var welcomeTextUrl = "${AppConfig().BASE_URL}/api/list/welcome_text";

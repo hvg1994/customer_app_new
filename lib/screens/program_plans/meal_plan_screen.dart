@@ -13,6 +13,7 @@ import 'package:sizer/sizer.dart';
 import 'package:get/get.dart';
 import '../../model/program_model/meal_plan_details_model/child_meal_plan_details_model.dart';
 import '../../model/program_model/meal_plan_details_model/meal_plan_details_model.dart';
+import '../../model/program_model/proceed_model/get_proceed_model.dart';
 import '../../repository/api_service.dart';
 import '../../services/program_service/program_service.dart';
 import '../../services/vlc_service/check_state.dart';
@@ -21,13 +22,15 @@ import '../../widgets/constants.dart';
 import '../../widgets/pip_package.dart';
 import '../../widgets/vlc_player/vlc_player_with_controls.dart';
 import '../../widgets/widgets.dart';
+import 'day_program_plans.dart';
 import 'meal_pdf.dart';
 import 'meal_plan_data.dart';
 import 'package:http/http.dart' as http;
 
 class MealPlanScreen extends StatefulWidget {
   final String day;
-  const MealPlanScreen({Key? key, required this.day}) : super(key: key);
+  final bool? isCompleted;
+  const MealPlanScreen({Key? key, required this.day, this.isCompleted}) : super(key: key);
 
   @override
   State<MealPlanScreen> createState() => _MealPlanScreenState();
@@ -54,6 +57,13 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
     "UnFollowed",
     "Alternative without Doctor",
     "Alternative with Doctor",
+  ];
+
+  List<String> sendList = [
+    "followed",
+    "unfollowed",
+    "altered_without_doctor",
+    "altered_with_doctor",
   ];
 
   //****************  video player variables  *************
@@ -296,28 +306,31 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                     ),
                   ),
                 ),
-                Center(
-                  child: GestureDetector(
-                    onTap: (statusList.length != mealPlanData1!.length)
-                        ? null
-                        : () {
-                      sendData();
-                    },
-                    child: Container(
-                      margin: EdgeInsets.symmetric(vertical: 2.h),
-                      padding: EdgeInsets.symmetric(
-                          vertical: 1.h, horizontal: 5.w),
-                      decoration: BoxDecoration(
-                        color: (statusList.length != mealPlanData1!.length) ? gMainColor : gPrimaryColor,
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: gMainColor, width: 1),
-                      ),
-                      child: Text(
-                        'Proceed to Day $proceedToDay',
-                        style: TextStyle(
-                          fontFamily: "GothamBook",
-                          color: (statusList.length != mealPlanData1!.length) ? gPrimaryColor :  gMainColor,
-                          fontSize: 10.sp,
+                Visibility(
+                  visible: widget.isCompleted == null,
+                  child: Center(
+                    child: GestureDetector(
+                      onTap: (statusList.length != mealPlanData1!.length)
+                          ? null
+                          : () {
+                        sendData();
+                      },
+                      child: Container(
+                        margin: EdgeInsets.symmetric(vertical: 2.h),
+                        padding: EdgeInsets.symmetric(
+                            vertical: 1.h, horizontal: 5.w),
+                        decoration: BoxDecoration(
+                          color: (statusList.length != mealPlanData1!.length) ? gMainColor : gPrimaryColor,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: gMainColor, width: 1),
+                        ),
+                        child: Text(
+                          'Proceed to Day $proceedToDay',
+                          style: TextStyle(
+                            fontFamily: "GothamBook",
+                            color: (statusList.length != mealPlanData1!.length) ? gPrimaryColor :  gMainColor,
+                            fontSize: 10.sp,
+                          ),
                         ),
                       ),
                     ),
@@ -958,10 +971,11 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
       tracking.add(PatientMealTracking(
           day: int.parse(widget.day),
         userMealItemId: key,
-        status: value
+        status: (value == list[0]) ? sendList[0] : (value == list[1]) ? sendList[1] : (value == list[2]) ? sendList[2] : sendList[3]
       ));
     });
 
+    print(tracking.last.toJson());
     model = ProceedProgramDayModel(patientMealTracking: tracking, comment: commentController.text.isEmpty ? null : commentController.text);
 
     // print('ProceedProgramDayModel: ${jsonEncode(model.toJson())}');
@@ -969,6 +983,10 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
     final result = await ProgramService(repository: repository).proceedDayMealDetailsService(model);
 
     print("result: $result");
+
+    if(result.runtimeType == GetProceedModel){
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => DaysProgramPlan()));
+    }
 
   }
 

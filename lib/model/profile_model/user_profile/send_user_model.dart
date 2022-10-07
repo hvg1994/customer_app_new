@@ -1,8 +1,8 @@
 class SendUserModel {
   String? fname;
   String? lname;
-  // String? email;
-  // String? phone;
+  String? email;
+  String? phone;
   String? gender;
   String? profile;
   String? age;
@@ -11,8 +11,8 @@ class SendUserModel {
       {
         this.fname,
         this.lname,
-        // this.email,
-        // this.phone,
+        this.email,
+        this.phone,
         this.gender,
         this.profile,
         this.age,
@@ -21,10 +21,10 @@ class SendUserModel {
   SendUserModel.fromJson(Map<String, dynamic> json) {
     fname = json['fname'];
     lname = json['lname'];
-    // email = json['email'];
-    // phone = json['phone'];
+    email = json['email'];
+    phone = json['phone'];
     gender = json['gender'];
-    if(json['profile'].toString().isNotEmpty){
+    if(json['photo'].toString().isNotEmpty || json['photo'] != null){
       profile = json['photo'];
     }
     age = json['age'];
@@ -34,10 +34,10 @@ class SendUserModel {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['fname'] = this.fname;
     data['lname'] = this.lname;
-    // data['email'] = this.email;
-    // data['phone'] = this.phone;
+    data['email'] = this.email;
+    data['phone'] = this.phone;
     data['gender'] = this.gender;
-    if(profile!.isNotEmpty){
+    if(profile!.isNotEmpty || profile != null){
       data['photo'] = this.profile;
     }
     data['age'] = this.age;

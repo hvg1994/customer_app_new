@@ -8,7 +8,7 @@ class UpdateUserModel {
   UpdateUserModel.fromJson(Map<String, dynamic> json) {
     status = json['status_code'] ?? json['status'].toString();
     message = json['message'] ?? json['errorMsg'] ?? json['error'];
-    errorCode = json['errorCode'];
+    errorCode = json['errorCode'].toString();
   }
 
   Map<String, dynamic> toJson() {

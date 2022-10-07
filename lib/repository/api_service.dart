@@ -61,10 +61,7 @@ final _prefs = AppConfig().preferences;
     "Keep-Alive": "timeout=5, max=1"
   };
 
-  Map<String, String> shipRocketHeader = {
-    "Authorization": "Bearer ${AppConfig().shipRocketToken}",
-    "Content-Type": "application/json"
-  };
+
 
 
 
@@ -279,6 +276,14 @@ final _prefs = AppConfig().preferences;
     final String path = '$shippingApiUrl/$awbNumber';
     dynamic result;
 
+    String shipToken = _prefs?.getString(AppConfig().shipRocketBearer) ?? '';
+
+    Map<String, String> shipRocketHeader = {
+      "Authorization": "Bearer $shipToken",
+      "Content-Type": "application/json"
+    };
+
+    print('shiptoken: $shipToken');
     try{
       final response = await httpClient.get(
         Uri.parse(path),
@@ -290,10 +295,8 @@ final _prefs = AppConfig().preferences;
       print('serverShippingTrackerApi Response body: ${response.body}');
 
       if (response.statusCode != 200) {
-        result = ErrorModel(
-            status: response.statusCode.toString(),
-            message: "Unauthenticated"
-        );
+        final res = jsonDecode(response.body);
+        result = ErrorModel.fromJson(res);
       } else {
         final res = jsonDecode(response.body);
         result = ShippingTrackModel.fromJson(res);
@@ -774,6 +777,7 @@ final _prefs = AppConfig().preferences;
 
   Future updateUserProfileApi(Map user) async {
     final path = updateUserProfileUrl;
+    print(user);
     var result;
     try {
       final response = await httpClient.post(
@@ -1135,6 +1139,52 @@ final _prefs = AppConfig().preferences;
 
     return result;
   }
+
+  Future submitUserFeedbackDetails(Map feedback) async {
+    final String path = submitFeedbackUrl;
+
+    dynamic result;
+
+    Map bodyParam = feedback;
+    var headers = {
+      // "Authorization": "Bearer ${AppConfig().bearerToken}",
+      "Authorization": getHeaderToken(),
+    };
+    try{
+      final response = await httpClient.post(
+        Uri.parse(path),
+        headers: headers,
+        body: bodyParam
+      ).timeout(const Duration(seconds: 45));
+
+      print('submitUserFeedbackDetails Response header: $path');
+      print('submitUserFeedbackDetails Response status: ${response.statusCode}');
+      print('submitUserFeedbackDetails Response body: ${response.body}');
+      final json = jsonDecode(response.body);
+
+      print('submitUserFeedbackDetails result: $json');
+
+      if(response.statusCode != 200){
+        result = ErrorModel(
+            status: response.statusCode.toString(),
+            message: "Unauthenticated"
+        );
+      }
+      else{
+        if(json['status'].toString() != '200'){
+          result = ErrorModel.fromJson(json);
+        }
+        else{
+          result = GetEvaluationDataModel.fromJson(json);
+        }
+      }
+    }
+    catch(e){
+      result = ErrorModel(status: "0", message: e.toString());
+    }
+    return result;
+  }
+
 
 
   void storeShipRocketToken(ShipRocketTokenModel result) {
