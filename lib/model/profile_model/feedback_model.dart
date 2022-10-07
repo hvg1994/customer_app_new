@@ -1,12 +1,12 @@
-class EnquiryStatusModel {
+class FeedbackModel {
   String? status;
   String? errorCode;
   String? errorMsg;
 
-  EnquiryStatusModel(
+  FeedbackModel(
       {this.status, this.errorCode, this.errorMsg});
 
-  EnquiryStatusModel.fromJson(Map<String, dynamic> json) {
+  FeedbackModel.fromJson(Map<String, dynamic> json) {
     status = json['status'].toString();
     errorCode = json['errorCode'].toString();
     errorMsg = json['errorMsg'].toString();

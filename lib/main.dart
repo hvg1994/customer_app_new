@@ -11,14 +11,8 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:gwc_customer/model/enquiry_status_model.dart';
-import 'package:gwc_customer/model/error_model.dart';
-import 'package:gwc_customer/services/enquiry_status_service.dart';
 import 'package:gwc_customer/services/local_notification_service.dart';
 import 'package:gwc_customer/splash_screen.dart';
-import 'package:gwc_customer/widgets/constants.dart';
-import 'package:gwc_customer/widgets/open_alert_box.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
@@ -69,6 +63,7 @@ void main() async {
 
 
   print("fcmToken: $fcmToken");
+
   // *****  end *************
   runApp(const MyApp());
 
@@ -127,6 +122,7 @@ class _MyAppState extends State<MyApp> {
 
   }
 
+
   @override
   void initState() {
     // TODO: implement initState
@@ -178,6 +174,7 @@ class _MyAppState extends State<MyApp> {
           print(message.notification!.body);
           print("message.data11 ${message.data}");
           LocalNotificationService.createanddisplaynotification(message);
+
         }
       },
     );

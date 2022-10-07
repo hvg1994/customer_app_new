@@ -1,6 +1,7 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:gwc_customer/utils/app_config.dart';
+import 'package:gwc_customer/widgets/constants.dart';
 import 'package:rxdart/rxdart.dart';
 
 class LocalNotificationService {
@@ -36,7 +37,7 @@ class LocalNotificationService {
   static void createanddisplaynotification(RemoteMessage message) async {
     try {
       final id = DateTime.now().millisecondsSinceEpoch ~/ 1000;
-      const NotificationDetails notificationDetails = NotificationDetails(
+      NotificationDetails notificationDetails = NotificationDetails(
         android: AndroidNotificationDetails(
           AppConfig.notification_channelId,
           AppConfig.notification_channelName,
@@ -44,6 +45,8 @@ class LocalNotificationService {
           priority: Priority.high,
           enableVibration: true,
           playSound: true,
+          color: gMainColor.withOpacity(0.4),
+          colorized: true
           //   sound: RawResourceAndroidNotificationSound('yourmp3files.mp3'),
         ),
         iOS: IOSNotificationDetails(

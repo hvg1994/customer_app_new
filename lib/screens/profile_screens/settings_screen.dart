@@ -17,6 +17,7 @@ import '../../splash_screen.dart';
 import '../../utils/app_config.dart';
 import '../../widgets/widgets.dart';
 import '../evalution_form/evaluation_form_screen.dart';
+import 'feedback_rating_screen.dart';
 import 'my_profile_details.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -82,6 +83,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) => const TermsConditionsScreen(),
+                    ),
+                  );
+                }),
+                Container(
+                  height: 1,
+                  color: Colors.grey,
+                ),
+                profileTile(
+                    "assets/images/feedback.png", "Feedback", () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const FeedbackRatingScreen(),
                     ),
                   );
                 }),

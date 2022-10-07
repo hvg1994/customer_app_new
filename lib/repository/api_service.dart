@@ -8,6 +8,7 @@ import 'package:gwc_customer/model/evaluation_from_models/get_evaluation_model/g
 import 'package:gwc_customer/model/login_model/login_otp_model.dart';
 import 'package:gwc_customer/model/login_model/resend_otp_model.dart';
 import 'package:gwc_customer/model/new_user_model/about_program_model/about_program_model.dart';
+import 'package:gwc_customer/model/profile_model/feedback_model.dart';
 import 'package:gwc_customer/model/profile_model/logout_model.dart';
 import 'package:gwc_customer/model/profile_model/user_profile/update_user_model.dart';
 import 'package:gwc_customer/model/program_model/proceed_model/get_proceed_model.dart';
@@ -1146,6 +1147,8 @@ final _prefs = AppConfig().preferences;
     dynamic result;
 
     Map bodyParam = feedback;
+
+    print(bodyParam);
     var headers = {
       // "Authorization": "Bearer ${AppConfig().bearerToken}",
       "Authorization": getHeaderToken(),
@@ -1175,7 +1178,7 @@ final _prefs = AppConfig().preferences;
           result = ErrorModel.fromJson(json);
         }
         else{
-          result = GetEvaluationDataModel.fromJson(json);
+          result = FeedbackModel.fromJson(json);
         }
       }
     }

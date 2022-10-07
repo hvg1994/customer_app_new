@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:gwc_customer/screens/profile_screens/settings_screen.dart';
 import 'package:sizer/sizer.dart';
 
@@ -256,4 +257,5 @@ class _DashboardScreenState extends State<DashboardScreen> {
     });
     return Future.value(false);
   }
+
 }
