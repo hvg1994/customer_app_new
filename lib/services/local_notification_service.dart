@@ -40,7 +40,7 @@ class LocalNotificationService {
         android: AndroidNotificationDetails(
           AppConfig.notification_channelId,
           AppConfig.notification_channelName,
-          importance: Importance.max,
+          importance: Importance.high,
           priority: Priority.high,
           enableVibration: true,
           playSound: true,

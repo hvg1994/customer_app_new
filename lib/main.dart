@@ -71,6 +71,10 @@ void main() async {
   print("fcmToken: $fcmToken");
   // *****  end *************
   runApp(const MyApp());
+
+  print("fcmToken: $fcmToken");
+
+
 }
 
 

@@ -34,7 +34,7 @@ class AppConfig{
   static const String countryName = "COUNTRY_NAME";
 
   // *** firebase ***
-  static const String notification_channelId = 'pushnotificationapp';
+  static const String notification_channelId = 'high_importance_channel';
   static const String notification_channelName = 'pushnotificationappchannel';
 
 
