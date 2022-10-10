@@ -155,7 +155,9 @@ final _prefs = AppConfig().preferences;
         required String email,
         required String countryCode,
         required String phone,
-        required String deviceId}) async {
+        required String deviceId,
+        required String fcmToken
+      }) async {
     final String path = registerUserUrl;
 
     Map bodyParam = {
@@ -165,7 +167,8 @@ final _prefs = AppConfig().preferences;
       'email': email,
       'phone': phone,
       'country_code': countryCode,
-      "device_id": deviceId
+      "device_id": deviceId,
+      "device_token": fcmToken
     };
 
     print(bodyParam);

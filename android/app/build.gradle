@@ -53,6 +53,10 @@ android {
         // Fixes duplicate libraries build issue,
         // when your project uses more than one plugin that depend on C++ libs.
         pickFirst 'lib/**/libc++_shared.so'
+        pickFirst 'lib/x86/libc++_shared.so'
+        pickFirst 'lib/x86_64/libc++_shared.so'
+        pickFirst 'lib/armeabi-v7a/libc++_shared.so'
+        pickFirst 'lib/arm64-v8a/libc++_shared.so'
     }
 
     defaultConfig {
@@ -73,16 +77,17 @@ android {
             }
         }
         release {
-            ndk {
-                abiFilters "x86", "armeabi-v7a", "armeabi"
-                //abiFilters ABI_FILTERS
-            }
+//            ndk {
+//                abiFilters "x86", "armeabi-v7a", "armeabi"
+//                //abiFilters ABI_FILTERS
+//            }
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig signingConfigs.debug
             shrinkResources true
             minifyEnabled true
             useProguard true
+            debuggable true
             proguardFiles getDefaultProguardFile(
                     'proguard-android-optimize.txt'),
                     'proguard-rules.pro'

@@ -29,6 +29,8 @@ class AppConfig{
   static const String isLogin = "login";
   static const String EVAL_STATUS = 'eval_status';
   static const String last_login = "last_login";
+  static const String FCM_TOKEN = "fcm_token";
+
 
   static const String countryCode = "COUNTRY_CODE";
   static const String countryName = "COUNTRY_NAME";

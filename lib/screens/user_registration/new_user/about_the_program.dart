@@ -117,6 +117,7 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
                         addUrlToVideoPlayer(videoLink);
                         // #3 feedback List
                         List<FeedbackList> feedbackList = _aboutProgramText?.feedbackList ?? [];
+                        print("feedbackList: $feedbackList");
                         return SingleChildScrollView(
                           physics: const BouncingScrollPhysics(),
                           child: Column(
@@ -187,7 +188,7 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
                               Center(
                                 child: GestureDetector(
                                   onTap: () async{
-                                    await _videoPlayerController!.stop();
+                                    await _videoPlayerController?.stop();
                                     Navigator.of(context).push(
                                       MaterialPageRoute(
                                         builder: (context) => const RegisterScreen(),
@@ -305,51 +306,53 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
 
 
   buildFeedback(List<FeedbackList> feedbackList) {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 3.w),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(5),
-        border: Border.all(color: gPrimaryColor, width: 1),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.3),
-            blurRadius: 20,
-            offset: const Offset(2, 10),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          SizedBox(
-            height: 20.h,
-            child: PageView(
-                controller: pageController,
-                children: [
-                  ...feedbackList.map((e) => buildFeedbackList(e)).toList()
-                ]
-              // [
-              //   buildFeedbackList(),
-              //   buildFeedbackList(),
-              //   buildFeedbackList(),
-              // ],
+    if(feedbackList.isNotEmpty){
+      return Container(
+        padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 3.w),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(5),
+          border: Border.all(color: gPrimaryColor, width: 1),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.3),
+              blurRadius: 20,
+              offset: const Offset(2, 10),
             ),
-          ),
-          SmoothPageIndicator(
-            controller: pageController,
-            count: feedbackList.length,
-            axisDirection: Axis.horizontal,
-            effect: JumpingDotEffect(
-              dotColor: Colors.amberAccent,
-              activeDotColor: gsecondaryColor,
-              dotHeight: 1.h,
-              dotWidth: 2.w,
-              jumpScale: 2,
+          ],
+        ),
+        child: Column(
+          children: [
+            SizedBox(
+              height: 20.h,
+              child: PageView(
+                  controller: pageController,
+                  children: [
+                    ...feedbackList.map((e) => buildFeedbackList(e)).toList()
+                  ]
+                // [
+                //   buildFeedbackList(),
+                //   buildFeedbackList(),
+                //   buildFeedbackList(),
+                // ],
+              ),
             ),
-          ),
-        ],
-      ),
-    );
+            SmoothPageIndicator(
+              controller: pageController,
+              count: feedbackList.length,
+              axisDirection: Axis.horizontal,
+              effect: JumpingDotEffect(
+                dotColor: Colors.amberAccent,
+                activeDotColor: gsecondaryColor,
+                dotHeight: 1.h,
+                dotWidth: 2.w,
+                jumpScale: 2,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
   }
 
   Widget buildRating(String starRating) {

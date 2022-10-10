@@ -61,7 +61,6 @@ void main() async {
   LocalNotificationService.initialize();
 
 
-
   print("fcmToken: $fcmToken");
 
   // *****  end *************
@@ -119,6 +118,9 @@ class _MyAppState extends State<MyApp> {
     String? n = await FlutterSimCountryCode.simCountryCode;
     if(n!= null) _pref!.setString(AppConfig.countryCode, n);
     // print("country_code:${n}");
+
+    String? fcmToken = await FirebaseMessaging.instance.getToken();
+    _pref!.setString(AppConfig.FCM_TOKEN, fcmToken!);
 
   }
 

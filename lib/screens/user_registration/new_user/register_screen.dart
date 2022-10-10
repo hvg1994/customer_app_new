@@ -34,7 +34,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   SharedPreferences? _pref;
 
-  String? deviceId;
+  String? deviceId, fcmToken;
 
   bool isLoading = false;
 
@@ -63,7 +63,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _pref = await SharedPreferences.getInstance();
     setState(() {
       deviceId = _pref!.getString(AppConfig().deviceId);
+      fcmToken = _pref!.getString(AppConfig.FCM_TOKEN);
     });
+    print("fcm token: $fcmToken");
   }
 
   @override
@@ -181,6 +183,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               FilteringTextInputFormatter.digitsOnly,
                             ],
                             keyboardType: TextInputType.number,
+                            maxLength: 2,
                           ),
                         ),
                         SizedBox(
@@ -512,7 +515,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
         email: email,
         phone: mobileNumber,
         countryCode: countryCode,
-        deviceId: deviceId!);
+        deviceId: deviceId!,
+      fcmToken: fcmToken!
+    );
 
     print("registerUser:$res");
     print("res.runtimeType: ${res.runtimeType}");
