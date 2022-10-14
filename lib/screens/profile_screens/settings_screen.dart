@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gwc_customer/model/error_model.dart';
 import 'package:gwc_customer/model/profile_model/logout_model.dart';
+import 'package:gwc_customer/screens/appointment_screens/consultation_screens/upload_files.dart';
+import 'package:gwc_customer/screens/chat_support/message_screen.dart';
 import 'package:gwc_customer/screens/evalution_form/personal_details_screen.dart';
+import 'package:gwc_customer/screens/profile_screens/call_support_method.dart';
 import 'package:gwc_customer/screens/profile_screens/faq_screen.dart';
 import 'package:gwc_customer/screens/profile_screens/terms_conditions_screen.dart';
 import 'package:gwc_customer/screens/user_registration/existing_user.dart';
@@ -106,6 +109,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     "assets/images/Group 2748.png", "My Report", () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
+                      builder: (context) => const UploadFiles(),
+                    ),
+                  );
+                }),
+                Container(
+                  height: 1,
+                  color: Colors.grey,
+                ),
+                profileTile(
+                    "assets/images/Group 2748.png", "My Evaluation Report", () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
                       builder: (context) => const PersonalDetailsScreen(showData: true,),
                     ),
                   );
@@ -119,6 +134,26 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) => const EvaluationFormScreen(),
+                    ),
+                  );
+                }),
+                Container(
+                  height: 1,
+                  color: Colors.grey,
+                ),
+                profileTile(
+                    "assets/images/call.png", "Customer Support", () {
+                  callSupport();
+                }),
+                Container(
+                  height: 1,
+                  color: Colors.grey,
+                ),
+                profileTile(
+                    "assets/images/noun-chat-5153452.png", "Chat Support", () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const MessageScreen(),
                     ),
                   );
                 }),
@@ -198,4 +233,5 @@ class _SettingsScreenState extends State<SettingsScreen> {
       AppConfig().showSnackbar(context, model.message!, isError:  true);
     }
   }
+
 }

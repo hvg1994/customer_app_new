@@ -138,79 +138,87 @@ class _ChooseYourProblemScreenState extends State<ChooseYourProblemScreen> {
         builder: (_, snapshot){
           if(snapshot.hasData){
             log("getProblemList result: ${snapshot.data}");
-            ChooseProblemModel model = snapshot.data as ChooseProblemModel;
-            List<ChildChooseProblemModel>? problemList = model.data;
-            return GridView.builder(
-                scrollDirection: Axis.vertical,
-                physics: const ScrollPhysics(),
-                shrinkWrap: true,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3, crossAxisSpacing: 6, mainAxisSpacing: 6),
-                // gridDelegate:SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
-                itemCount: problemList?.length ?? 0,
-                itemBuilder: (context, index) {
-                  return InkWell(
-                    onTap: () {
-                      print("Problem: ${problemList?[index].name}");
-                      buildChooseProblemOnClick(problemList![index]);
-                    },
-                    child: Container(
-                      margin: EdgeInsets.symmetric(horizontal: 2, vertical: 2),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(5),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.3),
-                            blurRadius: 5,
-                            offset: const Offset(2, 5),
-                          ),
-                        ],
-                        image: DecorationImage(
-                            image: AssetImage("assets/images/Group 4855.png"),
-                            fit: BoxFit.fill),
-                      ),
-                      child: Stack(
-                        children: [
-                          Center(
-                            child: Column(
-                              children: [
-                                SizedBox(height: 2.h),
-                                Image(
-                                  height: 8.h,
-                                  image: NetworkImage(problemList?[index].image ?? ''),
-                                ),
-                                SizedBox(height: 1.5.h),
-                                Text(
-                                  problemList?[index].name.toString().capitalize() ?? '',
-                                  style: TextStyle(
-                                    fontFamily: "GothamMedium",
-                                    color: gTextColor,
-                                    fontSize: 9.sp,
-                                  ),
-                                ),
-                              ],
+            if(snapshot.data.runtimeType == ChooseProblemModel){
+              ChooseProblemModel model = snapshot.data as ChooseProblemModel;
+              List<ChildChooseProblemModel>? problemList = model.data;
+              return GridView.builder(
+                  scrollDirection: Axis.vertical,
+                  physics: const ScrollPhysics(),
+                  shrinkWrap: true,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3, crossAxisSpacing: 6, mainAxisSpacing: 6),
+                  // gridDelegate:SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
+                  itemCount: problemList?.length ?? 0,
+                  itemBuilder: (context, index) {
+                    return InkWell(
+                      onTap: () {
+                        print("Problem: ${problemList?[index].name}");
+                        buildChooseProblemOnClick(problemList![index]);
+                      },
+                      child: Container(
+                        margin: EdgeInsets.symmetric(horizontal: 2, vertical: 2),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(5),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.3),
+                              blurRadius: 5,
+                              offset: const Offset(2, 5),
                             ),
-                          ),
-                          Positioned(
-                            top: 10,
-                            left: 10,
-                            child: Visibility(
-                              visible: selectedProblems.contains(problemList?[index].id),
-                              child:  Align(
-                                alignment: Alignment.topLeft,
-                                child: Icon(
-                                  Icons.check_circle,
-                                  color: gMainColor,
-                                  size: 20,
-                                ),
+                          ],
+                          image: DecorationImage(
+                              image: AssetImage("assets/images/Group 4855.png"),
+                              fit: BoxFit.fill),
+                        ),
+                        child: Stack(
+                          children: [
+                            Center(
+                              child: Column(
+                                children: [
+                                  SizedBox(height: 2.h),
+                                  Image(
+                                    height: 8.h,
+                                    image: NetworkImage(problemList?[index].image ?? ''),
+                                  ),
+                                  SizedBox(height: 1.5.h),
+                                  Text(
+                                    problemList?[index].name.toString().capitalize() ?? '',
+                                    style: TextStyle(
+                                      fontFamily: "GothamMedium",
+                                      color: gTextColor,
+                                      fontSize: 9.sp,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                          )
-                        ],
+                            Positioned(
+                              top: 10,
+                              left: 10,
+                              child: Visibility(
+                                visible: selectedProblems.contains(problemList?[index].id),
+                                child:  Align(
+                                  alignment: Alignment.topLeft,
+                                  child: Icon(
+                                    Icons.check_circle,
+                                    color: gMainColor,
+                                    size: 20,
+                                  ),
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
                       ),
-                    ),
-                  );
-                });
+                    );
+                  });
+            }
+            else{
+              return const SizedBox(
+                width: double.infinity,
+                child: Text("Problems Not Found"),
+              );
+            }
           }
           else if(snapshot.hasError){
             print("snap error: ${snapshot.error}");

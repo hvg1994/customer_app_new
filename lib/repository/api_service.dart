@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:gwc_customer/model/dashboard_model/get_appointment/get_appointment_after_appointed.dart';
 import 'package:gwc_customer/model/dashboard_model/get_dashboard_data_model.dart';
@@ -14,6 +15,7 @@ import 'package:gwc_customer/model/profile_model/user_profile/update_user_model.
 import 'package:gwc_customer/model/program_model/proceed_model/get_proceed_model.dart';
 import 'package:gwc_customer/model/program_model/proceed_model/send_proceed_program_model.dart';
 import 'package:gwc_customer/model/program_model/program_days_model/program_day_model.dart';
+import 'package:gwc_customer/model/program_model/start_program_on_swipe_model.dart';
 import 'package:gwc_customer/model/ship_track_model/shiprocket_auth_model/shiprocket_auth_model.dart';
 import 'package:gwc_customer/model/ship_track_model/shopping_model/get_shopping_model.dart';
 import 'package:gwc_customer/model/ship_track_model/sipping_approve_model.dart';
@@ -88,7 +90,7 @@ final _prefs = AppConfig().preferences;
       if(response.statusCode != 200){
         result = ErrorModel(
             status: response.statusCode.toString(),
-            message: "Unauthenticated"
+            message: response.body
         );
       }
       else{
@@ -479,7 +481,7 @@ final _prefs = AppConfig().preferences;
       }
     } catch (e) {
       print("catch error $e");
-      result = ErrorModel(status: "0", message: "Unauthenticated");
+      result = ErrorModel(status: "0", message: e.toString());
     }
     return result;
   }
@@ -528,7 +530,7 @@ final _prefs = AppConfig().preferences;
       }
     } catch (e) {
       print("catch error: ${e}");
-      result = ErrorModel(status: "0", message: "Unauthenticated");
+      result = ErrorModel(status: "0", message: e.toString());
     }
     return result;
   }
@@ -559,6 +561,7 @@ final _prefs = AppConfig().preferences;
       };
 
       request.fields.addAll(param);
+      request.persistentConnection = false;
 
       // reportList.forEach((element) async {
       //   request.files.add(await http.MultipartFile.fromPath('files[]', element));
@@ -640,7 +643,7 @@ final _prefs = AppConfig().preferences;
       }
     } catch (e) {
       print("catch error: ${e}");
-      result = ErrorModel(status: "0", message: "Unauthenticated");
+      result = ErrorModel(status: "0", message: e.toString());
     }
     return result;
   }
@@ -676,7 +679,7 @@ final _prefs = AppConfig().preferences;
       if(response.statusCode != 200){
         result = ErrorModel(
             status: response.statusCode.toString(),
-            message: "Unauthenticated"
+            message: response.body
         );
       }
       else{
@@ -720,7 +723,7 @@ final _prefs = AppConfig().preferences;
       if(response.statusCode != 200){
         result = ErrorModel(
             status: response.statusCode.toString(),
-            message: "Unauthenticated"
+            message: response.body
         );
       }
       else{
@@ -729,17 +732,6 @@ final _prefs = AppConfig().preferences;
         }
         else{
           result = GetDashboardDataModel.fromJson(json);
-          // if(json['data'] == 'appointment_booked'){
-          //   result = GetAppointmentDetailsModel.fromJson(json);
-          // }
-          // else if(json['data'] == 'shipping_approved'){
-          //   result = ShippingApprovedModel.fromJson(json);
-          // }
-          // else{
-          //   // if(json['data'] == 'evaluation_done' || json['data'] == 'pending' || json['data'] == 'consultation_accepted' || json['data'] == 'consultation_rejected' || json['data'] == 'consultation_waiting' || json['data'] == 'report_upload'){
-          //     result = GutDataModel.fromJson(json);
-          //   // }
-          // }
         }
       }
     }
@@ -774,7 +766,7 @@ final _prefs = AppConfig().preferences;
       }
     } catch (e) {
       print("getUserProfileApi catch error");
-      result = ErrorModel(status: "0", message: "Unauthenticated");
+      result = ErrorModel(status: "0", message: e.toString());
     }
     return result;
   }
@@ -805,7 +797,7 @@ final _prefs = AppConfig().preferences;
       }
     } catch (e) {
       print("updateUserProfileApi catch error $e");
-      result = ErrorModel(status: "0", message: "Unauthenticated");
+      result = ErrorModel(status: "0", message: e.toString());
     }
     return result;
   }
@@ -879,7 +871,7 @@ final _prefs = AppConfig().preferences;
       }
     } catch (e) {
       print("catch error: ${e}");
-      result = ErrorModel(status: "0", message: "Unauthenticated");
+      result = ErrorModel(status: "0", message: e.toString());
     }
     return result;
   }
@@ -910,7 +902,7 @@ final _prefs = AppConfig().preferences;
       }
     } catch (e) {
       print("catch error");
-      result = ErrorModel(status: "0", message: "Unauthenticated");
+      result = ErrorModel(status: "0", message: e.toString());
     }
     return result;
   }
@@ -948,7 +940,7 @@ final _prefs = AppConfig().preferences;
       }
     } catch (e) {
       print("catch error::> $e");
-      result = ErrorModel(status: "0", message: "Unauthenticated");
+      result = ErrorModel(status: "0", message: e.toString());
     }
     return result;
   }
@@ -980,7 +972,7 @@ final _prefs = AppConfig().preferences;
       }
     } catch (e) {
       print("catch error$e");
-      result = ErrorModel(status: "0", message: "Unauthenticated");
+      result = ErrorModel(status: "0", message: e.toString());
     }
     return result;
   }
@@ -1173,7 +1165,7 @@ final _prefs = AppConfig().preferences;
       if(response.statusCode != 200){
         result = ErrorModel(
             status: response.statusCode.toString(),
-            message: "Unauthenticated"
+            message: response.body
         );
       }
       else{
@@ -1186,6 +1178,114 @@ final _prefs = AppConfig().preferences;
       }
     }
     catch(e){
+      result = ErrorModel(status: "0", message: e.toString());
+    }
+    return result;
+  }
+
+  Future serverGetCallSupportDetails() async {
+    final String path = getCallSupportUrl;
+
+    print('serverGetCallSupportDetails Response header: $path');
+
+    dynamic result;
+
+    try{
+      final response = await httpClient.get(
+        Uri.parse(path),
+        headers: {
+          // "Authorization": "Bearer ${AppConfig().bearerToken}",
+          "Authorization": getHeaderToken(),
+        },
+      ).timeout(const Duration(seconds: 45));
+
+      print('serverGetCallSupportDetails Response header: $path');
+      print('serverGetCallSupportDetails Response status: ${response.statusCode}');
+      print('serverGetCallSupportDetails Response body: ${response.body}');
+
+
+      final json = jsonDecode(response.body);
+      print('serverGetCallSupportDetails result: $json');
+      print(json['status'].toString().contains("200"));
+      if (response.statusCode != 200) {
+        print("error: $json");
+        result = ErrorModel.fromJson(json);
+      }
+      else if(json['status'].toString().contains("200")){
+        result = AboutProgramModel.fromJson(json);
+      }
+      else{
+        result = ErrorModel.fromJson(json);
+      }
+    }
+    catch(e){
+      result = ErrorModel(status: "0", message: e.toString());
+    }
+
+    return result;
+  }
+
+  /// need to send 1 to startProgram
+  Future startProgramOnSwipeApi(String startProgram) async {
+    final path = startProgramOnSwipeUrl;
+
+    Map<String, String> param = {
+      'start_program': startProgram,
+      'date': DateTime.now().toString()
+    };
+
+
+    final startTime = DateTime.now().millisecondsSinceEpoch;
+
+    var result;
+
+    try {
+      print("param: $param");
+
+      // final response = await httpClient.post(
+      //   Uri.parse(path),
+      //   body: param,
+      // ).timeout(Duration(seconds: 45));
+
+      var request = http.MultipartRequest('POST', Uri.parse(path));
+      var headers = {
+        "Authorization": getHeaderToken(),
+      };
+      request.headers.addAll(headers);
+
+      request.fields.addAll(param);
+      request.persistentConnection = false;
+
+      // reportList.forEach((element) async {
+      //   request.files.add(await http.MultipartFile.fromPath('files[]', element));
+      // });
+
+      var response = await http.Response.fromStream(await request.send())
+          .timeout(Duration(seconds: 45));
+
+
+      print("enquiryStatusApi response code:" + response.statusCode.toString());
+      print("enquiryStatusApi response body:" + response.body);
+
+      print("getAppointmentSlotListApi response body:" + response.body);
+      var totalTime = DateTime.now().millisecondsSinceEpoch - startTime;
+
+      print("response: $totalTime");
+
+      final res = jsonDecode(response.body);
+
+      print('${res['status'].runtimeType} ${res['status']}');
+
+      if(response.statusCode != 200){
+        result = ErrorModel.fromJson(res);
+      }
+      else if (res['status'].toString() == '200') {
+        result = StartProgramOnSwipeModel.fromJson(res);
+      } else {
+        result = ErrorModel.fromJson(res);
+      }
+    } catch (e) {
+      print("catch error: ${e}");
       result = ErrorModel(status: "0", message: e.toString());
     }
     return result;

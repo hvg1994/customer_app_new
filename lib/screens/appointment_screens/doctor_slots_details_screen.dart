@@ -125,11 +125,11 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
                         SizedBox(width: 2.w),
                         GestureDetector(
                           onTap: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      const DoctorCalenderTimeScreen()),
-                            );
+                            // Navigator.of(context).push(
+                            //   MaterialPageRoute(
+                            //       builder: (context) =>
+                            //           const DoctorCalenderTimeScreen()),
+                            // );
                           },
                           child: Text(
                             'Chat Support',
@@ -225,6 +225,21 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
                                 SizedBox(height: 8.h),
                                 GestureDetector(
                                   onTap: () {
+                                    Navigator.of(context).push(
+                                      PageRouteBuilder(
+                                          opaque: false, // set to false
+                                          pageBuilder: (_, __, ___) => Container(
+                                            child: buildCircularIndicator(),
+                                            width: 70,height: 70,
+                                            decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(10),
+                                              boxShadow: [
+                                                BoxShadow(blurRadius: 2, color: Colors.grey.withOpacity(0.5))
+                                              ],
+                                            ),
+                                          )
+                                      ),
+                                    );
                                     ChildAppointmentDetails? model;
                                     if(widget.isFromDashboard){
                                       model = ChildAppointmentDetails.fromJson(Map.from(widget.dashboardValueMap!));
@@ -357,6 +372,7 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
     String meetingId = widget.isFromDashboard ? model!.zoomId! : widget.data?.zoomId ?? '';
     String meetingPwd = widget.isFromDashboard ? model!.zoomPassword! : widget.data?.zoomPassword ?? '';
     print('$meetingId $meetingPwd');
+    Navigator.pop(context);
     bool _isMeetingEnded(String status) {
       var result = false;
 

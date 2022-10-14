@@ -1,12 +1,16 @@
 import '../../model/profile_model/terms_condition_model.dart';
 import '../api_service.dart';
 
-class TermsConditionRepository{
+class SettingsRepository{
   ApiClient apiClient;
 
-  TermsConditionRepository({required this.apiClient}) : assert(apiClient != null);
+  SettingsRepository({required this.apiClient}) : assert(apiClient != null);
 
   Future<TermsConditionModel> getTermsCondition() async{
     return await apiClient.serverGetTermsAndCondition();
+  }
+
+  Future getCallSupportRepo() async{
+    return await apiClient.serverGetCallSupportDetails();
   }
 }

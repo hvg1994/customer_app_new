@@ -4,15 +4,17 @@ class MealPlanDetailsModel {
   int? status;
   int? errorCode;
   String? programDay;
+  String? comment;
   List<ChildMealPlanDetailsModel>? data;
 
   MealPlanDetailsModel(
-      {this.status, this.errorCode, this.programDay, this.data});
+      {this.status, this.errorCode, this.programDay, this.data, this.comment});
 
   MealPlanDetailsModel.fromJson(Map<String, dynamic> json) {
     status = json['status'];
     errorCode = json['errorCode'];
     programDay = json['program_day'];
+    comment = json['comment'] ?? '';
     if (json['data'] != null) {
       data = <ChildMealPlanDetailsModel>[];
       json['data'].forEach((v) {

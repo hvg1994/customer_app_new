@@ -57,6 +57,10 @@ var submitDayPlanDetailsUrl = "${AppConfig().BASE_URL}/api/submitData/patient_me
 /// feedback Url
 var submitFeedbackUrl = "${AppConfig().BASE_URL}/api/submitForm/feedback";
 
+var getCallSupportUrl = "${AppConfig().BASE_URL}/api/getData/call_support";
+
+var startProgramOnSwipeUrl = "${AppConfig().BASE_URL}/api/submitForm/start_program";
+
 
 //  old apis
 // var welcomeTextUrl = "${AppConfig().BASE_URL}/api/list/welcome_text";

@@ -45,7 +45,7 @@ class _TermsConditionsScreenState extends State<TermsConditionsScreen> {
                   height: 1.h,
                 ),
                 FutureBuilder(
-                    future: TermsConditionService(repository: repository).getData(),
+                    future: SettingsService(repository: repository).getData(),
                     builder: (_, snapshot){
                       if(snapshot.connectionState == ConnectionState.done){
                         if(snapshot.hasData){
@@ -95,7 +95,7 @@ class _TermsConditionsScreenState extends State<TermsConditionsScreen> {
     );
   }
 
-  final TermsConditionRepository repository = TermsConditionRepository(
+  final SettingsRepository repository = SettingsRepository(
     apiClient: ApiClient(
       httpClient: http.Client(),
     ),

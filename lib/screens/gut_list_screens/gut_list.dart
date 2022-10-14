@@ -1,6 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gwc_customer/model/dashboard_model/get_appointment/get_appointment_after_appointed.dart';
 import 'package:gwc_customer/model/dashboard_model/get_dashboard_data_model.dart';
+import 'package:gwc_customer/model/dashboard_model/get_program_model.dart';
 import 'package:gwc_customer/model/dashboard_model/gut_model/gut_data_model.dart';
 import 'package:gwc_customer/model/error_model.dart';
 import 'package:gwc_customer/repository/dashboard_repo/gut_repository/dashboard_repository.dart';
@@ -8,6 +10,7 @@ import 'package:gwc_customer/screens/appointment_screens/consultation_screens/co
 import 'package:gwc_customer/screens/appointment_screens/consultation_screens/upload_files.dart';
 import 'package:gwc_customer/screens/gut_list_screens/meal_popup.dart';
 import 'package:gwc_customer/screens/post_program_screens/post_program_screen.dart';
+import 'package:gwc_customer/screens/profile_screens/call_support_method.dart';
 import 'package:gwc_customer/screens/program_plans/program_plan_screen.dart';
 import 'package:gwc_customer/services/dashboard_service/gut_service/dashboard_data_service.dart';
 import 'package:gwc_customer/services/shipping_service/ship_track_service.dart';
@@ -25,6 +28,7 @@ import '../appointment_screens/consultation_screens/consultation_success.dart';
 import '../appointment_screens/consultation_screens/medical_report_screen.dart';
 import '../appointment_screens/doctor_slots_details_screen.dart';
 import '../cook_kit_shipping_screens/cook_kit_tracking.dart';
+import '../program_plans/day_program_plans.dart';
 import 'List/list_view_effect.dart';
 import 'package:gwc_customer/screens/appointment_screens/doctor_calender_time_screen.dart';
 import 'package:http/http.dart' as http;
@@ -62,8 +66,10 @@ class GutListState extends State<GutList> {
   /// ths is used when data = shipping_approved status
   ShippingApprovedModel? _shippingApprovedModel;
 
+  GetProgramModel? _getProgramModel;
+
   /// for other status we use this one(except shipping_approved & appointment_booked)
-  GutDataModel? _gutDataModel, _gutShipDataModel;
+  GutDataModel? _gutDataModel, _gutShipDataModel, _gutProgramModel, _gutPostProgramModel;
 
   @override
   void initState() {
@@ -122,7 +128,7 @@ class GutListState extends State<GutList> {
           _gutDataModel = _getDashboardDataModel.normal_consultation;
           consultationStage = _gutDataModel?.data ?? '';
         }
-        if(consultationStage != null && consultationStage == "report_upload"){
+        if(consultationStage != null && (shippingStage != null && shippingStage!.isNotEmpty)){
           isSelected = "Shipping";
         }
 
@@ -138,6 +144,18 @@ class GutListState extends State<GutList> {
         if(shippingStage != null && shippingStage == "shipping_delivered"){
           isSelected = "Programs";
         }
+        if(_getDashboardDataModel.data_program != null){
+          _getProgramModel = _getDashboardDataModel.data_program;
+          programOptionStage = _getProgramModel?.data ?? '';
+        }
+        else{
+          _gutProgramModel = _getDashboardDataModel.normal_program;
+          programOptionStage = _getProgramModel?.data ?? '';
+          abc();
+        }
+        // if(_getDashboardDataModel.program != null){
+        //   _getProgramModel = _getDashboardDataModel.program;
+        // }
       });
     }
     // else if(_getData.runtimeType == GutDataModel){
@@ -199,13 +217,43 @@ class GutListState extends State<GutList> {
                 Navigator.pop(context);
               }, isBackEnable: false),
               SizedBox(height: 3.h),
-              Text(
-                "Program Stages",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    fontFamily: "GothamRoundedBold_21016",
-                    color: gPrimaryColor,
-                    fontSize: 12.sp),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Program Stages",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        fontFamily: "GothamRoundedBold_21016",
+                        color: gPrimaryColor,
+                        fontSize: 12.sp),
+                  ),
+                  GestureDetector(
+                    onTap: (){
+                      callSupport();
+                    },
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.asset('assets/images/call.png',
+                          width: 12,
+                          height: 12,
+                        ),
+                        SizedBox(
+                          width: 4,
+                        ),
+                        Text("Support",
+                          style: TextStyle(
+                            color: kTextColor,
+                            fontFamily: 'GothamBook',
+                            fontSize: 10.sp,
+                          ),
+                        )
+                      ],
+                    ),
+                  )
+                ],
               ),
               SizedBox(height: 1.h),
               Expanded(
@@ -230,7 +278,7 @@ class GutListState extends State<GutList> {
     WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
         //shipping_approved  shipping_packed
       print("isShown: $isShown $shippingStage");
-        if(shippingStage == 'shipping_packed'){
+        // if(shippingStage == 'shipping_packed'){
           if(!isShown){
             setState(() {
               isShown = true;
@@ -239,13 +287,13 @@ class GutListState extends State<GutList> {
               PageRouteBuilder(
                 opaque: false, // set to false
                 pageBuilder: (_, __, ___) => MealPopup(
-                  yesButton: () {
+                  yesButton:(isPressed) ? (){} : () {
                     sendApproveStatus('yes');
                     setState(() {
                       isShown = false;
                     });
                   },
-                  noButton: () {
+                  noButton:(isPressed) ? (){} : () {
                     sendApproveStatus('no');
                     setState(() {
                       isShown = false;
@@ -263,7 +311,7 @@ class GutListState extends State<GutList> {
               }
             });
           }
-        }
+        // }
     });
   }
 
@@ -280,7 +328,7 @@ class GutListState extends State<GutList> {
         if(index == 0){
           changedIndex(programsData.title);
         }
-        if(index == 1 && shippingStage != null){
+        if(index == 1 && shippingStage != null && shippingStage!.isNotEmpty){
           changedIndex(programsData.title);
         }
         else if(index == 2 && shippingStage == 'shipping_delivered'){
@@ -296,7 +344,7 @@ class GutListState extends State<GutList> {
           margin: EdgeInsets.symmetric(vertical: 1.5.h),
           decoration: BoxDecoration(
             // color: kWhiteColor,
-            color: index == 0 ? kWhiteColor : (index == 1 && shippingStage != null) ? kWhiteColor : (index == 2 && shippingStage == 'shipping_delivered') ? kWhiteColor : (index == 3 && programOptionStage != null) ? kWhiteColor : gGreyColor.withOpacity(0.05),
+            color: index == 0 ? kWhiteColor : (index == 1 && shippingStage != '') ? kWhiteColor : (index == 2 && shippingStage == 'shipping_delivered') ? kWhiteColor : (index == 3 && postProgramStage != null) ? kWhiteColor : gGreyColor.withOpacity(0.05),
             borderRadius: BorderRadius.circular(20),
             border: Border.all(color: gMainColor.withOpacity(0.3), width: 1),
             boxShadow: (isSelected != programsData.title)
@@ -365,6 +413,7 @@ class GutListState extends State<GutList> {
                           }
                         }
                         else if (programsData.title == "Shipping") {
+                          print(shippingStage!.isNotEmpty);
                           // Navigator.of(context).push(
                           //   PageRouteBuilder(
                           //     opaque: false, // set to false
@@ -373,29 +422,40 @@ class GutListState extends State<GutList> {
                           //     }),
                           //   ),
                           // );
-
-                          if(_shippingApprovedModel != null){
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => CookKitTracking(awb_number: _shippingApprovedModel?.value?.awbCode ?? '',currentStage: shippingStage!,),
-                              ),
-                            );
-                          }
-                          else{
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => CookKitTracking(currentStage: shippingStage ?? ''),
-                              ),
-                            );
+                          if(shippingStage != null && shippingStage!.isNotEmpty){
+                            if(_shippingApprovedModel != null){
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => CookKitTracking(awb_number: _shippingApprovedModel?.value?.awbCode ?? '',currentStage: shippingStage!,),
+                                ),
+                              );
+                            }
+                            else{
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => CookKitTracking(currentStage: shippingStage ?? ''),
+                                ),
+                              );
+                            }
                           }
                         }
                         else if (programsData.title == "Programs") {
                           if(shippingStage == "shipping_delivered"){
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => const ProgramPlanScreen(),
-                              ),
-                            );
+                            if(_getProgramModel!.value!.startProgram == '0'){
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => const ProgramPlanScreen(),
+                                ),
+                              ).then((value) => setState(() { }));
+                            }
+                            else{
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const DaysProgramPlan(),
+                                ),
+                              ).then((value) => setState(() { }));
+                            }
                           }
                           else{
                             AppConfig().showSnackbar(context, "You can access when Shipping Approved");
@@ -429,20 +489,32 @@ class GutListState extends State<GutList> {
     );
   }
 
+  bool isSendApproveStatus = false;
+  bool isPressed = false;
   sendApproveStatus(String status, {bool fromNull = false}) async{
-    final res = await ShipTrackService(repository: shipTrackRepository).sendSippingApproveStatusService(status);
+    if(!isSendApproveStatus){
+      setState(() {
+        isSendApproveStatus = true;
+        isPressed = true;
+      });
+      print("isPressed: $isPressed");
+      final res = await ShipTrackService(repository: shipTrackRepository).sendSippingApproveStatusService(status);
 
-    if(res.runtimeType == ShippingApproveModel){
-      ShippingApproveModel model = res as ShippingApproveModel;
-      print('success: ${model.message}');
-      AppConfig().showSnackbar(context, model.message!);
+      if(res.runtimeType == ShippingApproveModel){
+        ShippingApproveModel model = res as ShippingApproveModel;
+        print('success: ${model.message}');
+        AppConfig().showSnackbar(context, model.message!);
+      }
+      else{
+        ErrorModel model = res as ErrorModel;
+        print('error: ${model.message}');
+        AppConfig().showSnackbar(context, model.message!);
+      }
+      setState(() {
+        isPressed = false;
+      });
+      if(!fromNull) Navigator.pop(context);
     }
-    else{
-      ErrorModel model = res as ErrorModel;
-      print('error: ${model.message}');
-      AppConfig().showSnackbar(context, model.message!);
-    }
-    if(!fromNull) Navigator.pop(context);
   }
 
   final GutDataRepository repository = GutDataRepository(
@@ -467,10 +539,14 @@ class GutListState extends State<GutList> {
         goToScreen(DoctorCalenderTimeScreen());
         break;
       case 'consultation_reschedule' :
+        final model = _getAppointmentDetailsModel;
+
         // add this before calling calendertimescreen for reschedule
         // _pref!.setString(AppConfig.appointmentId , '');
         goToScreen(DoctorCalenderTimeScreen(
-          // isReschedule: true,
+          isReschedule: true,
+          prevBookingDate: model!.value!.appointmentDate,
+          prevBookingTime: model.value!.appointmentStartTime,
         ));
         break;
       case 'appointment_booked':

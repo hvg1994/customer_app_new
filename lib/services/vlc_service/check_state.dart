@@ -6,6 +6,7 @@ class CheckState extends ChangeNotifier{
 
   setValue(bool value){
     _isChanged = value;
+    notifyListeners();
   }
 
   updateValue(value){

@@ -15,4 +15,5 @@ class ConsultationService extends ChangeNotifier{
   Future bookAppointmentService(String date, String slotTime, {String? appointmentId}) async{
     return await repository.bookAppointmentSlotListRepo(date, slotTime, appointmentId: appointmentId);
   }
+
 }

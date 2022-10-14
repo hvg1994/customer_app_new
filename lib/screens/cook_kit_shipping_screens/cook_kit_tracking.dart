@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gwc_customer/model/error_model.dart';
 import 'package:gwc_customer/model/ship_track_model/shopping_model/get_shopping_model.dart';
@@ -16,6 +17,7 @@ import '../../../widgets/stepper/another_stepper.dart';
 import '../../../widgets/stepper/stepper_data.dart';
 import '../../../widgets/widgets.dart';
 import '../../model/ship_track_model/shopping_model/child_get_shopping_model.dart';
+import '../../utils/app_config.dart';
 import '../../widgets/constants.dart';
 import 'package:gwc_customer/screens/gut_list_screens/gut_list.dart' as gut;
 
@@ -41,7 +43,9 @@ class _CookKitTrackingState extends State<CookKitTracking>{
 
   int tabSize = 2;
 
+  bool showShoppingLoading = false;
 
+  final _pref = AppConfig().preferences;
   List<ChildGetShoppingModel> shoppingData = [];
 
 
@@ -51,7 +55,7 @@ class _CookKitTrackingState extends State<CookKitTracking>{
     super.initState();
     if(widget.currentStage.isNotEmpty){
       getShoppingList();
-      if(widget.currentStage == 'shipping_approved'){
+      if((widget.currentStage == 'shipping_approved' || widget.currentStage == 'shipping_delivered') && widget.awb_number != null){
         shippingTracker();
       }
     }
@@ -67,16 +71,18 @@ class _CookKitTrackingState extends State<CookKitTracking>{
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: tabSize,
-      child: Scaffold(
-        body: Padding(
-          padding: EdgeInsets.only(top: 1.h, left: 4.w, right: 4.w, bottom: 1.w),
-          child: Column(
-            children: [
-              buildAppBar((){
-                Navigator.pop(context);
-              }),
-              Expanded(child: tabView())
-            ],
+      child: SafeArea(
+        child: Scaffold(
+          body: Padding(
+            padding: EdgeInsets.only(top: 1.h, left: 4.w, right: 4.w, bottom: 1.w),
+            child: Column(
+              children: [
+                buildAppBar((){
+                  Navigator.pop(context);
+                }),
+                Expanded(child: tabView())
+              ],
+            ),
           ),
         ),
       ),
@@ -110,8 +116,14 @@ class _CookKitTrackingState extends State<CookKitTracking>{
           Flexible(
               child: TabBarView(
                 children:  [
-                  shipRocketUI(context),
-                  (shoppingData.isNotEmpty) ? dataTableView() : noData(),
+                  (showTrackingProgress) ? buildCircularIndicator() : shipRocketUI(context),
+                  (showShoppingLoading) ? buildCircularIndicator() : (shoppingData.isNotEmpty)
+                      ? ListView.builder(
+                    itemCount: 12,
+                      itemBuilder: (_, index){
+                        return dataTableView(index);
+                  })
+                      : noData(),
                 ],
               )
           )
@@ -121,7 +133,7 @@ class _CookKitTrackingState extends State<CookKitTracking>{
   }
 
   shipRocketUI(BuildContext context){
-    if(widget.currentStage == "shipping_approved"){
+    if((widget.currentStage == "shipping_approved" || widget.currentStage == "shipping_delivered") && widget.awb_number != null){
       return (!showErrorText)
           ? SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
@@ -219,7 +231,7 @@ class _CookKitTrackingState extends State<CookKitTracking>{
                     ),
                   ),
                   title: Text(
-                    "477/3 Lorem lpsum Diansms,94107,Bangalore",
+                    _pref?.getString(AppConfig.SHIPPING_ADDRESS) ??  "",
                     style: TextStyle(
                       height: 1.5,
                       fontFamily: "GothamBook",
@@ -237,7 +249,7 @@ class _CookKitTrackingState extends State<CookKitTracking>{
         errorTextResponse,
         style: TextStyle(
           height: 1.5,
-          color: gWhiteColor,
+          color: gTextColor,
           fontSize: 11.sp,
           fontFamily: "GothamBold",
         ),
@@ -262,9 +274,10 @@ class _CookKitTrackingState extends State<CookKitTracking>{
     );
   }
 
-  dataTableView(){
+  dataTableView(index){
       return ListView(
         shrinkWrap: true,
+        physics: NeverScrollableScrollPhysics(),
         children: [
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8),
@@ -284,65 +297,80 @@ class _CookKitTrackingState extends State<CookKitTracking>{
                   )
                 ],
               ),
-              child: Stack(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    height: 5.h,
-                    decoration: const BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(8),
-                          topRight: Radius.circular(8)
-                      ),
-                      gradient: LinearGradient(colors: [
-                        Color(0xffE06666),
-                        Color(0xff93C47D),
-                        Color(0xffFFD966),
-                      ], begin: Alignment.topLeft, end: Alignment.topRight),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                    child: Text('Day ${index+1}',
+                      style: TextStyle(
+                        color: gPrimaryColor,
+                        fontSize: 11.sp,
+                        fontFamily: "GothamBold",
+                      )
                     ),
                   ),
-                  Center(
-                    child: DataTable(
-                        headingTextStyle: TextStyle(
-                          color: gWhiteColor,
-                          fontSize: 5.sp,
-                          fontFamily: "GothamMedium",
-                        ),
-                        headingRowHeight: 5.h,
-                        horizontalMargin: 2.w,
-                        columnSpacing: 40.w,
-                        dataRowHeight: 6.h,
-                        // headingRowColor: MaterialStateProperty.all(const Color(0xffE06666)),
-                        columns:  <DataColumn>[
-                          DataColumn(
-                            label: Text('Meal Name',
-                              style: TextStyle(
-                                height: 1.5,
-                                color: gWhiteColor,
-                                fontSize: 11.sp,
-                                fontFamily: "GothamBold",
-                              ),
-                            ),
+                  Stack(
+                    children: [
+                      Container(
+                        height: (index == 0) ? 5.h : 0,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(8),
+                              topRight: Radius.circular(8)
                           ),
-                          DataColumn(
-                            label: ConstrainedBox(
-                              constraints: const BoxConstraints(
-                                maxWidth: 80,
-                                minWidth: 20,
-                              ),
-                              child: Text('Weight',
-                                textAlign: TextAlign.right,
-                                style: TextStyle(
-                                  height: 1.5,
-                                  color: gWhiteColor,
-                                  fontSize: 11.sp,
-                                  fontFamily: "GothamBold",
+                          gradient: (index == 0) ? LinearGradient(colors: [
+                            Color(0xffE06666),
+                            Color(0xff93C47D),
+                            Color(0xffFFD966),
+                          ], begin: Alignment.topLeft, end: Alignment.topRight) : null,
+                        ),
+                      ),
+                      Center(
+                        child: DataTable(
+                            headingTextStyle: TextStyle(
+                              color: gWhiteColor,
+                              fontSize: 5.sp,
+                              fontFamily: "GothamMedium",
+                            ),
+                            headingRowHeight: (index == 0) ? 5.h : 0,
+                            horizontalMargin: 2.w,
+                            columnSpacing: 40.w,
+                            dataRowHeight: 6.h,
+                            // headingRowColor: MaterialStateProperty.all(const Color(0xffE06666)),
+                            columns:  <DataColumn>[
+                              DataColumn(
+                                label: Text('Meal Name',
+                                  style: TextStyle(
+                                    height: 1.5,
+                                    color: gWhiteColor,
+                                    fontSize: 11.sp,
+                                    fontFamily: "GothamBold",
+                                  ),
                                 ),
                               ),
-                            ),
-                          ),
-                        ],
-                        rows: showDataRow()
-                    ),
+                              DataColumn(
+                                label: ConstrainedBox(
+                                  constraints: const BoxConstraints(
+                                    maxWidth: 80,
+                                    minWidth: 20,
+                                  ),
+                                  child: Text('Quantity',
+                                    textAlign: TextAlign.right,
+                                    style: TextStyle(
+                                      height: 1.5,
+                                      color: gWhiteColor,
+                                      fontSize: 11.sp,
+                                      fontFamily: "GothamBold",
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                            rows: showDataRow()
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -429,9 +457,13 @@ class _CookKitTrackingState extends State<CookKitTracking>{
 
   String errorTextResponse = '';
 
+  bool showTrackingProgress = false;
   void shippingTracker() async {
+    setState(() {
+      showTrackingProgress = true;
+    });
     final result = await ShipTrackService(repository: repository).getUserProfileService(widget.awb_number ?? '');
-    //print("shippingTracker: $result");
+    print("shippingTracker: $result");
     //print(result.runtimeType);
     if(result.runtimeType == ShippingTrackModel){
       ShippingTrackModel data = result;
@@ -441,36 +473,39 @@ class _CookKitTrackingState extends State<CookKitTracking>{
           errorTextResponse = data.trackingData?.error ?? '';
         });
       }
-      data.trackingData!.shipmentTrackActivities!.forEach((element) {
-        trackerList.add(element);
-        if(element.srStatusLabel!.toLowerCase() == 'delivered'){
-          setState(() {
-            isDelivered = true;
-          });
-        }
-      });
-      estimatedDate = data.trackingData!.etd!;
-      estimatedDay = DateFormat('EEEE').format(DateTime.parse(estimatedDate));
-      //print("estimatedDay: $estimatedDay");
-      setState(() {
-        upperBound = trackerList.length;
-        activeStep = 0;
-      });
+      else{
+        print(data.trackingData!.shipmentTrackActivities);
+        data.trackingData!.shipmentTrackActivities!.forEach((element) {
+          trackerList.add(element);
+          if(element.srStatusLabel!.toLowerCase() == 'delivered'){
+            setState(() {
+              isDelivered = true;
+            });
+          }
+        });
+        estimatedDate = data.trackingData!.etd!;
+        estimatedDay = DateFormat('EEEE').format(DateTime.parse(estimatedDate));
+        //print("estimatedDay: $estimatedDay");
+        setState(() {
+          upperBound = trackerList.length;
+          activeStep = 0;
+        });
 
 
-      timer = Timer.periodic(const Duration(milliseconds: 500), (timer1) {
-        //print(timer1.tick);
-        //print('activeStep: $activeStep');
-        //print('upperBound:$upperBound');
-        if (activeStep < upperBound) {
-          setState(() {
-            activeStep++;
-          });
-        }
-        else{
-          timer1.cancel();
-        }
-      });
+        timer = Timer.periodic(const Duration(milliseconds: 500), (timer1) {
+          //print(timer1.tick);
+          //print('activeStep: $activeStep');
+          //print('upperBound:$upperBound');
+          if (activeStep < upperBound) {
+            setState(() {
+              activeStep++;
+            });
+          }
+          else{
+            timer1.cancel();
+          }
+        });
+      }
     }
     else{
       ErrorModel error = result as ErrorModel;
@@ -480,9 +515,15 @@ class _CookKitTrackingState extends State<CookKitTracking>{
         GutList().myAppState.getShipRocketToken();
       }
     }
+    setState(() {
+      showTrackingProgress = false;
+    });
   }
 
   void getShoppingList() async {
+    setState(() {
+      showShoppingLoading = true;
+    });
     final result = await ShipTrackService(repository: repository).getShoppingDetailsListService();
     print("getShoppingList: $result");
     print(result.runtimeType);
@@ -494,6 +535,9 @@ class _CookKitTrackingState extends State<CookKitTracking>{
         shoppingData = model.data!.map((e) => e).toList();
       });
       print('shopping list: $shoppingData');
+      setState(() {
+        showShoppingLoading = false;
+      });
     }
   }
 

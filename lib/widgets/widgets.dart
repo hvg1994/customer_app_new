@@ -122,7 +122,7 @@ TextStyle buildTextStyle() {
 //   );
 // }
 
-Center buildCircularIndicator() {
+buildCircularIndicator() {
   return Center(
       child: HeartBeat(
         child: Image.asset('assets/images/progress_logo.png',

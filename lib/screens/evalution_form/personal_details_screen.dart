@@ -18,7 +18,10 @@ import '../../model/error_model.dart';
 import '../../model/evaluation_from_models/evaluation_model_format1.dart';
 import '../../model/evaluation_from_models/get_country_details_model.dart';
 import '../../model/evaluation_from_models/get_evaluation_model/get_evaluationdata_model.dart';
+import '../../model/profile_model/user_profile/user_profile_model.dart';
 import '../../repository/api_service.dart';
+import '../../repository/profile_repository/get_user_profile_repo.dart';
+import '../../services/profile_screen_service/user_profile_service.dart';
 import '../../utils/country_list.dart';
 import '../../widgets/constants.dart';
 import '../../widgets/widgets.dart';
@@ -107,6 +110,10 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
   String selectedValue21 = "";
   String selectedValue22 = "";
   String tongueCoatingRadio = "";
+  String urinationValue = "";
+  String urineColorValue = "";
+  String urineLookLikeValue = "";
+
 
   final healthCheckBox1 = <CheckBoxSettings>[
     CheckBoxSettings(title: "Autoimmune Diseases"),
@@ -220,12 +227,17 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
   ];
   List selectedHealthCheckBox2 = [];
 
+  //********** not used*************
+
   final urinFrequencyList = [
     CheckBoxSettings(title: "Increased"),
     CheckBoxSettings(title: "Decreased"),
     CheckBoxSettings(title: "No Change"),
   ];
   List selectedUrinFrequencyList = [];
+  //*********************************
+
+  //********** not used*************
 
   final urinColorList = [
     CheckBoxSettings(title: "Clear"),
@@ -236,6 +248,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
   ];
   List selectedUrinColorList = [];
   bool urinColorOtherSelected = false;
+  // *******************************
 
   final urinSmellList = [
     CheckBoxSettings(title: "Normal urine odour"),
@@ -245,13 +258,16 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
   List selectedUrinSmellList = [];
   bool urinSmellOtherSelected = false;
 
+  //********** not used*************
 
   final urinLooksList = [
     CheckBoxSettings(title: "Clear/Transparent"),
     CheckBoxSettings(title: "Foggy/cloudy"),
   ];
+
   List selectedUrinLooksList = [];
   bool urinLooksLikeOtherSelected = false;
+  //***********************************
 
 
   final medicalInterventionsDoneBeforeList = [
@@ -278,6 +294,10 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
     // TODO: implement initState
     super.initState();
 
+    WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
+      getProfileData();
+    });
+    pinCodeController.addListener(() { });
     if(widget.showData){
       _getEvaluationDataFuture = EvaluationFormService(repository: repository).getEvaluationDataService();
     }
@@ -291,7 +311,10 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
   @override
   void dispose() {
     // TODO: implement dispose
-    if(mounted) super.dispose();
+    if(mounted) {
+      pinCodeController.removeListener(() { });
+      super.dispose();
+    }
   }
 
   @override
@@ -771,29 +794,45 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
             SizedBox(
               height: 1.h,
             ),
-            TextFormField(
-              controller: pinCodeController,
-              cursorColor: kPrimaryColor,
-              validator: (value) {
-                if (value!.isEmpty) {
-                  return 'Please enter your Pin Code';
-                } else if (value.length > 7) {
-                  return 'Please enter your valid Pin Code';
-                } else {
-                  return null;
+            FocusScope(
+              onFocusChange: (value) {
+                print(value);
+                if (!value) {
+                  print("editing");
+                  String code = _pref?.getString(AppConfig.countryCode) ?? '';
+                  if(pinCodeController.text.length < 6){
+
+                  }
+                  else if(code.isNotEmpty && code == 'IN'){
+                    fetchCountry(pinCodeController.text, code);
+                  }
                 }
               },
-              onFieldSubmitted: (value){
-                String code = _pref?.getString(AppConfig.countryCode) ?? '';
-                if(code.isNotEmpty && code == 'IN'){
-                  fetchCountry(value, code);
-                }
-              },
-              decoration: CommonDecoration.buildTextInputDecoration(
-                  "Your answer", pinCodeController),
-              textInputAction: TextInputAction.next,
-              textAlign: TextAlign.start,
-              keyboardType: TextInputType.number,
+              child: TextFormField(
+                controller: pinCodeController,
+                cursorColor: kPrimaryColor,
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return 'Please enter your Pin Code';
+                  } else if (value.length > 7) {
+                    return 'Please enter your valid Pin Code';
+                  } else {
+                    return null;
+                  }
+                },
+                onFieldSubmitted: (value){
+                  String code = _pref?.getString(AppConfig.countryCode) ?? '';
+                  if(code.isNotEmpty && code == 'IN'){
+                    fetchCountry(value, code);
+                  }
+                },
+                decoration: CommonDecoration.buildTextInputDecoration(
+                    "Your answer", pinCodeController),
+                textInputAction: TextInputAction.next,
+                textAlign: TextAlign.start,
+                keyboardType: TextInputType.number,
+                maxLength: 6,
+              ),
             ),
             SizedBox(
               height: 2.h,
@@ -802,23 +841,25 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
             SizedBox(
               height: 1.h,
             ),
-            TextFormField(
-              controller: cityController,
-              cursorColor: kPrimaryColor,
-              validator: (value) {
-                if (value!.isEmpty || !RegExp(r"^[a-z A-Z]").hasMatch(value)) {
-                  return 'Please Enter City';
-                } else if (!RegExp(r"^[a-z A-Z]").hasMatch(value)) {
-                  return 'Please Enter City';
-                } else {
-                  return null;
-                }
-              },
-              decoration: CommonDecoration.buildTextInputDecoration(
-                  "Please Select City", cityController),
-              textInputAction: TextInputAction.next,
-              textAlign: TextAlign.start,
-              keyboardType: TextInputType.streetAddress,
+            IgnorePointer(
+              child: TextFormField(
+                controller: cityController,
+                cursorColor: kPrimaryColor,
+                validator: (value) {
+                  if (value!.isEmpty || !RegExp(r"^[a-z A-Z]").hasMatch(value)) {
+                    return 'Please Enter City';
+                  } else if (!RegExp(r"^[a-z A-Z]").hasMatch(value)) {
+                    return 'Please Enter City';
+                  } else {
+                    return null;
+                  }
+                },
+                decoration: CommonDecoration.buildTextInputDecoration(
+                    "Please Select City", cityController),
+                textInputAction: TextInputAction.next,
+                textAlign: TextAlign.start,
+                keyboardType: TextInputType.streetAddress,
+              ),
             ),
             SizedBox(
               height: 2.h,
@@ -827,23 +868,25 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
             SizedBox(
               height: 1.h,
             ),
-            TextFormField(
-              controller: stateController,
-              cursorColor: kPrimaryColor,
-              validator: (value) {
-                if (value!.isEmpty || !RegExp(r"^[a-z A-Z]").hasMatch(value)) {
-                  return 'Please Enter State';
-                } else if (!RegExp(r"^[a-z A-Z]").hasMatch(value)) {
-                  return 'Please Enter State';
-                } else {
-                  return null;
-                }
-              },
-              decoration: CommonDecoration.buildTextInputDecoration(
-                  "Please Select State", stateController),
-              textInputAction: TextInputAction.next,
-              textAlign: TextAlign.start,
-              keyboardType: TextInputType.streetAddress,
+            IgnorePointer(
+              child: TextFormField(
+                controller: stateController,
+                cursorColor: kPrimaryColor,
+                validator: (value) {
+                  if (value!.isEmpty || !RegExp(r"^[a-z A-Z]").hasMatch(value)) {
+                    return 'Please Enter State';
+                  } else if (!RegExp(r"^[a-z A-Z]").hasMatch(value)) {
+                    return 'Please Enter State';
+                  } else {
+                    return null;
+                  }
+                },
+                decoration: CommonDecoration.buildTextInputDecoration(
+                    "Please Select State", stateController),
+                textInputAction: TextInputAction.next,
+                textAlign: TextAlign.start,
+                keyboardType: TextInputType.streetAddress,
+              ),
             ),
             SizedBox(
               height: 2.h,
@@ -852,23 +895,25 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
             SizedBox(
               height: 1.h,
             ),
-            TextFormField(
-              controller: countryController,
-              cursorColor: kPrimaryColor,
-              validator: (value) {
-                if (value!.isEmpty || !RegExp(r"^[a-z A-Z]").hasMatch(value)) {
-                  return 'Please Enter Country';
-                } else if (!RegExp(r"^[a-z A-Z]").hasMatch(value)) {
-                  return 'Please Enter Country';
-                } else {
-                  return null;
-                }
-              },
-              decoration: CommonDecoration.buildTextInputDecoration(
-                  "Please Select Country", countryController),
-              textInputAction: TextInputAction.next,
-              textAlign: TextAlign.start,
-              keyboardType: TextInputType.streetAddress,
+            IgnorePointer(
+              child: TextFormField(
+                controller: countryController,
+                cursorColor: kPrimaryColor,
+                validator: (value) {
+                  if (value!.isEmpty || !RegExp(r"^[a-z A-Z]").hasMatch(value)) {
+                    return 'Please Enter Country';
+                  } else if (!RegExp(r"^[a-z A-Z]").hasMatch(value)) {
+                    return 'Please Enter Country';
+                  } else {
+                    return null;
+                  }
+                },
+                decoration: CommonDecoration.buildTextInputDecoration(
+                    "Please Select Country", countryController),
+                textInputAction: TextInputAction.next,
+                textAlign: TextAlign.start,
+                keyboardType: TextInputType.streetAddress,
+              ),
             ),
             SizedBox(
               height: 5.h,
@@ -1155,83 +1200,152 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
             SizedBox(
               height: 1.h,
             ),
-            Wrap(
-              // mainAxisSize: MainAxisSize.min,
+            Row(
               children: [
-                ...urinFrequencyList.map(buildWrapingCheckBox).toList()
+                Radio(
+                  value: "Increased",
+                  activeColor: kPrimaryColor,
+                  groupValue: urinationValue,
+                  onChanged: (value) {
+                    setState(() {
+                      urinationValue = value as String;
+                    });
+                  },
+                ),
+                Text('Increased', style: buildTextStyle()),
+                SizedBox(
+                  width: 3.w,
+                ),
+                Radio(
+                  value: "Decreased",
+                  activeColor: kPrimaryColor,
+                  groupValue: urinationValue,
+                  onChanged: (value) {
+                    setState(() {
+                      urinationValue = value as String;
+                    });
+                  },
+                ),
+                Text(
+                  'Decreased',
+                  style: buildTextStyle(),
+                ),
+                SizedBox(
+                  width: 3.w,
+                ),
+                Radio(
+                    value: "No Change",
+                    groupValue: urinationValue,
+                    activeColor: kPrimaryColor,
+                    onChanged: (value) {
+                      setState(() {
+                        urinationValue = value as String;
+                      });
+                    }),
+                Text(
+                  "No Change",
+                  style: buildTextStyle(),
+                ),
               ],
             ),
+            // Wrap(
+            //   // mainAxisSize: MainAxisSize.min,
+            //   children: [
+            //     ...urinFrequencyList.map(buildWrapingCheckBox).toList()
+            //   ],
+            // ),
             buildLabelTextField("Urin Color"),
             SizedBox(
               height: 1.h,
             ),
-            ListView(
-              shrinkWrap: true,
-              physics: const BouncingScrollPhysics(),
-              children: [
-                Wrap(
-                  children: [
-                    ...urinColorList.map(buildWrapingCheckBox).toList(),
-                  ],
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      SizedBox(
-                        width: 20,
-                        child: Checkbox(
-                          activeColor: kPrimaryColor,
-                          value: urinColorOtherSelected,
-                          onChanged: (v) {
-                            setState(() {
-                              urinColorOtherSelected = v!;
-                              if(urinColorOtherSelected){
-                                selectedUrinColorList.add(otherText);
-                              }
-                              else{
-                                selectedUrinColorList.remove(otherText);
-                              }
-                            });
-                          },
-                        ),
-                      ),
-                      const SizedBox(
-                        width: 4,
-                      ),
-                      Text(
-                        'Other:',
-                        style: buildTextStyle(),
-                      ),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: TextFormField(
-                    controller: urinColorController,
-                    cursorColor: kPrimaryColor,
-                    validator: (value) {
-                      if (value!.isEmpty && urinColorOtherSelected) {
-                        return 'Please enter the details about Urin Color';
-                      } else {
-                        return null;
-                      }
-                    },
-                    decoration: CommonDecoration.buildTextInputDecoration(
-                        "Your answer", urinColorController),
-                    textInputAction: TextInputAction.next,
-                    textAlign: TextAlign.start,
-                    keyboardType: TextInputType.text,
-                  ),
-                ),
-              ],
+            buildUrineColorRadioButton(),
+            // ListView(
+            //   shrinkWrap: true,
+            //   physics: const BouncingScrollPhysics(),
+            //   children: [
+            //     Wrap(
+            //       children: [
+            //         ...urinColorList.map(buildWrapingCheckBox).toList(),
+            //       ],
+            //     ),
+            //     Padding(
+            //       padding: const EdgeInsets.symmetric(horizontal: 8),
+            //       child: Row(
+            //         mainAxisSize: MainAxisSize.min,
+            //         children: [
+            //           SizedBox(
+            //             width: 20,
+            //             child: Checkbox(
+            //               activeColor: kPrimaryColor,
+            //               value: urinColorOtherSelected,
+            //               onChanged: (v) {
+            //                 setState(() {
+            //                   urinColorOtherSelected = v!;
+            //                   if(urinColorOtherSelected){
+            //                     selectedUrinColorList.add(otherText);
+            //                   }
+            //                   else{
+            //                     selectedUrinColorList.remove(otherText);
+            //                   }
+            //                 });
+            //               },
+            //             ),
+            //           ),
+            //           const SizedBox(
+            //             width: 4,
+            //           ),
+            //           Text(
+            //             'Other:',
+            //             style: buildTextStyle(),
+            //           ),
+            //         ],
+            //       ),
+            //     ),
+            //     Padding(
+            //       padding: const EdgeInsets.symmetric(horizontal: 8),
+            //       child: TextFormField(
+            //         controller: urinColorController,
+            //         cursorColor: kPrimaryColor,
+            //         validator: (value) {
+            //           if (value!.isEmpty && urinColorOtherSelected) {
+            //             return 'Please enter the details about Urin Color';
+            //           } else {
+            //             return null;
+            //           }
+            //         },
+            //         decoration: CommonDecoration.buildTextInputDecoration(
+            //             "Your answer", urinColorController),
+            //         textInputAction: TextInputAction.next,
+            //         textAlign: TextAlign.start,
+            //         keyboardType: TextInputType.text,
+            //       ),
+            //     ),
+            //   ],
+            // ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: TextFormField(
+                controller: urinColorController,
+                cursorColor: kPrimaryColor,
+                validator: (value) {
+                  if (value!.isEmpty && urineColorValue.toLowerCase().contains('other')) {
+                    AppConfig().showSnackbar(context, "Please enter the details about Urine Color", isError: true);
+                    return 'Please enter the details about Urine Color';
+                  } else {
+                    return null;
+                  }
+                },
+                decoration: CommonDecoration.buildTextInputDecoration(
+                    "Your answer", urinColorController),
+                textInputAction: TextInputAction.next,
+                textAlign: TextAlign.start,
+                keyboardType: TextInputType.text,
+              ),
             ),
             SizedBox(
               height: 2.h,
             ),
-            buildLabelTextField("Urin Smell"),
+            buildLabelTextField("Urine Smell"),
             SizedBox(
               height: 1.h,
             ),
@@ -1276,7 +1390,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                     cursorColor: kPrimaryColor,
                     validator: (value) {
                       if (value!.isEmpty && urinSmellOtherSelected) {
-                        return 'Please enter the details about urin smell';
+                        return 'Please select the details about urine smell';
                       } else {
                         return null;
                       }
@@ -1297,60 +1411,81 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
             SizedBox(
               height: 1.h,
             ),
-            ListView(
-              shrinkWrap: true,
-              physics: const BouncingScrollPhysics(),
-              children: [
-                Wrap(
-                  children: [
-                    ...urinLooksList.map(buildHealthCheckBox).toList(),
-                  ],
-                ),
-                ListTile(
-                  minLeadingWidth: 0,
-                  leading: SizedBox(
-                    width: 20,
-                    child: Checkbox(
-                      activeColor: kPrimaryColor,
-                      value: urinLooksLikeOtherSelected,
-                      onChanged: (v) {
-                        setState(() {
-                          urinLooksLikeOtherSelected = v!;
-                          if(urinLooksLikeOtherSelected){
-                            selectedUrinLooksList.add(otherText);
-                          }
-                          else{
-                            selectedUrinLooksList.remove(otherText);
-                          }
-                        });
-                      },
-                    ),
-                  ),
-                  title: Text(
-                    'Other:',
-                    style: buildTextStyle(),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: TextFormField(
-                    controller: urinLooksLikeController,
-                    cursorColor: kPrimaryColor,
-                    validator: (value) {
-                      if (value!.isEmpty && urinLooksLikeOtherSelected) {
-                        return 'Please enter how Urin Looks';
-                      } else {
-                        return null;
-                      }
-                    },
-                    decoration: CommonDecoration.buildTextInputDecoration(
-                        "Your answer", urinLooksLikeController),
-                    textInputAction: TextInputAction.next,
-                    textAlign: TextAlign.start,
-                    keyboardType: TextInputType.text,
-                  ),
-                ),
-              ],
+            buildUrineLookRadioButton(),
+            // ListView(
+            //   shrinkWrap: true,
+            //   physics: const BouncingScrollPhysics(),
+            //   children: [
+            //     Wrap(
+            //       children: [
+            //         ...urinLooksList.map(buildHealthCheckBox).toList(),
+            //       ],
+            //     ),
+            //     ListTile(
+            //       minLeadingWidth: 0,
+            //       leading: SizedBox(
+            //         width: 20,
+            //         child: Checkbox(
+            //           activeColor: kPrimaryColor,
+            //           value: urinLooksLikeOtherSelected,
+            //           onChanged: (v) {
+            //             setState(() {
+            //               urinLooksLikeOtherSelected = v!;
+            //               if(urinLooksLikeOtherSelected){
+            //                 selectedUrinLooksList.add(otherText);
+            //               }
+            //               else{
+            //                 selectedUrinLooksList.remove(otherText);
+            //               }
+            //             });
+            //           },
+            //         ),
+            //       ),
+            //       title: Text(
+            //         'Other:',
+            //         style: buildTextStyle(),
+            //       ),
+            //     ),
+            //     Padding(
+            //       padding: const EdgeInsets.symmetric(horizontal: 8),
+            //       child: TextFormField(
+            //         controller: urinLooksLikeController,
+            //         cursorColor: kPrimaryColor,
+            //         validator: (value) {
+            //           if (value!.isEmpty && urinLooksLikeOtherSelected) {
+            //             return 'Please enter how Urin Looks';
+            //           } else {
+            //             return null;
+            //           }
+            //         },
+            //         decoration: CommonDecoration.buildTextInputDecoration(
+            //             "Your answer", urinLooksLikeController),
+            //         textInputAction: TextInputAction.next,
+            //         textAlign: TextAlign.start,
+            //         keyboardType: TextInputType.text,
+            //       ),
+            //     ),
+            //   ],
+            // ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: TextFormField(
+                controller: urinLooksLikeController,
+                cursorColor: kPrimaryColor,
+                validator: (value) {
+                  if (value!.isEmpty && urineLookLikeValue.toLowerCase().contains('other')) {
+                    AppConfig().showSnackbar(context, "Please enter how Urine Looks", isError: true);
+                    return 'Please enter how Urine Looks';
+                  } else {
+                    return null;
+                  }
+                },
+                decoration: CommonDecoration.buildTextInputDecoration(
+                    "Your answer", urinLooksLikeController),
+                textInputAction: TextInputAction.next,
+                textAlign: TextAlign.start,
+                keyboardType: TextInputType.text,
+              ),
             ),
             SizedBox(
               height: 2.h,
@@ -1704,17 +1839,20 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
       else if(tongueCoatingRadio.isEmpty){
         AppConfig().showSnackbar(context, "Please Select Tongue Coating Details");
       }
-      else if(urinFrequencyList.every((element) => element.value == false)){
-        AppConfig().showSnackbar(context, "Please Select Atleast 1 Frequency of Urination");
+      else if(urinationValue.isEmpty){
+        // else if(urinFrequencyList.every((element) => element.value == false)){
+        AppConfig().showSnackbar(context, "Please Select Frequency of Urination");
       }
-      else if(urinColorList.every((element) => element.value == false) && !urinColorOtherSelected){
-        AppConfig().showSnackbar(context, "Please Select Atleast 1 Urin Color");
+      else if(urineColorValue.isEmpty){
+        // else if(urinColorList.every((element) => element.value == false) && !urinColorOtherSelected){
+        AppConfig().showSnackbar(context, "Please Select Urine Color");
       }
       else if(urinSmellList.every((element) => element.value == false) && !urinSmellOtherSelected){
         AppConfig().showSnackbar(context, "Please Select Atleast 1 Urin Smell");
       }
-      else if(urinLooksList.every((element) => element.value == false) && !urinLooksLikeOtherSelected){
-        AppConfig().showSnackbar(context, "Please Select Atleast 1 Urin Looks List");
+      else if(urineLookLikeValue.isEmpty){
+        // else if(urinLooksList.every((element) => element.value == false) && !urinLooksLikeOtherSelected){
+        AppConfig().showSnackbar(context, "Please Select Urine Looks List");
       }
       else if(selectedStoolMatch.isEmpty){
         AppConfig().showSnackbar(context, "Please Select Closest match to your stool");
@@ -1740,8 +1878,8 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
   }
   createFormMap(){
     return EvaluationModelFormat1(
-      fname: fnameController.text,
-      lname: lnameController.text,
+      fname: fnameController.text.capitalize(),
+      lname: lnameController.text.capitalize(),
       maritalStatus: maritalStatus,
       phone: mobileController.text,
       email: emailController.text,
@@ -1761,13 +1899,13 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
       checkList2: selectedHealthCheckBox2.join(','),
       tongueCoating: tongueCoatingRadio,
       tongueCoating_other: (tongueCoatingRadio.toLowerCase().contains("other")) ? tongueCoatingController.text : '',
-      urinationIssue:selectedUrinFrequencyList.join(','),
+      urinationIssue: urinationValue,
       urinColor: selectedUrinColorList.join(','),
-      urinColor_other: urinColorOtherSelected ? urinColorController.text : '',
+      urinColor_other: urineColorValue.toLowerCase().contains("other") ? urinColorController.text : '',
       urinSmell: selectedUrinSmellList.join(','),
       urinSmell_other: urinSmellOtherSelected ? urinSmellController.text : '',
       urinLooksLike: selectedUrinLooksList.join(','),
-      urinLooksLike_other: urinLooksLikeOtherSelected ? urinLooksLikeController.text : '',
+      urinLooksLike_other: urineLookLikeValue.toLowerCase().contains("other") ? urinLooksLikeController.text : '',
       stoolDetails: selectedStoolMatch,
       medical_interventions: selectedmedicalInterventionsDoneBeforeList.join(','),
       medical_interventions_other: medicalInterventionsOtherSelected ? medicalInterventionsDoneController.text : '',
@@ -4145,19 +4283,22 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
 
     selectedUrinFrequencyList.addAll(List.from(jsonDecode(model.anyUrinationIssue ?? '')));
     selectedUrinFrequencyList = List.from((selectedUrinFrequencyList[0].split(',') as List).map((e) => e).toList());
-    urinFrequencyList.forEach((element) {
-      if(selectedUrinFrequencyList.any((element1) => element1 == element.title)){
-        element.value = true;
-      }
-    });
+    urinationValue = selectedUrinFrequencyList.first;
+    // urinFrequencyList.forEach((element) {
+    //   if(selectedUrinFrequencyList.any((element1) => element1 == element.title)){
+    //     element.value = true;
+    //   }
+    // });
 
     selectedUrinColorList.addAll(List.from(jsonDecode(model.urineColor ?? '')));
     selectedUrinColorList = List.from((selectedUrinColorList[0].split(',') as List).map((e) => e).toList());
-    urinColorList.forEach((element) {
-      if(selectedUrinColorList.any((element1) => element1 == element.title)){
-        element.value = true;
-      }
-    });
+    urineColorValue = selectedUrinColorList.first;
+    // urinColorList.forEach((element) {
+    //   if(selectedUrinColorList.any((element1) => element1 == element.title)){
+    //     element.value = true;
+    //   }
+    // });
+
     selectedUrinSmellList.addAll(List.from(jsonDecode(model.urineSmell ?? '')));
     selectedUrinSmellList = List.from((selectedUrinSmellList[0].split(',') as List).map((e) => e).toList());
     urinSmellList.forEach((element) {
@@ -4174,11 +4315,15 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
 
     selectedUrinLooksList.addAll(List.from(jsonDecode(model.urineLookLike ?? '')));
     selectedUrinLooksList = List.from((selectedUrinLooksList[0].split(',') as List).map((e) => e).toList());
-    urinLooksList.forEach((element) {
-      if(selectedUrinLooksList.any((element1) => element1 == element.title)){
-        element.value = true;
-      }
-    });
+    urineLookLikeValue = selectedUrinLooksList.first;
+    // urinLooksList.forEach((element) {
+    //   if(selectedUrinLooksList.any((element1) => element1 == element.title)){
+    //     element.value = true;
+    //   }
+    //   if(selectedUrinLooksList.any((element) => element == otherText)){
+    //     urinLooksLikeOtherSelected = true;
+    //   }
+    // });
     urinLooksLikeController.text = model.urineLookLikeOther ?? '';
     selectedStoolMatch = model.closestStoolType ?? '';
 
@@ -4294,7 +4439,16 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
     Navigator.of(context).push(
       PageRouteBuilder(
         opaque: false, // set to false
-        pageBuilder: (_, __, ___) => buildCircularIndicator()
+        pageBuilder: (_, __, ___) => Container(
+          child: buildCircularIndicator(),
+          width: 70,height: 70,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            boxShadow: [
+              BoxShadow(blurRadius: 2, color: Colors.grey.withOpacity(0.5))
+            ],
+          ),
+        )
       ),
     );
 
@@ -4314,6 +4468,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
     else{
       ErrorModel model = res as ErrorModel;
       print(model.message!);
+      AppConfig().showSnackbar(context, "Please Enter Valid Pincode", isError: true);
     }
     Navigator.pop(context);
   }
@@ -4341,6 +4496,203 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
           fontSize: 8.sp,
         ),
       ),
+    );
+  }
+
+  getProfileData() async{
+    Navigator.of(context).push(
+      PageRouteBuilder(
+          opaque: false, // set to false
+          pageBuilder: (_, __, ___) => Container(
+            child: buildCircularIndicator(),
+            width: 70,height: 70,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              boxShadow: [
+                BoxShadow(blurRadius: 2, color: Colors.grey.withOpacity(0.5))
+              ],
+            ),
+          )
+      ),
+    );
+    final res = await UserProfileService(repository: userRepository).getUserProfileService();
+    if(res.runtimeType == UserProfileModel){
+      UserProfileModel data = res as UserProfileModel;
+      fnameController.text = data.data?.fname ?? '';
+      lnameController.text = data.data?.lname ?? '';
+      ageController.text = data.data?.age ?? '';
+      emailController.text = data.data?.email ?? '';
+      mobileController.text = data.data?.phone ?? '';
+      gender = (data.data!.gender != null) ? data.data!.gender.toString().capitalize() : '';
+      print(gender);
+      print(data.data!.gender.toString());
+    }
+    Navigator.pop(context);
+  }
+  final UserProfileRepository userRepository = UserProfileRepository(
+    apiClient: ApiClient(
+      httpClient: http.Client(),
+    ),
+  );
+
+  buildUrineColorRadioButton() {
+    return Column(
+      children: [
+        Row(
+          children: [
+            Radio(
+              value: "Clear",
+              activeColor: kPrimaryColor,
+              groupValue: urineColorValue,
+              onChanged: (value) {
+                setState(() {
+                  urineColorValue = value as String;
+                });
+              },
+            ),
+            Text('Clear', style: buildTextStyle()),
+            SizedBox(
+              width: 3.w,
+            ),
+            Radio(
+              value: "Pale Yello",
+              activeColor: kPrimaryColor,
+              groupValue: urineColorValue,
+              onChanged: (value) {
+                setState(() {
+                  urineColorValue = value as String;
+                });
+              },
+            ),
+            Text(
+              'Pale Yello',
+              style: buildTextStyle(),
+            ),
+            SizedBox(
+              width: 3.w,
+            ),
+            Radio(
+                value: "Red",
+                groupValue: urineColorValue,
+                activeColor: kPrimaryColor,
+                onChanged: (value) {
+                  setState(() {
+                    urineColorValue = value as String;
+                  });
+                }),
+            Text(
+              "Red",
+              style: buildTextStyle(),
+            ),
+          ],
+        ),
+        Row(
+          children: [
+            Radio(
+              value: "Black",
+              activeColor: kPrimaryColor,
+              groupValue: urineColorValue,
+              onChanged: (value) {
+                setState(() {
+                  urineColorValue = value as String;
+                });
+              },
+            ),
+            Text('Black', style: buildTextStyle()),
+            SizedBox(
+              width: 3.w,
+            ),
+            Radio(
+              value: "Yellow",
+              activeColor: kPrimaryColor,
+              groupValue: urineColorValue,
+              onChanged: (value) {
+                setState(() {
+                  urineColorValue = value as String;
+                });
+              },
+            ),
+            Text(
+              'Yellow',
+              style: buildTextStyle(),
+            ),
+            SizedBox(
+              width: 3.w,
+            ),
+            Radio(
+                value: "Other",
+                groupValue: urineColorValue,
+                activeColor: kPrimaryColor,
+                onChanged: (value) {
+                  setState(() {
+                    urineColorValue = value as String;
+                  });
+                }),
+            Text(
+              "Other",
+              style: buildTextStyle(),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  buildUrineLookRadioButton() {
+    return  Column(
+      children: [
+        Row(
+          children: [
+            Radio(
+                value: "Clear/Transparent",
+                groupValue: urineLookLikeValue,
+                activeColor: kPrimaryColor,
+                onChanged: (value) {
+                  setState(() {
+                    urineLookLikeValue = value as String;
+                  });
+                }),
+            Text(
+              "Clear/Transparent",
+              style: buildTextStyle(),
+            ),
+          ],
+        ),
+        Row(
+          children: [
+            Radio(
+                value: "Foggy/cloudy",
+                groupValue: urineLookLikeValue,
+                activeColor: kPrimaryColor,
+                onChanged: (value) {
+                  setState(() {
+                    urineLookLikeValue = value as String;
+                  });
+                }),
+            Text(
+              "Foggy/cloudy",
+              style: buildTextStyle(),
+            ),
+          ],
+        ),
+        Row(
+          children: [
+            Radio(
+                value: "Other",
+                groupValue: urineLookLikeValue,
+                activeColor: kPrimaryColor,
+                onChanged: (value) {
+                  setState(() {
+                    urineLookLikeValue = value as String;
+                  });
+                }),
+            Text(
+              "Other",
+              style: buildTextStyle(),
+            ),
+          ],
+        ),
+      ],
     );
   }
 

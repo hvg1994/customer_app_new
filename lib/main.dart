@@ -4,6 +4,8 @@ In main.dart we are storing DeviceId to local storage
 AppConfig() will be Singleton class so than we can use this as local storage
 */
 
+import 'dart:io';
+
 import 'package:country_code_picker/country_localizations.dart';
 import 'package:device_preview/device_preview.dart' hide DeviceType;
 import 'package:firebase_core/firebase_core.dart';
@@ -26,6 +28,8 @@ import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_sim_country_code/flutter_sim_country_code.dart';
 
+import 'utils/http_override.dart';
+
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     print('Handling a background message ${message.messageId}');
     await Firebase.initializeApp();
@@ -36,6 +40,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  HttpOverrides.global = new MyHttpOverrides();
   AppConfig().preferences = await SharedPreferences.getInstance();
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: [SystemUiOverlay.bottom]);
   SystemChrome.setSystemUIOverlayStyle(
@@ -176,7 +181,6 @@ class _MyAppState extends State<MyApp> {
           print(message.notification!.body);
           print("message.data11 ${message.data}");
           LocalNotificationService.createanddisplaynotification(message);
-
         }
       },
     );

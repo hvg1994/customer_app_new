@@ -19,5 +19,9 @@ class ProgramRepository{
     return await apiClient.proceedDayProgramList(model);
   }
 
+  /// pass startProgram=1
+  Future startProgramOnSwipeRepo(String startProgram) async{
+    return await apiClient.startProgramOnSwipeApi(startProgram);
+  }
 
 }

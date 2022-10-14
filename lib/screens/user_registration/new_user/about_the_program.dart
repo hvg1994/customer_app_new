@@ -52,9 +52,9 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
   addUrlToVideoPlayer(String url){
     print("url"+ url);
     _videoPlayerController = VlcPlayerController.network(
-      url,
+      // url,
       // 'http://samples.mplayerhq.hu/MPEG-4/embedded_subs/1Video_2Audio_2SUBs_timed_text_streams_.mp4',
-      // 'https://media.w3.org/2010/05/sintel/trailer.mp4',
+      'https://media.w3.org/2010/05/sintel/trailer.mp4',
       hwAcc: HwAcc.auto,
       options: VlcPlayerOptions(
         advanced: VlcAdvancedOptions([

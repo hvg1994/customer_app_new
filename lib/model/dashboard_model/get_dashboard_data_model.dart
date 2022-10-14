@@ -1,7 +1,9 @@
 import 'package:gwc_customer/model/dashboard_model/gut_model/gut_data_model.dart';
 import 'package:gwc_customer/model/dashboard_model/shipping_approved/ship_approved_model.dart';
+import 'package:gwc_customer/model/program_model/proceed_model/get_proceed_model.dart';
 
 import 'get_appointment/get_appointment_after_appointed.dart';
+import 'get_program_model.dart';
 
 class GetDashboardDataModel {
   int? status;
@@ -11,8 +13,9 @@ class GetDashboardDataModel {
   GutDataModel? normal_consultation;
   ShippingApprovedModel? approved_shipping;
   GutDataModel? normal_shipping;
-  GutDataModel? program;
-  GutDataModel? postprogram;
+  GetProgramModel? data_program;
+  GutDataModel? normal_program;
+  GutDataModel? normal_postprogram;
 
   GetDashboardDataModel(
       {this.status,
@@ -20,8 +23,11 @@ class GetDashboardDataModel {
         this.key,
         this.app_consulation,
         this.approved_shipping,
-        this.program,
-        this.postprogram});
+        this.normal_program,
+        this.data_program,
+        this.normal_postprogram,
+        // this.postprogram
+      });
 
   GetDashboardDataModel.fromJson(Map<String, dynamic> json) {
     status = json['status'];
@@ -29,6 +35,8 @@ class GetDashboardDataModel {
     key = json['key'];
     print(json['Consulation']['value'].runtimeType);
     print(json['Shipping']['value'].runtimeType);
+    print(json['Program']['value'].runtimeType);
+
 
     if(json['Consulation'] != null){
       if(json['Consulation']['value'].runtimeType == String){
@@ -46,15 +54,16 @@ class GetDashboardDataModel {
         approved_shipping = ShippingApprovedModel.fromJson(json['Shipping']);
       }
     }
-    // consulation =
-    //     ? new GetAppointmentDetailsModel.fromJson(json['Consulation'])
-    //     : null;
-    // shipping = json['Shipping'] != null
-    //     ? new ShippingApprovedModel.fromJson(json['Shipping'])
-    //     : null;
-    program = json['Program'] != null ? new GutDataModel.fromJson(json['Program']) : null;
-    postprogram = json['Postprogram'] != null
-        ? new GutDataModel.fromJson(json['Postprogram'])
+    if(json['Program'] != null){
+      if(json['Program']['value'].runtimeType == String){
+        normal_program = GutDataModel.fromJson(json['Program']);
+      }
+      else{
+        data_program = GetProgramModel.fromJson(json['Program']);
+      }
+    }
+    normal_postprogram = json['Postprogram'] != null
+        ? GutDataModel.fromJson(json['Postprogram'])
         : null;
   }
 
@@ -66,14 +75,14 @@ class GetDashboardDataModel {
     if (this.app_consulation != null) {
       data['Consulation'] = this.app_consulation!.toJson();
     }
-    if (this.app_consulation != null) {
+    if (this.approved_shipping != null) {
       data['Shipping'] = this.approved_shipping!.toJson();
     }
-    if (this.program != null) {
-      data['Program'] = this.program!.toJson();
+    if (this.data_program != null) {
+      data['Program'] = this.data_program!.toJson();
     }
-    if (this.postprogram != null) {
-      data['Postprogram'] = this.postprogram!.toJson();
+    if (this.normal_postprogram != null) {
+      data['Postprogram'] = this.normal_postprogram!.toJson();
     }
     return data;
   }

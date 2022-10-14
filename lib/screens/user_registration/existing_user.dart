@@ -12,7 +12,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
 import 'package:http/http.dart' as http;
 import 'package:gwc_customer/repository/api_service.dart';
+import '../../model/evaluation_from_models/get_evaluation_model/child_get_evaluation_data_model.dart';
+import '../../model/evaluation_from_models/get_evaluation_model/get_evaluationdata_model.dart';
 import '../../model/login_model/login_otp_model.dart';
+import '../../repository/evaluation_form_repository/evanluation_form_repo.dart';
+import '../../services/evaluation_fome_service/evaluation_form_service.dart';
 import '../../utils/app_config.dart';
 import '../dashboard_screen.dart';
 import 'new_user/choose_your_problem_screen.dart';
@@ -502,6 +506,14 @@ class _ExistingUserState extends State<ExistingUser> {
           ),
         );
       }
+      final shipAddress = await EvaluationFormService(repository: evalrepository).getEvaluationDataService();
+      if(shipAddress.runtimeType == GetEvaluationDataModel){
+        GetEvaluationDataModel model = shipAddress as GetEvaluationDataModel;
+        ChildGetEvaluationDataModel? model1 = model.data;
+        final address1 = model1?.patient?.user?.address ?? '';
+        final address2 = model1?.patient?.address2 ?? '';
+        _pref.setString(AppConfig.SHIPPING_ADDRESS, address1+address2);
+      }
     }
     else{
       setState(() {
@@ -524,4 +536,10 @@ class _ExistingUserState extends State<ExistingUser> {
     _pref.setInt(AppConfig.last_login, DateTime.now().millisecondsSinceEpoch);
     await _pref.setString(AppConfig().BEARER_TOKEN, token);
   }
+
+  final EvaluationFormRepository evalrepository = EvaluationFormRepository(
+    apiClient: ApiClient(
+      httpClient: http.Client(),
+    ),
+  );
 }

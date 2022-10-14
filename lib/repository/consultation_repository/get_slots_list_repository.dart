@@ -14,4 +14,5 @@ class ConsultationRepository{
   Future bookAppointmentSlotListRepo(String date, String slotTime, {String? appointmentId}) async{
     return await apiClient.bookAppointmentApi(date, slotTime, appointmentId: appointmentId);
   }
+
 }

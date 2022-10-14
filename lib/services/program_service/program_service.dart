@@ -20,4 +20,9 @@ class ProgramService extends ChangeNotifier{
   Future proceedDayMealDetailsService(ProceedProgramDayModel day) async{
     return await repository.proceedDayMealDetailsRepo(day);
   }
+
+  /// pass startProgram=1
+  Future startProgramOnSwipeService(String startProgram) async{
+    return await repository.startProgramOnSwipeRepo(startProgram);
+  }
 }

@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:gwc_customer/model/error_model.dart';
+import 'package:gwc_customer/services/program_service/program_service.dart';
 import 'package:sizer/sizer.dart';
 import 'package:slide_to_confirm/slide_to_confirm.dart';
+import '../../model/program_model/start_program_on_swipe_model.dart';
+import '../../repository/api_service.dart';
+import '../../repository/program_repository/program_repository.dart';
+import '../../utils/app_config.dart';
 import '../../widgets/constants.dart';
 import '../../widgets/widgets.dart';
 import 'day_program_plans.dart';
+import 'package:http/http.dart' as http;
 
 class ProgramPlanScreen extends StatefulWidget {
   const ProgramPlanScreen({Key? key}) : super(key: key);
@@ -51,12 +58,7 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
                       color: gTextColor,
                       fontSize: 10.sp),
                   onConfirmation: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const DaysProgramPlan(),
-                      ),
-                    );
+                    startProgram();
                   }),
             ],
           ),
@@ -83,5 +85,28 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
         ),
       ],
     );
+  }
+
+  final ProgramRepository repository = ProgramRepository(
+    apiClient: ApiClient(
+      httpClient: http.Client(),
+    ),
+  );
+
+  void startProgram() async{
+    final response = await ProgramService(repository: repository).startProgramOnSwipeService('1');
+
+    if(response.runtimeType == StartProgramOnSwipeModel){
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const DaysProgramPlan(),
+        ),
+      );
+    }
+    else{
+      ErrorModel model = response as ErrorModel;
+      AppConfig().showSnackbar(context, model.message ?? 'UnAuthenticated');
+    }
   }
 }

@@ -148,9 +148,9 @@ class _MyProfileDetailsState extends State<MyProfileDetails> {
                                                   setState(() {
                                                     ChildUserModel data = subData!;
                                                     print("${data.name}, ${data.age}");
-                                                    fnameController.text = data.fname!;
-                                                    lnameController.text = data.lname!;
-                                                    ageController.text = data.age!;
+                                                    fnameController.text = data.fname ?? '';
+                                                    lnameController.text = data.lname ?? '';
+                                                    ageController.text = data.age ?? '';
                                                     genderController.text = data.gender!;
                                                     emailController.text = data.email!;
                                                     mobileController.text = data.phone!;

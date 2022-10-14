@@ -29,6 +29,8 @@ class _DaysProgramPlanState extends State<DaysProgramPlan> {
 
   Future? _getDaysFuture;
 
+  int? nextDay;
+
   @override
   void setState(VoidCallback fn) {
     // TODO: implement setState
@@ -82,6 +84,8 @@ class _DaysProgramPlanState extends State<DaysProgramPlan> {
                         //   print('${element.dayNumber} -- ${element.color}');
                         // });
                         _pref!.setInt(AppConfig.STORE_LENGTH, model.data!.length);
+                        nextDay = model.presentDay!+1;
+                        print("next day: $nextDay");
                         return buildDaysPlan(model);
                       }
                       else {
@@ -157,17 +161,17 @@ class _DaysProgramPlanState extends State<DaysProgramPlan> {
         itemBuilder: (context, index) {
           return GestureDetector(
             // onTap: ((index == 0) || model.presentDay.toString() == listData[index].dayNumber || listData[index].isCompleted == 1)
-            onTap: ((index == 0) || listData[index-1].isCompleted == 1)
+            onTap: checkOnTapCondition(index, listData, model)
                 ? () {
-              //  buildDayCompleted();
-             // buildDayNotCompleted();
               Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => MealPlanScreen(
                     // day: dayPlansData[index]["day"],
                     isCompleted: listData[index].isCompleted == 1 ? true : null,
-                    day: listData[index].dayNumber!
+                    day: listData[index].dayNumber!,
+                    presentDay: model.presentDay.toString(),
+                    nextDay: nextDay.toString() ?? "-1",
                   ),
                 ),
               );
@@ -194,7 +198,7 @@ class _DaysProgramPlanState extends State<DaysProgramPlan> {
                       image: DecorationImage(
                           alignment: Alignment(-.2, 0),
                           // opacity: (model.presentDay.toString() == listData[index].dayNumber || listData[index].isCompleted == 1 || listData[index].isCompleted != 2) ? 1.0 : 0.7,
-                          opacity: index == 0 ? 1.0 :  listData[index-1].isCompleted == 1 ? 1.0 : 0.7,
+                          opacity: getOpacity(index, listData, model),
                           // opacity: (model[index].isCompleted.toString() == '1' || model[index].isCompleted.toString() == '2') ? 1.0 : 0.7,
                           image: CachedNetworkImageProvider(listData[index].image!,),
                           // image: AssetImage(dayPlansData[index]["image"]),
@@ -424,4 +428,49 @@ class _DaysProgramPlanState extends State<DaysProgramPlan> {
       httpClient: http.Client(),
     ),
   );
+
+  getOpacity(int index, List<ChildProgramDayModel> listData, ProgramDayModel model) {
+    if(index == 0){
+      return 1.0;
+    }
+    else if(listData[index-1].isCompleted == 1){
+      return 1.0;
+    }
+    else if(index != listData.length-1 && listData[index+1].dayNumber == (model.presentDay!+1).toString()){
+      return 1.0;
+    }
+    else if(listData[listData.length-2].isCompleted == 1 && index == listData.length-1){
+      return 1.0;
+    }
+    else if(int.parse(listData[index].dayNumber!) == nextDay){
+      return 1.0;
+    }
+    else{
+      return 0.7;
+    }
+  }
+
+  checkOnTapCondition(int index, List<ChildProgramDayModel> listData, ProgramDayModel model) {
+    if(index == 0){
+      return true;
+    }
+    else if(listData[index-1].isCompleted == 1){
+      return true;
+    }
+    else if(index != listData.length-1 && listData[index+1].dayNumber == (model.presentDay!+1).toString()){
+      return true;
+    }
+    else if(listData[listData.length-2].isCompleted == 1 && index == listData.length-1){
+      return true;
+    }
+    else if(int.parse(listData[index].dayNumber!) == nextDay){
+      return true;
+    }
+    else{
+      return false;
+    }
+    // ((index == 0) || listData[index-1].isCompleted == 1)
+  }
+
+
 }
