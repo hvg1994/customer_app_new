@@ -26,10 +26,9 @@ class _SitBackScreenState extends State<SitBackScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  buildAppBar(() {
-                    Navigator.pop(context);
-                  },
-                  isBackEnable: false),
+                  buildAppBar(() {},
+                  isBackEnable: false
+                  ),
                   SizedBox(height: 2.h),
                   const Image(
                     image: AssetImage("assets/images/Mask Group 2172.png"),

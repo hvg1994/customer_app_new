@@ -105,7 +105,7 @@ class _MyProfileDetailsState extends State<MyProfileDetails> {
                       fontSize: 12.sp),
                 ),
                 SizedBox(
-                  height: height * 0.62,
+                  height: height * 0.70,
                   child: FutureBuilder(
                     future: getProfileDetails,
                     builder: (_, snapshot){

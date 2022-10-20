@@ -97,6 +97,7 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    print(widget.showData);
     if(widget.showData){
       storeData();
     }
@@ -104,6 +105,8 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
 
   void storeData() {
     final model = widget.childGetEvaluationDataModel;
+    print('store');
+    print('${model?.hungerPatternOther} ${model?.hungerPattern}');
     digestionController.text = model?.mentionIfAnyFoodAffectsYourDigesion ?? '';
     specialDietController.text = model?.anySpecialDiet ?? '';
     foodAllergyController.text = model?.anyFoodAllergy ?? '';
@@ -117,9 +120,13 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
     // print("selectedHealthCheckBox1[0]:${(selectedHealthCheckBox1[0].split(',') as List).map((e) => e).toList()}");
     selectedHabitCheckBoxList = List.from((selectedHabitCheckBoxList[0].split(',') as List).map((e) => e).toList());
     habitCheckBox.forEach((element) {
+      print(selectedHabitCheckBoxList);
       print('selectedHabitCheckBoxList.any((element1) => element1 == element.title): ${selectedHabitCheckBoxList.any((element1) => element1 == element.title)}');
       if(selectedHabitCheckBoxList.any((element1) => element1 == element.title)){
         element.value = true;
+      }
+      if(selectedHabitCheckBoxList.any((element) => element.toString().toLowerCase().contains("other"))){
+        habitOtherSelected = true;
       }
     });
     habitOtherController.text = model?.anyHabbitOrAddictionOther ?? '';

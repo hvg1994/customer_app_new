@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'package:gwc_customer/model/error_model.dart';
 import 'package:gwc_customer/model/login_model/resend_otp_model.dart';
 import 'package:gwc_customer/repository/login_otp_repository.dart';
 import 'package:gwc_customer/screens/evalution_form/evaluation_form_screen.dart';
+import 'package:gwc_customer/screens/user_registration/resend_otp_screen.dart';
 import 'package:gwc_customer/services/login_otp_service.dart';
 import 'package:gwc_customer/widgets/constants.dart';
 import 'package:gwc_customer/widgets/unfocus_widget.dart';
 import 'package:gwc_customer/widgets/widgets.dart';
+import 'package:gwc_customer/widgets/will_pop_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
 import 'package:http/http.dart' as http;
@@ -15,8 +18,11 @@ import 'package:gwc_customer/repository/api_service.dart';
 import '../../model/evaluation_from_models/get_evaluation_model/child_get_evaluation_data_model.dart';
 import '../../model/evaluation_from_models/get_evaluation_model/get_evaluationdata_model.dart';
 import '../../model/login_model/login_otp_model.dart';
+import '../../model/profile_model/user_profile/user_profile_model.dart';
 import '../../repository/evaluation_form_repository/evanluation_form_repo.dart';
+import '../../repository/profile_repository/get_user_profile_repo.dart';
 import '../../services/evaluation_fome_service/evaluation_form_service.dart';
+import '../../services/profile_screen_service/user_profile_service.dart';
 import '../../utils/app_config.dart';
 import '../dashboard_screen.dart';
 import 'new_user/choose_your_problem_screen.dart';
@@ -65,12 +71,12 @@ class _ExistingUserState extends State<ExistingUser> {
     otpVisibility = false;
     _phoneFocus = FocusNode();
 
-    phoneController.addListener(() {
-      setState(() {});
-    });
-    otpController.addListener(() {
-      setState(() {});
-    });
+    // phoneController.addListener(() {
+    //   setState(() {});
+    // });
+    // otpController.addListener(() {
+    //   setState(() {});
+    // });
     _phoneFocus.addListener(() {
       // print("!_phoneFocus.hasFocus: ${_phoneFocus.hasFocus}");
       //
@@ -85,39 +91,41 @@ class _ExistingUserState extends State<ExistingUser> {
   void dispose() {
     super.dispose();
     _phoneFocus.removeListener(() { });
-    phoneController.dispose();
-    otpController.dispose();
+    // phoneController.dispose();
+    // otpController.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        body: SingleChildScrollView(
-      physics: const BouncingScrollPhysics(),
-      child: UnfocusWidget(
-        child: Column(
-          children: [
-            Container(
-              height: 40.h,
-              width: double.maxFinite,
-              decoration: const BoxDecoration(
-                image: DecorationImage(
-                    image: AssetImage("assets/images/Mask Group 2.png"),
-                    fit: BoxFit.fill),
-              ),
-              child: Center(
-                child: Image(
-                  height: 15.h,
-                  image: const AssetImage("assets/images/Gut welness logo.png"),
+    return WillPopWidget(
+      child: Scaffold(
+          body: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: UnfocusWidget(
+          child: Column(
+            children: [
+              Container(
+                height: 30.h,
+                width: double.maxFinite,
+                decoration: const BoxDecoration(
+                  image: DecorationImage(
+                      image: AssetImage("assets/images/Mask Group 2.png"),
+                      fit: BoxFit.fill),
+                ),
+                child: Center(
+                  child: Image(
+                    height: 15.h,
+                    image: const AssetImage("assets/images/Gut welness logo.png"),
+                  ),
                 ),
               ),
-            ),
-            SizedBox(height: 1.h),
-            buildForms(),
-          ],
+              SizedBox(height: 1.h),
+              buildForms(),
+            ],
+          ),
         ),
-      ),
-    ));
+      )),
+    );
   }
 
   buildForms() {
@@ -135,7 +143,7 @@ class _ExistingUserState extends State<ExistingUser> {
                 Text(
                   'Existing User',
                   style: TextStyle(
-                    fontSize: 11.sp,
+                    fontSize: 12.sp,
                     fontFamily: "GothamMedium",
                     color: gMainColor,
                   ),
@@ -198,6 +206,7 @@ class _ExistingUserState extends State<ExistingUser> {
                     child: TextFormField(
                       cursorColor: gPrimaryColor,
                       textAlignVertical: TextAlignVertical.center,
+                      maxLength: 10,
                       controller: phoneController,
                       style: TextStyle(
                           fontFamily: "GothamBook", color: gMainColor, fontSize: 11.sp),
@@ -216,11 +225,13 @@ class _ExistingUserState extends State<ExistingUser> {
                         print("!_phoneFocus.hasFocus: ${_phoneFocus.hasFocus}");
                          if(isPhone(value) && _phoneFocus.hasFocus){
                            getOtp(value);
+                           _phoneFocus.unfocus();
                          }
                       },
                       focusNode: _phoneFocus,
                       decoration: InputDecoration(
                         isDense: true,
+                        counterText: '',
                         contentPadding: EdgeInsets.symmetric(horizontal: 2),
                         suffixIcon: !isPhone(phoneController.value.text)
                             ? phoneController.text.isEmpty
@@ -286,6 +297,7 @@ class _ExistingUserState extends State<ExistingUser> {
             Form(
               autovalidateMode: AutovalidateMode.disabled,
               child: TextFormField(
+                maxLength: 6,
                 textAlignVertical: TextAlignVertical.center,
                 keyboardType: TextInputType.number,
                 cursorColor: gPrimaryColor,
@@ -298,6 +310,7 @@ class _ExistingUserState extends State<ExistingUser> {
                     fontSize: 11.sp),
                 decoration: InputDecoration(
                   isDense: true,
+                  counterText: '',
                   // fillColor: MainTheme.fillColor,
                   contentPadding: EdgeInsets.symmetric(horizontal: 2),
                   // prefixIcon: const Icon(
@@ -333,12 +346,7 @@ class _ExistingUserState extends State<ExistingUser> {
             SizedBox(height: 3.h),
             GestureDetector(
               onTap: (){
-                if(phoneController.text.isEmpty){
-                  AppConfig().showSnackbar(context, "Please Enter Mobile Number", isError: true);
-                }
-                else if(isPhone(phoneController.text)){
-                  getOtp(phoneController.text);
-                }
+                Navigator.push(context, MaterialPageRoute(builder: (_) => ResendOtpScreen()));
               },
               child: Text(
                 "Resend OTP",
@@ -529,6 +537,15 @@ class _ExistingUserState extends State<ExistingUser> {
       //   ),
       // );
     }
+
+    final profile = await UserProfileService(repository: userRepository).getUserProfileService();
+    if(profile.runtimeType == UserProfileModel){
+      UserProfileModel model1 = profile as UserProfileModel;
+      _pref.setString(AppConfig.User_Name, model1.data?.name ?? model1.data?.fname ?? '');
+      _pref.setInt(AppConfig.USER_ID, model1.data?.id ?? -1);
+
+      print("pref id: ${_pref.getInt(AppConfig.USER_ID)}");
+    }
   }
 
   void storeBearerToken(String token) async {
@@ -538,6 +555,12 @@ class _ExistingUserState extends State<ExistingUser> {
   }
 
   final EvaluationFormRepository evalrepository = EvaluationFormRepository(
+    apiClient: ApiClient(
+      httpClient: http.Client(),
+    ),
+  );
+
+  final UserProfileRepository userRepository = UserProfileRepository(
     apiClient: ApiClient(
       httpClient: http.Client(),
     ),

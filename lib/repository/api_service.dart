@@ -68,7 +68,7 @@ final _prefs = AppConfig().preferences;
 
 
 
-  Future<ChooseProblemModel> serverGetProblemList() async {
+  Future serverGetProblemList() async {
     final String path = getProblemListUrl;
 
     print('serverGetProblemList Response header: $path');
@@ -802,7 +802,7 @@ final _prefs = AppConfig().preferences;
     return result;
   }
 
-  Future<TermsConditionModel> serverGetTermsAndCondition() async {
+  Future serverGetTermsAndCondition() async {
     final String path = termsConditionUrl;
 
     final response = await httpClient.get(

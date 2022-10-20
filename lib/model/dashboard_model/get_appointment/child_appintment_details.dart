@@ -51,7 +51,7 @@ class ChildAppointmentDetails {
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
     appointmentDate = json['appointment_date'];
-    appointmentStartTime = json['appointment_start_time'];
+    appointmentStartTime = json['slot_start_time'] ?? json['appointment_start_time'];
     teamPatients = json['team_patients'] != null
         ? new ChildTeamPatientsAppointment.fromJson(json['team_patients'])
         : null;

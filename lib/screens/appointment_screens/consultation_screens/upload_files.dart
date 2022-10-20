@@ -61,7 +61,7 @@ class _UploadFilesState extends State<UploadFiles> {
               ),
               SizedBox(height: 2.h),
               Text(
-                "Lorem lpsum is simply dummy text of the printing and typesetting idustry.",
+                "Your Appointment has been Completed !\n Please upload the reports requested by Doctor.",
                 textAlign: TextAlign.center,
                 style: TextStyle(
                     height: 1.5,
@@ -298,6 +298,8 @@ class _UploadFilesState extends State<UploadFiles> {
         ReportUploadModel result = res;
         setState(() {
           showUploadProgress = false;
+          fileFormatList.clear();
+          newList.clear();
         });
         AppConfig().showSnackbar(context, result.errorMsg ?? '');
         // Navigator.of(context).push(
@@ -310,6 +312,9 @@ class _UploadFilesState extends State<UploadFiles> {
     else{
       AppConfig().showSnackbar(context, 'Please Upload at least 1 report' ?? '', isError: true);
     }
+    setState(() {
+
+    });
   }
 
   getFileSize(File file){
@@ -474,7 +479,6 @@ class _UploadFilesState extends State<UploadFiles> {
 
     setState(() {});
   }
-
 
   Future getImageFromCamera() async {
     var image = await ImagePicker.platform.pickImage(

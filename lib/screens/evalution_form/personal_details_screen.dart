@@ -487,6 +487,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
               cursorColor: kPrimaryColor,
               validator: (value) {
                 if (value!.isEmpty || !RegExp(r"^[a-z A-Z]").hasMatch(value)) {
+                  AppConfig().showSnackbar(context, "Please enter your First Name", isError: true);
                   return 'Please enter your First Name';
                 } else {
                   return null;
@@ -777,7 +778,11 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
               validator: (value) {
                 if (value!.isEmpty) {
                   return 'Please enter your Address';
-                } else {
+                }
+                else if(value.length < 10){
+                  return 'Please enter your Address';
+                }
+                else {
                   return null;
                 }
               },
@@ -797,18 +802,22 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
             FocusScope(
               onFocusChange: (value) {
                 print(value);
-                if (!value) {
-                  print("editing");
-                  String code = _pref?.getString(AppConfig.countryCode) ?? '';
-                  if(pinCodeController.text.length < 6){
+                if(cityController.text.isEmpty){
+                  if (!value) {
+                    print("editing");
+                    String code = _pref?.getString(AppConfig.countryCode) ?? '';
+                    if(pinCodeController.text.length < 6){
 
-                  }
-                  else if(code.isNotEmpty && code == 'IN'){
-                    fetchCountry(pinCodeController.text, code);
+                    }
+                    else if(code.isNotEmpty && code == 'IN'){
+                      fetchCountry(pinCodeController.text, code);
+                    }
                   }
                 }
               },
               child: TextFormField(
+                autovalidateMode:
+                AutovalidateMode.onUserInteraction,
                 controller: pinCodeController,
                 cursorColor: kPrimaryColor,
                 validator: (value) {
@@ -821,13 +830,33 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                   }
                 },
                 onFieldSubmitted: (value){
-                  String code = _pref?.getString(AppConfig.countryCode) ?? '';
-                  if(code.isNotEmpty && code == 'IN'){
-                    fetchCountry(value, code);
+                  if(cityController.text.isEmpty){
+                    String code = _pref?.getString(AppConfig.countryCode) ?? '';
+                    if(code.isNotEmpty && code == 'IN'){
+                      fetchCountry(value, code);
+                    }
+                    FocusManager.instance.primaryFocus?.unfocus();
                   }
                 },
                 decoration: CommonDecoration.buildTextInputDecoration(
-                    "Your answer", pinCodeController),
+                    "Your answer", pinCodeController,
+                  suffixIcon: (pinCodeController.text.length != 6) ? null :
+                  GestureDetector(
+                  onTap:(){
+                    if(cityController.text.isEmpty){
+                      String code = _pref?.getString(AppConfig.countryCode) ?? '';
+                      if(code.isNotEmpty && code == 'IN'){
+                        fetchCountry(pinCodeController.text, code);
+                      }
+                      FocusManager.instance.primaryFocus?.unfocus();
+                    }
+                  },
+                  child: Icon(
+                    Icons.keyboard_arrow_right,
+                    color: gMainColor,
+                    size: 22,
+                  ),
+                ),),
                 textInputAction: TextInputAction.next,
                 textAlign: TextAlign.start,
                 keyboardType: TextInputType.number,
@@ -989,7 +1018,10 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
               validator: (value) {
                 if (value!.isEmpty) {
                   return 'Please enter your Weight';
-                } else {
+                }else if (int.tryParse(value)! < 20 || int.tryParse(value)! > 120) {
+                  return 'Please enter Valid Weight';
+                }
+                else {
                   return null;
                 }
               },
@@ -1827,7 +1859,16 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
   checkFields(BuildContext context){
     print(formKey1.currentState!.validate());
     if(formKey1.currentState!.validate() && formKey2.currentState!.validate()){
-      if(ft == -1 || inches == -1){
+      if(address1Controller.text.isEmpty){
+        AppConfig().showSnackbar(context, "Please Mention Flat Details");
+      }
+      else if(address2Controller.text.isEmpty){
+        AppConfig().showSnackbar(context, "Please Postal Address");
+      }
+      else if(pinCodeController.text.isEmpty){
+        AppConfig().showSnackbar(context, "Please Mention Pincode");
+      }
+      else if(ft == -1 || inches == -1){
         AppConfig().showSnackbar(context, "Please Select Height");
       }
       else if(healthCheckBox1.every((element) => element.value == false)){
@@ -1871,10 +1912,60 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
         addSelectedValuesToList();
         var eval1 = createFormMap();
         print((eval1 as EvaluationModelFormat1).toMap());
+        print(urineColorValue);
         Navigator.push(context, MaterialPageRoute(builder: (ctx) => PersonalDetailsScreen2(evaluationModelFormat1: eval1,medicalReportList: medicalRecords.map((e) => e.path).toList())));
       }
     }
-
+    else{
+      if(address1Controller.text.isEmpty){
+        AppConfig().showSnackbar(context, "Please Mention Flat Details", isError: true);
+      }
+      else if(address2Controller.text.isEmpty){
+        AppConfig().showSnackbar(context, "Please Postal Address", isError: true);
+      }
+      else if(pinCodeController.text.isEmpty){
+        AppConfig().showSnackbar(context, "Please Mention Pincode", isError: true);
+      }
+      else if(ft == -1 || inches == -1){
+        AppConfig().showSnackbar(context, "Please Select Height", isError: true);
+      }
+      else if(healController.text.isEmpty){
+        AppConfig().showSnackbar(context, "Please Mention your complaints", isError: true);
+      }
+      else if(healthCheckBox1.every((element) => element.value == false)){
+        AppConfig().showSnackbar(context, "Please Select Atleast 1 option from HealthList1", isError: true);
+      }
+      else if(healthCheckBox2.every((element) => element.value == false)){
+        AppConfig().showSnackbar(context, "Please Select Atleast 1 option from HealthList2", isError: true);
+      }
+      else if(tongueCoatingRadio.isEmpty){
+        AppConfig().showSnackbar(context, "Please Select Tongue Coating Details", isError: true);
+      }
+      else if(urinationValue.isEmpty){
+        // else if(urinFrequencyList.every((element) => element.value == false)){
+        AppConfig().showSnackbar(context, "Please Select Frequency of Urination" ,isError: true);
+      }
+      else if(urineColorValue.isEmpty){
+        // else if(urinColorList.every((element) => element.value == false) && !urinColorOtherSelected){
+        AppConfig().showSnackbar(context, "Please Select Urine Color", isError: true);
+      }
+      else if(urinSmellList.every((element) => element.value == false) && !urinSmellOtherSelected){
+        AppConfig().showSnackbar(context, "Please Select Atleast 1 Urin Smell", isError: true);
+      }
+      else if(urineLookLikeValue.isEmpty){
+        // else if(urinLooksList.every((element) => element.value == false) && !urinLooksLikeOtherSelected){
+        AppConfig().showSnackbar(context, "Please Select Urine Looks List", isError: true);
+      }
+      else if(selectedStoolMatch.isEmpty){
+        AppConfig().showSnackbar(context, "Please Select Closest match to your stool",isError: true);
+      }
+      else if(medicalInterventionsDoneBeforeList.every((element) => element.value == false)  && medicalInterventionsOtherSelected == false){
+        AppConfig().showSnackbar(context, "Please Select Atleast 1 Medication Intervention", isError: true);
+      }
+      else if(medicalRecords.isEmpty){
+        AppConfig().showSnackbar(context, "Please Upload Medical Records", isError: true);
+      }
+    }
   }
   createFormMap(){
     return EvaluationModelFormat1(
@@ -1900,11 +1991,11 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
       tongueCoating: tongueCoatingRadio,
       tongueCoating_other: (tongueCoatingRadio.toLowerCase().contains("other")) ? tongueCoatingController.text : '',
       urinationIssue: urinationValue,
-      urinColor: selectedUrinColorList.join(','),
+      urinColor: urineColorValue,
       urinColor_other: urineColorValue.toLowerCase().contains("other") ? urinColorController.text : '',
       urinSmell: selectedUrinSmellList.join(','),
       urinSmell_other: urinSmellOtherSelected ? urinSmellController.text : '',
-      urinLooksLike: selectedUrinLooksList.join(','),
+      urinLooksLike: urineLookLikeValue,
       urinLooksLike_other: urineLookLikeValue.toLowerCase().contains("other") ? urinLooksLikeController.text : '',
       stoolDetails: selectedStoolMatch,
       medical_interventions: selectedmedicalInterventionsDoneBeforeList.join(','),
@@ -1914,7 +2005,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
     );
   }
 
-  List<String> lst = List.generate(12, (index) => '${index+1}').toList();
+  List<String> lst = List.generate(8, (index) => '${index+1}').toList();
   List<String> lst1 = List.generate(12, (index) => '${index}').toList();
 
   showDropdown(){
@@ -4224,6 +4315,9 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
   );
 
   void storeDetails(ChildGetEvaluationDataModel model) {
+    print('storing');
+    print('model.urineColorOther: ${model.urineColorOther}');
+
     fnameController.text = model.patient?.user?.fname ?? '';
     lnameController.text = model.patient?.user?.lname ?? '';
     mobileController.text = model.patient?.user?.phone ?? '';
@@ -4293,6 +4387,8 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
     selectedUrinColorList.addAll(List.from(jsonDecode(model.urineColor ?? '')));
     selectedUrinColorList = List.from((selectedUrinColorList[0].split(',') as List).map((e) => e).toList());
     urineColorValue = selectedUrinColorList.first;
+    urinColorController.text = model.urineColorOther ?? '';
+
     // urinColorList.forEach((element) {
     //   if(selectedUrinColorList.any((element1) => element1 == element.title)){
     //     element.value = true;
@@ -4526,6 +4622,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
       gender = (data.data!.gender != null) ? data.data!.gender.toString().capitalize() : '';
       print(gender);
       print(data.data!.gender.toString());
+      setState((){});
     }
     Navigator.pop(context);
   }

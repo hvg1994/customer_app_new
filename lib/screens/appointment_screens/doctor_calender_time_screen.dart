@@ -91,7 +91,7 @@ class _DoctorCalenderTimeScreenState extends State<DoctorCalenderTimeScreen> {
           slotErrorText = result.message!;
         }
         else if(result.message!.toLowerCase().contains("unauthenticated")){
-          slotErrorText = AppConfig.networkErrorText;
+          slotErrorText = 'Something went wrong! Please Retry..';
         }
         else{
           slotErrorText = AppConfig.slotErrorText;
@@ -218,7 +218,9 @@ class _DoctorCalenderTimeScreenState extends State<DoctorCalenderTimeScreen> {
                 ),
                 Center(
                   child: GestureDetector(
-                    onTap: (isSelected.isEmpty || showBookingProgress) ? null : () {
+                    onTap: (isSelected.isEmpty || showBookingProgress) ? (){
+                      AppConfig().showSnackbar(context, 'Please select time');
+                    } : () {
                       buildConfirm(DateFormat('yyyy-MM-dd').format(selectedDate), selectedTimeSlotFullName);
                     },
                     child: Container(
@@ -525,7 +527,11 @@ class _DoctorCalenderTimeScreenState extends State<DoctorCalenderTimeScreen> {
             bookingTime: isSelected,
             data: result,
           ),
-        ),);
+        ),).then((value) {
+          setState(() {
+
+          });
+      });
     }
     else{
       ErrorModel result = res;

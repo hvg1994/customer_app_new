@@ -9,6 +9,7 @@ class AppointmentBookingModel {
   String? data;
   String? appointmentId;
   Team? team;
+  String? patientName;
   ChildDoctorModel? doctor;
   String? zoomJoinUrl;
   String? zoomId;
@@ -24,7 +25,9 @@ class AppointmentBookingModel {
         this.doctor,
         this.zoomJoinUrl,
         this.zoomId,
-        this.zoomPassword});
+        this.zoomPassword,
+        this.patientName
+      });
 
   AppointmentBookingModel.fromJson(Map<String, dynamic> json) {
     status = json['status'].toString();
@@ -37,6 +40,7 @@ class AppointmentBookingModel {
     zoomJoinUrl = json['zoom_join_url'];
     zoomId = json['zoom_id'].toString();
     zoomPassword = json['zoom_password'];
+    patientName = json['patient_name'];
   }
 
   Map<String, dynamic> toJson() {
@@ -45,6 +49,7 @@ class AppointmentBookingModel {
     data['errorCode'] = this.errorCode;
     data['key'] = this.key;
     data['data'] = this.data;
+    data['patient_name'] = this.patientName;
     data['appointment_id'] = this.appointmentId;
     if (this.team != null) {
       data['team'] = this.team!.toJson();

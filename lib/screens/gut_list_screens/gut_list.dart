@@ -20,9 +20,12 @@ import 'package:gwc_customer/widgets/widgets.dart';
 import 'package:jwt_decode/jwt_decode.dart';
 import 'package:sizer/sizer.dart';
 import '../../model/dashboard_model/shipping_approved/ship_approved_model.dart';
+import '../../model/profile_model/user_profile/user_profile_model.dart';
 import '../../model/ship_track_model/sipping_approve_model.dart';
 import '../../repository/api_service.dart';
+import '../../repository/profile_repository/get_user_profile_repo.dart';
 import '../../repository/shipping_repository/ship_track_repo.dart';
+import '../../services/profile_screen_service/user_profile_service.dart';
 import '../../utils/app_config.dart';
 import '../appointment_screens/consultation_screens/consultation_success.dart';
 import '../appointment_screens/consultation_screens/medical_report_screen.dart';
@@ -78,6 +81,8 @@ class GutListState extends State<GutList> {
     // isConsultationCompleted = _pref?.getBool(AppConfig.consultationComplete) ?? false;
 
     myFuture = getData();
+
+    getUserProfile();
 
     if(_pref!.getString(AppConfig().shipRocketBearer) == null || _pref!.getString(AppConfig().shipRocketBearer)!.isEmpty){
       getShipRocketToken();
@@ -139,7 +144,6 @@ class GutListState extends State<GutList> {
         else{
           _gutShipDataModel = _getDashboardDataModel.normal_shipping;
           shippingStage = _gutShipDataModel?.data ?? '';
-          abc();
         }
         if(shippingStage != null && shippingStage == "shipping_delivered"){
           isSelected = "Programs";
@@ -276,9 +280,9 @@ class GutListState extends State<GutList> {
 
   abc(){
     WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
-        //shipping_approved  shipping_packed
+        //shipping_approved  meal_plan_completed
       print("isShown: $isShown $shippingStage");
-        // if(shippingStage == 'shipping_packed'){
+        if(shippingStage == 'meal_plan_completed'){
           if(!isShown){
             setState(() {
               isShown = true;
@@ -311,7 +315,7 @@ class GutListState extends State<GutList> {
               }
             });
           }
-        // }
+        }
     });
   }
 
@@ -334,7 +338,7 @@ class GutListState extends State<GutList> {
         else if(index == 2 && shippingStage == 'shipping_delivered'){
           changedIndex(programsData.title);
         }
-        else if(index == 3 && programOptionStage != null){
+        else if(index == 3 && (programOptionStage != null && programOptionStage!.isNotEmpty) || (postProgramStage != null && postProgramStage!.isNotEmpty)){
           changedIndex(programsData.title);
         }
       },
@@ -344,7 +348,7 @@ class GutListState extends State<GutList> {
           margin: EdgeInsets.symmetric(vertical: 1.5.h),
           decoration: BoxDecoration(
             // color: kWhiteColor,
-            color: index == 0 ? kWhiteColor : (index == 1 && shippingStage != '') ? kWhiteColor : (index == 2 && shippingStage == 'shipping_delivered') ? kWhiteColor : (index == 3 && postProgramStage != null) ? kWhiteColor : gGreyColor.withOpacity(0.05),
+            color: index == 0 ? kWhiteColor : (index == 1 && shippingStage != null && shippingStage!.isNotEmpty) ? kWhiteColor : (index == 2 && shippingStage == 'shipping_delivered') ? kWhiteColor : (index == 3 && postProgramStage != null) ? kWhiteColor : gGreyColor.withOpacity(0.05),
             borderRadius: BorderRadius.circular(20),
             border: Border.all(color: gMainColor.withOpacity(0.3), width: 1),
             boxShadow: (isSelected != programsData.title)
@@ -380,8 +384,9 @@ class GutListState extends State<GutList> {
                   : ClipRRect(
                       borderRadius: BorderRadius.circular(10),
                       child: ColorFiltered(
-                        colorFilter: const ColorFilter.mode(
-                            Colors.grey, BlendMode.darken),
+                        colorFilter: ColorFilter.mode(
+                            (programsData.isCompleted) ? Colors.transparent : Colors.grey,
+                            BlendMode.darken),
                         child: Image(
                           height: 9.h,
                           image: AssetImage(programsData.image),
@@ -440,7 +445,7 @@ class GutListState extends State<GutList> {
                           }
                         }
                         else if (programsData.title == "Programs") {
-                          if(shippingStage == "shipping_delivered"){
+                          if(shippingStage == "shipping_delivered" && programOptionStage != null){
                             if(_getProgramModel!.value!.startProgram == '0'){
                               Navigator.of(context).push(
                                 MaterialPageRoute(
@@ -458,11 +463,11 @@ class GutListState extends State<GutList> {
                             }
                           }
                           else{
-                            AppConfig().showSnackbar(context, "You can access when Shipping Approved");
+                            AppConfig().showSnackbar(context, "program stage not getting", isError:  true);
                           }
                         }
                         else if (programsData.title == "Post Program") {
-                          if(programOptionStage != null){
+                          if(postProgramStage != null){
                             Navigator.of(context).push(
                               MaterialPageRoute(
                                 builder: (context) => const PostProgramScreen(),
@@ -497,6 +502,7 @@ class GutListState extends State<GutList> {
         isSendApproveStatus = true;
         isPressed = true;
       });
+      Navigator.pop(context);
       print("isPressed: $isPressed");
       final res = await ShipTrackService(repository: shipTrackRepository).sendSippingApproveStatusService(status);
 
@@ -513,7 +519,6 @@ class GutListState extends State<GutList> {
       setState(() {
         isPressed = false;
       });
-      if(!fromNull) Navigator.pop(context);
     }
   }
 
@@ -547,11 +552,15 @@ class GutListState extends State<GutList> {
           isReschedule: true,
           prevBookingDate: model!.value!.appointmentDate,
           prevBookingTime: model.value!.appointmentStartTime,
+
         ));
         break;
       case 'appointment_booked':
         final model = _getAppointmentDetailsModel;
         goToScreen(DoctorSlotsDetailsScreen(bookingDate: model!.value!.date!, bookingTime: model.value!.slotStartTime!, dashboardValueMap: model.value!.toJson(),isFromDashboard: true,));
+        break;
+      case 'consultation_done':
+        goToScreen(const ConsultationSuccess());
         break;
       case 'consultation_accepted':
         goToScreen(const ConsultationSuccess());
@@ -625,6 +634,22 @@ class GutListState extends State<GutList> {
     // }
     return status;
   }
+
+  getUserProfile() async{
+    if(_pref!.getString(AppConfig.User_Name) != null || _pref!.getString(AppConfig.User_Name)!.isNotEmpty){
+      final profile = await UserProfileService(repository: userRepository).getUserProfileService();
+      if(profile.runtimeType == UserProfileModel){
+        UserProfileModel model1 = profile as UserProfileModel;
+        _pref!.setString(AppConfig.User_Name, model1.data?.name ?? model1.data?.fname ?? '');
+        _pref!.setInt(AppConfig.USER_ID, model1.data?.id ?? -1);
+      }
+    }
+  }
+  final UserProfileRepository userRepository = UserProfileRepository(
+    apiClient: ApiClient(
+      httpClient: http.Client(),
+    ),
+  );
 }
 
 class ProgramsData {

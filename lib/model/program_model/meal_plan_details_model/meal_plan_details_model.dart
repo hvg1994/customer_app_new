@@ -5,22 +5,20 @@ class MealPlanDetailsModel {
   int? errorCode;
   String? programDay;
   String? comment;
-  List<ChildMealPlanDetailsModel>? data;
+  Map<String, List<ChildMealPlanDetailsModel>>? data;
 
   MealPlanDetailsModel(
       {this.status, this.errorCode, this.programDay, this.data, this.comment});
 
   MealPlanDetailsModel.fromJson(Map<String, dynamic> json) {
+    print("json => ${json['data']} ");
+    print("run==> ${json['data'].runtimeType}");
     status = json['status'];
     errorCode = json['errorCode'];
     programDay = json['program_day'];
     comment = json['comment'] ?? '';
-    if (json['data'] != null) {
-      data = <ChildMealPlanDetailsModel>[];
-      json['data'].forEach((v) {
-        data!.add(new ChildMealPlanDetailsModel.fromJson(v));
-      });
-    }
+    data = Map.from(json["data"]).map((k, v) => MapEntry<String, List<ChildMealPlanDetailsModel>>(k, List<ChildMealPlanDetailsModel>.from(v.map((x) => ChildMealPlanDetailsModel.fromJson(x)))));
+
   }
 
   Map<String, dynamic> toJson() {
@@ -29,7 +27,7 @@ class MealPlanDetailsModel {
     data['errorCode'] = this.errorCode;
     data['program_day'] = this.programDay;
     if (this.data != null) {
-      data['data'] = this.data!.map((v) => v.toJson()).toList();
+      data['data'] = Map.from(data).map((k, v) => MapEntry<String, dynamic>(k, List<dynamic>.from(v.map((x) => x.toJson()))));
     }
     return data;
   }

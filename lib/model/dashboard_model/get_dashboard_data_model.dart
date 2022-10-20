@@ -6,8 +6,8 @@ import 'get_appointment/get_appointment_after_appointed.dart';
 import 'get_program_model.dart';
 
 class GetDashboardDataModel {
-  int? status;
-  int? errorCode;
+  String? status;
+  String? errorCode;
   String? key;
   GetAppointmentDetailsModel? app_consulation;
   GutDataModel? normal_consultation;
@@ -30,8 +30,8 @@ class GetDashboardDataModel {
       });
 
   GetDashboardDataModel.fromJson(Map<String, dynamic> json) {
-    status = json['status'];
-    errorCode = json['errorCode'];
+    status = json['status'].toString();
+    errorCode = json['errorCode'].toString();
     key = json['key'];
     print(json['Consulation']['value'].runtimeType);
     print(json['Shipping']['value'].runtimeType);

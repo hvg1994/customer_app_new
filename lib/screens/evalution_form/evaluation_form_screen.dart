@@ -132,7 +132,7 @@ class _EvaluationFormScreenState extends State<EvaluationFormScreen> {
                         builder: (context) => const PersonalDetailsScreen(),
                       ),
                     );
-                  }, "Next"),
+                  }, "NEXT"),
                 ),
               ],
             ),

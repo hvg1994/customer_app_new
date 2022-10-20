@@ -44,6 +44,8 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
 
   final _pref = AppConfig().preferences;
 
+  bool isJoinPressed = false;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -174,7 +176,7 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
                                     text: TextSpan(
                                       children: <TextSpan>[
                                         TextSpan(
-                                          text: 'Your Slot has been Booked @ ',
+                                          text: 'Your Slot Booked @ ',
                                           style: TextStyle(
                                             height: 1.5,
                                             fontSize: 12.sp,
@@ -192,7 +194,7 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
                                           ),
                                         ),
                                         TextSpan(
-                                          text: " on the ",
+                                          text: " on ",
                                           style: TextStyle(
                                             height: 1.5,
                                             fontSize: 12.sp,
@@ -224,53 +226,34 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
                                 ),
                                 SizedBox(height: 8.h),
                                 GestureDetector(
-                                  onTap: () {
-                                    Navigator.of(context).push(
-                                      PageRouteBuilder(
-                                          opaque: false, // set to false
-                                          pageBuilder: (_, __, ___) => Container(
-                                            child: buildCircularIndicator(),
-                                            width: 70,height: 70,
-                                            decoration: BoxDecoration(
-                                              borderRadius: BorderRadius.circular(10),
-                                              boxShadow: [
-                                                BoxShadow(blurRadius: 2, color: Colors.grey.withOpacity(0.5))
-                                              ],
-                                            ),
-                                          )
-                                      ),
-                                    );
+                                  onTap: (isJoinPressed) ? null : () {
+                                    setState(() {
+                                      isJoinPressed = true;
+                                    });
                                     ChildAppointmentDetails? model;
                                     if(widget.isFromDashboard){
                                       model = ChildAppointmentDetails.fromJson(Map.from(widget.dashboardValueMap!));
                                     }
-                                    // print("model!.teamPatients!.patient!.user!.name: ${model!.teamPatients!.patient!.user!.name}");
                                     joinZoom(context);
-                                    // Navigator.of(context).push(
-                                    //   MaterialPageRoute(
-                                    //     builder: (context) =>
-                                    //         DoctorConsultationCompleted(
-                                    //       bookingDate: widget.bookingDate,
-                                    //       bookingTime: widget.bookingTime,
-                                    //     ),
-                                    //   ),
-                                    // );
                                   },
                                   child: Container(
-                                    padding: EdgeInsets.symmetric(
-                                        vertical: 1.h, horizontal: 25.w),
+                                    width: 60.w,
+                                    height: 5.h,
+                                    padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 10.w),
                                     decoration: BoxDecoration(
                                       color: gWhiteColor,
                                       borderRadius: BorderRadius.circular(10),
                                       border: Border.all(
                                           color: gMainColor, width: 1),
                                     ),
-                                    child: Text(
-                                      'Join',
-                                      style: TextStyle(
-                                        fontFamily: "GothamMedium",
-                                        color: gMainColor,
-                                        fontSize: 12.sp,
+                                    child: (isJoinPressed) ? buildThreeBounceIndicator()  : Center(
+                                      child: Text(
+                                        'Join',
+                                        style: TextStyle(
+                                          fontFamily: "GothamMedium",
+                                          color: gMainColor,
+                                          fontSize: 12.sp,
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -365,14 +348,20 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
   }
 
   joinZoom(BuildContext context) {
+    print(widget.data?.patientName);
     ChildAppointmentDetails? model;
     if(widget.isFromDashboard){
       model = ChildAppointmentDetails.fromJson(Map.from(widget.dashboardValueMap!));
     }
+    String? userId = widget.isFromDashboard ? model?.teamPatients!.patient?.user?.name : widget.data?.patientName ?? _pref?.getString(AppConfig.User_Name) ?? '';
     String meetingId = widget.isFromDashboard ? model!.zoomId! : widget.data?.zoomId ?? '';
     String meetingPwd = widget.isFromDashboard ? model!.zoomPassword! : widget.data?.zoomPassword ?? '';
     print('$meetingId $meetingPwd');
-    Navigator.pop(context);
+
+    setState(() {
+      isJoinPressed = false;
+    });
+
     bool _isMeetingEnded(String status) {
       var result = false;
 
@@ -396,8 +385,7 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
         "sN2sN5jrXUXzdmBQrGNmdEVzQwBbOlFSas0B", //API SECRET FROM ZOOM - Sdk API Secret
       );
       var meetingOptions = ZoomMeetingOptions(
-          userId:
-          model!.teamPatients!.patient!.user!.name ?? model.teamPatientId, //pass username for join meeting only --- Any name eg:- EVILRATT.
+          userId: userId, //pass username for join meeting only --- Any name eg:- EVILRATT.
           meetingId: meetingId
               .toString(), //pass meeting id for join meeting only
           meetingPassword: meetingPwd
@@ -416,12 +404,12 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
         if (results[0] == 0) {
           StreamSubscription? stream;
           stream = zoom.onMeetingStatus().listen((status) {
+            print("meeting status: $status");
             print("[Meeting Status Stream] : " + status[0] + " - " + status[1]);
             if (_isMeetingEnded(status[0])) {
               print("[Meeting Status] :- Ended");
               timer?.cancel();
               stream?.cancel();
-              _pref!.setBool(AppConfig.consultationComplete, true);
               Navigator.of(context).pushAndRemoveUntil(
                   MaterialPageRoute(
                       builder: (context) =>
@@ -432,19 +420,6 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
                     // ),
                   ), (route) => route.isFirst
               );
-              // if(status[1].toString().toLowerCase().contains('Disconnect the meeting server, user leaves meeting')){
-              //
-              // }
-              // Navigator.of(context).pushAndRemoveUntil(
-              //   MaterialPageRoute(
-              //     builder: (context) =>
-              //         const ConsultationSuccess()
-              //         // DoctorConsultationCompleted(
-              //         //   bookingDate: widget.bookingDate,
-              //         //   bookingTime: widget.bookingTime,
-              //         // ),
-              //   ), (route) => route.isFirst
-              // );
             }
             if(status[0] == "MEETING_STATUS_INMEETING"){
               zoom.meetinDetails().then((meetingDetailsResult) {
@@ -454,7 +429,7 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
           });
           print("listen on event channel");
           zoom.joinMeeting(meetingOptions).then((joinMeetingResult) {
-            timer = Timer.periodic(const Duration(seconds: 2), (timer) {
+            timer = Timer.periodic(const Duration(seconds: 1), (timer) {
               zoom.meetingStatus(meetingOptions.meetingId!).then((status) {
                 print("[Meeting Status Polling] : " +
                     status[0] +

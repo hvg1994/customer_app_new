@@ -49,7 +49,7 @@ class EvaluationModelFormat2{
     data['after_meal_preference'] = this.mealPreference;
     if(mealPreferenceOther!.isNotEmpty) data['after_meal_preference_other'] = this.mealPreferenceOther!;
     data['hunger_pattern'] = this.hunger;
-    if(hungerOther!.isNotEmpty) data['hunger_pattern_other '] = this.hungerOther!;
+    if(hungerOther!.isNotEmpty) data['hunger_pattern_other'] = this.hungerOther!;
     data['bowel_pattern'] = this.bowelPattern;
     if(bowelPatterOther!.isNotEmpty) data['bowel_pattern_other'] = this.bowelPatterOther!;
     return data;

@@ -45,9 +45,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                buildAppBar(() {
-                  Navigator.pop(context);
-                }),
+                buildAppBar(() => null, isBackEnable: false),
                 SizedBox(
                   height: 3.h,
                 ),
@@ -136,14 +134,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       builder: (context) => const EvaluationFormScreen(),
                     ),
                   );
-                }),
-                Container(
-                  height: 1,
-                  color: Colors.grey,
-                ),
-                profileTile(
-                    "assets/images/call.png", "Customer Support", () {
-                  callSupport();
                 }),
                 Container(
                   height: 1,

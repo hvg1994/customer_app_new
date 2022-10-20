@@ -6,6 +6,7 @@ AppConfig() will be Singleton class so than we can use this as local storage
 
 import 'dart:io';
 
+import 'package:catcher/catcher.dart';
 import 'package:country_code_picker/country_localizations.dart';
 import 'package:device_preview/device_preview.dart' hide DeviceType;
 import 'package:firebase_core/firebase_core.dart';
@@ -42,6 +43,18 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   HttpOverrides.global = new MyHttpOverrides();
   AppConfig().preferences = await SharedPreferences.getInstance();
+
+  // CatcherOptions debugOptions =
+  // CatcherOptions(DialogReportMode(), [ConsoleHandler()]);
+  //
+  // /// Release configuration. Same as above, but once user accepts dialog, user will be prompted to send email with crash to support.
+  // CatcherOptions releaseOptions = CatcherOptions(DialogReportMode(), [
+  //   EmailManualHandler(["support@email.com"])
+  // ]);
+  //
+  // /// STEP 2. Pass your root widget (MyApp) along with Catcher configuration:
+  // Catcher(rootWidget: MyApp(), debugConfig: debugOptions, releaseConfig: releaseOptions);
+
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: [SystemUiOverlay.bottom]);
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(statusBarColor: Colors.black26),
@@ -73,16 +86,50 @@ void main() async {
 
   print("fcmToken: $fcmToken");
 
-
 }
 
 
 // void main() async{
 //   WidgetsFlutterBinding.ensureInitialized();
+//   HttpOverrides.global = new MyHttpOverrides();
 //   AppConfig().preferences = await SharedPreferences.getInstance();
+//
+//   // CatcherOptions debugOptions =
+//   // CatcherOptions(DialogReportMode(), [ConsoleHandler()]);
+//   //
+//   // /// Release configuration. Same as above, but once user accepts dialog, user will be prompted to send email with crash to support.
+//   // CatcherOptions releaseOptions = CatcherOptions(DialogReportMode(), [
+//   //   EmailManualHandler(["support@email.com"])
+//   // ]);
+//   //
+//   // /// STEP 2. Pass your root widget (MyApp) along with Catcher configuration:
+//   // Catcher(rootWidget: MyApp(), debugConfig: debugOptions, releaseConfig: releaseOptions);
+//
+//   SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: [SystemUiOverlay.bottom]);
 //   SystemChrome.setSystemUIOverlayStyle(
-//     const SystemUiOverlayStyle(statusBarColor: Colors.transparent),
+//     const SystemUiOverlayStyle(statusBarColor: Colors.black26),
 //   );
+//   await SystemChrome.setPreferredOrientations(
+//     [DeviceOrientation.portraitUp],
+//   );
+//   //***** firebase notification ******
+//   await Firebase.initializeApp();
+//
+//   await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+//     alert: true,
+//     badge: true,
+//     sound: true,
+//   );
+//
+//   await FirebaseMessaging.instance.getToken();
+//
+//   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+//   final fcmToken = await FirebaseMessaging.instance.getToken();
+//
+//   LocalNotificationService.initialize();
+//
+//
+//   print("fcmToken: $fcmToken");
 //   runApp(
 //     DevicePreview(
 //       enabled: !kReleaseMode,

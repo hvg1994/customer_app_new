@@ -46,7 +46,12 @@ class _CookKitTrackingState extends State<CookKitTracking>{
   bool showShoppingLoading = false;
 
   final _pref = AppConfig().preferences;
-  List<ChildGetShoppingModel> shoppingData = [];
+  List<ChildGetShoppingModel> shoppingData1 = [];
+
+  Map<String, List<ChildGetShoppingModel>> shoppingData = {};
+
+  List dayList = [];
+  List<ChildGetShoppingModel> shoppingList = [];
 
 
   @override
@@ -55,7 +60,7 @@ class _CookKitTrackingState extends State<CookKitTracking>{
     super.initState();
     if(widget.currentStage.isNotEmpty){
       getShoppingList();
-      if((widget.currentStage == 'shipping_approved' || widget.currentStage == 'shipping_delivered') && widget.awb_number != null){
+      if((widget.currentStage == 'shipping_approved' || widget.currentStage == 'shipping_delivered' || widget.currentStage == 'shipping_packed') && widget.awb_number != null){
         shippingTracker();
       }
     }
@@ -117,13 +122,7 @@ class _CookKitTrackingState extends State<CookKitTracking>{
               child: TabBarView(
                 children:  [
                   (showTrackingProgress) ? buildCircularIndicator() : shipRocketUI(context),
-                  (showShoppingLoading) ? buildCircularIndicator() : (shoppingData.isNotEmpty)
-                      ? ListView.builder(
-                    itemCount: 12,
-                      itemBuilder: (_, index){
-                        return dataTableView(index);
-                  })
-                      : noData(),
+                  (showShoppingLoading) ? buildCircularIndicator() : shoppingUi(),
                 ],
               )
           )
@@ -132,8 +131,418 @@ class _CookKitTrackingState extends State<CookKitTracking>{
     );
   }
 
+  shoppingUi(){
+    if(shoppingData.isNotEmpty){
+      return tableView();
+    }
+    else{
+    return noData();
+    }
+  }
+
+  tableView(){
+    return ListView.builder(
+      itemCount: shoppingData.entries.length,
+        itemBuilder: (_, index){
+          // print(shoppingData.entries);
+          // print(shoppingData.entries.first.key);
+          // print(index);
+          // print(shoppingData.entries.elementAt(index).key);
+          return  Visibility(
+            visible: shoppingData.entries.elementAt(index).value.isNotEmpty,
+            child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: Container(
+            // width: 85.w,
+            margin: EdgeInsets.symmetric(horizontal: 2.w),
+            decoration: BoxDecoration(
+              color: gWhiteColor,
+              // border: Border.all(color: gsecondaryColor.withOpacity(0.3), width: 1),
+              borderRadius: BorderRadius.circular(8),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.4),
+                  blurRadius: 2.0,
+                  spreadRadius: 0.0,
+                  offset: const Offset(2.0, 2.0), // shadow direction: bottom right
+                )
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                  child: Text('Day ${shoppingData.entries.elementAt(index).key}',
+                      style: TextStyle(
+                        color: gPrimaryColor,
+                        fontSize: 11.sp,
+                        fontFamily: "GothamBold",
+                      )
+                  ),
+                ),
+                ListView.builder(
+                    physics: NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: shoppingData.entries.elementAt(index).value.length,
+                    itemBuilder: (_, ind){
+                      print("meal name");
+                      print(shoppingData.entries.elementAt(index).value[ind].mealItemWeight?.mealItem?.name);
+
+                      print('${shoppingData.entries.elementAt(index).key} == ${shoppingData.entries.first.key}');
+                      return Stack(
+                        children: [
+                          Container(
+                            height: (shoppingData.entries.elementAt(index).key == shoppingData.entries.first.key && ind ==0) ? 5.h : 0,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(8),
+                                  topRight: Radius.circular(8)
+                              ),
+                              gradient: (shoppingData.keys.first == shoppingData.entries.first.key && ind ==0) ? LinearGradient(colors: [
+                                Color(0xffE06666),
+                                Color(0xff93C47D),
+                                Color(0xffFFD966),
+                              ], begin: Alignment.topLeft, end: Alignment.topRight) : null,
+                            ),
+                          ),
+                          Center(
+                            child: DataTable(
+                                headingTextStyle: TextStyle(
+                                  color: gWhiteColor,
+                                  fontSize: 5.sp,
+                                  fontFamily: "GothamMedium",
+                                ),
+                                headingRowHeight: (shoppingData.entries.elementAt(index).key == shoppingData.entries.first.key && ind ==0) ? 5.h : 0,
+                                horizontalMargin: 2.w,
+                                columnSpacing: 40.w,
+                                dataRowHeight: 7.h,
+                                // headingRowColor: MaterialStateProperty.all(const Color(0xffE06666)),
+                                columns:  <DataColumn>[
+                                  DataColumn(
+                                    label: Text('Meal Name',
+                                      style: TextStyle(
+                                        height: 1.5,
+                                        color: gWhiteColor,
+                                        fontSize: 11.sp,
+                                        fontFamily: "GothamBold",
+                                      ),
+                                    ),
+                                  ),
+                                  DataColumn(
+                                    label: ConstrainedBox(
+                                      constraints: const BoxConstraints(
+                                        maxWidth: 80,
+                                        minWidth: 20,
+                                      ),
+                                      child: Text('Quantity',
+                                        textAlign: TextAlign.right,
+                                        style: TextStyle(
+                                          height: 1.5,
+                                          color: gWhiteColor,
+                                          fontSize: 11.sp,
+                                          fontFamily: "GothamBold",
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                                rows: [
+                                  DataRow(
+                                    cells: [
+                                      DataCell(
+                                          Text(
+                                            shoppingData.entries.elementAt(index).value[ind].mealItemWeight?.mealItem?.name?.trimLeft() ?? '',
+                                            // value[ind].mealItemWeight?.mealItem?.name ?? '',
+                                            // e.mealItemWeight!.mealItem!.name.toString(),
+                                            textAlign: TextAlign.left,
+                                            style: TextStyle(
+                                              height: 1.5,
+                                              color: gTextColor,
+                                              fontSize: 8.sp,
+                                              fontFamily: "GothamBold",
+                                            ),
+                                          )
+                                      ),
+                                      DataCell(
+                                        Text(
+                                          shoppingData.entries.elementAt(index).value[ind].itemWeight?.trim() ?? '',
+                                          // " ${value[ind].itemWeight}" ?? '',
+                                          // maxLines: 3,
+                                          textAlign: TextAlign.start,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
+                                            height: 1.5,
+                                            color: gTextColor,
+                                            fontSize: 8.sp,
+                                            fontFamily: "GothamBook",
+                                          ),
+                                        ),
+                                        placeholder: true,
+                                      ),
+                                    ],
+                                  )
+                                ]
+                            ),
+                          ),
+                        ],
+                      );
+                    }
+                ),
+              ],
+            ),
+        ),
+      ),
+          );
+    });
+  }
+
+  // tableView1(String day){
+  //   return SingleChildScrollView(
+  //     child: Column(
+  //       mainAxisSize: MainAxisSize.min,
+  //       // shrinkWrap: true,
+  //       // physics: NeverScrollableScrollPhysics(),
+  //       children: [
+  //         Padding(
+  //           padding: const EdgeInsets.symmetric(vertical: 8),
+  //           child: Container(
+  //             // width: 85.w,
+  //             margin: EdgeInsets.symmetric(horizontal: 2.w),
+  //             decoration: BoxDecoration(
+  //               color: gWhiteColor,
+  //               // border: Border.all(color: gsecondaryColor.withOpacity(0.3), width: 1),
+  //               borderRadius: BorderRadius.circular(8),
+  //               boxShadow: [
+  //                 BoxShadow(
+  //                   color: Colors.grey.withOpacity(0.4),
+  //                   blurRadius: 2.0,
+  //                   spreadRadius: 0.0,
+  //                   offset: const Offset(2.0, 2.0), // shadow direction: bottom right
+  //                 )
+  //               ],
+  //             ),
+  //             child: Column(
+  //               crossAxisAlignment: CrossAxisAlignment.start,
+  //               children: [
+  //                 Padding(
+  //                   padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+  //                   child: Text('Day $day',
+  //                       style: TextStyle(
+  //                         color: gPrimaryColor,
+  //                         fontSize: 11.sp,
+  //                         fontFamily: "GothamBold",
+  //                       )
+  //                   ),
+  //                 ),
+  //                 ListView.builder(
+  //                   physics: NeverScrollableScrollPhysics(),
+  //                   shrinkWrap: true,
+  //                     itemCount: shoppingData.keys.length,
+  //                     itemBuilder: (_, ind){
+  //                       return Stack(
+  //                         children: [
+  //                           Container(
+  //                             height: (shoppingData.keys.first == day) ? 5.h : 0,
+  //                             decoration: BoxDecoration(
+  //                               borderRadius: BorderRadius.only(
+  //                                   topLeft: Radius.circular(8),
+  //                                   topRight: Radius.circular(8)
+  //                               ),
+  //                               gradient: (shoppingData.keys.first == day) ? LinearGradient(colors: [
+  //                                 Color(0xffE06666),
+  //                                 Color(0xff93C47D),
+  //                                 Color(0xffFFD966),
+  //                               ], begin: Alignment.topLeft, end: Alignment.topRight) : null,
+  //                             ),
+  //                           ),
+  //                           Center(
+  //                             child: DataTable(
+  //                                 headingTextStyle: TextStyle(
+  //                                   color: gWhiteColor,
+  //                                   fontSize: 5.sp,
+  //                                   fontFamily: "GothamMedium",
+  //                                 ),
+  //                                 headingRowHeight: (shoppingData.keys.first == day) ? 5.h : 0,
+  //                                 horizontalMargin: 2.w,
+  //                                 columnSpacing: 40.w,
+  //                                 dataRowHeight: 6.h,
+  //                                 // headingRowColor: MaterialStateProperty.all(const Color(0xffE06666)),
+  //                                 columns:  <DataColumn>[
+  //                                   DataColumn(
+  //                                     label: Text('Meal Name',
+  //                                       style: TextStyle(
+  //                                         height: 1.5,
+  //                                         color: gWhiteColor,
+  //                                         fontSize: 11.sp,
+  //                                         fontFamily: "GothamBold",
+  //                                       ),
+  //                                     ),
+  //                                   ),
+  //                                   DataColumn(
+  //                                     label: ConstrainedBox(
+  //                                       constraints: const BoxConstraints(
+  //                                         maxWidth: 80,
+  //                                         minWidth: 20,
+  //                                       ),
+  //                                       child: Text('Quantity',
+  //                                         textAlign: TextAlign.right,
+  //                                         style: TextStyle(
+  //                                           height: 1.5,
+  //                                           color: gWhiteColor,
+  //                                           fontSize: 11.sp,
+  //                                           fontFamily: "GothamBold",
+  //                                         ),
+  //                                       ),
+  //                                     ),
+  //                                   ),
+  //                                 ],
+  //                                 rows: [
+  //                                   ...shoppingData.values.map((e){
+  //                                     return DataRow(
+  //                                       cells: [
+  //                                         DataCell(
+  //                                           Text('',
+  //                                             // value[ind].mealItemWeight?.mealItem?.name ?? '',
+  //                                             // e.mealItemWeight!.mealItem!.name.toString(),
+  //                                             style: TextStyle(
+  //                                               height: 1.5,
+  //                                               color: gTextColor,
+  //                                               fontSize: 8.sp,
+  //                                               fontFamily: "GothamBold",
+  //                                             ),
+  //                                           ),
+  //                                         ),
+  //                                         DataCell(
+  //                                           Text('100',
+  //                                             // " ${value[ind].itemWeight}" ?? '',
+  //                                             maxLines: 3,
+  //                                             textAlign: TextAlign.start,
+  //                                             overflow: TextOverflow.ellipsis,
+  //                                             style: TextStyle(
+  //                                               height: 1.5,
+  //                                               color: gTextColor,
+  //                                               fontSize: 8.sp,
+  //                                               fontFamily: "GothamBook",
+  //                                             ),
+  //                                           ),
+  //                                           placeholder: true,
+  //                                         ),
+  //                                       ],
+  //                                     );
+  //                                   }).toList()
+  //                                 ]
+  //                             ),
+  //                           ),
+  //                         ],
+  //                       );
+  //                     }
+  //                 ),
+  //               ],
+  //             ),
+  //           ),
+  //         )
+  //       ],
+  //     ),
+  //   );
+  // }
+
+  // oldCode(){
+  //   Stack(
+  //     children: [
+  //       Container(
+  //         height: (shoppingData.keys.first == day) ? 5.h : 0,
+  //         decoration: BoxDecoration(
+  //           borderRadius: BorderRadius.only(
+  //               topLeft: Radius.circular(8),
+  //               topRight: Radius.circular(8)
+  //           ),
+  //           gradient: (shoppingData.keys.first == day) ? LinearGradient(colors: [
+  //             Color(0xffE06666),
+  //             Color(0xff93C47D),
+  //             Color(0xffFFD966),
+  //           ], begin: Alignment.topLeft, end: Alignment.topRight) : null,
+  //         ),
+  //       ),
+  //       Center(
+  //         child: DataTable(
+  //             headingTextStyle: TextStyle(
+  //               color: gWhiteColor,
+  //               fontSize: 5.sp,
+  //               fontFamily: "GothamMedium",
+  //             ),
+  //             headingRowHeight: (shoppingData.keys.first == day) ? 5.h : 0,
+  //             horizontalMargin: 2.w,
+  //             columnSpacing: 40.w,
+  //             dataRowHeight: 6.h,
+  //             // headingRowColor: MaterialStateProperty.all(const Color(0xffE06666)),
+  //             columns:  <DataColumn>[
+  //               DataColumn(
+  //                 label: Text('Meal Name',
+  //                   style: TextStyle(
+  //                     height: 1.5,
+  //                     color: gWhiteColor,
+  //                     fontSize: 11.sp,
+  //                     fontFamily: "GothamBold",
+  //                   ),
+  //                 ),
+  //               ),
+  //               DataColumn(
+  //                 label: ConstrainedBox(
+  //                   constraints: const BoxConstraints(
+  //                     maxWidth: 80,
+  //                     minWidth: 20,
+  //                   ),
+  //                   child: Text('Quantity',
+  //                     textAlign: TextAlign.right,
+  //                     style: TextStyle(
+  //                       height: 1.5,
+  //                       color: gWhiteColor,
+  //                       fontSize: 11.sp,
+  //                       fontFamily: "GothamBold",
+  //                     ),
+  //                   ),
+  //                 ),
+  //               ),
+  //             ],
+  //             rows: value.map((e) => DataRow(
+  //               cells: [
+  //                 DataCell(
+  //                   Text(
+  //                     e.mealItemWeight!.mealItem!.name.toString(),
+  //                     style: TextStyle(
+  //                       height: 1.5,
+  //                       color: gTextColor,
+  //                       fontSize: 8.sp,
+  //                       fontFamily: "GothamBold",
+  //                     ),
+  //                   ),
+  //                 ),
+  //                 DataCell(
+  //                   Text(
+  //                     " ${e.itemWeight}" ?? '',
+  //                     maxLines: 3,
+  //                     textAlign: TextAlign.start,
+  //                     overflow: TextOverflow.ellipsis,
+  //                     style: TextStyle(
+  //                       height: 1.5,
+  //                       color: gTextColor,
+  //                       fontSize: 8.sp,
+  //                       fontFamily: "GothamBook",
+  //                     ),
+  //                   ),
+  //                   placeholder: true,
+  //                 ),
+  //               ],
+  //             )).toList()
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
+
   shipRocketUI(BuildContext context){
-    if((widget.currentStage == "shipping_approved" || widget.currentStage == "shipping_delivered") && widget.awb_number != null){
+    if((widget.currentStage == "shipping_approved" || widget.currentStage == "shipping_delivered" || widget.currentStage == "shipping_packed") && widget.awb_number != null){
       return (!showErrorText)
           ? SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
@@ -274,147 +683,147 @@ class _CookKitTrackingState extends State<CookKitTracking>{
     );
   }
 
-  dataTableView(index){
-      return ListView(
-        shrinkWrap: true,
-        physics: NeverScrollableScrollPhysics(),
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: Container(
-              // width: 85.w,
-              margin: EdgeInsets.symmetric(horizontal: 2.w),
-              decoration: BoxDecoration(
-                color: gWhiteColor,
-                // border: Border.all(color: gsecondaryColor.withOpacity(0.3), width: 1),
-                borderRadius: BorderRadius.circular(8),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.4),
-                    blurRadius: 2.0,
-                    spreadRadius: 0.0,
-                    offset: const Offset(2.0, 2.0), // shadow direction: bottom right
-                  )
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-                    child: Text('Day ${index+1}',
-                      style: TextStyle(
-                        color: gPrimaryColor,
-                        fontSize: 11.sp,
-                        fontFamily: "GothamBold",
-                      )
-                    ),
-                  ),
-                  Stack(
-                    children: [
-                      Container(
-                        height: (index == 0) ? 5.h : 0,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(8),
-                              topRight: Radius.circular(8)
-                          ),
-                          gradient: (index == 0) ? LinearGradient(colors: [
-                            Color(0xffE06666),
-                            Color(0xff93C47D),
-                            Color(0xffFFD966),
-                          ], begin: Alignment.topLeft, end: Alignment.topRight) : null,
-                        ),
-                      ),
-                      Center(
-                        child: DataTable(
-                            headingTextStyle: TextStyle(
-                              color: gWhiteColor,
-                              fontSize: 5.sp,
-                              fontFamily: "GothamMedium",
-                            ),
-                            headingRowHeight: (index == 0) ? 5.h : 0,
-                            horizontalMargin: 2.w,
-                            columnSpacing: 40.w,
-                            dataRowHeight: 6.h,
-                            // headingRowColor: MaterialStateProperty.all(const Color(0xffE06666)),
-                            columns:  <DataColumn>[
-                              DataColumn(
-                                label: Text('Meal Name',
-                                  style: TextStyle(
-                                    height: 1.5,
-                                    color: gWhiteColor,
-                                    fontSize: 11.sp,
-                                    fontFamily: "GothamBold",
-                                  ),
-                                ),
-                              ),
-                              DataColumn(
-                                label: ConstrainedBox(
-                                  constraints: const BoxConstraints(
-                                    maxWidth: 80,
-                                    minWidth: 20,
-                                  ),
-                                  child: Text('Quantity',
-                                    textAlign: TextAlign.right,
-                                    style: TextStyle(
-                                      height: 1.5,
-                                      color: gWhiteColor,
-                                      fontSize: 11.sp,
-                                      fontFamily: "GothamBold",
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                            rows: showDataRow()
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          )
-        ],
-      );
-  }
+  // dataTableView(index){
+  //     return ListView(
+  //       shrinkWrap: true,
+  //       physics: NeverScrollableScrollPhysics(),
+  //       children: [
+  //         Padding(
+  //           padding: const EdgeInsets.symmetric(vertical: 8),
+  //           child: Container(
+  //             // width: 85.w,
+  //             margin: EdgeInsets.symmetric(horizontal: 2.w),
+  //             decoration: BoxDecoration(
+  //               color: gWhiteColor,
+  //               // border: Border.all(color: gsecondaryColor.withOpacity(0.3), width: 1),
+  //               borderRadius: BorderRadius.circular(8),
+  //               boxShadow: [
+  //                 BoxShadow(
+  //                   color: Colors.grey.withOpacity(0.4),
+  //                   blurRadius: 2.0,
+  //                   spreadRadius: 0.0,
+  //                   offset: const Offset(2.0, 2.0), // shadow direction: bottom right
+  //                 )
+  //               ],
+  //             ),
+  //             child: Column(
+  //               crossAxisAlignment: CrossAxisAlignment.start,
+  //               children: [
+  //                 Padding(
+  //                   padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+  //                   child: Text('Day ${shoppingData}',
+  //                     style: TextStyle(
+  //                       color: gPrimaryColor,
+  //                       fontSize: 11.sp,
+  //                       fontFamily: "GothamBold",
+  //                     )
+  //                   ),
+  //                 ),
+  //                 Stack(
+  //                   children: [
+  //                     Container(
+  //                       height: (index == 0) ? 5.h : 0,
+  //                       decoration: BoxDecoration(
+  //                         borderRadius: BorderRadius.only(
+  //                             topLeft: Radius.circular(8),
+  //                             topRight: Radius.circular(8)
+  //                         ),
+  //                         gradient: (index == 0) ? LinearGradient(colors: [
+  //                           Color(0xffE06666),
+  //                           Color(0xff93C47D),
+  //                           Color(0xffFFD966),
+  //                         ], begin: Alignment.topLeft, end: Alignment.topRight) : null,
+  //                       ),
+  //                     ),
+  //                     Center(
+  //                       child: DataTable(
+  //                           headingTextStyle: TextStyle(
+  //                             color: gWhiteColor,
+  //                             fontSize: 5.sp,
+  //                             fontFamily: "GothamMedium",
+  //                           ),
+  //                           headingRowHeight: (index == 0) ? 5.h : 0,
+  //                           horizontalMargin: 2.w,
+  //                           columnSpacing: 40.w,
+  //                           dataRowHeight: 6.h,
+  //                           // headingRowColor: MaterialStateProperty.all(const Color(0xffE06666)),
+  //                           columns:  <DataColumn>[
+  //                             DataColumn(
+  //                               label: Text('Meal Name',
+  //                                 style: TextStyle(
+  //                                   height: 1.5,
+  //                                   color: gWhiteColor,
+  //                                   fontSize: 11.sp,
+  //                                   fontFamily: "GothamBold",
+  //                                 ),
+  //                               ),
+  //                             ),
+  //                             DataColumn(
+  //                               label: ConstrainedBox(
+  //                                 constraints: const BoxConstraints(
+  //                                   maxWidth: 80,
+  //                                   minWidth: 20,
+  //                                 ),
+  //                                 child: Text('Quantity',
+  //                                   textAlign: TextAlign.right,
+  //                                   style: TextStyle(
+  //                                     height: 1.5,
+  //                                     color: gWhiteColor,
+  //                                     fontSize: 11.sp,
+  //                                     fontFamily: "GothamBold",
+  //                                   ),
+  //                                 ),
+  //                               ),
+  //                             ),
+  //                           ],
+  //                           rows: showDataRow()
+  //                       ),
+  //                     ),
+  //                   ],
+  //                 ),
+  //               ],
+  //             ),
+  //           ),
+  //         )
+  //       ],
+  //     );
+  // }
 
 
-  showDataRow(){
-    return shoppingData!.map(
-            (s) => DataRow(
-              cells: [
-                DataCell(
-                  Text(
-                    s.mealItem!.name.toString(),
-                    style: TextStyle(
-                      height: 1.5,
-                      color: gTextColor,
-                      fontSize: 8.sp,
-                      fontFamily: "GothamBold",
-                    ),
-                  ),
-                ),
-                DataCell(
-                  Text(
-                    " ${s.itemWeight}" ?? '',
-                    maxLines: 3,
-                    textAlign: TextAlign.start,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      height: 1.5,
-                      color: gTextColor,
-                      fontSize: 8.sp,
-                      fontFamily: "GothamBook",
-                    ),
-                  ),
-                  placeholder: true,
-                ),
-              ],
-            ),
-    ).toList();
-  }
+  // showDataRow(){
+  //   return shoppingData1!.map(
+  //           (s) => DataRow(
+  //             cells: [
+  //               DataCell(
+  //                 Text(
+  //                   s.mealItem!.name.toString(),
+  //                   style: TextStyle(
+  //                     height: 1.5,
+  //                     color: gTextColor,
+  //                     fontSize: 8.sp,
+  //                     fontFamily: "GothamBold",
+  //                   ),
+  //                 ),
+  //               ),
+  //               DataCell(
+  //                 Text(
+  //                   " ${s.itemWeight}" ?? '',
+  //                   maxLines: 3,
+  //                   textAlign: TextAlign.start,
+  //                   overflow: TextOverflow.ellipsis,
+  //                   style: TextStyle(
+  //                     height: 1.5,
+  //                     color: gTextColor,
+  //                     fontSize: 8.sp,
+  //                     fontFamily: "GothamBook",
+  //                   ),
+  //                 ),
+  //                 placeholder: true,
+  //               ),
+  //             ],
+  //           ),
+  //   );
+  // }
   buildTrackingArea(String title, String image) {
     return ListTile(
       leading: Container(
@@ -531,10 +940,15 @@ class _CookKitTrackingState extends State<CookKitTracking>{
       print("meal plan");
       GetShoppingListModel model = result as GetShoppingListModel;
 
-      setState(() {
-        shoppingData = model.data!.map((e) => e).toList();
-      });
+     shoppingData = model.data ?? {};
+
       print('shopping list: $shoppingData');
+      if(shoppingData.isNotEmpty){
+        dayList = shoppingData.keys.toList();
+        shoppingData.values.forEach((element) {
+          shoppingList.addAll(element);
+        });
+      }
       setState(() {
         showShoppingLoading = false;
       });

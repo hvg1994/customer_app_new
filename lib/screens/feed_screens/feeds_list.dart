@@ -21,9 +21,7 @@ class _FeedsListState extends State<FeedsList> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              buildAppBar(() {
-                Navigator.pop(context);
-              }),
+              buildAppBar(() => null, isBackEnable: false),
               SizedBox(height: 3.h),
               Text(
                 "Feeds",

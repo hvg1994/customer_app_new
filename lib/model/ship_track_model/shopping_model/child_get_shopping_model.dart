@@ -1,57 +1,120 @@
 class ChildGetShoppingModel {
+  ChildGetShoppingModel({
+    this.id,
+    this.teamPatientId,
+    this.itemWeightId,
+    this.userCustomMealPlanId,
+    this.shopId,
+    this.programDay,
+    this.totalWeight,
+    this.addedBy,
+    this.createdAt,
+    this.updatedAt,
+    this.itemWeight,
+    this.mealItemWeight,
+  });
+
   int? id;
   String? teamPatientId;
-  String? itemId;
+  String? itemWeightId;
+  String? userCustomMealPlanId;
+  String? shopId;
+  String? programDay;
   String? totalWeight;
   String? addedBy;
-  String? createdAt;
-  String? updatedAt;
+  DateTime? createdAt;
+  DateTime? updatedAt;
   String? itemWeight;
+  MealItemWeight? mealItemWeight;
+
+  factory ChildGetShoppingModel.fromJson(Map<String, dynamic> json) => ChildGetShoppingModel(
+    id: json["id"],
+    teamPatientId: json["team_patient_id"],
+    itemWeightId: json["item_weight_id"],
+    userCustomMealPlanId: json["user_custom_meal_plan_id"],
+    shopId: json["shop_id"],
+    programDay: json["program_day"],
+    totalWeight: json["total_weight"],
+    addedBy: json["added_by"],
+    createdAt: DateTime.parse(json["created_at"]),
+    updatedAt: DateTime.parse(json["updated_at"]),
+    itemWeight: json["item_weight"],
+    mealItemWeight: MealItemWeight.fromJson(json["meal_item_weight"]),
+  );
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "team_patient_id": teamPatientId,
+    "item_weight_id": itemWeightId,
+    "user_custom_meal_plan_id": userCustomMealPlanId,
+    "shop_id": shopId,
+    "program_day": programDay,
+    "total_weight": totalWeight,
+    "added_by": addedBy,
+    "created_at": createdAt?.toIso8601String() ?? '',
+    "updated_at": updatedAt?.toIso8601String() ?? '',
+    "item_weight": itemWeight,
+    "meal_item_weight": mealItemWeight?.toJson(),
+  };
+}
+
+class MealItemWeight {
+  MealItemWeight({
+    this.id,
+    this.mealPlanItemId,
+    this.weight,
+    this.weightTypeId,
+    this.createdAt,
+    this.updatedAt,
+    this.mealItem,
+    this.weightType,
+  });
+
+  int? id;
+  String? mealPlanItemId;
+  String? weight;
+  String? weightTypeId;
+  DateTime? createdAt;
+  DateTime? updatedAt;
   MealItem? mealItem;
+  WeightType? weightType;
 
-  ChildGetShoppingModel(
-      {this.id,
-        this.teamPatientId,
-        this.itemId,
-        this.totalWeight,
-        this.addedBy,
-        this.createdAt,
-        this.updatedAt,
-        this.itemWeight,
-        this.mealItem});
+  factory MealItemWeight.fromJson(Map<String, dynamic> json) => MealItemWeight(
+    id: json["id"],
+    mealPlanItemId: json["meal_plan_item_id"],
+    weight: json["weight"] == null ? null : json["weight"],
+    weightTypeId: json["weight_type_id"],
+    createdAt: DateTime.parse(json["created_at"]),
+    updatedAt: DateTime.parse(json["updated_at"]),
+    mealItem: MealItem.fromJson(json["meal_item"]),
+    weightType: WeightType.fromJson(json["weight_type"]),
+  );
 
-  ChildGetShoppingModel.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    teamPatientId = json['team_patient_id'];
-    itemId = json['item_id'];
-    totalWeight = json['total_weight'];
-    addedBy = json['added_by'];
-    createdAt = json['created_at'];
-    updatedAt = json['updated_at'];
-    itemWeight = json['item_weight'] ?? '';
-    mealItem = json['meal_item'] != null
-        ? new MealItem.fromJson(json['meal_item'])
-        : null;
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['team_patient_id'] = this.teamPatientId;
-    data['item_id'] = this.itemId;
-    data['total_weight'] = this.totalWeight;
-    data['added_by'] = this.addedBy;
-    data['created_at'] = this.createdAt;
-    data['updated_at'] = this.updatedAt;
-    data['item_weight'] = this.itemWeight;
-    if (this.mealItem != null) {
-      data['meal_item'] = this.mealItem!.toJson();
-    }
-    return data;
-  }
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "meal_plan_item_id": mealPlanItemId,
+    "weight": weight == null ? null : weight,
+    "weight_type_id": weightTypeId,
+    "created_at": createdAt?.toIso8601String() ?? '',
+    "updated_at": updatedAt?.toIso8601String() ?? '',
+    "meal_item": mealItem?.toJson(),
+    "weight_type": weightType?.toJson(),
+  };
 }
 
 class MealItem {
+  MealItem({
+    this.id,
+    this.name,
+    this.mealTimingId,
+    this.recipeId,
+    this.programId,
+    this.inCookingKit,
+    this.addedBy,
+    this.createdAt,
+    this.updatedAt,
+  });
+
   int? id;
   String? name;
   String? mealTimingId;
@@ -59,125 +122,58 @@ class MealItem {
   String? programId;
   String? inCookingKit;
   String? addedBy;
-  String? createdAt;
-  String? updatedAt;
-  List<MealItemWeight>? mealItemWeight;
+  DateTime? createdAt;
+  DateTime? updatedAt;
 
-  MealItem(
-      {this.id,
-        this.name,
-        this.mealTimingId,
-        this.recipeId,
-        this.programId,
-        this.inCookingKit,
-        this.addedBy,
-        this.createdAt,
-        this.updatedAt,
-        this.mealItemWeight});
+  factory MealItem.fromJson(Map<String, dynamic> json) => MealItem(
+    id: json["id"],
+    name: json["name"],
+    mealTimingId: json["meal_timing_id"],
+    recipeId: json["recipe_id"],
+    programId: json["program_id"],
+    inCookingKit: json["in_cooking_kit"],
+    addedBy: json["added_by"],
+    createdAt: DateTime.parse(json["created_at"]),
+    updatedAt: DateTime.parse(json["updated_at"]),
+  );
 
-  MealItem.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    name = json['name'];
-    mealTimingId = json['meal_timing_id'];
-    recipeId = json['recipe_id'];
-    programId = json['program_id'];
-    inCookingKit = json['in_cooking_kit'];
-    addedBy = json['added_by'];
-    createdAt = json['created_at'];
-    updatedAt = json['updated_at'];
-    if (json['meal_item_weight'] != null) {
-      mealItemWeight = <MealItemWeight>[];
-      json['meal_item_weight'].forEach((v) {
-        mealItemWeight!.add(new MealItemWeight.fromJson(v));
-      });
-    }
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['name'] = this.name;
-    data['meal_timing_id'] = this.mealTimingId;
-    data['recipe_id'] = this.recipeId;
-    data['program_id'] = this.programId;
-    data['in_cooking_kit'] = this.inCookingKit;
-    data['added_by'] = this.addedBy;
-    data['created_at'] = this.createdAt;
-    data['updated_at'] = this.updatedAt;
-    if (this.mealItemWeight != null) {
-      data['meal_item_weight'] =
-          this.mealItemWeight!.map((v) => v.toJson()).toList();
-    }
-    return data;
-  }
-}
-
-class MealItemWeight {
-  int? id;
-  String? mealPlanItemId;
-  String? weight;
-  String? weightTypeId;
-  String? createdAt;
-  String? updatedAt;
-  WeightType? weightType;
-
-  MealItemWeight(
-      {this.id,
-        this.mealPlanItemId,
-        this.weight,
-        this.weightTypeId,
-        this.createdAt,
-        this.updatedAt,
-        this.weightType});
-
-  MealItemWeight.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    mealPlanItemId = json['meal_plan_item_id'];
-    weight = json['weight'];
-    weightTypeId = json['weight_type_id'];
-    createdAt = json['created_at'];
-    updatedAt = json['updated_at'];
-    weightType = json['weight_type'] != null
-        ? new WeightType.fromJson(json['weight_type'])
-        : null;
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['meal_plan_item_id'] = this.mealPlanItemId;
-    data['weight'] = this.weight;
-    data['weight_type_id'] = this.weightTypeId;
-    data['created_at'] = this.createdAt;
-    data['updated_at'] = this.updatedAt;
-    if (this.weightType != null) {
-      data['weight_type'] = this.weightType!.toJson();
-    }
-    return data;
-  }
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "name": name,
+    "meal_timing_id": mealTimingId,
+    "recipe_id": recipeId,
+    "program_id": programId,
+    "in_cooking_kit": inCookingKit,
+    "added_by": addedBy,
+    "created_at": createdAt?.toIso8601String() ?? '',
+    "updated_at": updatedAt?.toIso8601String() ?? '',
+  };
 }
 
 class WeightType {
+  WeightType({
+    this.id,
+    this.unit,
+    this.createdAt,
+    this.updatedAt,
+  });
+
   int? id;
   String? unit;
   String? createdAt;
   String? updatedAt;
 
-  WeightType({this.id, this.unit, this.createdAt, this.updatedAt});
+  factory WeightType.fromJson(Map<String, dynamic> json) => WeightType(
+    id: json["id"],
+    unit: json["unit"],
+    createdAt: json["created_at"],
+    updatedAt: json["updated_at"],
+  );
 
-  WeightType.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    unit = json['unit'];
-    createdAt = json['created_at'];
-    updatedAt = json['updated_at'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['unit'] = this.unit;
-    data['created_at'] = this.createdAt;
-    data['updated_at'] = this.updatedAt;
-    return data;
-  }
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "unit": unit,
+    "created_at": createdAt,
+    "updated_at": updatedAt,
+  };
 }

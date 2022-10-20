@@ -56,7 +56,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _userRegisterService = UserRegisterService(registerRepo: repository);
     _nameFocus = FocusNode();
     _nameFocus.addListener(() {});
-    emailController.addListener(() {});
+    // emailController.addListener(() {});
     getDeviceId();
   }
 
@@ -72,7 +72,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   void dispose() {
     // TODO: implement dispose
-    emailController.removeListener(() {});
+    // emailController.removeListener(() {});
     super.dispose();
   }
 
@@ -214,7 +214,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                         SizedBox(height: 0.5.h),
                         Form(
-                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                          autovalidateMode: AutovalidateMode.disabled,
                           key: emailFormKey,
                           child: TextFormField(
                             controller: emailController,
@@ -306,8 +306,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             //   //   );
                             //   // },
                             // ),
-                            SizedBox(
-                              width: 40,
+                            Expanded(
                               child: CountryCodePicker(
                                 // flagDecoration: BoxDecoration(
                                 //   borderRadius: BorderRadius.circular(7),
@@ -333,13 +332,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               ),
                             ),
                             Expanded(
+                              flex: 7,
                               child: Form(
                                 autovalidateMode:
-                                    AutovalidateMode.onUserInteraction,
+                                    AutovalidateMode.disabled,
                                 key: mobileFormKey,
                                 child: TextFormField(
                                   controller: mobileController,
                                   cursorColor: gPrimaryColor,
+                                  maxLength: 10,
                                   validator: (value) {
                                     if (value!.isEmpty) {
                                       return 'Please enter your Mobile Number';
@@ -530,7 +531,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         MaterialPageRoute(
           builder: (context) => const SitBackScreen(),
         ),
-          (route) => route.isFirst
+          (route) => false
       );
     }
     else {

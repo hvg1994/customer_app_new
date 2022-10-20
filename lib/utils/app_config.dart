@@ -31,6 +31,10 @@ class AppConfig{
   static const String last_login = "last_login";
   static const String FCM_TOKEN = "fcm_token";
   static const String SHIPPING_ADDRESS = "ship_address";
+  static const String User_Name = "userName";
+  static const String USER_ID = "userId";
+
+
 
 
   static const String countryCode = "COUNTRY_CODE";
@@ -61,7 +65,6 @@ class AppConfig{
 
   final String program_days = "no_of_days";
 
-  static const String consultationComplete = "IS_COMPLETED";
 
   static String appointmentId = "appoint_id";
 
@@ -80,7 +83,7 @@ class AppConfig{
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         behavior: SnackBarBehavior.floating,
-        backgroundColor:(isError == null || isError == false) ? gPrimaryColor : Colors.redAccent,
+        backgroundColor:(isError == null || isError == false) ? gPrimaryColor : gsecondaryColor.withOpacity(0.55),
         content: Text(message),
         duration: Duration(seconds: duration ?? 2),
       ),

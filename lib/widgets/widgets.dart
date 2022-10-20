@@ -82,11 +82,13 @@ class CommonButton {
   }
 
   // ignore: deprecated_member_use
-  static RaisedButton submitButton(func, String title) {
-    return RaisedButton(
-      color: gPrimaryColor,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-      padding: EdgeInsets.symmetric(vertical: 0.5.h, horizontal: 3.w),
+  static ElevatedButton submitButton(func, String title) {
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        primary: gPrimaryColor,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+        padding: EdgeInsets.symmetric(vertical: 0.5.h, horizontal: 20.w),
+      ),
       child: Text(
         title,
         style: TextStyle(
@@ -176,7 +178,7 @@ SnackbarController buildSnackBar(String title, String subTitle) {
 
 buildAppBar(VoidCallback func, {bool isBackEnable = true}) {
   return GestureDetector(
-    onTap: func,
+    onTap: (isBackEnable) ? func : null,
     child: Row(
       children: [
         Visibility(

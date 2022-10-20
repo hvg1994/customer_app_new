@@ -29,31 +29,41 @@ class ChooseYourProblemScreen extends StatefulWidget {
 class _ChooseYourProblemScreenState extends State<ChooseYourProblemScreen> {
 
   List selectedProblems = [];
-  late final Future myFuture;
+  Future? myFuture;
 
   bool isLoading = false;
 
   String? deviceId;
-  late ChooseProblemService _chooseProblemService;
+  ChooseProblemService? _chooseProblemService;
 
-  late SharedPreferences _prefs;
+  SharedPreferences? _prefs;
 
+  @override
+  void setState(VoidCallback fn) {
+    // TODO: implement setState
+    if(mounted){
+      super.setState(fn);
+    }
+  }
   @override
   void initState() {
     super.initState();
 
     // _chooseProblemService = Provider.of<ChooseProblemService>(context, listen: false);
-    _chooseProblemService = ChooseProblemService(repository: repository);
-    myFuture = getProblemList();
-    getDeviceId();
+    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+      _chooseProblemService = ChooseProblemService(repository: repository);
+      myFuture = getProblemList();
+      getDeviceId();
+    });
   }
+
 
   getDeviceId() async{
     _prefs = await SharedPreferences.getInstance();
     await AppConfig().getDeviceId().then((id) {
       print("deviceId: $id");
       if(id != null){
-        _prefs.setString(AppConfig().deviceId, id);
+        _prefs!.setString(AppConfig().deviceId, id);
       }
       setState(() {
         deviceId = id;
@@ -61,8 +71,9 @@ class _ChooseYourProblemScreenState extends State<ChooseYourProblemScreen> {
     });
   }
 
+
   getProblemList() async{
-    return await _chooseProblemService.getProblems();
+    return await _chooseProblemService!.getProblems();
   }
 
   @override
@@ -98,7 +109,7 @@ class _ChooseYourProblemScreenState extends State<ChooseYourProblemScreen> {
               ),
               Center(
                       child: GestureDetector(
-                        onTap: selectedProblems.isEmpty ? null : () {
+                        onTap: selectedProblems.isEmpty ? () => AppConfig().showSnackbar(context, "Please Select your Problem") : () {
                           submitProblems();
                         },
                         child: Container(
@@ -137,7 +148,6 @@ class _ChooseYourProblemScreenState extends State<ChooseYourProblemScreen> {
         future: myFuture,
         builder: (_, snapshot){
           if(snapshot.hasData){
-            log("getProblemList result: ${snapshot.data}");
             if(snapshot.data.runtimeType == ChooseProblemModel){
               ChooseProblemModel model = snapshot.data as ChooseProblemModel;
               List<ChildChooseProblemModel>? problemList = model.data;
@@ -259,7 +269,7 @@ class _ChooseYourProblemScreenState extends State<ChooseYourProblemScreen> {
     setState(() {
       isLoading = true;
     });
-    final res = await _chooseProblemService.postProblems(selectedProblems, deviceId!);
+    final res = await _chooseProblemService!.postProblems(selectedProblems, deviceId!);
     print(res);
     print(res.runtimeType);
     setState(() {

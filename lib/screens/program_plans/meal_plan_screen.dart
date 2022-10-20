@@ -55,7 +55,10 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
 
   String? proceedToDay;
 
-  List<ChildMealPlanDetailsModel>? mealPlanData1;
+  List<ChildMealPlanDetailsModel>? shoppingData;
+
+  Map<String, List<ChildMealPlanDetailsModel>> mealPlanData1 = {};
+
 
   List<String> list = [
     "Followed",
@@ -118,16 +121,28 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
       setState(() {
         isLoading = false;
       });
-      mealPlanData1 = model.data!.map((e) => e).toList();
+      mealPlanData1.addAll(model.data!);
+
       print('meal list: ${mealPlanData1}');
       // when day completed
       if(widget.isCompleted  != null){
-        mealPlanData1!.forEach((element) {
-          print(element.toJson());
-          statusList.putIfAbsent(element.itemId, () => element.status.toString().capitalize);
+        mealPlanData1.forEach((key, value) {
+          (value).forEach((element) {
+            statusList.putIfAbsent(element.itemId, () => element.status.toString().capitalize);
+          });
         });
+        // mealPlanData1.forEach((element) {
+        //   print(element.toJson());
+        //   statusList.putIfAbsent(element.itemId, () => element.status.toString().capitalize);
+        // });
         commentController.text = model.comment ?? '';
       }
+      mealPlanData1.values.forEach((element) {
+        element.forEach((item) {
+          lst.add(item);
+        });
+      });
+      print('mealPlanData1.values.length:${mealPlanData1.values.length}, ${lst.length}');
     }
     else{
       ErrorModel model = result as ErrorModel;
@@ -325,7 +340,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                   visible: buttonVisibility(),
                   child: Center(
                     child: GestureDetector(
-                      onTap: (statusList.length != mealPlanData1!.length)
+                      onTap: (statusList.length != lst.length)
                           ? null
                           : () {
                         sendData();
@@ -335,7 +350,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                         padding: EdgeInsets.symmetric(
                             vertical: 1.h, horizontal: 5.w),
                         decoration: BoxDecoration(
-                          color: (statusList.length != mealPlanData1!.length) ? gMainColor : gPrimaryColor,
+                          color: (statusList.length != lst.length) ? gMainColor : gPrimaryColor,
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(color: gMainColor, width: 1),
                         ),
@@ -343,7 +358,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                           'Proceed to Day $proceedToDay',
                           style: TextStyle(
                             fontFamily: "GothamBook",
-                            color: (statusList.length != mealPlanData1!.length) ? gPrimaryColor :  gMainColor,
+                            color: (statusList.length != lst.length) ? gPrimaryColor :  gMainColor,
                             fontSize: 10.sp,
                           ),
                         ),
@@ -489,7 +504,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
             headingRowHeight: 5.h,
             horizontalMargin: 2.w,
             // columnSpacing: 60,
-            dataRowHeight: 6.h,
+            dataRowHeight: getRowHeight(),
             // headingRowColor: MaterialStateProperty.all(const Color(0xffE06666)),
             columns:  <DataColumn>[
               DataColumn(
@@ -520,7 +535,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                 ),
               ),
             ],
-            rows: showDataRow(),
+            rows: dataRowWidget(),
           ),
         ],
       ),
@@ -528,7 +543,315 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
   }
 
   showDataRow(){
-    return mealPlanData1!.map((e) => DataRow(
+    return mealPlanData1.entries.map((e) {
+      return DataRow(
+          cells: [
+            DataCell(
+              Text(
+                'e.mealTime.toString()',
+                style: TextStyle(
+                  height: 1.5,
+                  color: gTextColor,
+                  fontSize: 8.sp,
+                  fontFamily: "GothamBold",
+                ),
+              ),
+            ),
+            DataCell(
+              GestureDetector(
+                // onTap: e.url == null ? null : e.type == 'item' ? () => showPdf(e.url!) : () => showVideo(e),
+                child: Row(
+                  children: [
+                    'e.type' == 'yoga'
+                        ? GestureDetector(
+                      onTap: () {},
+                      child: Image(
+                        image: const AssetImage(
+                            "assets/images/noun-play-1832840.png"),
+                        height: 2.h,
+                      ),
+                    )
+                        : const SizedBox(),
+                    if('e.type '== 'yoga') SizedBox(width: 2.w),
+                    Expanded(
+                      child: Text(
+                        "e.name.toString()",
+                        maxLines: 3,
+                        textAlign: TextAlign.start,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          height: 1.5,
+                          color: gTextColor,
+                          fontSize: 8.sp,
+                          fontFamily: "GothamBook",
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              placeholder: true,
+            ),
+            DataCell(
+              // (widget.isCompleted == null) ?
+                Theme(
+                  data: Theme.of(context).copyWith(
+                    highlightColor: Colors.transparent,
+                    splashColor: Colors.transparent,
+                  ),
+                  child: oldPopup(e.value.first),
+                )
+              // : Text(e.status ?? '',
+              //     textAlign: TextAlign.start,
+              //     style: TextStyle(
+              //       fontFamily: "GothamBook",
+              //       color: gTextColor,
+              //       fontSize: 8.sp,
+              //     ),
+              //   ),
+            ),
+            // DataCell(
+            //   Text(
+            //     e.key.toString(),
+            //     style: TextStyle(
+            //       height: 1.5,
+            //       color: gTextColor,
+            //       fontSize: 8.sp,
+            //       fontFamily: "GothamBold",
+            //     ),
+            //   ),
+            // ),
+            // DataCell(
+            //   ListView.builder(
+            //       shrinkWrap: true,
+            //       itemCount: e.value.length,
+            //       itemBuilder: (_, index){
+            //         return GestureDetector(
+            //           onTap: e.value[index].url == null ? null : e.value[index].url == 'item' ? () => showPdf(e.value[index].url!) : () => showVideo(e.value[index]),
+            //           child: Row(
+            //             mainAxisSize: MainAxisSize.min,
+            //             children: [
+            //               e.value[index].type == 'yoga'
+            //                   ? GestureDetector(
+            //                 onTap: () {},
+            //                 child: Image(
+            //                   image: const AssetImage(
+            //                       "assets/images/noun-play-1832840.png"),
+            //                   height: 2.h,
+            //                 ),
+            //               )
+            //                   : const SizedBox(),
+            //               if(e.value[index].type == 'yoga') SizedBox(width: 2.w),
+            //               Expanded(
+            //                 child: Text(
+            //                   "${e.value.map((value) => value.name)}",
+            //                   // " ${e.name.toString()}",
+            //                   maxLines: 3,
+            //                   textAlign: TextAlign.start,
+            //                   overflow: TextOverflow.ellipsis,
+            //                   style: TextStyle(
+            //                     height: 1.5,
+            //                     color: gTextColor,
+            //                     fontSize: 8.sp,
+            //                     fontFamily: "GothamBook",
+            //                   ),
+            //                 ),
+            //               ),
+            //             ],
+            //           ),
+            //         );
+            //       }
+            //   ),
+            //   placeholder: true,
+            // ),
+            // DataCell(
+            //     Theme(
+            //       data: Theme.of(context).copyWith(
+            //         highlightColor: Colors.transparent,
+            //         splashColor: Colors.transparent,
+            //       ),
+            //       child: oldPopup(e.value[0]),
+            //     )
+            //   // (widget.isCompleted == null) ?
+            //   //   ListView.builder(
+            //   //     shrinkWrap: true,
+            //   //       itemBuilder: (_, index){
+            //   //         return ;
+            //   //       }
+            //   //   )
+            //   // : Text(e.status ?? '',
+            //   //     textAlign: TextAlign.start,
+            //   //     style: TextStyle(
+            //   //       fontFamily: "GothamBook",
+            //   //       color: gTextColor,
+            //   //       fontSize: 8.sp,
+            //   //     ),
+            //   //   ),
+            // ),
+          ]
+      );
+    });
+    return shoppingData!.map((e) => DataRow(
+      cells: [
+        DataCell(
+          Text(
+            e.mealTime.toString(),
+            style: TextStyle(
+              height: 1.5,
+              color: gTextColor,
+              fontSize: 8.sp,
+              fontFamily: "GothamBold",
+            ),
+          ),
+        ),
+        DataCell(
+          GestureDetector(
+            onTap: e.url == null ? null : e.type == 'item' ? () => showPdf(e.url!) : () => showVideo(e),
+            child: Row(
+              children: [
+                e.type == 'yoga'
+                    ? GestureDetector(
+                  onTap: () {},
+                  child: Image(
+                    image: const AssetImage(
+                        "assets/images/noun-play-1832840.png"),
+                    height: 2.h,
+                  ),
+                )
+                    : const SizedBox(),
+                if(e.type == 'yoga') SizedBox(width: 2.w),
+                Expanded(
+                  child: Text(
+                    " ${e.name.toString()}",
+                    maxLines: 3,
+                    textAlign: TextAlign.start,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      height: 1.5,
+                      color: gTextColor,
+                      fontSize: 8.sp,
+                      fontFamily: "GothamBook",
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          placeholder: true,
+        ),
+        DataCell(
+          // (widget.isCompleted == null) ?
+            Theme(
+              data: Theme.of(context).copyWith(
+                highlightColor: Colors.transparent,
+                splashColor: Colors.transparent,
+              ),
+              child: oldPopup(e),
+            )
+          // : Text(e.status ?? '',
+          //     textAlign: TextAlign.start,
+          //     style: TextStyle(
+          //       fontFamily: "GothamBook",
+          //       color: gTextColor,
+          //       fontSize: 8.sp,
+          //     ),
+          //   ),
+        ),
+      ],
+    )).toList();
+  }
+
+  List<DataRow> dataRowWidget(){
+    List<DataRow> _data = [];
+    mealPlanData1.forEach((dayTime, value) {
+      _data.add(DataRow(cells: [
+        DataCell(
+          Text(
+            dayTime,
+            style: TextStyle(
+              height: 1.5,
+              color: gTextColor,
+              fontSize: 8.sp,
+              fontFamily: "GothamBold",
+            ),
+          ),
+        ),
+        DataCell(
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              ...value.map((e) => GestureDetector(
+                onTap: e.url == null ? null : e.type == 'item' ? () => showPdf(e.url!) : () => showVideo(e),
+                child: Row(
+                  children: [
+                    e.type == 'yoga'
+                        ? GestureDetector(
+                      onTap: () {},
+                      child: Image(
+                        image: const AssetImage(
+                            "assets/images/noun-play-1832840.png"),
+                        height: 2.h,
+                      ),
+                    )
+                        : const SizedBox(),
+                    if(e.type == 'yoga') SizedBox(width: 2.w),
+                    Expanded(
+                      child: Text(
+                        " ${e.name.toString()}",
+                        maxLines: 3,
+                        textAlign: TextAlign.start,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          height: 1.5,
+                          color: gTextColor,
+                          fontSize: 8.sp,
+                          fontFamily: "GothamBook",
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              )).toList()
+            ],
+          ),
+          placeholder: true,
+        ),
+        DataCell(
+          // (widget.isCompleted == null) ?
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              // shrinkWrap: true,
+              children: [
+                ...value.map((e) {
+                  return Theme(
+                    data: Theme.of(context).copyWith(
+                      highlightColor: Colors.transparent,
+                      splashColor: Colors.transparent,
+                    ),
+                    child: oldPopup(e),
+                  );
+                }).toList()
+              ],
+            )
+          // : Text(e.status ?? '',
+          //     textAlign: TextAlign.start,
+          //     style: TextStyle(
+          //       fontFamily: "GothamBook",
+          //       color: gTextColor,
+          //       fontSize: 8.sp,
+          //     ),
+          //   ),
+        ),
+      ]));
+    });
+    return _data;
+  }
+
+  showDataRow1(){
+    return shoppingData!.map((e) => DataRow(
       cells: [
         DataCell(
           Text(
@@ -599,6 +922,8 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
   }
 
   Map statusList = {};
+
+  List lst = [];
 
   showDummyDataRow(){
     return mealPlanData
@@ -778,13 +1103,17 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
         onChangedTab(index, id: itemId, title: title);
         Get.back();
       },
-      child: Text(
-        title,
-        style: TextStyle(
-          fontFamily: "GothamBook",
-          // color: (planStatus == index) ? color : gTextColor,
-          color: (statusList[itemId] == title) ? color : gTextColor,
-          fontSize: 9.5.sp,
+      child: Container(
+        width: double.infinity,
+        padding: EdgeInsets.symmetric(vertical: 2, horizontal: 4),
+        child: Text(
+          title,
+          style: TextStyle(
+            fontFamily: "GothamBook",
+            // color: (planStatus == index) ? color : gTextColor,
+            color: (statusList[itemId] == title) ? color : gTextColor,
+            fontSize: 9.5.sp,
+          ),
         ),
       ),
     );
@@ -869,7 +1198,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
     print("result: $result");
 
     if(result.runtimeType == GetProceedModel){
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => DaysProgramPlan()));
+      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => DaysProgramPlan()), (route) => route.isFirst);
     }
 
   }
@@ -905,69 +1234,72 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
   oldPopup(ChildMealPlanDetailsModel e){
     return IgnorePointer(
       ignoring: widget.isCompleted == true,
-      child: PopupMenuButton(
-        offset: const Offset(0, 30),
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(5)),
-        itemBuilder: (context) => [
-          PopupMenuItem(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      child: Container(
+        margin: EdgeInsets.only(bottom: 4),
+        child: PopupMenuButton(
+          offset: const Offset(0, 30),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(5)),
+          itemBuilder: (context) => [
+            PopupMenuItem(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 0.6.h),
+                  buildTabView(
+                      index: 1,
+                      title: list[0],
+                      color: gPrimaryColor,
+                      itemId: e.itemId!
+                  ),
+                  SizedBox(height: 0.6.h),
+                  Container(
+                    margin: EdgeInsets.symmetric(vertical: 1.h),
+                    height: 1,
+                    color: gGreyColor.withOpacity(0.3),
+                  ),
+                  SizedBox(height: 0.6.h),
+                  buildTabView(
+                      index: 2,
+                      title: list[1],
+                      color: gsecondaryColor,
+                      itemId: e.itemId!
+                  ),
+                  SizedBox(height: 0.6.h),
+                ],
+              ),
+              onTap: null,
+            ),
+          ],
+          child: Container(
+            width: 20.w,
+            padding: EdgeInsets.symmetric(
+                horizontal: 2.w, vertical: 0.2.h),
+            decoration: BoxDecoration(
+              color: gWhiteColor,
+              borderRadius: BorderRadius.circular(5),
+              border: Border.all(color: gMainColor, width: 1),
+            ),
+            child: Row(
               children: [
-                SizedBox(height: 0.6.h),
-                buildTabView(
-                    index: 1,
-                    title: list[0],
-                    color: gPrimaryColor,
-                    itemId: e.itemId!
+                Expanded(
+                  child: Text(
+                    statusList.isEmpty ? '' : getStatusText(e.itemId!) ?? '',
+                    textAlign: TextAlign.start,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                        fontFamily: "GothamBook",
+                        color: statusList.isEmpty ? textColor : getTextColor(e.itemId!) ?? textColor,
+                        fontSize: 8.sp),
+                  ),
                 ),
-                SizedBox(height: 0.6.h),
-                Container(
-                  margin: EdgeInsets.symmetric(vertical: 1.h),
-                  height: 1,
-                  color: gGreyColor.withOpacity(0.3),
+                Icon(
+                  Icons.expand_more,
+                  color: gGreyColor,
+                  size: 2.h,
                 ),
-                SizedBox(height: 0.6.h),
-                buildTabView(
-                    index: 2,
-                    title: list[1],
-                    color: gsecondaryColor,
-                    itemId: e.itemId!
-                ),
-                SizedBox(height: 0.6.h),
               ],
             ),
-            onTap: null,
-          ),
-        ],
-        child: Container(
-          width: 20.w,
-          padding: EdgeInsets.symmetric(
-              horizontal: 2.w, vertical: 0.2.h),
-          decoration: BoxDecoration(
-            color: gWhiteColor,
-            borderRadius: BorderRadius.circular(5),
-            border: Border.all(color: gMainColor, width: 1),
-          ),
-          child: Row(
-            children: [
-              Expanded(
-                child: Text(
-                  statusList.isEmpty ? '' : getStatusText(e.itemId!) ?? '',
-                  textAlign: TextAlign.start,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                      fontFamily: "GothamBook",
-                      color: statusList.isEmpty ? textColor : getTextColor(e.itemId!) ?? textColor,
-                      fontSize: 8.sp),
-                ),
-              ),
-              Icon(
-                Icons.expand_more,
-                color: gGreyColor,
-                size: 2.h,
-              ),
-            ],
           ),
         ),
       ),
@@ -1020,6 +1352,15 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
     print("isVisible: $isVisible");
     return isVisible;
     // widget.isCompleted == null || (widget.nextDay == widget.day)
+  }
+
+  getRowHeight() {
+    if(mealPlanData1.values.length > 1){
+      return 8.h;
+    }
+    else{
+      return 6.h;
+    }
   }
 
 }
