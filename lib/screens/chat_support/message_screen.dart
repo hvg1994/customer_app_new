@@ -1,102 +1,125 @@
+import 'dart:async';
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:grouped_list/grouped_list.dart';
+import 'package:gwc_customer/repository/quick_blox_repository/message_wrapper.dart';
 import 'package:gwc_customer/screens/profile_screens/call_support_method.dart';
 import 'package:gwc_customer/utils/app_config.dart';
 import 'package:gwc_customer/widgets/unfocus_widget.dart';
 import 'package:gwc_customer/widgets/widgets.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import 'package:quickblox_sdk/chat/constants.dart';
+import 'package:quickblox_sdk/models/qb_attachment.dart';
+import 'package:quickblox_sdk/models/qb_file.dart';
+import 'package:quickblox_sdk/models/qb_message.dart';
 import 'package:sizer/sizer.dart';
-import 'package:socket_io_client/socket_io_client.dart' as IO;
 import '../../model/message_model/message_model.dart';
+import '../../services/quick_blox_service/quick_blox_service.dart';
 import '../../widgets/constants.dart';
+import 'package:quickblox_sdk/quickblox_sdk.dart';
 
 class MessageScreen extends StatefulWidget {
-  const MessageScreen({Key? key}) : super(key: key);
+  final bool isGroupId;
+  const MessageScreen({Key? key, this.isGroupId = false}) : super(key: key);
 
   @override
   State<MessageScreen> createState() => _MessageScreenState();
 }
 
-class _MessageScreenState extends State<MessageScreen> {
+class _MessageScreenState extends State<MessageScreen> with WidgetsBindingObserver {
   final formKey = GlobalKey<FormState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   TextEditingController commentController = TextEditingController();
-  ScrollController? _controller;
-  IO.Socket? socket;
+  ScrollController? _scrollController;
 
-  static final _pref = AppConfig().preferences;
+  QuickBloxService? _quickBloxService;
 
-  void _sendMessage() {
-    String messageText = commentController.text.trim();
-    commentController.text = '';
-    print(messageText);
-    if (messageText != '') {
-      var messagePost = {
-        'message': messageText,
-        'sender': 'Ganesh',
-        // 'recipient': 'chat',
-        'time': DateTime.now().toUtc().toString().substring(0, 16)
-      };
-      socket!.emit('chat', messagePost);
-    }
-  }
+  bool isLoading = false;
+
+  List attachments = [];
+
+  String? _groupId;
+  String? _messageId;
+
+  final _pref = AppConfig().preferences;
+
 
   @override
   void initState() {
     super.initState();
+    isLoading = true;
+    _quickBloxService = Provider.of<QuickBloxService>(context,listen: false);
+    if (WidgetsBinding.instance != null) {
+      WidgetsBinding.instance!.addObserver(this);
+    }
+    if(_pref != null){
+      if(_pref?.getString(AppConfig.GROUP_ID) != null){
+        _groupId = _pref!.getString(AppConfig.GROUP_ID);
+        joinChatRoom(_pref!.getString(AppConfig.GROUP_ID)!);
+      }
+    }
     commentController.addListener(() {
       setState(() {});
     });
-    _controller = ScrollController();
-    initSocket();
-    WidgetsBinding.instance?.addPostFrameCallback((_) => {
-      _controller!.animateTo(
-        0.0,
-        duration: Duration(milliseconds: 200),
-        curve: Curves.easeIn,
-      )
-    });
+    _scrollController = ScrollController();
+    // WidgetsBinding.instance?.addPostFrameCallback((_) => {
+    //   _scrollController!.animateTo(
+    //     0.0,
+    //     duration: Duration(milliseconds: 200),
+    //     curve: Curves.easeIn,
+    //   )
+    // });
+    _scrollController?.addListener(_scrollListener);
   }
 
-  Future<void> initSocket() async {
-    final user_id = _pref?.getInt(AppConfig.USER_ID) ?? -1;
-    print('Connecting to chat service with $user_id');
-    // String registrationToken = await getFCMToken();
-    socket = IO.io('https://gwc.disol.in:1333/socket.io/?user_id=$user_id&user_type=user&group_id=nN5oJI',
-        <String, dynamic>{
-      'transports': ['websocket'],
-      'autoConnect': false,
-      'query': {
-        'user_id': user_id.toString(),
-        'user_type': "user",
-        'group_id': 'nN5oJI'
-        // 'registrationToken': registrationToken
-      }
-    });
-    socket!.connect();
-    socket!.onConnect((_) {
-      print('connected to websocket');
-    });
-    socket!.on('chat_message', (message) {
-      print(message);
-      setState(() {
-        MessagesModel.updateMessages(message);
-      });
-    });
-    // socket.on('allChats', (messages) {
-    //   print(messages);
-    //   setState(() {
-    //     MessagesModel.messages.addAll(messages);
-    //   });
-    // });
+  callQBService() async{
+    // await _quickBloxService!.init();
+    await _quickBloxService!.login('Ramesh', password: '12345678');
   }
+
 
   @override
   void dispose() {
+    if (WidgetsBinding.instance != null) {
+      WidgetsBinding.instance!.removeObserver(this);
+    }
     commentController.dispose();
-    socket!.disconnect();
+    _scrollController?.removeListener(_scrollListener);
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    switch (state) {
+      case AppLifecycleState.resumed:
+        print("app in resumed");
+        break;
+      case AppLifecycleState.inactive:
+        print("app in inactive");
+        break;
+      case AppLifecycleState.paused:
+        print("app in paused");
+        break;
+      case AppLifecycleState.detached:
+        print("app in detached");
+        break;
+    }
+  }
+
+
+  void _scrollListener() {
+    double? maxScroll = _scrollController?.position.maxScrollExtent;
+    double? currentScroll = _scrollController?.position.pixels;
+    if (maxScroll == currentScroll && _quickBloxService!.hasMore == true) {
+      _quickBloxService!.loadMessages(_groupId ?? '');
+    }
   }
 
   List<Message> messages = [
@@ -185,267 +208,498 @@ class _MessageScreenState extends State<MessageScreen> {
   @override
   Widget build(BuildContext context) {
     return UnfocusWidget(
-      child: Scaffold(
-        body: Container(
-          color: gsecondaryColor,
-          child: Column(
-            children: [
-              Padding(
-                padding: EdgeInsets.only(top: 2.h, left: 4.w, right: 4.w),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
+      child: SafeArea(
+        child: Scaffold(
+          key: _scaffoldKey,
+          body: Container(
+            color: gsecondaryColor,
+            child: Stack(
+              children: [
+                Column(
                   children: [
-                    buildAppBar(() {
-                      Navigator.pop(context);
-                    }),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Ms. Lorem Ipsum Daries",
-                          style: TextStyle(
-                              fontFamily: "PoppinsRegular",
-                              color: gWhiteColor,
-                              fontSize: 10.sp),
-                        ),
-                        SizedBox(height: 0.5.h),
-                        Text(
-                          "Age : 26 Female",
-                          style: TextStyle(
-                              fontFamily: "PoppinsLight",
-                              color: gWhiteColor,
-                              fontSize: 9.sp),
-                        ),
-                        SizedBox(height: 2.h),
-                      ],
+                    Padding(
+                      padding: EdgeInsets.only(top: 2.h, left: 4.w, right: 4.w),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          buildAppBar(() {
+                            Navigator.pop(context);
+                          }),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                "Ms. Lorem Ipsum Daries",
+                                style: TextStyle(
+                                    fontFamily: "PoppinsRegular",
+                                    color: gWhiteColor,
+                                    fontSize: 10.sp),
+                              ),
+                              SizedBox(height: 0.5.h),
+                              Text(
+                                "Age : 26 Female",
+                                style: TextStyle(
+                                    fontFamily: "PoppinsLight",
+                                    color: gWhiteColor,
+                                    fontSize: 9.sp),
+                              ),
+                              SizedBox(height: 2.h),
+                            ],
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              callSupport();
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.all(5),
+                              decoration: BoxDecoration(
+                                color: gWhiteColor.withOpacity(0.3),
+                                borderRadius: BorderRadius.circular(50),
+                              ),
+                              child: const Icon(
+                                Icons.local_phone,
+                                color: gPrimaryColor,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                    GestureDetector(
-                      onTap: () {
-                        callSupport();
-                      },
+                    SizedBox(height: 3.h),
+                    Expanded(
                       child: Container(
-                        padding: const EdgeInsets.all(5),
+                        padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 1.h),
+                        width: double.maxFinite,
                         decoration: BoxDecoration(
-                          color: gWhiteColor.withOpacity(0.3),
-                          borderRadius: BorderRadius.circular(50),
+                          color: Colors.white,
+                          boxShadow: [
+                            BoxShadow(
+                                blurRadius: 2, color: Colors.grey.withOpacity(0.5))
+                          ],
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(20),
+                            topRight: Radius.circular(20),
+                          ),
                         ),
-                        child: const Icon(
-                          Icons.local_phone,
-                          color: gPrimaryColor,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: RawScrollbar(
+                                isAlwaysShown: false,
+                                thickness: 3,
+                                controller: _scrollController,
+                                radius: Radius.circular(3),
+                                thumbColor: gMainColor,
+                                child: StreamBuilder(
+                                  stream: _quickBloxService!.stream.stream.asBroadcastStream(),
+                                  builder: (_, snapshot){
+                                    // print("snap.data: ${snapshot.data}");
+                                    if(snapshot.hasData) {
+                                      return buildMessageList(snapshot.data as List<QBMessageWrapper>);
+                                    }
+                                    else if(snapshot.hasError) {
+                                      return Center(child: Text(snapshot.error.toString()),);
+                                    }
+                                    return Center(child: CircularProgressIndicator(),);
+                                  },
+                                )
+                              ),
+                            ),
+                            _buildEnterMessageRow(),
+                          ],
                         ),
                       ),
                     ),
                   ],
                 ),
-              ),
-              SizedBox(height: 3.h),
+                // if(isLoading)
+                // Positioned(
+                //   child: Center(child: CircularProgressIndicator()),
+                // )
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEnterMessageRow() {
+    return SafeArea(
+      child: Column(
+        children: [
+          _buildTypingIndicator(),
+          Row(
+            children: [
               Expanded(
                 child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 1.h),
-                  width: double.maxFinite,
+                  // height: 5.h,
+                  padding: EdgeInsets.symmetric(horizontal: 2.w),
                   decoration: BoxDecoration(
-                    color: Colors.white,
-                    boxShadow: [
-                      BoxShadow(
-                          blurRadius: 2, color: Colors.grey.withOpacity(0.5))
-                    ],
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(20),
-                      topRight: Radius.circular(20),
+                    color: const Color(0xffF8F4F4),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Form(
+                    key: formKey,
+                    child: TextFormField(
+                      // cursorColor: kPrimaryColor,
+                      controller: commentController,
+                      textAlignVertical: TextAlignVertical.center,
+                      decoration: InputDecoration(
+                        hintText: "Say Something ...",
+                        alignLabelWithHint: true,
+                        hintStyle: TextStyle(
+                          color: gMainColor,
+                          fontSize: 10.sp,
+                          fontFamily: "GothamBook",
+                        ),
+                        border: InputBorder.none,
+                        suffixIcon: InkWell(
+                          onTap: () {
+                            showAttachmentSheet(context);
+                          },
+                          child: const Icon(
+                            Icons.add,
+                            color: gPrimaryColor,
+                          ),
+                        ),
+                      ),
+                      style: TextStyle(
+                          fontFamily: "GothamMedium",
+                          color: gTextColor,
+                          fontSize: 11.sp
+                      ),
+                      maxLines: 3,
+                      minLines: 1,
+                      textInputAction: TextInputAction.none,
+                      textAlign: TextAlign.start,
+                      keyboardType: TextInputType.text,
                     ),
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: buildMessageList(),
-                      ),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Container(
-                              // height: 5.h,
-                              padding: EdgeInsets.symmetric(horizontal: 2.w),
-                              decoration: BoxDecoration(
-                                color: const Color(0xffF8F4F4),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Form(
-                                key: formKey,
-                                child: TextFormField(
-                                  // cursorColor: kPrimaryColor,
-                                  controller: commentController,
-                                  textAlignVertical: TextAlignVertical.center,
-                                  decoration: InputDecoration(
-                                    hintText: "Say Something ...",
-                                    alignLabelWithHint: true,
-                                    hintStyle: TextStyle(
-                                      color: gMainColor,
-                                      fontSize: 10.sp,
-                                      fontFamily: "GothamBook",
-                                    ),
-                                    border: InputBorder.none,
-                                    suffixIcon: InkWell(
-                                            onTap: () {
-                                              showAttachmentSheet();
-                                            },
-                                            child: const Icon(
-                                              Icons.add,
-                                              color: gPrimaryColor,
-                                            ),
-                                          ),
-                                  ),
-                                  style: TextStyle(
-                                      fontFamily: "GothamMedium",
-                                      color: gTextColor,
-                                      fontSize: 11.sp
-                                  ),
-                                  maxLines: 3,
-                                  minLines: 1,
-                                  textInputAction: TextInputAction.none,
-                                  textAlign: TextAlign.start,
-                                  keyboardType: TextInputType.text,
-                                ),
-                              ),
-                            ),
-                          ),
-                          commentController.text.toString().isNotEmpty
-                              ? SizedBox(
-                                  width: 2.w,
-                                )
-                              : SizedBox(width: 0),
-                          commentController.text.toString().isEmpty
-                              ? SizedBox(
-                                  width: 0,
-                                )
-                              : InkWell(
-                                  onTap: () {
-                                    final message = Message(
-                                        text: commentController.text.toString(),
-                                        date: DateTime.now(),
-                                        sendMe: true,
-                                        image: "assets/images/closeup-content-attractive-indian-business-lady.png"
-                                    );
-                                    setState(() {
-                                      messages.add(message);
-                                    });
-                                    _sendMessage();
-                                    // commentController.clear();
-                                  },
-                                  child: const Icon(
-                                    Icons.send,
-                                    color: kPrimaryColor,
-                                  ),
-                                ),
-                        ],
-                      ),
-                    ],
-                  ),
+                ),
+              ),
+              commentController.text.toString().isNotEmpty
+                  ? SizedBox(
+                width: 2.w,
+              )
+                  : SizedBox(width: 0),
+              commentController.text.toString().isEmpty
+                  ? SizedBox(
+                width: 0,
+              )
+                  : InkWell(
+                onTap: () {
+                  final message = Message(
+                      text: commentController.text.toString(),
+                      date: DateTime.now(),
+                      sendMe: true,
+                      image: "assets/images/closeup-content-attractive-indian-business-lady.png"
+                  );
+                  setState(() {
+                    messages.add(message);
+                  });
+                  _quickBloxService!.sendMessage(_groupId!, message: commentController.text );
+
+                  commentController.clear();
+                },
+                child: const Icon(
+                  Icons.send,
+                  color: kPrimaryColor,
                 ),
               ),
             ],
           ),
-        ),
+        ],
       ),
     );
   }
 
-  buildMessageList() {
-    return GroupedListView<dynamic, DateTime>(
-      elements: MessagesModel.messages,
-      groupBy: (message) =>
+  Widget _buildTypingIndicator() {
+    return StreamBuilder(
+        stream: _quickBloxService!.typingStream.stream.asBroadcastStream(),
+        builder: (_, snapshot){
+          if(snapshot.hasData){
+            print("typinf snap: ${snapshot.data}");
+            return Container(
+              // color: Color(0xfff1f1f1),
+              height: 35,
+              child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SizedBox(width: 16),
+                    Text((snapshot.data as List<String>).isEmpty ? '' :_makeTypingStatus(snapshot.data as List<String>),
+                        style: TextStyle(
+                            fontSize: 13,
+                            color: Color(0xff6c7a92),
+                            fontStyle: FontStyle.italic))
+                  ]),
+            );
+          }
+          return SizedBox();
+        }
+    );
+  }
+
+String _makeTypingStatus(List<String> usersName) {
+  const int MAX_NAME_SIZE = 20;
+  const int ONE_USER = 1;
+  const int TWO_USERS = 2;
+
+  String result = "";
+  int namesCount = usersName.length;
+
+  switch (namesCount) {
+    case ONE_USER:
+      String firstUser = usersName[0];
+      if (firstUser.length <= MAX_NAME_SIZE) {
+        result = firstUser + " is typing...";
+      } else {
+        result = firstUser.substring(0, MAX_NAME_SIZE - 1) + "… is typing...";
+      }
+      break;
+    case TWO_USERS:
+      String firstUser = usersName[0];
+      String secondUser = usersName[1];
+      if ((firstUser + secondUser).length > MAX_NAME_SIZE) {
+        firstUser = _getModifiedUserName(firstUser);
+        secondUser = _getModifiedUserName(secondUser);
+      }
+      result = firstUser + " and " + secondUser + " are typing...";
+      break;
+    default:
+      String firstUser = usersName[0];
+      String secondUser = usersName[1];
+      String thirdUser = usersName[2];
+
+      if ((firstUser + secondUser + thirdUser).length <= MAX_NAME_SIZE) {
+        result = firstUser + ", " + secondUser + ", " + thirdUser + " are typing...";
+      } else {
+        firstUser = _getModifiedUserName(firstUser);
+        secondUser = _getModifiedUserName(secondUser);
+        result = firstUser +
+            ", " +
+            secondUser +
+            " and " +
+            (namesCount - 2).toString() +
+            " more are typing...";
+        break;
+      }
+  }
+  return result;
+}
+
+String _getModifiedUserName(String name) {
+  const int MAX_NAME_SIZE = 10;
+  if (name.length >= MAX_NAME_SIZE) {
+    name = name.substring(0, (MAX_NAME_SIZE) - 1) + "…";
+  }
+  return name;
+}
+
+
+  buildMessageList(List<QBMessageWrapper> messageList) {
+    return GroupedListView<QBMessageWrapper, DateTime>(
+      elements: messageList,
+      order: GroupedListOrder.DESC,
+      reverse: true,
+      floatingHeader: true,
+      useStickyGroupSeparators: true,
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+      groupBy: (QBMessageWrapper message) =>
           DateTime(message.date.year, message.date.month, message.date.day),
-      physics: const BouncingScrollPhysics(),
-      padding: EdgeInsets.symmetric(horizontal: 0.w),
-      groupHeaderBuilder: (dynamic message) => Center(
-        child: Container(
-          margin: EdgeInsets.symmetric(vertical: 1.h),
-          child: Text(
-            DateFormat.yMMMd().format(message.date),
-            style: TextStyle(
-                fontFamily: "GothamBook",
-                height: 1.5,
-                color: gGreyColor.withOpacity(0.5),
-                fontSize: 9.sp),
-          ),
-        ),
-      ),
-      itemBuilder: (context, dynamic message) => Align(
-        alignment:
-            message.sendMe ? Alignment.centerRight : Alignment.centerLeft,
-        child: Stack(
-          overflow: Overflow.visible,
-          clipBehavior: Clip.none,
-          children: [
+      // padding: EdgeInsets.symmetric(horizontal: 0.w),
+      groupHeaderBuilder: (QBMessageWrapper message) =>
+          Row(mainAxisAlignment: MainAxisAlignment.center, children: [
             Container(
-              margin: message.sendMe
-                  ? EdgeInsets.only(top: 1.h, bottom: 1.h, left: 10.w)
-                  : EdgeInsets.only(top: 1.h, bottom: 1.h, right: 10.w),
-              padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 1.5.h),
+              margin: EdgeInsets.only(top: 7, bottom: 7),
+              padding: EdgeInsets.only(left: 16, right: 16, top: 3, bottom: 3),
               decoration: BoxDecoration(
-                  color: message.sendMe
-                      ? gGreyColor.withOpacity(0.2)
-                      : gsecondaryColor,
-                  borderRadius: BorderRadius.circular(10)),
-              child: Text(
-                message.text.toString(),
-                style: TextStyle(
-                    fontFamily: "GothamBook",
-                    height: 1.5,
-                    color: message.sendMe ? gTextColor : gWhiteColor,
-                    fontSize: 10.sp),
-              ),
-            ),
-            message.sendMe
-                ? Positioned(
-                    bottom: 0,
-                    right: -1,
-                    child: Align(
-                      alignment: Alignment.bottomRight,
-                      child: Container(
-                        // padding: const EdgeInsets.all(4),
-                        decoration: BoxDecoration(
-                          color: gsecondaryColor,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: Center(
-                            child: Image(
-                              image: AssetImage(message.image),
-                              height: 2.h,
-                            ),
+                  color: Color(0xffd9e3f7),
+                  borderRadius: BorderRadius.all(Radius.circular(11))),
+              child: Text(_buildHeaderDate(message.qbMessage.dateSent),
+                  style: TextStyle(color: Colors.black54, fontSize: 13)),
+            )
+          ]),
+      itemBuilder: (context, QBMessageWrapper message) => Row(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Container(
+              child: message.isIncoming
+                  ? _generateAvatarFromName(message.senderName)
+                  : null),
+          Expanded(
+            child: Padding(
+              padding: EdgeInsets.only(top: 15),
+              child: Column(
+                crossAxisAlignment: message.isIncoming ? CrossAxisAlignment.start : CrossAxisAlignment.end,
+                children: [
+                  IntrinsicWidth(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      // overflow: Overflow.visible,
+                      // clipBehavior: Clip.none,
+                      children: [
+                        Container(
+                          padding: EdgeInsets.only(left: 16, right: 16, top: 13, bottom: 13),
+                          constraints: BoxConstraints(maxWidth: 70.w),
+                          margin: message.isIncoming
+                              ? EdgeInsets.only(top: 1.h, bottom: 1.h, left: 5)
+                              : EdgeInsets.only(top: 1.h, bottom: 1.h, right: 5),
+                          // padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 1.5.h),
+                          decoration: BoxDecoration(
+                              color: message.isIncoming
+                                  ? gGreyColor.withOpacity(0.2)
+                                  : gsecondaryColor,
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(18),
+                                topRight: Radius.circular(18),
+                                bottomLeft: message.isIncoming ? Radius.circular(0) : Radius.circular(18),
+                                bottomRight: message.isIncoming ? Radius.circular(18) : Radius.circular(0)
+
+                              )),
+                          child: Text(
+                            message.qbMessage.body ?? '',
+                            style: TextStyle(
+                                fontFamily: "GothamBook",
+                                height: 1.5,
+                                color: message.isIncoming ? gTextColor : gWhiteColor,
+                                fontSize: 10.sp),
                           ),
                         ),
-                      ),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: _buildNameTimeHeader(message),
+                        ),
+                        // message.isIncoming
+                        //     ? Positioned(
+                        //   bottom: 0,
+                        //   right: 0,
+                        //   child: Align(
+                        //     alignment: Alignment.bottomRight,
+                        //     child: Container(
+                        //       // padding: const EdgeInsets.all(4),
+                        //       decoration: BoxDecoration(
+                        //         color: gsecondaryColor,
+                        //         borderRadius: BorderRadius.circular(8),
+                        //       ),
+                        //       child: ClipRRect(
+                        //         borderRadius: BorderRadius.circular(8),
+                        //         child: Center(
+                        //           child: Image(
+                        //             image: AssetImage('assets/images/closeup-content-attractive-indian-business-lady.png'),
+                        //             height: 2.h,
+                        //           ),
+                        //         ),
+                        //       ),
+                        //     ),
+                        //   ),
+                        // )
+                        //     : Positioned(
+                        //   bottom: 0,
+                        //   // left: -3,
+                        //   child: Container(
+                        //     padding: const EdgeInsets.all(4),
+                        //     decoration: BoxDecoration(
+                        //       color: gWhiteColor,
+                        //       borderRadius: BorderRadius.circular(8),
+                        //     ),
+                        //     child: ClipRRect(
+                        //       borderRadius: BorderRadius.circular(8),
+                        //       child: Image(
+                        //         image: AssetImage('assets/images/closeup-content-attractive-indian-business-lady.png'),
+                        //         height: 2.h,
+                        //       ),
+                        //     ),
+                        //   ),
+                        // ),
+                      ],
                     ),
                   )
-                : Positioned(
-              bottom: 0,
-              left: -3,
-                    child: Container(
-                      padding: const EdgeInsets.all(4),
-                      decoration: BoxDecoration(
-                        color: gWhiteColor,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: Image(
-                          image: AssetImage(message.image),
-                          height: 2.h,
-                        ),
-                      ),
-                    ),
-                  ),
-          ],
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+      controller: _scrollController,
+
+    );
+  }
+
+  List<Widget> _buildNameTimeHeader(message) {
+    return <Widget>[
+      Padding(padding: EdgeInsets.only(left: 16)),
+      _buildSenderName(message),
+      Padding(padding: EdgeInsets.only(left: 7)),
+      Expanded(child: SizedBox.shrink()),
+      message.isIncoming ? SizedBox.shrink() : _buildMessageStatus(message),
+      Padding(padding: EdgeInsets.only(left: 3)),
+      _buildDateSent(message),
+      Padding(padding: EdgeInsets.only(left: 16))
+    ];
+  }
+
+  Widget _buildMessageStatus(message) {
+    var deliveredIds = message.qbMessage.deliveredIds;
+    var readIds = message.qbMessage.readIds;
+    // if (_dialogType == QBChatDialogTypes.PUBLIC_CHAT) {
+    //   return SizedBox.shrink();
+    // }
+    if (readIds != null && readIds.length > 1) {
+      return Icon(Icons.done_all, color: Colors.blue,size: 14,);
+    } else if (deliveredIds != null && deliveredIds.length > 1) {
+      return Icon(Icons.done_all, color: gGreyColor,size: 14);
+    } else {
+      return Icon(Icons.done, color: gGreyColor,size: 14);
+    }
+  }
+
+  Widget _buildSenderName(message) {
+    return Text(message.senderName ?? "Noname",
+        maxLines: 1,
+        style: TextStyle(fontSize: 10.5.sp, fontWeight: FontWeight.bold, color: Colors.black54));
+  }
+
+  Widget _buildDateSent(message) {
+    return Text(_buildTime(message.qbMessage.dateSent!),
+        maxLines: 1, style: TextStyle(fontSize: 10.sp, color: Colors.black54));
+  }
+  String _buildTime(int timeStamp) {
+    String completedTime = "";
+    DateFormat timeFormat = DateFormat("HH:mm");
+    DateTime messageTime = new DateTime.fromMicrosecondsSinceEpoch(timeStamp * 1000);
+    completedTime = timeFormat.format(messageTime);
+
+    return completedTime;
+  }
+
+  Widget _generateAvatarFromName(String? name) {
+    if (name == null) {
+      name = "Noname";
+    }
+    return Container(
+      width: 20,
+      height: 20,
+      decoration: new BoxDecoration(
+        color: gMainColor.withOpacity(0.18),
+          borderRadius: new BorderRadius.all(Radius.circular(20))),
+      child: Center(
+        child: Text(
+          '${name.substring(0, 1).toUpperCase()}',
+          style: TextStyle(color: gPrimaryColor, fontWeight: FontWeight.bold, fontFamily: 'GothamMedium'),
         ),
       ),
     );
   }
 
-  showAttachmentSheet() {
+
+  showAttachmentSheet(BuildContext context) {
     return showModalBottomSheet(
         backgroundColor: Colors.transparent,
         context: context,
@@ -486,15 +740,15 @@ class _MessageScreenState extends State<MessageScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         iconWithText( Icons.insert_drive_file, 'Document', () {
-                          // getImageFromCamera();
+                          pickFromFile();
                           Navigator.pop(context);
                         }),
                         iconWithText( Icons.camera_enhance_outlined, 'Camera', () {
-                          // getImageFromCamera();
+                          getImageFromCamera();
                           Navigator.pop(context);
                         }),
                         iconWithText( Icons.image, 'Gallery', () {
-                          // getImageFromCamera();
+                          getImageFromCamera(fromCamera: false);
                           Navigator.pop(context);
                         }),
                       ],
@@ -507,6 +761,35 @@ class _MessageScreenState extends State<MessageScreen> {
         }
     );
   }
+
+  String _buildHeaderDate(int? timeStamp) {
+    String completedDate = "";
+    DateFormat dayFormat = DateFormat("d MMMM");
+    DateFormat lastYearFormat = DateFormat("dd.MM.yy");
+
+    DateTime now = DateTime.now();
+    var today = DateTime(now.year, now.month, now.day);
+    var yesterday = DateTime(now.year, now.month, now.day - 1);
+
+    if (timeStamp == null) {
+      timeStamp = 0;
+    }
+    DateTime messageTime = DateTime.fromMicrosecondsSinceEpoch(timeStamp * 1000);
+    DateTime messageDate = DateTime(messageTime.year, messageTime.month, messageTime.day);
+
+    if (today == messageDate) {
+      completedDate = "Today";
+    } else if (yesterday == messageDate) {
+      completedDate = "Yesterday";
+    } else if (now.year == messageTime.year) {
+      completedDate = dayFormat.format(messageTime);
+    } else {
+      completedDate = lastYearFormat.format(messageTime);
+    }
+
+    return completedDate;
+  }
+
 
   iconWithText(IconData assetName, String optionName, VoidCallback onPress){
     return GestureDetector(
@@ -542,6 +825,180 @@ class _MessageScreenState extends State<MessageScreen> {
       ),
     );
   }
+
+  // void unsubscribeNewMessage() {
+  //   if (_newMessageSubscription != null) {
+  //     _newMessageSubscription!.cancel();
+  //     _newMessageSubscription = null;
+  //     AppConfig().showSnackbar(
+  //         context, "Unsubscribed: " + QBChatEvents.RECEIVED_NEW_MESSAGE);
+  //   }
+  // }
+  //
+  // void unsubscribeDeliveredMessage() async {
+  //   if (_deliveredMessageSubscription != null) {
+  //     _deliveredMessageSubscription!.cancel();
+  //     _deliveredMessageSubscription = null;
+  //     AppConfig().showSnackbar(context,
+  //         "Unsubscribed: " + QBChatEvents.MESSAGE_DELIVERED);
+  //   }
+  // }
+  //
+  // void unsubscribeReadMessage() async {
+  //   if (_readMessageSubscription != null) {
+  //     _readMessageSubscription!.cancel();
+  //     _readMessageSubscription = null;
+  //     AppConfig().showSnackbar(context,
+  //         "Unsubscribed: " + QBChatEvents.MESSAGE_READ);
+  //   }
+  // }
+  //
+  // void unsubscribeUserTyping() async {
+  //   if (_userTypingSubscription != null) {
+  //     _userTypingSubscription!.cancel();
+  //     _userTypingSubscription = null;
+  //     AppConfig().showSnackbar(context,
+  //         "Unsubscribed: " + QBChatEvents.USER_IS_TYPING);
+  //   }
+  // }
+  //
+  // void unsubscribeUserStopTyping() async {
+  //   if (_userStopTypingSubscription != null) {
+  //     _userStopTypingSubscription!.cancel();
+  //     _userStopTypingSubscription = null;
+  //     AppConfig().showSnackbar(context,
+  //         "Unsubscribed: " + QBChatEvents.USER_STOPPED_TYPING);
+  //   }
+  // }
+  //
+  // void unsubscribeConnected() {
+  //   if (_connectedSubscription != null) {
+  //     _connectedSubscription!.cancel();
+  //     _connectedSubscription = null;
+  //     AppConfig().showSnackbar(context,
+  //         "Unsubscribed: " + QBChatEvents.CONNECTED);
+  //   }
+  // }
+  //
+  // void unsubscribeConnectionClosed() {
+  //   if (_connectionClosedSubscription != null) {
+  //     _connectionClosedSubscription!.cancel();
+  //     _connectionClosedSubscription = null;
+  //     AppConfig().showSnackbar(context,
+  //         "Unsubscribed: " + QBChatEvents.CONNECTION_CLOSED);
+  //   }
+  // }
+  //
+  // void unsubscribeReconnectionFailed() {
+  //   if (_reconnectionFailedSubscription != null) {
+  //     _reconnectionFailedSubscription!.cancel();
+  //     _reconnectionFailedSubscription = null;
+  //     AppConfig().showSnackbar(context,
+  //         "Unsubscribed: " + QBChatEvents.RECONNECTION_FAILED);
+  //   }
+  // }
+  //
+  // void unsubscribeReconnectionSuccess() {
+  //   if (_reconnectionSuccessSubscription != null) {
+  //     _reconnectionSuccessSubscription!.cancel();
+  //     _reconnectionSuccessSubscription = null;
+  //     AppConfig().showSnackbar(context,
+  //         "Unsubscribed: " + QBChatEvents.RECONNECTION_SUCCESSFUL);
+  //   }
+  // }
+
+
+  joinChatRoom(String groupId) async{
+    await Provider.of<QuickBloxService>(context,listen: false).joinDialog(groupId);
+
+    Future.delayed(Duration(seconds: 15)).whenComplete(() {
+      setState(() {
+        isLoading = false;
+      });
+    });
+  }
+
+  File? _image;
+
+  List<PlatformFile> files = [];
+
+
+  Future getImageFromCamera({bool fromCamera = true}) async {
+    var image = await ImagePicker.platform.pickImage(
+        source: fromCamera ? ImageSource.camera : ImageSource.gallery,
+        imageQuality: 50
+    );
+
+    setState(() {
+      _image = File(image!.path);
+    });
+    sendQbAttachment(_image!.path, 'photo');
+    print("captured image: ${_image}");
+  }
+
+  void pickFromFile() async{
+    final result = await FilePicker.platform
+        .pickFiles(
+      withReadStream: true,
+      type: FileType.any,
+      // allowedExtensions: ['pdf', 'jpg', 'png'],
+      allowMultiple: false,
+    );
+    if (result == null) return;
+
+    if(result.files.first.extension!.contains("pdf") || result.files.first.extension!.contains("png") || result.files.first.extension!.contains("jpg")){
+      if(getFileSize(File(result.paths.first!)) <= 10){
+        print("filesize: ${getFileSize(File(result.paths.first!))}Mb");
+        files.add(result.files.first);
+      }
+      else{
+        AppConfig().showSnackbar(context, "File size must be < 10Mb", isError: true);
+      }
+    }
+    else{
+      AppConfig().showSnackbar(context, "Please select png/jpg/Pdf files", isError: true);
+    }
+    sendQbAttachment(files.first.path!, 'doc');
+    setState(() {});
+  }
+
+  getFileSize(File file){
+    var size = file.lengthSync();
+    num mb = num.parse((size / (1024*1024)).toStringAsFixed(2));
+    return mb;
+  }
+
+  sendQbAttachment(String url, String fileType) async{
+    try{
+      QBFile? file;
+      file = await QB.content.upload(url);
+      if(file != null) {
+        int id = file.id!;
+        String contentType = file.contentType!;
+
+        QBAttachment attachment = QBAttachment();
+        attachment.id = id.toString();
+        attachment.contentType = contentType;
+
+        //Required parameter
+        attachment.type = fileType.toUpperCase();
+
+        List<QBAttachment> attachmentsList = [];
+        attachmentsList.add(attachment);
+
+        QBMessage message = QBMessage();
+        message.attachments = attachmentsList;
+
+        _quickBloxService!.sendMessage(_groupId!, attachments: attachmentsList);
+
+        // Send a message logic
+      }
+    }
+    catch(e){
+
+    }
+  }
+
 }
 
 class Message {

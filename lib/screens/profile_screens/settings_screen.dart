@@ -9,12 +9,17 @@ import 'package:gwc_customer/screens/profile_screens/call_support_method.dart';
 import 'package:gwc_customer/screens/profile_screens/faq_screen.dart';
 import 'package:gwc_customer/screens/profile_screens/terms_conditions_screen.dart';
 import 'package:gwc_customer/screens/user_registration/existing_user.dart';
+import 'package:gwc_customer/services/quick_blox_service/quick_blox_service.dart';
 import 'package:gwc_customer/widgets/constants.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
 import 'package:http/http.dart' as http;
+import '../../model/message_model/get_chat_groupid_model.dart';
 import '../../repository/api_service.dart';
+import '../../repository/chat_repository/message_repo.dart';
 import '../../repository/login_otp_repository.dart';
+import '../../services/chat_service/chat_service.dart';
 import '../../services/login_otp_service.dart';
 import '../../splash_screen.dart';
 import '../../utils/app_config.dart';
@@ -141,11 +146,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
                 profileTile(
                     "assets/images/noun-chat-5153452.png", "Chat Support", () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => const MessageScreen(),
-                    ),
-                  );
+                  getChatGroupId();
                 }),
                 Container(
                   height: 1,
@@ -222,6 +223,34 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ErrorModel model = res as ErrorModel;
       AppConfig().showSnackbar(context, model.message!, isError:  true);
     }
+  }
+
+  final MessageRepository chatRepository = MessageRepository(
+    apiClient: ApiClient(
+      httpClient: http.Client(),
+    ),
+  );
+
+  getChatGroupId() async{
+    final _qbService = Provider.of<QuickBloxService>(context, listen:  false);
+    if(_pref.getInt(AppConfig.GET_QB_SESSION) == null || _qbService.getSession() == false){
+      _qbService.login('Ramesh', password: AppConfig.DEFAULT_PASSWORD);
+    }
+    else{
+      _qbService.connect(_pref.getInt(AppConfig.QB_CURRENT_USERID)!, AppConfig.DEFAULT_PASSWORD);
+    }
+    final res = await ChatService(repository: chatRepository).getChatGroupIdService();
+    String? chatGroupId;
+    if(res.runtimeType == GetChatGroupIdModel){
+      GetChatGroupIdModel model = res as GetChatGroupIdModel;
+      _pref.setString(AppConfig.GROUP_ID, model.group ?? '');
+      Navigator.push(context, MaterialPageRoute(builder: (c)=> MessageScreen(isGroupId: true,)));
+    }
+    else{
+      ErrorModel model = res as ErrorModel;
+      AppConfig().showSnackbar(context, model.message.toString(), isError: true);
+    }
+
   }
 
 }

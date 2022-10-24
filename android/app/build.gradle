@@ -50,6 +50,7 @@ android {
     }
 
     packagingOptions {
+        exclude 'META-INF/com.android.tools/proguard/coroutines.pro'
         // Fixes duplicate libraries build issue,
         // when your project uses more than one plugin that depend on C++ libs.
         pickFirst 'lib/**/libc++_shared.so'
@@ -109,5 +110,8 @@ dependencies {
     // TODO: Add the dependencies for Firebase products you want to use
     // When using the BoM, don't specify versions in Firebase dependencies
     implementation 'com.google.firebase:firebase-analytics'
+
+//    implementation 'androidx.work:work-runtime-ktx:2.8.0-beta01'
+    implementation 'androidx.work:work-runtime:2.7.1'
 
 }

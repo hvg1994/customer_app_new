@@ -6,15 +6,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_zoom_sdk/zoom_options.dart';
 import 'package:flutter_zoom_sdk/zoom_view.dart';
+import 'package:gwc_customer/model/error_model.dart';
+import 'package:gwc_customer/model/message_model/get_chat_groupid_model.dart';
+import 'package:gwc_customer/screens/chat_support/message_screen.dart';
 import 'package:gwc_customer/screens/dashboard_screen.dart';
 import 'package:gwc_customer/screens/evalution_form/personal_details_screen.dart';
+import 'package:gwc_customer/services/quick_blox_service/quick_blox_service.dart';
 import 'package:gwc_customer/utils/app_config.dart';
+import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 import '../../model/consultation_model/appointment_booking/appointment_book_model.dart';
 import '../../model/dashboard_model/get_appointment/child_appintment_details.dart';
+import '../../repository/api_service.dart';
+import '../../repository/chat_repository/message_repo.dart';
+import '../../services/chat_service/chat_service.dart';
 import '../../widgets/constants.dart';
 import '../../widgets/widgets.dart';
-import 'consultation_screens/consultation_success.dart';
+import 'package:http/http.dart' as http;
 import 'doctor_calender_time_screen.dart';
 
 class DoctorSlotsDetailsScreen extends StatefulWidget {
@@ -127,6 +135,7 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
                         SizedBox(width: 2.w),
                         GestureDetector(
                           onTap: () {
+                            getChatGroupId();
                             // Navigator.of(context).push(
                             //   MaterialPageRoute(
                             //       builder: (context) =>
@@ -463,6 +472,27 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
   void getEvaluationReport() {
     Navigator.push(context, MaterialPageRoute(builder: (c) => PersonalDetailsScreen(showData: true,)));
 
+  }
+
+  final MessageRepository chatRepository = MessageRepository(
+    apiClient: ApiClient(
+      httpClient: http.Client(),
+    ),
+  );
+
+  getChatGroupId() async{
+    final res = await ChatService(repository: chatRepository).getChatGroupIdService();
+    String? chatGroupId;
+    if(res.runtimeType == GetChatGroupIdModel){
+      GetChatGroupIdModel model = res as GetChatGroupIdModel;
+      _pref!.setString(AppConfig.GROUP_ID, model.group ?? '');
+      Navigator.push(context, MaterialPageRoute(builder: (c)=> MessageScreen(isGroupId: true,)));
+    }
+    else{
+      ErrorModel model = res as ErrorModel;
+      AppConfig().showSnackbar(context, model.message.toString(), isError: true);
+    }
+    
   }
 
 }

@@ -8,6 +8,7 @@ import 'package:gwc_customer/model/enquiry_status_model.dart';
 import 'package:gwc_customer/model/evaluation_from_models/get_evaluation_model/get_evaluationdata_model.dart';
 import 'package:gwc_customer/model/login_model/login_otp_model.dart';
 import 'package:gwc_customer/model/login_model/resend_otp_model.dart';
+import 'package:gwc_customer/model/message_model/get_chat_groupid_model.dart';
 import 'package:gwc_customer/model/new_user_model/about_program_model/about_program_model.dart';
 import 'package:gwc_customer/model/profile_model/feedback_model.dart';
 import 'package:gwc_customer/model/profile_model/logout_model.dart';
@@ -1291,6 +1292,44 @@ final _prefs = AppConfig().preferences;
     return result;
   }
 
+  getChatGroupId() async
+  {
+    String path = chatGroupIdUrl;
+
+    dynamic result;
+
+    try{
+      final response = await httpClient.get(
+        Uri.parse(path),
+        headers: {
+          // "Authorization": "Bearer ${AppConfig().bearerToken}",
+          "Authorization": getHeaderToken(),
+        },
+      ).timeout(const Duration(seconds: 45));
+
+      print('getChatGroupId Response header: $path');
+      print('getChatGroupId Response status: ${response.statusCode}');
+      print('getChatGroupId Response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final res = jsonDecode(response.body);
+        if(res['status'].toString() == '200'){
+          result = GetChatGroupIdModel.fromJson(res);
+        }
+        else{
+          result = ErrorModel(status: res['status'].toString(), message: res.toString());
+        }
+      } else {
+        print('getChatGroupId error: ${response.reasonPhrase}');
+        result = ErrorModel.fromJson(jsonDecode(response.body));
+      }
+    }
+    catch(e){
+      result = ErrorModel(status: "0", message: e.toString());
+    }
+
+    return result;
+  }
 
 
   void storeShipRocketToken(ShipRocketTokenModel result) {

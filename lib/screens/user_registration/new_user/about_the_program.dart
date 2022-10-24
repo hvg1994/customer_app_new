@@ -113,10 +113,12 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
                         // #1
                         String _programText = _aboutProgramText?.aboutProgram?.first ?? '';
                         // #2 video player
-                        String videoLink = _aboutProgramText?.testimonial?.video ?? '';
-                        addUrlToVideoPlayer(videoLink);
+                        if(_aboutProgramText!.testimonial !=null){
+                          String videoLink = _aboutProgramText.testimonial?.video ?? '';
+                          addUrlToVideoPlayer(videoLink);
+                        }
                         // #3 feedback List
-                        List<FeedbackList> feedbackList = _aboutProgramText?.feedbackList ?? [];
+                        List<FeedbackList> feedbackList = _aboutProgramText.feedbackList ?? [];
                         print("feedbackList: $feedbackList");
                         return SingleChildScrollView(
                           physics: const BouncingScrollPhysics(),
@@ -240,58 +242,63 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
 
 
   buildTestimonial() {
-    return AspectRatio(
-      aspectRatio: 16/9,
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(5),
-          border: Border.all(color: gPrimaryColor, width: 1),
-          // boxShadow: [
-          //   BoxShadow(
-          //     color: Colors.grey.withOpacity(0.3),
-          //     blurRadius: 20,
-          //     offset: const Offset(2, 10),
-          //   ),
-          // ],
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(5),
-          child: Center(
-            child: VlcPlayerWithControls(
-              key: _key,
-              controller: _videoPlayerController!,
-              showVolume: false,
-              showVideoProgress: false,
-              seekButtonIconSize: 10.sp,
-              playButtonIconSize: 14.sp,
-              replayButtonSize: 10.sp,
-            ),
-            // child: VlcPlayer(
-            //   controller: _videoPlayerController!,
-            //   aspectRatio: 16 / 9,
-            //   virtualDisplay: false,
-            //   placeholder: Center(child: CircularProgressIndicator()),
-            // ),
+    if(_videoPlayerController != null){
+      return AspectRatio(
+        aspectRatio: 16/9,
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(5),
+            border: Border.all(color: gPrimaryColor, width: 1),
+            // boxShadow: [
+            //   BoxShadow(
+            //     color: Colors.grey.withOpacity(0.3),
+            //     blurRadius: 20,
+            //     offset: const Offset(2, 10),
+            //   ),
+            // ],
           ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(5),
+            child: Center(
+              child: VlcPlayerWithControls(
+                key: _key,
+                controller: _videoPlayerController!,
+                showVolume: false,
+                showVideoProgress: false,
+                seekButtonIconSize: 10.sp,
+                playButtonIconSize: 14.sp,
+                replayButtonSize: 10.sp,
+              ),
+              // child: VlcPlayer(
+              //   controller: _videoPlayerController!,
+              //   aspectRatio: 16 / 9,
+              //   virtualDisplay: false,
+              //   placeholder: Center(child: CircularProgressIndicator()),
+              // ),
+            ),
+          ),
+          // child: Stack(
+          //   children: <Widget>[
+          //     ClipRRect(
+          //       borderRadius: BorderRadius.circular(5),
+          //       child: Center(
+          //         child: VlcPlayer(
+          //           controller: _videoPlayerController!,
+          //           aspectRatio: 16 / 9,
+          //           virtualDisplay: false,
+          //           placeholder: Center(child: CircularProgressIndicator()),
+          //         ),
+          //       ),
+          //     ),
+          //     ControlsOverlay(controller: _videoPlayerController,)
+          //   ],
+          // ),
         ),
-        // child: Stack(
-        //   children: <Widget>[
-        //     ClipRRect(
-        //       borderRadius: BorderRadius.circular(5),
-        //       child: Center(
-        //         child: VlcPlayer(
-        //           controller: _videoPlayerController!,
-        //           aspectRatio: 16 / 9,
-        //           virtualDisplay: false,
-        //           placeholder: Center(child: CircularProgressIndicator()),
-        //         ),
-        //       ),
-        //     ),
-        //     ControlsOverlay(controller: _videoPlayerController,)
-        //   ],
-        // ),
-      ),
-    );
+      );
+    }
+    else {
+      return SizedBox.shrink();
+    }
   }
 
   isPlaying() async {
@@ -353,6 +360,9 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
           ],
         ),
       );
+    }
+    else{
+      return SizedBox.shrink();
     }
   }
 

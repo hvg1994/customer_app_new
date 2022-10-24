@@ -42,6 +42,9 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
 
   final _pref = AppConfig().preferences;
 
+  bool _ignoreFields = true;
+
+
   int ft = -1;
   int inches = -1;
   String heightText = '';
@@ -295,9 +298,11 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
     super.initState();
 
     WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
-      getProfileData();
+      if(!widget.showData) getProfileData();
     });
-    pinCodeController.addListener(() { });
+    pinCodeController.addListener(() {
+      setState(() { });
+    });
     if(widget.showData){
       _getEvaluationDataFuture = EvaluationFormService(repository: repository).getEvaluationDataService();
     }
@@ -807,10 +812,10 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                     print("editing");
                     String code = _pref?.getString(AppConfig.countryCode) ?? '';
                     if(pinCodeController.text.length < 6){
-
+                      AppConfig().showSnackbar(context, 'Pincode should br 6 digits');
                     }
-                    else if(code.isNotEmpty && code == 'IN'){
-                      fetchCountry(pinCodeController.text, code);
+                    else {
+                      fetchCountry(pinCodeController.text, 'IN');
                     }
                   }
                 }
@@ -831,7 +836,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                 },
                 onFieldSubmitted: (value){
                   if(cityController.text.isEmpty){
-                    String code = _pref?.getString(AppConfig.countryCode) ?? '';
+                    String code = _pref?.getString(AppConfig.countryCode) ?? 'IN';
                     if(code.isNotEmpty && code == 'IN'){
                       fetchCountry(value, code);
                     }
@@ -843,13 +848,11 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                   suffixIcon: (pinCodeController.text.length != 6) ? null :
                   GestureDetector(
                   onTap:(){
-                    if(cityController.text.isEmpty){
-                      String code = _pref?.getString(AppConfig.countryCode) ?? '';
-                      if(code.isNotEmpty && code == 'IN'){
-                        fetchCountry(pinCodeController.text, code);
-                      }
-                      FocusManager.instance.primaryFocus?.unfocus();
+                    String code = _pref?.getString(AppConfig.countryCode) ?? '';
+                    if(code.isNotEmpty && code == 'IN'){
+                      fetchCountry(pinCodeController.text, code);
                     }
+                    FocusManager.instance.primaryFocus?.unfocus();
                   },
                   child: Icon(
                     Icons.keyboard_arrow_right,
@@ -871,6 +874,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
               height: 1.h,
             ),
             IgnorePointer(
+              ignoring: _ignoreFields,
               child: TextFormField(
                 controller: cityController,
                 cursorColor: kPrimaryColor,
@@ -898,6 +902,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
               height: 1.h,
             ),
             IgnorePointer(
+              ignoring: _ignoreFields,
               child: TextFormField(
                 controller: stateController,
                 cursorColor: kPrimaryColor,
@@ -925,6 +930,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
               height: 1.h,
             ),
             IgnorePointer(
+              ignoring: _ignoreFields,
               child: TextFormField(
                 controller: countryController,
                 cursorColor: kPrimaryColor,
@@ -4564,6 +4570,9 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
     else{
       ErrorModel model = res as ErrorModel;
       print(model.message!);
+      setState(() {
+        _ignoreFields = false;
+      });
       AppConfig().showSnackbar(context, "Please Enter Valid Pincode", isError: true);
     }
     Navigator.pop(context);

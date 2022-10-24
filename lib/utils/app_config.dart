@@ -18,6 +18,20 @@ class AppConfig{
 
   final String BEARER_TOKEN = "Bearer";
 
+  // ****** QuickBlox Credentials ****************
+
+  static const String QB_APP_ID = "98585";
+  static const String QB_AUTH_KEY = "aPtW8zaYg-Qmhf9";
+  static const String QB_AUTH_SECRET = "MDvw-kpzNRGVLt4";
+  static const String QB_ACCOUNT_KEY = "1s1UERbtsu13uQFYVF9Y";
+  static const String DEFAULT_PASSWORD = "12345678";
+
+  static const String GROUP_ID = 'groupId';
+  static const String QB_CURRENT_USERID = 'curr_userId';
+  static const String GET_QB_SESSION = 'qb_session';
+
+
+  // ************** END **************************
 
 
   final String shipRocketBearer = "ShipToken";

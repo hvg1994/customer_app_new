@@ -61,6 +61,8 @@ var getCallSupportUrl = "${AppConfig().BASE_URL}/api/getData/call_support";
 
 var startProgramOnSwipeUrl = "${AppConfig().BASE_URL}/api/submitForm/start_program";
 
+var chatGroupIdUrl = "${AppConfig().BASE_URL}/api/getData/get_chat_messages_group";
+
 
 //  old apis
 // var welcomeTextUrl = "${AppConfig().BASE_URL}/api/list/welcome_text";

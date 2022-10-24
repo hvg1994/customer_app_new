@@ -14,7 +14,9 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:gwc_customer/repository/quick_blox_repository/quick_blox_repository.dart';
 import 'package:gwc_customer/services/local_notification_service.dart';
+import 'package:gwc_customer/services/quick_blox_service/quick_blox_service.dart';
 import 'package:gwc_customer/splash_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -78,13 +80,14 @@ void main() async {
 
   LocalNotificationService.initialize();
 
-
   print("fcmToken: $fcmToken");
 
   // *****  end *************
   runApp(const MyApp());
 
   print("fcmToken: $fcmToken");
+
+  QuickBloxRepository().init(AppConfig.QB_APP_ID, AppConfig.QB_AUTH_KEY, AppConfig.QB_AUTH_SECRET, AppConfig.QB_ACCOUNT_KEY);
 
 }
 
@@ -268,7 +271,8 @@ class _MyAppState extends State<MyApp> {
         (BuildContext context, Orientation orientation, DeviceType deviceType) {
       return  MultiProvider(
         providers: [
-          ChangeNotifierProvider(create: (_) => CheckState())
+          ChangeNotifierProvider(create: (_) => CheckState()),
+          ListenableProvider<QuickBloxService>.value(value: QuickBloxService()),
         ],
         child: const GetMaterialApp(
             supportedLocales: [

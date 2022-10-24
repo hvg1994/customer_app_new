@@ -71,9 +71,9 @@ class _ExistingUserState extends State<ExistingUser> {
     otpVisibility = false;
     _phoneFocus = FocusNode();
 
-    // phoneController.addListener(() {
-    //   setState(() {});
-    // });
+    phoneController.addListener(() {
+      setState(() {});
+    });
     // otpController.addListener(() {
     //   setState(() {});
     // });
@@ -91,7 +91,7 @@ class _ExistingUserState extends State<ExistingUser> {
   void dispose() {
     super.dispose();
     _phoneFocus.removeListener(() { });
-    // phoneController.dispose();
+    phoneController.dispose();
     // otpController.dispose();
   }
 
@@ -200,8 +200,7 @@ class _ExistingUserState extends State<ExistingUser> {
                 ),
                 Expanded(
                   child: Form(
-                    autovalidateMode:
-                    AutovalidateMode.onUserInteraction,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
                     key: mobileFormKey,
                     child: TextFormField(
                       cursorColor: gPrimaryColor,
@@ -233,30 +232,30 @@ class _ExistingUserState extends State<ExistingUser> {
                         isDense: true,
                         counterText: '',
                         contentPadding: EdgeInsets.symmetric(horizontal: 2),
-                        suffixIcon: !isPhone(phoneController.value.text)
-                            ? phoneController.text.isEmpty
-                            ? SizedBox()
-                            : InkWell(
+                        suffixIcon: (phoneController.text.length != 10 && phoneController.text.length > 0)
+                        ? InkWell(
                           onTap: () {
                             phoneController.clear();
                           },
                           child: const Icon(
-                              Icons.cancel_outlined,
+                            Icons.cancel_outlined,
                             color: gMainColor,
                           ),
                         )
-                            : GestureDetector(
+                            : (phoneController.text.length == 10 && isPhone(phoneController.text))
+                          ? GestureDetector(
                           onTap:(otpMessage.toLowerCase().contains('otp sent')) ? null : (){
                             if(isPhone(phoneController.text) && _phoneFocus.hasFocus){
                               getOtp(phoneController.text);
                             }
                           },
-                              child: Icon(
-                                (otpMessage.toLowerCase().contains('otp sent')) ? Icons.check_circle_outline : Icons.keyboard_arrow_right,
-                                color: gMainColor,
-                                size: 22,
-                              ),
-                            ),
+                          child: Icon(
+                            (otpMessage.toLowerCase().contains('otp sent')) ? Icons.check_circle_outline : Icons.keyboard_arrow_right,
+                            color: gMainColor,
+                            size: 22,
+                          ),
+                        )
+                            : SizedBox(),
                         hintText: "MobileNumber",
                         hintStyle: TextStyle(
                           fontFamily: "GothamBook",
