@@ -41,21 +41,24 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     print(message.notification!.title);
 }
 
+cacheManager(){
+  CatcherOptions debugOptions =
+  CatcherOptions(DialogReportMode(), [ConsoleHandler()]);
+
+  /// Release configuration. Same as above, but once user accepts dialog, user will be prompted to send email with crash to support.
+  CatcherOptions releaseOptions = CatcherOptions(DialogReportMode(), [
+    EmailManualHandler(["support@email.com"])
+  ]);
+
+  /// STEP 2. Pass your root widget (MyApp) along with Catcher configuration:
+  Catcher(rootWidget: MyApp(), debugConfig: debugOptions, releaseConfig: releaseOptions);
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   HttpOverrides.global = new MyHttpOverrides();
   AppConfig().preferences = await SharedPreferences.getInstance();
-
-  // CatcherOptions debugOptions =
-  // CatcherOptions(DialogReportMode(), [ConsoleHandler()]);
-  //
-  // /// Release configuration. Same as above, but once user accepts dialog, user will be prompted to send email with crash to support.
-  // CatcherOptions releaseOptions = CatcherOptions(DialogReportMode(), [
-  //   EmailManualHandler(["support@email.com"])
-  // ]);
-  //
-  // /// STEP 2. Pass your root widget (MyApp) along with Catcher configuration:
-  // Catcher(rootWidget: MyApp(), debugConfig: debugOptions, releaseConfig: releaseOptions);
+  cacheManager();
 
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: [SystemUiOverlay.bottom]);
   SystemChrome.setSystemUIOverlayStyle(

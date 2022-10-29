@@ -1,12 +1,27 @@
+/*
+after completing meal plan status will be =>  post_program
+after appointment booked => post_appointment_booked
+after consultation done => post_appointment_done
+post_appointment_done after getting this status doctor will upload protocol guide meal plan
+once doctor uploads protocol guide meal plan => protocol_guide
+then user can start this protocol guide
+ */
+
 import 'package:flutter/material.dart';
+import 'package:gwc_customer/screens/appointment_screens/consultation_screens/consultation_success.dart';
+import 'package:gwc_customer/screens/appointment_screens/doctor_calender_time_screen.dart';
+import 'package:gwc_customer/screens/appointment_screens/doctor_slots_details_screen.dart';
 import 'package:gwc_customer/screens/post_program_screens/protocol_guide_screen.dart';
 import 'package:sizer/sizer.dart';
 
+import '../../model/dashboard_model/get_appointment/get_appointment_after_appointed.dart';
 import '../../widgets/constants.dart';
 import '../../widgets/widgets.dart';
 
 class PostProgramScreen extends StatefulWidget {
-  const PostProgramScreen({Key? key}) : super(key: key);
+  final String? postProgramStage;
+  final dynamic? consultationData;
+  const PostProgramScreen({Key? key, this.postProgramStage, this.consultationData}) : super(key: key);
 
   @override
   State<PostProgramScreen> createState() => _PostProgramScreenState();
@@ -41,18 +56,32 @@ class _PostProgramScreenState extends State<PostProgramScreen> {
               buildPostPrograms(
                 "assets/images/medical-staff.png",
                 "Consultation",
-                () {},
+                () {
+                  if(widget.postProgramStage == 'post_program'){
+                    Navigator.push(context, MaterialPageRoute(builder: (ctx) => DoctorCalenderTimeScreen(isPostProgram: true,)));
+                  }
+                  else if(widget.postProgramStage == 'post_appointment_booked'){
+                    GetAppointmentDetailsModel model = widget.consultationData as GetAppointmentDetailsModel;
+                    Navigator.push(context, MaterialPageRoute(builder: (ctx) => DoctorSlotsDetailsScreen(bookingDate: model.value!.date!, bookingTime: model.value!.slotStartTime!)));
+                  }
+                  else {
+                    Navigator.push(context, MaterialPageRoute(builder: (ctx) => ConsultationSuccess()));
+                  }
+                },
+                color: kWhiteColor
               ),
               buildPostPrograms(
                 "assets/images/information.png",
                 "Protocol Guide",
-                () {
+                  (widget.postProgramStage == 'protocol_guide')
+                      ? () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) => const ProtocolGuideScreen(),
                     ),
                   );
-                },
+                } : () => null,
+                color: (widget.postProgramStage == 'protocol_guide') ? kWhiteColor : gGreyColor.withOpacity(0.05)
               ),
             ],
           ),
@@ -61,14 +90,14 @@ class _PostProgramScreenState extends State<PostProgramScreen> {
     );
   }
 
-  buildPostPrograms(String image, String title, func) {
+  buildPostPrograms(String image, String title, func, {Color? color}) {
     return GestureDetector(
       onTap: func,
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 1.5.h),
         margin: EdgeInsets.symmetric(vertical: 1.5.h),
         decoration: BoxDecoration(
-            color: kWhiteColor,
+            color: color ?? kWhiteColor,
             borderRadius: BorderRadius.circular(20),
             border: Border.all(color: gMainColor.withOpacity(0.5), width: 1),
             boxShadow: [

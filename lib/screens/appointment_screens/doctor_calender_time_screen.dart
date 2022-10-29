@@ -24,10 +24,14 @@ class DoctorCalenderTimeScreen extends StatefulWidget {
   final bool isReschedule;
   final String? prevBookingDate;
   final String? prevBookingTime;
+  /// this is for post program
+  /// when this all other parameters will null
+  final bool isPostProgram;
   const DoctorCalenderTimeScreen({Key? key,
     this.isReschedule = false,
     this.prevBookingDate,
-    this.prevBookingTime
+    this.prevBookingTime,
+    this.isPostProgram = false
   }) : super(key: key);
 
   @override
@@ -71,6 +75,7 @@ class _DoctorCalenderTimeScreenState extends State<DoctorCalenderTimeScreen> {
     print(appointment_id);
     final res = await (() => ConsultationService(repository: repository).getAppointmentSlotListService(DateFormat('yyyy-MM-dd').format(selectedDate), appointmentId: (widget.isReschedule) ? appointment_id : null)).withRetries(3);
     print("getSlotlist" + res.runtimeType.toString());
+
     if(res.runtimeType == SlotModel){
       SlotModel result = res;
       setState(() {
@@ -526,6 +531,7 @@ class _DoctorCalenderTimeScreenState extends State<DoctorCalenderTimeScreen> {
             bookingDate: date,
             bookingTime: isSelected,
             data: result,
+            isPostProgram: widget.isPostProgram,
           ),
         ),).then((value) {
           setState(() {
@@ -539,6 +545,14 @@ class _DoctorCalenderTimeScreenState extends State<DoctorCalenderTimeScreen> {
       setState(() {
         showBookingProgress = false;
       });
+    }
+  }
+
+  @override
+  void setState(VoidCallback fn) {
+    // TODO: implement setState
+    if(mounted){
+      super.setState(fn);
     }
   }
 

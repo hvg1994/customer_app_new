@@ -11,13 +11,15 @@ import 'package:gwc_customer/screens/appointment_screens/consultation_screens/up
 import 'package:gwc_customer/screens/gut_list_screens/meal_popup.dart';
 import 'package:gwc_customer/screens/post_program_screens/post_program_screen.dart';
 import 'package:gwc_customer/screens/profile_screens/call_support_method.dart';
-import 'package:gwc_customer/screens/program_plans/program_plan_screen.dart';
+import 'package:gwc_customer/screens/program_plans/program_start_screen.dart';
 import 'package:gwc_customer/services/dashboard_service/gut_service/dashboard_data_service.dart';
+import 'package:gwc_customer/services/quick_blox_service/quick_blox_service.dart';
 import 'package:gwc_customer/services/shipping_service/ship_track_service.dart';
 import 'package:gwc_customer/utils/program_stages_enum.dart';
 import 'package:gwc_customer/widgets/constants.dart';
 import 'package:gwc_customer/widgets/widgets.dart';
 import 'package:jwt_decode/jwt_decode.dart';
+import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 import '../../model/dashboard_model/shipping_approved/ship_approved_model.dart';
 import '../../model/profile_model/user_profile/user_profile_model.dart';
@@ -40,7 +42,7 @@ import 'List/program_stages_data.dart';
 class GutList extends StatefulWidget {
   GutList({Key? key}) : super(key: key);
 
-  final GutListState myAppState=new GutListState();
+  final GutListState myAppState=  GutListState();
   @override
   State<GutList> createState() => GutListState();
 
@@ -59,12 +61,10 @@ class GutListState extends State<GutList> {
 
   late final Future myFuture;
 
-  bool? isConsultationDone, isShippingDone, isProgramsDone, isPostProgramDone;
-
   String? consultationStage, shippingStage, programOptionStage, postProgramStage;
 
   /// this is used when data=appointment_booked status
-  GetAppointmentDetailsModel? _getAppointmentDetailsModel;
+  GetAppointmentDetailsModel? _getAppointmentDetailsModel, _postConsultationAppointment;
 
   /// ths is used when data = shipping_approved status
   ShippingApprovedModel? _shippingApprovedModel;
@@ -81,6 +81,7 @@ class GutListState extends State<GutList> {
     // isConsultationCompleted = _pref?.getBool(AppConfig.consultationComplete) ?? false;
 
     myFuture = getData();
+
 
     getUserProfile();
 
@@ -144,6 +145,7 @@ class GutListState extends State<GutList> {
         else{
           _gutShipDataModel = _getDashboardDataModel.normal_shipping;
           shippingStage = _gutShipDataModel?.data ?? '';
+          abc();
         }
         if(shippingStage != null && shippingStage == "shipping_delivered"){
           isSelected = "Programs";
@@ -157,46 +159,22 @@ class GutListState extends State<GutList> {
           programOptionStage = _getProgramModel?.data ?? '';
           abc();
         }
-        // if(_getDashboardDataModel.program != null){
-        //   _getProgramModel = _getDashboardDataModel.program;
-        // }
+        // this is for other postprogram model
+        if(_getDashboardDataModel.normal_postprogram != null){
+          _gutPostProgramModel = _getDashboardDataModel.normal_postprogram;
+          postProgramStage = _gutPostProgramModel?.data ?? '';
+        }
+        else{
+          _postConsultationAppointment = _getDashboardDataModel.postprogram_consultation;
+          print(_getDashboardDataModel.postprogram_consultation?.data);
+          postProgramStage = _postConsultationAppointment?.data ?? '';
+        }
+        print("postProgramStage: ${postProgramStage}");
+        if(postProgramStage != null && postProgramStage == "post_program"){
+          isSelected = "Post Program";
+        }
       });
     }
-    // else if(_getData.runtimeType == GutDataModel){
-    //   _gutDataModel = _getData as GutDataModel;
-    //   consultationStage = _gutDataModel!.data;
-    //   abc();
-    // }
-    // else if(_getData.runtimeType == GetAppointmentDetailsModel)
-    // {
-    //   model = _getData;
-    //
-    //   ProgramStatus.values.forEach((element) {
-    //     if(model!.data == element.name){
-    //       consultationStage = element.name;
-    //     }
-    //   });
-    //   // isConsultationDone = ProgramStatus.medical_report.name == model.data;
-    //   // isShippingDone = ProgramStatus.shipping.name == model.data;
-    //   // if(isShippingDone! && isShippingDone != null) isConsultationDone = true;
-    //   // isProgramsDone = ProgramStatus.programs.name == model.data;
-    //   // if(isProgramsDone! && isProgramsDone != null) {
-    //   //   isConsultationDone = true;
-    //   //   isShippingDone = true;
-    //   // }
-    //   // isPostProgramDone = ProgramStatus.post_program.name == model.data;
-    //   // if(isPostProgramDone! && isPostProgramDone != null) {
-    //   //   isConsultationDone = true;
-    //   //   isShippingDone = true;
-    //   //   isProgramsDone = true;
-    //   // }
-    //   // List l = [isConsultationDone, isShippingDone, isProgramsDone, isPostProgramDone];
-    // }
-    // else if(_getData.runtimeType == ShippingApprovedModel){
-    //   _shippingApprovedModel = _getData;
-    //
-    //   consultationStage = _shippingApprovedModel!.data;
-    // }
   }
 
 
@@ -338,7 +316,7 @@ class GutListState extends State<GutList> {
         else if(index == 2 && shippingStage == 'shipping_delivered'){
           changedIndex(programsData.title);
         }
-        else if(index == 3 && (programOptionStage != null && programOptionStage!.isNotEmpty) || (postProgramStage != null && postProgramStage!.isNotEmpty)){
+        else if((postProgramStage != null && postProgramStage!.isNotEmpty)){
           changedIndex(programsData.title);
         }
       },
@@ -348,7 +326,7 @@ class GutListState extends State<GutList> {
           margin: EdgeInsets.symmetric(vertical: 1.5.h),
           decoration: BoxDecoration(
             // color: kWhiteColor,
-            color: index == 0 ? kWhiteColor : (index == 1 && shippingStage != null && shippingStage!.isNotEmpty) ? kWhiteColor : (index == 2 && shippingStage == 'shipping_delivered') ? kWhiteColor : (index == 3 && postProgramStage != null) ? kWhiteColor : gGreyColor.withOpacity(0.05),
+            color: index == 0 ? kWhiteColor : (index == 1 && shippingStage != null && shippingStage!.isNotEmpty) ? kWhiteColor : (index == 2 && shippingStage == 'shipping_delivered') ? kWhiteColor : (index == 3 && postProgramStage != null && postProgramStage!.isNotEmpty) ? kWhiteColor : gGreyColor.withOpacity(0.05),
             borderRadius: BorderRadius.circular(20),
             border: Border.all(color: gMainColor.withOpacity(0.3), width: 1),
             boxShadow: (isSelected != programsData.title)
@@ -467,10 +445,17 @@ class GutListState extends State<GutList> {
                           }
                         }
                         else if (programsData.title == "Post Program") {
-                          if(postProgramStage != null){
+                          if(postProgramStage != null && _postConsultationAppointment != null){
                             Navigator.of(context).push(
                               MaterialPageRoute(
-                                builder: (context) => const PostProgramScreen(),
+                                builder: (context) => PostProgramScreen(postProgramStage: postProgramStage,consultationData: _postConsultationAppointment,),
+                              ),
+                            );
+                          }
+                          else{
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => PostProgramScreen(postProgramStage: postProgramStage,),
                               ),
                             );
                           }
@@ -636,15 +621,23 @@ class GutListState extends State<GutList> {
   }
 
   getUserProfile() async{
+    print("user profile: ${_pref!.getInt(AppConfig.QB_CURRENT_USERID)}");
     if(_pref!.getString(AppConfig.User_Name) != null || _pref!.getString(AppConfig.User_Name)!.isNotEmpty){
       final profile = await UserProfileService(repository: userRepository).getUserProfileService();
       if(profile.runtimeType == UserProfileModel){
         UserProfileModel model1 = profile as UserProfileModel;
         _pref!.setString(AppConfig.User_Name, model1.data?.name ?? model1.data?.fname ?? '');
         _pref!.setInt(AppConfig.USER_ID, model1.data?.id ?? -1);
+        _pref!.setString(AppConfig.QB_USERNAME, model1.data!.qbUsername!);
+        _pref!.setInt(AppConfig.QB_CURRENT_USERID, int.tryParse(model1.data!.qbUserId!)!);
       }
     }
+    // if(_pref!.getInt(AppConfig.QB_CURRENT_USERID) != null && !await _qbService!.getSession() || _pref!.getBool(AppConfig.IS_QB_LOGIN) == null){
+    //   String _uName = _pref!.getString(AppConfig.QB_USERNAME)!;
+    //   _qbService!.login(_uName);
+    // }
   }
+
   final UserProfileRepository userRepository = UserProfileRepository(
     apiClient: ApiClient(
       httpClient: http.Client(),

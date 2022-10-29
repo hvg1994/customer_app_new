@@ -72,6 +72,8 @@ dependencies:
   grouped_list: any
   quickblox_sdk: ^0.6.0-beta
   catcher: ^0.6.9
+  mime: any
+  photo_view: any
 #  change_app_package_name: ^1.1.0
 
 dev_dependencies:

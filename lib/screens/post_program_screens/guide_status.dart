@@ -1,19 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:gwc_customer/model/error_model.dart';
+import 'package:gwc_customer/model/post_program_model/breakfast/protocol_breakfast_get.dart';
+import 'package:gwc_customer/repository/post_program_repo/post_program_repository.dart';
+import 'package:gwc_customer/services/post_program_service/post_program_service.dart';
 import 'package:lottie/lottie.dart';
 import 'package:sizer/sizer.dart';
-
+import 'package:http/http.dart' as http;
+import '../../model/post_program_model/post_program_base_model.dart';
+import '../../repository/api_service.dart';
+import '../../utils/app_config.dart';
 import '../../widgets/constants.dart';
 import '../../widgets/widgets.dart';
 
 class GuideStatus extends StatefulWidget {
   final String title;
-  const GuideStatus({Key? key, required this.title}) : super(key: key);
+  final int dayNumber;
+  final bool isSelected;
+  const GuideStatus({Key? key, required this.title, required this.dayNumber, this.isSelected = false}) : super(key: key);
 
   @override
   State<GuideStatus> createState() => _GuideStatusState();
 }
 
 class _GuideStatusState extends State<GuideStatus> {
+  Future? mealPlanFuture;
   String selectedValue = "";
 
   List dayReaction = [
@@ -42,6 +52,35 @@ class _GuideStatusState extends State<GuideStatus> {
       "day": "Day 6",
     },
   ];
+
+  List types = ['Do', "Don't Do", 'none'];
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getDetails(widget.dayNumber.toString());
+  }
+
+  getDetails(String day) async{
+    mealPlanFuture = PostProgramService(repository: postProgramRepository).getBreakfastService(day);
+  }
+
+  final PostProgramRepository postProgramRepository = PostProgramRepository(
+    apiClient: ApiClient(
+      httpClient: http.Client(),
+    ),
+  );
+
+  @override
+  void setState(VoidCallback fn) {
+    // TODO: implement setState
+    if(mounted){
+      super.setState(fn);
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -69,8 +108,9 @@ class _GuideStatusState extends State<GuideStatus> {
                           color: gPrimaryColor,
                           fontSize: 11.sp),
                     ),
-                    // buildList(),
-                    Lottie.asset('assets/lottie/emoji_waiting.json'),
+                    widget.isSelected ?
+                    buildList()
+                    : Lottie.asset('assets/lottie/emoji_waiting.json'),
                     Container(
                       width: double.maxFinite,
                       height: 1,
@@ -80,9 +120,7 @@ class _GuideStatusState extends State<GuideStatus> {
                   ],
                 ),
               ),
-              buildTile('assets/lottie/loading_tick.json', "Do"),
-              buildTile('assets/lottie/loading_wrong.json', "Don't Do"),
-              buildTile('assets/lottie/loading_wrong.json', "None"),
+              showTiles()
             ],
           ),
         ),
@@ -90,7 +128,27 @@ class _GuideStatusState extends State<GuideStatus> {
     );
   }
 
-  buildTile(String lottie, String title) {
+
+  showTiles(){
+    return FutureBuilder(
+      future: mealPlanFuture,
+        builder: (_, snapshot){
+        if(snapshot.hasData){
+          GetProtocolBreakfastModel model = snapshot.data as GetProtocolBreakfastModel;
+          return Column(
+            children: [
+              buildTile('assets/lottie/loading_tick.json', types[0], mainText: model.data!.dataDo!.first.name),
+              buildTile('assets/lottie/loading_wrong.json', types[1], mainText: model.data!.doNot!.first.name),
+              buildTile('assets/lottie/loading_wrong.json', types[2], mainText: model.data!.none!.first.name),
+            ],
+          );
+        }
+        return buildCircularIndicator();
+        }
+    );
+  }
+
+  buildTile(String lottie, String title, {String? mainText}) {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 3.w),
       margin: EdgeInsets.symmetric(vertical: 1.h, horizontal: 4.w),
@@ -129,8 +187,8 @@ class _GuideStatusState extends State<GuideStatus> {
                 groupValue: selectedValue,
                 onChanged: (value) {
                   setState(() {
+                    submitValue(title);
                     selectedValue = value as String;
-                    Navigator.pop(context, title);
                   });
                 },
               ),
@@ -142,7 +200,7 @@ class _GuideStatusState extends State<GuideStatus> {
             color: gGreyColor.withOpacity(0.3),
           ),
           SizedBox(height: 1.h),
-          Text(
+          Text(mainText ??
             "Lorem Ipsum is simply dummy text of the printing and typesetting industry.Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,when an unknown printer took a gallery of type and scrambled it to make a type specimen book.",
             style: TextStyle(
               height: 1.5,
@@ -184,5 +242,28 @@ class _GuideStatusState extends State<GuideStatus> {
         },
       ),
     );
+  }
+
+  submitValue(String type) async{
+    // mealType: breakfast, lunch, dinner
+    // selectedType:
+    // do -- 1
+    // do-not -- 2
+    // none-- 3
+
+    String mealType = widget.title.trim().toLowerCase();
+    int selectedType = (type.contains(types[0]) ? 1 : type.contains(types[1]) ? 2 : 3);
+    final res = await PostProgramService(repository: postProgramRepository).submitPostProgramMealTrackingService(mealType, selectedType, widget.dayNumber);
+
+    if(res == ErrorModel){
+      ErrorModel model = res as ErrorModel;
+      AppConfig().showSnackbar(context, model.message ?? '', isError: true);
+    }
+    else{
+      PostProgramBaseModel model = res as PostProgramBaseModel;
+      AppConfig().showSnackbar(context, model.message ?? '');
+      Navigator.pop(context, type);
+    }
+
   }
 }

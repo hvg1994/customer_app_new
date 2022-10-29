@@ -63,6 +63,22 @@ var startProgramOnSwipeUrl = "${AppConfig().BASE_URL}/api/submitForm/start_progr
 
 var chatGroupIdUrl = "${AppConfig().BASE_URL}/api/getData/get_chat_messages_group";
 
+/// this is called after all 15 days completed than on click on next clap ui we need to hit this api
+var startPostProgramUrl = "${AppConfig().BASE_URL}/api/submitForm/post_program";
+
+var getBreakfastOnclickUrl = "${AppConfig().BASE_URL}/api/getDataList/protocol_guide_meal_plan/breakfast";
+
+var submitPostProgramMealTrackingUrl = "${AppConfig().BASE_URL}/api/submitData/post_program_meal_tracking";
+
+var getLunchOnclickUrl = "${AppConfig().BASE_URL}/api/getDataList/protocol_guide_meal_plan/lunch";
+
+var getDinnerOnclickUrl = "${AppConfig().BASE_URL}/api/getDataList/protocol_guide_meal_plan/dinner";
+
+/// this is called on protocol home page and also
+/// if user already submited details based on the day selection details will get
+var getProtocolDayDetailsUrl = "${AppConfig().BASE_URL}/api/getDataList/protocol_guide_day_score";
+
+
 
 //  old apis
 // var welcomeTextUrl = "${AppConfig().BASE_URL}/api/list/welcome_text";

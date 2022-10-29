@@ -1,13 +1,17 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:gwc_customer/model/dashboard_model/gut_model/gut_data_model.dart';
 import 'package:gwc_customer/model/error_model.dart';
 import 'package:gwc_customer/model/program_model/program_days_model/child_program_day.dart';
 import 'package:gwc_customer/model/program_model/program_days_model/program_day_model.dart';
+import 'package:gwc_customer/services/post_program_service/post_program_service.dart';
 import 'package:gwc_customer/services/program_service/program_service.dart';
 import 'package:gwc_customer/widgets/open_alert_box.dart';
+import 'package:lottie/lottie.dart';
 import 'package:sizer/sizer.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../repository/api_service.dart';
+import '../../repository/post_program_repo/post_program_repository.dart';
 import '../../repository/program_repository/program_repository.dart';
 import '../../utils/app_config.dart';
 import '../../widgets/constants.dart';
@@ -146,6 +150,9 @@ class _DaysProgramPlanState extends State<DaysProgramPlan> {
 
   buildDaysPlan(ProgramDayModel model) {
     List<ChildProgramDayModel> listData = model.data!;
+    if(listData.last.isCompleted == 1){
+      buildDayCompleted();
+    }
     return GridView.builder(
       // this clip none to show check icon full
         clipBehavior: Clip.none,
@@ -221,7 +228,6 @@ class _DaysProgramPlanState extends State<DaysProgramPlan> {
                           ),
                           child: Text(
                             " DAY ${listData[index].dayNumber!}",
-                            // " DAY ${dayPlansData[index]["day"]}",
                             style: TextStyle(
                               fontFamily: "GothamMedium",
                               color: gTextColor,
@@ -238,6 +244,7 @@ class _DaysProgramPlanState extends State<DaysProgramPlan> {
           );
         });
   }
+
 
   buildDayNotCompleted() {
     Size size = MediaQuery.of(context).size;
@@ -378,9 +385,10 @@ class _DaysProgramPlanState extends State<DaysProgramPlan> {
                 borderRadius: BorderRadius.circular(5),
                 border: Border.all(color: gMainColor),
               ),
-              child: Image(
+              child:
+              Lottie.asset(
+                "assets/lottie/clap.json",
                 height: 20.h,
-                image: const AssetImage("assets/images/Image 2.png"),
               ),
             ),
             SizedBox(height: 1.5.h),
@@ -399,7 +407,9 @@ class _DaysProgramPlanState extends State<DaysProgramPlan> {
             ),
             SizedBox(height: 5.h),
             GestureDetector(
-              onTap: () {},
+              onTap: () {
+                startPostProgram();
+              },
               child: Container(
                 padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 15.w),
                 decoration: BoxDecoration(
@@ -472,5 +482,24 @@ class _DaysProgramPlanState extends State<DaysProgramPlan> {
     // ((index == 0) || listData[index-1].isCompleted == 1)
   }
 
+  startPostProgram() async{
+    final res = await PostProgramService(repository: _postProgramRepository).startPostProgramService();
 
+    if(res.runtimeType == ErrorModel){
+      ErrorModel model = res as ErrorModel;
+      AppConfig().showSnackbar(context, model.message ?? '', isError: true);
+    }else{
+      if(res.runtimeType == GutDataModel){
+        GutDataModel model = res as GutDataModel;
+        print("start program: ${model.data}");
+        print("start value: ${model.value}");
+      }
+    }
+  }
+
+  final PostProgramRepository _postProgramRepository = PostProgramRepository(
+    apiClient: ApiClient(
+      httpClient: http.Client(),
+    ),
+  );
 }

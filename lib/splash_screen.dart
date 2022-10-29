@@ -161,7 +161,7 @@ class _SplashScreenState extends State<SplashScreen> {
             children: <Widget>[
               splashImage(),
               if(enquiryStatus != null)
-              (enquiryStatus!.isEven) ? SitBackScreen() : !isLogin ? ExistingUser() : (evalStatus!.contains("no_evaluation") || evalStatus!.contains("pending")) ? EvaluationFormScreen() : DashboardScreen()
+              (enquiryStatus!.isEven) ? SitBackScreen() : !isLogin ? ExistingUser() : (evalStatus!.contains("no_evaluation") || evalStatus!.contains("pending")) ? EvaluationFormScreen(isFromSplashScreen: true,) : DashboardScreen()
             ],
           ),
         ],

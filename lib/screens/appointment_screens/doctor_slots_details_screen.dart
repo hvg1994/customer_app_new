@@ -34,13 +34,17 @@ class DoctorSlotsDetailsScreen extends StatefulWidget {
   final bool isFromDashboard;
   /// this parameter will be called from gutlist screen
   final Map? dashboardValueMap;
+  /// this is for post program
+  /// when this all other parameters will null
+  final bool isPostProgram;
   const DoctorSlotsDetailsScreen({
     Key? key,
     this.data,
     required this.bookingDate,
     required this.bookingTime,
     this.isFromDashboard = false,
-    this.dashboardValueMap
+    this.dashboardValueMap,
+    this.isPostProgram = false
   }) : super(key: key);
 
   @override
@@ -270,25 +274,28 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
                                 SizedBox(
                                   height: 4.h,
                                 ),
-                                GestureDetector(
-                                  onTap: () {
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              DoctorCalenderTimeScreen(
-                                                isReschedule: true,
-                                                prevBookingDate: widget.bookingDate,
-                                                prevBookingTime: widget.bookingTime,
-                                              )),
-                                    );
-                                  },
-                                  child: Text(
-                                    'Reschedule',
-                                    style: TextStyle(
-                                      decoration: TextDecoration.underline,
-                                      fontFamily: "GothamMedium",
-                                      color: gWhiteColor,
-                                      fontSize: 12.sp,
+                                Visibility(
+                                  visible: !widget.isPostProgram,
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                DoctorCalenderTimeScreen(
+                                                  isReschedule: true,
+                                                  prevBookingDate: widget.bookingDate,
+                                                  prevBookingTime: widget.bookingTime,
+                                                )),
+                                      );
+                                    },
+                                    child: Text(
+                                      'Reschedule',
+                                      style: TextStyle(
+                                        decoration: TextDecoration.underline,
+                                        fontFamily: "GothamMedium",
+                                        color: gWhiteColor,
+                                        fontSize: 12.sp,
+                                      ),
                                     ),
                                   ),
                                 ),

@@ -191,12 +191,13 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
                                 child: GestureDetector(
                                   onTap: () async{
                                     await _videoPlayerController?.stop().then((value) {
-                                      Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                          builder: (context) => const RegisterScreen(),
-                                        ),
-                                      );
+
                                     });
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) => const RegisterScreen(),
+                                      ),
+                                    );
                                   },
                                   child: Container(
                                     padding:
@@ -227,6 +228,29 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
                         if(data.message!.contains("Connection closed before full header was received")){
                           getFuture();
                         }
+                        return Center(
+                          child: Column(
+                            children: [
+                              Text(data.message ?? '',
+                                style: TextStyle(
+                                  fontSize: 10.sp,
+                                  fontFamily: 'GothamMedium'
+                                ),
+                              ),
+                              TextButton(
+                                  onPressed: (){
+                                    getFuture();
+                                  },
+                                  child: Text("Retry",
+                                    style: TextStyle(
+                                        fontSize: 10.sp,
+                                        fontFamily: 'GothamMedium'
+                                    ),
+                                  )
+                              )
+                            ],
+                          )
+                        );
                       }
                     }
                     return buildCircularIndicator();

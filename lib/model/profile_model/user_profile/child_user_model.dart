@@ -16,6 +16,8 @@ class ChildUserModel {
   String? deviceType;
   String? deviceId;
   String? age;
+  String? qbUserId;
+  String? qbUsername;
   String? pincode;
   String? isActive;
   String? addedBy;
@@ -64,6 +66,8 @@ class ChildUserModel {
     deviceType = json['device_type'];
     deviceId = json['device_id'].toString();
     age = json['age'];
+    qbUserId = json['chat_id'];
+    qbUsername = json['login_username'];
     pincode = json['pincode'].toString();
     isActive = json['is_active'];
     addedBy = json['added_by'];
@@ -90,6 +94,8 @@ class ChildUserModel {
     data['device_type'] = this.deviceType;
     data['device_id'] = this.deviceId;
     data['age'] = this.age;
+    data['chat_id'] = this.qbUserId;
+    data['login_username'] = this.qbUsername;
     data['pincode'] = this.pincode;
     data['is_active'] = this.isActive;
     data['added_by'] = this.addedBy;

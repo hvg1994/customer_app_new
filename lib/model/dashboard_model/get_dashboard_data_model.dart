@@ -9,13 +9,20 @@ class GetDashboardDataModel {
   String? status;
   String? errorCode;
   String? key;
+  // these 2 for consultation
   GetAppointmentDetailsModel? app_consulation;
   GutDataModel? normal_consultation;
+  // these 2 for shipping
   ShippingApprovedModel? approved_shipping;
   GutDataModel? normal_shipping;
+  // these 2 for Programs
   GetProgramModel? data_program;
   GutDataModel? normal_program;
+  // these parameters for post programs
   GutDataModel? normal_postprogram;
+  GetAppointmentDetailsModel? postprogram_consultation;
+
+
 
   GetDashboardDataModel(
       {this.status,
@@ -35,7 +42,7 @@ class GetDashboardDataModel {
     key = json['key'];
     print(json['Consulation']['value'].runtimeType);
     print(json['Shipping']['value'].runtimeType);
-    print(json['Program']['value'].runtimeType);
+    print(json['Postprogram']['value']);
 
 
     if(json['Consulation'] != null){
@@ -62,9 +69,19 @@ class GetDashboardDataModel {
         data_program = GetProgramModel.fromJson(json['Program']);
       }
     }
-    normal_postprogram = json['Postprogram'] != null
-        ? GutDataModel.fromJson(json['Postprogram'])
-        : null;
+    print('json postProgram: ${json['Postprogram']['value'].runtimeType}');
+    if(json['Postprogram'] != null && json['Postprogram']['data'] != null){
+      if(json['Postprogram']['value'].runtimeType == String){
+        normal_postprogram = GutDataModel.fromJson(json['Postprogram']);
+      }
+      else{
+        print((json['Postprogram']['value'] as Map).containsKey('zoom_join_url'));
+        if((json['Postprogram']['value'] as Map).containsKey('zoom_join_url')){
+          postprogram_consultation = GetAppointmentDetailsModel.fromJson(json['Postprogram']);
+          print(postprogram_consultation);
+        }
+      }
+    }
   }
 
   Map<String, dynamic> toJson() {

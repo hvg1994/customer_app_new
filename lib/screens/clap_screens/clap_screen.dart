@@ -19,8 +19,7 @@ class ClapScreen extends StatelessWidget {
         Center(
           child: SizedBox(
             height: 150,
-            child: Lottie.network(
-                'https://assets6.lottiefiles.com/packages/lf20_drkxsxuy.json'),
+            child: Lottie.network('https://assets6.lottiefiles.com/packages/lf20_drkxsxuy.json'),
           ),
         ),
       ],

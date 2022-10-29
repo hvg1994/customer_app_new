@@ -1,14 +1,23 @@
+/*
+  1.first we need to login
+  2.wen eed to connect using userId, Password
+  3. join dialog dialog id will get from api
+  4. send message
+
+ */
 import 'dart:async';
 import 'dart:collection';
-
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:quickblox_sdk/auth/module.dart';
 import 'package:quickblox_sdk/chat/constants.dart';
 import 'package:quickblox_sdk/mappers/qb_message_mapper.dart';
 import 'package:quickblox_sdk/models/qb_attachment.dart';
 import 'package:quickblox_sdk/models/qb_dialog.dart';
+import 'package:quickblox_sdk/models/qb_file.dart';
 import 'package:quickblox_sdk/models/qb_filter.dart';
 import 'package:quickblox_sdk/models/qb_message.dart';
 import 'package:quickblox_sdk/models/qb_session.dart';
@@ -24,12 +33,10 @@ class QuickBloxService extends ChangeNotifier{
 
   final _pref = AppConfig().preferences;
 
-  int? currentUser;
   int? _localUserId;
   String? _dialogId;
   bool hasMore = false;
-  QBDialog? _dialog;
-  bool _isNewChat = false;
+
   static const int PAGE_SIZE = 20;
 
   QBSession? qbSession;
@@ -58,12 +65,12 @@ class QuickBloxService extends ChangeNotifier{
   StreamSubscription? _reconnectionFailedSubscription;
   StreamSubscription? _reconnectionSuccessSubscription;
 
-  GlobalKey<ScaffoldState>? _scaffoldKey;
-  QuickBloxService({GlobalKey<ScaffoldState>? scaffoldKey}){
-    if(scaffoldKey != null){
-      _scaffoldKey = scaffoldKey;
-    }
+  String _errorMsg = '';
+  String get errorMsg => _errorMsg;
+
+  QuickBloxService(){
     subscribe();
+    getInstance();
   }
 
   subscribe(){
@@ -74,6 +81,11 @@ class QuickBloxService extends ChangeNotifier{
     subscribeNewMessage();
     subscribeUserTyping();
     subscribeUserStopTyping();
+  }
+  getInstance(){
+    if(_pref!.getInt(AppConfig.QB_CURRENT_USERID) != null){
+      _localUserId = _pref!.getInt(AppConfig.QB_CURRENT_USERID);
+    }
   }
 
   @override
@@ -93,41 +105,55 @@ class QuickBloxService extends ChangeNotifier{
     unsubscribeReconnectionSuccess();
   }
 
-  getSession() async{
+  Future<bool> getSession() async{
     bool? _isExpired;
     int? expiry = _pref!.getInt(AppConfig.GET_QB_SESSION);
-    if(DateTime.now().isAfter(DateTime.fromMillisecondsSinceEpoch(expiry!))){
+    if(expiry != null){
+      if(DateTime.now().isAfter(DateTime.fromMillisecondsSinceEpoch(expiry))){
+        _isExpired = true;
+      }
+      else{
+        _isExpired = false;
+      }
+    }
+    else {
       _isExpired = true;
-    }
-    else{
-      _isExpired = false;
-    }
+    };
     return _isExpired;
   }
   // 1st login
-  Future<void> login(String userName, {String? password}) async {
+  Future<bool> login(String userName) async {
+    bool isLogin;
     try {
-      QBLoginResult result = await QB.auth.login(userName, (password == null) ? AppConfig.DEFAULT_PASSWORD : password);
+      QBLoginResult result = await QB.auth.login(userName, AppConfig.QB_DEFAULT_PASSWORD);
 
       QBUser? qbUser = result.qbUser;
-      currentUser = qbUser?.id ?? -1;
       _localUserId = qbUser?.id ?? -1;
-      connect(qbUser!.id!, (password == null) ? AppConfig.DEFAULT_PASSWORD : password);
+      connect(qbUser!.id!);
+      // on login success store username, password, userid to local
+      _pref!.setInt(AppConfig.QB_CURRENT_USERID, _localUserId!);
 
-      _pref!.setInt(AppConfig.QB_CURRENT_USERID, currentUser!);
       QBSession? _qbSession = result.qbSession;
       qbSession = _qbSession;
+      isLogin = true;
+      _pref!.setBool(AppConfig.IS_QB_LOGIN, true);
       _pref!.setInt(AppConfig.GET_QB_SESSION, DateTime.parse(_qbSession!.expirationDate!).millisecondsSinceEpoch);
-      _qbSession.applicationId = int.parse(AppConfig.QB_APP_ID);
       print("login success..");
     } on PlatformException catch (e) {
+      _errorMsg = e.details;
+      isLogin = false;
       print('login catch error: ${e.message}');
     }
+    return isLogin;
   }
 
   Future<void> logout() async {
     try {
       await QB.auth.logout();
+      _pref!.setBool(AppConfig.IS_QB_LOGIN, false);
+      _pref!.remove(AppConfig.GET_QB_SESSION);
+      _pref!.remove(AppConfig.QB_CURRENT_USERID);
+
       // SnackBarUtils.showResult(_scaffoldKey!, "Logout success");
     } on PlatformException catch (e) {
       print("logout error ${e.message}");
@@ -136,13 +162,14 @@ class QuickBloxService extends ChangeNotifier{
   }
   //2nd connect
   // PASS AppConfig.DEFAULT_PASSWORD IF PASSWORD NOT THERE
-  void connect(int userId, String password) async {
+  void connect(int userId) async {
     try {
-      await QB.chat.connect(userId, password);
+      await QB.chat.connect(userId, AppConfig.QB_DEFAULT_PASSWORD);
+      await QB.settings.enableAutoReconnect(true);
       print('The chat was connected');
       // SnackBarUtils.showResult(_scaffoldKey!, "The chat was connected");
     } on PlatformException catch (e) {
-      print("connect error ${e.message}");
+      print("connect error ${e}");
       // DialogUtils.showError(_scaffoldKey!.currentContext!, e);
     }
   }
@@ -159,31 +186,33 @@ class QuickBloxService extends ChangeNotifier{
   }
 
   isConnected() async {
+    bool? connected;
     try {
-      bool ? connected = await QB.chat.isConnected();
-      print("isConnected=> ${connected}");
+      await QB.chat.isConnected().then((value) {
+       connected = (value == true) ? true : false;
+      });
+      print("isConnected=> ${connected!}");
     } on PlatformException catch (e) {
       print("isConnected error ${e.message}");
+      connected = false;
     }
+    return connected;
   }
 
   joinDialog(String dialogId) async {
     try {
       await QB.chat.joinDialog(dialogId);
       print("The dialog $_dialogId was joined");
-      // SnackBarUtils.showResult(
-      //     _scaffoldKey!, "The dialog $_dialogId was joined");
+
       loadMessages(dialogId);
     } on PlatformException catch (e) {
-      print("join room error: ${e.message}");
-      // DialogUtils.showError(_scaffoldKey!.currentContext!, e);
+      print("join room error: ${e}");
+
+      rethrow;
     }
   }
 
   void sendMessage(String chatRoomId, {String? message, List<QBAttachment>? attachments,}) async {
-    // String messageBody =
-    //     "Hello from flutter!" + "\n From user: " + LOGGED_USER_ID.toString();
-
     try {
     //   Map<String, String> properties = Map();
     //   properties["testProperty1"] = "testPropertyValue1";
@@ -197,12 +226,14 @@ class QuickBloxService extends ChangeNotifier{
       // SnackBarUtils.showResult(
       //     _scaffoldKey!, "The message was sent to dialog: $_dialogId");
     } on PlatformException catch (e) {
+      print("send error: ${e.details}");
       print("send message error: ${e.toString()}");
       // DialogUtils.showError(_scaffoldKey!.currentContext!, e);
     }
   }
 
   Future<void> loadMessages(String dialogId) async {
+    print("load messages");
     int skip = 0;
     if (_wrappedMessageSet.length > 0) {
       skip = _wrappedMessageSet.length;
@@ -227,7 +258,7 @@ class QuickBloxService extends ChangeNotifier{
       list = _wrappedMessageSet.toList();
       list.sort((first, second) => first.date.compareTo(second.date));
       _stream.sink.add(list);
-      print('sink added:$list');
+      print('sink added from loadmessage:$list');
       notifyListeners();
     }
   }
@@ -275,13 +306,43 @@ class QuickBloxService extends ChangeNotifier{
     String? dialogId = payload["dialogId"] as String;
     print("new message recieved$payload");
     QBMessage? message = QBMessageMapper.mapToQBMessage(payload);
+    // print(message!.attachments!.first);
+    print('_wrappedMessageSet.length: ${_wrappedMessageSet.length}');
+    print("list.length: ${list.length}");
+
     _wrappedMessageSet.addAll(await _wrapMessages([message]));
+
     list = _wrappedMessageSet.toList();
     list.sort((first, second) => first.date.compareTo(second.date));
     _stream.sink.add(list);
     hasMore = true;
     print('sink added:$list');
+    list.forEach((element) {
+      if(element.qbMessage.attachments != null){
+        print('element.qbMessage.attachments!.first!.url!: ${element.qbMessage.attachments!.first!.id}');
+      }
+    });
+    loadMessages(dialogId);
     notifyListeners();
+  }
+
+  Future getQbAttachmentUrl(String id) async{
+    print("getqbUrl $id");
+    try {
+      QBFile? _file = await QB.content.getInfo(int.parse(id));
+      print("_file: ${_file} id: ${id}");
+      String? url = await QB.content.getPrivateURL(_file!.uid!);
+      print("url: ${url} id: ${id}");
+      Map map = {
+        'file': _file,
+        'url': url
+      };
+      return map;
+    } catch (e) {
+      print("attchurl error: ${e}");
+      rethrow;
+      // Some error occurred, look at the exception message for more details
+    }
   }
 
 
@@ -420,7 +481,7 @@ class QuickBloxService extends ChangeNotifier{
     QBMessage qbMessage = QBMessage();
     qbMessage.dialogId = _dialogId;
     qbMessage.id = _messageId;
-    qbMessage.senderId = (currentUser == null) ? _pref!.getInt(AppConfig.QB_CURRENT_USERID) : currentUser;
+    qbMessage.senderId = (_localUserId == null) ? _pref!.getInt(AppConfig.QB_CURRENT_USERID) : _localUserId;
 
     try {
       await QB.chat.markMessageRead(qbMessage);
@@ -435,7 +496,7 @@ class QuickBloxService extends ChangeNotifier{
     QBMessage qbMessage = QBMessage();
     qbMessage.dialogId = _dialogId;
     qbMessage.id = _messageId;
-    qbMessage.senderId = (currentUser == null) ? _pref!.getInt(AppConfig.QB_CURRENT_USERID) : currentUser;
+    qbMessage.senderId = (_localUserId == null) ? _pref!.getInt(AppConfig.QB_CURRENT_USERID) : _localUserId;
 
     try {
       await QB.chat.markMessageDelivered(qbMessage);
@@ -726,6 +787,24 @@ class QuickBloxService extends ChangeNotifier{
       _reconnectionSuccessSubscription!.cancel();
       _reconnectionSuccessSubscription = null;
       print("Unsubscribed: " + QBChatEvents.RECONNECTION_SUCCESSFUL);
+    }
+  }
+
+  Future downloadFile(String url, String filename) async {
+    var httpClient = new HttpClient();
+    try{
+      var request = await httpClient.getUrl(Uri.parse(url));
+      var response = await request.close();
+      var bytes = await consolidateHttpClientResponseBytes(response);
+      final dir = await getTemporaryDirectory();
+      //(await getApplicationDocumentsDirectory()).path;
+      File file = new File('${dir.path}/$filename');
+      await file.writeAsBytes(bytes);
+      print('downloaded file path = ${file.path}');
+      return file;
+    }catch(error){
+      print('pdf downloading error = $error');
+      return error;
     }
   }
 

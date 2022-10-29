@@ -1,6 +1,9 @@
 import 'dart:async';
+import 'dart:collection';
+import 'dart:convert';
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -8,17 +11,21 @@ import 'package:get/get.dart';
 import 'package:grouped_list/grouped_list.dart';
 import 'package:gwc_customer/repository/quick_blox_repository/message_wrapper.dart';
 import 'package:gwc_customer/screens/profile_screens/call_support_method.dart';
+import 'package:gwc_customer/screens/program_plans/meal_pdf.dart';
 import 'package:gwc_customer/utils/app_config.dart';
 import 'package:gwc_customer/widgets/unfocus_widget.dart';
 import 'package:gwc_customer/widgets/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:mime/mime.dart';
+import 'package:photo_view/photo_view.dart';
 import 'package:provider/provider.dart';
 import 'package:quickblox_sdk/chat/constants.dart';
 import 'package:quickblox_sdk/models/qb_attachment.dart';
 import 'package:quickblox_sdk/models/qb_file.dart';
 import 'package:quickblox_sdk/models/qb_message.dart';
 import 'package:sizer/sizer.dart';
+import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import '../../model/message_model/message_model.dart';
 import '../../services/quick_blox_service/quick_blox_service.dart';
 import '../../widgets/constants.dart';
@@ -32,7 +39,8 @@ class MessageScreen extends StatefulWidget {
   State<MessageScreen> createState() => _MessageScreenState();
 }
 
-class _MessageScreenState extends State<MessageScreen> with WidgetsBindingObserver {
+class _MessageScreenState extends State<MessageScreen>
+    with WidgetsBindingObserver {
   final formKey = GlobalKey<FormState>();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -50,17 +58,16 @@ class _MessageScreenState extends State<MessageScreen> with WidgetsBindingObserv
 
   final _pref = AppConfig().preferences;
 
-
   @override
   void initState() {
     super.initState();
     isLoading = true;
-    _quickBloxService = Provider.of<QuickBloxService>(context,listen: false);
+    _quickBloxService = Provider.of<QuickBloxService>(context, listen: false);
     if (WidgetsBinding.instance != null) {
       WidgetsBinding.instance!.addObserver(this);
     }
-    if(_pref != null){
-      if(_pref?.getString(AppConfig.GROUP_ID) != null){
+    if (_pref != null) {
+      if (_pref?.getString(AppConfig.GROUP_ID) != null) {
         _groupId = _pref!.getString(AppConfig.GROUP_ID);
         joinChatRoom(_pref!.getString(AppConfig.GROUP_ID)!);
       }
@@ -78,12 +85,6 @@ class _MessageScreenState extends State<MessageScreen> with WidgetsBindingObserv
     // });
     _scrollController?.addListener(_scrollListener);
   }
-
-  callQBService() async{
-    // await _quickBloxService!.init();
-    await _quickBloxService!.login('Ramesh', password: '12345678');
-  }
-
 
   @override
   void dispose() {
@@ -113,7 +114,6 @@ class _MessageScreenState extends State<MessageScreen> with WidgetsBindingObserv
     }
   }
 
-
   void _scrollListener() {
     double? maxScroll = _scrollController?.position.maxScrollExtent;
     double? currentScroll = _scrollController?.position.pixels;
@@ -129,80 +129,75 @@ class _MessageScreenState extends State<MessageScreen> with WidgetsBindingObserv
           const Duration(minutes: 1, days: 10),
         ),
         sendMe: false,
-        image: "assets/images/closeup-content-attractive-indian-business-lady.png"
-    ),
+        image:
+            "assets/images/closeup-content-attractive-indian-business-lady.png"),
     Message(
         text: "Hello, Adam!",
         date: DateTime.now().subtract(
           const Duration(minutes: 5, days: 10),
         ),
         sendMe: true,
-        image: "assets/images/cheerful.png"
-    ),
+        image: "assets/images/cheerful.png"),
     Message(
         text: "Lorem ipsum  Is Simply Dummy Text",
         date: DateTime.now().subtract(
           const Duration(minutes: 1, days: 6),
         ),
         sendMe: false,
-        image: "assets/images/closeup-content-attractive-indian-business-lady.png"
-    ),
+        image:
+            "assets/images/closeup-content-attractive-indian-business-lady.png"),
     Message(
         text: "done.",
         date: DateTime.now().subtract(
           const Duration(minutes: 5, days: 6),
         ),
         sendMe: true,
-        image: "assets/images/cheerful.png"
-    ),
+        image: "assets/images/cheerful.png"),
     Message(
         text: "Lorem ipsum  Is Simply Dummy Text",
         date: DateTime.now().subtract(
           const Duration(minutes: 1, days: 3),
         ),
         sendMe: false,
-        image: "assets/images/closeup-content-attractive-indian-business-lady.png"
-    ),
+        image:
+            "assets/images/closeup-content-attractive-indian-business-lady.png"),
     Message(
         text: "Okay,",
         date: DateTime.now().subtract(
           const Duration(minutes: 5, days: 3),
         ),
         sendMe: true,
-        image: "assets/images/cheerful.png"
-    ),
+        image: "assets/images/cheerful.png"),
     Message(
         text: "Lorem ipsum  Is Simply Dummy Text",
         date: DateTime.now().subtract(
           const Duration(minutes: 1, days: 2),
         ),
         sendMe: false,
-        image: "assets/images/closeup-content-attractive-indian-business-lady.png"
-    ),
+        image:
+            "assets/images/closeup-content-attractive-indian-business-lady.png"),
     Message(
         text: "Okay,",
         date: DateTime.now().subtract(
           const Duration(minutes: 5, days: 2),
         ),
         sendMe: true,
-        image: "assets/images/cheerful.png"
-    ),
+        image: "assets/images/cheerful.png"),
     Message(
         text: "Lorem ipsum  Is Simply Dummy Text",
         date: DateTime.now().subtract(
           const Duration(minutes: 1, days: 0),
         ),
         sendMe: false,
-        image:"assets/images/closeup-content-attractive-indian-business-lady.png"
-    ),
+        image:
+            "assets/images/closeup-content-attractive-indian-business-lady.png"),
     Message(
         text: "Okay,",
         date: DateTime.now().subtract(
           const Duration(minutes: 5, days: 0),
         ),
         sendMe: true,
-        image: "assets/images/cheerful.png"
-    ),
+        image: "assets/images/cheerful.png"),
   ].toList();
 
   @override
@@ -269,13 +264,15 @@ class _MessageScreenState extends State<MessageScreen> with WidgetsBindingObserv
                     SizedBox(height: 3.h),
                     Expanded(
                       child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 1.h),
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 2.w, vertical: 1.h),
                         width: double.maxFinite,
                         decoration: BoxDecoration(
                           color: Colors.white,
                           boxShadow: [
                             BoxShadow(
-                                blurRadius: 2, color: Colors.grey.withOpacity(0.5))
+                                blurRadius: 2,
+                                color: Colors.grey.withOpacity(0.5))
                           ],
                           borderRadius: const BorderRadius.only(
                             topLeft: Radius.circular(20),
@@ -287,25 +284,30 @@ class _MessageScreenState extends State<MessageScreen> with WidgetsBindingObserv
                           children: [
                             Expanded(
                               child: RawScrollbar(
-                                isAlwaysShown: false,
-                                thickness: 3,
-                                controller: _scrollController,
-                                radius: Radius.circular(3),
-                                thumbColor: gMainColor,
-                                child: StreamBuilder(
-                                  stream: _quickBloxService!.stream.stream.asBroadcastStream(),
-                                  builder: (_, snapshot){
-                                    // print("snap.data: ${snapshot.data}");
-                                    if(snapshot.hasData) {
-                                      return buildMessageList(snapshot.data as List<QBMessageWrapper>);
-                                    }
-                                    else if(snapshot.hasError) {
-                                      return Center(child: Text(snapshot.error.toString()),);
-                                    }
-                                    return Center(child: CircularProgressIndicator(),);
-                                  },
-                                )
-                              ),
+                                  isAlwaysShown: false,
+                                  thickness: 3,
+                                  controller: _scrollController,
+                                  radius: Radius.circular(3),
+                                  thumbColor: gMainColor,
+                                  child: StreamBuilder(
+                                    stream: _quickBloxService!.stream.stream
+                                        .asBroadcastStream(),
+                                    builder: (_, snapshot) {
+                                      print("snap.data: ${snapshot.data}");
+                                      if (snapshot.hasData) {
+                                        return buildMessageList(snapshot.data
+                                            as List<QBMessageWrapper>);
+                                      } else if (snapshot.hasError) {
+                                        return Center(
+                                          child:
+                                              Text(snapshot.error.toString()),
+                                        );
+                                      }
+                                      return Center(
+                                        child: CircularProgressIndicator(),
+                                      );
+                                    },
+                                  )),
                             ),
                             _buildEnterMessageRow(),
                           ],
@@ -369,8 +371,7 @@ class _MessageScreenState extends State<MessageScreen> with WidgetsBindingObserv
                       style: TextStyle(
                           fontFamily: "GothamMedium",
                           color: gTextColor,
-                          fontSize: 11.sp
-                      ),
+                          fontSize: 11.sp),
                       maxLines: 3,
                       minLines: 1,
                       textInputAction: TextInputAction.none,
@@ -382,33 +383,34 @@ class _MessageScreenState extends State<MessageScreen> with WidgetsBindingObserv
               ),
               commentController.text.toString().isNotEmpty
                   ? SizedBox(
-                width: 2.w,
-              )
+                      width: 2.w,
+                    )
                   : SizedBox(width: 0),
               commentController.text.toString().isEmpty
                   ? SizedBox(
-                width: 0,
-              )
+                      width: 0,
+                    )
                   : InkWell(
-                onTap: () {
-                  final message = Message(
-                      text: commentController.text.toString(),
-                      date: DateTime.now(),
-                      sendMe: true,
-                      image: "assets/images/closeup-content-attractive-indian-business-lady.png"
-                  );
-                  setState(() {
-                    messages.add(message);
-                  });
-                  _quickBloxService!.sendMessage(_groupId!, message: commentController.text );
+                      onTap: () {
+                        final message = Message(
+                            text: commentController.text.toString(),
+                            date: DateTime.now(),
+                            sendMe: true,
+                            image:
+                                "assets/images/closeup-content-attractive-indian-business-lady.png");
+                        setState(() {
+                          messages.add(message);
+                        });
+                        _quickBloxService!.sendMessage(_groupId!,
+                            message: commentController.text);
 
-                  commentController.clear();
-                },
-                child: const Icon(
-                  Icons.send,
-                  color: kPrimaryColor,
-                ),
-              ),
+                        commentController.clear();
+                      },
+                      child: const Icon(
+                        Icons.send,
+                        color: kPrimaryColor,
+                      ),
+                    ),
             ],
           ),
         ],
@@ -419,8 +421,8 @@ class _MessageScreenState extends State<MessageScreen> with WidgetsBindingObserv
   Widget _buildTypingIndicator() {
     return StreamBuilder(
         stream: _quickBloxService!.typingStream.stream.asBroadcastStream(),
-        builder: (_, snapshot){
-          if(snapshot.hasData){
+        builder: (_, snapshot) {
+          if (snapshot.hasData) {
             print("typinf snap: ${snapshot.data}");
             return Container(
               // color: Color(0xfff1f1f1),
@@ -431,7 +433,10 @@ class _MessageScreenState extends State<MessageScreen> with WidgetsBindingObserv
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     SizedBox(width: 16),
-                    Text((snapshot.data as List<String>).isEmpty ? '' :_makeTypingStatus(snapshot.data as List<String>),
+                    Text(
+                        (snapshot.data as List<String>).isEmpty
+                            ? ''
+                            : _makeTypingStatus(snapshot.data as List<String>),
                         style: TextStyle(
                             fontSize: 13,
                             color: Color(0xff6c7a92),
@@ -440,66 +445,69 @@ class _MessageScreenState extends State<MessageScreen> with WidgetsBindingObserv
             );
           }
           return SizedBox();
+        });
+  }
+
+  String _makeTypingStatus(List<String> usersName) {
+    const int MAX_NAME_SIZE = 20;
+    const int ONE_USER = 1;
+    const int TWO_USERS = 2;
+
+    String result = "";
+    int namesCount = usersName.length;
+
+    switch (namesCount) {
+      case ONE_USER:
+        String firstUser = usersName[0];
+        if (firstUser.length <= MAX_NAME_SIZE) {
+          result = firstUser + " is typing...";
+        } else {
+          result = firstUser.substring(0, MAX_NAME_SIZE - 1) + "… is typing...";
         }
-    );
-  }
-
-String _makeTypingStatus(List<String> usersName) {
-  const int MAX_NAME_SIZE = 20;
-  const int ONE_USER = 1;
-  const int TWO_USERS = 2;
-
-  String result = "";
-  int namesCount = usersName.length;
-
-  switch (namesCount) {
-    case ONE_USER:
-      String firstUser = usersName[0];
-      if (firstUser.length <= MAX_NAME_SIZE) {
-        result = firstUser + " is typing...";
-      } else {
-        result = firstUser.substring(0, MAX_NAME_SIZE - 1) + "… is typing...";
-      }
-      break;
-    case TWO_USERS:
-      String firstUser = usersName[0];
-      String secondUser = usersName[1];
-      if ((firstUser + secondUser).length > MAX_NAME_SIZE) {
-        firstUser = _getModifiedUserName(firstUser);
-        secondUser = _getModifiedUserName(secondUser);
-      }
-      result = firstUser + " and " + secondUser + " are typing...";
-      break;
-    default:
-      String firstUser = usersName[0];
-      String secondUser = usersName[1];
-      String thirdUser = usersName[2];
-
-      if ((firstUser + secondUser + thirdUser).length <= MAX_NAME_SIZE) {
-        result = firstUser + ", " + secondUser + ", " + thirdUser + " are typing...";
-      } else {
-        firstUser = _getModifiedUserName(firstUser);
-        secondUser = _getModifiedUserName(secondUser);
-        result = firstUser +
-            ", " +
-            secondUser +
-            " and " +
-            (namesCount - 2).toString() +
-            " more are typing...";
         break;
-      }
-  }
-  return result;
-}
+      case TWO_USERS:
+        String firstUser = usersName[0];
+        String secondUser = usersName[1];
+        if ((firstUser + secondUser).length > MAX_NAME_SIZE) {
+          firstUser = _getModifiedUserName(firstUser);
+          secondUser = _getModifiedUserName(secondUser);
+        }
+        result = firstUser + " and " + secondUser + " are typing...";
+        break;
+      default:
+        String firstUser = usersName[0];
+        String secondUser = usersName[1];
+        String thirdUser = usersName[2];
 
-String _getModifiedUserName(String name) {
-  const int MAX_NAME_SIZE = 10;
-  if (name.length >= MAX_NAME_SIZE) {
-    name = name.substring(0, (MAX_NAME_SIZE) - 1) + "…";
+        if ((firstUser + secondUser + thirdUser).length <= MAX_NAME_SIZE) {
+          result = firstUser +
+              ", " +
+              secondUser +
+              ", " +
+              thirdUser +
+              " are typing...";
+        } else {
+          firstUser = _getModifiedUserName(firstUser);
+          secondUser = _getModifiedUserName(secondUser);
+          result = firstUser +
+              ", " +
+              secondUser +
+              " and " +
+              (namesCount - 2).toString() +
+              " more are typing...";
+          break;
+        }
+    }
+    return result;
   }
-  return name;
-}
 
+  String _getModifiedUserName(String name) {
+    const int MAX_NAME_SIZE = 10;
+    if (name.length >= MAX_NAME_SIZE) {
+      name = name.substring(0, (MAX_NAME_SIZE) - 1) + "…";
+    }
+    return name;
+  }
 
   buildMessageList(List<QBMessageWrapper> messageList) {
     return GroupedListView<QBMessageWrapper, DateTime>(
@@ -514,16 +522,16 @@ String _getModifiedUserName(String name) {
       // padding: EdgeInsets.symmetric(horizontal: 0.w),
       groupHeaderBuilder: (QBMessageWrapper message) =>
           Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-            Container(
-              margin: EdgeInsets.only(top: 7, bottom: 7),
-              padding: EdgeInsets.only(left: 16, right: 16, top: 3, bottom: 3),
-              decoration: BoxDecoration(
-                  color: Color(0xffd9e3f7),
-                  borderRadius: BorderRadius.all(Radius.circular(11))),
-              child: Text(_buildHeaderDate(message.qbMessage.dateSent),
-                  style: TextStyle(color: Colors.black54, fontSize: 13)),
-            )
-          ]),
+        Container(
+          margin: EdgeInsets.only(top: 7, bottom: 7),
+          padding: EdgeInsets.only(left: 16, right: 16, top: 3, bottom: 3),
+          decoration: BoxDecoration(
+              color: Color(0xffd9e3f7),
+              borderRadius: BorderRadius.all(Radius.circular(11))),
+          child: Text(_buildHeaderDate(message.qbMessage.dateSent),
+              style: TextStyle(color: Colors.black54, fontSize: 13)),
+        )
+      ]),
       itemBuilder: (context, QBMessageWrapper message) => Row(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.end,
@@ -536,90 +544,200 @@ String _getModifiedUserName(String name) {
             child: Padding(
               padding: EdgeInsets.only(top: 15),
               child: Column(
-                crossAxisAlignment: message.isIncoming ? CrossAxisAlignment.start : CrossAxisAlignment.end,
+                crossAxisAlignment: message.isIncoming
+                    ? CrossAxisAlignment.start
+                    : CrossAxisAlignment.end,
                 children: [
                   IntrinsicWidth(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      // overflow: Overflow.visible,
-                      // clipBehavior: Clip.none,
-                      children: [
-                        Container(
-                          padding: EdgeInsets.only(left: 16, right: 16, top: 13, bottom: 13),
-                          constraints: BoxConstraints(maxWidth: 70.w),
-                          margin: message.isIncoming
-                              ? EdgeInsets.only(top: 1.h, bottom: 1.h, left: 5)
-                              : EdgeInsets.only(top: 1.h, bottom: 1.h, right: 5),
-                          // padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 1.5.h),
-                          decoration: BoxDecoration(
-                              color: message.isIncoming
-                                  ? gGreyColor.withOpacity(0.2)
-                                  : gsecondaryColor,
-                              borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(18),
-                                topRight: Radius.circular(18),
-                                bottomLeft: message.isIncoming ? Radius.circular(0) : Radius.circular(18),
-                                bottomRight: message.isIncoming ? Radius.circular(18) : Radius.circular(0)
-
-                              )),
-                          child: Text(
-                            message.qbMessage.body ?? '',
-                            style: TextStyle(
-                                fontFamily: "GothamBook",
-                                height: 1.5,
-                                color: message.isIncoming ? gTextColor : gWhiteColor,
-                                fontSize: 10.sp),
-                          ),
-                        ),
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: _buildNameTimeHeader(message),
-                        ),
-                        // message.isIncoming
-                        //     ? Positioned(
-                        //   bottom: 0,
-                        //   right: 0,
-                        //   child: Align(
-                        //     alignment: Alignment.bottomRight,
-                        //     child: Container(
-                        //       // padding: const EdgeInsets.all(4),
-                        //       decoration: BoxDecoration(
-                        //         color: gsecondaryColor,
-                        //         borderRadius: BorderRadius.circular(8),
-                        //       ),
-                        //       child: ClipRRect(
-                        //         borderRadius: BorderRadius.circular(8),
-                        //         child: Center(
-                        //           child: Image(
-                        //             image: AssetImage('assets/images/closeup-content-attractive-indian-business-lady.png'),
-                        //             height: 2.h,
-                        //           ),
-                        //         ),
-                        //       ),
-                        //     ),
-                        //   ),
-                        // )
-                        //     : Positioned(
-                        //   bottom: 0,
-                        //   // left: -3,
-                        //   child: Container(
-                        //     padding: const EdgeInsets.all(4),
-                        //     decoration: BoxDecoration(
-                        //       color: gWhiteColor,
-                        //       borderRadius: BorderRadius.circular(8),
-                        //     ),
-                        //     child: ClipRRect(
-                        //       borderRadius: BorderRadius.circular(8),
-                        //       child: Image(
-                        //         image: AssetImage('assets/images/closeup-content-attractive-indian-business-lady.png'),
-                        //         height: 2.h,
-                        //       ),
-                        //     ),
-                        //   ),
-                        // ),
-                      ],
-                    ),
+                    child: (message.qbMessage.attachments == null ||
+                            message.qbMessage.attachments!.isEmpty)
+                        ? Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            // overflow: Overflow.visible,
+                            // clipBehavior: Clip.none,
+                            children: [
+                              Container(
+                                padding: EdgeInsets.only(
+                                    left: 16, right: 16, top: 13, bottom: 13),
+                                constraints: BoxConstraints(maxWidth: 70.w),
+                                margin: message.isIncoming
+                                    ? EdgeInsets.only(
+                                        top: 1.h, bottom: 1.h, left: 5)
+                                    : EdgeInsets.only(
+                                        top: 1.h, bottom: 1.h, right: 5),
+                                // padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 1.5.h),
+                                decoration: BoxDecoration(
+                                    color: message.isIncoming
+                                        ? gGreyColor.withOpacity(0.2)
+                                        : gsecondaryColor,
+                                    borderRadius: BorderRadius.only(
+                                        topLeft: Radius.circular(18),
+                                        topRight: Radius.circular(18),
+                                        bottomLeft: message.isIncoming
+                                            ? Radius.circular(0)
+                                            : Radius.circular(18),
+                                        bottomRight: message.isIncoming
+                                            ? Radius.circular(18)
+                                            : Radius.circular(0))),
+                                child: Text(
+                                  message.qbMessage.body ?? '',
+                                  style: TextStyle(
+                                      fontFamily: "GothamBook",
+                                      height: 1.5,
+                                      color: message.isIncoming
+                                          ? gTextColor
+                                          : gWhiteColor,
+                                      fontSize: 10.sp),
+                                ),
+                              ),
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: _buildNameTimeHeader(message),
+                              ),
+                            ],
+                          )
+                        : FutureBuilder(
+                            future: _quickBloxService!.getQbAttachmentUrl(
+                                message.qbMessage.attachments!.first!.id!),
+                            builder: (_, imgUrl) {
+                              print('imgUrl.hasError: ${imgUrl.hasError}');
+                              if (imgUrl.hasData) {
+                                QBFile? _file;
+                                print("imgUrl.runtimeType: ${imgUrl.data.runtimeType}");
+                                  _file = (imgUrl.data as Map)['file'];
+                                  // print('_file!.name: ${_file!.name}');
+                                return Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
+                                  children: [
+                                    GestureDetector(
+                                      onTap: () {
+                                        if(message.qbMessage.attachments!.first!.type == 'application/pdf'){
+                                          Navigator.push(context, PageRouteBuilder(
+                                            opaque: false, // set to false
+                                            pageBuilder: (_, __, ___) {
+                                              return MealPdf(pdfLink: (imgUrl.data as Map)['url'],);
+                                            },
+                                          ));
+                                        }
+                                        else{
+                                          Navigator.push(context, PageRouteBuilder(
+                                            opaque: false, // set to false
+                                            pageBuilder: (_, __, ___) {
+                                              return showImageFullScreen((imgUrl.data as Map)['url']);
+                                            },
+                                          ));
+                                        }
+                                      },
+                                      child: Container(
+                                        height: message.qbMessage.attachments!
+                                                    .first!.type ==
+                                                'application/pdf'
+                                            ? null
+                                            : 200,
+                                        padding: EdgeInsets.only(
+                                            left: 16,
+                                            right: 16,
+                                            top: 13,
+                                            bottom: 13),
+                                        constraints:
+                                            BoxConstraints(maxWidth: 70.w),
+                                        margin: message.isIncoming
+                                            ? EdgeInsets.only(
+                                                top: 1.h,
+                                                bottom: 1.h,
+                                                left: 5)
+                                            : EdgeInsets.only(
+                                                top: 1.h,
+                                                bottom: 1.h,
+                                                right: 5),
+                                        // padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 1.5.h),
+                                        decoration: (message
+                                                    .qbMessage
+                                                    .attachments!
+                                                    .first!
+                                                    .type ==
+                                                'application/pdf')
+                                            ? BoxDecoration(
+                                                color: message.isIncoming
+                                                    ? gGreyColor
+                                                        .withOpacity(0.2)
+                                                    : gsecondaryColor,
+                                                borderRadius: BorderRadius.only(
+                                                    topLeft:
+                                                        Radius.circular(18),
+                                                    topRight:
+                                                        Radius.circular(18),
+                                                    bottomLeft: message.isIncoming
+                                                        ? Radius.circular(0)
+                                                        : Radius.circular(18),
+                                                    bottomRight: message.isIncoming
+                                                        ? Radius.circular(18)
+                                                        : Radius.circular(0)))
+                                            : BoxDecoration(
+                                                image: DecorationImage(
+                                                    filterQuality:
+                                                        FilterQuality.high,
+                                                    fit: BoxFit.fill,
+                                                    image: CachedNetworkImageProvider((imgUrl.data as Map)['url'])),
+                                                boxShadow: [BoxShadow(color: gGreyColor.withOpacity(0.5), blurRadius: 0.2)],
+                                                borderRadius: BorderRadius.only(topLeft: Radius.circular(18), topRight: Radius.circular(18), bottomLeft: message.isIncoming ? Radius.circular(0) : Radius.circular(18), bottomRight: message.isIncoming ? Radius.circular(18) : Radius.circular(0))),
+                                        child: (message.qbMessage.attachments!
+                                                    .first!.type ==
+                                                'application/pdf')
+                                            ? (_file != null)
+                                                ? Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                                  children: [
+                                                    Expanded(
+                                                      child: Text(
+                                                          _file.name ?? '',
+                                                          maxLines: 2,
+                                                          style: TextStyle(
+                                                              fontSize: 10.sp,
+                                                              fontFamily:
+                                                                  'GothamMedium',
+                                                              color: gWhiteColor),
+                                                        ),
+                                                    ),
+                                                    IconButton(
+                                                      icon: Icon(Icons.download,
+                                                        color: Colors.white,),
+                                                      onPressed: () async{
+                                                        if(_file != null){
+                                                          await _quickBloxService!.downloadFile((imgUrl.data as Map)['url'], _file.name!)
+                                                              .then((value) {
+                                                            File file = value as File;
+                                                            AppConfig().showSnackbar(context, "file saved to ${file.path}");
+                                                          }).onError((error, stackTrace) {
+                                                            AppConfig().showSnackbar(context, "file download error");
+                                                          });
+                                                        }
+                                                      },
+                                                    )
+                                                  ],
+                                                )
+                                                : null
+                                            : null,
+                                      ),
+                                    ),
+                                    Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: _buildNameTimeHeader(message),
+                                    )
+                                  ],
+                                );
+                              } else {
+                                print("imgUrl.error: ${imgUrl.error}");
+                                return SizedBox.shrink(
+                                    child: Text('Not found'));
+                              }
+                              return SizedBox.shrink();
+                            }),
                   )
                 ],
               ),
@@ -628,7 +746,6 @@ String _getModifiedUserName(String name) {
         ],
       ),
       controller: _scrollController,
-
     );
   }
 
@@ -652,28 +769,37 @@ String _getModifiedUserName(String name) {
     //   return SizedBox.shrink();
     // }
     if (readIds != null && readIds.length > 1) {
-      return Icon(Icons.done_all, color: Colors.blue,size: 14,);
+      return Icon(
+        Icons.done_all,
+        color: Colors.blue,
+        size: 14,
+      );
     } else if (deliveredIds != null && deliveredIds.length > 1) {
-      return Icon(Icons.done_all, color: gGreyColor,size: 14);
+      return Icon(Icons.done_all, color: gGreyColor, size: 14);
     } else {
-      return Icon(Icons.done, color: gGreyColor,size: 14);
+      return Icon(Icons.done, color: gGreyColor, size: 14);
     }
   }
 
   Widget _buildSenderName(message) {
     return Text(message.senderName ?? "Noname",
         maxLines: 1,
-        style: TextStyle(fontSize: 10.5.sp, fontWeight: FontWeight.bold, color: Colors.black54));
+        style: TextStyle(
+            fontSize: 10.5.sp,
+            fontWeight: FontWeight.bold,
+            color: Colors.black54));
   }
 
   Widget _buildDateSent(message) {
     return Text(_buildTime(message.qbMessage.dateSent!),
         maxLines: 1, style: TextStyle(fontSize: 10.sp, color: Colors.black54));
   }
+
   String _buildTime(int timeStamp) {
     String completedTime = "";
     DateFormat timeFormat = DateFormat("HH:mm");
-    DateTime messageTime = new DateTime.fromMicrosecondsSinceEpoch(timeStamp * 1000);
+    DateTime messageTime =
+        new DateTime.fromMicrosecondsSinceEpoch(timeStamp * 1000);
     completedTime = timeFormat.format(messageTime);
 
     return completedTime;
@@ -687,24 +813,26 @@ String _getModifiedUserName(String name) {
       width: 20,
       height: 20,
       decoration: new BoxDecoration(
-        color: gMainColor.withOpacity(0.18),
+          color: gMainColor.withOpacity(0.18),
           borderRadius: new BorderRadius.all(Radius.circular(20))),
       child: Center(
         child: Text(
           '${name.substring(0, 1).toUpperCase()}',
-          style: TextStyle(color: gPrimaryColor, fontWeight: FontWeight.bold, fontFamily: 'GothamMedium'),
+          style: TextStyle(
+              color: gPrimaryColor,
+              fontWeight: FontWeight.bold,
+              fontFamily: 'GothamMedium'),
         ),
       ),
     );
   }
-
 
   showAttachmentSheet(BuildContext context) {
     return showModalBottomSheet(
         backgroundColor: Colors.transparent,
         context: context,
         enableDrag: false,
-        builder: (ctx){
+        builder: (ctx) {
           return Wrap(
             children: [
               Container(
@@ -716,8 +844,7 @@ String _getModifiedUserName(String name) {
                       topRight: Radius.circular(20),
                       topLeft: Radius.circular(20),
                       bottomRight: Radius.circular(20),
-                      bottomLeft: Radius.circular(20)
-                  ),
+                      bottomLeft: Radius.circular(20)),
                 ),
                 child: Column(
                   children: [
@@ -726,12 +853,11 @@ String _getModifiedUserName(String name) {
                       child: Text('Choose File Source'),
                       decoration: BoxDecoration(
                           border: Border(
-                            bottom: BorderSide(
-                              color: gGreyColor,
-                              width: 3.0,
-                            ),
-                          )
-                      ),
+                        bottom: BorderSide(
+                          color: gGreyColor,
+                          width: 3.0,
+                        ),
+                      )),
                     ),
                     SizedBox(
                       height: 10,
@@ -739,15 +865,16 @@ String _getModifiedUserName(String name) {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        iconWithText( Icons.insert_drive_file, 'Document', () {
+                        iconWithText(Icons.insert_drive_file, 'Document', () {
                           pickFromFile();
                           Navigator.pop(context);
                         }),
-                        iconWithText( Icons.camera_enhance_outlined, 'Camera', () {
+                        iconWithText(Icons.camera_enhance_outlined, 'Camera',
+                            () {
                           getImageFromCamera();
                           Navigator.pop(context);
                         }),
-                        iconWithText( Icons.image, 'Gallery', () {
+                        iconWithText(Icons.image, 'Gallery', () {
                           getImageFromCamera(fromCamera: false);
                           Navigator.pop(context);
                         }),
@@ -758,8 +885,7 @@ String _getModifiedUserName(String name) {
               )
             ],
           );
-        }
-    );
+        });
   }
 
   String _buildHeaderDate(int? timeStamp) {
@@ -774,8 +900,10 @@ String _getModifiedUserName(String name) {
     if (timeStamp == null) {
       timeStamp = 0;
     }
-    DateTime messageTime = DateTime.fromMicrosecondsSinceEpoch(timeStamp * 1000);
-    DateTime messageDate = DateTime(messageTime.year, messageTime.month, messageTime.day);
+    DateTime messageTime =
+        DateTime.fromMicrosecondsSinceEpoch(timeStamp * 1000);
+    DateTime messageDate =
+        DateTime(messageTime.year, messageTime.month, messageTime.day);
 
     if (today == messageDate) {
       completedDate = "Today";
@@ -790,8 +918,7 @@ String _getModifiedUserName(String name) {
     return completedDate;
   }
 
-
-  iconWithText(IconData assetName, String optionName, VoidCallback onPress){
+  iconWithText(IconData assetName, String optionName, VoidCallback onPress) {
     return GestureDetector(
       onTap: onPress,
       child: SizedBox(
@@ -799,12 +926,11 @@ String _getModifiedUserName(String name) {
           children: [
             Container(
               padding: EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: gPrimaryColor
-              ),
-              child:Center(
-                child: Icon(assetName,
+              decoration:
+                  BoxDecoration(shape: BoxShape.circle, color: gPrimaryColor),
+              child: Center(
+                child: Icon(
+                  assetName,
                   color: gMainColor,
                 ),
               ),
@@ -822,6 +948,15 @@ String _getModifiedUserName(String name) {
             )
           ],
         ),
+      ),
+    );
+  }
+
+  showImageFullScreen(String url) {
+    print(url);
+    return PhotoView(
+      imageProvider: CachedNetworkImageProvider(
+        url,
       ),
     );
   }
@@ -907,9 +1042,10 @@ String _getModifiedUserName(String name) {
   //   }
   // }
 
-
-  joinChatRoom(String groupId) async{
-    await Provider.of<QuickBloxService>(context,listen: false).joinDialog(groupId);
+  joinChatRoom(String groupId) async {
+    print("groupId: ${groupId}");
+    await Provider.of<QuickBloxService>(context, listen: false)
+        .joinDialog(groupId);
 
     Future.delayed(Duration(seconds: 15)).whenComplete(() {
       setState(() {
@@ -922,23 +1058,20 @@ String _getModifiedUserName(String name) {
 
   List<PlatformFile> files = [];
 
-
   Future getImageFromCamera({bool fromCamera = true}) async {
     var image = await ImagePicker.platform.pickImage(
         source: fromCamera ? ImageSource.camera : ImageSource.gallery,
-        imageQuality: 50
-    );
+        imageQuality: 50);
 
     setState(() {
       _image = File(image!.path);
     });
-    sendQbAttachment(_image!.path, 'photo');
+    sendQbAttachment(_image!.path);
     print("captured image: ${_image}");
   }
 
-  void pickFromFile() async{
-    final result = await FilePicker.platform
-        .pickFiles(
+  void pickFromFile() async {
+    final result = await FilePicker.platform.pickFiles(
       withReadStream: true,
       type: FileType.any,
       // allowedExtensions: ['pdf', 'jpg', 'png'],
@@ -946,33 +1079,37 @@ String _getModifiedUserName(String name) {
     );
     if (result == null) return;
 
-    if(result.files.first.extension!.contains("pdf") || result.files.first.extension!.contains("png") || result.files.first.extension!.contains("jpg")){
-      if(getFileSize(File(result.paths.first!)) <= 10){
+    if (result.files.first.extension!.contains("pdf") ||
+        result.files.first.extension!.contains("png") ||
+        result.files.first.extension!.contains("jpg")) {
+      if (getFileSize(File(result.paths.first!)) <= 10) {
         print("filesize: ${getFileSize(File(result.paths.first!))}Mb");
         files.add(result.files.first);
+      } else {
+        AppConfig()
+            .showSnackbar(context, "File size must be < 10Mb", isError: true);
       }
-      else{
-        AppConfig().showSnackbar(context, "File size must be < 10Mb", isError: true);
-      }
+    } else {
+      AppConfig().showSnackbar(context, "Please select png/jpg/Pdf files",
+          isError: true);
     }
-    else{
-      AppConfig().showSnackbar(context, "Please select png/jpg/Pdf files", isError: true);
-    }
-    sendQbAttachment(files.first.path!, 'doc');
+    print("selected file: ${files.first.identifier}");
+    print(lookupMimeType(files.first.path!));
+    sendQbAttachment(files.first.path!);
     setState(() {});
   }
 
-  getFileSize(File file){
+  getFileSize(File file) {
     var size = file.lengthSync();
-    num mb = num.parse((size / (1024*1024)).toStringAsFixed(2));
+    num mb = num.parse((size / (1024 * 1024)).toStringAsFixed(2));
     return mb;
   }
 
-  sendQbAttachment(String url, String fileType) async{
-    try{
+  sendQbAttachment(String url) async {
+    try {
       QBFile? file;
       file = await QB.content.upload(url);
-      if(file != null) {
+      if (file != null) {
         int id = file.id!;
         String contentType = file.contentType!;
 
@@ -981,7 +1118,8 @@ String _getModifiedUserName(String name) {
         attachment.contentType = contentType;
 
         //Required parameter
-        attachment.type = fileType.toUpperCase();
+        attachment.type = lookupMimeType(url);
+        attachment.contentType = lookupMimeType(url);
 
         List<QBAttachment> attachmentsList = [];
         attachmentsList.add(attachment);
@@ -993,12 +1131,8 @@ String _getModifiedUserName(String name) {
 
         // Send a message logic
       }
-    }
-    catch(e){
-
-    }
+    } catch (e) {}
   }
-
 }
 
 class Message {

@@ -542,7 +542,8 @@ class _ExistingUserState extends State<ExistingUser> {
       UserProfileModel model1 = profile as UserProfileModel;
       _pref.setString(AppConfig.User_Name, model1.data?.name ?? model1.data?.fname ?? '');
       _pref.setInt(AppConfig.USER_ID, model1.data?.id ?? -1);
-
+      _pref.setString(AppConfig.QB_USERNAME, model1.data!.qbUsername!);
+      _pref.setInt(AppConfig.QB_CURRENT_USERID, int.tryParse(model1.data!.qbUserId!)!);
       print("pref id: ${_pref.getInt(AppConfig.USER_ID)}");
     }
   }

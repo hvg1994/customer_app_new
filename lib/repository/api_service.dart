@@ -10,6 +10,8 @@ import 'package:gwc_customer/model/login_model/login_otp_model.dart';
 import 'package:gwc_customer/model/login_model/resend_otp_model.dart';
 import 'package:gwc_customer/model/message_model/get_chat_groupid_model.dart';
 import 'package:gwc_customer/model/new_user_model/about_program_model/about_program_model.dart';
+import 'package:gwc_customer/model/post_program_model/breakfast/protocol_breakfast_get.dart';
+import 'package:gwc_customer/model/post_program_model/post_program_base_model.dart';
 import 'package:gwc_customer/model/profile_model/feedback_model.dart';
 import 'package:gwc_customer/model/profile_model/logout_model.dart';
 import 'package:gwc_customer/model/profile_model/user_profile/update_user_model.dart';
@@ -1330,6 +1332,219 @@ final _prefs = AppConfig().preferences;
 
     return result;
   }
+
+  Future startPostProgram() async {
+    var url = startPostProgramUrl;
+
+    dynamic result;
+
+    try {
+      final response = await httpClient.post(
+        Uri.parse(url),
+        headers: {
+          "Authorization": getHeaderToken(),
+        },
+      );
+
+      print('startPostProgram Response status: ${response.statusCode}');
+      print('startPostProgram Response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final json = jsonDecode(response.body);
+        print('startPostProgram result: $json');
+        result = GutDataModel.fromJson(json);
+      } else {
+        print('startPostProgram error: ${response.reasonPhrase}');
+        result = ErrorModel(
+            status: response.statusCode.toString(),
+            message: response.body);
+      }
+    } catch (e) {
+      print(e);
+      result = ErrorModel(status: "", message: e.toString());
+    }
+    return result;
+  }
+
+  Future submitPostProgramMealTrackingApi(String mealType, int selectedType, int dayNumber) async {
+    var url = submitPostProgramMealTrackingUrl;
+
+    dynamic result;
+
+    Map bodyParam = {
+      'type': mealType,
+      'follow_id': selectedType,
+      'day' : dayNumber
+    };
+
+    try {
+      final response = await httpClient.post(
+        Uri.parse(url),
+        headers: {
+          "Authorization": getHeaderToken(),
+        },
+        body: bodyParam
+      );
+
+      print('submitPostProgramMealTrackingApi Response status: ${response.statusCode}');
+      print('submitPostProgramMealTrackingApi Response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final json = jsonDecode(response.body);
+        print('submitPostProgramMealTrackingApi result: $json');
+        result = PostProgramBaseModel.fromJson(json);
+      } else {
+        print('submitPostProgramMealTrackingApi error: ${response.reasonPhrase}');
+        result = ErrorModel(
+            status: response.statusCode.toString(),
+            message: response.body);
+      }
+    } catch (e) {
+      print(e);
+      result = ErrorModel(status: "", message: e.toString());
+    }
+    return result;
+  }
+
+  Future getBreakfastOnclickApi(String day) async {
+    var url = '$getBreakfastOnclickUrl/$day';
+
+    dynamic result;
+
+    try {
+      final response = await httpClient.get(
+        Uri.parse(url),
+        headers: {
+          "Authorization": getHeaderToken(),
+        },
+      );
+
+      print('getBreakfastOnclickApi Response status: ${response.statusCode}');
+      print('getBreakfastOnclickApi Response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final json = jsonDecode(response.body);
+        print('getBreakfastOnclickApi result: $json');
+        result = GetProtocolBreakfastModel.fromJson(json);
+      } else {
+        print('getBreakfastOnclickApi error: ${response.reasonPhrase}');
+        result = ErrorModel(
+            status: response.statusCode.toString(),
+            message: response.body);
+      }
+    } catch (e) {
+      print(e);
+      result = ErrorModel(status: "", message: e.toString());
+    }
+    return result;
+  }
+
+  Future getLunchOnclickApi(String day) async {
+    var url = '$getLunchOnclickUrl/$day';
+
+    dynamic result;
+
+    try {
+      final response = await httpClient.get(
+        Uri.parse(url),
+        headers: {
+          "Authorization": getHeaderToken(),
+        },
+      );
+
+      print('getLunchOnclickApi Response status: ${response.statusCode}');
+      print('getLunchOnclickApi Response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final json = jsonDecode(response.body);
+        print('getLunchOnclickApi result: $json');
+        result = GetProtocolBreakfastModel.fromJson(json);
+      } else {
+        print('getLunchOnclickApi error: ${response.reasonPhrase}');
+        result = ErrorModel(
+            status: response.statusCode.toString(),
+            message: response.body);
+      }
+    } catch (e) {
+      print(e);
+      result = ErrorModel(status: "", message: e.toString());
+    }
+    return result;
+  }
+
+  Future getDinnerOnclickApi(String day) async {
+    var url = '$getDinnerOnclickUrl/$day';
+
+    dynamic result;
+
+    try {
+      final response = await httpClient.get(
+        Uri.parse(url),
+        headers: {
+          "Authorization": getHeaderToken(),
+        },
+      );
+
+      print('getDinnerOnclickApi Response status: ${response.statusCode}');
+      print('getDinnerOnclickApi Response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final json = jsonDecode(response.body);
+        print('getDinnerOnclickApi result: $json');
+        result = GetProtocolBreakfastModel.fromJson(json);
+      } else {
+        print('getDinnerOnclickApi error: ${response.reasonPhrase}');
+        result = ErrorModel(
+            status: response.statusCode.toString(),
+            message: response.body);
+      }
+    } catch (e) {
+      print(e);
+      result = ErrorModel(status: "", message: e.toString());
+    }
+    return result;
+  }
+
+  Future getProtocolDayDetailsApi({String? dayNumber}) async {
+    var url;
+    if(dayNumber != null){
+      url = '$getProtocolDayDetailsUrl/$dayNumber';
+    }
+    else{
+      url = getProtocolDayDetailsUrl;
+    }
+
+    dynamic result;
+
+    try {
+      final response = await httpClient.post(
+        Uri.parse(url),
+        headers: {
+          "Authorization": getHeaderToken(),
+        },
+      );
+
+      print('getProtocolDayDetailsApi Response status: ${response.statusCode}');
+      print('getProtocolDayDetailsApi Response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final json = jsonDecode(response.body);
+        print('getProtocolDayDetailsApi result: $json');
+        result = GetProtocolBreakfastModel.fromJson(json);
+      } else {
+        print('getProtocolDayDetailsApi error: ${response.reasonPhrase}');
+        result = ErrorModel(
+            status: response.statusCode.toString(),
+            message: response.body);
+      }
+    } catch (e) {
+      print(e);
+      result = ErrorModel(status: "", message: e.toString());
+    }
+    return result;
+  }
+
+
 
 
   void storeShipRocketToken(ShipRocketTokenModel result) {

@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:gwc_customer/repository/post_program_repo/post_program_repository.dart';
+import 'package:gwc_customer/services/post_program_service/post_program_service.dart';
 import 'package:lottie/lottie.dart';
 import 'package:sizer/sizer.dart';
 
+import '../../repository/api_service.dart';
 import '../../widgets/constants.dart';
 import '../../widgets/widgets.dart';
 import 'guide_status.dart';
+import 'package:http/http.dart' as http;
 
 class ProtocolGuideScreen extends StatefulWidget {
   const ProtocolGuideScreen({Key? key}) : super(key: key);
@@ -14,89 +18,126 @@ class ProtocolGuideScreen extends StatefulWidget {
 }
 
 class _ProtocolGuideScreenState extends State<ProtocolGuideScreen> {
+  Future? getDayProtocolFuture;
   String selectedStatus = "";
   Color? containerColor;
+  List optionSelectedList = [];
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getFuture();
+  }
+
+  getFuture({String? dayNumber}){
+    getDayProtocolFuture = PostProgramService(repository: postProgramRepository).getProtocolDayDetailsService(dayNumber: dayNumber);
+  }
+
+  PostProgramRepository postProgramRepository = PostProgramRepository(
+      apiClient: ApiClient(
+        httpClient: http.Client()
+      )
+  );
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: Column(
+        body: ListView(
           children: [
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.h),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      buildAppBar(() {
-                        Navigator.pop(context);
-                      }),
-                      SizedBox(
-                        height: 3.5.h,
-                        child: Lottie.asset('assets/lottie/alert.json'),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 1.h),
-                  Text(
-                    "Protocol Guide",
-                    style: TextStyle(
-                        fontFamily: "GothamBold",
-                        color: gPrimaryColor,
-                        fontSize: 12.sp),
-                  ),
-                  SizedBox(height: 1.h),
-                  Text(
-                    "Day 1",
-                    style: TextStyle(
-                        fontFamily: "GothamMedium",
-                        color: gPrimaryColor,
-                        fontSize: 9.sp),
-                  ),
-                  buildReactions(),
-                ],
-              ),
-            ),
-            Container(
-              width: double.maxFinite,
-              padding: EdgeInsets.symmetric(vertical: 2.h, horizontal: 6.w),
-              margin: EdgeInsets.symmetric(vertical: 1.h),
-              color: gGreyColor.withOpacity(0.1),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    "Score : ---",
-                    style: TextStyle(
-                        fontFamily: "GothamBook",
-                        color: gBlackColor,
-                        fontSize: 9.sp),
-                  ),
-                  Text(
-                    "Lorem Ipsum : ---",
-                    style: TextStyle(
-                        fontFamily: "GothamBook",
-                        color: gBlackColor,
-                        fontSize: 9.sp),
+                  buildAppBar(() {
+                    Navigator.pop(context);
+                  }),
+                  SizedBox(
+                    height: 3.5.h,
+                    child: Lottie.asset('assets/lottie/alert.json'),
                   ),
                 ],
               ),
             ),
-            buildTile(
-              "assets/lottie/breakfast.json",
-              "Break Fast",
-            ),
-            buildTile(
-              "assets/lottie/lunch.json",
-              "Lunch",
-            ),
-            buildTile(
-              "assets/lottie/dinner.json",
-              "Dinner",
-            ),
+            SizedBox(height: 1.h),
+            FutureBuilder(
+              future: getDayProtocolFuture,
+                builder: (_, snapshot){
+                  if(snapshot.hasData){
+                    return Column(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.h),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Protocol Guide",
+                                style: TextStyle(
+                                    fontFamily: "GothamBold",
+                                    color: gPrimaryColor,
+                                    fontSize: 12.sp),
+                              ),
+                              SizedBox(height: 1.h),
+                              Text(
+                                "Day 1",
+                                style: TextStyle(
+                                    fontFamily: "GothamMedium",
+                                    color: gPrimaryColor,
+                                    fontSize: 9.sp),
+                              ),
+                              buildReactions(),
+                            ],
+                          ),
+                        ),
+                        Container(
+                          width: double.maxFinite,
+                          padding: EdgeInsets.symmetric(vertical: 2.h, horizontal: 6.w),
+                          margin: EdgeInsets.symmetric(vertical: 1.h),
+                          color: gGreyColor.withOpacity(0.1),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "Score : ---",
+                                style: TextStyle(
+                                    fontFamily: "GothamBook",
+                                    color: gBlackColor,
+                                    fontSize: 9.sp),
+                              ),
+                              Text(
+                                "Lorem Ipsum : ---",
+                                style: TextStyle(
+                                    fontFamily: "GothamBook",
+                                    color: gBlackColor,
+                                    fontSize: 9.sp),
+                              ),
+                            ],
+                          ),
+                        ),
+                        buildTile(
+                          "assets/lottie/breakfast.json",
+                          "Break Fast",
+                        ),
+                        buildTile(
+                          "assets/lottie/lunch.json",
+                          "Lunch",
+                        ),
+                        buildTile(
+                          "assets/lottie/dinner.json",
+                          "Dinner",
+                        ),
+                      ],
+                    );
+                  }
+                  else{
+                    return Center(child: Text(snapshot.error.toString()));
+                  }
+                  return buildCircularIndicator();
+                }
+            )
           ],
         ),
       ),
@@ -135,13 +176,17 @@ class _ProtocolGuideScreenState extends State<ProtocolGuideScreen> {
           selectedStatus.isEmpty
               ? GestureDetector(
                   onTap: () async {
-                    final result = await Navigator.of(context).push(
+                    await Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (context) => GuideStatus(title: title),
+                        builder: (context) => GuideStatus(title: title, dayNumber: 1,isSelected: true,),
                       ),
-                    );
-                    setState(() {
-                      selectedStatus = result;
+                    ).then((value) {
+                      if(value != null){
+                        setState(() {
+                          selectedStatus = value;
+                        });
+                        getFuture();
+                      }
                     });
                   },
                   child: Image(
@@ -150,7 +195,7 @@ class _ProtocolGuideScreenState extends State<ProtocolGuideScreen> {
                     height: 2.5.h,
                   ),
                 )
-              : Container(),
+              : SizedBox.shrink(),
         ],
       ),
     );

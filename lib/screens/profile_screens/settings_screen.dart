@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gwc_customer/model/error_model.dart';
@@ -19,6 +21,7 @@ import '../../model/message_model/get_chat_groupid_model.dart';
 import '../../repository/api_service.dart';
 import '../../repository/chat_repository/message_repo.dart';
 import '../../repository/login_otp_repository.dart';
+import '../../repository/quick_blox_repository/quick_blox_repository.dart';
 import '../../services/chat_service/chat_service.dart';
 import '../../services/login_otp_service.dart';
 import '../../splash_screen.dart';
@@ -128,18 +131,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                   );
                 }),
-                Container(
-                  height: 1,
-                  color: Colors.grey,
+                Visibility(
+                  // visible: kDebugMode,
+                  child: Container(
+                    height: 1,
+                    color: Colors.grey,
+                  ),
                 ),
-                profileTile(
-                    "assets/images/Group 2748.png", "Eval form", () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => const EvaluationFormScreen(),
-                    ),
-                  );
-                }),
+                Visibility(
+                  // visible: kDebugMode,
+                    child:profileTile(
+                        "assets/images/Group 2748.png", "Eval form", () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const EvaluationFormScreen(),
+                        ),
+                      );
+                    })
+                ),
                 Container(
                   height: 1,
                   color: Colors.grey,
@@ -209,6 +218,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
   );
 
   void logOut() async{
+    final _qbService = Provider.of<QuickBloxService>(context, listen: false);
+    print( await _qbService.getSession());
+    _qbService.logout();
+
     final res = await LoginWithOtpService(repository: repository).logoutService();
 
     if(res.runtimeType == LogoutModel){
@@ -232,18 +245,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
   );
 
   getChatGroupId() async{
+    print(_pref.getInt(AppConfig.GET_QB_SESSION));
+    print(_pref.getBool(AppConfig.IS_QB_LOGIN));
+
+    print(_pref.getInt(AppConfig.GET_QB_SESSION) == null || _pref.getBool(AppConfig.IS_QB_LOGIN) == null || _pref.getBool(AppConfig.IS_QB_LOGIN) == false);
     final _qbService = Provider.of<QuickBloxService>(context, listen:  false);
-    if(_pref.getInt(AppConfig.GET_QB_SESSION) == null || _qbService.getSession() == false){
-      _qbService.login('Ramesh', password: AppConfig.DEFAULT_PASSWORD);
+    print(await _qbService.getSession());
+    if(_pref.getInt(AppConfig.GET_QB_SESSION) == null || await _qbService.getSession() == true || _pref.getBool(AppConfig.IS_QB_LOGIN) == null || _pref.getBool(AppConfig.IS_QB_LOGIN) == false){
+      _qbService.login(_pref.getString(AppConfig.QB_USERNAME)!);
     }
     else{
-      _qbService.connect(_pref.getInt(AppConfig.QB_CURRENT_USERID)!, AppConfig.DEFAULT_PASSWORD);
+      if(await _qbService.isConnected() == false){
+        _qbService.connect(_pref.getInt(AppConfig.QB_CURRENT_USERID)!);
+      }
     }
     final res = await ChatService(repository: chatRepository).getChatGroupIdService();
-    String? chatGroupId;
+
     if(res.runtimeType == GetChatGroupIdModel){
       GetChatGroupIdModel model = res as GetChatGroupIdModel;
+      // QuickBloxRepository().init(AppConfig.QB_APP_ID, AppConfig.QB_AUTH_KEY, AppConfig.QB_AUTH_SECRET, AppConfig.QB_ACCOUNT_KEY);
       _pref.setString(AppConfig.GROUP_ID, model.group ?? '');
+      print('model.group: ${model.group}');
       Navigator.push(context, MaterialPageRoute(builder: (c)=> MessageScreen(isGroupId: true,)));
     }
     else{
