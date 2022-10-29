@@ -365,13 +365,17 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
 
   joinZoom(BuildContext context) {
     print(widget.data?.patientName);
+    print(widget.isPostProgram);
     ChildAppointmentDetails? model;
-    if(widget.isFromDashboard){
+    if(widget.isFromDashboard || widget.isPostProgram){
       model = ChildAppointmentDetails.fromJson(Map.from(widget.dashboardValueMap!));
     }
-    String? userId = widget.isFromDashboard ? model?.teamPatients!.patient?.user?.name : widget.data?.patientName ?? _pref?.getString(AppConfig.User_Name) ?? '';
-    String meetingId = widget.isFromDashboard ? model!.zoomId! : widget.data?.zoomId ?? '';
-    String meetingPwd = widget.isFromDashboard ? model!.zoomPassword! : widget.data?.zoomPassword ?? '';
+
+    print("model: ${model!.zoomId}");
+
+    String? userId = (widget.isFromDashboard || widget.isPostProgram) ? model?.teamPatients!.patient?.user?.name : widget.data?.patientName ?? _pref?.getString(AppConfig.User_Name) ?? '';
+    String meetingId = (widget.isFromDashboard || widget.isPostProgram) ? model!.zoomId! : widget.data?.zoomId ?? '';
+    String meetingPwd = (widget.isFromDashboard || widget.isPostProgram) ? model!.zoomPassword! : widget.data?.zoomPassword ?? '';
     print('$meetingId $meetingPwd');
 
     setState(() {

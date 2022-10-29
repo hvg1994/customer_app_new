@@ -340,26 +340,28 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                   visible: buttonVisibility(),
                   child: Center(
                     child: GestureDetector(
-                      onTap: (statusList.length != lst.length)
+                      onTap: (statusList.length != lst.length || isSent)
                           ? null
                           : () {
                         sendData();
                       },
                       child: Container(
                         margin: EdgeInsets.symmetric(vertical: 2.h),
-                        padding: EdgeInsets.symmetric(
-                            vertical: 1.h, horizontal: 5.w),
+                        width: 40.w,
+                        height: 4.h,
                         decoration: BoxDecoration(
                           color: (statusList.length != lst.length) ? gMainColor : gPrimaryColor,
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(color: gMainColor, width: 1),
                         ),
-                        child: Text(
-                          'Proceed to Day $proceedToDay',
-                          style: TextStyle(
-                            fontFamily: "GothamBook",
-                            color: (statusList.length != lst.length) ? gPrimaryColor :  gMainColor,
-                            fontSize: 10.sp,
+                        child: (isSent) ? buildThreeBounceIndicator() :Center(
+                          child: Text(
+                            'Proceed to Day $proceedToDay',
+                            style: TextStyle(
+                              fontFamily: "GothamBook",
+                              color: (statusList.length != lst.length) ? gPrimaryColor :  gMainColor,
+                              fontSize: 10.sp,
+                            ),
                           ),
                         ),
                       ),
@@ -1175,7 +1177,11 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
     ),
   );
 
+  bool isSent = false;
   void sendData() async{
+    setState(() {
+      isSent = true;
+    });
     ProceedProgramDayModel? model;
     List<PatientMealTracking> tracking = [];
 
@@ -1196,9 +1202,15 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
     final result = await ProgramService(repository: repository).proceedDayMealDetailsService(model);
 
     print("result: $result");
+    setState(() {
+      isSent = false;
+    });
 
     if(result.runtimeType == GetProceedModel){
       Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => DaysProgramPlan()), (route) => route.isFirst);
+    }
+    else{
+      AppConfig().showSnackbar(context, "proceed error please try again");
     }
 
   }

@@ -170,7 +170,7 @@ class GutListState extends State<GutList> {
           postProgramStage = _postConsultationAppointment?.data ?? '';
         }
         print("postProgramStage: ${postProgramStage}");
-        if(postProgramStage != null && postProgramStage == "post_program"){
+        if(postProgramStage != null && postProgramStage!.isNotEmpty){
           isSelected = "Post Program";
         }
       });
@@ -411,14 +411,14 @@ class GutListState extends State<GutList> {
                                 MaterialPageRoute(
                                   builder: (context) => CookKitTracking(awb_number: _shippingApprovedModel?.value?.awbCode ?? '',currentStage: shippingStage!,),
                                 ),
-                              );
+                              ).then((value) => reloadUI());
                             }
                             else{
                               Navigator.of(context).push(
                                 MaterialPageRoute(
                                   builder: (context) => CookKitTracking(currentStage: shippingStage ?? ''),
                                 ),
-                              );
+                              ).then((value) => reloadUI());
                             }
                           }
                         }
@@ -429,15 +429,15 @@ class GutListState extends State<GutList> {
                                 MaterialPageRoute(
                                   builder: (context) => const ProgramPlanScreen(),
                                 ),
-                              ).then((value) => setState(() { }));
+                              ).then((value) => reloadUI());
                             }
                             else{
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => const DaysProgramPlan(),
+                                  builder: (context) => DaysProgramPlan(postProgramStage: postProgramStage,),
                                 ),
-                              ).then((value) => setState(() { }));
+                              ).then((value) => reloadUI());
                             }
                           }
                           else{
@@ -450,14 +450,14 @@ class GutListState extends State<GutList> {
                               MaterialPageRoute(
                                 builder: (context) => PostProgramScreen(postProgramStage: postProgramStage,consultationData: _postConsultationAppointment,),
                               ),
-                            );
+                            ).then((value) => reloadUI());
                           }
                           else{
                             Navigator.of(context).push(
                               MaterialPageRoute(
                                 builder: (context) => PostProgramScreen(postProgramStage: postProgramStage,),
                               ),
-                            );
+                            ).then((value) => reloadUI());
                           }
                         }
                       },
@@ -636,6 +636,11 @@ class GutListState extends State<GutList> {
     //   String _uName = _pref!.getString(AppConfig.QB_USERNAME)!;
     //   _qbService!.login(_uName);
     // }
+  }
+
+  reloadUI(){
+    getData();
+    setState(() { });
   }
 
   final UserProfileRepository userRepository = UserProfileRepository(

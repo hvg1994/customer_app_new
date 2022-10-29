@@ -1,29 +1,49 @@
-class ChildBreakfast {
-  ChildBreakfast({
+class Data {
+  Data({
     this.dataDo,
     this.doNot,
     this.none,
   });
 
-  List<Do>? dataDo;
-  List<Do>? doNot;
-  List<Do>? none;
+  Do? dataDo;
+  Do? doNot;
+  None? none;
 
-  ChildBreakfast.fromJson(Map<String, dynamic> json) {
-      dataDo = List<Do>.from(json["do"].map((x) => Do.fromJson(x)));
-      doNot = List<Do>.from(json["do not"].map((x) => Do.fromJson(x)));
-      none = List<Do>.from(json["none"].map((x) => Do.fromJson(x)));
-  }
+  factory Data.fromJson(Map<String, dynamic> json) => Data(
+    dataDo: Do.fromJson(json["do"]),
+    doNot: Do.fromJson(json["do not"]),
+    none: None.fromJson(json["none"]),
+  );
 
   Map<String, dynamic> toJson() => {
-    "do": List<dynamic>.from(dataDo!.map((x) => x.toJson())),
-    "do not": List<dynamic>.from(doNot!.map((x) => x.toJson())),
-    "none": List<dynamic>.from(none!.map((x) => x.toJson())),
+    "do": dataDo!.toJson(),
+    "do not": doNot!.toJson(),
+    "none": none!.toJson(),
   };
 }
 
 class Do {
   Do({
+    this.the0,
+    this.isSelected,
+  });
+
+  The0? the0;
+  int? isSelected;
+
+  factory Do.fromJson(Map<String, dynamic> json) => Do(
+    the0: The0.fromJson(json["0"]),
+    isSelected: json["is_selected"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "0": the0!.toJson(),
+    "is_selected": isSelected,
+  };
+}
+
+class The0 {
+  The0({
     this.id,
     this.itemId,
     this.name,
@@ -33,7 +53,7 @@ class Do {
   int? itemId;
   String? name;
 
-  factory Do.fromJson(Map<String, dynamic> json) => Do(
+  factory The0.fromJson(Map<String, dynamic> json) => The0(
     id: json["id"],
     itemId: json["item_id"],
     name: json["name"],
@@ -43,5 +63,21 @@ class Do {
     "id": id,
     "item_id": itemId,
     "name": name,
+  };
+}
+
+class None {
+  None({
+    this.isSelected,
+  });
+
+  int? isSelected;
+
+  factory None.fromJson(Map<String, dynamic> json) => None(
+    isSelected: json["is_selected"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "is_selected": isSelected,
   };
 }

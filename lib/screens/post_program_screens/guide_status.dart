@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gwc_customer/model/error_model.dart';
+import 'package:gwc_customer/model/post_program_model/breakfast/child_breakfast.dart';
 import 'package:gwc_customer/model/post_program_model/breakfast/protocol_breakfast_get.dart';
 import 'package:gwc_customer/repository/post_program_repo/post_program_repository.dart';
 import 'package:gwc_customer/services/post_program_service/post_program_service.dart';
@@ -134,14 +135,21 @@ class _GuideStatusState extends State<GuideStatus> {
       future: mealPlanFuture,
         builder: (_, snapshot){
         if(snapshot.hasData){
-          GetProtocolBreakfastModel model = snapshot.data as GetProtocolBreakfastModel;
-          return Column(
-            children: [
-              buildTile('assets/lottie/loading_tick.json', types[0], mainText: model.data!.dataDo!.first.name),
-              buildTile('assets/lottie/loading_wrong.json', types[1], mainText: model.data!.doNot!.first.name),
-              buildTile('assets/lottie/loading_wrong.json', types[2], mainText: model.data!.none!.first.name),
-            ],
-          );
+          if(snapshot.data.runtimeType == ErrorModel){
+            ErrorModel model = snapshot.data as ErrorModel;
+            return Center(child: Text(model.message ?? ''));
+          }
+          else{
+            GetProtocolBreakfastModel model = snapshot.data as GetProtocolBreakfastModel;
+            addSelectedValue(model.data);
+            return Column(
+              children: [
+                buildTile('assets/lottie/loading_tick.json', types[0], mainText: model.data?.dataDo?.the0?.name ?? ''),
+                buildTile('assets/lottie/loading_wrong.json', types[1], mainText: model.data?.doNot?.the0?.name ?? ''),
+                buildTile('assets/lottie/loading_wrong.json', types[2], mainText: ''),
+              ],
+            );
+          }
         }
         return buildCircularIndicator();
         }
@@ -255,7 +263,7 @@ class _GuideStatusState extends State<GuideStatus> {
     int selectedType = (type.contains(types[0]) ? 1 : type.contains(types[1]) ? 2 : 3);
     final res = await PostProgramService(repository: postProgramRepository).submitPostProgramMealTrackingService(mealType, selectedType, widget.dayNumber);
 
-    if(res == ErrorModel){
+    if(res.runtimeType == ErrorModel){
       ErrorModel model = res as ErrorModel;
       AppConfig().showSnackbar(context, model.message ?? '', isError: true);
     }
@@ -265,5 +273,17 @@ class _GuideStatusState extends State<GuideStatus> {
       Navigator.pop(context, type);
     }
 
+  }
+
+  void addSelectedValue(Data? data) {
+    if(data!.dataDo!.isSelected == 1){
+      selectedValue = types[0];
+    }
+    else if(data!.doNot!.isSelected == 1){
+      selectedValue = types[1];
+    }
+    else if(data!.none!.isSelected == 1){
+      selectedValue = types[2];
+    }
   }
 }

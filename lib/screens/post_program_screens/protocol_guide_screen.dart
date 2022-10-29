@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:gwc_customer/model/error_model.dart';
+import 'package:gwc_customer/model/post_program_model/protocol_guide_day_score.dart';
 import 'package:gwc_customer/repository/post_program_repo/post_program_repository.dart';
 import 'package:gwc_customer/services/post_program_service/post_program_service.dart';
 import 'package:lottie/lottie.dart';
@@ -66,73 +68,91 @@ class _ProtocolGuideScreenState extends State<ProtocolGuideScreen> {
               future: getDayProtocolFuture,
                 builder: (_, snapshot){
                   if(snapshot.hasData){
-                    return Column(
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.h),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Protocol Guide",
-                                style: TextStyle(
-                                    fontFamily: "GothamBold",
-                                    color: gPrimaryColor,
-                                    fontSize: 12.sp),
-                              ),
-                              SizedBox(height: 1.h),
-                              Text(
-                                "Day 1",
-                                style: TextStyle(
-                                    fontFamily: "GothamMedium",
-                                    color: gPrimaryColor,
-                                    fontSize: 9.sp),
-                              ),
-                              buildReactions(),
-                            ],
+                    optionSelectedList.clear();
+                    if(snapshot.data.runtimeType == ErrorModel){
+                      ErrorModel model = snapshot.data as ErrorModel;
+                      return Center(child: Text(model.message ?? ''));
+                    }
+                    else{
+                      ProtocolGuideDayScoreModel model = snapshot.data as ProtocolGuideDayScoreModel;
+                      optionSelectedList.add(model.breakfast);
+                      optionSelectedList.add(model.lunch);
+                      optionSelectedList.add(model.dinner);
+                      print("optionSelectedList: $optionSelectedList");
+                      return Column(
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.h),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "Protocol Guide",
+                                  style: TextStyle(
+                                      fontFamily: "GothamBold",
+                                      color: gPrimaryColor,
+                                      fontSize: 12.sp),
+                                ),
+                                SizedBox(height: 1.h),
+                                Text(
+                                  "Day ${model.day}",
+                                  style: TextStyle(
+                                      fontFamily: "GothamMedium",
+                                      color: gPrimaryColor,
+                                      fontSize: 9.sp),
+                                ),
+                                buildReactions(),
+                              ],
+                            ),
                           ),
-                        ),
-                        Container(
-                          width: double.maxFinite,
-                          padding: EdgeInsets.symmetric(vertical: 2.h, horizontal: 6.w),
-                          margin: EdgeInsets.symmetric(vertical: 1.h),
-                          color: gGreyColor.withOpacity(0.1),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "Score : ---",
-                                style: TextStyle(
-                                    fontFamily: "GothamBook",
-                                    color: gBlackColor,
-                                    fontSize: 9.sp),
-                              ),
-                              Text(
-                                "Lorem Ipsum : ---",
-                                style: TextStyle(
-                                    fontFamily: "GothamBook",
-                                    color: gBlackColor,
-                                    fontSize: 9.sp),
-                              ),
-                            ],
+                          Container(
+                            width: double.maxFinite,
+                            padding: EdgeInsets.symmetric(vertical: 2.h, horizontal: 6.w),
+                            margin: EdgeInsets.symmetric(vertical: 1.h),
+                            color: gGreyColor.withOpacity(0.1),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  "Score : ${model.score}",
+                                  style: TextStyle(
+                                      fontFamily: "GothamBook",
+                                      color: gBlackColor,
+                                      fontSize: 9.sp),
+                                ),
+                                Text(
+                                  "Lorem Ipsum : ${model.percentage}",
+                                  style: TextStyle(
+                                      fontFamily: "GothamBook",
+                                      color: gBlackColor,
+                                      fontSize: 9.sp),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                        buildTile(
-                          "assets/lottie/breakfast.json",
-                          "Break Fast",
-                        ),
-                        buildTile(
-                          "assets/lottie/lunch.json",
-                          "Lunch",
-                        ),
-                        buildTile(
-                          "assets/lottie/dinner.json",
-                          "Dinner",
-                        ),
-                      ],
-                    );
+                          buildTile(
+                              "assets/lottie/breakfast.json",
+                              "Break Fast",
+                              optionSelectedList[0],
+                            0
+                          ),
+                          buildTile(
+                              "assets/lottie/lunch.json",
+                              "Lunch",
+                              optionSelectedList[1],
+                            1
+                          ),
+                          buildTile(
+                              "assets/lottie/dinner.json",
+                              "Dinner",
+                              optionSelectedList[2],
+                            2
+                          ),
+                        ],
+                      );
+                    }
                   }
-                  else{
+                  else if(snapshot.hasError){
                     return Center(child: Text(snapshot.error.toString()));
                   }
                   return buildCircularIndicator();
@@ -144,7 +164,8 @@ class _ProtocolGuideScreenState extends State<ProtocolGuideScreen> {
     );
   }
 
-  buildTile(String lottie, String title) {
+  buildTile(String lottie, String title, int value, int index) {
+    print(value);
     return Container(
       padding: EdgeInsets.symmetric(vertical: 0.h, horizontal: 3.w),
       margin: EdgeInsets.symmetric(vertical: 1.5.h, horizontal: 4.w),
@@ -173,29 +194,27 @@ class _ProtocolGuideScreenState extends State<ProtocolGuideScreen> {
               ),
             ),
           ),
-          selectedStatus.isEmpty
-              ? GestureDetector(
-                  onTap: () async {
-                    await Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => GuideStatus(title: title, dayNumber: 1,isSelected: true,),
-                      ),
-                    ).then((value) {
-                      if(value != null){
-                        setState(() {
-                          selectedStatus = value;
-                        });
-                        getFuture();
-                      }
-                    });
-                  },
-                  child: Image(
-                    image: const AssetImage(
-                        "assets/images/noun-arrow-1018952.png"),
-                    height: 2.5.h,
-                  ),
-                )
-              : SizedBox.shrink(),
+          GestureDetector(
+            onTap: () async {
+              await Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => GuideStatus(title: title, dayNumber: 1,isSelected: optionSelectedList[index] != 0,),
+                ),
+              ).then((value) {
+                if(value != null){
+                  setState(() {
+                    selectedStatus = value;
+                  });
+                  getFuture();
+                }
+              });
+            },
+            child: Image(
+              image: const AssetImage(
+                  "assets/images/noun-arrow-1018952.png"),
+              height: 2.5.h,
+            ),
+          )
         ],
       ),
     );

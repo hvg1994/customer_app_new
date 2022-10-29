@@ -1,15 +1,18 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:gwc_customer/model/dashboard_model/gut_model/gut_data_model.dart';
 import 'package:gwc_customer/model/error_model.dart';
 import 'package:gwc_customer/model/program_model/program_days_model/child_program_day.dart';
 import 'package:gwc_customer/model/program_model/program_days_model/program_day_model.dart';
+import 'package:gwc_customer/screens/dashboard_screen.dart';
 import 'package:gwc_customer/services/post_program_service/post_program_service.dart';
 import 'package:gwc_customer/services/program_service/program_service.dart';
 import 'package:gwc_customer/widgets/open_alert_box.dart';
 import 'package:lottie/lottie.dart';
 import 'package:sizer/sizer.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import '../../model/program_model/start_post_program_model.dart';
 import '../../repository/api_service.dart';
 import '../../repository/post_program_repo/post_program_repository.dart';
 import '../../repository/program_repository/program_repository.dart';
@@ -21,7 +24,8 @@ import 'meal_plan_screen.dart';
 import 'package:http/http.dart' as http;
 
 class DaysProgramPlan extends StatefulWidget {
-  const DaysProgramPlan({Key? key}) : super(key: key);
+  final String? postProgramStage;
+  const DaysProgramPlan({Key? key, this.postProgramStage}) : super(key: key);
 
   @override
   State<DaysProgramPlan> createState() => _DaysProgramPlanState();
@@ -148,10 +152,20 @@ class _DaysProgramPlanState extends State<DaysProgramPlan> {
     );
   }
 
+  bool isOpened = false;
   buildDaysPlan(ProgramDayModel model) {
     List<ChildProgramDayModel> listData = model.data!;
     if(listData.last.isCompleted == 1){
-      buildDayCompleted();
+      if(widget.postProgramStage == null || widget.postProgramStage!.isEmpty) {
+        WidgetsBinding.instance!.addPostFrameCallback((_) {
+          if(!isOpened) {
+            setState(() {
+              isOpened = true;
+            });
+            buildDayCompleted();
+          }
+        });
+      }
     }
     return GridView.builder(
       // this clip none to show check icon full
@@ -342,94 +356,104 @@ class _DaysProgramPlanState extends State<DaysProgramPlan> {
     Size size = MediaQuery.of(context).size;
     return showModalBottomSheet(
       backgroundColor: Colors.transparent,
+      isDismissible: false,
       context: context,
-      builder: (context) => Container(
-        padding: EdgeInsets.only(top: 2.h, left: 10.w, right: 10.w),
-        decoration: const BoxDecoration(
-          color: gWhiteColor,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(10),
-            topRight: Radius.circular(10),
+      builder: (context)
+      {
+        return Container(
+          padding: EdgeInsets.only(top: 2.h, left: 10.w, right: 10.w),
+          decoration: const BoxDecoration(
+            color: gWhiteColor,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(10),
+              topRight: Radius.circular(10),
+            ),
           ),
-        ),
-        height: size.height * 0.50,
-        width: double.infinity,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Padding(
-              padding: EdgeInsets.only(right: 5.w),
-              child: Align(
-                alignment: Alignment.topRight,
-                child: InkWell(
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(1),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(30),
-                      border: Border.all(color: gMainColor, width: 1),
-                    ),
-                    child: Icon(
-                      Icons.clear,
-                      color: gMainColor,
-                      size: 1.8.h,
+          height: size.height * 0.50,
+          width: double.infinity,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Padding(
+                padding: EdgeInsets.only(right: 5.w),
+                child: Align(
+                  alignment: Alignment.topRight,
+                  child: InkWell(
+                    onTap: () {
+                      setState(() {
+                        isOpened = false;
+                      });
+                      Navigator.pop(context);
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(1),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(30),
+                        border: Border.all(color: gMainColor, width: 1),
+                      ),
+                      child: Icon(
+                        Icons.clear,
+                        color: gMainColor,
+                        size: 1.8.h,
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-            Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(5),
-                border: Border.all(color: gMainColor),
-              ),
-              child:
-              Lottie.asset(
-                "assets/lottie/clap.json",
-                height: 20.h,
-              ),
-            ),
-            SizedBox(height: 1.5.h),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 3.w),
-              child: Text(
-                "Your Have completed the 15 days Meal Plan, Now you can proceed to Post Protocol",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  height: 1.5,
-                  fontFamily: "GothamBold",
-                  color: gTextColor,
-                  fontSize: 10.sp,
-                ),
-              ),
-            ),
-            SizedBox(height: 5.h),
-            GestureDetector(
-              onTap: () {
-                startPostProgram();
-              },
-              child: Container(
-                padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 15.w),
+              Container(
                 decoration: BoxDecoration(
-                  color: gPrimaryColor,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: gMainColor, width: 1),
+                  borderRadius: BorderRadius.circular(5),
+                  border: Border.all(color: gMainColor),
                 ),
+                child: Lottie.asset(
+                  "assets/lottie/clap.json",
+                  height: 20.h,
+                ),
+              ),
+              SizedBox(height: 1.5.h),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 3.w),
                 child: Text(
-                  'Next',
+                  "Your Have completed the 15 days Meal Plan, Now you can proceed to Post Protocol",
+                  textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontFamily: "GothamRoundedBold_21016",
-                    color: gMainColor,
-                    fontSize: 12.sp,
+                    height: 1.5,
+                    fontFamily: "GothamBold",
+                    color: gTextColor,
+                    fontSize: 10.sp,
                   ),
                 ),
               ),
-            ),
-          ],
-        ),
-      ),
+              SizedBox(height: 5.h),
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    isOpened = true;
+                  });
+                  startPostProgram();
+                },
+                child: Container(
+                  padding:
+                      EdgeInsets.symmetric(vertical: 1.h, horizontal: 15.w),
+                  decoration: BoxDecoration(
+                    color: gPrimaryColor,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: gMainColor, width: 1),
+                  ),
+                  child: Text(
+                    'Next',
+                    style: TextStyle(
+                      fontFamily: "GothamRoundedBold_21016",
+                      color: gMainColor,
+                      fontSize: 12.sp,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -489,10 +513,10 @@ class _DaysProgramPlanState extends State<DaysProgramPlan> {
       ErrorModel model = res as ErrorModel;
       AppConfig().showSnackbar(context, model.message ?? '', isError: true);
     }else{
-      if(res.runtimeType == GutDataModel){
-        GutDataModel model = res as GutDataModel;
-        print("start program: ${model.data}");
-        print("start value: ${model.value}");
+      if(res.runtimeType == StartPostProgramModel){
+        StartPostProgramModel model = res as StartPostProgramModel;
+        print("start program: ${model.response}");
+        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => DashboardScreen()), (route) => true);
       }
     }
   }

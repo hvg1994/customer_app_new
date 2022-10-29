@@ -162,7 +162,7 @@ class QuickBloxService extends ChangeNotifier{
   }
   //2nd connect
   // PASS AppConfig.DEFAULT_PASSWORD IF PASSWORD NOT THERE
-  void connect(int userId) async {
+  connect(int userId) async {
     try {
       await QB.chat.connect(userId, AppConfig.QB_DEFAULT_PASSWORD);
       await QB.settings.enableAutoReconnect(true);
@@ -199,7 +199,7 @@ class QuickBloxService extends ChangeNotifier{
     return connected;
   }
 
-  joinDialog(String dialogId) async {
+  Future joinDialog(String dialogId) async {
     try {
       await QB.chat.joinDialog(dialogId);
       print("The dialog $_dialogId was joined");
@@ -207,7 +207,7 @@ class QuickBloxService extends ChangeNotifier{
       loadMessages(dialogId);
     } on PlatformException catch (e) {
       print("join room error: ${e}");
-
+      print(e.message);
       rethrow;
     }
   }

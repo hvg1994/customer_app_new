@@ -7,6 +7,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:grouped_list/grouped_list.dart';
 import 'package:gwc_customer/repository/quick_blox_repository/message_wrapper.dart';
@@ -1044,8 +1045,24 @@ class _MessageScreenState extends State<MessageScreen>
 
   joinChatRoom(String groupId) async {
     print("groupId: ${groupId}");
-    await Provider.of<QuickBloxService>(context, listen: false)
-        .joinDialog(groupId);
+    Provider.of<QuickBloxService>(context, listen: false).joinDialog(groupId).then((value) {
+      print("value: $value");
+    }).onError((error, stackTrace) {
+      print('err: ${error.runtimeType}');
+      print(stackTrace);
+      // if(PlatformException(e)
+      if(error.runtimeType == PlatformException){
+        PlatformException e = error as PlatformException;
+        if(e.message!.toLowerCase().contains('need user')){
+          joinWithLogin(groupId);
+        }
+        else{
+          // _qbService.connect(_pref.getInt(AppConfig.QB_CURRENT_USERID)!);
+        }
+      }
+    });
+
+    // print(res.runtimeType);
 
     Future.delayed(Duration(seconds: 15)).whenComplete(() {
       setState(() {
@@ -1053,6 +1070,25 @@ class _MessageScreenState extends State<MessageScreen>
       });
     });
   }
+
+  joinWithLogin(String groupId) async{
+    String? username = _pref!.getString(AppConfig.QB_USERNAME)!;
+    final res = await _quickBloxService!.login(username);
+
+    if(res){
+     joinChatRoom(groupId);
+    }
+  }
+
+  joinWithConnect(String groupId) async{
+    int? userId = _pref!.getInt(AppConfig.QB_CURRENT_USERID)!;
+    _quickBloxService!.connect(userId);
+
+    // if(res){
+    //   joinChatRoom(groupId);
+    // }
+  }
+
 
   File? _image;
 

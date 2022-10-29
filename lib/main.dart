@@ -58,7 +58,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   HttpOverrides.global = new MyHttpOverrides();
   AppConfig().preferences = await SharedPreferences.getInstance();
-  cacheManager();
+  // cacheManager();
 
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: [SystemUiOverlay.bottom]);
   SystemChrome.setSystemUIOverlayStyle(

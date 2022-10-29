@@ -1,0 +1,48 @@
+class ProtocolGuideDayScoreModel {
+  int? status;
+  int? errorCode;
+  String? key;
+  int? day;
+  int? score;
+  int? percentage;
+  int? breakfast;
+  int? lunch;
+  int? dinner;
+
+  ProtocolGuideDayScoreModel(
+      {this.status,
+        this.errorCode,
+        this.key,
+        this.day,
+        this.score,
+        this.percentage,
+        this.breakfast,
+        this.lunch,
+        this.dinner});
+
+  ProtocolGuideDayScoreModel.fromJson(Map<String, dynamic> json) {
+    status = json['status'];
+    errorCode = json['errorCode'];
+    key = json['key'];
+    day = json['day'];
+    score = json['score'];
+    percentage = json['percentage'];
+    breakfast = json['breakfast'];
+    lunch = json['lunch'];
+    dinner = json['dinner'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['status'] = this.status;
+    data['errorCode'] = this.errorCode;
+    data['key'] = this.key;
+    data['day'] = this.day;
+    data['score'] = this.score;
+    data['percentage'] = this.percentage;
+    data['breakfast'] = this.breakfast;
+    data['lunch'] = this.lunch;
+    data['dinner'] = this.dinner;
+    return data;
+  }
+}

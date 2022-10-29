@@ -12,12 +12,14 @@ import 'package:gwc_customer/model/message_model/get_chat_groupid_model.dart';
 import 'package:gwc_customer/model/new_user_model/about_program_model/about_program_model.dart';
 import 'package:gwc_customer/model/post_program_model/breakfast/protocol_breakfast_get.dart';
 import 'package:gwc_customer/model/post_program_model/post_program_base_model.dart';
+import 'package:gwc_customer/model/post_program_model/protocol_guide_day_score.dart';
 import 'package:gwc_customer/model/profile_model/feedback_model.dart';
 import 'package:gwc_customer/model/profile_model/logout_model.dart';
 import 'package:gwc_customer/model/profile_model/user_profile/update_user_model.dart';
 import 'package:gwc_customer/model/program_model/proceed_model/get_proceed_model.dart';
 import 'package:gwc_customer/model/program_model/proceed_model/send_proceed_program_model.dart';
 import 'package:gwc_customer/model/program_model/program_days_model/program_day_model.dart';
+import 'package:gwc_customer/model/program_model/start_post_program_model.dart';
 import 'package:gwc_customer/model/program_model/start_program_on_swipe_model.dart';
 import 'package:gwc_customer/model/ship_track_model/shiprocket_auth_model/shiprocket_auth_model.dart';
 import 'package:gwc_customer/model/ship_track_model/shopping_model/get_shopping_model.dart';
@@ -1352,7 +1354,7 @@ final _prefs = AppConfig().preferences;
       if (response.statusCode == 200) {
         final json = jsonDecode(response.body);
         print('startPostProgram result: $json');
-        result = GutDataModel.fromJson(json);
+        result = StartPostProgramModel.fromJson(json);
       } else {
         print('startPostProgram error: ${response.reasonPhrase}');
         result = ErrorModel(
@@ -1367,6 +1369,7 @@ final _prefs = AppConfig().preferences;
   }
 
   Future submitPostProgramMealTrackingApi(String mealType, int selectedType, int dayNumber) async {
+    print("submit :");
     var url = submitPostProgramMealTrackingUrl;
 
     dynamic result;
@@ -1377,13 +1380,15 @@ final _prefs = AppConfig().preferences;
       'day' : dayNumber
     };
 
+    print('body: $bodyParam');
+
     try {
       final response = await httpClient.post(
         Uri.parse(url),
         headers: {
           "Authorization": getHeaderToken(),
         },
-        body: bodyParam
+        body: jsonEncode(bodyParam)
       );
 
       print('submitPostProgramMealTrackingApi Response status: ${response.statusCode}');
@@ -1517,7 +1522,7 @@ final _prefs = AppConfig().preferences;
     dynamic result;
 
     try {
-      final response = await httpClient.post(
+      final response = await httpClient.get(
         Uri.parse(url),
         headers: {
           "Authorization": getHeaderToken(),
@@ -1530,7 +1535,7 @@ final _prefs = AppConfig().preferences;
       if (response.statusCode == 200) {
         final json = jsonDecode(response.body);
         print('getProtocolDayDetailsApi result: $json');
-        result = GetProtocolBreakfastModel.fromJson(json);
+        result = ProtocolGuideDayScoreModel.fromJson(json);
       } else {
         print('getProtocolDayDetailsApi error: ${response.reasonPhrase}');
         result = ErrorModel(

@@ -62,7 +62,7 @@ class _PostProgramScreenState extends State<PostProgramScreen> {
                   }
                   else if(widget.postProgramStage == 'post_appointment_booked'){
                     GetAppointmentDetailsModel model = widget.consultationData as GetAppointmentDetailsModel;
-                    Navigator.push(context, MaterialPageRoute(builder: (ctx) => DoctorSlotsDetailsScreen(bookingDate: model.value!.date!, bookingTime: model.value!.slotStartTime!)));
+                    Navigator.push(context, MaterialPageRoute(builder: (ctx) => DoctorSlotsDetailsScreen(bookingDate: model.value!.date!, bookingTime: model.value!.slotStartTime!, isPostProgram: true,dashboardValueMap: model.value!.toJson() ,)));
                   }
                   else {
                     Navigator.push(context, MaterialPageRoute(builder: (ctx) => ConsultationSuccess()));
