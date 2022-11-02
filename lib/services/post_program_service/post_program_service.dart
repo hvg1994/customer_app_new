@@ -21,7 +21,7 @@ class PostProgramService extends ChangeNotifier{
   Future getDinnerService(String day) async{
     return await repository.getDinnerRepo(day);
   }
-  Future submitPostProgramMealTrackingService(String mealType, int selectedType, int dayNumber) async{
+  Future submitPostProgramMealTrackingService(String mealType, int selectedType, int? dayNumber) async{
     return await repository.submitPostProgramMealTrackingRepo(mealType, selectedType, dayNumber);
   }
   Future getProtocolDayDetailsService({String? dayNumber}) async{

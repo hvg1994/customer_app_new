@@ -199,7 +199,7 @@ class _DaysProgramPlanState extends State<DaysProgramPlan> {
             } : null,
             child: Stack(
               alignment: AlignmentDirectional.topEnd,
-              overflow: Overflow.visible,
+              //overflow: Overflow.visible,
               clipBehavior: Clip.antiAlias,
               children: [
                 Positioned(

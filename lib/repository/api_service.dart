@@ -42,15 +42,14 @@ import '../model/ship_track_model/shipping_track_model.dart';
 import '../utils/api_urls.dart';
 import '../utils/app_config.dart';
 
-
 class ApiClient {
   ApiClient({
     required this.httpClient,
   }) : assert(httpClient != null);
 
-  final http.Client  httpClient;
+  final http.Client httpClient;
 
-final _prefs = AppConfig().preferences;
+  final _prefs = AppConfig().preferences;
 
   String getHeaderToken() {
     if (_prefs != null) {
@@ -63,15 +62,10 @@ final _prefs = AppConfig().preferences;
     }
   }
 
-
   Map<String, String> header = {
     "Content-Type": "application/json",
     "Keep-Alive": "timeout=5, max=1"
   };
-
-
-
-
 
   Future serverGetProblemList() async {
     final String path = getProblemListUrl;
@@ -79,11 +73,13 @@ final _prefs = AppConfig().preferences;
     print('serverGetProblemList Response header: $path');
     dynamic result;
 
-    try{
-      final response = await httpClient.get(
-        Uri.parse(path),
-        headers: header,
-      ).timeout(const Duration(seconds: 45));
+    try {
+      final response = await httpClient
+          .get(
+            Uri.parse(path),
+            headers: header,
+          )
+          .timeout(const Duration(seconds: 45));
 
       print('serverGetProblemList Response header: $path');
       print('serverGetProblemList Response status: ${response.statusCode}');
@@ -92,29 +88,23 @@ final _prefs = AppConfig().preferences;
 
       print('serverGetProblemList result: $json');
 
-      if(response.statusCode != 200){
+      if (response.statusCode != 200) {
         result = ErrorModel(
-            status: response.statusCode.toString(),
-            message: response.body
-        );
-      }
-      else{
-        if(json['status'] != 200){
+            status: response.statusCode.toString(), message: response.body);
+      } else {
+        if (json['status'] != 200) {
           result = ErrorModel.fromJson(json);
-        }
-        else{
+        } else {
           result = ChooseProblemModel.fromJson(json);
         }
       }
-    }
-    catch(e){
+    } catch (e) {
       result = ErrorModel(status: "0", message: e.toString());
     }
     return result;
   }
 
-  Future submitProblemList(
-      List problemList, String deviceId) async {
+  Future submitProblemList(List problemList, String deviceId) async {
     var url = submitProblemListUrl;
 
     Map param = {
@@ -123,7 +113,7 @@ final _prefs = AppConfig().preferences;
     problemList.forEach((element) {
       param.putIfAbsent(
           "problems[${problemList.indexWhere((ele) => ele == element)}]",
-              () => element.toString());
+          () => element.toString());
     });
 
     print(jsonEncode(param));
@@ -157,14 +147,13 @@ final _prefs = AppConfig().preferences;
 
   Future serverRegisterUser(
       {required String name,
-        required int age,
-        required String gender,
-        required String email,
-        required String countryCode,
-        required String phone,
-        required String deviceId,
-        required String fcmToken
-      }) async {
+      required int age,
+      required String gender,
+      required String email,
+      required String countryCode,
+      required String phone,
+      required String deviceId,
+      required String fcmToken}) async {
     final String path = registerUserUrl;
 
     Map bodyParam = {
@@ -181,8 +170,7 @@ final _prefs = AppConfig().preferences;
     print(bodyParam);
     dynamic result;
 
-
-    try{
+    try {
       final response = await httpClient.post(
         Uri.parse(path),
         body: bodyParam,
@@ -196,17 +184,15 @@ final _prefs = AppConfig().preferences;
 
       if (response.statusCode != 200) {
         result = ErrorModel.fromJson(json);
-      }else {
+      } else {
         print('submitProblemList result: $json');
-        if(json['status'].toString() == '201'){
+        if (json['status'].toString() == '201') {
           result = RegisterResponse.fromJson(json);
-        }
-        else{
+        } else {
           result = ErrorModel.fromJson(json);
         }
       }
-    }
-    catch(e){
+    } catch (e) {
       print("catch error: $e");
       result = ErrorModel(status: "0", message: e.toString());
     }
@@ -220,16 +206,18 @@ final _prefs = AppConfig().preferences;
 
     dynamic result;
 
-    try{
-      final response = await httpClient.get(
-        Uri.parse(path),
-        headers: header,
-      ).timeout(const Duration(seconds: 45));
+    try {
+      final response = await httpClient
+          .get(
+            Uri.parse(path),
+            headers: header,
+          )
+          .timeout(const Duration(seconds: 45));
 
       print('serverGetAboutProgramDetails Response header: $path');
-      print('serverGetAboutProgramDetails Response status: ${response.statusCode}');
+      print(
+          'serverGetAboutProgramDetails Response status: ${response.statusCode}');
       print('serverGetAboutProgramDetails Response body: ${response.body}');
-
 
       final json = jsonDecode(response.body);
       print('serverGetAboutProgramDetails result: $json');
@@ -237,50 +225,41 @@ final _prefs = AppConfig().preferences;
       if (response.statusCode != 200) {
         print("error: $json");
         result = ErrorModel.fromJson(json);
-      }
-      else if(json['status'].toString().contains("200")){
+      } else if (json['status'].toString().contains("200")) {
         result = AboutProgramModel.fromJson(json);
-      }
-      else{
+      } else {
         result = ErrorModel.fromJson(json);
       }
-    }
-    catch(e){
+    } catch (e) {
       result = ErrorModel(status: "0", message: e.toString());
     }
 
     return result;
   }
 
-  Future getShippingTokenApi(String email, String password) async{
+  Future getShippingTokenApi(String email, String password) async {
     final path = shippingApiLoginUrl;
 
-    Map bodyParam =  {
-      "email": email,
-      "password": password
-    };
+    Map bodyParam = {"email": email, "password": password};
 
     dynamic result;
 
-    try{
-      final response = await httpClient.post(Uri.parse(path),
-          body: bodyParam
-      ).timeout(Duration(seconds: 45));
+    try {
+      final response = await httpClient
+          .post(Uri.parse(path), body: bodyParam)
+          .timeout(Duration(seconds: 45));
 
-      if(response.statusCode != 200){
+      if (response.statusCode != 200) {
         result = ErrorModel.fromJson(jsonDecode(response.body));
-      }
-      else{
+      } else {
         result = ShipRocketTokenModel.fromJson(jsonDecode(response.body));
         storeShipRocketToken(result);
       }
-    }
-    catch(e){
+    } catch (e) {
       result = ErrorModel(status: "0", message: e.toString());
     }
     return result;
   }
-
 
   Future serverShippingTrackerApi(String awbNumber) async {
     print(awbNumber);
@@ -295,11 +274,13 @@ final _prefs = AppConfig().preferences;
     };
 
     print('shiptoken: $shipToken');
-    try{
-      final response = await httpClient.get(
-        Uri.parse(path),
-        headers: shipRocketHeader,
-      ).timeout(const Duration(seconds: 45));
+    try {
+      final response = await httpClient
+          .get(
+            Uri.parse(path),
+            headers: shipRocketHeader,
+          )
+          .timeout(const Duration(seconds: 45));
 
       print('serverShippingTrackerApi Response header: $path');
       print('serverShippingTrackerApi Response status: ${response.statusCode}');
@@ -312,8 +293,7 @@ final _prefs = AppConfig().preferences;
         final res = jsonDecode(response.body);
         result = ShippingTrackModel.fromJson(res);
       }
-    }
-    catch(e){
+    } catch (e) {
       result = ErrorModel(status: "0", message: e.toString());
     }
 
@@ -325,34 +305,28 @@ final _prefs = AppConfig().preferences;
 
     dynamic result;
 
-    Map bodyParam = {
-      'phone': phone,
-      'otp': otp
-    };
+    Map bodyParam = {'phone': phone, 'otp': otp};
 
-    try{
-      final response = await httpClient.post(Uri.parse(path),
-        body: bodyParam
-      ).timeout(Duration(seconds: 45));
+    try {
+      final response = await httpClient
+          .post(Uri.parse(path), body: bodyParam)
+          .timeout(Duration(seconds: 45));
 
       print('serverLoginWithOtpApi Response header: $path');
       print('serverLoginWithOtpApi Response status: ${response.statusCode}');
       print('serverLoginWithOtpApi Response body: ${response.body}');
       final res = jsonDecode(response.body);
 
-      if(response.statusCode == 200){
-        if(res['status'] == 200){
+      if (response.statusCode == 200) {
+        if (res['status'] == 200) {
           result = loginOtpFromJson(response.body);
-        }
-        else{
+        } else {
           result = ErrorModel.fromJson(res);
         }
-      }
-      else{
+      } else {
         result = ErrorModel.fromJson(res);
       }
-    }
-    catch(e){
+    } catch (e) {
       result = ErrorModel(status: "0", message: e.toString());
     }
     return result;
@@ -363,8 +337,9 @@ final _prefs = AppConfig().preferences;
 
     dynamic result;
 
-    try{
-      final response = await httpClient.post(Uri.parse(path),
+    try {
+      final response = await httpClient.post(
+        Uri.parse(path),
         headers: {
           // "Authorization": "Bearer ${AppConfig().bearerToken}",
           "Authorization": getHeaderToken(),
@@ -376,39 +351,32 @@ final _prefs = AppConfig().preferences;
       print('serverLogoutApi Response body: ${response.body}');
       final res = jsonDecode(response.body);
 
-      if(response.statusCode == 200){
-        if(res['status'] == 200){
+      if (response.statusCode == 200) {
+        if (res['status'] == 200) {
           result = LogoutModel.fromJson(res);
-        }
-        else{
+        } else {
           result = ErrorModel.fromJson(res);
         }
-      }
-      else{
+      } else {
         result = ErrorModel.fromJson(res);
       }
-    }
-    catch(e){
+    } catch (e) {
       result = ErrorModel(status: "0", message: e.toString());
     }
     return result;
   }
-
 
   serverGetOtpApi(String phone) async {
     String path = getOtpUrl;
 
     dynamic result;
 
-    Map bodyParam = {
-      'phone': phone
-    };
+    Map bodyParam = {'phone': phone};
 
-    try{
-      final response = await httpClient.post(
-        Uri.parse(path),
-        body: bodyParam
-      ).timeout(Duration(seconds: 45));
+    try {
+      final response = await httpClient
+          .post(Uri.parse(path), body: bodyParam)
+          .timeout(Duration(seconds: 45));
 
       print('serverGetOtpApi Response header: $path');
       print('serverGetOtpApi Response status: ${response.statusCode}');
@@ -416,19 +384,16 @@ final _prefs = AppConfig().preferences;
 
       final res = jsonDecode(response.body);
 
-      if(response.statusCode != 200){
+      if (response.statusCode != 200) {
         result = ErrorModel.fromJson(res);
-      }
-      else{
-        if(res['status'] == 200){
+      } else {
+        if (res['status'] == 200) {
           result = getOtpFromJson(response.body);
-        }
-        else{
+        } else {
           result = ErrorModel.fromJson(res);
         }
       }
-    }
-    catch(e){
+    } catch (e) {
       print(e);
       result = ErrorModel(status: "0", message: e.toString());
     }
@@ -450,26 +415,24 @@ final _prefs = AppConfig().preferences;
       "Authorization": getHeaderToken(),
     };
     try {
-      if(appointmentId == null){
+      if (appointmentId == null) {
         print("First Slot");
-      }
-      else{
+      } else {
         print("Existing Slot");
       }
 
       final response = (appointmentId != null)
           ? await httpClient
-          .post(Uri.parse(path),
-          headers: header,
-          body: param)
-          .timeout(const Duration(seconds: 45))
-          : await httpClient.get(
-        Uri.parse(path),
-        headers: header,
-      ).timeout(const Duration(seconds: 45));
+              .post(Uri.parse(path), headers: header, body: param)
+              .timeout(const Duration(seconds: 45))
+          : await httpClient
+              .get(
+                Uri.parse(path),
+                headers: header,
+              )
+              .timeout(const Duration(seconds: 45));
 
-      print(
-          "getAppointmentSlotListApi response path:" + path);
+      print("getAppointmentSlotListApi response path:" + path);
 
       print("getAppointmentSlotListApi response code:" +
           response.statusCode.toString());
@@ -497,7 +460,6 @@ final _prefs = AppConfig().preferences;
 
     var startTime = DateTime.now().millisecondsSinceEpoch;
 
-
     Map param = {'booking_date': date, 'slot': slotTime};
     if (appointmentId != null) {
       param.putIfAbsent('appointment_id', () => appointmentId);
@@ -505,10 +467,9 @@ final _prefs = AppConfig().preferences;
     var result;
 
     try {
-      if(appointmentId == null){
+      if (appointmentId == null) {
         print("Normal Appointment");
-      }
-      else{
+      } else {
         print("Reschedule Appointment");
       }
       print("param: $param");
@@ -575,23 +536,21 @@ final _prefs = AppConfig().preferences;
       var response = await http.Response.fromStream(await request.send())
           .timeout(Duration(seconds: 45));
 
-
       print("enquiryStatusApi response code:" + response.statusCode.toString());
       print("enquiryStatusApi response body:" + response.body);
 
-    print("getAppointmentSlotListApi response body:" + response.body);
-    var totalTime = DateTime.now().millisecondsSinceEpoch - startTime;
+      print("getAppointmentSlotListApi response body:" + response.body);
+      var totalTime = DateTime.now().millisecondsSinceEpoch - startTime;
 
-    print("response: $totalTime");
+      print("response: $totalTime");
 
       final res = jsonDecode(response.body);
 
       print('${res['status'].runtimeType} ${res['status']}');
 
-      if(response.statusCode != 200){
+      if (response.statusCode != 200) {
         result = ErrorModel.fromJson(res);
-      }
-      else if (res['status'].toString() == '200') {
+      } else if (res['status'].toString() == '200') {
         result = EnquiryStatusModel.fromJson(res);
       } else {
         result = ErrorModel.fromJson(res);
@@ -652,6 +611,7 @@ final _prefs = AppConfig().preferences;
     }
     return result;
   }
+
   jsonToFormData(http.MultipartRequest request, Map<String, dynamic> data) {
     for (var key in data.keys) {
       request.fields[key] = data[key].toString();
@@ -668,40 +628,37 @@ final _prefs = AppConfig().preferences;
       // "Authorization": "Bearer ${AppConfig().bearerToken}",
       "Authorization": getHeaderToken(),
     };
-    try{
-      final response = await httpClient.get(
-        Uri.parse(path),
-        headers: headers,
-      ).timeout(const Duration(seconds: 45));
+    try {
+      final response = await httpClient
+          .get(
+            Uri.parse(path),
+            headers: headers,
+          )
+          .timeout(const Duration(seconds: 45));
 
       print('serverGetEvaluationDetails Response header: $path');
-      print('serverGetEvaluationDetails Response status: ${response.statusCode}');
+      print(
+          'serverGetEvaluationDetails Response status: ${response.statusCode}');
       print('serverGetEvaluationDetails Response body: ${response.body}');
       final json = jsonDecode(response.body);
 
       print('serverGetEvaluationDetails result: $json');
 
-      if(response.statusCode != 200){
+      if (response.statusCode != 200) {
         result = ErrorModel(
-            status: response.statusCode.toString(),
-            message: response.body
-        );
-      }
-      else{
-        if(json['status'].toString() != '200'){
+            status: response.statusCode.toString(), message: response.body);
+      } else {
+        if (json['status'].toString() != '200') {
           result = ErrorModel.fromJson(json);
-        }
-        else{
+        } else {
           result = GetEvaluationDataModel.fromJson(json);
         }
       }
-    }
-    catch(e){
+    } catch (e) {
       result = ErrorModel(status: "0", message: e.toString());
     }
     return result;
   }
-
 
   Future serverGetGutData() async {
     final String path = getDashboardDataUrl;
@@ -712,11 +669,13 @@ final _prefs = AppConfig().preferences;
       // "Authorization": "Bearer ${AppConfig().bearerToken}",
       "Authorization": getHeaderToken(),
     };
-    try{
-      final response = await httpClient.get(
-        Uri.parse(path),
-        headers: headers,
-      ).timeout(const Duration(seconds: 45));
+    try {
+      final response = await httpClient
+          .get(
+            Uri.parse(path),
+            headers: headers,
+          )
+          .timeout(const Duration(seconds: 45));
 
       print('serverGetDashboardData Response header: $path');
       print('serverGetDashboardData Response status: ${response.statusCode}');
@@ -725,22 +684,17 @@ final _prefs = AppConfig().preferences;
 
       print('serverGetDashboardData result: $json');
 
-      if(response.statusCode != 200){
+      if (response.statusCode != 200) {
         result = ErrorModel(
-            status: response.statusCode.toString(),
-            message: response.body
-        );
-      }
-      else{
-        if(json['status'].toString() != '200'){
+            status: response.statusCode.toString(), message: response.body);
+      } else {
+        if (json['status'].toString() != '200') {
           result = ErrorModel.fromJson(json);
-        }
-        else{
+        } else {
           result = GetDashboardDataModel.fromJson(json);
         }
       }
-    }
-    catch(e){
+    } catch (e) {
       result = ErrorModel(status: "0", message: e.toString());
     }
     return result;
@@ -759,7 +713,8 @@ final _prefs = AppConfig().preferences;
         },
       ).timeout(const Duration(seconds: 45));
 
-      print("getUserProfileApi response code:" + response.statusCode.toString());
+      print(
+          "getUserProfileApi response code:" + response.statusCode.toString());
       print("getUserProfileApi response body:" + response.body);
 
       final res = jsonDecode(response.body);
@@ -781,16 +736,17 @@ final _prefs = AppConfig().preferences;
     print(user);
     var result;
     try {
-      final response = await httpClient.post(
-        Uri.parse(path),
-        headers: {
-          // "Authorization": "Bearer ${AppConfig().bearerToken}",
-          "Authorization": getHeaderToken(),
-        },
-        body: user
-      ).timeout(const Duration(seconds: 45));
+      final response = await httpClient
+          .post(Uri.parse(path),
+              headers: {
+                // "Authorization": "Bearer ${AppConfig().bearerToken}",
+                "Authorization": getHeaderToken(),
+              },
+              body: user)
+          .timeout(const Duration(seconds: 45));
 
-      print("updateUserProfileApi response code:" + response.statusCode.toString());
+      print("updateUserProfileApi response code:" +
+          response.statusCode.toString());
       print("updateUserProfileApi response body:" + response.body);
 
       final res = jsonDecode(response.body);
@@ -929,12 +885,11 @@ final _prefs = AppConfig().preferences;
           response.statusCode.toString());
       print("getProgramDayListApi response body:" + response.body);
 
-      if(response.statusCode != 200){
+      if (response.statusCode != 200) {
         print('status not equal called');
         final res = jsonDecode(response.body);
         result = ErrorModel.fromJson(res);
-      }
-      else{
+      } else {
         final res = jsonDecode(response.body);
         print('${res['status'].runtimeType} ${res['status']}');
         if (res['status'].toString() == '200') {
@@ -964,7 +919,8 @@ final _prefs = AppConfig().preferences;
         },
       ).timeout(const Duration(seconds: 45));
 
-      print("getMealPlanDetailsApi response code:" + response.statusCode.toString());
+      print("getMealPlanDetailsApi response code:" +
+          response.statusCode.toString());
       print("getMealPlanDetailsApi response body:" + response.body);
 
       final res = jsonDecode(response.body);
@@ -989,7 +945,8 @@ final _prefs = AppConfig().preferences;
 
     print("proceedDayProgramList path: $url");
 
-    print("model: ${json.encode(model.toJson()) == jsonEncode(model.toJson())}");
+    print(
+        "model: ${json.encode(model.toJson()) == jsonEncode(model.toJson())}");
 
     try {
       final response = await httpClient.post(
@@ -1024,7 +981,7 @@ final _prefs = AppConfig().preferences;
     final String path = shoppingListApiUrl;
     dynamic result;
 
-    try{
+    try {
       final response = await httpClient.get(
         Uri.parse(path),
         headers: {
@@ -1039,18 +996,16 @@ final _prefs = AppConfig().preferences;
 
       if (response.statusCode == 200) {
         final res = jsonDecode(response.body);
-        if(res['status'] == 200){
+        if (res['status'] == 200) {
           result = GetShoppingListModel.fromJson(res);
-        }
-        else{
+        } else {
           result = ErrorModel.fromJson(jsonDecode(response.body));
         }
       } else {
         print('proceedDayProgramList error: ${response.reasonPhrase}');
         result = ErrorModel.fromJson(jsonDecode(response.body));
       }
-    }
-    catch(e){
+    } catch (e) {
       result = ErrorModel(status: "0", message: e.toString());
     }
 
@@ -1061,19 +1016,17 @@ final _prefs = AppConfig().preferences;
     final String path = shoppingApproveApiUrl;
     dynamic result;
 
-    Map bodyParam = {
-      'status': approveStatus
-    };
+    Map bodyParam = {'status': approveStatus};
 
-    try{
-      final response = await httpClient.post(
-        Uri.parse(path),
-        headers: {
-          // "Authorization": "Bearer ${AppConfig().bearerToken}",
-          "Authorization": getHeaderToken(),
-        },
-        body: bodyParam
-      ).timeout(const Duration(seconds: 45));
+    try {
+      final response = await httpClient
+          .post(Uri.parse(path),
+              headers: {
+                // "Authorization": "Bearer ${AppConfig().bearerToken}",
+                "Authorization": getHeaderToken(),
+              },
+              body: bodyParam)
+          .timeout(const Duration(seconds: 45));
 
       print('shippingApproveApi Response header: $path');
       print('shippingApproveApi Response status: ${response.statusCode}');
@@ -1081,18 +1034,16 @@ final _prefs = AppConfig().preferences;
 
       if (response.statusCode == 200) {
         final res = jsonDecode(response.body);
-        if(res['status'] == 200){
+        if (res['status'] == 200) {
           result = ShippingApproveModel.fromJson(res);
-        }
-        else{
+        } else {
           result = ErrorModel.fromJson(jsonDecode(response.body));
         }
       } else {
         print('shippingApproveApi error: ${response.reasonPhrase}');
         result = ErrorModel.fromJson(jsonDecode(response.body));
       }
-    }
-    catch(e){
+    } catch (e) {
       result = ErrorModel(status: "0", message: e.toString());
     }
 
@@ -1100,15 +1051,14 @@ final _prefs = AppConfig().preferences;
   }
   //https://api.worldpostallocations.com/?postalcode=570008&countrycode=IN
 
-  getCountryDetails(String pincode, String countryCode) async
-  {
+  getCountryDetails(String pincode, String countryCode) async {
     final String url = "http://www.postalpincode.in/api/pincode/";
     final String path = url + pincode;
     // final String url = "https://api.worldpostallocations.com/";
     // final String path = url + "?postalcode=$pincode&countrycode=$countryCode";
     dynamic result;
 
-    try{
+    try {
       final response = await httpClient.get(
         Uri.parse(path),
         headers: {
@@ -1123,18 +1073,16 @@ final _prefs = AppConfig().preferences;
 
       if (response.statusCode == 200) {
         final res = jsonDecode(response.body);
-        if(res['Status'].toString().toLowerCase() == "success"){
+        if (res['Status'].toString().toLowerCase() == "success") {
           result = GetCountryDetailsModel.fromJson(res);
-        }
-        else{
+        } else {
           result = ErrorModel(status: "0", message: "No Data");
         }
       } else {
         print('getCountryDetails error: ${response.reasonPhrase}');
         result = ErrorModel.fromJson(jsonDecode(response.body));
       }
-    }
-    catch(e){
+    } catch (e) {
       result = ErrorModel(status: "0", message: e.toString());
     }
 
@@ -1153,36 +1101,30 @@ final _prefs = AppConfig().preferences;
       // "Authorization": "Bearer ${AppConfig().bearerToken}",
       "Authorization": getHeaderToken(),
     };
-    try{
-      final response = await httpClient.post(
-        Uri.parse(path),
-        headers: headers,
-        body: bodyParam
-      ).timeout(const Duration(seconds: 45));
+    try {
+      final response = await httpClient
+          .post(Uri.parse(path), headers: headers, body: bodyParam)
+          .timeout(const Duration(seconds: 45));
 
       print('submitUserFeedbackDetails Response header: $path');
-      print('submitUserFeedbackDetails Response status: ${response.statusCode}');
+      print(
+          'submitUserFeedbackDetails Response status: ${response.statusCode}');
       print('submitUserFeedbackDetails Response body: ${response.body}');
       final json = jsonDecode(response.body);
 
       print('submitUserFeedbackDetails result: $json');
 
-      if(response.statusCode != 200){
+      if (response.statusCode != 200) {
         result = ErrorModel(
-            status: response.statusCode.toString(),
-            message: response.body
-        );
-      }
-      else{
-        if(json['status'].toString() != '200'){
+            status: response.statusCode.toString(), message: response.body);
+      } else {
+        if (json['status'].toString() != '200') {
           result = ErrorModel.fromJson(json);
-        }
-        else{
+        } else {
           result = FeedbackModel.fromJson(json);
         }
       }
-    }
-    catch(e){
+    } catch (e) {
       result = ErrorModel(status: "0", message: e.toString());
     }
     return result;
@@ -1195,7 +1137,7 @@ final _prefs = AppConfig().preferences;
 
     dynamic result;
 
-    try{
+    try {
       final response = await httpClient.get(
         Uri.parse(path),
         headers: {
@@ -1205,9 +1147,9 @@ final _prefs = AppConfig().preferences;
       ).timeout(const Duration(seconds: 45));
 
       print('serverGetCallSupportDetails Response header: $path');
-      print('serverGetCallSupportDetails Response status: ${response.statusCode}');
+      print(
+          'serverGetCallSupportDetails Response status: ${response.statusCode}');
       print('serverGetCallSupportDetails Response body: ${response.body}');
-
 
       final json = jsonDecode(response.body);
       print('serverGetCallSupportDetails result: $json');
@@ -1215,15 +1157,12 @@ final _prefs = AppConfig().preferences;
       if (response.statusCode != 200) {
         print("error: $json");
         result = ErrorModel.fromJson(json);
-      }
-      else if(json['status'].toString().contains("200")){
+      } else if (json['status'].toString().contains("200")) {
         result = AboutProgramModel.fromJson(json);
-      }
-      else{
+      } else {
         result = ErrorModel.fromJson(json);
       }
-    }
-    catch(e){
+    } catch (e) {
       result = ErrorModel(status: "0", message: e.toString());
     }
 
@@ -1238,7 +1177,6 @@ final _prefs = AppConfig().preferences;
       'start_program': startProgram,
       'date': DateTime.now().toString()
     };
-
 
     final startTime = DateTime.now().millisecondsSinceEpoch;
 
@@ -1268,7 +1206,6 @@ final _prefs = AppConfig().preferences;
       var response = await http.Response.fromStream(await request.send())
           .timeout(Duration(seconds: 45));
 
-
       print("enquiryStatusApi response code:" + response.statusCode.toString());
       print("enquiryStatusApi response body:" + response.body);
 
@@ -1281,10 +1218,9 @@ final _prefs = AppConfig().preferences;
 
       print('${res['status'].runtimeType} ${res['status']}');
 
-      if(response.statusCode != 200){
+      if (response.statusCode != 200) {
         result = ErrorModel.fromJson(res);
-      }
-      else if (res['status'].toString() == '200') {
+      } else if (res['status'].toString() == '200') {
         result = StartProgramOnSwipeModel.fromJson(res);
       } else {
         result = ErrorModel.fromJson(res);
@@ -1296,13 +1232,12 @@ final _prefs = AppConfig().preferences;
     return result;
   }
 
-  getChatGroupId() async
-  {
+  getChatGroupId() async {
     String path = chatGroupIdUrl;
 
     dynamic result;
 
-    try{
+    try {
       final response = await httpClient.get(
         Uri.parse(path),
         headers: {
@@ -1317,18 +1252,17 @@ final _prefs = AppConfig().preferences;
 
       if (response.statusCode == 200) {
         final res = jsonDecode(response.body);
-        if(res['status'].toString() == '200'){
+        if (res['status'].toString() == '200') {
           result = GetChatGroupIdModel.fromJson(res);
-        }
-        else{
-          result = ErrorModel(status: res['status'].toString(), message: res.toString());
+        } else {
+          result = ErrorModel(
+              status: res['status'].toString(), message: res.toString());
         }
       } else {
         print('getChatGroupId error: ${response.reasonPhrase}');
         result = ErrorModel.fromJson(jsonDecode(response.body));
       }
-    }
-    catch(e){
+    } catch (e) {
       result = ErrorModel(status: "0", message: e.toString());
     }
 
@@ -1358,8 +1292,7 @@ final _prefs = AppConfig().preferences;
       } else {
         print('startPostProgram error: ${response.reasonPhrase}');
         result = ErrorModel(
-            status: response.statusCode.toString(),
-            message: response.body);
+            status: response.statusCode.toString(), message: response.body);
       }
     } catch (e) {
       print(e);
@@ -1368,30 +1301,31 @@ final _prefs = AppConfig().preferences;
     return result;
   }
 
-  Future submitPostProgramMealTrackingApi(String mealType, int selectedType, int dayNumber) async {
+  Future submitPostProgramMealTrackingApi(
+      String mealType, int selectedType, int? dayNumber) async {
     print("submit :");
     var url = submitPostProgramMealTrackingUrl;
 
     dynamic result;
 
     Map bodyParam = {
-      'type': mealType,
-      'follow_id': selectedType,
-      'day' : dayNumber
+      'type': mealType.toString(),
+      'follow_id': selectedType.toString(),
+      'day': dayNumber.toString()
     };
 
     print('body: $bodyParam');
+   // print("token: ${getHeaderToken()}");
 
     try {
-      final response = await httpClient.post(
-        Uri.parse(url),
-        headers: {
-          "Authorization": getHeaderToken(),
-        },
-        body: jsonEncode(bodyParam)
-      );
+      final response = await httpClient.post(Uri.parse(url),
+          headers: {
+            "Authorization": getHeaderToken(),
+          },
+          body: bodyParam);
 
-      print('submitPostProgramMealTrackingApi Response status: ${response.statusCode}');
+      print(
+          'submitPostProgramMealTrackingApi Response status: ${response.statusCode}');
       print('submitPostProgramMealTrackingApi Response body: ${response.body}');
 
       if (response.statusCode == 200) {
@@ -1399,10 +1333,10 @@ final _prefs = AppConfig().preferences;
         print('submitPostProgramMealTrackingApi result: $json');
         result = PostProgramBaseModel.fromJson(json);
       } else {
-        print('submitPostProgramMealTrackingApi error: ${response.reasonPhrase}');
+        print(
+            'submitPostProgramMealTrackingApi error: ${response.reasonPhrase}');
         result = ErrorModel(
-            status: response.statusCode.toString(),
-            message: response.body);
+            status: response.statusCode.toString(), message: response.body);
       }
     } catch (e) {
       print(e);
@@ -1434,8 +1368,7 @@ final _prefs = AppConfig().preferences;
       } else {
         print('getBreakfastOnclickApi error: ${response.reasonPhrase}');
         result = ErrorModel(
-            status: response.statusCode.toString(),
-            message: response.body);
+            status: response.statusCode.toString(), message: response.body);
       }
     } catch (e) {
       print(e);
@@ -1467,8 +1400,7 @@ final _prefs = AppConfig().preferences;
       } else {
         print('getLunchOnclickApi error: ${response.reasonPhrase}');
         result = ErrorModel(
-            status: response.statusCode.toString(),
-            message: response.body);
+            status: response.statusCode.toString(), message: response.body);
       }
     } catch (e) {
       print(e);
@@ -1500,8 +1432,7 @@ final _prefs = AppConfig().preferences;
       } else {
         print('getDinnerOnclickApi error: ${response.reasonPhrase}');
         result = ErrorModel(
-            status: response.statusCode.toString(),
-            message: response.body);
+            status: response.statusCode.toString(), message: response.body);
       }
     } catch (e) {
       print(e);
@@ -1512,10 +1443,9 @@ final _prefs = AppConfig().preferences;
 
   Future getProtocolDayDetailsApi({String? dayNumber}) async {
     var url;
-    if(dayNumber != null){
+    if (dayNumber != null) {
       url = '$getProtocolDayDetailsUrl/$dayNumber';
-    }
-    else{
+    } else {
       url = getProtocolDayDetailsUrl;
     }
 
@@ -1539,8 +1469,7 @@ final _prefs = AppConfig().preferences;
       } else {
         print('getProtocolDayDetailsApi error: ${response.reasonPhrase}');
         result = ErrorModel(
-            status: response.statusCode.toString(),
-            message: response.body);
+            status: response.statusCode.toString(), message: response.body);
       }
     } catch (e) {
       print(e);
@@ -1549,11 +1478,7 @@ final _prefs = AppConfig().preferences;
     return result;
   }
 
-
-
-
   void storeShipRocketToken(ShipRocketTokenModel result) {
     _prefs!.setString(AppConfig().shipRocketBearer, result.token ?? '');
   }
-
 }

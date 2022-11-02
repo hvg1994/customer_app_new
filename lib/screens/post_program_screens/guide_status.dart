@@ -15,9 +15,14 @@ import '../../widgets/widgets.dart';
 
 class GuideStatus extends StatefulWidget {
   final String title;
-  final int dayNumber;
+  final int? dayNumber;
   final bool isSelected;
-  const GuideStatus({Key? key, required this.title, required this.dayNumber, this.isSelected = false}) : super(key: key);
+  const GuideStatus(
+      {Key? key,
+      required this.title,
+      required this.dayNumber,
+      this.isSelected = false})
+      : super(key: key);
 
   @override
   State<GuideStatus> createState() => _GuideStatusState();
@@ -63,8 +68,9 @@ class _GuideStatusState extends State<GuideStatus> {
     getDetails(widget.dayNumber.toString());
   }
 
-  getDetails(String day) async{
-    mealPlanFuture = PostProgramService(repository: postProgramRepository).getBreakfastService(day);
+  getDetails(String day) async {
+    mealPlanFuture = PostProgramService(repository: postProgramRepository)
+        .getBreakfastService(day);
   }
 
   final PostProgramRepository postProgramRepository = PostProgramRepository(
@@ -76,11 +82,10 @@ class _GuideStatusState extends State<GuideStatus> {
   @override
   void setState(VoidCallback fn) {
     // TODO: implement setState
-    if(mounted){
+    if (mounted) {
       super.setState(fn);
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -109,9 +114,9 @@ class _GuideStatusState extends State<GuideStatus> {
                           color: gPrimaryColor,
                           fontSize: 11.sp),
                     ),
-                    widget.isSelected ?
-                    buildList()
-                    : Lottie.asset('assets/lottie/emoji_waiting.json'),
+                    widget.isSelected
+                        ? buildList()
+                        : Lottie.asset('assets/lottie/emoji_waiting.json'),
                     Container(
                       width: double.maxFinite,
                       height: 1,
@@ -129,31 +134,32 @@ class _GuideStatusState extends State<GuideStatus> {
     );
   }
 
-
-  showTiles(){
+  showTiles() {
     return FutureBuilder(
-      future: mealPlanFuture,
-        builder: (_, snapshot){
-        if(snapshot.hasData){
-          if(snapshot.data.runtimeType == ErrorModel){
-            ErrorModel model = snapshot.data as ErrorModel;
-            return Center(child: Text(model.message ?? ''));
+        future: mealPlanFuture,
+        builder: (_, snapshot) {
+          if (snapshot.hasData) {
+            if (snapshot.data.runtimeType == ErrorModel) {
+              ErrorModel model = snapshot.data as ErrorModel;
+              return Center(child: Text(model.message ?? ''));
+            } else {
+              GetProtocolBreakfastModel model =
+                  snapshot.data as GetProtocolBreakfastModel;
+              addSelectedValue(model.data);
+              return Column(
+                children: [
+                  buildTile('assets/lottie/loading_tick.json', types[0],
+                      mainText: model.data?.dataDo?.the0?.name ?? ''),
+                  buildTile('assets/lottie/loading_wrong.json', types[1],
+                      mainText: model.data?.doNot?.the0?.name ?? ''),
+                  buildTile('assets/lottie/loading_wrong.json', types[2],
+                      mainText: ''),
+                ],
+              );
+            }
           }
-          else{
-            GetProtocolBreakfastModel model = snapshot.data as GetProtocolBreakfastModel;
-            addSelectedValue(model.data);
-            return Column(
-              children: [
-                buildTile('assets/lottie/loading_tick.json', types[0], mainText: model.data?.dataDo?.the0?.name ?? ''),
-                buildTile('assets/lottie/loading_wrong.json', types[1], mainText: model.data?.doNot?.the0?.name ?? ''),
-                buildTile('assets/lottie/loading_wrong.json', types[2], mainText: ''),
-              ],
-            );
-          }
-        }
-        return buildCircularIndicator();
-        }
-    );
+          return buildCircularIndicator();
+        });
   }
 
   buildTile(String lottie, String title, {String? mainText}) {
@@ -208,8 +214,9 @@ class _GuideStatusState extends State<GuideStatus> {
             color: gGreyColor.withOpacity(0.3),
           ),
           SizedBox(height: 1.h),
-          Text(mainText ??
-            "Lorem Ipsum is simply dummy text of the printing and typesetting industry.Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,when an unknown printer took a gallery of type and scrambled it to make a type specimen book.",
+          Text(
+            mainText ??
+                "Lorem Ipsum is simply dummy text of the printing and typesetting industry.Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,when an unknown printer took a gallery of type and scrambled it to make a type specimen book.",
             style: TextStyle(
               height: 1.5,
               fontSize: 8.sp,
@@ -252,7 +259,7 @@ class _GuideStatusState extends State<GuideStatus> {
     );
   }
 
-  submitValue(String type) async{
+  submitValue(String type) async {
     // mealType: breakfast, lunch, dinner
     // selectedType:
     // do -- 1
@@ -260,29 +267,31 @@ class _GuideStatusState extends State<GuideStatus> {
     // none-- 3
 
     String mealType = widget.title.trim().toLowerCase();
-    int selectedType = (type.contains(types[0]) ? 1 : type.contains(types[1]) ? 2 : 3);
-    final res = await PostProgramService(repository: postProgramRepository).submitPostProgramMealTrackingService(mealType, selectedType, widget.dayNumber);
+    int selectedType = (type.contains(types[0])
+        ? 1
+        : type.contains(types[1])
+            ? 2
+            : 3);
+    final res = await PostProgramService(repository: postProgramRepository)
+        .submitPostProgramMealTrackingService(
+            mealType, selectedType, widget.dayNumber);
 
-    if(res.runtimeType == ErrorModel){
+    if (res.runtimeType == ErrorModel) {
       ErrorModel model = res as ErrorModel;
       AppConfig().showSnackbar(context, model.message ?? '', isError: true);
-    }
-    else{
+    } else {
       PostProgramBaseModel model = res as PostProgramBaseModel;
       AppConfig().showSnackbar(context, model.message ?? '');
       Navigator.pop(context, type);
     }
-
   }
 
   void addSelectedValue(Data? data) {
-    if(data!.dataDo!.isSelected == 1){
+    if (data!.dataDo!.isSelected == 1) {
       selectedValue = types[0];
-    }
-    else if(data!.doNot!.isSelected == 1){
+    } else if (data!.doNot!.isSelected == 1) {
       selectedValue = types[1];
-    }
-    else if(data!.none!.isSelected == 1){
+    } else if (data!.none!.isSelected == 1) {
       selectedValue = types[2];
     }
   }

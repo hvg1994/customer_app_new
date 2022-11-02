@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gwc_customer/model/error_model.dart';
 import 'package:gwc_customer/model/post_program_model/protocol_guide_day_score.dart';
 import 'package:gwc_customer/repository/post_program_repo/post_program_repository.dart';
+import 'package:gwc_customer/screens/post_program_screens/protcol_guide_details.dart';
 import 'package:gwc_customer/services/post_program_service/post_program_service.dart';
 import 'package:lottie/lottie.dart';
 import 'package:sizer/sizer.dart';
@@ -32,15 +33,13 @@ class _ProtocolGuideScreenState extends State<ProtocolGuideScreen> {
     getFuture();
   }
 
-  getFuture({String? dayNumber}){
-    getDayProtocolFuture = PostProgramService(repository: postProgramRepository).getProtocolDayDetailsService(dayNumber: dayNumber);
+  getFuture({String? dayNumber}) {
+    getDayProtocolFuture = PostProgramService(repository: postProgramRepository)
+        .getProtocolDayDetailsService(dayNumber: dayNumber);
   }
 
-  PostProgramRepository postProgramRepository = PostProgramRepository(
-      apiClient: ApiClient(
-        httpClient: http.Client()
-      )
-  );
+  PostProgramRepository postProgramRepository =
+      PostProgramRepository(apiClient: ApiClient(httpClient: http.Client()));
 
   @override
   Widget build(BuildContext context) {
@@ -56,25 +55,34 @@ class _ProtocolGuideScreenState extends State<ProtocolGuideScreen> {
                   buildAppBar(() {
                     Navigator.pop(context);
                   }),
-                  SizedBox(
-                    height: 3.5.h,
-                    child: Lottie.asset('assets/lottie/alert.json'),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const ProtocolGuideDetails(),
+                        ),
+                      );
+                    },
+                    child: SizedBox(
+                      height: 3.5.h,
+                      child: Lottie.asset('assets/lottie/alert.json'),
+                    ),
                   ),
                 ],
               ),
             ),
             SizedBox(height: 1.h),
             FutureBuilder(
-              future: getDayProtocolFuture,
-                builder: (_, snapshot){
-                  if(snapshot.hasData){
+                future: getDayProtocolFuture,
+                builder: (_, snapshot) {
+                  if (snapshot.hasData) {
                     optionSelectedList.clear();
-                    if(snapshot.data.runtimeType == ErrorModel){
+                    if (snapshot.data.runtimeType == ErrorModel) {
                       ErrorModel model = snapshot.data as ErrorModel;
                       return Center(child: Text(model.message ?? ''));
-                    }
-                    else{
-                      ProtocolGuideDayScoreModel model = snapshot.data as ProtocolGuideDayScoreModel;
+                    } else {
+                      ProtocolGuideDayScoreModel model =
+                          snapshot.data as ProtocolGuideDayScoreModel;
                       optionSelectedList.add(model.breakfast);
                       optionSelectedList.add(model.lunch);
                       optionSelectedList.add(model.dinner);
@@ -82,7 +90,8 @@ class _ProtocolGuideScreenState extends State<ProtocolGuideScreen> {
                       return Column(
                         children: [
                           Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.h),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 4.w, vertical: 1.h),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -107,7 +116,8 @@ class _ProtocolGuideScreenState extends State<ProtocolGuideScreen> {
                           ),
                           Container(
                             width: double.maxFinite,
-                            padding: EdgeInsets.symmetric(vertical: 2.h, horizontal: 6.w),
+                            padding: EdgeInsets.symmetric(
+                                vertical: 2.h, horizontal: 6.w),
                             margin: EdgeInsets.symmetric(vertical: 1.h),
                             color: gGreyColor.withOpacity(0.1),
                             child: Row(
@@ -121,7 +131,7 @@ class _ProtocolGuideScreenState extends State<ProtocolGuideScreen> {
                                       fontSize: 9.sp),
                                 ),
                                 Text(
-                                  "Lorem Ipsum : ${model.percentage}",
+                                  "Lorem Ipsum : ${model.percentage.toString()}",
                                   style: TextStyle(
                                       fontFamily: "GothamBook",
                                       color: gBlackColor,
@@ -131,40 +141,41 @@ class _ProtocolGuideScreenState extends State<ProtocolGuideScreen> {
                             ),
                           ),
                           buildTile(
-                              "assets/lottie/breakfast.json",
-                              "Break Fast",
-                              optionSelectedList[0],
-                            0
+                            "assets/lottie/breakfast.json",
+                            "BreakFast",
+                            optionSelectedList[0].toString(),
+                            0,
+                            model.day,
                           ),
                           buildTile(
-                              "assets/lottie/lunch.json",
-                              "Lunch",
-                              optionSelectedList[1],
-                            1
+                            "assets/lottie/lunch.json",
+                            "Lunch",
+                            optionSelectedList[1].toString(),
+                            1,
+                            model.day,
                           ),
                           buildTile(
-                              "assets/lottie/dinner.json",
-                              "Dinner",
-                              optionSelectedList[2],
-                            2
+                            "assets/lottie/dinner.json",
+                            "Dinner",
+                            optionSelectedList[2].toString(),
+                            2,
+                            model.day,
                           ),
                         ],
                       );
                     }
-                  }
-                  else if(snapshot.hasError){
+                  } else if (snapshot.hasError) {
                     return Center(child: Text(snapshot.error.toString()));
                   }
                   return buildCircularIndicator();
-                }
-            )
+                })
           ],
         ),
       ),
     );
   }
 
-  buildTile(String lottie, String title, int value, int index) {
+  buildTile(String lottie, String title, String value, int index, int? day) {
     print(value);
     return Container(
       padding: EdgeInsets.symmetric(vertical: 0.h, horizontal: 3.w),
@@ -196,12 +207,18 @@ class _ProtocolGuideScreenState extends State<ProtocolGuideScreen> {
           ),
           GestureDetector(
             onTap: () async {
-              await Navigator.of(context).push(
+              await Navigator.of(context)
+                  .push(
                 MaterialPageRoute(
-                  builder: (context) => GuideStatus(title: title, dayNumber: 1,isSelected: optionSelectedList[index] != 0,),
+                  builder: (context) => GuideStatus(
+                    title: title,
+                    dayNumber: day,
+                    isSelected: optionSelectedList[index] != 0,
+                  ),
                 ),
-              ).then((value) {
-                if(value != null){
+              )
+                  .then((value) {
+                if (value != null) {
                   setState(() {
                     selectedStatus = value;
                   });
@@ -210,8 +227,7 @@ class _ProtocolGuideScreenState extends State<ProtocolGuideScreen> {
               });
             },
             child: Image(
-              image: const AssetImage(
-                  "assets/images/noun-arrow-1018952.png"),
+              image: const AssetImage("assets/images/noun-arrow-1018952.png"),
               height: 2.5.h,
             ),
           )

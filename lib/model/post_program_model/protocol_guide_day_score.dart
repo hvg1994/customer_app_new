@@ -4,10 +4,10 @@ class ProtocolGuideDayScoreModel {
   String? key;
   int? day;
   int? score;
-  int? percentage;
-  int? breakfast;
-  int? lunch;
-  int? dinner;
+  String? percentage;
+  String? breakfast;
+  String? lunch;
+  String? dinner;
 
   ProtocolGuideDayScoreModel(
       {this.status,
@@ -26,10 +26,10 @@ class ProtocolGuideDayScoreModel {
     key = json['key'];
     day = json['day'];
     score = json['score'];
-    percentage = json['percentage'];
-    breakfast = json['breakfast'];
-    lunch = json['lunch'];
-    dinner = json['dinner'];
+    percentage = json['percentage'].toString();
+    breakfast = json['breakfast'].toString();
+    lunch = json['lunch'].toString();
+    dinner = json['dinner'].toString();
   }
 
   Map<String, dynamic> toJson() {

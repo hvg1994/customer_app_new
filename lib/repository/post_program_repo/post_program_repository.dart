@@ -20,7 +20,7 @@ class PostProgramRepository{
     return await apiClient.getDinnerOnclickApi(day);
   }
 
-  Future submitPostProgramMealTrackingRepo(String mealType, int selectedType, int dayNumber) async{
+  Future submitPostProgramMealTrackingRepo(String mealType, int selectedType, int? dayNumber) async{
     return await apiClient.submitPostProgramMealTrackingApi(mealType, selectedType, dayNumber);
   }
 

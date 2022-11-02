@@ -265,7 +265,7 @@ class _MyProfileDetailsState extends State<MyProfileDetails> {
                                           }
                                         ) as ImageProvider,
                                         child: Stack(
-                                          overflow: Overflow.visible,
+                                        //  overflow: Overflow.visible,
                                             clipBehavior: Clip.none,
                                             children: [
                                               Visibility(
