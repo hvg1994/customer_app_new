@@ -61,16 +61,19 @@ class _GuideStatusState extends State<GuideStatus> {
 
   List types = ['Do', "Don't Do", 'none'];
 
+  String? selectedDay;
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     getDetails(widget.dayNumber.toString());
+    selectedDay = widget.dayNumber.toString();
   }
 
   getDetails(String day) async {
     mealPlanFuture = PostProgramService(repository: postProgramRepository)
-        .getBreakfastService(day);
+        .getBreakfastService(day, selectedType: widget.title.toLowerCase());
   }
 
   final PostProgramRepository postProgramRepository = PostProgramRepository(
@@ -92,42 +95,29 @@ class _GuideStatusState extends State<GuideStatus> {
     return SafeArea(
       child: Scaffold(
         body: SingleChildScrollView(
-          child: Column(
-            children: [
-              Padding(
-                padding: EdgeInsets.only(
-                  left: 4.w,
-                  right: 4.w,
-                  top: 1.h,
+          child: Padding(
+            padding: EdgeInsets.only(
+              left: 4.w,
+              right: 4.w,
+              top: 1.h,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                buildAppBar(() {
+                  Navigator.pop(context);
+                }),
+                SizedBox(height: 1.h),
+                Text(
+                  widget.title,
+                  style: TextStyle(
+                      fontFamily: "GothamBold",
+                      color: gPrimaryColor,
+                      fontSize: 11.sp),
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    buildAppBar(() {
-                      Navigator.pop(context);
-                    }),
-                    SizedBox(height: 1.h),
-                    Text(
-                      widget.title,
-                      style: TextStyle(
-                          fontFamily: "GothamBold",
-                          color: gPrimaryColor,
-                          fontSize: 11.sp),
-                    ),
-                    widget.isSelected
-                        ? buildList()
-                        : Lottie.asset('assets/lottie/emoji_waiting.json'),
-                    Container(
-                      width: double.maxFinite,
-                      height: 1,
-                      color: gGreyColor.withOpacity(0.3),
-                    ),
-                    SizedBox(height: 1.5.h),
-                  ],
-                ),
-              ),
-              showTiles()
-            ],
+                showTiles()
+              ],
+            ),
           ),
         ),
       ),
@@ -138,24 +128,52 @@ class _GuideStatusState extends State<GuideStatus> {
     return FutureBuilder(
         future: mealPlanFuture,
         builder: (_, snapshot) {
-          if (snapshot.hasData) {
-            if (snapshot.data.runtimeType == ErrorModel) {
-              ErrorModel model = snapshot.data as ErrorModel;
-              return Center(child: Text(model.message ?? ''));
-            } else {
-              GetProtocolBreakfastModel model =
-                  snapshot.data as GetProtocolBreakfastModel;
-              addSelectedValue(model.data);
-              return Column(
-                children: [
-                  buildTile('assets/lottie/loading_tick.json', types[0],
-                      mainText: model.data?.dataDo?.the0?.name ?? ''),
-                  buildTile('assets/lottie/loading_wrong.json', types[1],
-                      mainText: model.data?.doNot?.the0?.name ?? ''),
-                  buildTile('assets/lottie/loading_wrong.json', types[2],
-                      mainText: ''),
-                ],
-              );
+          print(snapshot.connectionState);
+          if(snapshot.connectionState == ConnectionState.waiting){
+            return buildCircularIndicator();
+          }
+          else if(snapshot.connectionState == ConnectionState.done){
+            if (snapshot.hasData) {
+              print(snapshot.data);
+              if (snapshot.data.runtimeType == ErrorModel) {
+                ErrorModel model = snapshot.data as ErrorModel;
+                return Center(
+                  child: Column(
+                    children: [
+                      Text(model.message ?? ''),
+                      TextButton(onPressed: (){
+                        getDetails(widget.dayNumber.toString());
+                        setState(() { });
+                      },
+                          child: Text('Retry')
+                      )
+                    ],
+                  ),
+                );
+              }
+              else {
+                GetProtocolBreakfastModel model = snapshot.data as GetProtocolBreakfastModel;
+                addSelectedValue(model.data);
+                return Column(
+                  children: [
+                    widget.isSelected
+                        ? buildList(model.history!)
+                        : Lottie.asset('assets/lottie/emoji_waiting.json'),
+                    Container(
+                      width: double.maxFinite,
+                      height: 1,
+                      color: gGreyColor.withOpacity(0.3),
+                    ),
+                    SizedBox(height: 1.5.h),
+                    buildTile('assets/lottie/loading_tick.json', types[0],
+                        mainText: model.data?.dataDo?.the0?.name ?? ''),
+                    buildTile('assets/lottie/loading_wrong.json', types[1],
+                        mainText: model.data?.doNot?.the0?.name ?? ''),
+                    buildTile('assets/lottie/loading_wrong.json', types[2],
+                        mainText: ''),
+                  ],
+                );
+              }
             }
           }
           return buildCircularIndicator();
@@ -165,7 +183,7 @@ class _GuideStatusState extends State<GuideStatus> {
   buildTile(String lottie, String title, {String? mainText}) {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 3.w),
-      margin: EdgeInsets.symmetric(vertical: 1.h, horizontal: 4.w),
+      // margin: EdgeInsets.symmetric(vertical: 1.h, horizontal: 4.w),
       decoration: BoxDecoration(
         color: kWhiteColor,
         borderRadius: BorderRadius.circular(5),
@@ -195,16 +213,19 @@ class _GuideStatusState extends State<GuideStatus> {
                   ),
                 ),
               ),
-              Radio(
-                value: title,
-                activeColor: kPrimaryColor,
-                groupValue: selectedValue,
-                onChanged: (value) {
-                  setState(() {
-                    submitValue(title);
-                    selectedValue = value as String;
-                  });
-                },
+              IgnorePointer(
+                ignoring: widget.isSelected,
+                child: Radio(
+                  value: title,
+                  activeColor: kPrimaryColor,
+                  groupValue: selectedValue,
+                  onChanged: (value) {
+                    setState(() {
+                      submitValue(title);
+                      selectedValue = value as String;
+                    });
+                  },
+                ),
               ),
             ],
           ),
@@ -229,29 +250,41 @@ class _GuideStatusState extends State<GuideStatus> {
     );
   }
 
-  buildList() {
+  buildList(List<History> history) {
     return SizedBox(
       height: 30.h,
       child: ListView.builder(
-        itemCount: dayReaction.length,
+        itemCount: history.length,
         scrollDirection: Axis.horizontal,
         padding: EdgeInsets.symmetric(vertical: 5.h),
         physics: const BouncingScrollPhysics(),
         itemBuilder: (context, index) {
           return Center(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Lottie.asset(dayReaction[index]["reaction"], height: 15.h),
-                SizedBox(height: 2.h),
-                Text(
-                  dayReaction[index]["day"],
-                  style: TextStyle(
-                      fontFamily: "GothamMedium",
-                      color: gBlackColor,
-                      fontSize: 10.sp),
+            child: GestureDetector(
+              onTap: (){
+                setState(() {
+                  selectedDay = history[index].day;
+                });
+                print("day :${history[index].day}");
+                getDetails(history[index].day!);
+              },
+              child: Padding(
+                padding: const EdgeInsets.only(right: 6),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Lottie.asset(history[index].lottieReaction ?? '', height: (selectedDay == history[index].day) ? 11.h : 10.h),
+                    SizedBox(height: 2.h),
+                    Text(
+                      'Day ${history[index].day}' ?? '',
+                      style: TextStyle(
+                          fontFamily: "GothamMedium",
+                          color: gBlackColor,
+                          fontSize: 10.sp),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           );
         },
@@ -272,6 +305,7 @@ class _GuideStatusState extends State<GuideStatus> {
         : type.contains(types[1])
             ? 2
             : 3);
+    print(mealType);
     final res = await PostProgramService(repository: postProgramRepository)
         .submitPostProgramMealTrackingService(
             mealType, selectedType, widget.dayNumber);

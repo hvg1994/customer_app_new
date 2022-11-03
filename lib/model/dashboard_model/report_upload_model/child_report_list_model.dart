@@ -1,10 +1,13 @@
 class ChildReportListModel {
-  String? id;
+  int? id;
   String? doctorId;
   String? patientId;
-  String? appointmentId;
+  Null? appointmentId;
   String? report;
   String? reportType;
+  String? reportId;
+  String? type;
+  String? isArchieved;
   String? createdAt;
   String? updatedAt;
 
@@ -15,16 +18,22 @@ class ChildReportListModel {
         this.appointmentId,
         this.report,
         this.reportType,
+        this.reportId,
+        this.type,
+        this.isArchieved,
         this.createdAt,
         this.updatedAt});
 
   ChildReportListModel.fromJson(Map<String, dynamic> json) {
-    id = json['id'].toString();
-    doctorId = json['doctor_id'].toString();
+    id = json['id'];
+    doctorId = json['doctor_id'];
     patientId = json['patient_id'];
-    appointmentId = json['appointment_id'].toString();
+    appointmentId = json['appointment_id'];
     report = json['report'];
     reportType = json['report_type'];
+    reportId = json['report_id'];
+    type = json['type'];
+    isArchieved = json['is_archieved'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
   }
@@ -37,6 +46,9 @@ class ChildReportListModel {
     data['appointment_id'] = this.appointmentId;
     data['report'] = this.report;
     data['report_type'] = this.reportType;
+    data['report_id'] = this.reportId;
+    data['type'] = this.type;
+    data['is_archieved'] = this.isArchieved;
     data['created_at'] = this.createdAt;
     data['updated_at'] = this.updatedAt;
     return data;

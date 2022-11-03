@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:gwc_customer/widgets/widgets.dart';
 import 'package:sizer/sizer.dart';
 
 import 'constants.dart';
@@ -114,4 +115,24 @@ openAlertBox({
           ),
         ),
       ));
+}
+
+openProgressDialog(BuildContext context){
+  var height = MediaQuery.of(context).size.height;
+  var width = MediaQuery.of(context).size.width;
+  AlertDialog alert = AlertDialog(
+    backgroundColor: Colors.transparent,
+    elevation: 0,
+    contentPadding: EdgeInsets.zero,
+    insetPadding: EdgeInsets.symmetric(horizontal: 100),
+    content: buildCircularIndicator(),
+  );
+  showDialog(
+    barrierDismissible: false,
+    context: context,
+    barrierColor: gGreyColor.withOpacity(0.1),
+    builder: (BuildContext context) {
+      return alert;
+    },
+  );
 }

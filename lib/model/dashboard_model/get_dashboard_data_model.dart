@@ -71,7 +71,7 @@ class GetDashboardDataModel {
     }
     print('json postProgram: ${json['Postprogram']['value'].runtimeType}');
     if(json['Postprogram'] != null && json['Postprogram']['data'] != null){
-      if(json['Postprogram']['value'].runtimeType == String){
+      if(json['Postprogram']['value'].runtimeType == String || json['Postprogram']['value'] == null){
         normal_postprogram = GutDataModel.fromJson(json['Postprogram']);
       }
       else{

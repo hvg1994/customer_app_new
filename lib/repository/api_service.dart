@@ -1322,7 +1322,8 @@ class ApiClient {
           headers: {
             "Authorization": getHeaderToken(),
           },
-          body: bodyParam);
+          body: bodyParam
+      );
 
       print(
           'submitPostProgramMealTrackingApi Response status: ${response.statusCode}');
@@ -1345,6 +1346,7 @@ class ApiClient {
     return result;
   }
 
+  /// selectedType ==> breakfast/lunch/dinner
   Future getBreakfastOnclickApi(String day) async {
     var url = '$getBreakfastOnclickUrl/$day';
 
@@ -1477,6 +1479,98 @@ class ApiClient {
     }
     return result;
   }
+
+  Future submitDoctorRequestedReportApi(String reportId, dynamic multipartFile) async {
+    final path = submitDoctorRequestedReportUrl;
+
+    var result;
+    var startTime = DateTime.now().millisecondsSinceEpoch;
+
+    try {
+      var request = http.MultipartRequest('POST', Uri.parse(path));
+      var headers = {
+        "Authorization": getHeaderToken(),
+      };
+      request.headers.addAll(headers);
+
+      request.fields.addAll({
+        'report_id': reportId
+      });
+      request.files.add(multipartFile);
+
+      request.persistentConnection = false;
+
+
+      // reportList.forEach((element) async {
+      //   request.files.add(await http.MultipartFile.fromPath('files[]', element));
+      // });
+
+      var response = await http.Response.fromStream(await request.send())
+          .timeout(Duration(seconds: 45));
+
+      print("uploadReportApi response code:" + path);
+      print("uploadReportApi response code:" + response.statusCode.toString());
+      print("uploadReportApi response body:" + response.body);
+      var totalTime = DateTime.now().millisecondsSinceEpoch - startTime;
+      print(
+          "start: $startTime end: ${DateTime.now().millisecondsSinceEpoch}  total: $totalTime");
+
+      print("response Time:" + (totalTime / 1000).round().toString());
+
+      final res = jsonDecode(response.body);
+      print('${res['status'].runtimeType} ${res['status']}');
+      if (res['status'].toString() == '200') {
+        result = ReportUploadModel.fromJson(res);
+      } else {
+        result = ErrorModel.fromJson(res);
+      }
+    } catch (e) {
+      print("catch error: ${e}");
+      result = ErrorModel(status: "0", message: e.toString());
+    }
+    return result;
+  }
+
+  Future doctorRequestedReportListApi() async {
+    final String path = doctorRequestedReportListUrl;
+
+    print('doctorRequestedReportListApi Response header: $path');
+    dynamic result;
+
+    try {
+      final response = await httpClient
+          .get(
+        Uri.parse(path),
+        headers: {
+          "Authorization": getHeaderToken(),
+        },
+      )
+          .timeout(const Duration(seconds: 45));
+
+      print('doctorRequestedReportListApi Response header: $path');
+      print('doctorRequestedReportListApi Response status: ${response.statusCode}');
+      print('doctorRequestedReportListApi Response body: ${response.body}');
+      final json = jsonDecode(response.body);
+
+      print('doctorRequestedReportListApi result: $json');
+
+      if (response.statusCode != 200) {
+        result = ErrorModel(
+            status: response.statusCode.toString(), message: response.body);
+      } else {
+        if (json['status'] != 200) {
+          result = ErrorModel.fromJson(json);
+        } else {
+          result = GetReportListModel.fromJson(json);
+        }
+      }
+    } catch (e) {
+      result = ErrorModel(status: "0", message: e.toString());
+    }
+    return result;
+  }
+
+
 
   void storeShipRocketToken(ShipRocketTokenModel result) {
     _prefs!.setString(AppConfig().shipRocketBearer, result.token ?? '');

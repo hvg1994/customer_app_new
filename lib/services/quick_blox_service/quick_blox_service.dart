@@ -174,7 +174,7 @@ class QuickBloxService extends ChangeNotifier{
     }
   }
 
-  void disconnect() async {
+  Future disconnect() async {
     try {
       await QB.chat.disconnect();
       print("The chat was disconnected}");

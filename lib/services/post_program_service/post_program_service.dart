@@ -12,15 +12,18 @@ class PostProgramService extends ChangeNotifier{
   Future startPostProgramService() async{
     return await repository.startPostProgramRepo();
   }
-  Future getBreakfastService(String day) async{
-    return await repository.getBreakfastRepo(day);
+  Future getBreakfastService(String day, {required String selectedType}) async{
+    if(selectedType == 'breakfast'){
+      return await repository.getBreakfastRepo(day);
+    }
+    else if(selectedType == 'lunch'){
+      return await repository.getLunchRepo(day);
+    }
+    else if(selectedType == 'dinner'){
+      return await repository.getDinnerRepo(day);
+    }
   }
-  Future getLunchService(String day) async{
-    return await repository.getLunchRepo(day);
-  }
-  Future getDinnerService(String day) async{
-    return await repository.getDinnerRepo(day);
-  }
+
   Future submitPostProgramMealTrackingService(String mealType, int selectedType, int? dayNumber) async{
     return await repository.submitPostProgramMealTrackingRepo(mealType, selectedType, dayNumber);
   }

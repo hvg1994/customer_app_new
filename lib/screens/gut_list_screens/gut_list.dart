@@ -29,6 +29,7 @@ import '../../repository/profile_repository/get_user_profile_repo.dart';
 import '../../repository/shipping_repository/ship_track_repo.dart';
 import '../../services/profile_screen_service/user_profile_service.dart';
 import '../../utils/app_config.dart';
+import '../../widgets/open_alert_box.dart';
 import '../appointment_screens/consultation_screens/consultation_success.dart';
 import '../appointment_screens/consultation_screens/medical_report_screen.dart';
 import '../appointment_screens/doctor_slots_details_screen.dart';
@@ -113,12 +114,16 @@ class GutListState extends State<GutList> {
   // }
 
   getData() async{
+    WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
+      openProgressDialog(context);
+    });
     _gutDataService = GutDataService(repository: repository);
     final _getData = await _gutDataService.getGutDataService();
     print("_getData: $_getData");
     if(_getData.runtimeType == ErrorModel){
       ErrorModel model = _getData;
       print(model.message);
+      Navigator.pop(context);
     }
     else{
       GetDashboardDataModel _getDashboardDataModel = _getData as GetDashboardDataModel;
@@ -173,6 +178,9 @@ class GutListState extends State<GutList> {
         if(postProgramStage != null && postProgramStage!.isNotEmpty){
           isSelected = "Post Program";
         }
+
+        Navigator.pop(context);
+
       });
     }
   }
@@ -322,7 +330,7 @@ class GutListState extends State<GutList> {
       },
       child: Container(
           padding:
-              EdgeInsets.only(left: 2.w, top: 0.5.h, bottom: 0.5.h, right: 5.w),
+          EdgeInsets.only(left: 2.w, top: 0.5.h, bottom: 0.5.h, right: 5.w),
           margin: EdgeInsets.symmetric(vertical: 1.5.h),
           decoration: BoxDecoration(
             // color: kWhiteColor,
@@ -331,46 +339,46 @@ class GutListState extends State<GutList> {
             border: Border.all(color: gMainColor.withOpacity(0.3), width: 1),
             boxShadow: (isSelected != programsData.title)
                 ? [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.5),
-                      blurRadius: 1,
-                    ),
-                  ]
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.5),
+                blurRadius: 1,
+              ),
+            ]
                 : [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.5),
-                      blurRadius: 20,
-                      offset: const Offset(2, 10),
-                    ),
-                  ],
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.5),
+                blurRadius: 20,
+                offset: const Offset(2, 10),
+              ),
+            ],
           ),
           child: Row(
             children: [
               (isSelected == programsData.title)
                   ? Container(
-                      margin:
-                          EdgeInsets.symmetric(horizontal: 2.w, vertical: 1.h),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: gMainColor),
-                      ),
-                      child: Image(
-                        height: 9.h,
-                        image: AssetImage(programsData.image),
-                      ),
-                    )
+                margin:
+                EdgeInsets.symmetric(horizontal: 2.w, vertical: 1.h),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: gMainColor),
+                ),
+                child: Image(
+                  height: 9.h,
+                  image: AssetImage(programsData.image),
+                ),
+              )
                   : ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: ColorFiltered(
-                        colorFilter: ColorFilter.mode(
-                            (programsData.isCompleted) ? Colors.transparent : Colors.grey,
-                            BlendMode.darken),
-                        child: Image(
-                          height: 9.h,
-                          image: AssetImage(programsData.image),
-                        ),
-                      ),
-                    ),
+                borderRadius: BorderRadius.circular(10),
+                child: ColorFiltered(
+                  colorFilter: ColorFilter.mode(
+                      (programsData.isCompleted) ? Colors.transparent : Colors.grey,
+                      BlendMode.darken),
+                  child: Image(
+                    height: 9.h,
+                    image: AssetImage(programsData.image),
+                  ),
+                ),
+              ),
               SizedBox(width: 3.w),
               Expanded(
                 child: Text(
@@ -386,93 +394,93 @@ class GutListState extends State<GutList> {
               ),
               (isSelected == programsData.title)
                   ? InkWell(
-                      onTap: () {
-                        if (programsData.title == "Consultation") {
-                          if(consultationStage != null){
-                            showConsultationScreenFromStages(consultationStage!);
-                          }
-                          else{
-                          //  show dialog or snackbar
-                          }
+                  onTap: () {
+                    if (programsData.title == "Consultation") {
+                      if(consultationStage != null){
+                        showConsultationScreenFromStages(consultationStage!);
+                      }
+                      else{
+                        //  show dialog or snackbar
+                      }
+                    }
+                    else if (programsData.title == "Shipping") {
+                      print(shippingStage!.isNotEmpty);
+                      // Navigator.of(context).push(
+                      //   PageRouteBuilder(
+                      //     opaque: false, // set to false
+                      //     pageBuilder: (_, __, ___) => MealPopup(yesButton: () {
+                      //       Navigator.pop(context);
+                      //     }),
+                      //   ),
+                      // );
+                      if(shippingStage != null && shippingStage!.isNotEmpty){
+                        if(_shippingApprovedModel != null){
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => CookKitTracking(awb_number: _shippingApprovedModel?.value?.awbCode ?? '',currentStage: shippingStage!,),
+                            ),
+                          ).then((value) => reloadUI());
                         }
-                        else if (programsData.title == "Shipping") {
-                          print(shippingStage!.isNotEmpty);
-                          // Navigator.of(context).push(
-                          //   PageRouteBuilder(
-                          //     opaque: false, // set to false
-                          //     pageBuilder: (_, __, ___) => MealPopup(yesButton: () {
-                          //       Navigator.pop(context);
-                          //     }),
-                          //   ),
-                          // );
-                          if(shippingStage != null && shippingStage!.isNotEmpty){
-                            if(_shippingApprovedModel != null){
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => CookKitTracking(awb_number: _shippingApprovedModel?.value?.awbCode ?? '',currentStage: shippingStage!,),
-                                ),
-                              ).then((value) => reloadUI());
-                            }
-                            else{
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => CookKitTracking(currentStage: shippingStage ?? ''),
-                                ),
-                              ).then((value) => reloadUI());
-                            }
-                          }
+                        else{
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => CookKitTracking(currentStage: shippingStage ?? ''),
+                            ),
+                          ).then((value) => reloadUI());
                         }
-                        else if (programsData.title == "Programs") {
-                          if(shippingStage == "shipping_delivered" && programOptionStage != null){
-                            if(_getProgramModel!.value!.startProgram == '0'){
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => const ProgramPlanScreen(),
-                                ),
-                              ).then((value) => reloadUI());
-                            }
-                            else{
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => DaysProgramPlan(postProgramStage: postProgramStage,),
-                                ),
-                              ).then((value) => reloadUI());
-                            }
-                          }
-                          else{
-                            AppConfig().showSnackbar(context, "program stage not getting", isError:  true);
-                          }
+                      }
+                    }
+                    else if (programsData.title == "Programs") {
+                      if(shippingStage == "shipping_delivered" && programOptionStage != null){
+                        if(_getProgramModel!.value!.startProgram == '0'){
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => const ProgramPlanScreen(),
+                            ),
+                          ).then((value) => reloadUI());
                         }
-                        else if (programsData.title == "Post Program") {
-                          if(postProgramStage != null && _postConsultationAppointment != null){
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => PostProgramScreen(postProgramStage: postProgramStage,consultationData: _postConsultationAppointment,),
-                              ),
-                            ).then((value) => reloadUI());
-                          }
-                          else{
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => PostProgramScreen(postProgramStage: postProgramStage,),
-                              ),
-                            ).then((value) => reloadUI());
-                          }
+                        else{
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => DaysProgramPlan(postProgramStage: postProgramStage,),
+                            ),
+                          ).then((value) => reloadUI());
                         }
-                      },
-                      child: (programsData.isCompleted) ? Icon(Icons.check_circle_outline) :
-                      Image(
-                        height: 3.h,
-                        image: const AssetImage(
-                            "assets/images/noun-arrow-1018952.png"),
-                      )
-                    )
+                      }
+                      else{
+                        AppConfig().showSnackbar(context, "program stage not getting", isError:  true);
+                      }
+                    }
+                    else if (programsData.title == "Post Program") {
+                      if(postProgramStage != null && _postConsultationAppointment != null){
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => PostProgramScreen(postProgramStage: postProgramStage,consultationData: _postConsultationAppointment,),
+                          ),
+                        ).then((value) => reloadUI());
+                      }
+                      else{
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => PostProgramScreen(postProgramStage: postProgramStage,),
+                          ),
+                        ).then((value) => reloadUI());
+                      }
+                    }
+                  },
+                  child: (programsData.isCompleted) ? Icon(Icons.check_circle_outline) :
+                  Image(
+                    height: 3.h,
+                    image: const AssetImage(
+                        "assets/images/noun-arrow-1018952.png"),
+                  )
+              )
                   : Container(
                 margin: EdgeInsets.only(right: 6),
-                      width: 2.w,
+                width: 2.w,
                 child: (programsData.isCompleted) ? Icon(Icons.check_circle_outline, color: gPrimaryColor,) : SizedBox(),
-                    ),
+              ),
             ],
           )
       ),
@@ -638,8 +646,8 @@ class GutListState extends State<GutList> {
     // }
   }
 
-  reloadUI(){
-    getData();
+  Future<void> reloadUI() async{
+    await getData();
     setState(() { });
   }
 

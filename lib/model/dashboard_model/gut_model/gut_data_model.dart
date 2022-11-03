@@ -6,7 +6,7 @@ class GutDataModel {
 
   GutDataModel.fromJson(Map<String, dynamic> json) {
     data = json['data'];
-    value = json['value'];
+    value = json['value'] ?? '';
   }
 
   Map<String, dynamic> toJson() {

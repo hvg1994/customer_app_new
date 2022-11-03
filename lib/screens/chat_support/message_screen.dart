@@ -204,130 +204,230 @@ class _MessageScreenState extends State<MessageScreen>
   @override
   Widget build(BuildContext context) {
     return UnfocusWidget(
-      child: SafeArea(
-        child: Scaffold(
-          key: _scaffoldKey,
-          body: Container(
-            color: gsecondaryColor,
-            child: Stack(
-              children: [
-                Column(
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.only(top: 2.h, left: 4.w, right: 4.w),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          buildAppBar(() {
-                            Navigator.pop(context);
-                          }),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
+      child: WillPopScope(
+        onWillPop: _onWillPop,
+        child: SafeArea(
+          child: Scaffold(
+            key: _scaffoldKey,
+            body: Container(
+              color: gsecondaryColor,
+              child: Stack(
+                children: [
+                  Column(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(top: 2.h, left: 4.w, right: 4.w),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            buildAppBar(() {
+                              Navigator.pop(context);
+                            }),
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  "Ms. Lorem Ipsum Daries",
+                                  style: TextStyle(
+                                      fontFamily: "PoppinsRegular",
+                                      color: gWhiteColor,
+                                      fontSize: 10.sp),
+                                ),
+                                SizedBox(height: 0.5.h),
+                                Text(
+                                  "Age : 26 Female",
+                                  style: TextStyle(
+                                      fontFamily: "PoppinsLight",
+                                      color: gWhiteColor,
+                                      fontSize: 9.sp),
+                                ),
+                                SizedBox(height: 2.h),
+                              ],
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                callSupport();
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.all(5),
+                                decoration: BoxDecoration(
+                                  color: gWhiteColor.withOpacity(0.3),
+                                  borderRadius: BorderRadius.circular(50),
+                                ),
+                                child: const Icon(
+                                  Icons.local_phone,
+                                  color: gPrimaryColor,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: 3.h),
+                      Expanded(
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 2.w, vertical: 1.h),
+                          width: double.maxFinite,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            boxShadow: [
+                              BoxShadow(
+                                  blurRadius: 2,
+                                  color: Colors.grey.withOpacity(0.5))
+                            ],
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(20),
+                              topRight: Radius.circular(20),
+                            ),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                "Ms. Lorem Ipsum Daries",
-                                style: TextStyle(
-                                    fontFamily: "PoppinsRegular",
-                                    color: gWhiteColor,
-                                    fontSize: 10.sp),
+                              Expanded(
+                                child: RawScrollbar(
+                                    isAlwaysShown: false,
+                                    thickness: 3,
+                                    controller: _scrollController,
+                                    radius: Radius.circular(3),
+                                    thumbColor: gMainColor,
+                                    child: StreamBuilder(
+                                      stream: _quickBloxService!.stream.stream
+                                          .asBroadcastStream(),
+                                      builder: (_, snapshot) {
+                                        print("snap.data: ${snapshot.data}");
+                                        if (snapshot.hasData) {
+                                          return buildMessageList(snapshot.data
+                                              as List<QBMessageWrapper>);
+                                        } else if (snapshot.hasError) {
+                                          return Center(
+                                            child:
+                                                Text(snapshot.error.toString()),
+                                          );
+                                        }
+                                        return Center(
+                                          child: CircularProgressIndicator(),
+                                        );
+                                      },
+                                    )),
                               ),
-                              SizedBox(height: 0.5.h),
-                              Text(
-                                "Age : 26 Female",
-                                style: TextStyle(
-                                    fontFamily: "PoppinsLight",
-                                    color: gWhiteColor,
-                                    fontSize: 9.sp),
-                              ),
-                              SizedBox(height: 2.h),
+                              _buildEnterMessageRow(),
                             ],
                           ),
-                          GestureDetector(
-                            onTap: () {
-                              callSupport();
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.all(5),
-                              decoration: BoxDecoration(
-                                color: gWhiteColor.withOpacity(0.3),
-                                borderRadius: BorderRadius.circular(50),
-                              ),
-                              child: const Icon(
-                                Icons.local_phone,
-                                color: gPrimaryColor,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 3.h),
-                    Expanded(
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 2.w, vertical: 1.h),
-                        width: double.maxFinite,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          boxShadow: [
-                            BoxShadow(
-                                blurRadius: 2,
-                                color: Colors.grey.withOpacity(0.5))
-                          ],
-                          borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(20),
-                            topRight: Radius.circular(20),
-                          ),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: RawScrollbar(
-                                  isAlwaysShown: false,
-                                  thickness: 3,
-                                  controller: _scrollController,
-                                  radius: Radius.circular(3),
-                                  thumbColor: gMainColor,
-                                  child: StreamBuilder(
-                                    stream: _quickBloxService!.stream.stream
-                                        .asBroadcastStream(),
-                                    builder: (_, snapshot) {
-                                      print("snap.data: ${snapshot.data}");
-                                      if (snapshot.hasData) {
-                                        return buildMessageList(snapshot.data
-                                            as List<QBMessageWrapper>);
-                                      } else if (snapshot.hasError) {
-                                        return Center(
-                                          child:
-                                              Text(snapshot.error.toString()),
-                                        );
-                                      }
-                                      return Center(
-                                        child: CircularProgressIndicator(),
-                                      );
-                                    },
-                                  )),
-                            ),
-                            _buildEnterMessageRow(),
-                          ],
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                // if(isLoading)
-                // Positioned(
-                //   child: Center(child: CircularProgressIndicator()),
-                // )
-              ],
+                    ],
+                  ),
+                  // if(isLoading)
+                  // Positioned(
+                  //   child: Center(child: CircularProgressIndicator()),
+                  // )
+                ],
+              ),
             ),
           ),
         ),
       ),
     );
   }
+
+  Future<bool> _onWillPop() async {
+    print('back pressed chat');
+    return await showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          backgroundColor: kPrimaryColor,
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(15.0.sp))),
+          contentPadding: EdgeInsets.only(top: 1.h),
+          content: Container(
+            padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 2.h),
+            decoration: BoxDecoration(
+                color: gWhiteColor, borderRadius: BorderRadius.circular(8)),
+            width: 50.h,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Text(
+                  'Are you sure?',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontFamily: "GothamRoundedBold_21016",
+                      color: gPrimaryColor,
+                      fontSize: 13.sp),
+                ),
+                Container(
+                  margin: EdgeInsets.symmetric(vertical: 2.h),
+                  height: 1,
+                  color: Colors.grey.withOpacity(0.3),
+                ),
+                Text(
+                  'Do you want to end the chat?',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontFamily: "GothamMedium",
+                      color: gsecondaryColor,
+                      fontSize: 11.sp),
+                ),
+                SizedBox(height: 3.h),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    GestureDetector(
+                      onTap: () => Navigator.pop(context),
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                            vertical: 1.h, horizontal: 5.w),
+                        decoration: BoxDecoration(
+                            color: gMainColor,
+                            borderRadius: BorderRadius.circular(5)),
+                        child: Text(
+                          "NO",
+                          style: TextStyle(
+                            fontFamily: "GothamRoundedBold_21016",
+                            color: gPrimaryColor,
+                            fontSize: 11.sp,
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 5.w),
+                    GestureDetector(
+                      onTap: () async{
+                        await _quickBloxService!.disconnect().then((value) {
+                          Navigator.pop(context);
+                          Navigator.pop(context);
+                        });
+                      },
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                            vertical: 1.h, horizontal: 5.w),
+                        decoration: BoxDecoration(
+                            color: gPrimaryColor,
+                            borderRadius: BorderRadius.circular(5)),
+                        child: Text(
+                          "YES",
+                          style: TextStyle(
+                            fontFamily: "GothamRoundedBold_21016",
+                            color: gMainColor,
+                            fontSize: 11.sp,
+                          ),
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+                SizedBox(height: 1.h)
+              ],
+            ),
+          ),
+        )) ??
+        false;
+  }
+
 
   Widget _buildEnterMessageRow() {
     return SafeArea(

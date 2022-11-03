@@ -50,6 +50,9 @@ class _CookKitTrackingState extends State<CookKitTracking>{
 
   Map<String, List<ChildGetShoppingModel>> shoppingData = {};
 
+  Map<String, List<ChildGetShoppingModel>> sortedData = {};
+
+
   List dayList = [];
   List<ChildGetShoppingModel> shoppingList = [];
 
@@ -132,7 +135,7 @@ class _CookKitTrackingState extends State<CookKitTracking>{
   }
 
   shoppingUi(){
-    if(shoppingData.isNotEmpty){
+    if(sortedData.isNotEmpty){
       return tableView();
     }
     else{
@@ -141,86 +144,101 @@ class _CookKitTrackingState extends State<CookKitTracking>{
   }
 
   tableView(){
+    print("len: ${sortedData.entries.length}");
     return ListView.builder(
-      itemCount: shoppingData.entries.length,
+      itemCount: sortedData.entries.length,
         itemBuilder: (_, index){
           // print(shoppingData.entries);
           // print(shoppingData.entries.first.key);
           // print(index);
           // print(shoppingData.entries.elementAt(index).key);
-          return  Visibility(
-            visible: shoppingData.entries.elementAt(index).value.isNotEmpty,
-            child: Padding(
+          return  Padding(
         padding: const EdgeInsets.symmetric(vertical: 8),
         child: Container(
-            // width: 85.w,
-            margin: EdgeInsets.symmetric(horizontal: 2.w),
-            decoration: BoxDecoration(
-              color: gWhiteColor,
-              // border: Border.all(color: gsecondaryColor.withOpacity(0.3), width: 1),
-              borderRadius: BorderRadius.circular(8),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.4),
-                  blurRadius: 2.0,
-                  spreadRadius: 0.0,
-                  offset: const Offset(2.0, 2.0), // shadow direction: bottom right
-                )
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-                  child: Text('Day ${shoppingData.entries.elementAt(index).key}',
-                      style: TextStyle(
-                        color: gPrimaryColor,
-                        fontSize: 11.sp,
-                        fontFamily: "GothamBold",
-                      )
-                  ),
+          // width: 85.w,
+          margin: EdgeInsets.symmetric(horizontal: 2.w),
+          decoration: BoxDecoration(
+            color: gWhiteColor,
+            // border: Border.all(color: gsecondaryColor.withOpacity(0.3), width: 1),
+            borderRadius: BorderRadius.circular(8),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.4),
+                blurRadius: 2.0,
+                spreadRadius: 0.0,
+                offset: const Offset(2.0, 2.0), // shadow direction: bottom right
+              )
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                child: Text('Day ${sortedData.entries.elementAt(index).key}',
+                    style: TextStyle(
+                      color: gPrimaryColor,
+                      fontSize: 11.sp,
+                      fontFamily: "GothamBold",
+                    )
                 ),
-                ListView.builder(
-                    physics: NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    itemCount: shoppingData.entries.elementAt(index).value.length,
-                    itemBuilder: (_, ind){
-                      print("meal name");
-                      print(shoppingData.entries.elementAt(index).value[ind].mealItemWeight?.mealItem?.name);
+              ),
+              ListView.builder(
+                  physics: NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  itemCount: sortedData.entries.elementAt(index).value.length,
+                  itemBuilder: (_, ind){
+                    print("meal name");
+                    print(sortedData.entries.elementAt(index).value[ind].mealItemWeight?.mealItem?.name);
 
-                      print('${shoppingData.entries.elementAt(index).key} == ${shoppingData.entries.first.key}');
-                      return Stack(
-                        children: [
-                          Container(
-                            height: (shoppingData.entries.elementAt(index).key == shoppingData.entries.first.key && ind ==0) ? 5.h : 0,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(8),
-                                  topRight: Radius.circular(8)
-                              ),
-                              gradient: (shoppingData.keys.first == shoppingData.entries.first.key && ind ==0) ? LinearGradient(colors: [
-                                Color(0xffE06666),
-                                Color(0xff93C47D),
-                                Color(0xffFFD966),
-                              ], begin: Alignment.topLeft, end: Alignment.topRight) : null,
+                    print('${sortedData.entries.elementAt(index).key} == ${sortedData.entries.first.key}');
+                    return Stack(
+                      children: [
+                        Container(
+                          height: (sortedData.entries.elementAt(index).key == sortedData.entries.first.key && ind ==0) ? 5.h : 0,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(8),
+                                topRight: Radius.circular(8)
                             ),
+                            gradient: (sortedData.keys.first == sortedData.entries.first.key || ind ==0) ? LinearGradient(colors: [
+                              Color(0xffE06666),
+                              Color(0xff93C47D),
+                              Color(0xffFFD966),
+                            ], begin: Alignment.topLeft, end: Alignment.topRight) : null,
                           ),
-                          Center(
-                            child: DataTable(
-                                headingTextStyle: TextStyle(
-                                  color: gWhiteColor,
-                                  fontSize: 5.sp,
-                                  fontFamily: "GothamMedium",
+                        ),
+                        Center(
+                          child: DataTable(
+                              headingTextStyle: TextStyle(
+                                color: gWhiteColor,
+                                fontSize: 5.sp,
+                                fontFamily: "GothamMedium",
+                              ),
+                              headingRowHeight: (sortedData.entries.elementAt(index).key == sortedData.entries.first.key && ind ==0) ? 5.h : 0,
+                              horizontalMargin: 2.w,
+                              columnSpacing: 40.w,
+                              dataRowHeight: 7.h,
+                              // headingRowColor: MaterialStateProperty.all(const Color(0xffE06666)),
+                              columns:  <DataColumn>[
+                                DataColumn(
+                                  label: Text('Meal Name',
+                                    style: TextStyle(
+                                      height: 1.5,
+                                      color: gWhiteColor,
+                                      fontSize: 11.sp,
+                                      fontFamily: "GothamBold",
+                                    ),
+                                  ),
                                 ),
-                                headingRowHeight: (shoppingData.entries.elementAt(index).key == shoppingData.entries.first.key && ind ==0) ? 5.h : 0,
-                                horizontalMargin: 2.w,
-                                columnSpacing: 40.w,
-                                dataRowHeight: 7.h,
-                                // headingRowColor: MaterialStateProperty.all(const Color(0xffE06666)),
-                                columns:  <DataColumn>[
-                                  DataColumn(
-                                    label: Text('Meal Name',
+                                DataColumn(
+                                  label: ConstrainedBox(
+                                    constraints: const BoxConstraints(
+                                      maxWidth: 80,
+                                      minWidth: 20,
+                                    ),
+                                    child: Text('Quantity',
+                                      textAlign: TextAlign.right,
                                       style: TextStyle(
                                         height: 1.5,
                                         color: gWhiteColor,
@@ -229,71 +247,54 @@ class _CookKitTrackingState extends State<CookKitTracking>{
                                       ),
                                     ),
                                   ),
-                                  DataColumn(
-                                    label: ConstrainedBox(
-                                      constraints: const BoxConstraints(
-                                        maxWidth: 80,
-                                        minWidth: 20,
-                                      ),
-                                      child: Text('Quantity',
-                                        textAlign: TextAlign.right,
-                                        style: TextStyle(
-                                          height: 1.5,
-                                          color: gWhiteColor,
-                                          fontSize: 11.sp,
-                                          fontFamily: "GothamBold",
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                                rows: [
-                                  DataRow(
-                                    cells: [
-                                      DataCell(
-                                          Text(
-                                            shoppingData.entries.elementAt(index).value[ind].mealItemWeight?.mealItem?.name?.trimLeft() ?? '',
-                                            // value[ind].mealItemWeight?.mealItem?.name ?? '',
-                                            // e.mealItemWeight!.mealItem!.name.toString(),
-                                            textAlign: TextAlign.left,
-                                            style: TextStyle(
-                                              height: 1.5,
-                                              color: gTextColor,
-                                              fontSize: 8.sp,
-                                              fontFamily: "GothamBold",
-                                            ),
-                                          )
-                                      ),
-                                      DataCell(
+                                ),
+                              ],
+                              rows: [
+                                DataRow(
+                                  cells: [
+                                    DataCell(
                                         Text(
-                                          shoppingData.entries.elementAt(index).value[ind].itemWeight?.trim() ?? '',
-                                          // " ${value[ind].itemWeight}" ?? '',
-                                          // maxLines: 3,
-                                          textAlign: TextAlign.start,
-                                          overflow: TextOverflow.ellipsis,
+                                          sortedData.entries.elementAt(index).value[ind].mealItemWeight?.mealItem?.name?.trimLeft() ?? '',
+                                          // value[ind].mealItemWeight?.mealItem?.name ?? '',
+                                          // e.mealItemWeight!.mealItem!.name.toString(),
+                                          textAlign: TextAlign.left,
                                           style: TextStyle(
                                             height: 1.5,
                                             color: gTextColor,
                                             fontSize: 8.sp,
-                                            fontFamily: "GothamBook",
+                                            fontFamily: "GothamBold",
                                           ),
+                                        )
+                                    ),
+                                    DataCell(
+                                      Text(
+                                        sortedData.entries.elementAt(index).value[ind].itemWeight?.trim() ?? '',
+                                        // " ${value[ind].itemWeight}" ?? '',
+                                        // maxLines: 3,
+                                        textAlign: TextAlign.start,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                          height: 1.5,
+                                          color: gTextColor,
+                                          fontSize: 8.sp,
+                                          fontFamily: "GothamBook",
                                         ),
-                                        placeholder: true,
                                       ),
-                                    ],
-                                  )
-                                ]
-                            ),
+                                      placeholder: true,
+                                    ),
+                                  ],
+                                )
+                              ]
                           ),
-                        ],
-                      );
-                    }
-                ),
-              ],
-            ),
+                        ),
+                      ],
+                    );
+                  }
+              ),
+            ],
+          ),
         ),
-      ),
-          );
+      );
     });
   }
 
@@ -947,6 +948,11 @@ class _CookKitTrackingState extends State<CookKitTracking>{
         dayList = shoppingData.keys.toList();
         shoppingData.values.forEach((element) {
           shoppingList.addAll(element);
+        });
+        shoppingData.entries.forEach((element) {
+          if(element.value.isNotEmpty){
+            sortedData.putIfAbsent(element.key, () => element.value);
+          }
         });
       }
       setState(() {

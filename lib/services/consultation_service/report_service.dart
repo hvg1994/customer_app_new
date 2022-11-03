@@ -14,4 +14,12 @@ class ReportService extends ChangeNotifier{
   Future getUploadedReportListListService() async{
     return await repository.getUploadedReportListListRepo();
   }
+
+  Future submitDoctorRequestedReportService(String reportId, dynamic multipartFile) async{
+    return await repository.submitDoctorRequestedReportRepo(reportId, multipartFile);
+  }
+
+  Future doctorRequestedReportListService() async{
+    return await repository.doctorRequestedReportListRepo();
+  }
 }

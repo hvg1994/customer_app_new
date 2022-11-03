@@ -8,7 +8,7 @@ class ReportUploadModel {
   ReportUploadModel.fromJson(Map<String, dynamic> json) {
     status = json['status'];
     errorCode = json['errorCode'];
-    errorMsg = json['errorMsg'];
+    errorMsg = json['errorMsg'] ?? json['msg'] ?? json['message'];
   }
 
   Map<String, dynamic> toJson() {

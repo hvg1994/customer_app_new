@@ -78,6 +78,9 @@ var getDinnerOnclickUrl = "${AppConfig().BASE_URL}/api/getDataList/protocol_guid
 /// if user already submited details based on the day selection details will get
 var getProtocolDayDetailsUrl = "${AppConfig().BASE_URL}/api/getDataList/protocol_guide_day_score";
 
+var doctorRequestedReportListUrl = "${AppConfig().BASE_URL}/api/getData/requested_reports_list";
+
+var submitDoctorRequestedReportUrl = "${AppConfig().BASE_URL}/api/submitForm/requested_user_report";
 
 
 //  old apis
