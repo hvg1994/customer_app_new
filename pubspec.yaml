@@ -74,6 +74,7 @@ dependencies:
   catcher: ^0.6.9
   mime: any
   photo_view: any
+  level_map: ^0.2.0
 #  change_app_package_name: ^1.1.0
 
 dev_dependencies:
@@ -102,6 +103,7 @@ flutter:
   assets:
     - assets/images/
     - assets/lottie/
+    - assets/images/notification/
   #   - images/a_dot_ham.jpeg
 
   fonts:

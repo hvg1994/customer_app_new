@@ -7,6 +7,7 @@ import 'package:gwc_customer/model/profile_model/logout_model.dart';
 import 'package:gwc_customer/screens/appointment_screens/consultation_screens/upload_files.dart';
 import 'package:gwc_customer/screens/chat_support/message_screen.dart';
 import 'package:gwc_customer/screens/evalution_form/personal_details_screen.dart';
+import 'package:gwc_customer/screens/notification_screen.dart';
 import 'package:gwc_customer/screens/profile_screens/call_support_method.dart';
 import 'package:gwc_customer/screens/profile_screens/faq_screen.dart';
 import 'package:gwc_customer/screens/profile_screens/terms_conditions_screen.dart';
@@ -52,7 +53,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                buildAppBar(() => null, isBackEnable: false),
+                buildAppBar(() => null, isBackEnable: false,
+                    showNotificationIcon: true,
+                    notificationOnTap: (){
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => NotificationScreen()));
+                    }
+                ),
                 SizedBox(
                   height: 3.h,
                 ),

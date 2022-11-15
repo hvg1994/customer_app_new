@@ -414,7 +414,7 @@ class _DaysProgramPlanState extends State<DaysProgramPlan> {
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 3.w),
                 child: Text(
-                  "Your Have completed the 15 days Meal Plan, Now you can proceed to Post Protocol",
+                  "You Have completed the 15 days Meal Plan, Now you can proceed to Post Protocol",
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     height: 1.5,
@@ -516,7 +516,10 @@ class _DaysProgramPlanState extends State<DaysProgramPlan> {
       if(res.runtimeType == StartPostProgramModel){
         StartPostProgramModel model = res as StartPostProgramModel;
         print("start program: ${model.response}");
-        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => DashboardScreen()), (route) => true);
+        AppConfig().showSnackbar(context, "Post Program started" ?? '');
+        Future.delayed(Duration(seconds: 2)).then((value) {
+          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => DashboardScreen()), (route) => true);
+        });
       }
     }
   }

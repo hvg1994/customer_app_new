@@ -23,3 +23,7 @@ const kSectionColor = Color(0xffFF597D);
 const kSoundColor = Color(0xffE6A790);
 const kDetailsColor = Color(0xffFF5A7F);
 const kHealthColor = Color(0xffD10034);
+
+const kDividerColor = Color(0xff000029);
+
+

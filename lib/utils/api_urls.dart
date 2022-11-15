@@ -82,6 +82,8 @@ var doctorRequestedReportListUrl = "${AppConfig().BASE_URL}/api/getData/requeste
 
 var submitDoctorRequestedReportUrl = "${AppConfig().BASE_URL}/api/submitForm/requested_user_report";
 
+var notificationListUrl = "${AppConfig().BASE_URL}/api/getData/notification_list";
+
 
 //  old apis
 // var welcomeTextUrl = "${AppConfig().BASE_URL}/api/list/welcome_text";

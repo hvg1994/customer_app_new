@@ -9,6 +9,7 @@ import 'package:gwc_customer/repository/dashboard_repo/gut_repository/dashboard_
 import 'package:gwc_customer/screens/appointment_screens/consultation_screens/consultation_rejected.dart';
 import 'package:gwc_customer/screens/appointment_screens/consultation_screens/upload_files.dart';
 import 'package:gwc_customer/screens/gut_list_screens/meal_popup.dart';
+import 'package:gwc_customer/screens/notification_screen.dart';
 import 'package:gwc_customer/screens/post_program_screens/post_program_screen.dart';
 import 'package:gwc_customer/screens/profile_screens/call_support_method.dart';
 import 'package:gwc_customer/screens/program_plans/program_start_screen.dart';
@@ -205,7 +206,12 @@ class GutListState extends State<GutList> {
             children: [
               buildAppBar(() {
                 Navigator.pop(context);
-              }, isBackEnable: false),
+              }, isBackEnable: false,
+                showNotificationIcon: true,
+                notificationOnTap: (){
+                Navigator.push(context, MaterialPageRoute(builder: (_) => NotificationScreen()));
+                }
+              ),
               SizedBox(height: 3.h),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,

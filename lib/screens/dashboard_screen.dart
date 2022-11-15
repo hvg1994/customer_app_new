@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:gwc_customer/screens/notification_screen.dart';
 import 'package:gwc_customer/screens/post_program_screens/post_program_screen.dart';
+import 'package:gwc_customer/screens/profile_screens/reward/reward_screen.dart';
 import 'package:gwc_customer/screens/profile_screens/settings_screen.dart';
 import 'package:sizer/sizer.dart';
 
@@ -60,7 +62,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     switch (index) {
       case 0:
         {
-          return const PostProgramScreen();
+          return const RewardScreen();
         }
       case 1:
         {

@@ -176,34 +176,48 @@ SnackbarController buildSnackBar(String title, String subTitle) {
   );
 }
 
-buildAppBar(VoidCallback func, {bool isBackEnable = true}) {
-  return GestureDetector(
-    onTap: (isBackEnable) ? func : null,
-    child: Row(
-      children: [
-        Visibility(
-          visible: isBackEnable,
-          child: SizedBox(
-            height: 2.h,
-            child: InkWell(
-              onTap: func,
-              child: const Image(
-                image: AssetImage(
-                    "assets/images/Icon ionic-ios-arrow-back.png"),
+buildAppBar(VoidCallback func, {bool isBackEnable = true, bool showNotificationIcon = false, VoidCallback? notificationOnTap}) {
+  return Row(
+    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    children: [
+      GestureDetector(
+        onTap: (isBackEnable) ? func : null,
+        child: Row(
+          children: [
+            Visibility(
+              visible: isBackEnable,
+              child: SizedBox(
+                height: 2.h,
+                child: InkWell(
+                  onTap: func,
+                  child: const Image(
+                    image: AssetImage(
+                        "assets/images/Icon ionic-ios-arrow-back.png"),
+                  ),
+                ),
               ),
             ),
-          ),
+            SizedBox(
+              height: 7.h,
+              child: const Image(
+                image: AssetImage(
+                    "assets/images/Gut welness logo (1).png"),
+              ),
+              //SvgPicture.asset("assets/images/splash_screen/Inside Logo.svg"),
+            ),
+          ],
         ),
-        SizedBox(
-          height: 7.h,
-          child: const Image(
-            image: AssetImage(
-                "assets/images/Gut welness logo (1).png"),
+      ),
+      Visibility(
+        visible: showNotificationIcon,
+        child: IconButton(
+          icon: Icon(Icons.notifications_none_sharp,
+            color: gMainColor,
           ),
-          //SvgPicture.asset("assets/images/splash_screen/Inside Logo.svg"),
+          onPressed: notificationOnTap,
         ),
-      ],
-    ),
+      )
+    ],
   );
 }
 

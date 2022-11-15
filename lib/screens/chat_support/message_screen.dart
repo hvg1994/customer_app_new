@@ -65,7 +65,7 @@ class _MessageScreenState extends State<MessageScreen>
     isLoading = true;
     _quickBloxService = Provider.of<QuickBloxService>(context, listen: false);
     if (WidgetsBinding.instance != null) {
-      WidgetsBinding.instance!.addObserver(this);
+      WidgetsBinding.instance.addObserver(this);
     }
     if (_pref != null) {
       if (_pref?.getString(AppConfig.GROUP_ID) != null) {

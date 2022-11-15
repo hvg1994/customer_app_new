@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gwc_customer/screens/notification_screen.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../widgets/constants.dart';
@@ -21,7 +22,12 @@ class _FeedsListState extends State<FeedsList> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              buildAppBar(() => null, isBackEnable: false),
+              buildAppBar(() => null, isBackEnable: false,
+                  showNotificationIcon: true,
+                  notificationOnTap: (){
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => NotificationScreen()));
+                  }
+                  ),
               SizedBox(height: 3.h),
               Text(
                 "Feeds",

@@ -201,9 +201,10 @@ class _UploadFilesState extends State<UploadFiles> {
                     shrinkWrap: true,
                     itemCount: doctorRequestedReports.length,
                       itemBuilder: (_, index){
-                      print(reportsObject[reportsObject.indexWhere((element) => element.name == doctorRequestedReports[index].reportType)].isSubmited);
+                      print("reportsObject: $reportsObject");
+                      // print(reportsObject[reportsObject.indexWhere((element) => element.name == doctorRequestedReports[index].reportType)].isSubmited);
                       return buildReportList(doctorRequestedReports[index].reportType ?? '',
-                        isDoneIcon: reportsObject[reportsObject.indexWhere((element) => element.name == doctorRequestedReports[index].reportType)].isSubmited,
+                        isDoneIcon: getIsDone(reportsObject, index),
                         onTap: (){
                         reportsObject.forEach((element) {
                           print(element.name == doctorRequestedReports[index].reportType && element.path.isEmpty);
@@ -364,7 +365,7 @@ class _UploadFilesState extends State<UploadFiles> {
   bool showUploadProgress = false;
 
   getDoctorRequestedReportList() async{
-    WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       openProgressDialog(context);
     });
     final res = await ReportService(repository: repository).doctorRequestedReportListService();
@@ -378,7 +379,7 @@ class _UploadFilesState extends State<UploadFiles> {
       late ReportObject _reports;
       if(doctorRequestedReports.isNotEmpty){
         doctorRequestedReports.forEach((element) {
-          _reports = ReportObject(element.reportType!, element.reportId!, '', false);
+          _reports = ReportObject(element.reportType!, element.reportId ?? '', '', false);
           // reportObj.putIfAbsent('name', () => element.reportType);
           // reportObj.putIfAbsent('id', () => element.reportId);
           // reportObj.putIfAbsent('path', () => '');
@@ -386,7 +387,10 @@ class _UploadFilesState extends State<UploadFiles> {
         reportsObject.add(_reports);
       }
 
-      print(result.data);
+      print("result.data: ${result.data}");
+      setState(() {
+
+      });
       // AppConfig().showSnackbar(context, result.message ?? '');
     }
     else{
@@ -711,6 +715,21 @@ class _UploadFilesState extends State<UploadFiles> {
       });
     }
     Navigator.pop(context);
+  }
+
+  bool getIsDone(List<ReportObject> reportsObjectList, index) {
+    bool? isDone;
+    if(reportsObjectList.isNotEmpty){
+      reportsObject.forEach((element) {
+        if(element.name == doctorRequestedReports[index].reportType){
+          isDone =  element.isSubmited;
+        }
+      });
+    }
+    else{
+      isDone = false;
+    }
+    return isDone ?? false;
   }
 
 }

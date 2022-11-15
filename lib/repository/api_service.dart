@@ -10,6 +10,7 @@ import 'package:gwc_customer/model/login_model/login_otp_model.dart';
 import 'package:gwc_customer/model/login_model/resend_otp_model.dart';
 import 'package:gwc_customer/model/message_model/get_chat_groupid_model.dart';
 import 'package:gwc_customer/model/new_user_model/about_program_model/about_program_model.dart';
+import 'package:gwc_customer/model/notification_model/NotificationModel.dart';
 import 'package:gwc_customer/model/post_program_model/breakfast/protocol_breakfast_get.dart';
 import 'package:gwc_customer/model/post_program_model/post_program_base_model.dart';
 import 'package:gwc_customer/model/post_program_model/protocol_guide_day_score.dart';
@@ -1568,6 +1569,41 @@ class ApiClient {
       result = ErrorModel(status: "0", message: e.toString());
     }
     return result;
+  }
+
+  getNotificationListApi() async{
+    String url = notificationListUrl;
+    print(url);
+
+    dynamic result;
+    try{
+      final response = await httpClient.get(Uri.parse(url),
+        headers: {
+          "Authorization": getHeaderToken(),
+        },
+      ).timeout(Duration(seconds: 45));
+
+      print('getNotificationListApi Response status: ${response.statusCode}');
+      print('getNotificationListApi Response body: ${response.body}');
+
+      if(response.statusCode == 200){
+        final json = jsonDecode(response.body);
+
+        if(json['status'].toString() == '200'){
+          result = NotificationModel.fromJsonMap(json);
+        }
+        else{
+          result = ErrorModel.fromJson(json);
+        }
+      }
+      else{
+        result = ErrorModel(status: response.statusCode.toString(), message: response.body);
+      }
+      return result;
+    }
+    catch(e){
+
+    }
   }
 
 
