@@ -1,9 +1,16 @@
 import 'dart:math';
-
+import 'package:gwc_customer/model/error_model.dart';
+import 'package:gwc_customer/model/rewards_model/reward_point_stages.dart';
+import 'package:gwc_customer/services/rewards_service/reward_service.dart';
+import 'package:gwc_customer/widgets/widgets.dart';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:gwc_customer/repository/rewards_repository/reward_repository.dart';
 import 'package:gwc_customer/widgets/constants.dart';
 import 'package:level_map/level_map.dart';
+
+import '../../../repository/api_service.dart';
 
 class LevelsScreen extends StatefulWidget {
   const LevelsScreen({Key? key}) : super(key: key);
@@ -13,60 +20,100 @@ class LevelsScreen extends StatefulWidget {
 }
 
 class _LevelsScreenState extends State<LevelsScreen> {
+  Future? stageFuture;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getStages();
+  }
+
+  getStages() async{
+    stageFuture = RewardService(repository: repo).getRewardStagesService();
+  }
+
   @override
   Widget build(BuildContext context) {
     double checkBoxSize = computeCheckBoxSize(context);
-    return LevelMap(
-      backgroundColor: Colors.white,
-      levelMapParams: LevelMapParams(
-        levelCount: 6,
-        currentLevel: 2,
-        pathColor: gMainColor,
-        currentLevelImage: ImageParams(
-          path: "assets/images/current_stage.png",
-          size: Size(40,40),
-        ),
-        lockedLevelImage: ImageParams(
-          path: "assets/images/lock.png",
-          size: Size(40,40),
-        ),
-        completedLevelImage: ImageParams(
-          path: "assets/images/green_done.png",
-          size: Size(40,40),
-        ),
-        bgImagesToBePaintedRandomly: [
-          ImageParams(
-              path: "assets/images/first.png",
-              size: Size(80, 80),
-              repeatCountPerLevel: 0.1
-          ),
-          ImageParams(
-              path: "assets/images/second.png",
-              size: Size(80, 80),
-              repeatCountPerLevel: 0.1
-          ),
-          ImageParams(
-              path: "assets/images/third.png",
-              size: Size(80, 80),
-              repeatCountPerLevel: 0.1
-          ),
-          ImageParams(
-              path: "assets/images/fourth.png",
-              size: Size(80, 80),
-              repeatCountPerLevel: 0.1
-          ),
-          ImageParams(
-              path: "assets/images/fifth.png",
-              size: Size(80, 80),
-              repeatCountPerLevel: 0.1
-          ),
-          ImageParams(
-              path: "assets/images/sixth.png",
-              size: Size(80, 80),
-              repeatCountPerLevel: 0.1
-          ),
-        ],
-      ),
+    return FutureBuilder(
+      future: stageFuture,
+        builder:(_ ,snapshot){
+          if(snapshot.connectionState == ConnectionState.waiting){
+            return buildCircularIndicator();
+          }
+          else if(snapshot.connectionState == ConnectionState.done){
+            if(snapshot.hasData){
+              if(snapshot.runtimeType is ErrorModel){
+                return Center(
+                  child: Text(snapshot.error.toString()),
+                );
+              }
+              else{
+                final model = snapshot.data as RewardPointsStagesModel;
+                List _l = storeLength(model);
+                // stageLength.add(model.)
+                return LevelMap(
+                  backgroundColor: gWhiteColor,
+                  levelMapParams: LevelMapParams(
+                    levelCount: _l.length,
+                    currentLevel: (_l.indexWhere((element) => element == 2)+1).toDouble(),
+                    pathColor: gMainColor ,
+                    currentLevelImage: ImageParams(
+                      path: "assets/images/current_stage.png",
+                      size: Size(40,40),
+                    ),
+                    lockedLevelImage: ImageParams(
+                      path: "assets/images/lock.png",
+                      size: Size(40,40),
+                    ),
+                    completedLevelImage: ImageParams(
+                      path: "assets/images/green_done.png",
+                      size: Size(40,40),
+                    ),
+                    // bgImagesToBePaintedRandomly: [
+                    //   ImageParams(
+                    //       path: "assets/images/first.png",
+                    //       size: Size(80, 80),
+                    //       repeatCountPerLevel: 0.1
+                    //   ),
+                    //   ImageParams(
+                    //       path: "assets/images/second.png",
+                    //       size: Size(80, 80),
+                    //       repeatCountPerLevel: 0.1
+                    //   ),
+                    //   ImageParams(
+                    //       path: "assets/images/third.png",
+                    //       size: Size(80, 80),
+                    //       repeatCountPerLevel: 0.1
+                    //   ),
+                    //   ImageParams(
+                    //       path: "assets/images/fourth.png",
+                    //       size: Size(80, 80),
+                    //       repeatCountPerLevel: 0.1
+                    //   ),
+                    //   ImageParams(
+                    //       path: "assets/images/fifth.png",
+                    //       size: Size(80, 80),
+                    //       repeatCountPerLevel: 0.1
+                    //   ),
+                    //   ImageParams(
+                    //       path: "assets/images/sixth.png",
+                    //       size: Size(80, 80),
+                    //       repeatCountPerLevel: 0.1
+                    //   ),
+                    // ],
+                  ),
+                );
+              }
+            }
+            else if(snapshot.hasError){
+              return Center(
+                child: Text(snapshot.error.toString()),
+              );
+            }
+          }
+          return buildCircularIndicator();
+        }
     );
     // return Scaffold(
     //   body: LayoutBuilder(
@@ -96,12 +143,31 @@ class _LevelsScreenState extends State<LevelsScreen> {
     // );
   }
 
+  RewardRepository repo = RewardRepository(
+      apiClient: ApiClient(
+          httpClient: http.Client()
+      )
+  );
+
   Path drawPath(){
     Size size = Size(300,300);
     Path path = Path();
     path.moveTo(0, size.height / 2);
     path.quadraticBezierTo(size.width / 2, size.height, size.width, size.height / 2);
     return path;
+  }
+
+  storeLength(RewardPointsStagesModel model) {
+    List l = [];
+    l.add(model.evaluation);
+    l.add(model.consultationBooked);
+    l.add(model.consultationDone);
+    l.add(model.mealItemFollowed);
+    l.add(model.postProgramConsultationBooked);
+    l.add(model.postProgramConsultationDone);
+    l.add(model.maintenanceGuideUpdated);
+
+    return l;
   }
 }
 

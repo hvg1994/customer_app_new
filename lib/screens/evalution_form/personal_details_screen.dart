@@ -1081,7 +1081,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
               shrinkWrap: true,
               physics: const BouncingScrollPhysics(),
               children: [
-                ...healthCheckBox1.map(buildHealthCheckBox).toList(),
+                ...healthCheckBox1.map((e) => buildHealthCheckBox(e, 'health1')).toList(),
                 TextFormField(
                   controller: checkbox1OtherController,
                   cursorColor: kPrimaryColor,
@@ -1112,7 +1112,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
               shrinkWrap: true,
               physics: const BouncingScrollPhysics(),
               children: [
-                ...healthCheckBox2.map(buildHealthCheckBox).toList(),
+                ...healthCheckBox2.map((e)=> buildHealthCheckBox(e, 'health2')).toList(),
                 SizedBox(
                   height: 1.h,
                 ),
@@ -1393,7 +1393,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
               children: [
                 Wrap(
                   children: [
-                    ...urinSmellList.map(buildHealthCheckBox).toList(),
+                    ...urinSmellList.map((e)=>buildHealthCheckBox(e, 'smell')).toList(),
                   ],
                 ),
                 ListTile(
@@ -1667,7 +1667,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
               children: [
                 Wrap(
                   children: [
-                    ...medicalInterventionsDoneBeforeList.map(buildHealthCheckBox).toList(),
+                    ...medicalInterventionsDoneBeforeList.map((e)=>buildHealthCheckBox(e, 'interventions')).toList(),
                   ],
                 ),
                 ListTile(
@@ -1936,7 +1936,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
         AppConfig().showSnackbar(context, "Please Select Height", isError: true);
       }
       else if(healController.text.isEmpty){
-        AppConfig().showSnackbar(context, "Please Mention your complaints", isError: true);
+        AppConfig().showSnackbar(context, "Please Mention your heal complaints", isError: true);
       }
       else if(healthCheckBox1.every((element) => element.value == false)){
         AppConfig().showSnackbar(context, "Please Select Atleast 1 option from HealthList1", isError: true);
@@ -4037,7 +4037,8 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
     );
   }
 
-  buildHealthCheckBox(CheckBoxSettings healthCheckBox) {
+  List health1List = [], health2List = [];
+  buildHealthCheckBox(CheckBoxSettings healthCheckBox, String from) {
     return ListTile(
       minLeadingWidth: 30,
       horizontalTitleGap: 3,
@@ -4049,9 +4050,22 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
           activeColor: kPrimaryColor,
           value: healthCheckBox.value,
           onChanged: (v) {
-            setState(() {
-              healthCheckBox.value = v;
-            });
+            if(from == 'health1'){
+              if(health1List.any((element) => element == healthCheckBox1[12].title)){
+                health1List.forEach((element) {
+                  if(element == healthCheckBox1[12].title){
+                    health1List.remove(element);
+                    healthCheckBox1[12].value = false;
+                  }
+                });
+              }
+              else{
+                setState(() {
+                  healthCheckBox.value = v;
+                  health1List.add(healthCheckBox.title);
+                });
+              }
+            }
             print("${healthCheckBox.title}=> ${healthCheckBox.value}");
             // if(selectedHealthCheckBox1.contains(v)){
             //   selectedHealthCheckBox1.remove(v);

@@ -113,9 +113,11 @@ class GutListState extends State<GutList> {
   // _hideLoading(BuildContext context) {
   //   BrandLogoLoading.dismissLoading(context: context);
   // }
+  bool isProgressOpened = false;
 
   getData() async{
-    WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
+    Future.delayed(Duration(seconds: 0)).whenComplete(() {
+      isProgressOpened = true;
       openProgressDialog(context);
     });
     _gutDataService = GutDataService(repository: repository);
@@ -151,7 +153,7 @@ class GutListState extends State<GutList> {
         else{
           _gutShipDataModel = _getDashboardDataModel.normal_shipping;
           shippingStage = _gutShipDataModel?.data ?? '';
-          abc();
+          // abc();
         }
         if(shippingStage != null && shippingStage == "shipping_delivered"){
           isSelected = "Programs";
@@ -288,12 +290,18 @@ class GutListState extends State<GutList> {
                     setState(() {
                       isShown = false;
                     });
+                    if(isProgressOpened){
+                      Navigator.pop(context);
+                    }
                   },
                   noButton:(isPressed) ? (){} : () {
                     sendApproveStatus('no');
                     setState(() {
                       isShown = false;
                     });
+                    if(isProgressOpened){
+                      Navigator.pop(context);
+                    }
                   },
                 ),
               ),
@@ -302,7 +310,7 @@ class GutListState extends State<GutList> {
                 setState(() {
                   isShown = false;
                 });
-                sendApproveStatus('no', fromNull: true);
+                // sendApproveStatus('no', fromNull: true);
                 print("pop: $value");
               }
             });

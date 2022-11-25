@@ -18,7 +18,6 @@ var shoppingListApiUrl = "${AppConfig().BASE_URL}/api/getData/get_shopping_list"
 
 var shoppingApproveApiUrl = "${AppConfig().BASE_URL}/api/submitForm/update_shipping_approval";
 
-
 var loginWithOtpUrl = "${AppConfig().BASE_URL}/api/otp_login";
 
 var logOutUrl = "${AppConfig().BASE_URL}/api/logout";
@@ -83,6 +82,12 @@ var doctorRequestedReportListUrl = "${AppConfig().BASE_URL}/api/getData/requeste
 var submitDoctorRequestedReportUrl = "${AppConfig().BASE_URL}/api/submitForm/requested_user_report";
 
 var notificationListUrl = "${AppConfig().BASE_URL}/api/getData/notification_list";
+
+var rewardPointsUrl = "${AppConfig().BASE_URL}/api/getDataList/get_user_reward_points";
+
+var rewardPointsStagesUrl = "${AppConfig().BASE_URL}/api/getDataList/user_stages_levels";
+
+var faqListUrl = "${AppConfig().BASE_URL}/api/getDataList/faq_list";
 
 
 //  old apis

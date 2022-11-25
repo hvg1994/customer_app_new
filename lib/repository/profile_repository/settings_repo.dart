@@ -13,4 +13,9 @@ class SettingsRepository{
   Future getCallSupportRepo() async{
     return await apiClient.serverGetCallSupportDetails();
   }
+
+  Future getFaqListRepo() async{
+    return await apiClient.getFaqListApi();
+  }
+
 }

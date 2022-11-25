@@ -4,8 +4,8 @@ import 'package:sizer/sizer.dart';
 import 'package:http/http.dart' as http;
 import '../../model/profile_model/terms_condition_model.dart';
 import '../../repository/api_service.dart';
-import '../../repository/profile_repository/terms_condition_repo.dart';
-import '../../services/profile_screen_service/terms_condition_service.dart';
+import '../../repository/profile_repository/settings_repo.dart';
+import '../../services/profile_screen_service/settings_service.dart';
 import '../../widgets/constants.dart';
 import '../../widgets/widgets.dart';
 

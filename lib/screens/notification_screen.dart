@@ -148,6 +148,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                     NotificationModel model = snapshot.data as NotificationModel;
                                     List<ChildNotificationModel> childModel = model.data as List<ChildNotificationModel>;
                                     return ListView.builder(
+                                      physics: ClampingScrollPhysics(),
                                       shrinkWrap: true,
                                       itemCount: childModel.length,
                                         itemBuilder: (_, index){

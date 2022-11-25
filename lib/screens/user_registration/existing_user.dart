@@ -263,6 +263,7 @@ class _ExistingUserState extends State<ExistingUser> {
                           fontSize: 9.sp,
                         ),
                       ),
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                       textInputAction: TextInputAction.next,
                       textAlign: TextAlign.start,
                       keyboardType: TextInputType.phone,

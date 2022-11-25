@@ -11,8 +11,8 @@ class ConsultationRepository{
     return await apiClient.getAppointmentSlotListApi(selectedDate, appointmentId: appointmentId);
   }
 
-  Future bookAppointmentSlotListRepo(String date, String slotTime, {String? appointmentId}) async{
-    return await apiClient.bookAppointmentApi(date, slotTime, appointmentId: appointmentId);
+  Future bookAppointmentSlotListRepo(String date, String slotTime, {String? appointmentId, bool isPostprogram = false}) async{
+    return await apiClient.bookAppointmentApi(date, slotTime, appointmentId: appointmentId, isPostprogram: isPostprogram);
   }
 
 }

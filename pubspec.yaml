@@ -104,6 +104,7 @@ flutter:
     - assets/images/
     - assets/lottie/
     - assets/images/notification/
+    - assets/images/faq/
   #   - images/a_dot_ham.jpeg
 
   fonts:
@@ -115,6 +116,10 @@ flutter:
     - family: GothamBook
       fonts:
         - asset: assets/font/GothamBook.ttf
+
+    - family: GothamLight
+      fonts:
+        - asset: assets/font/Gotham-Light.otf
 
     - family: GothamRoundedBold
       fonts:

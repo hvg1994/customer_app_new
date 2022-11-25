@@ -1,10 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
+import 'package:gwc_customer/model/error_model.dart';
+import 'package:gwc_customer/model/rewards_model/reward_point_model.dart';
+import 'package:gwc_customer/repository/api_service.dart';
+import 'package:gwc_customer/repository/rewards_repository/reward_repository.dart';
 import 'package:gwc_customer/screens/profile_screens/reward/levels_screen.dart';
+import 'package:gwc_customer/services/rewards_service/reward_service.dart';
 import 'package:gwc_customer/widgets/constants.dart';
 import 'package:gwc_customer/widgets/widgets.dart';
 import 'package:sizer/sizer.dart';
+import 'package:http/http.dart' as http;
 
 class RewardScreen extends StatefulWidget {
   const RewardScreen({Key? key}) : super(key: key);
@@ -37,12 +43,23 @@ class _RewardScreenState extends State<RewardScreen> {
     }
   ];
   String rupeeSymbol = '\u{20B9}';
+  Future? rewardFuture;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    rewardFuture = RewardService(repository: repo).getRewardService();
+  }
+
+
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
         body: SingleChildScrollView(
-          physics: PageScrollPhysics(),
+          physics: NeverScrollableScrollPhysics(),
           child: Container(
             height: 100.h,
             child: Column(
@@ -108,176 +125,176 @@ class _RewardScreenState extends State<RewardScreen> {
                 ),
                 Expanded(
                   flex: 3,
-                  child: Container(
-                    color: Color(0xFFFAFAFA),
-                    height: double.maxFinite,
-                    width: double.maxFinite,
-                    child: LayoutBuilder(
-                      builder: (context, constraints) {
-                        return Stack(
-                          clipBehavior: Clip.none,
-                          fit: StackFit.expand,
-                          children: [
-                            Positioned(
-                              bottom: 0,
-                              left: 0,
-                              right: 0,
-                              top: 5.h,
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Column(
-                                  children: [
-                                    Card(
-                                      // child: customListTile('12', 'anlnana;kd', '12 Nov 2022'),
-                                      elevation: 5,
-                                      child: ListView.separated(
-                                        physics: NeverScrollableScrollPhysics(),
-                                        shrinkWrap: true,
-                                        itemCount: rewardList.length,
-                                          itemBuilder: (_, index){
-                                          return customListTile(
-                                              rewardList[index]['amount'].toString(),
-                                              rewardList[index]['name'],
-                                              rewardList[index]['time']
-                                          );
-                                          },
-                                        separatorBuilder: (_, index){
-                                          if(index != rewardList.length-1){
-                                            return Padding(
-                                              padding: EdgeInsets.symmetric(horizontal: 20),
-                                              child: Divider(
-                                                color: kDividerColor,
-                                              ),
-                                            );
-                                          }
-                                          return SizedBox.shrink();
-                                        },
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      height: 4.h,
-                                    ),
-                                    Row(
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                          "Frequently asked questions",
-                                          textAlign: TextAlign.start,
-                                          style: TextStyle(
-                                              fontFamily: "GothamBold",
-                                              color: gTextColor,
-                                              fontSize: 12.sp),
-                                        ),
-                                        SizedBox(
-                                          width: 2.w,
-                                        ),
-                                        Expanded(
-                                          child: Container(
-                                            height: 1,
-                                            color: Color(0xFFCFCFCF),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        color: gWhiteColor,
-                                        borderRadius: BorderRadius.circular(10),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: Colors.grey.withOpacity(0.3),
-                                            blurRadius: 20,
-                                            offset: const Offset(8, 10),
-                                          ),
-                                        ],
-                                      ),
-                                      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 14),
-                                      child: Row(
-                                        children: [
-                                          Expanded(
-                                            child: Text('What is the Refer and Earn program?',
-                                              style: TextStyle(
-                                                fontSize: 10.5.sp,
-                                                fontFamily: 'GothamMedium'
-                                              ),
-                                            ),
-                                          ),
-                                          Icon(Icons.keyboard_arrow_down_sharp,
-                                          color: gMainColor,)
-                                        ],
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ),
-                            Positioned(
-                              left: 10.w,
-                              right: 10.w,
-                              top: -10.w,
-                              child: GestureDetector(
-                                onTap:(){
-                                  Navigator.push(context, MaterialPageRoute(builder: (_)=> LevelsScreen()));
-                                },
-                                child: Container(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 3.w, vertical: 1.h),
-                                  decoration: BoxDecoration(
-                                    color: gWhiteColor,
-                                    borderRadius: BorderRadius.circular(12),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.grey.withOpacity(0.3),
-                                        blurRadius: 20,
-                                        offset: const Offset(8, 10),
-                                      ),
-                                    ],
-                                  ),
-                                  child: Row(
+                  child: FutureBuilder(
+                    future: rewardFuture,
+                    builder: (_, snapshot){
+                      if(snapshot.connectionState == ConnectionState.waiting){
+                        return buildCircularIndicator();
+                      }
+                      else if(snapshot.connectionState == ConnectionState.done){
+                        if(snapshot.hasData){
+                          if(snapshot.data is RewardPointModel){
+                            final model = snapshot.data as RewardPointModel;
+                            return Container(
+                              color: Color(0xFFFAFAFA),
+                              height: double.maxFinite,
+                              width: double.maxFinite,
+                              child: LayoutBuilder(
+                                builder: (context, constraints) {
+                                  return Stack(
+                                    clipBehavior: Clip.none,
+                                    fit: StackFit.expand,
                                     children: [
-                                      Image(
-                                        image: const AssetImage(
-                                            "assets/images/reward_coin.png"),
-                                        height: 8.h,
-                                      ),
-                                      SizedBox(width: 5.w),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              "TOTAL REWARD",
-                                              style: TextStyle(
-                                                  fontFamily: "GothamBook",
-                                                  color: gTextColor,
-                                                  letterSpacing: 0.4,
-                                                  fontSize: 11.sp),
+                                      Positioned(
+                                        bottom: 0,
+                                        left: 0,
+                                        right: 0,
+                                        top: 5.h,
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: SingleChildScrollView(
+                                            child: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                (model.rewardList == null || model.rewardList!.isEmpty)
+                                                    ? SizedBox(
+                                                  height: 50.h,
+                                                  child: Center(
+                                                    child: Text('There is No Rewards',
+                                                      style: TextStyle(
+                                                        fontFamily: 'GothamBook'
+                                                      ),
+                                                    ),
+                                                  ),
+                                                )
+                                                    :Card(
+                                                  // child: customListTile('12', 'anlnana;kd', '12 Nov 2022'),
+                                                  elevation: 5,
+                                                  child: ListView.separated(
+                                                    physics: NeverScrollableScrollPhysics(),
+                                                    shrinkWrap: true,
+                                                    // itemCount: rewardList.length,
+                                                    itemCount: model.rewardList?.length ?? 0,
+                                                    itemBuilder: (_, index){
+                                                      return customListTile(
+                                                        model.rewardList?[index].rewardPoints?.point ?? '',
+                                                          model.rewardList?[index].rewardPoints?.name ?? '',
+                                                          model.rewardList?[index].createdAt ?? '',
+                                                      );
+                                                      // return customListTile(
+                                                      //     rewardList[index]['amount'].toString(),
+                                                      //     rewardList[index]['name'],
+                                                      //     rewardList[index]['time']
+                                                      // );
+                                                    },
+                                                    separatorBuilder: (_, index){
+                                                      if(model.rewardList != null && model.rewardList!.isNotEmpty){
+                                                        if(index != model.rewardList!.length-1){
+                                                          return Padding(
+                                                            padding: EdgeInsets.symmetric(horizontal: 20),
+                                                            child: Divider(
+                                                              color: kDividerColor,
+                                                            ),
+                                                          );
+                                                        }
+                                                      }
+                                                      return SizedBox.shrink();
+                                                    },
+                                                  ),
+                                                ),
+                                                SizedBox(
+                                                  height: 4.h,
+                                                ),
+                                                //faqTile(context)
+                                              ],
                                             ),
-                                            Text(
-                                              "$rupeeSymbol 200",
-                                              style: TextStyle(
-                                                  fontFamily: "GothamBold",
-                                                  color: gTextColor,
-                                                  height: 1.5,
-                                                  fontSize: 11.sp),
-                                            ),
-                                          ],
+                                          ),
                                         ),
                                       ),
-                                      Icon(
-                                        Icons.arrow_forward_ios_sharp,
-                                        color: gMainColor,
-                                        size: 2.h,
-                                      )
+                                      Positioned(
+                                        left: 10.w,
+                                        right: 10.w,
+                                        top: -10.w,
+                                        child: GestureDetector(
+                                          onTap:(){
+                                            Navigator.push(context, MaterialPageRoute(builder: (_)=> LevelsScreen()));
+                                          },
+                                          child: Container(
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 3.w, vertical: 1.h),
+                                            decoration: BoxDecoration(
+                                              color: gWhiteColor,
+                                              borderRadius: BorderRadius.circular(12),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.grey.withOpacity(0.3),
+                                                  blurRadius: 20,
+                                                  offset: const Offset(8, 10),
+                                                ),
+                                              ],
+                                            ),
+                                            child: Row(
+                                              children: [
+                                                Image(
+                                                  image: const AssetImage(
+                                                      "assets/images/reward_coin.png"),
+                                                  height: 8.h,
+                                                ),
+                                                SizedBox(width: 5.w),
+                                                Expanded(
+                                                  child: Column(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: [
+                                                      Text(
+                                                        "TOTAL REWARD",
+                                                        style: TextStyle(
+                                                            fontFamily: "GothamBook",
+                                                            color: gTextColor,
+                                                            letterSpacing: 0.4,
+                                                            fontSize: 11.sp),
+                                                      ),
+                                                      Text(
+                                                        "$rupeeSymbol ${model.totalReward}",
+                                                        style: TextStyle(
+                                                            fontFamily: "GothamBold",
+                                                            color: gTextColor,
+                                                            height: 1.5,
+                                                            fontSize: 11.sp),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                                Icon(
+                                                  Icons.arrow_forward_ios_sharp,
+                                                  color: gMainColor,
+                                                  size: 2.h,
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
                                     ],
-                                  ),
-                                ),
+                                  );
+                                },
                               ),
-                            ),
-                          ],
-                        );
-                      },
-                    ),
+                            );
+                          }
+                          else{
+                            final model = snapshot.data as ErrorModel;
+                            return Center(
+                              child: Text(model.message.toString()),
+                            );
+                          }
+                        }
+                        else if(snapshot.hasError){
+                          return Center(
+                            child: Text(snapshot.error.toString()),
+                          );
+                        }
+                      }
+                      return buildCircularIndicator();
+                    },
                   ),
                 ),
               ],
@@ -335,4 +352,68 @@ class _RewardScreenState extends State<RewardScreen> {
       ),
     );
   }
+  RewardRepository repo = RewardRepository(
+      apiClient: ApiClient(
+          httpClient: http.Client()
+      )
+  );
+
+  faqTile(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              "Frequently asked questions",
+              textAlign: TextAlign.start,
+              style: TextStyle(
+                  fontFamily: "GothamBold",
+                  color: gTextColor,
+                  fontSize: 12.sp),
+            ),
+            SizedBox(
+              width: 2.w,
+            ),
+            Expanded(
+              child: Container(
+                height: 1,
+                color: Color(0xFFCFCFCF),
+              ),
+            ),
+          ],
+        ),
+        Container(
+          decoration: BoxDecoration(
+            color: gWhiteColor,
+            borderRadius: BorderRadius.circular(10),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.3),
+                blurRadius: 20,
+                offset: const Offset(8, 10),
+              ),
+            ],
+          ),
+          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 14),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text('What is the Refer and Earn program?',
+                  style: TextStyle(
+                      fontSize: 10.5.sp,
+                      fontFamily: 'GothamMedium'
+                  ),
+                ),
+              ),
+              Icon(Icons.keyboard_arrow_down_sharp,
+                color: gMainColor,)
+            ],
+          ),
+        )
+      ],
+    );
+  }
+
 }

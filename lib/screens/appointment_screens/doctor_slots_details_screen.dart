@@ -58,6 +58,8 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
 
   bool isJoinPressed = false;
 
+  List<String> doctorNames = [];
+
   @override
   void initState() {
     // TODO: implement initState
@@ -68,6 +70,11 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
       int minute = int.parse(splited[1]);
       int second = int.parse(splited[2]);
       print('$hour $minute');
+    }
+    if(!widget.isPostProgram && !widget.isFromDashboard){
+      widget.data?.team?.teamMember?.forEach((element) {
+        doctorNames.add(element.user!.name ?? '');
+      });
     }
   }
 
@@ -119,7 +126,8 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
                   ),
                   Center(
                     child: Text(
-                      "Dr.Anita H,Dr.Anita J",
+                      doctorNames.join(','),
+                      // "Dr.Anita H,Dr.Anita J",
                       textAlign: TextAlign.center,
                       style: TextStyle(
                           fontFamily: "Gotham-Black",
@@ -400,9 +408,11 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
       ZoomOptions zoomOptions = ZoomOptions(
         domain: "zoom.us",
         appKey:
-        "FxjLOPbhuE5ecpjRS7PCKUWSeCo7Xb3bGjEU", //API KEY FROM ZOOM - Sdk API Key
+            "FN4n7k0rOGDRf8t8fmhKvbjGLiA98ovbzEjJ",
+        // "FxjLOPbhuE5ecpjRS7PCKUWSeCo7Xb3bGjEU", //API KEY FROM ZOOM - Sdk API Key
         appSecret:
-        "sN2sN5jrXUXzdmBQrGNmdEVzQwBbOlFSas0B", //API SECRET FROM ZOOM - Sdk API Secret
+          "Hp7Lyy9nD5EjQN2B5aF2S4yogk55mbz0rN9X",
+        // "sN2sN5jrXUXzdmBQrGNmdEVzQwBbOlFSas0B", //API SECRET FROM ZOOM - Sdk API Secret
       );
       var meetingOptions = ZoomMeetingOptions(
           userId: userId, //pass username for join meeting only --- Any name eg:- EVILRATT.
@@ -430,16 +440,16 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
               print("[Meeting Status] :- Ended");
               timer?.cancel();
               stream?.cancel();
-              Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(
-                      builder: (context) =>
-                      const DashboardScreen()
-                    // DoctorConsultationCompleted(
-                    //   bookingDate: widget.bookingDate,
-                    //   bookingTime: widget.bookingTime,
-                    // ),
-                  ), (route) => route.isFirst
-              );
+              // Navigator.of(context).pushAndRemoveUntil(
+              //     MaterialPageRoute(
+              //         builder: (context) =>
+              //         const DashboardScreen()
+              //       // DoctorConsultationCompleted(
+              //       //   bookingDate: widget.bookingDate,
+              //       //   bookingTime: widget.bookingTime,
+              //       // ),
+              //     ), (route) => route.isFirst
+              // );
             }
             if(status[0] == "MEETING_STATUS_INMEETING"){
               zoom.meetinDetails().then((meetingDetailsResult) {
@@ -455,10 +465,10 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
                     status[0] +
                     " - " +
                     status[1]);
-                if(status[0] == 'MEETING_STATUS_IDLE'){
-                  stream!.cancel();
-                  timer.cancel();
-                }
+                // if(status[0] == 'MEETING_STATUS_IDLE'){
+                //   stream!.cancel();
+                //   timer.cancel();
+                // }
               });
             });
           });

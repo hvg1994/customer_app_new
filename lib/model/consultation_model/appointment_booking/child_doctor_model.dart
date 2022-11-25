@@ -12,7 +12,7 @@ class ChildDoctorModel {
   String? occupation;
   ChildSpecialization? specialization;
   String? isArchieved;
-  Null? createdAt;
+  String? createdAt;
   String? updatedAt;
   ChildUser? user;
 

@@ -506,9 +506,11 @@ class _DoctorCalenderTimeScreenState extends State<DoctorCalenderTimeScreen> {
     setState(() {
       showBookingProgress = true;
     });
+   print(widget.isPostProgram);
     final res = await ConsultationService(repository: repository)
         .bookAppointmentService(date, slotTime,
-        appointmentId: (widget.isReschedule) ? appointmentId : null
+        appointmentId: (widget.isReschedule) ? appointmentId : null,
+        isPostprogram: widget.isPostProgram
     );
     print("bookAppointment : " + res.runtimeType.toString());
     if(res.runtimeType == AppointmentBookingModel){
@@ -534,9 +536,9 @@ class _DoctorCalenderTimeScreenState extends State<DoctorCalenderTimeScreen> {
             isPostProgram: widget.isPostProgram,
           ),
         ),).then((value) {
-          setState(() {
+        setState(() {
 
-          });
+        });
       });
     }
     else{

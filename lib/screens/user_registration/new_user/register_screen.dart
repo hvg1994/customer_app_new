@@ -145,6 +145,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             textInputAction: TextInputAction.next,
                             textAlign: TextAlign.start,
                             keyboardType: TextInputType.name,
+                            inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[a-zA-Z]"))],
                           ),
                         ),
                         SizedBox(
@@ -181,7 +182,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             textInputAction: TextInputAction.next,
                             textAlign: TextAlign.start,
                             inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly,
+                              FilteringTextInputFormatter.digitsOnly,FilteringTextInputFormatter.allow(RegExp(r'^[1-9][0-9]*'))
                             ],
                             keyboardType: TextInputType.number,
                             maxLength: 2,
@@ -351,6 +352,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   decoration:
                                       CommonDecoration.buildTextInputDecoration(
                                           "Mobile Number", mobileController),
+                                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                                   style: TextStyle(
                                       fontFamily: "GothamBook",
                                       color: gMainColor,

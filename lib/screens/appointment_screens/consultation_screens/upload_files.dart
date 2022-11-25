@@ -1,6 +1,7 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:gwc_customer/widgets/background_widget.dart';
 import 'package:gwc_customer/widgets/open_alert_box.dart';
 import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
@@ -22,7 +23,8 @@ import 'package:async/async.dart';
 
 
 class UploadFiles extends StatefulWidget {
-  const UploadFiles({Key? key}) : super(key: key);
+  bool isFromSettings;
+  UploadFiles({Key? key, this.isFromSettings = false}) : super(key: key);
 
   @override
   State<UploadFiles> createState() => _UploadFilesState();
@@ -54,7 +56,7 @@ class _UploadFilesState extends State<UploadFiles> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    getDoctorRequestedReportList();
+    if(!widget.isFromSettings) getDoctorRequestedReportList();
   }
   @override
   void didChangeDependencies() {
@@ -64,16 +66,18 @@ class _UploadFilesState extends State<UploadFiles> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SingleChildScrollView(
-        child: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-                colors: [Color(0xffFFE889), Color(0xffFFF3C2)],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter),
-          ),
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+            colors: [Color(0xffFFE889), Color(0xffFFF3C2)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter),
+      ),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: SingleChildScrollView(
           child: Column(
+            mainAxisSize: MainAxisSize.max,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Padding(
@@ -106,43 +110,46 @@ class _UploadFilesState extends State<UploadFiles> {
                       fontSize: 12.sp),
                 ),
               ),
-              Padding(
-                padding: padding,
-                child: GestureDetector(
-                  onTap: () async {
-                    // showChooserSheet();
-                  },
-                  child: Container(
-                    margin: EdgeInsets.symmetric(vertical: 5.h, horizontal: 3.w),
-                    padding: EdgeInsets.symmetric(vertical: 2.h),
-                    decoration: BoxDecoration(
-                      color: gMainColor,
-                      borderRadius: BorderRadius.circular(5),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.5),
-                          blurRadius: 20,
-                          offset: const Offset(2, 10),
-                        ),
-                      ],
-                    ),
-                    child: Center(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Image(
-                            image:
-                                const AssetImage("assets/images/Group 3323.png"),
-                            height: 2.5.h,
-                          ),
-                          Text(
-                            "   Choose file",
-                            style: TextStyle(
-                                fontFamily: "GothamMedium",
-                                color: Colors.black,
-                                fontSize: 10.sp),
+              Visibility(
+                visible: widget.isFromSettings,
+                child: Padding(
+                  padding: padding,
+                  child: GestureDetector(
+                    onTap: () async {
+                      showChooserSheet();
+                    },
+                    child: Container(
+                      margin: EdgeInsets.symmetric(vertical: 5.h, horizontal: 3.w),
+                      padding: EdgeInsets.symmetric(vertical: 2.h),
+                      decoration: BoxDecoration(
+                        color: gMainColor,
+                        borderRadius: BorderRadius.circular(5),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            blurRadius: 20,
+                            offset: const Offset(2, 10),
                           ),
                         ],
+                      ),
+                      child: Center(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image(
+                              image:
+                              const AssetImage("assets/images/Group 3323.png"),
+                              height: 2.5.h,
+                            ),
+                            Text(
+                              "   Choose file",
+                              style: TextStyle(
+                                  fontFamily: "GothamMedium",
+                                  color: Colors.black,
+                                  fontSize: 10.sp),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -151,117 +158,65 @@ class _UploadFilesState extends State<UploadFiles> {
               SizedBox(
                 height: 1.8.h,
               ),
-              Padding(
-                padding: padding,
-                child: Align(
-                  alignment: Alignment.topLeft,
-                  child: Text(
-                    // "Uploaded Report",
-                    'Requested Report',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        fontFamily: "GothamRoundedBold_21016",
-                        color: gTextColor,
-                        fontSize: 11.sp),
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              (doctorRequestedReports.isEmpty) ?
-              Padding(
-                padding: padding,
-                child: Container(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      buildReportList('Blood Report', onTap: () {
-                        showChooserSheet();
-                      }),
-                      buildReportList('Xray Report', onTap: () async{
-                        // var file = await getApplicationSupportDirectory();
-                        // var packageRoot = file.path.substring(0, file.path.lastIndexOf('/'));
-                        // var rootPath = packageRoot.substring(0, packageRoot.lastIndexOf('/'));
-                        // print(rootPath);
-                        // var directory = await Directory('$rootPath/Reports').create(recursive: true);
-                        // print(directory.path);
-
-                        // File file1 = new File('$rootPath/$filename');
-
-                        showChooserSheet();
-                      }),
-                    ],
-                  ),
-                ),
-              ) : Padding(
-                padding: padding,
-                child: Container(
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: doctorRequestedReports.length,
-                      itemBuilder: (_, index){
-                      print("reportsObject: $reportsObject");
-                      // print(reportsObject[reportsObject.indexWhere((element) => element.name == doctorRequestedReports[index].reportType)].isSubmited);
-                      return buildReportList(doctorRequestedReports[index].reportType ?? '',
-                        isDoneIcon: getIsDone(reportsObject, index),
-                        onTap: (){
-                        reportsObject.forEach((element) {
-                          print(element.name == doctorRequestedReports[index].reportType && element.path.isEmpty);
-                          if(element.name == doctorRequestedReports[index].reportType && element.path.isEmpty){
-                            showChooserSheet(type: doctorRequestedReports[index].reportType);
-                          }
-                          else{
-                            submitDoctorRequestedReport(element.path, element.id);
-                          }
-                        });
-                        }
-                      );
-                      }
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 1.8.h,
-              ),
-              Divider(color: gGreyColor,),
-              Padding(
-                padding: padding,
-                child: buildReportList('Prescription', isSingleIcon: false ,
-                  onTap: () async{
-                  var file = await getExternalStorageDirectory();
-                  print(file!.path);
-                  }
-                ),
-              ),
-              // (fileFormatList.isEmpty)
-              //     ? Container()
-              //     : Padding(
-              //   padding: padding,
-              //   child: ListView.builder(
-              //         itemCount: fileFormatList.length,
-              //         shrinkWrap: true,
-              //         itemBuilder: (context, index) {
-              //           final file = fileFormatList[index];
-              //           return buildFile(file, index);
-              //         },
-              //       ),
-              //     ),
+              (widget.isFromSettings) ? showNormalReportList(context) : showRequestedReports(context),
               SizedBox(
                 height: 5.h,
               ),
-              Padding(
+              (widget.isFromSettings)
+                  ? Visibility(
+                visible: fileFormatList.isNotEmpty,
+                    child: Padding(
+                padding: padding,
+                child: Center(
+                    child: GestureDetector(
+                      onTap: () async{
+                        uploadReport();
+
+                        // getReportList();
+                        // Navigator.of(context).push(
+                        //   MaterialPageRoute(
+                        //       builder: (context) =>
+                        //       const ReportsUploadedScreen()),
+                        // );
+                      },
+                      child: Container(
+                        width: 60.w,
+                        height: 5.h,
+                        // padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 10.w),
+                        decoration: BoxDecoration(
+                          color: gPrimaryColor,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: gMainColor, width: 1),
+                        ),
+                        child: (showUploadProgress) ? buildThreeBounceIndicator() : Center(
+                          child: Text(
+                            'Submit',
+                            style: TextStyle(
+                              fontFamily: "GothamRoundedBold_21016",
+                              color: gWhiteColor,
+                              fontSize: 11.sp,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                ),
+              ),
+                  )
+                  : Padding(
                 padding: padding,
                 child: Center(
                   child: GestureDetector(
-                    onTap: () {
-                      uploadReport();
-                      // getReportList();
-                      // Navigator.of(context).push(
-                      //   MaterialPageRoute(
-                      //       builder: (context) =>
-                      //       const ReportsUploadedScreen()),
-                      // );
+                    onTap: () async{
+                      Stream s = sendStream();
+                      print("s.length:${s.length}");
+                      // for(int i=0;i<reportsObject.length;i++){
+                      //   if(reportsObject[i].path.isNotEmpty){
+                      //     final res = await submitDoctorRequestedReport(reportsObject[i].path, reportsObject[i].id);
+                      //     print("button res: $res  ${res.runtimeType}");
+                      //
+                      //   }
+                      // }
                     },
                     child: Container(
                       width: 60.w,
@@ -306,7 +261,8 @@ class _UploadFilesState extends State<UploadFiles> {
             Image(
               image: const AssetImage("assets/images/Group 2722.png"),
               height: 4.h,
-            ), //   (file.extension == 'jpg' || file.extension == 'png')
+            ),
+            //   (file.extension == 'jpg' || file.extension == 'png')
             //     ? Image.file(
             //   File(file.path.toString()),
             //   width: 5.w,
@@ -357,8 +313,13 @@ class _UploadFilesState extends State<UploadFiles> {
   }
 
   void _delete(int index) {
-    // files.removeAt(index);
-    fileFormatList.removeAt(index);
+    if(widget.isFromSettings){
+      files.removeAt(index);
+      fileFormatList.removeAt(index);
+    }
+    else{
+      reportsObject[index].path = '';
+    }
     setState(() {});
   }
 
@@ -383,10 +344,16 @@ class _UploadFilesState extends State<UploadFiles> {
           // reportObj.putIfAbsent('name', () => element.reportType);
           // reportObj.putIfAbsent('id', () => element.reportId);
           // reportObj.putIfAbsent('path', () => '');
-        });
-        reportsObject.add(_reports);
-      }
+          reportsObject.add(_reports);
 
+        });
+      }
+      doctorRequestedReports.forEach((element) {
+        print("doc req: ${element.reportType}");
+      });
+      reportsObject.forEach((element) {
+        print("req obj: ${element.name}");
+      });
       print("result.data: ${result.data}");
       setState(() {
 
@@ -434,11 +401,6 @@ class _UploadFilesState extends State<UploadFiles> {
           newList.clear();
         });
         AppConfig().showSnackbar(context, result.errorMsg ?? '');
-        // Navigator.of(context).push(
-        //   MaterialPageRoute(
-        //       builder: (context) =>
-        //       const ReportsUploadedScreen()),
-        // );
       }
     }
     else{
@@ -691,7 +653,7 @@ class _UploadFilesState extends State<UploadFiles> {
   }
 
 
-  submitDoctorRequestedReport(String filePath, String reportId) async{
+  Future submitDoctorRequestedReport(String filePath, String reportId) async{
     openProgressDialog(context);
 
     var multipartFile = await http.MultipartFile.fromPath("file", filePath);
@@ -721,8 +683,11 @@ class _UploadFilesState extends State<UploadFiles> {
     bool? isDone;
     if(reportsObjectList.isNotEmpty){
       reportsObject.forEach((element) {
-        if(element.name == doctorRequestedReports[index].reportType){
-          isDone =  element.isSubmited;
+        // if(element.name == doctorRequestedReports[index].reportType){
+        //   isDone =  element.isSubmited;
+        // }
+        if(element.path.isNotEmpty && element.name == doctorRequestedReports[index].reportType){
+          isDone =  true;
         }
       });
     }
@@ -730,6 +695,129 @@ class _UploadFilesState extends State<UploadFiles> {
       isDone = false;
     }
     return isDone ?? false;
+  }
+
+  showRequestedReports(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: padding,
+          child: Align(
+            alignment: Alignment.topLeft,
+            child: Text(
+              // "Uploaded Report",
+              'Requested Report',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  fontFamily: "GothamRoundedBold_21016",
+                  color: gTextColor,
+                  fontSize: 11.sp),
+            ),
+          ),
+        ),
+        SizedBox(
+          height: 10,
+        ),
+        (doctorRequestedReports.isEmpty) ?
+        Padding(
+          padding: padding,
+          child: Container(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                buildReportList('Blood Report', onTap: () {
+                  showChooserSheet();
+                }),
+                buildReportList('Xray Report', onTap: () async{
+                  // var file = await getApplicationSupportDirectory();
+                  // var packageRoot = file.path.substring(0, file.path.lastIndexOf('/'));
+                  // var rootPath = packageRoot.substring(0, packageRoot.lastIndexOf('/'));
+                  // print(rootPath);
+                  // var directory = await Directory('$rootPath/Reports').create(recursive: true);
+                  // print(directory.path);
+
+                  // File file1 = new File('$rootPath/$filename');
+
+                  showChooserSheet();
+                }),
+              ],
+            ),
+          ),
+        )
+            : Padding(
+          padding: padding,
+          child: Container(
+            child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: doctorRequestedReports.length,
+                itemBuilder: (_, index){
+                  print("reportsObject: $reportsObject");
+                  // print(reportsObject[reportsObject.indexWhere((element) => element.name == doctorRequestedReports[index].reportType)].isSubmited);
+                  return buildReportList(doctorRequestedReports[index].reportType ?? '',
+                      isDoneIcon: getIsDone(reportsObject, index),
+                      onTap: (){
+                        reportsObject.forEach((element) {
+                          print('${element.name} ${doctorRequestedReports[index].reportType}');
+                          print(element.name == doctorRequestedReports[index].reportType && element.path.isEmpty);
+                          if(element.name == doctorRequestedReports[index].reportType && element.path.isEmpty){
+                            showChooserSheet(type: doctorRequestedReports[index].reportType);
+                          }
+                          else if(element.name == doctorRequestedReports[index].reportType && element.path.isEmpty){
+                            return;
+                          }
+                          // else{
+                          //   if(element.path .isNotEmpty){
+                          //     submitDoctorRequestedReport(element.path, element.id);
+                          //   }
+                          // }
+                        });
+                      }
+                  );
+                }
+            ),
+          ),
+        ),
+        SizedBox(
+          height: 1.8.h,
+        ),
+        Divider(color: gGreyColor,),
+        Padding(
+          padding: padding,
+          child: buildReportList('Prescription', isSingleIcon: false ,
+              onTap: () async{
+                var file = await getExternalStorageDirectory();
+                print(file!.path);
+              }
+          ),
+        ),
+      ],
+    );
+  }
+
+  showNormalReportList(BuildContext context){
+    return (fileFormatList.isEmpty)
+        ? SizedBox()
+        : Padding(
+      padding: padding,
+      child: ListView.builder(
+            itemCount: fileFormatList.length,
+            shrinkWrap: true,
+            itemBuilder: (context, index) {
+              final file = fileFormatList[index];
+              return buildFile(file, index);
+            },
+          ),
+        );
+  }
+
+  Stream sendStream() async*{
+    for(int i=0;i<reportsObject.length;i++){
+      if(reportsObject[i].path.isNotEmpty){
+        yield submitDoctorRequestedReport(reportsObject[i].path, reportsObject[i].id);
+        // print("button res: $res  ${res.runtimeType}");
+      }
+    }
   }
 
 }

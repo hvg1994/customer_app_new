@@ -22,10 +22,13 @@ import 'package:gwc_customer/model/program_model/proceed_model/send_proceed_prog
 import 'package:gwc_customer/model/program_model/program_days_model/program_day_model.dart';
 import 'package:gwc_customer/model/program_model/start_post_program_model.dart';
 import 'package:gwc_customer/model/program_model/start_program_on_swipe_model.dart';
+import 'package:gwc_customer/model/rewards_model/reward_point_model.dart';
+import 'package:gwc_customer/model/rewards_model/reward_point_stages.dart';
 import 'package:gwc_customer/model/ship_track_model/shiprocket_auth_model/shiprocket_auth_model.dart';
 import 'package:gwc_customer/model/ship_track_model/shopping_model/get_shopping_model.dart';
 import 'package:gwc_customer/model/ship_track_model/sipping_approve_model.dart';
 import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 import '../model/consultation_model/appointment_booking/appointment_book_model.dart';
 import '../model/consultation_model/appointment_slot_model.dart';
 import '../model/dashboard_model/report_upload_model/report_list_model.dart';
@@ -33,6 +36,7 @@ import '../model/dashboard_model/report_upload_model/report_upload_model.dart';
 import '../model/dashboard_model/shipping_approved/ship_approved_model.dart';
 import '../model/error_model.dart';
 import '../model/evaluation_from_models/get_country_details_model.dart';
+import '../model/faq_model/faq_list_model.dart';
 import '../model/new_user_model/choose_your_problem/choose_your_problem_model.dart';
 import '../model/new_user_model/choose_your_problem/submit_problem_response.dart';
 import '../model/new_user_model/register/register_model.dart';
@@ -222,7 +226,7 @@ class ApiClient {
 
       final json = jsonDecode(response.body);
       print('serverGetAboutProgramDetails result: $json');
-      print(json['status'].toString().contains("200"));
+
       if (response.statusCode != 200) {
         print("error: $json");
         result = ErrorModel.fromJson(json);
@@ -456,12 +460,17 @@ class ApiClient {
   }
 
   Future bookAppointmentApi(String date, String slotTime,
-      {String? appointmentId}) async {
+      {String? appointmentId, bool isPostprogram = false}) async {
     final path = bookAppointmentUrl;
+
+    print("is from postprogram==> ${isPostprogram}");
 
     var startTime = DateTime.now().millisecondsSinceEpoch;
 
     Map param = {'booking_date': date, 'slot': slotTime};
+    if(isPostprogram == true) {
+      param.putIfAbsent("status", () => 'post_program');
+    }
     if (appointmentId != null) {
       param.putIfAbsent('appointment_id', () => appointmentId);
     }
@@ -473,7 +482,7 @@ class ApiClient {
       } else {
         print("Reschedule Appointment");
       }
-      print("param: $param");
+      print("param: ${param}");
       final response = await httpClient.post(
         Uri.parse(path),
         headers: {
@@ -1090,7 +1099,7 @@ class ApiClient {
     return result;
   }
 
-  Future submitUserFeedbackDetails(Map feedback) async {
+  Future submitUserFeedbackDetails(Map feedback, List<MultipartFile> files) async {
     final String path = submitFeedbackUrl;
 
     dynamic result;
@@ -1098,14 +1107,22 @@ class ApiClient {
     Map bodyParam = feedback;
 
     print(bodyParam);
+    print(files);
     var headers = {
       // "Authorization": "Bearer ${AppConfig().bearerToken}",
       "Authorization": getHeaderToken(),
     };
     try {
-      final response = await httpClient
-          .post(Uri.parse(path), headers: headers, body: bodyParam)
-          .timeout(const Duration(seconds: 45));
+      var request = http.MultipartRequest('POST', Uri.parse(path));
+
+      request.headers.addAll(headers);
+      request.fields.addAll(Map.from(bodyParam));
+
+      if(files.isNotEmpty){
+        request.files.addAll(files);
+      }
+      var response = await http.Response.fromStream(await request.send())
+          .timeout(Duration(seconds: 50));
 
       print('submitUserFeedbackDetails Response header: $path');
       print(
@@ -1605,6 +1622,106 @@ class ApiClient {
 
     }
   }
+
+  Future getRewardPointsApi() async {
+    var url = rewardPointsUrl;
+
+    dynamic result;
+
+    try {
+      final response = await httpClient.get(
+        Uri.parse(url),
+        headers: {
+          "Authorization": getHeaderToken(),
+        },
+      );
+
+      print('getRewardPointsApi Response status: ${response.statusCode}');
+      print('getRewardPointsApi Response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final json = jsonDecode(response.body);
+        print('getRewardPointsApi result: $json');
+        result = RewardPointModel.fromJson(json);
+      } else {
+        print('getRewardPointsApi error: ${response.reasonPhrase}');
+        result = ErrorModel(
+            status: response.statusCode.toString(), message: response.body);
+      }
+    } catch (e) {
+      print(e);
+      result = ErrorModel(status: "", message: e.toString());
+    }
+    return result;
+  }
+
+  Future getRewardPointsStagesApi() async {
+    var url = rewardPointsStagesUrl;
+
+    dynamic result;
+
+    try {
+      final response = await httpClient.get(
+        Uri.parse(url),
+        headers: {
+          "Authorization": getHeaderToken(),
+        },
+      );
+
+      print('getRewardPointsStagesApi Response status: ${response.statusCode}');
+      print('getRewardPointsStagesApi Response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final json = jsonDecode(response.body);
+        print('getRewardPointsStagesApi result: $json');
+        result = RewardPointsStagesModel.fromJson(json);
+      } else {
+        print('getRewardPointsStagesApi error: ${response.reasonPhrase}');
+        result = ErrorModel(
+            status: response.statusCode.toString(), message: response.body);
+      }
+    } catch (e) {
+      print(e);
+      result = ErrorModel(status: "", message: e.toString());
+    }
+    return result;
+  }
+
+  Future getFaqListApi() async{
+    String url= faqListUrl;
+    dynamic result;
+
+    try{
+      final response = await httpClient.get(Uri.parse(url),
+        headers: {
+          "Authorization": getHeaderToken(),
+        },
+      );
+
+      if(response.statusCode == 200){
+        final json = jsonDecode(response.body);
+        print('getFaqListApi result: $json');
+
+
+        if(json['status'].toString() == '200'){
+          result = FaqListModel.fromJson(json);
+        }
+        else {
+          print('getFaqListApi error: $json');
+          result = ErrorModel.fromJson(json);
+        }
+      }
+      else{
+        result = ErrorModel(status: response.statusCode.toString(), message: response.body);
+      }
+    }
+    catch(e){
+      throw Exception(e);
+    }
+    return result;
+  }
+
+
 
 
 

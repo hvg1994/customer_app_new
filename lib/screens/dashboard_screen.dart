@@ -6,6 +6,7 @@ import 'package:gwc_customer/screens/notification_screen.dart';
 import 'package:gwc_customer/screens/post_program_screens/post_program_screen.dart';
 import 'package:gwc_customer/screens/profile_screens/reward/reward_screen.dart';
 import 'package:gwc_customer/screens/profile_screens/settings_screen.dart';
+import 'package:gwc_customer/screens/testimonial_list_screen/testimonial_list_screen.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../widgets/constants.dart';
@@ -74,7 +75,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         }
       case 3:
         {
-          return const ClapScreen();
+          return const TestimonialListScreen();
         }
       case 4:
         {

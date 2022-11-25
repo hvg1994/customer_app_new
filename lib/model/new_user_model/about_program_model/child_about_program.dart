@@ -1,10 +1,13 @@
 import 'feedback_list_model.dart';
+import 'feeds_model/feedsListModel.dart';
 import 'testimonial_model.dart';
 
 class ChildAboutProgramModel {
   List<String>? aboutProgram;
   Testimonial? testimonial;
   List<FeedbackList>? feedbackList;
+  List<FeedsListModel>? feedsList;
+
 
   ChildAboutProgramModel({this.aboutProgram, this.testimonial, this.feedbackList});
 
@@ -19,6 +22,12 @@ class ChildAboutProgramModel {
         feedbackList!.add(new FeedbackList.fromJson(v));
       });
     }
+    if (json['feed_list'] != null) {
+      feedsList = <FeedsListModel>[];
+      json['feed_list'].forEach((v) {
+        feedsList!.add(new FeedsListModel.fromJson(v));
+      });
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -30,6 +39,9 @@ class ChildAboutProgramModel {
     if (this.feedbackList != null) {
       data['feedback_list'] =
           this.feedbackList!.map((v) => v.toJson()).toList();
+    }
+    if (this.feedsList != null) {
+      data['feed_list'] = this.feedsList!.map((v) => v.toJson()).toList();
     }
     return data;
   }

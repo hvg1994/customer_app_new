@@ -9,7 +9,7 @@ import 'package:gwc_customer/screens/chat_support/message_screen.dart';
 import 'package:gwc_customer/screens/evalution_form/personal_details_screen.dart';
 import 'package:gwc_customer/screens/notification_screen.dart';
 import 'package:gwc_customer/screens/profile_screens/call_support_method.dart';
-import 'package:gwc_customer/screens/profile_screens/faq_screen.dart';
+import 'package:gwc_customer/screens/profile_screens/faq_screens/faq_screen.dart';
 import 'package:gwc_customer/screens/profile_screens/terms_conditions_screen.dart';
 import 'package:gwc_customer/screens/user_registration/existing_user.dart';
 import 'package:gwc_customer/services/quick_blox_service/quick_blox_service.dart';
@@ -120,7 +120,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     "assets/images/Group 2748.png", "My Report", () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (context) => const UploadFiles(),
+                      builder: (context) => UploadFiles(isFromSettings: false,),
                     ),
                   );
                 }),
