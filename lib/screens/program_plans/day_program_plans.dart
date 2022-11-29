@@ -199,8 +199,7 @@ class _DaysProgramPlanState extends State<DaysProgramPlan> {
             } : null,
             child: Stack(
               alignment: AlignmentDirectional.topEnd,
-              //overflow: Overflow.visible,
-              clipBehavior: Clip.antiAlias,
+              clipBehavior: Clip.none,
               children: [
                 Positioned(
                   top: -9,
@@ -430,6 +429,9 @@ class _DaysProgramPlanState extends State<DaysProgramPlan> {
                   setState(() {
                     isOpened = true;
                   });
+                  Future.delayed(Duration(seconds: 0)).whenComplete(() {
+                    openProgressDialog(context);
+                  });
                   startPostProgram();
                 },
                 child: Container(
@@ -511,8 +513,10 @@ class _DaysProgramPlanState extends State<DaysProgramPlan> {
 
     if(res.runtimeType == ErrorModel){
       ErrorModel model = res as ErrorModel;
+      Navigator.pop(context);
       AppConfig().showSnackbar(context, model.message ?? '', isError: true);
     }else{
+      Navigator.pop(context);
       if(res.runtimeType == StartPostProgramModel){
         StartPostProgramModel model = res as StartPostProgramModel;
         print("start program: ${model.response}");

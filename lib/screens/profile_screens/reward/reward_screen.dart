@@ -11,6 +11,7 @@ import 'package:gwc_customer/widgets/constants.dart';
 import 'package:gwc_customer/widgets/widgets.dart';
 import 'package:sizer/sizer.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 class RewardScreen extends StatefulWidget {
   const RewardScreen({Key? key}) : super(key: key);
@@ -254,7 +255,7 @@ class _RewardScreenState extends State<RewardScreen> {
                                                             fontSize: 11.sp),
                                                       ),
                                                       Text(
-                                                        "$rupeeSymbol ${model.totalReward}",
+                                                        "${model.totalReward} Pts",
                                                         style: TextStyle(
                                                             fontFamily: "GothamBold",
                                                             color: gTextColor,
@@ -322,7 +323,7 @@ class _RewardScreenState extends State<RewardScreen> {
       minVerticalPadding: 0,
       dense: true,
       minLeadingWidth: 30,
-      title: Text('$rupeeSymbol $rupee',
+      title: Text('$rupee Pt',
         style: TextStyle(
           fontFamily: 'GothamMedium',
           fontSize: 11.sp,
@@ -341,7 +342,7 @@ class _RewardScreenState extends State<RewardScreen> {
               color: gTextColor
             ),
           ),
-          Text(time,
+          Text(DateFormat('yyyy/MM/dd, hh:mm a').format(DateTime.parse(time).toLocal()).toString(),
             style: TextStyle(
                 fontFamily: 'GothamLight',
                 fontSize: 9.sp,

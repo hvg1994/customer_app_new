@@ -1723,8 +1723,6 @@ class ApiClient {
 
 
 
-
-
   void storeShipRocketToken(ShipRocketTokenModel result) {
     _prefs!.setString(AppConfig().shipRocketBearer, result.token ?? '');
   }

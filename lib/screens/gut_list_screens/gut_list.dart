@@ -127,6 +127,17 @@ class GutListState extends State<GutList> {
       ErrorModel model = _getData;
       print(model.message);
       Navigator.pop(context);
+      Future.delayed(Duration(seconds: 0)).whenComplete(() =>
+          AppConfig().showSnackbar(context, model.message ?? '', isError: true,
+            duration: 50000,
+            action: SnackBarAction(
+              label: 'Retry',
+              onPressed: (){
+                getData();
+              },
+            )
+          )
+      );
     }
     else{
       GetDashboardDataModel _getDashboardDataModel = _getData as GetDashboardDataModel;

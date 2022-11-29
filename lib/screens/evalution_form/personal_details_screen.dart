@@ -1407,11 +1407,16 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                         setState(() {
                           urinSmellOtherSelected = v!;
                           if(urinSmellOtherSelected){
+                            selectedUrinSmellList.clear();
+                            urinSmellList.forEach((element) {
+                              element.value = false;
+                            });
                             selectedUrinSmellList.add(otherText);
                           }
                           else{
                             selectedUrinSmellList.remove(otherText);
                           }
+                          print(selectedUrinSmellList);
                         });
                       },
                     ),
@@ -1681,6 +1686,11 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                         setState(() {
                           medicalInterventionsOtherSelected = v!;
                           if(medicalInterventionsOtherSelected){
+                            selectedmedicalInterventionsDoneBeforeList.add(otherText);
+                            selectedmedicalInterventionsDoneBeforeList.clear();
+                            medicalInterventionsDoneBeforeList.forEach((element) {
+                              element.value = false;
+                            });
                             selectedmedicalInterventionsDoneBeforeList.add(otherText);
                           }
                           else{
@@ -4037,7 +4047,6 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
     );
   }
 
-  List health1List = [], health2List = [];
   buildHealthCheckBox(CheckBoxSettings healthCheckBox, String from) {
     return ListTile(
       minLeadingWidth: 30,
@@ -4051,28 +4060,166 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
           value: healthCheckBox.value,
           onChanged: (v) {
             if(from == 'health1'){
-              if(health1List.any((element) => element == healthCheckBox1[12].title)){
-                health1List.forEach((element) {
-                  if(element == healthCheckBox1[12].title){
-                    health1List.remove(element);
+              if(healthCheckBox.title == healthCheckBox1[13].title){
+                print("if");
+                setState(() {
+                  selectedHealthCheckBox1.clear();
+                  healthCheckBox1.forEach((element) {
+                    element.value = false;
+                  });
+                  selectedHealthCheckBox1.add(healthCheckBox.title!);
+                  healthCheckBox.value = v;
+                });
+              }
+              else if(healthCheckBox.title == healthCheckBox1[12].title){
+                print(" else if");
+                setState(() {
+                  selectedHealthCheckBox1.clear();
+                  healthCheckBox1.forEach((element) {
+                    element.value = false;
+                  });
+                  selectedHealthCheckBox1.add(healthCheckBox.title!);
+                  healthCheckBox.value = v;
+                });
+              }
+              else{
+                print("else");
+                if(selectedHealthCheckBox1.contains(healthCheckBox1[13].title)){
+                  print("if");
+                  setState(() {
+                    selectedHealthCheckBox1.clear();
+                    healthCheckBox1[13].value = false;
+                  });
+                }
+                else if(selectedHealthCheckBox1.contains(healthCheckBox1[12].title)){
+                  print("else if");
+
+                  setState(() {
+                    selectedHealthCheckBox1.clear();
                     healthCheckBox1[12].value = false;
+                  });
+                }
+                if(v == true){
+                  setState(() {
+                    selectedHealthCheckBox1.add(healthCheckBox.title!);
+                    healthCheckBox.value = v;
+                  });
+                }
+                else{
+                  setState(() {
+                    selectedHealthCheckBox1.remove(healthCheckBox.title!);
+                    healthCheckBox.value = v;
+                  });
+                }
+              }
+              print(selectedHealthCheckBox1);
+            }
+            else if(from == 'health2'){
+              if(healthCheckBox.title == healthCheckBox2.last.title){
+                print("if");
+                setState(() {
+                  selectedHealthCheckBox2.clear();
+                  healthCheckBox2.forEach((element) {
+                    if(element != healthCheckBox2.last.title){
+                      element.value = false;
+                    }
+                  });
+                  if(v == true){
+                    selectedHealthCheckBox2.add(healthCheckBox.title!);
+                    healthCheckBox.value = v;
+                  }
+                  else{
+                    selectedHealthCheckBox2.remove(healthCheckBox.title!);
+                    healthCheckBox.value = v;
                   }
                 });
               }
               else{
-                setState(() {
-                  healthCheckBox.value = v;
-                  health1List.add(healthCheckBox.title);
-                });
+                // print("else");
+                if(v == true){
+                  // print("if");
+                  setState(() {
+                    if(selectedHealthCheckBox2.contains(healthCheckBox2.last.title)){
+                      // print("if");
+                        selectedHealthCheckBox2.removeWhere((element) => element == healthCheckBox2.last.title);
+                        healthCheckBox2.forEach((element) {
+                          if(element.title == healthCheckBox2.last.title){
+                            element.value = false;
+                          }
+                        });
+                    }
+                    selectedHealthCheckBox2.add(healthCheckBox.title!);
+                    healthCheckBox.value = v;
+                  });
+                }
+                else{
+                  setState(() {
+                    selectedHealthCheckBox2.remove(healthCheckBox.title!);
+                    healthCheckBox.value = v;
+                  });
+                }
               }
+              print(selectedHealthCheckBox2);
             }
-            print("${healthCheckBox.title}=> ${healthCheckBox.value}");
-            // if(selectedHealthCheckBox1.contains(v)){
-            //   selectedHealthCheckBox1.remove(v);
-            // }
-            // else{
-            //   selectedHealthCheckBox1.add(v);
-            // }
+            else if(from == 'smell'){
+              if(urinSmellOtherSelected){
+                if(v == true){
+                  setState(() {
+                    urinSmellOtherSelected =  false;
+                    selectedUrinSmellList.clear();
+                    selectedUrinSmellList.add(healthCheckBox.title);
+                    healthCheckBox.value = v;
+                  });
+                }
+              }
+              else{
+                if(v == true){
+                  setState(() {
+                    selectedUrinSmellList.add(healthCheckBox.title);
+                    healthCheckBox.value = v;
+                  });
+                }
+                else{
+                  setState(() {
+                    selectedUrinSmellList.remove(healthCheckBox.title);
+                    healthCheckBox.value = v;
+                  });
+                }
+
+              }
+              print(selectedUrinSmellList);
+            }
+            else if(from == 'interventions'){
+              if(medicalInterventionsOtherSelected){
+                if(v == true){
+                  setState(() {
+                    medicalInterventionsOtherSelected =  false;
+                    selectedmedicalInterventionsDoneBeforeList.clear();
+                    selectedmedicalInterventionsDoneBeforeList.add(healthCheckBox.title);
+                    healthCheckBox.value = v;
+                  });
+                }
+              }
+              else{
+                if(v == true){
+                  setState(() {
+                    selectedmedicalInterventionsDoneBeforeList.add(healthCheckBox.title);
+                    healthCheckBox.value = v;
+                  });
+                }
+                else{
+                  setState(() {
+                    selectedmedicalInterventionsDoneBeforeList.remove(healthCheckBox.title);
+                    healthCheckBox.value = v;
+                  });
+                }
+
+              }
+              print(selectedmedicalInterventionsDoneBeforeList);
+            }
+
+            // print("${healthCheckBox.title}=> ${healthCheckBox.value}");
+
           },
         ),
       ),

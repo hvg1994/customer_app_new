@@ -96,13 +96,14 @@ class AppConfig{
     return deviceId;
   }
 
-  showSnackbar(BuildContext context, String message,{int? duration, bool? isError}){
+  showSnackbar(BuildContext context, String message,{int? duration, bool? isError, SnackBarAction? action}){
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         behavior: SnackBarBehavior.floating,
         backgroundColor:(isError == null || isError == false) ? gPrimaryColor : gsecondaryColor.withOpacity(0.55),
         content: Text(message),
         duration: Duration(seconds: duration ?? 2),
+        action: action,
       ),
     );
   }

@@ -300,11 +300,11 @@ class _GuideStatusState extends State<GuideStatus> {
     // none-- 3
 
     String mealType = widget.title.trim().toLowerCase();
-    int selectedType = (type.contains(types[0])
+    int selectedType = (type == types[0])
         ? 1
-        : type.contains(types[1])
+        : (type == types[1])
             ? 2
-            : 3);
+            : 3;
     print(mealType);
     final res = await PostProgramService(repository: postProgramRepository)
         .submitPostProgramMealTrackingService(

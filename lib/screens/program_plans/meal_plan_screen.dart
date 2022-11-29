@@ -1195,7 +1195,10 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
     });
 
     print(tracking.last.toJson());
-    model = ProceedProgramDayModel(patientMealTracking: tracking, comment: commentController.text.isEmpty ? null : commentController.text);
+    model = ProceedProgramDayModel(patientMealTracking: tracking,
+        comment: commentController.text.isEmpty ? null : commentController.text,
+      day: widget.day
+    );
 
     // print('ProceedProgramDayModel: ${jsonEncode(model.toJson())}');
 
@@ -1210,7 +1213,8 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
       Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => DaysProgramPlan()), (route) => route.isFirst);
     }
     else{
-      AppConfig().showSnackbar(context, "proceed error please try again");
+      var model = result as ErrorModel;
+      AppConfig().showSnackbar(context, model.message ?? '', isError: true);
     }
 
   }

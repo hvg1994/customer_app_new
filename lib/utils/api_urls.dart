@@ -89,6 +89,9 @@ var rewardPointsStagesUrl = "${AppConfig().BASE_URL}/api/getDataList/user_stages
 
 var faqListUrl = "${AppConfig().BASE_URL}/api/getDataList/faq_list";
 
+var submitStatusTrackerUrl = "${AppConfig().BASE_URL}/api/submitData/patient_meal_tracking";
+
+
 
 //  old apis
 // var welcomeTextUrl = "${AppConfig().BASE_URL}/api/list/welcome_text";

@@ -190,14 +190,15 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
                               Center(
                                 child: GestureDetector(
                                   onTap: () async{
-                                    await _videoPlayerController?.stop().then((value) {
-
-                                    });
+                                    print("tap");
                                     Navigator.of(context).push(
                                       MaterialPageRoute(
                                         builder: (context) => const RegisterScreen(),
                                       ),
-                                    );
+                                    ).then((value) async{
+                                        await _videoPlayerController?.stop();
+
+                                    });
                                   },
                                   child: Container(
                                     padding:

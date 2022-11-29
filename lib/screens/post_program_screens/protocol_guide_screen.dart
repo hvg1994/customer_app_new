@@ -133,7 +133,7 @@ class _ProtocolGuideScreenState extends State<ProtocolGuideScreen> {
                                         fontSize: 9.sp),
                                   ),
                                   Text(
-                                    "Lorem Ipsum : ${model.percentage.toString()}",
+                                    "Percentage: ${model.percentage.toString()}",
                                     style: TextStyle(
                                         fontFamily: "GothamBook",
                                         color: gBlackColor,

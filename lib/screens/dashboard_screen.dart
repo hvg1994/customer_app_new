@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:gwc_customer/model/program_model/proceed_model/send_proceed_program_model.dart';
 import 'package:gwc_customer/screens/notification_screen.dart';
 import 'package:gwc_customer/screens/post_program_screens/post_program_screen.dart';
 import 'package:gwc_customer/screens/profile_screens/reward/reward_screen.dart';
 import 'package:gwc_customer/screens/profile_screens/settings_screen.dart';
+import 'package:gwc_customer/screens/program_plans/day_tracker_ui/day_tracker.dart';
 import 'package:gwc_customer/screens/testimonial_list_screen/testimonial_list_screen.dart';
 import 'package:sizer/sizer.dart';
 
@@ -63,7 +65,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     switch (index) {
       case 0:
         {
-          return const RewardScreen();
+          return DayMealTracerUI(proceedProgramDayModel: ProceedProgramDayModel(),);
         }
       case 1:
         {
