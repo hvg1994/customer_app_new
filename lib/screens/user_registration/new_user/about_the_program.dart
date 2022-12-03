@@ -126,50 +126,13 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                "About The Problem",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    fontFamily: "GothamRoundedBold_21016",
-                                    color: gPrimaryColor,
-                                    fontSize: 11.sp),
-                              ),
-                              SizedBox(
-                                height: 2.h,
-                              ),
-                              Container(
-                                padding: EdgeInsets.symmetric(
-                                    vertical: 1.h, horizontal: 3.w),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(5),
-                                  border: Border.all(color: gPrimaryColor, width: 1),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.grey.withOpacity(0.3),
-                                      blurRadius: 20,
-                                      offset: const Offset(2, 10),
-                                    ),
-                                  ],
-                                ),
-                                child: Text(
-                                  _programText,
-                                  // 'Lorem lpsum is simply dummy text of the printing and typesetting industry. Lorem lpsum has been the industry\'s standard dummy text ever since the 1500s,when an unknown printer took a gallery of type and scrambled it to make a type specimen book.',
-                                  style: TextStyle(
-                                    height: 1.7,
-                                    fontFamily: "GothamBook",
-                                    color: gTextColor,
-                                    fontSize: 9.sp,
-                                  ),
-                                ),
-                              ),
-                              SizedBox(height: 2.h),
-                              Text(
                                 "Testimonial",
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
-                                    fontFamily: "GothamRoundedBold_21016",
-                                    color: gPrimaryColor,
-                                    fontSize: 11.sp),
+                                    fontFamily: eUser().mainHeadingFont,
+                                    color: eUser().mainHeadingColor,
+                                    fontSize: eUser().mainHeadingFontSize
+                                ),
                               ),
                               SizedBox(
                                 height: 2.h,
@@ -177,12 +140,55 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
                               buildTestimonial(),
                               SizedBox(height: 2.h),
                               Text(
+                                "About The Program",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    fontFamily: eUser().mainHeadingFont,
+                                    color: eUser().mainHeadingColor,
+                                    fontSize: eUser().mainHeadingFontSize
+                                ),
+                              ),
+                              SizedBox(
+                                height: 2.h,
+                              ),
+                              Card(
+                                elevation: 7,
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: 1.h, horizontal: 3.w),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(5),
+                                    border: Border.all(color: gPrimaryColor, width: 1),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey.withOpacity(0.3),
+                                        blurRadius: 20,
+                                        offset: const Offset(2, 10),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Text(
+                                    _programText,
+                                    // 'Lorem lpsum is simply dummy text of the printing and typesetting industry. Lorem lpsum has been the industry\'s standard dummy text ever since the 1500s,when an unknown printer took a gallery of type and scrambled it to make a type specimen book.',
+                                    style: TextStyle(
+                                      height: 1.7,
+                                      fontFamily: "GothamBook",
+                                      color: gTextColor,
+                                      fontSize: 9.sp,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              SizedBox(height: 2.h),
+                              Text(
                                 "Feedback",
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
-                                    fontFamily: "GothamRoundedBold_21016",
-                                    color: gPrimaryColor,
-                                    fontSize: 11.sp),
+                                    fontFamily: eUser().mainHeadingFont,
+                                    color: eUser().mainHeadingColor,
+                                    fontSize: eUser().mainHeadingFontSize
+                                ),
                               ),
                               SizedBox(height: 2.h),
                               buildFeedback(feedbackList),
@@ -204,16 +210,18 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
                                     padding:
                                     EdgeInsets.symmetric(vertical: 1.h, horizontal: 15.w),
                                     decoration: BoxDecoration(
-                                      color: gPrimaryColor,
-                                      borderRadius: BorderRadius.circular(8),
-                                      border: Border.all(color: gMainColor, width: 1),
+                                      color: eUser().buttonColor,
+                                      borderRadius: BorderRadius.circular(eUser().buttonBorderRadius),
+                                      border: Border.all(
+                                          color: eUser().buttonBorderColor,
+                                          width: eUser().buttonBorderWidth                                      ),
                                     ),
                                     child: Text(
                                       'Next',
                                       style: TextStyle(
-                                        fontFamily: "GothamRoundedBold_21016",
-                                        color: gWhiteColor,
-                                        fontSize: 11.sp,
+                                        fontFamily: eUser().buttonTextFont,
+                                        color: eUser().buttonTextColor,
+                                        fontSize: eUser().buttonTextSize,
                                       ),
                                     ),
                                   ),

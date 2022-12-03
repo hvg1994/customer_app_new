@@ -495,11 +495,14 @@ class _FeedsListState extends State<FeedsList> {
                                       ],
                                     ),
                                   ),
-                                  GestureDetector(
-                                    onTap: () {},
-                                    child: const Icon(
-                                      Icons.more_vert,
-                                      color: gTextColor,
+                                  Visibility(
+                                    visible: false,
+                                    child: GestureDetector(
+                                      onTap: () {},
+                                      child: const Icon(
+                                        Icons.more_vert,
+                                        color: gTextColor,
+                                      ),
                                     ),
                                   )
                                 ],
@@ -515,40 +518,43 @@ class _FeedsListState extends State<FeedsList> {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Row(
-                                    children: [
-                                      GestureDetector(
-                                        onTap: () {},
-                                        child:  Image(
-                                          image:const AssetImage("assets/images/Union 4.png"),
-                                          height: 2.h,
+                                  Visibility(
+                                    visible: false,
+                                    child: Row(
+                                      children: [
+                                        GestureDetector(
+                                          onTap: () {},
+                                          child:  Image(
+                                            image:const AssetImage("assets/images/Union 4.png"),
+                                            height: 2.h,
+                                          ),
                                         ),
-                                      ),
-                                      SizedBox(width: 1.w),
-                                      Text(list[index].likes.toString() ??
-                                        "22",
-                                        style: TextStyle(
-                                            fontFamily: "GothamMedium",
-                                            color: gTextColor,
-                                            fontSize: 8.sp),
-                                      ),
-                                      SizedBox(width: 4.w),
-                                      GestureDetector(
-                                        onTap: () {},
-                                        child:  Image(
-                                          image: const AssetImage("assets/images/noun_chat_1079099.png"),
-                                          height: 2.h,
+                                        SizedBox(width: 1.w),
+                                        Text(list[index].likes.toString() ??
+                                          "22",
+                                          style: TextStyle(
+                                              fontFamily: "GothamMedium",
+                                              color: gTextColor,
+                                              fontSize: 8.sp),
                                         ),
-                                      ),
-                                      SizedBox(width: 1.w),
-                                      Text(list[index].comments?.length.toString() ??
-                                        "132",
-                                        style: TextStyle(
-                                            fontFamily: "GothamMedium",
-                                            color: gTextColor,
-                                            fontSize: 8.sp),
-                                      ),
-                                    ],
+                                        SizedBox(width: 4.w),
+                                        GestureDetector(
+                                          onTap: () {},
+                                          child:  Image(
+                                            image: const AssetImage("assets/images/noun_chat_1079099.png"),
+                                            height: 2.h,
+                                          ),
+                                        ),
+                                        SizedBox(width: 1.w),
+                                        Text(list[index].comments?.length.toString() ??
+                                          "132",
+                                          style: TextStyle(
+                                              fontFamily: "GothamMedium",
+                                              color: gTextColor,
+                                              fontSize: 8.sp),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                   Text(list[index].ago ??
                                     "2 minutes ago",
@@ -570,20 +576,20 @@ class _FeedsListState extends State<FeedsList> {
                                         color: gTextColor),
                                   ),
                                   SizedBox(width: 1.w),
-                                  Container(
-                                    color: gTextColor,
-                                    height: 2.h,
-                                    width: 0.5.w,
-                                  ),
-                                  SizedBox(width: 1.w),
-                                  Text(
-                                    "Lorem lpsum is simply dummy text",
-                                    style: TextStyle(
-                                      fontSize: 9.sp,
-                                      color: gTextColor,
-                                      fontFamily: "GothamMedium",
-                                    ),
-                                  ),
+                                  // Container(
+                                  //   color: gTextColor,
+                                  //   height: 2.h,
+                                  //   width: 0.5.w,
+                                  // ),
+                                  // SizedBox(width: 1.w),
+                                  // Text(
+                                  //   "Lorem lpsum is simply dummy text",
+                                  //   style: TextStyle(
+                                  //     fontSize: 9.sp,
+                                  //     color: gTextColor,
+                                  //     fontFamily: "GothamMedium",
+                                  //   ),
+                                  // ),
                                 ],
                               ),
                             ],

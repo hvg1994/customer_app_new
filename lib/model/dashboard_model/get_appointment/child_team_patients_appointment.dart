@@ -1,3 +1,5 @@
+import 'package:gwc_customer/model/consultation_model/appointment_booking/child_team.dart';
+
 import 'child_user_appointment.dart';
 
 class ChildTeamPatientsAppointment {
@@ -12,6 +14,7 @@ class ChildTeamPatientsAppointment {
   String? createdAt;
   String? updatedAt;
   ChildPatientAppointment? patient;
+  Team? team;
 
   ChildTeamPatientsAppointment(
       {this.id,
@@ -24,7 +27,7 @@ class ChildTeamPatientsAppointment {
         this.isArchieved,
         this.createdAt,
         this.updatedAt,
-        this.patient});
+        this.patient, this.team});
 
   ChildTeamPatientsAppointment.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -39,6 +42,8 @@ class ChildTeamPatientsAppointment {
     updatedAt = json['updated_at'];
     patient =
     json['patient'] != null ? new ChildPatientAppointment.fromJson(json['patient']) : null;
+    team = json['team'] != null ? new Team.fromJson(json['team']) : null;
+
   }
 
   Map<String, dynamic> toJson() {
@@ -55,6 +60,9 @@ class ChildTeamPatientsAppointment {
     data['updated_at'] = this.updatedAt;
     if (this.patient != null) {
       data['patient'] = this.patient!.toJson();
+    }
+    if (this.team != null) {
+      data['team'] = this.team!.toJson();
     }
     return data;
   }

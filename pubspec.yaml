@@ -66,7 +66,7 @@ dependencies:
   cached_network_image: any
   flutter_sim_country_code: ^0.1.2
   dropdown_button2: any
-  firebase_core: ^1.15.0
+  firebase_core: ^1.24.0
   firebase_messaging: ^11.2.15
   flutter_local_notifications: ^9.7.0
   grouped_list: any
@@ -75,6 +75,10 @@ dependencies:
   mime: any
   photo_view: any
   level_map: ^0.2.0
+  circular_progress_bar_with_lines: ^0.0.5
+  simple_circular_progress_bar: ^1.0.2
+  vertical_percent_indicator: any
+  url_launcher: any
 #  change_app_package_name: ^1.1.0
 
 dev_dependencies:
@@ -132,6 +136,10 @@ flutter:
     - family: GothamRoundedBold_21016
       fonts:
         - asset: assets/font/GothamRoundedBold_21016.ttf
+
+    - family: GothamBlack
+      fonts:
+        - asset: assets/font/Gotham-Black.otf
 
 
 

@@ -100,9 +100,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     "Enquiry Form",
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                        fontFamily: "GothamRoundedBold_21016",
-                        color: gPrimaryColor,
-                        fontSize: 12.sp),
+                        fontFamily: eUser().mainHeadingFont,
+                        fontSize: eUser().mainHeadingFontSize,
+                        color: eUser().mainHeadingColor
+                    ),
                   ),
                   SizedBox(
                     height: 3.h,
@@ -115,9 +116,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         Text(
                           'Name',
                           style: TextStyle(
-                              fontFamily: "GothamMedium",
-                              fontSize: 11.sp,
-                              color: gPrimaryColor),
+                              fontFamily: eUser().userFieldLabelFont,
+                              fontSize: eUser().userFieldLabelFontSize,
+                              color: eUser().userFieldLabelColor
+                          ),
                         ),
                         SizedBox(height: 0.5.h),
                         Form(
@@ -137,11 +139,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             focusNode: _nameFocus,
                             decoration:
                                 CommonDecoration.buildTextInputDecoration(
-                                    "Name", nameController),
+                                    "Name", nameController
+                                ),
                             style: TextStyle(
-                                fontFamily: "GothamBook",
-                                color: gMainColor,
-                                fontSize: 11.sp),
+                                fontFamily: eUser().userTextFieldFont,
+                                fontSize: eUser().userTextFieldFontSize,
+                                color: eUser().userTextFieldColor
+                            ),
                             textInputAction: TextInputAction.next,
                             textAlign: TextAlign.start,
                             keyboardType: TextInputType.name,
@@ -154,9 +158,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         Text(
                           'Age',
                           style: TextStyle(
-                              fontFamily: "GothamMedium",
-                              fontSize: 11.sp,
-                              color: gPrimaryColor),
+                              fontFamily: eUser().userFieldLabelFont,
+                              fontSize: eUser().userFieldLabelFontSize,
+                              color: eUser().userFieldLabelColor
+                          ),
                         ),
                         SizedBox(height: 0.5.h),
                         Form(
@@ -194,9 +199,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         Text(
                           'Gender',
                           style: TextStyle(
-                              fontFamily: "GothamMedium",
-                              fontSize: 11.sp,
-                              color: gPrimaryColor),
+                              fontFamily: eUser().userFieldLabelFont,
+                              fontSize: eUser().userFieldLabelFontSize,
+                              color: eUser().userFieldLabelColor
+                          ),
                         ),
                         SizedBox(height: 0.5.h),
                         Form(
@@ -209,9 +215,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         Text(
                           'Email',
                           style: TextStyle(
-                              fontFamily: "GothamMedium",
-                              fontSize: 11.sp,
-                              color: gPrimaryColor),
+                              fontFamily: eUser().userFieldLabelFont,
+                              fontSize: eUser().userFieldLabelFontSize,
+                              color: eUser().userFieldLabelColor
+                          ),
                         ),
                         SizedBox(height: 0.5.h),
                         Form(
@@ -231,9 +238,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 CommonDecoration.buildTextInputDecoration(
                                     "Email", emailController),
                             style: TextStyle(
-                                fontFamily: "GothamBook",
-                                color: gMainColor,
-                                fontSize: 11.sp),
+                                fontFamily: eUser().userTextFieldFont,
+                                fontSize: eUser().userTextFieldFontSize,
+                                color: eUser().userTextFieldColor
+                            ),
                             textInputAction: TextInputAction.next,
                             textAlign: TextAlign.start,
                             keyboardType: TextInputType.emailAddress,
@@ -245,9 +253,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         Text(
                           'Mobile Number',
                           style: TextStyle(
-                              fontFamily: "GothamMedium",
-                              fontSize: 11.sp,
-                              color: gPrimaryColor
+                              fontFamily: eUser().userFieldLabelFont,
+                              fontSize: eUser().userFieldLabelFontSize,
+                              color: eUser().userFieldLabelColor
                           ),
                         ),
                         SizedBox(height: 0.5.h),
@@ -318,9 +326,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 showFlagMain: false,
                                 showCountryOnly: false,
                                 textStyle: TextStyle(
-                                    fontFamily: "GothamBook",
-                                    color: gMainColor,
-                                    fontSize: 11.sp),
+                                    fontFamily: eUser().userTextFieldFont,
+                                    fontSize: eUser().userTextFieldFontSize,
+                                    color: eUser().userTextFieldColor
+                                ),
                                 padding: EdgeInsets.zero,
                                 favorite: ['+91','IN'],
                                 initialSelection: countryCode,
@@ -354,9 +363,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                           "Mobile Number", mobileController),
                                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                                   style: TextStyle(
-                                      fontFamily: "GothamBook",
-                                      color: gMainColor,
-                                      fontSize: 11.sp),
+                                      fontFamily: eUser().userTextFieldFont,
+                                      fontSize: eUser().userTextFieldFontSize,
+                                      color: eUser().userTextFieldColor
+                                  ),
                                   textInputAction: TextInputAction.next,
                                   textAlign: TextAlign.start,
                                   keyboardType: TextInputType.number,
@@ -407,18 +417,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         // padding: EdgeInsets.symmetric(
                         //     vertical: 1.h, horizontal: 10.w),
                         decoration: BoxDecoration(
-                          color: gPrimaryColor,
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: gMainColor, width: 1),
+                          color: eUser().buttonColor,
+                          borderRadius: BorderRadius.circular(eUser().buttonBorderRadius),
+                          border: Border.all(
+                              color: eUser().buttonBorderColor,
+                              width: eUser().buttonBorderWidth
+                          ),
                         ),
                         child: (isLoading) ? buildThreeBounceIndicator()
                             : Center(
                               child: Text(
                           'Next',
                           style: TextStyle(
-                              fontFamily: "GothamRoundedBold_21016",
-                              color: gWhiteColor,
-                              fontSize: 13.sp,
+                            fontFamily: eUser().buttonTextFont,
+                            color: eUser().buttonTextColor,
+                            fontSize: eUser().buttonTextSize,
                           ),
                         ),
                             ),
@@ -454,14 +467,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     _selectedGender = value!;
                   });
                 },
-                activeColor: gMainColor,
+                activeColor: eUser().kRadioButtonColor,
               ),
               Text(
                 'Male',
                 style: TextStyle(
-                    fontFamily: "GothamBook",
-                    color: (_selectedGender == 0) ? gMainColor : gBlackColor,
-                    fontSize: 11.sp),
+                    fontFamily: eUser().userTextFieldFont,
+                    fontSize: eUser().userTextFieldFontSize,
+                    color: (_selectedGender == 0) ? eUser().kRadioButtonColor : eUser().userTextFieldColor,
+
+                ),
               )
             ],
           ),
@@ -476,14 +491,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     _selectedGender = value!;
                   });
                 },
-                activeColor: gMainColor,
+                activeColor: eUser().kRadioButtonColor,
               ),
               Text(
                 'Female',
                 style: TextStyle(
-                    fontFamily: "GothamBook",
-                    color: (_selectedGender == 1) ? gMainColor : gBlackColor,
-                    fontSize: 11.sp),
+                  fontFamily: eUser().userTextFieldFont,
+                  fontSize: eUser().userTextFieldFontSize,
+                  color: (_selectedGender == 1) ? eUser().kRadioButtonColor : eUser().userTextFieldColor,
+                ),
               )
             ],
           )

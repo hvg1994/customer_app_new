@@ -34,14 +34,16 @@ class CommonDecoration {
     return InputDecoration(
       hintText: hintText,
       hintStyle: TextStyle(
-        fontFamily: "PoppinsRegular",
-        color: Colors.grey,
-        fontSize: 10.sp,
+          fontFamily: eUser().userTextFieldHintFont,
+          fontSize: eUser().userTextFieldHintFontSize,
+          color: eUser().userTextFieldHintColor
       ),
       counterText: "",
       border: const UnderlineInputBorder(
         borderSide: BorderSide(
-            color: kPrimaryColor, width: 1.0, style: BorderStyle.solid),
+            color: kPrimaryColor, width: 1.0,
+            style: BorderStyle.solid
+        ),
       ),
       suffixIcon: suffixIcon
       // controller.text.isEmpty
@@ -201,7 +203,7 @@ buildAppBar(VoidCallback func, {bool isBackEnable = true, bool showNotificationI
               height: 7.h,
               child: const Image(
                 image: AssetImage(
-                    "assets/images/Gut welness logo (1).png"),
+                    "assets/images/Gut welness logo.png"),
               ),
               //SvgPicture.asset("assets/images/splash_screen/Inside Logo.svg"),
             ),

@@ -64,6 +64,9 @@ void main() async {
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(statusBarColor: Colors.black26),
   );
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+  ]);
   await SystemChrome.setPreferredOrientations(
     [DeviceOrientation.portraitUp],
   );

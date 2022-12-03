@@ -8,6 +8,7 @@ class ProtocolGuideDayScoreModel {
   String? breakfast;
   String? lunch;
   String? dinner;
+  String? protocolGuidePdf;
 
   ProtocolGuideDayScoreModel(
       {this.status,
@@ -18,7 +19,9 @@ class ProtocolGuideDayScoreModel {
         this.percentage,
         this.breakfast,
         this.lunch,
-        this.dinner});
+        this.dinner,
+        this.protocolGuidePdf
+      });
 
   ProtocolGuideDayScoreModel.fromJson(Map<String, dynamic> json) {
     status = json['status'];
@@ -30,6 +33,7 @@ class ProtocolGuideDayScoreModel {
     breakfast = json['breakfast'].toString();
     lunch = json['lunch'].toString();
     dinner = json['dinner'].toString();
+    protocolGuidePdf = json['protocol_guide'].toString();
   }
 
   Map<String, dynamic> toJson() {
@@ -43,6 +47,7 @@ class ProtocolGuideDayScoreModel {
     data['breakfast'] = this.breakfast;
     data['lunch'] = this.lunch;
     data['dinner'] = this.dinner;
+    data['protocol_guide'] = this.protocolGuidePdf;
     return data;
   }
 }

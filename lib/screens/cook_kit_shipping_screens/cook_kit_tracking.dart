@@ -24,7 +24,8 @@ import 'package:gwc_customer/screens/gut_list_screens/gut_list.dart' as gut;
 class CookKitTracking extends StatefulWidget {
   final String currentStage;
   final String? awb_number;
-  const CookKitTracking({Key? key, this.awb_number, required this.currentStage}) : super(key: key);
+  final int initialIndex;
+  const CookKitTracking({Key? key, this.awb_number, required this.currentStage, this.initialIndex = 0}) : super(key: key);
 
   @override
   State<CookKitTracking> createState() => _CookKitTrackingState();
@@ -78,6 +79,7 @@ class _CookKitTrackingState extends State<CookKitTracking>{
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
+      initialIndex: widget.initialIndex,
       length: tabSize,
       child: SafeArea(
         child: Scaffold(

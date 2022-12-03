@@ -8,6 +8,7 @@ import 'package:flutter_vlc_player/flutter_vlc_player.dart';
 import 'package:gwc_customer/model/error_model.dart';
 import 'package:gwc_customer/model/program_model/proceed_model/send_proceed_program_model.dart';
 import 'package:gwc_customer/repository/program_repository/program_repository.dart';
+import 'package:gwc_customer/screens/program_plans/day_tracker_ui/day_tracker.dart';
 import 'package:gwc_customer/widgets/open_alert_box.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
@@ -151,7 +152,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
         setState(() {
           isLoading = false;
         });
-        showAlert(context, model.status!);
+        showAlert(context, model.status!, isSingleButton: !(model.status != '401'));
       });
     }
     print(result);
@@ -186,8 +187,9 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
   }
 
   initVideoView(String? url){
+    print("init url: $url");
     _controller = VlcPlayerController.network(
-      // url!,
+     // url ??
       'https://media.w3.org/2010/05/sintel/trailer.mp4',
       hwAcc: HwAcc.full,
       options: VlcPlayerOptions(
@@ -241,11 +243,12 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
     final _ori = MediaQuery.of(context).orientation;
     bool isPortrait = _ori == Orientation.portrait;
     if(!isPortrait){
-      AutoOrientation.portraitAutoMode();
+      AutoOrientation.portraitUpMode();
       // setState(() {
       //   isEnabled = false;
       // });
     }
+    print(isEnabled);
     return !isEnabled ? true: false;
     // return false;
   }
@@ -340,26 +343,27 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                   visible: buttonVisibility(),
                   child: Center(
                     child: GestureDetector(
-                      onTap: (statusList.length != lst.length || isSent)
-                          ? null
+                      onTap: (statusList.length != lst.length)
+                          ? () => AppConfig().showSnackbar(context, "Please complete the Meal Plan Status", isError: true)
                           : () {
                         sendData();
                       },
                       child: Container(
                         margin: EdgeInsets.symmetric(vertical: 2.h),
-                        width: 40.w,
-                        height: 4.h,
+                        width: 60.w,
+                        height: 5.h,
                         decoration: BoxDecoration(
                           color: (statusList.length != lst.length) ? gMainColor : gPrimaryColor,
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(color: gMainColor, width: 1),
                         ),
-                        child: (isSent) ? buildThreeBounceIndicator() :Center(
+                        child: Center(
                           child: Text(
-                            'Proceed to Day $proceedToDay',
+                            'Proceed to Symptoms Tracker',
+                            // 'Proceed to Day $proceedToDay',
                             style: TextStyle(
                               fontFamily: "GothamBook",
-                              color: (statusList.length != lst.length) ? gPrimaryColor :  gMainColor,
+                              color: (statusList.length != lst.length) ? gPrimaryColor : gMainColor,
                               fontSize: 10.sp,
                             ),
                           ),
@@ -1178,6 +1182,8 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
   );
 
   bool isSent = false;
+
+
   void sendData() async{
     setState(() {
       isSent = true;
@@ -1194,28 +1200,35 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
       ));
     });
 
-    print(tracking.last.toJson());
+    print(tracking);
     model = ProceedProgramDayModel(patientMealTracking: tracking,
         comment: commentController.text.isEmpty ? null : commentController.text,
       day: widget.day
     );
+    List dummy = [];
+    model.patientMealTracking!.forEach((element) {
+      dummy.add(jsonEncode(element.toJson()));
+    });
+    print('dummy: $dummy');
 
+    showSymptomsTrackerSheet(context, model);
+    // Navigator.push(context, MaterialPageRoute(builder: (_) => DayMealTracerUI(proceedProgramDayModel: model!)));
     // print('ProceedProgramDayModel: ${jsonEncode(model.toJson())}');
 
-    final result = await ProgramService(repository: repository).proceedDayMealDetailsService(model);
-
-    print("result: $result");
-    setState(() {
-      isSent = false;
-    });
-
-    if(result.runtimeType == GetProceedModel){
-      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => DaysProgramPlan()), (route) => route.isFirst);
-    }
-    else{
-      var model = result as ErrorModel;
-      AppConfig().showSnackbar(context, model.message ?? '', isError: true);
-    }
+    // final result = await ProgramService(repository: repository).proceedDayMealDetailsService(model);
+    //
+    // print("result: $result");
+    // setState(() {
+    //   isSent = false;
+    // });
+    //
+    // if(result.runtimeType == GetProceedModel){
+    //   Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => DaysProgramPlan()), (route) => route.isFirst);
+    // }
+    // else{
+    //   var model = result as ErrorModel;
+    //   AppConfig().showSnackbar(context, model.message ?? '', isError: true);
+    // }
 
   }
 
@@ -1377,6 +1390,37 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
     else{
       return 6.h;
     }
+  }
+
+  showSymptomsTrackerSheet(BuildContext context, ProceedProgramDayModel model) {
+    return showModalBottomSheet(
+      isDismissible: false,
+      isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        context: context,
+        enableDrag: false,
+        builder: (ctx) {
+          return Wrap(
+            children: [
+              Container(
+                child: Text(
+                  "Gut Detox Program Status Tracker",
+                  textAlign: TextAlign.start,
+                  style: TextStyle(
+                      fontFamily: "PoppinsBold",
+                      color: kPrimaryColor,
+                      fontSize: 12.sp,
+                    decoration: TextDecoration.underline
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 1.h,
+              ),
+              TrackerUI(proceedProgramDayModel: model,)
+            ],
+          );
+        });
   }
 
 }

@@ -10,7 +10,8 @@ import 'package:gwc_customer/screens/profile_screens/settings_screen.dart';
 import 'package:gwc_customer/screens/program_plans/day_tracker_ui/day_tracker.dart';
 import 'package:gwc_customer/screens/testimonial_list_screen/testimonial_list_screen.dart';
 import 'package:sizer/sizer.dart';
-
+import 'package:gwc_customer/screens/home_screens/level_status.dart';
+import 'package:gwc_customer/screens/profile_screens/reward/levels_screen.dart';
 import '../../widgets/constants.dart';
 import 'clap_screens/clap_screen.dart';
 import 'feed_screens/feeds_list.dart';
@@ -65,7 +66,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
     switch (index) {
       case 0:
         {
-          return DayMealTracerUI(proceedProgramDayModel: ProceedProgramDayModel(),);
+          return LevelsScreen();
+          // return DayMealTracerUI(proceedProgramDayModel: ProceedProgramDayModel(),);
         }
       case 1:
         {

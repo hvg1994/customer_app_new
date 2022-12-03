@@ -91,6 +91,8 @@ var faqListUrl = "${AppConfig().BASE_URL}/api/getDataList/faq_list";
 
 var submitStatusTrackerUrl = "${AppConfig().BASE_URL}/api/submitData/patient_meal_tracking";
 
+var getHomeDetailsUrl = "${AppConfig().BASE_URL}/api/getDataList/user_stages_data";
+
 
 
 //  old apis

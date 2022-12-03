@@ -143,7 +143,7 @@ class _PIPStackState extends State<PIPStack> with TickerProviderStateMixin {
             return Column(
               mainAxisSize: MainAxisSize.max,
               children: <Widget>[
-                !isInSmallMode
+                !isInSmallMode && !_checkState!.isChanged
                     ? Align(
                   alignment: currentAlignment,
                   child: GestureDetector(

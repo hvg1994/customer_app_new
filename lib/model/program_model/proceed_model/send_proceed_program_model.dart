@@ -1,8 +1,10 @@
+import 'dart:convert';
+
 class ProceedProgramDayModel {
   List<PatientMealTracking>? patientMealTracking;
   String? comment;
   String? day;
-  int? userProgramStatusTracking;
+  String? userProgramStatusTracking;
   String? didUMiss;
   String? missedAnyThingRadio;
   String? withdrawalSymptoms;
@@ -28,7 +30,7 @@ class ProceedProgramDayModel {
   ProceedProgramDayModel.fromJson(Map<String, dynamic> json) {
     if (json['patient_meal_tracking'] != null) {
       patientMealTracking = <PatientMealTracking>[];
-      json['patient_meal_tracking'].forEach((v) {
+      json['patient_meal_tracking[]'].forEach((v) {
         patientMealTracking!.add(new PatientMealTracking.fromJson(v));
       });
     }
@@ -68,14 +70,16 @@ class ProceedProgramDayModel {
   }
 
   Map<String, dynamic> toJson() {
+    print('to json error ${withdrawalSymptoms.runtimeType}  ${detoxification.runtimeType}');
     final Map<String, dynamic> data = new Map<String, dynamic>();
     if (this.patientMealTracking != null) {
       data['patient_meal_tracking'] =
-          this.patientMealTracking!.map((v) => v.toJson()).toList();
+          this.patientMealTracking!.map((v) => jsonEncode(v.toJson())).toList().toString();
     }
     if(this.comment != null){
       data['comment'] = this.comment;
     }
+    data['user_program_status_tracking'] = this.userProgramStatusTracking;
     if(this.day != null){
       data['day'] = this.day;
     }

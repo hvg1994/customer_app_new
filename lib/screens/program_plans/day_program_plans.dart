@@ -157,7 +157,7 @@ class _DaysProgramPlanState extends State<DaysProgramPlan> {
     List<ChildProgramDayModel> listData = model.data!;
     if(listData.last.isCompleted == 1){
       if(widget.postProgramStage == null || widget.postProgramStage!.isEmpty) {
-        WidgetsBinding.instance!.addPostFrameCallback((_) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
           if(!isOpened) {
             setState(() {
               isOpened = true;

@@ -99,6 +99,9 @@ class GutListState extends State<GutList> {
         getShipRocketToken();
       }
     }
+
+    getData();
+
   }
 
   // _showSingleAnimationDialog(BuildContext context) {
@@ -133,6 +136,7 @@ class GutListState extends State<GutList> {
             action: SnackBarAction(
               label: 'Retry',
               onPressed: (){
+                ScaffoldMessenger.of(context).hideCurrentSnackBar();
                 getData();
               },
             )
@@ -575,6 +579,7 @@ class GutListState extends State<GutList> {
         break;
       case 'appointment_booked':
         final model = _getAppointmentDetailsModel;
+        _pref!.setString(AppConfig.appointmentId, model?.value?.id.toString() ?? '');
         goToScreen(DoctorSlotsDetailsScreen(bookingDate: model!.value!.date!, bookingTime: model.value!.slotStartTime!, dashboardValueMap: model.value!.toJson(),isFromDashboard: true,));
         break;
       case 'consultation_done':
@@ -622,7 +627,6 @@ class GutListState extends State<GutList> {
     // TODO: implement didChangeDependencies
     super.didChangeDependencies();
     print("didChangeDependencies");
-    getData();
   }
 
   void getShipRocketToken() async{

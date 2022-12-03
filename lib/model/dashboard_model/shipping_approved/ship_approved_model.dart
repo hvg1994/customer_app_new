@@ -31,11 +31,11 @@ class Value {
   String? assignedDateTime;
   String? labelUrl;
   String? manifestUrl;
-  Null? pickupTokenNumber;
-  Null? routingCode;
+  String? pickupTokenNumber;
+  String? routingCode;
   String? pickupScheduledDate;
   String? status;
-  Null? addedBy;
+  String? addedBy;
   String? createdAt;
   String? updatedAt;
 

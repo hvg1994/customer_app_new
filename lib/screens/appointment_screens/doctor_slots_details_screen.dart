@@ -24,6 +24,7 @@ import '../../widgets/constants.dart';
 import '../../widgets/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'doctor_calender_time_screen.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class DoctorSlotsDetailsScreen extends StatefulWidget {
   /// this will be called from consultation date time screen
@@ -73,6 +74,14 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
     }
     if(!widget.isPostProgram && !widget.isFromDashboard){
       widget.data?.team?.teamMember?.forEach((element) {
+        doctorNames.add(element.user!.name ?? '');
+      });
+    }
+    ChildAppointmentDetails? model;
+    if(widget.isFromDashboard || widget.isPostProgram){
+      model = ChildAppointmentDetails.fromJson(Map.from(widget.dashboardValueMap!));
+      model.teamPatients?.team?.teamMember?.forEach((element) {
+        print('from appoi: ${element.toJson()}');
         doctorNames.add(element.user!.name ?? '');
       });
     }
@@ -247,7 +256,7 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
                                 ),
                                 SizedBox(height: 8.h),
                                 GestureDetector(
-                                  onTap: (isJoinPressed) ? null : () {
+                                  onTap: () {
                                     setState(() {
                                       isJoinPressed = true;
                                     });
@@ -255,7 +264,8 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
                                     if(widget.isFromDashboard){
                                       model = ChildAppointmentDetails.fromJson(Map.from(widget.dashboardValueMap!));
                                     }
-                                    joinZoom(context);
+                                    launchZoomUrl();
+                                    // joinZoom(context);
                                   },
                                   child: Container(
                                     width: 60.w,
@@ -267,7 +277,7 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
                                       border: Border.all(
                                           color: gMainColor, width: 1),
                                     ),
-                                    child: (isJoinPressed) ? buildThreeBounceIndicator()  : Center(
+                                    child: Center(
                                       child: Text(
                                         'Join',
                                         style: TextStyle(
@@ -287,7 +297,7 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
                                   child: GestureDetector(
                                     onTap: () {
                                       Navigator.of(context).push(
-                                        MaterialPageRoute(
+                                          MaterialPageRoute(
                                             builder: (context) =>
                                                 DoctorCalenderTimeScreen(
                                                   isReschedule: true,
@@ -514,6 +524,27 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
       AppConfig().showSnackbar(context, model.message.toString(), isError: true);
     }
     
+  }
+
+  void launchZoomUrl() async{
+    print(widget.data?.patientName);
+    print(widget.isPostProgram);
+    ChildAppointmentDetails? model;
+    if(widget.isFromDashboard || widget.isPostProgram){
+      model = ChildAppointmentDetails.fromJson(Map.from(widget.dashboardValueMap!));
+    }
+    // String zoomUrl = model.;
+
+    String? zoomUrl = (widget.isFromDashboard || widget.isPostProgram) ? model?.zoomJoinUrl : widget.data?.zoomJoinUrl;
+
+    print("model: ${zoomUrl}");
+
+    if (await canLaunchUrl(Uri.parse(zoomUrl ?? '')))
+      await launch(zoomUrl ?? '');
+    else
+      // can't launch url, there is some error
+      throw "Could not launch ${zoomUrl}";
+
   }
 
 }

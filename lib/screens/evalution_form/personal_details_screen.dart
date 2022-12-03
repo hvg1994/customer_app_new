@@ -4607,6 +4607,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
     medicalInterventionsDoneController.text = model.anyMedicalIntervationDoneBeforeOther ?? '';
     medicationsController.text = model.anyMedicationConsumeAtMoment ?? '';
     holisticController.text = model.anyTherapiesHaveDoneBefore ?? '';
+    print("model.medicalReport.runtimeType: ${model.medicalReport!.split(',')}");
     List list = jsonDecode(model.medicalReport ?? '');
     print("report list: $list ${list.length}");
 

@@ -46,6 +46,7 @@ import '../model/program_model/meal_plan_details_model/meal_plan_details_model.d
 import '../model/ship_track_model/shipping_track_model.dart';
 import '../utils/api_urls.dart';
 import '../utils/app_config.dart';
+import 'package:gwc_customer/model/home_model/home_model.dart';
 
 class ApiClient {
   ApiClient({
@@ -953,19 +954,42 @@ class ApiClient {
 
     dynamic result;
 
+    Map staticData =
+    {
+    'patient_meal_tracking[]':[{"user_meal_item_id":1658,"day":2,"status":"followed"},{"user_meal_item_id":1500,"day":2,"status":"followed"},{"user_meal_item_id":1501,"day":2,"status":"unfollowed"},{"user_meal_item_id":1502,"day":2,"status":"followed"},{"user_meal_item_id":1503,"day":2,"status":"followed"},
+      {"user_meal_item_id":1504,"day":2,"status":"followed"},{"user_meal_item_id":1505,"day":2,"status":"unfollowed"},
+      {"user_meal_item_id":1506,"day":2,"status":"followed"},
+      {"user_meal_item_id":1659,"day":2,"status":"unfollowed"},
+      {"user_meal_item_id":1507,"day":2,"status":"followed"},
+      {"user_meal_item_id":1508,"day":2,"status":"followed"}],
+    'user_program_status_tracking':1,
+    'day':2,
+    'did_u_miss':'no',
+    'withdrawal_symptoms[]': ['Aches, pain, and soreness', 'Nausea'],
+    'detoxification[]': ['Lightness in the Chest / Abdomen', 'Odour free burps'],
+    'have_any_other_worries':'No',
+    'eat_something_other':'no',
+    'completed_calm_move_modules':'Yes',
+    'had_a_medical_exam_medications':'No'
+  };
+
     print("proceedDayProgramList path: $url");
 
-    print(
-        "model: ${json.encode(model.toJson()) == jsonEncode(model.toJson())}");
+    print(Map.from(model.toJson()));
+    Map<String, String> m = Map.unmodifiable(model.toJson());
+
+    // print(
+    //     "model: ${json.encode(model.toJson()) == jsonEncode(model.toJson())}");
 
     try {
       final response = await httpClient.post(
         Uri.parse(url),
         headers: {
-          "Content-Type": "application/json",
+          // "Content-Type": "application/json",
           "Authorization": getHeaderToken(),
         },
-        body: jsonEncode(model.toJson()),
+        body: m,
+        // body: staticData
       );
 
       print('proceedDayProgramList Response status: ${response.statusCode}');
@@ -1616,11 +1640,12 @@ class ApiClient {
       else{
         result = ErrorModel(status: response.statusCode.toString(), message: response.body);
       }
-      return result;
     }
-    catch(e){
-
+    catch (e) {
+      print(e);
+      result = ErrorModel(status: "", message: e.toString());
     }
+    return result;
   }
 
   Future getRewardPointsApi() async {
@@ -1717,6 +1742,39 @@ class ApiClient {
     }
     catch(e){
       throw Exception(e);
+    }
+    return result;
+  }
+
+  Future getHomeDetailsApi() async{
+    String url = getHomeDetailsUrl;
+    dynamic result;
+
+    try{
+      final response = await httpClient.get(Uri.parse(url),
+        headers: {
+          "Authorization": getHeaderToken(),
+        },
+      ).timeout(Duration(seconds: 50));
+
+      if(response.statusCode == 200){
+        final json = jsonDecode(response.body);
+
+        if(json['status'].toString() == '200'){
+          result = HomeScreenModel.fromJson(json);
+        }
+        else{
+          result = ErrorModel.fromJson(json);
+        }
+      }
+      else{
+        result = ErrorModel(
+            status: response.statusCode.toString(), message: response.body);
+      }
+    }
+    catch (e) {
+      print(e);
+      result = ErrorModel(status: "", message: e.toString());
     }
     return result;
   }

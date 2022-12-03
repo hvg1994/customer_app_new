@@ -26,6 +26,8 @@ class _ProtocolGuideScreenState extends State<ProtocolGuideScreen> {
   Color? containerColor;
   List optionSelectedList = [];
 
+  String protocolGuidePdfLink = '';
+
   @override
   void initState() {
     // TODO: implement initState
@@ -60,7 +62,7 @@ class _ProtocolGuideScreenState extends State<ProtocolGuideScreen> {
                     onTap: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (context) => const ProtocolGuideDetails(),
+                          builder: (context) => ProtocolGuideDetails(pdfLink: protocolGuidePdfLink,),
                         ),
                       );
                     },
@@ -88,6 +90,7 @@ class _ProtocolGuideScreenState extends State<ProtocolGuideScreen> {
                         optionSelectedList.add(model.breakfast);
                         optionSelectedList.add(model.lunch);
                         optionSelectedList.add(model.dinner);
+                        protocolGuidePdfLink = model.protocolGuidePdf ?? '';
                         print("optionSelectedList: $optionSelectedList");
                         return Column(
                           children: [

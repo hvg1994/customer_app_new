@@ -51,57 +51,64 @@ class _LevelsScreenState extends State<LevelsScreen> {
               else{
                 final model = snapshot.data as RewardPointsStagesModel;
                 List _l = storeLength(model);
-                // stageLength.add(model.)
-                return LevelMap(
-                  backgroundColor: gWhiteColor,
-                  levelMapParams: LevelMapParams(
-                    levelCount: _l.length,
-                    currentLevel: (_l.indexWhere((element) => element == 2)+1).toDouble(),
-                    pathColor: gMainColor ,
-                    currentLevelImage: ImageParams(
-                      path: "assets/images/current_stage.png",
-                      size: Size(40,40),
-                    ),
-                    lockedLevelImage: ImageParams(
-                      path: "assets/images/lock.png",
-                      size: Size(40,40),
-                    ),
-                    completedLevelImage: ImageParams(
-                      path: "assets/images/green_done.png",
-                      size: Size(40,40),
-                    ),
-                    // bgImagesToBePaintedRandomly: [
-                    //   ImageParams(
-                    //       path: "assets/images/first.png",
-                    //       size: Size(80, 80),
-                    //       repeatCountPerLevel: 0.1
-                    //   ),
-                    //   ImageParams(
-                    //       path: "assets/images/second.png",
-                    //       size: Size(80, 80),
-                    //       repeatCountPerLevel: 0.1
-                    //   ),
-                    //   ImageParams(
-                    //       path: "assets/images/third.png",
-                    //       size: Size(80, 80),
-                    //       repeatCountPerLevel: 0.1
-                    //   ),
-                    //   ImageParams(
-                    //       path: "assets/images/fourth.png",
-                    //       size: Size(80, 80),
-                    //       repeatCountPerLevel: 0.1
-                    //   ),
-                    //   ImageParams(
-                    //       path: "assets/images/fifth.png",
-                    //       size: Size(80, 80),
-                    //       repeatCountPerLevel: 0.1
-                    //   ),
-                    //   ImageParams(
-                    //       path: "assets/images/sixth.png",
-                    //       size: Size(80, 80),
-                    //       repeatCountPerLevel: 0.1
-                    //   ),
-                    // ],
+                // return LevelMap(
+                //   backgroundColor: gWhiteColor,
+                //   levelMapParams: LevelMapParams(
+                //     levelCount: _l.length,
+                //     currentLevel: (_l.indexWhere((element) => element == 2)+1).toDouble(),
+                //     pathColor: gMainColor ,
+                //     currentLevelImage: ImageParams(
+                //       path: "assets/images/current_stage.png",
+                //       size: Size(40,40),
+                //     ),
+                //     lockedLevelImage: ImageParams(
+                //       path: "assets/images/lock.png",
+                //       size: Size(40,40),
+                //     ),
+                //     completedLevelImage: ImageParams(
+                //       path: "assets/images/green_done.png",
+                //       size: Size(40,40),
+                //     ),
+                //     // bgImagesToBePaintedRandomly: [
+                //     //   ImageParams(
+                //     //       path: "assets/images/first.png",
+                //     //       size: Size(80, 80),
+                //     //       repeatCountPerLevel: 0.1
+                //     //   ),
+                //     //   ImageParams(
+                //     //       path: "assets/images/second.png",
+                //     //       size: Size(80, 80),
+                //     //       repeatCountPerLevel: 0.1
+                //     //   ),
+                //     //   ImageParams(
+                //     //       path: "assets/images/third.png",
+                //     //       size: Size(80, 80),
+                //     //       repeatCountPerLevel: 0.1
+                //     //   ),
+                //     //   ImageParams(
+                //     //       path: "assets/images/fourth.png",
+                //     //       size: Size(80, 80),
+                //     //       repeatCountPerLevel: 0.1
+                //     //   ),
+                //     //   ImageParams(
+                //     //       path: "assets/images/fifth.png",
+                //     //       size: Size(80, 80),
+                //     //       repeatCountPerLevel: 0.1
+                //     //   ),
+                //     //   ImageParams(
+                //     //       path: "assets/images/sixth.png",
+                //     //       size: Size(80, 80),
+                //     //       repeatCountPerLevel: 0.1
+                //     //   ),
+                //     // ],
+                //   ),
+                // );
+                return Container(
+                  height: double.infinity,
+                  color: Colors.yellow,
+                  width: MediaQuery.of(context).size.width,
+                  child: CustomPaint(
+                    painter: ArrowPainter(),
                   ),
                 );
               }

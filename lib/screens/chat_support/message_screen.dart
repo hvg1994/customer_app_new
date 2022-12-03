@@ -886,7 +886,7 @@ class _MessageScreenState extends State<MessageScreen>
     return Text(message.senderName ?? "Noname",
         maxLines: 1,
         style: TextStyle(
-            fontSize: 10.5.sp,
+            fontSize: 8.5.sp,
             fontWeight: FontWeight.bold,
             color: Colors.black54));
   }

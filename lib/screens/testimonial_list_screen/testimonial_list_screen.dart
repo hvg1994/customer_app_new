@@ -13,7 +13,7 @@ import 'package:gwc_customer/widgets/constants.dart';
 import 'package:gwc_customer/widgets/widgets.dart';
 import 'package:sizer/sizer.dart';
 import 'package:http/http.dart' as http;
-
+import 'package:intl/intl.dart';
 class TestimonialListScreen extends StatefulWidget {
   const TestimonialListScreen({Key? key}) : super(key: key);
 
@@ -130,7 +130,7 @@ class _TestimonialListScreenState extends State<TestimonialListScreen> {
                       print("feedbackList[index].file: ${feedbackList[index].file.runtimeType}");
                       return showCardViews(
                         userProfile: feedbackList[index].addedBy?.profile ?? '',
-                          feedbackTime: feedbackList[index].addedBy?.createdAt ?? '',
+                          feedbackTime: DateFormat('yyyy/MM/dd, hh:mm a').format(DateTime.parse(feedbackList[index].addedBy?.createdAt ?? '').toLocal()),
                           feedbackUser: feedbackList[index].addedBy?.name ?? '',
                           feedback: feedbackList[index].feedback,
                           imagePath: (feedbackList[index].file == null) ? null : feedbackList[index].file?.first
@@ -200,7 +200,7 @@ class _TestimonialListScreenState extends State<TestimonialListScreen> {
                 fontFamily: 'GothamBold'
               ),
             ),
-            subtitle: Text(DateTime.parse(feedbackTime!).toLocal().toString() ?? '',
+            subtitle: Text(feedbackTime ?? '',
               style: TextStyle(
                   fontSize: 9.5.sp,
                   fontFamily: 'GothamLight'
@@ -219,31 +219,33 @@ class _TestimonialListScreenState extends State<TestimonialListScreen> {
           ),
           Visibility(
             visible: imagePath != null,
-            child: Container(
-              width: 70.w,
-              height: 30.h,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(14),
-                image: DecorationImage(
-                  image: CachedNetworkImageProvider(
-                    imagePath ?? '',
-                    errorListener: (){
-                      Image.asset('assets/images/top-view-indian-food-assortment.png');
-                    },
-                    // placeholder: (_, __){
-                    //   return Image.asset('assets/images/top-view-indian-food-assortment.png');
-                    // },
+            child: Center(
+              child: Container(
+                width: 70.w,
+                height: 30.h,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(14),
+                  image: DecorationImage(
+                    image: CachedNetworkImageProvider(
+                      imagePath ?? '',
+                      errorListener: (){
+                        Image.asset('assets/images/top-view-indian-food-assortment.png');
+                      },
+                      // placeholder: (_, __){
+                      //   return Image.asset('assets/images/top-view-indian-food-assortment.png');
+                      // },
+                    )
                   )
-                )
+                ),
+                // child: Card(
+                //   child: CachedNetworkImage(
+                //     imageUrl: imagePath ?? '',
+                //     placeholder: (_, __){
+                //       return Image.asset('assets/images/top-view-indian-food-assortment.png');
+                //     },
+                //   ),
+                // ),
               ),
-              // child: Card(
-              //   child: CachedNetworkImage(
-              //     imageUrl: imagePath ?? '',
-              //     placeholder: (_, __){
-              //       return Image.asset('assets/images/top-view-indian-food-assortment.png');
-              //     },
-              //   ),
-              // ),
             ),
           ),
         ],

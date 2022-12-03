@@ -29,6 +29,7 @@ class ChooseYourProblemScreen extends StatefulWidget {
 class _ChooseYourProblemScreenState extends State<ChooseYourProblemScreen> {
 
   List selectedProblems = [];
+  final otherController = TextEditingController();
   Future? myFuture;
 
   bool isLoading = false;
@@ -97,9 +98,10 @@ class _ChooseYourProblemScreenState extends State<ChooseYourProblemScreen> {
                 "Choose Your Problem",
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                    fontFamily: "GothamRoundedBold_21016",
-                    color: gPrimaryColor,
-                    fontSize: 11.sp),
+                    fontFamily: eUser().mainHeadingFont,
+                    fontSize: eUser().mainHeadingFontSize,
+                    color: eUser().mainHeadingColor
+                ),
               ),
               SizedBox(
                 height: 2.h,
@@ -118,18 +120,21 @@ class _ChooseYourProblemScreenState extends State<ChooseYourProblemScreen> {
                           // padding: EdgeInsets.symmetric(
                           //     vertical: 1.h, horizontal: 15.w),
                           decoration: BoxDecoration(
-                            color: selectedProblems.isEmpty ? gMainColor : gPrimaryColor,
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: gMainColor, width: 1),
+                            color: selectedProblems.isEmpty ? eUser().buttonColor : eUser().buttonColor,
+                            borderRadius: BorderRadius.circular(eUser().buttonBorderRadius),
+                            border: Border.all(
+                                color: eUser().buttonBorderColor,
+                                width: eUser().buttonBorderWidth
+                            ),
                           ),
-                          child: (isLoading) ? buildThreeBounceIndicator()
+                          child: (isLoading) ? buildThreeBounceIndicator(color: eUser().threeBounceIndicatorColor)
                               : Center(
                                 child: Text(
                             'Next',
                             style: TextStyle(
-                                fontFamily: "GothamRoundedBold_21016",
-                                color: selectedProblems.isEmpty ? gPrimaryColor : gWhiteColor,
-                                fontSize: 11.sp,
+                                fontFamily: eUser().buttonTextFont,
+                                color: selectedProblems.isEmpty ? eUser().buttonTextColor : eUser().buttonTextColor,
+                                fontSize: eUser().buttonTextSize,
                             ),
                           ),
                               ),
@@ -156,8 +161,14 @@ class _ChooseYourProblemScreenState extends State<ChooseYourProblemScreen> {
                   physics: const ScrollPhysics(),
                   shrinkWrap: true,
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3, crossAxisSpacing: 6, mainAxisSpacing: 6),
-                  // gridDelegate:SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
+                    crossAxisCount: 4,
+                    crossAxisSpacing: 5.0,
+                    mainAxisSpacing: 5.0,
+
+                    // childAspectRatio: MediaQuery.of(context).size.width /
+                    //     (MediaQuery.of(context).size.height / 1.4),
+                  ),
+                  // gridDelegate:SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4),
                   itemCount: problemList?.length ?? 0,
                   itemBuilder: (context, index) {
                     return InkWell(
@@ -166,9 +177,14 @@ class _ChooseYourProblemScreenState extends State<ChooseYourProblemScreen> {
                         buildChooseProblemOnClick(problemList![index]);
                       },
                       child: Container(
-                        margin: EdgeInsets.symmetric(horizontal: 2, vertical: 2),
+                        height: 120,
+                        // margin: EdgeInsets.symmetric(horizontal: 2, vertical: 2),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(5),
+                          border: Border.all(
+                              color: eUser().buttonBorderColor,
+                              width: eUser().buttonBorderWidth
+                          ),
                           boxShadow: [
                             BoxShadow(
                               color: Colors.grey.withOpacity(0.3),
@@ -178,28 +194,37 @@ class _ChooseYourProblemScreenState extends State<ChooseYourProblemScreen> {
                           ],
                           image: DecorationImage(
                               image: AssetImage("assets/images/Group 4855.png"),
-                              fit: BoxFit.fill),
+                              fit: BoxFit.cover
+                          ),
                         ),
                         child: Stack(
                           children: [
                             Center(
-                              child: Column(
-                                children: [
-                                  SizedBox(height: 2.h),
-                                  Image(
-                                    height: 8.h,
-                                    image: NetworkImage(problemList?[index].image ?? ''),
-                                  ),
-                                  SizedBox(height: 1.5.h),
-                                  Text(
-                                    problemList?[index].name.toString().capitalize() ?? '',
-                                    style: TextStyle(
-                                      fontFamily: "GothamMedium",
-                                      color: gTextColor,
-                                      fontSize: 9.sp,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 5),
+                                child: Column(
+                                  children: [
+                                    // SizedBox(height: 1.h),
+                                    Image(
+                                      height: 40,
+                                      width: 40,
+                                      image: NetworkImage(problemList?[index].image ?? ''),
                                     ),
-                                  ),
-                                ],
+                                    SizedBox(height: 1.5.h),
+                                    Expanded(
+                                      child: Text(
+                                        'Constipation Constipationdsd',
+                                        // problemList?[index].name.toString().capitalize() ?? '',
+                                            style: TextStyle(
+                                          fontFamily: "GothamMedium",
+                                          color: gTextColor,
+                                          fontSize: 9.sp,
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(height: 1.h),
+                                  ],
+                                ),
                               ),
                             ),
                             Positioned(
