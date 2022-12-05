@@ -31,7 +31,8 @@ import 'package:gwc_customer/widgets/dart_extensions.dart';
 
 class PersonalDetailsScreen extends StatefulWidget {
   final bool showData;
-  const PersonalDetailsScreen({Key? key, this.showData = false}) : super(key: key);
+  const PersonalDetailsScreen({Key? key, this.showData = false})
+      : super(key: key);
 
   @override
   State<PersonalDetailsScreen> createState() => _PersonalDetailsScreenState();
@@ -43,7 +44,6 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
   final _pref = AppConfig().preferences;
 
   bool _ignoreFields = true;
-
 
   int ft = -1;
   int inches = -1;
@@ -82,7 +82,8 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
   TextEditingController urinColorController = TextEditingController();
   TextEditingController urinSmellController = TextEditingController();
   TextEditingController urinLooksLikeController = TextEditingController();
-  TextEditingController medicalInterventionsDoneController = TextEditingController();
+  TextEditingController medicalInterventionsDoneController =
+      TextEditingController();
   TextEditingController medicationsController = TextEditingController();
   TextEditingController holisticController = TextEditingController();
 
@@ -117,23 +118,38 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
   String urineColorValue = "";
   String urineLookLikeValue = "";
 
-
   final healthCheckBox1 = <CheckBoxSettings>[
     CheckBoxSettings(title: "Autoimmune Diseases"),
     CheckBoxSettings(title: "Endocrine Diseases (Thyroid/Diabetes/PCOS)"),
-    CheckBoxSettings(title: "Heart Diseases (Palpitations/Low Blood Pressure/High Blood Pressure)"),
+    CheckBoxSettings(
+        title:
+            "Heart Diseases (Palpitations/Low Blood Pressure/High Blood Pressure)"),
     CheckBoxSettings(title: "Renal/Kidney Diseases (Kidney Stones)"),
-    CheckBoxSettings(title: "Liver Diseases (Cirrhosis/Fatty Liver/Hepatitis/Jaundice)"),
-    CheckBoxSettings(title: "Neurological Diseases (Seizures/Fits/Convulsions/Headache/Migraine/Vertigo)"),
-    CheckBoxSettings(title: "Digestive Diseases (Hernia/Hemorrhoids/Piles/Indigestion/Gall Stone/Pancreatitis/Irritable Bowel Syndrome)"),
-    CheckBoxSettings(title: "Skin Diseases (Psoriasis/Acne/Eczema/Herpes,/Skin Allergies/Dandruff/Rashes)"),
-    CheckBoxSettings(title: "Respiratory Diseases (Athama/Allergic bronchitis/Rhinitis/Sinusitis/Frequent Cold, Cough & Fever/Tonsillitis/Wheezing)"),
-    CheckBoxSettings(title: "Reproductive Diseases (PCOD/Infertility/MenstrualDisorders/Heavy or Scanty Period Bleeding/Increased or Decreased Sexual Drive/Painful Periods /Irregular Cycles)"),
-    CheckBoxSettings(title: "Skeletal Muscle Disorders (Muscular Dystrophy/Rheumatoid Arthritis/Arthritis/Spondylitis/Loss ofMuscle Mass)"),
-    CheckBoxSettings(title: "Psychological/Psychiatric Issues (Depression,Anxiety, OCD, ADHD, Mood Disorders, Schizophrenia,Personality Disorders, Eating Disorders)"),
+    CheckBoxSettings(
+        title: "Liver Diseases (Cirrhosis/Fatty Liver/Hepatitis/Jaundice)"),
+    CheckBoxSettings(
+        title:
+            "Neurological Diseases (Seizures/Fits/Convulsions/Headache/Migraine/Vertigo)"),
+    CheckBoxSettings(
+        title:
+            "Digestive Diseases (Hernia/Hemorrhoids/Piles/Indigestion/Gall Stone/Pancreatitis/Irritable Bowel Syndrome)"),
+    CheckBoxSettings(
+        title:
+            "Skin Diseases (Psoriasis/Acne/Eczema/Herpes,/Skin Allergies/Dandruff/Rashes)"),
+    CheckBoxSettings(
+        title:
+            "Respiratory Diseases (Athama/Allergic bronchitis/Rhinitis/Sinusitis/Frequent Cold, Cough & Fever/Tonsillitis/Wheezing)"),
+    CheckBoxSettings(
+        title:
+            "Reproductive Diseases (PCOD/Infertility/MenstrualDisorders/Heavy or Scanty Period Bleeding/Increased or Decreased Sexual Drive/Painful Periods /Irregular Cycles)"),
+    CheckBoxSettings(
+        title:
+            "Skeletal Muscle Disorders (Muscular Dystrophy/Rheumatoid Arthritis/Arthritis/Spondylitis/Loss ofMuscle Mass)"),
+    CheckBoxSettings(
+        title:
+            "Psychological/Psychiatric Issues (Depression,Anxiety, OCD, ADHD, Mood Disorders, Schizophrenia,Personality Disorders, Eating Disorders)"),
     CheckBoxSettings(title: "None Of The Above"),
     CheckBoxSettings(title: "Other:"),
-
   ];
 
   List<String> selectedHealthCheckBox1 = [];
@@ -157,7 +173,8 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
     CheckBoxSettings(title: "Frequent Head/Body Aches"),
     CheckBoxSettings(title: "Gurgling Noise In Your Tummy"),
     CheckBoxSettings(title: "Hypersalivation While Feeling Nauseous"),
-    CheckBoxSettings(title: "Cannot Start My Day Without A Hot Beverage Once I'm Up"),
+    CheckBoxSettings(
+        title: "Cannot Start My Day Without A Hot Beverage Once I'm Up"),
     CheckBoxSettings(title: "Gas & Bloating"),
     CheckBoxSettings(title: "Constipation"),
     CheckBoxSettings(title: "Low Immunity/ Falling Ill Frequently"),
@@ -176,11 +193,12 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
     CheckBoxSettings(title: "Weight Loss"),
     CheckBoxSettings(title: "Weight Gain"),
     CheckBoxSettings(title: "Burping"),
-    CheckBoxSettings(title: "Sour Regurgitation/ Food Regurgitation.(Food Coming back to your mouth)"),
+    CheckBoxSettings(
+        title:
+            "Sour Regurgitation/ Food Regurgitation.(Food Coming back to your mouth)"),
     CheckBoxSettings(title: "Burning while passing urine"),
     CheckBoxSettings(title: "None Of The Above")
   ];
-
 
   final foodCheckBox = [
     CheckBoxSettings(title: "North Indian"),
@@ -272,7 +290,6 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
   bool urinLooksLikeOtherSelected = false;
   //***********************************
 
-
   final medicalInterventionsDoneBeforeList = [
     CheckBoxSettings(title: "Surgery"),
     CheckBoxSettings(title: "Stents"),
@@ -281,7 +298,6 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
   bool medicalInterventionsOtherSelected = false;
   List selectedmedicalInterventionsDoneBeforeList = [];
 
-
   String selectedStoolMatch = '';
 
   List<PlatformFile> medicalRecords = [];
@@ -289,35 +305,33 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
   /// this is used when showdata is true
   List showMedicalReport = [];
 
-
-
-
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
 
     WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
-      if(!widget.showData) getProfileData();
+      if (!widget.showData) getProfileData();
     });
     pinCodeController.addListener(() {
-      setState(() { });
+      setState(() {});
     });
-    if(widget.showData){
-      _getEvaluationDataFuture = EvaluationFormService(repository: repository).getEvaluationDataService();
+    if (widget.showData) {
+      _getEvaluationDataFuture = EvaluationFormService(repository: repository)
+          .getEvaluationDataService();
     }
   }
 
   @override
   void setState(fn) {
-    if(mounted) super.setState(fn);
+    if (mounted) super.setState(fn);
   }
 
   @override
   void dispose() {
     // TODO: implement dispose
-    if(mounted) {
-      pinCodeController.removeListener(() { });
+    if (mounted) {
+      pinCodeController.removeListener(() {});
       super.dispose();
     }
   }
@@ -325,115 +339,125 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-              image: const AssetImage("assets/images/eval_bg.png"),
-              fit: BoxFit.fitWidth,
-              colorFilter: ColorFilter.mode(kPrimaryColor, BlendMode.lighten)
-          ),
-        ),
+      decoration:widget.showData
+          ?BoxDecoration(color: gWhiteColor):  const BoxDecoration(
+        image: DecorationImage(
+            image: const AssetImage("assets/images/eval_bg.png"),
+            fit: BoxFit.fitWidth,
+            colorFilter: ColorFilter.mode(kPrimaryColor, BlendMode.lighten)),
+      ),
       child: SafeArea(
         child: Scaffold(
           backgroundColor: Colors.transparent,
           body: widget.showData
               ? FutureBuilder(
-            future: _getEvaluationDataFuture,
-              builder: (_, snapshot){
-              if(snapshot.hasData){
-                 print(snapshot.data);
-                print(snapshot.data.runtimeType);
-                if(snapshot.data.runtimeType == GetEvaluationDataModel){
-                  GetEvaluationDataModel model = snapshot.data as GetEvaluationDataModel;
-                  ChildGetEvaluationDataModel? model1 = model.data;
-                  storeDetails(model1!);
-                  return showUI(context, model: model1);
-                }
-                else{
-                  ErrorModel model = snapshot.data as ErrorModel;
-                  print(model.message);
-                }
-              }
-              else if(snapshot.hasError){
-                print("snapshot.error: ${snapshot.error}");
-              }
-                return buildCircularIndicator();
-              }
-          )
+                  future: _getEvaluationDataFuture,
+                  builder: (_, snapshot) {
+                    if (snapshot.hasData) {
+                      print(snapshot.data);
+                      print(snapshot.data.runtimeType);
+                      if (snapshot.data.runtimeType == GetEvaluationDataModel) {
+                        GetEvaluationDataModel model =
+                            snapshot.data as GetEvaluationDataModel;
+                        ChildGetEvaluationDataModel? model1 = model.data;
+                        storeDetails(model1!);
+                        return showUI(context, model: model1);
+                      } else {
+                        ErrorModel model = snapshot.data as ErrorModel;
+                        print(model.message);
+                      }
+                    } else if (snapshot.hasError) {
+                      print("snapshot.error: ${snapshot.error}");
+                    }
+                    return buildCircularIndicator();
+                  })
               : showUI(context),
         ),
       ),
     );
   }
 
-  showUI(BuildContext context, {ChildGetEvaluationDataModel? model}){
-    return Column(
-      children: [
-        Padding(
-          padding: EdgeInsets.only(left: 4.w, right: 4.w, top: 3.h),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+  showUI(BuildContext context, {ChildGetEvaluationDataModel? model}) {
+    return widget.showData
+        ? buildEvaluationForm()
+        : Column(
             children: [
-              buildAppBar(() {
-                Navigator.pop(context);
-              }),
-              SizedBox(
-                width: 3.w,
+              SizedBox(height: 1.h),
+              Padding(
+                padding: EdgeInsets.only(left: 4.w, right: 4.w, top: 3.h),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    buildAppBar(() {
+                      Navigator.pop(context);
+                    }),
+                    SizedBox(
+                      width: 3.w,
+                    ),
+                    Text(
+                      "Gut Wellness Club \nEvaluation Form",
+                      textAlign: TextAlign.start,
+                      style: TextStyle(
+                          fontFamily: "PoppinsMedium",
+                          color: Colors.white,
+                          fontSize: 12.sp),
+                    ),
+                  ],
+                ),
               ),
-              Text(
-                "Gut Wellness Club \nEvaluation Form",
-                textAlign: TextAlign.start,
-                style: TextStyle(
-                    fontFamily: "PoppinsMedium",
-                    color: Colors.white,
-                    fontSize: 12.sp),
+              SizedBox(
+                height: 4.h,
+              ),
+              Expanded(
+                child: Container(
+                    width: double.maxFinite,
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 3.w, vertical: 3.h),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                            blurRadius: 2, color: Colors.grey.withOpacity(0.5))
+                      ],
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(30),
+                        topRight: Radius.circular(30),
+                      ),
+                    ),
+                    child: buildEvaluationForm()),
               ),
             ],
+          );
+  }
+
+  buildEvaluationForm({ChildGetEvaluationDataModel? model}) {
+    return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
+      child: Column(
+        children: [
+          buildPersonalDetails(),
+          buildHealthDetails(),
+          // buildFoodHabitsDetails(),
+          // buildSleepDetails(),
+          // buildLifeStyleDetails(),
+          // buildGutTypeDetails(),
+          Center(
+            child: CommonButton.sendButton(() {
+              if (widget.showData) {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (ctx) => PersonalDetailsScreen2(
+                              showData: true,
+                              childGetEvaluationDataModel: model,
+                            )));
+              } else {
+                checkFields(context);
+              }
+            }, "Next"),
           ),
-        ),
-        SizedBox(
-          height: 4.h,
-        ),
-        Expanded(
-          child: Container(
-            width: double.maxFinite,
-            padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 3.h),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                    blurRadius: 2, color: Colors.grey.withOpacity(0.5))
-              ],
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(30),
-                topRight: Radius.circular(30),
-              ),
-            ),
-            child: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              child: Column(
-                children: [
-                  buildPersonalDetails(),
-                  buildHealthDetails(),
-                  // buildFoodHabitsDetails(),
-                  // buildSleepDetails(),
-                  // buildLifeStyleDetails(),
-                  // buildGutTypeDetails(),
-                  Center(
-                    child: CommonButton.sendButton(() {
-                      if(widget.showData){
-                        Navigator.push(context, MaterialPageRoute(builder: (ctx) => PersonalDetailsScreen2(showData: true, childGetEvaluationDataModel: model,)));
-                      }
-                      else{
-                        checkFields(context);
-                      }
-                    }, "Next"),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -492,7 +516,9 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
               cursorColor: kPrimaryColor,
               validator: (value) {
                 if (value!.isEmpty || !RegExp(r"^[a-z A-Z]").hasMatch(value)) {
-                  AppConfig().showSnackbar(context, "Please enter your First Name", isError: true);
+                  AppConfig().showSnackbar(
+                      context, "Please enter your First Name",
+                      isError: true);
                   return 'Please enter your First Name';
                 } else {
                   return null;
@@ -614,10 +640,9 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
               validator: (value) {
                 if (value!.isEmpty) {
                   return 'Please enter your Phone Number';
-                }  else if (!isPhone(value)){
+                } else if (!isPhone(value)) {
                   return 'Please enter valid Mobile Number';
-                }
-                else {
+                } else {
                   return null;
                 }
               },
@@ -773,7 +798,8 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
             SizedBox(
               height: 2.h,
             ),
-            buildLabelTextField('Full Postal Address To Deliver Your Ready To Cook Kit'),
+            buildLabelTextField(
+                'Full Postal Address To Deliver Your Ready To Cook Kit'),
             SizedBox(
               height: 1.h,
             ),
@@ -783,11 +809,9 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
               validator: (value) {
                 if (value!.isEmpty) {
                   return 'Please enter your Address';
-                }
-                else if(value.length < 10){
+                } else if (value.length < 10) {
                   return 'Please enter your Address';
-                }
-                else {
+                } else {
                   return null;
                 }
               },
@@ -807,22 +831,21 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
             FocusScope(
               onFocusChange: (value) {
                 print(value);
-                if(cityController.text.isEmpty){
+                if (cityController.text.isEmpty) {
                   if (!value) {
                     print("editing");
                     String code = _pref?.getString(AppConfig.countryCode) ?? '';
-                    if(pinCodeController.text.length < 6){
-                      AppConfig().showSnackbar(context, 'Pincode should br 6 digits');
-                    }
-                    else {
+                    if (pinCodeController.text.length < 6) {
+                      AppConfig()
+                          .showSnackbar(context, 'Pincode should br 6 digits');
+                    } else {
                       fetchCountry(pinCodeController.text, 'IN');
                     }
                   }
                 }
               },
               child: TextFormField(
-                autovalidateMode:
-                AutovalidateMode.onUserInteraction,
+                autovalidateMode: AutovalidateMode.onUserInteraction,
                 controller: pinCodeController,
                 cursorColor: kPrimaryColor,
                 validator: (value) {
@@ -834,32 +857,37 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                     return null;
                   }
                 },
-                onFieldSubmitted: (value){
-                  if(cityController.text.isEmpty){
-                    String code = _pref?.getString(AppConfig.countryCode) ?? 'IN';
-                    if(code.isNotEmpty && code == 'IN'){
+                onFieldSubmitted: (value) {
+                  if (cityController.text.isEmpty) {
+                    String code =
+                        _pref?.getString(AppConfig.countryCode) ?? 'IN';
+                    if (code.isNotEmpty && code == 'IN') {
                       fetchCountry(value, code);
                     }
                     FocusManager.instance.primaryFocus?.unfocus();
                   }
                 },
                 decoration: CommonDecoration.buildTextInputDecoration(
-                    "Your answer", pinCodeController,
-                  suffixIcon: (pinCodeController.text.length != 6) ? null :
-                  GestureDetector(
-                  onTap:(){
-                    String code = _pref?.getString(AppConfig.countryCode) ?? '';
-                    if(code.isNotEmpty && code == 'IN'){
-                      fetchCountry(pinCodeController.text, code);
-                    }
-                    FocusManager.instance.primaryFocus?.unfocus();
-                  },
-                  child: Icon(
-                    Icons.keyboard_arrow_right,
-                    color: gMainColor,
-                    size: 22,
-                  ),
-                ),),
+                  "Your answer",
+                  pinCodeController,
+                  suffixIcon: (pinCodeController.text.length != 6)
+                      ? null
+                      : GestureDetector(
+                          onTap: () {
+                            String code =
+                                _pref?.getString(AppConfig.countryCode) ?? '';
+                            if (code.isNotEmpty && code == 'IN') {
+                              fetchCountry(pinCodeController.text, code);
+                            }
+                            FocusManager.instance.primaryFocus?.unfocus();
+                          },
+                          child: Icon(
+                            Icons.keyboard_arrow_right,
+                            color: gMainColor,
+                            size: 22,
+                          ),
+                        ),
+                ),
                 textInputAction: TextInputAction.next,
                 textAlign: TextAlign.start,
                 keyboardType: TextInputType.number,
@@ -879,7 +907,8 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                 controller: cityController,
                 cursorColor: kPrimaryColor,
                 validator: (value) {
-                  if (value!.isEmpty || !RegExp(r"^[a-z A-Z]").hasMatch(value)) {
+                  if (value!.isEmpty ||
+                      !RegExp(r"^[a-z A-Z]").hasMatch(value)) {
                     return 'Please Enter City';
                   } else if (!RegExp(r"^[a-z A-Z]").hasMatch(value)) {
                     return 'Please Enter City';
@@ -907,7 +936,8 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                 controller: stateController,
                 cursorColor: kPrimaryColor,
                 validator: (value) {
-                  if (value!.isEmpty || !RegExp(r"^[a-z A-Z]").hasMatch(value)) {
+                  if (value!.isEmpty ||
+                      !RegExp(r"^[a-z A-Z]").hasMatch(value)) {
                     return 'Please Enter State';
                   } else if (!RegExp(r"^[a-z A-Z]").hasMatch(value)) {
                     return 'Please Enter State';
@@ -935,7 +965,8 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                 controller: countryController,
                 cursorColor: kPrimaryColor,
                 validator: (value) {
-                  if (value!.isEmpty || !RegExp(r"^[a-z A-Z]").hasMatch(value)) {
+                  if (value!.isEmpty ||
+                      !RegExp(r"^[a-z A-Z]").hasMatch(value)) {
                     return 'Please Enter Country';
                   } else if (!RegExp(r"^[a-z A-Z]").hasMatch(value)) {
                     return 'Please Enter Country';
@@ -1024,10 +1055,10 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
               validator: (value) {
                 if (value!.isEmpty) {
                   return 'Please enter your Weight';
-                }else if (int.tryParse(value)! < 20 || int.tryParse(value)! > 120) {
+                } else if (int.tryParse(value)! < 20 ||
+                    int.tryParse(value)! > 120) {
                   return 'Please enter Valid Weight';
-                }
-                else {
+                } else {
                   return null;
                 }
               },
@@ -1048,7 +1079,8 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
             SizedBox(
               height: 2.h,
             ),
-            buildLabelTextField('Brief Paragraph About Your Current Complaints Are & What You Are Looking To Heal Here'),
+            buildLabelTextField(
+                'Brief Paragraph About Your Current Complaints Are & What You Are Looking To Heal Here'),
             SizedBox(
               height: 1.h,
             ),
@@ -1081,12 +1113,16 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
               shrinkWrap: true,
               physics: const BouncingScrollPhysics(),
               children: [
-                ...healthCheckBox1.map((e) => buildHealthCheckBox(e, 'health1')).toList(),
+                ...healthCheckBox1
+                    .map((e) => buildHealthCheckBox(e, 'health1'))
+                    .toList(),
                 TextFormField(
                   controller: checkbox1OtherController,
                   cursorColor: kPrimaryColor,
                   validator: (value) {
-                    if (value!.isEmpty && selectedHealthCheckBox1.any((element) => element.contains("Other:"))) {
+                    if (value!.isEmpty &&
+                        selectedHealthCheckBox1
+                            .any((element) => element.contains("Other:"))) {
                       return 'Please Mention Other Details with minimum 2 characters';
                     } else {
                       return null;
@@ -1112,7 +1148,9 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
               shrinkWrap: true,
               physics: const BouncingScrollPhysics(),
               children: [
-                ...healthCheckBox2.map((e)=> buildHealthCheckBox(e, 'health2')).toList(),
+                ...healthCheckBox2
+                    .map((e) => buildHealthCheckBox(e, 'health2'))
+                    .toList(),
                 SizedBox(
                   height: 1.h,
                 ),
@@ -1216,10 +1254,10 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                   controller: tongueCoatingController,
                   cursorColor: kPrimaryColor,
                   validator: (value) {
-                    if (value!.isEmpty && tongueCoatingRadio.toLowerCase().contains("other")) {
+                    if (value!.isEmpty &&
+                        tongueCoatingRadio.toLowerCase().contains("other")) {
                       return 'Please enter the tongue coating details';
-                    }
-                    else {
+                    } else {
                       return null;
                     }
                   },
@@ -1234,7 +1272,8 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
             SizedBox(
               height: 2.h,
             ),
-            buildLabelTextField("Has Frequency Of Urination Increased Or Decreased In The Recent Past"),
+            buildLabelTextField(
+                "Has Frequency Of Urination Increased Or Decreased In The Recent Past"),
             SizedBox(
               height: 1.h,
             ),
@@ -1366,8 +1405,11 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                 controller: urinColorController,
                 cursorColor: kPrimaryColor,
                 validator: (value) {
-                  if (value!.isEmpty && urineColorValue.toLowerCase().contains('other')) {
-                    AppConfig().showSnackbar(context, "Please enter the details about Urine Color", isError: true);
+                  if (value!.isEmpty &&
+                      urineColorValue.toLowerCase().contains('other')) {
+                    AppConfig().showSnackbar(
+                        context, "Please enter the details about Urine Color",
+                        isError: true);
                     return 'Please enter the details about Urine Color';
                   } else {
                     return null;
@@ -1393,7 +1435,9 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
               children: [
                 Wrap(
                   children: [
-                    ...urinSmellList.map((e)=>buildHealthCheckBox(e, 'smell')).toList(),
+                    ...urinSmellList
+                        .map((e) => buildHealthCheckBox(e, 'smell'))
+                        .toList(),
                   ],
                 ),
                 ListTile(
@@ -1406,14 +1450,13 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                       onChanged: (v) {
                         setState(() {
                           urinSmellOtherSelected = v!;
-                          if(urinSmellOtherSelected){
+                          if (urinSmellOtherSelected) {
                             selectedUrinSmellList.clear();
                             urinSmellList.forEach((element) {
                               element.value = false;
                             });
                             selectedUrinSmellList.add(otherText);
-                          }
-                          else{
+                          } else {
                             selectedUrinSmellList.remove(otherText);
                           }
                           print(selectedUrinSmellList);
@@ -1516,8 +1559,11 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                 controller: urinLooksLikeController,
                 cursorColor: kPrimaryColor,
                 validator: (value) {
-                  if (value!.isEmpty && urineLookLikeValue.toLowerCase().contains('other')) {
-                    AppConfig().showSnackbar(context, "Please enter how Urine Looks", isError: true);
+                  if (value!.isEmpty &&
+                      urineLookLikeValue.toLowerCase().contains('other')) {
+                    AppConfig().showSnackbar(
+                        context, "Please enter how Urine Looks",
+                        isError: true);
                     return 'Please enter how Urine Looks';
                   } else {
                     return null;
@@ -1553,7 +1599,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                 ),
                 Column(
                   children: [
-                    Row (
+                    Row(
                       children: [
                         Radio(
                             value: "Seperate hard lumps",
@@ -1672,7 +1718,9 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
               children: [
                 Wrap(
                   children: [
-                    ...medicalInterventionsDoneBeforeList.map((e)=>buildHealthCheckBox(e, 'interventions')).toList(),
+                    ...medicalInterventionsDoneBeforeList
+                        .map((e) => buildHealthCheckBox(e, 'interventions'))
+                        .toList(),
                   ],
                 ),
                 ListTile(
@@ -1685,16 +1733,19 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                       onChanged: (v) {
                         setState(() {
                           medicalInterventionsOtherSelected = v!;
-                          if(medicalInterventionsOtherSelected){
-                            selectedmedicalInterventionsDoneBeforeList.add(otherText);
+                          if (medicalInterventionsOtherSelected) {
+                            selectedmedicalInterventionsDoneBeforeList
+                                .add(otherText);
                             selectedmedicalInterventionsDoneBeforeList.clear();
-                            medicalInterventionsDoneBeforeList.forEach((element) {
+                            medicalInterventionsDoneBeforeList
+                                .forEach((element) {
                               element.value = false;
                             });
-                            selectedmedicalInterventionsDoneBeforeList.add(otherText);
-                          }
-                          else{
-                            selectedmedicalInterventionsDoneBeforeList.remove(otherText);
+                            selectedmedicalInterventionsDoneBeforeList
+                                .add(otherText);
+                          } else {
+                            selectedmedicalInterventionsDoneBeforeList
+                                .remove(otherText);
                           }
                         });
                       },
@@ -1729,7 +1780,8 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
             SizedBox(
               height: 2.h,
             ),
-            buildLabelTextField('Any Medications/Supplements/Inhalers/Contraceptives You Consume At The Moment'),
+            buildLabelTextField(
+                'Any Medications/Supplements/Inhalers/Contraceptives You Consume At The Moment'),
             TextFormField(
               controller: medicationsController,
               cursorColor: kPrimaryColor,
@@ -1738,7 +1790,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                   return 'Please mention Any Medications Taken before';
                 } else if (value.length < 2) {
                   return emptyStringMsg;
-                }else {
+                } else {
                   return null;
                 }
               },
@@ -1751,7 +1803,8 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
             SizedBox(
               height: 2.h,
             ),
-            buildLabelTextField('Holistic/Alternative Therapies You Have Been Through & When (Ayurveda, Homeopathy) '),
+            buildLabelTextField(
+                'Holistic/Alternative Therapies You Have Been Through & When (Ayurveda, Homeopathy) '),
             SizedBox(
               height: 1.h,
             ),
@@ -1763,7 +1816,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                   return 'Please mention the Therapy taken';
                 } else if (value.length < 2) {
                   return emptyStringMsg;
-                }else {
+                } else {
                   return null;
                 }
               },
@@ -1776,44 +1829,46 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
             SizedBox(
               height: 2.h,
             ),
-            buildLabelTextField("Please Upload Any & All Medical Records That Might Be Helpful To Evaluate Your Condition Better"),
+            buildLabelTextField(
+                "Please Upload Any & All Medical Records That Might Be Helpful To Evaluate Your Condition Better"),
             SizedBox(
               height: 1.h,
             ),
             GestureDetector(
-              onTap: ()async{
+              onTap: () async {
                 final result = await FilePicker.platform
-                    .pickFiles(
-                    withReadStream: true,
-                    allowMultiple: false
-                );
+                    .pickFiles(withReadStream: true, allowMultiple: false);
 
                 if (result == null) return;
-                if(result.files.first.extension!.contains("pdf") || result.files.first.extension!.contains("png") || result.files.first.extension!.contains("jpg")){
+                if (result.files.first.extension!.contains("pdf") ||
+                    result.files.first.extension!.contains("png") ||
+                    result.files.first.extension!.contains("jpg")) {
                   medicalRecords.add(result.files.first);
-                }
-                else{
-                  AppConfig().showSnackbar(context, "Please select png/jpg/Pdf files", isError: true);
+                } else {
+                  AppConfig().showSnackbar(
+                      context, "Please select png/jpg/Pdf files",
+                      isError: true);
                 }
                 setState(() {});
               },
               child: Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                    color: gMainColor,
-                    width: 1
-                  ),
+                  border: Border.all(color: gMainColor, width: 1),
                 ),
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.file_upload_outlined,
+                    const Icon(
+                      Icons.file_upload_outlined,
                       color: gMainColor,
                     ),
-                    const SizedBox(width: 4,),
-                    Text('Add File',
+                    const SizedBox(
+                      width: 4,
+                    ),
+                    Text(
+                      'Add File',
                       style: TextStyle(
                         fontSize: 10.sp,
                         color: gMainColor,
@@ -1827,18 +1882,18 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
             (widget.showData)
                 ? showFiles()
                 : (medicalRecords.isEmpty)
-                ? Container()
-                : SizedBox(
-              width: double.maxFinite,
-              child: ListView.builder(
-                itemCount: medicalRecords.length,
-                shrinkWrap: true,
-                itemBuilder: (context, index) {
-                  final file = medicalRecords[index];
-                  return buildFile(file, index);
-                },
-              ),
-            ),
+                    ? Container()
+                    : SizedBox(
+                        width: double.maxFinite,
+                        child: ListView.builder(
+                          itemCount: medicalRecords.length,
+                          shrinkWrap: true,
+                          itemBuilder: (context, index) {
+                            final file = medicalRecords[index];
+                            return buildFile(file, index);
+                          },
+                        ),
+                      ),
             SizedBox(
               height: 5.h,
             ),
@@ -1872,56 +1927,53 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
     //   ],
     // );
   }
-  checkFields(BuildContext context){
+
+  checkFields(BuildContext context) {
     print(formKey1.currentState!.validate());
-    if(formKey1.currentState!.validate() && formKey2.currentState!.validate()){
-      if(address1Controller.text.isEmpty){
+    if (formKey1.currentState!.validate() &&
+        formKey2.currentState!.validate()) {
+      if (address1Controller.text.isEmpty) {
         AppConfig().showSnackbar(context, "Please Mention Flat Details");
-      }
-      else if(address2Controller.text.isEmpty){
+      } else if (address2Controller.text.isEmpty) {
         AppConfig().showSnackbar(context, "Please Postal Address");
-      }
-      else if(pinCodeController.text.isEmpty){
+      } else if (pinCodeController.text.isEmpty) {
         AppConfig().showSnackbar(context, "Please Mention Pincode");
-      }
-      else if(ft == -1 || inches == -1){
+      } else if (ft == -1 || inches == -1) {
         AppConfig().showSnackbar(context, "Please Select Height");
-      }
-      else if(healthCheckBox1.every((element) => element.value == false)){
-        AppConfig().showSnackbar(context, "Please Select Atleast 1 option from HealthList1");
-      }
-      else if(healthCheckBox2.every((element) => element.value == false)){
-        AppConfig().showSnackbar(context, "Please Select Atleast 1 option from HealthList2");
-      }
-      else if(tongueCoatingRadio.isEmpty){
-        AppConfig().showSnackbar(context, "Please Select Tongue Coating Details");
-      }
-      else if(urinationValue.isEmpty){
+      } else if (healthCheckBox1.every((element) => element.value == false)) {
+        AppConfig().showSnackbar(
+            context, "Please Select Atleast 1 option from HealthList1");
+      } else if (healthCheckBox2.every((element) => element.value == false)) {
+        AppConfig().showSnackbar(
+            context, "Please Select Atleast 1 option from HealthList2");
+      } else if (tongueCoatingRadio.isEmpty) {
+        AppConfig()
+            .showSnackbar(context, "Please Select Tongue Coating Details");
+      } else if (urinationValue.isEmpty) {
         // else if(urinFrequencyList.every((element) => element.value == false)){
-        AppConfig().showSnackbar(context, "Please Select Frequency of Urination");
-      }
-      else if(urineColorValue.isEmpty){
+        AppConfig()
+            .showSnackbar(context, "Please Select Frequency of Urination");
+      } else if (urineColorValue.isEmpty) {
         // else if(urinColorList.every((element) => element.value == false) && !urinColorOtherSelected){
         AppConfig().showSnackbar(context, "Please Select Urine Color");
-      }
-      else if(urinSmellList.every((element) => element.value == false) && !urinSmellOtherSelected){
+      } else if (urinSmellList.every((element) => element.value == false) &&
+          !urinSmellOtherSelected) {
         AppConfig().showSnackbar(context, "Please Select Atleast 1 Urin Smell");
-      }
-      else if(urineLookLikeValue.isEmpty){
+      } else if (urineLookLikeValue.isEmpty) {
         // else if(urinLooksList.every((element) => element.value == false) && !urinLooksLikeOtherSelected){
         AppConfig().showSnackbar(context, "Please Select Urine Looks List");
-      }
-      else if(selectedStoolMatch.isEmpty){
-        AppConfig().showSnackbar(context, "Please Select Closest match to your stool");
-      }
-      else if(medicalInterventionsDoneBeforeList.every((element) => element.value == false)  && medicalInterventionsOtherSelected == false){
-        AppConfig().showSnackbar(context, "Please Select Atleast 1 Medication Intervention");
-      }
-      else if(medicalRecords.isEmpty){
+      } else if (selectedStoolMatch.isEmpty) {
+        AppConfig()
+            .showSnackbar(context, "Please Select Closest match to your stool");
+      } else if (medicalInterventionsDoneBeforeList
+              .every((element) => element.value == false) &&
+          medicalInterventionsOtherSelected == false) {
+        AppConfig().showSnackbar(
+            context, "Please Select Atleast 1 Medication Intervention");
+      } else if (medicalRecords.isEmpty) {
         AppConfig().showSnackbar(context, "Please Upload Medical Records");
-      }
-      else{
-        if(ft != -1 && inches != -1){
+      } else {
+        if (ft != -1 && inches != -1) {
           heightText = '$ft.$inches';
           print(heightText);
         }
@@ -1929,61 +1981,77 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
         var eval1 = createFormMap();
         print((eval1 as EvaluationModelFormat1).toMap());
         print(urineColorValue);
-        Navigator.push(context, MaterialPageRoute(builder: (ctx) => PersonalDetailsScreen2(evaluationModelFormat1: eval1,medicalReportList: medicalRecords.map((e) => e.path).toList())));
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (ctx) => PersonalDetailsScreen2(
+                    evaluationModelFormat1: eval1,
+                    medicalReportList:
+                        medicalRecords.map((e) => e.path).toList())));
       }
-    }
-    else{
-      if(address1Controller.text.isEmpty){
-        AppConfig().showSnackbar(context, "Please Mention Flat Details", isError: true);
-      }
-      else if(address2Controller.text.isEmpty){
-        AppConfig().showSnackbar(context, "Please Postal Address", isError: true);
-      }
-      else if(pinCodeController.text.isEmpty){
-        AppConfig().showSnackbar(context, "Please Mention Pincode", isError: true);
-      }
-      else if(ft == -1 || inches == -1){
-        AppConfig().showSnackbar(context, "Please Select Height", isError: true);
-      }
-      else if(healController.text.isEmpty){
-        AppConfig().showSnackbar(context, "Please Mention your heal complaints", isError: true);
-      }
-      else if(healthCheckBox1.every((element) => element.value == false)){
-        AppConfig().showSnackbar(context, "Please Select Atleast 1 option from HealthList1", isError: true);
-      }
-      else if(healthCheckBox2.every((element) => element.value == false)){
-        AppConfig().showSnackbar(context, "Please Select Atleast 1 option from HealthList2", isError: true);
-      }
-      else if(tongueCoatingRadio.isEmpty){
-        AppConfig().showSnackbar(context, "Please Select Tongue Coating Details", isError: true);
-      }
-      else if(urinationValue.isEmpty){
+    } else {
+      if (address1Controller.text.isEmpty) {
+        AppConfig().showSnackbar(context, "Please Mention Flat Details",
+            isError: true);
+      } else if (address2Controller.text.isEmpty) {
+        AppConfig()
+            .showSnackbar(context, "Please Postal Address", isError: true);
+      } else if (pinCodeController.text.isEmpty) {
+        AppConfig()
+            .showSnackbar(context, "Please Mention Pincode", isError: true);
+      } else if (ft == -1 || inches == -1) {
+        AppConfig()
+            .showSnackbar(context, "Please Select Height", isError: true);
+      } else if (healController.text.isEmpty) {
+        AppConfig().showSnackbar(context, "Please Mention your heal complaints",
+            isError: true);
+      } else if (healthCheckBox1.every((element) => element.value == false)) {
+        AppConfig().showSnackbar(
+            context, "Please Select Atleast 1 option from HealthList1",
+            isError: true);
+      } else if (healthCheckBox2.every((element) => element.value == false)) {
+        AppConfig().showSnackbar(
+            context, "Please Select Atleast 1 option from HealthList2",
+            isError: true);
+      } else if (tongueCoatingRadio.isEmpty) {
+        AppConfig().showSnackbar(
+            context, "Please Select Tongue Coating Details",
+            isError: true);
+      } else if (urinationValue.isEmpty) {
         // else if(urinFrequencyList.every((element) => element.value == false)){
-        AppConfig().showSnackbar(context, "Please Select Frequency of Urination" ,isError: true);
-      }
-      else if(urineColorValue.isEmpty){
+        AppConfig().showSnackbar(
+            context, "Please Select Frequency of Urination",
+            isError: true);
+      } else if (urineColorValue.isEmpty) {
         // else if(urinColorList.every((element) => element.value == false) && !urinColorOtherSelected){
-        AppConfig().showSnackbar(context, "Please Select Urine Color", isError: true);
-      }
-      else if(urinSmellList.every((element) => element.value == false) && !urinSmellOtherSelected){
-        AppConfig().showSnackbar(context, "Please Select Atleast 1 Urin Smell", isError: true);
-      }
-      else if(urineLookLikeValue.isEmpty){
+        AppConfig()
+            .showSnackbar(context, "Please Select Urine Color", isError: true);
+      } else if (urinSmellList.every((element) => element.value == false) &&
+          !urinSmellOtherSelected) {
+        AppConfig().showSnackbar(context, "Please Select Atleast 1 Urin Smell",
+            isError: true);
+      } else if (urineLookLikeValue.isEmpty) {
         // else if(urinLooksList.every((element) => element.value == false) && !urinLooksLikeOtherSelected){
-        AppConfig().showSnackbar(context, "Please Select Urine Looks List", isError: true);
-      }
-      else if(selectedStoolMatch.isEmpty){
-        AppConfig().showSnackbar(context, "Please Select Closest match to your stool",isError: true);
-      }
-      else if(medicalInterventionsDoneBeforeList.every((element) => element.value == false)  && medicalInterventionsOtherSelected == false){
-        AppConfig().showSnackbar(context, "Please Select Atleast 1 Medication Intervention", isError: true);
-      }
-      else if(medicalRecords.isEmpty){
-        AppConfig().showSnackbar(context, "Please Upload Medical Records", isError: true);
+        AppConfig().showSnackbar(context, "Please Select Urine Looks List",
+            isError: true);
+      } else if (selectedStoolMatch.isEmpty) {
+        AppConfig().showSnackbar(
+            context, "Please Select Closest match to your stool",
+            isError: true);
+      } else if (medicalInterventionsDoneBeforeList
+              .every((element) => element.value == false) &&
+          medicalInterventionsOtherSelected == false) {
+        AppConfig().showSnackbar(
+            context, "Please Select Atleast 1 Medication Intervention",
+            isError: true);
+      } else if (medicalRecords.isEmpty) {
+        AppConfig().showSnackbar(context, "Please Upload Medical Records",
+            isError: true);
       }
     }
   }
-  createFormMap(){
+
+  createFormMap() {
     return EvaluationModelFormat1(
       fname: fnameController.text.capitalize(),
       lname: lnameController.text.capitalize(),
@@ -2005,26 +2073,35 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
       checkList1Other: checkbox1OtherController.text,
       checkList2: selectedHealthCheckBox2.join(','),
       tongueCoating: tongueCoatingRadio,
-      tongueCoating_other: (tongueCoatingRadio.toLowerCase().contains("other")) ? tongueCoatingController.text : '',
+      tongueCoating_other: (tongueCoatingRadio.toLowerCase().contains("other"))
+          ? tongueCoatingController.text
+          : '',
       urinationIssue: urinationValue,
       urinColor: urineColorValue,
-      urinColor_other: urineColorValue.toLowerCase().contains("other") ? urinColorController.text : '',
+      urinColor_other: urineColorValue.toLowerCase().contains("other")
+          ? urinColorController.text
+          : '',
       urinSmell: selectedUrinSmellList.join(','),
       urinSmell_other: urinSmellOtherSelected ? urinSmellController.text : '',
       urinLooksLike: urineLookLikeValue,
-      urinLooksLike_other: urineLookLikeValue.toLowerCase().contains("other") ? urinLooksLikeController.text : '',
+      urinLooksLike_other: urineLookLikeValue.toLowerCase().contains("other")
+          ? urinLooksLikeController.text
+          : '',
       stoolDetails: selectedStoolMatch,
-      medical_interventions: selectedmedicalInterventionsDoneBeforeList.join(','),
-      medical_interventions_other: medicalInterventionsOtherSelected ? medicalInterventionsDoneController.text : '',
+      medical_interventions:
+          selectedmedicalInterventionsDoneBeforeList.join(','),
+      medical_interventions_other: medicalInterventionsOtherSelected
+          ? medicalInterventionsDoneController.text
+          : '',
       medication: medicationsController.text,
       holistic: holisticController.text,
     );
   }
 
-  List<String> lst = List.generate(8, (index) => '${index+1}').toList();
+  List<String> lst = List.generate(8, (index) => '${index + 1}').toList();
   List<String> lst1 = List.generate(12, (index) => '${index}').toList();
 
-  showDropdown(){
+  showDropdown() {
     return Container(
       padding: const EdgeInsets.all(8.0),
       child: Row(
@@ -2043,7 +2120,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                   ft = int.tryParse(value!) ?? -1;
                 });
               },
-              buttonDecoration : BoxDecoration(
+              buttonDecoration: BoxDecoration(
                 color: gWhiteColor,
                 borderRadius: BorderRadius.circular(5),
                 border: Border.all(color: gMainColor, width: 1),
@@ -2051,7 +2128,9 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
               icon: Icon(Icons.keyboard_arrow_down_outlined),
             ),
           ),
-          SizedBox(width: 10,),
+          SizedBox(
+            width: 10,
+          ),
           Expanded(
             child: CustomDropdownButton2(
               // buttonHeight: 25,
@@ -2065,7 +2144,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                   inches = int.tryParse(value!) ?? -1;
                 });
               },
-              buttonDecoration : BoxDecoration(
+              buttonDecoration: BoxDecoration(
                 color: gWhiteColor,
                 borderRadius: BorderRadius.circular(5),
                 border: Border.all(color: gMainColor, width: 1),
@@ -2077,7 +2156,6 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
       ),
     );
   }
-
 
   buildFoodHabitsDetails() {
     return Column(
@@ -4059,8 +4137,8 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
           activeColor: kPrimaryColor,
           value: healthCheckBox.value,
           onChanged: (v) {
-            if(from == 'health1'){
-              if(healthCheckBox.title == healthCheckBox1[13].title){
+            if (from == 'health1') {
+              if (healthCheckBox.title == healthCheckBox1[13].title) {
                 print("if");
                 setState(() {
                   selectedHealthCheckBox1.clear();
@@ -4070,8 +4148,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                   selectedHealthCheckBox1.add(healthCheckBox.title!);
                   healthCheckBox.value = v;
                 });
-              }
-              else if(healthCheckBox.title == healthCheckBox1[12].title){
+              } else if (healthCheckBox.title == healthCheckBox1[12].title) {
                 print(" else if");
                 setState(() {
                   selectedHealthCheckBox1.clear();
@@ -4081,17 +4158,17 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                   selectedHealthCheckBox1.add(healthCheckBox.title!);
                   healthCheckBox.value = v;
                 });
-              }
-              else{
+              } else {
                 print("else");
-                if(selectedHealthCheckBox1.contains(healthCheckBox1[13].title)){
+                if (selectedHealthCheckBox1
+                    .contains(healthCheckBox1[13].title)) {
                   print("if");
                   setState(() {
                     selectedHealthCheckBox1.clear();
                     healthCheckBox1[13].value = false;
                   });
-                }
-                else if(selectedHealthCheckBox1.contains(healthCheckBox1[12].title)){
+                } else if (selectedHealthCheckBox1
+                    .contains(healthCheckBox1[12].title)) {
                   print("else if");
 
                   setState(() {
@@ -4099,13 +4176,12 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                     healthCheckBox1[12].value = false;
                   });
                 }
-                if(v == true){
+                if (v == true) {
                   setState(() {
                     selectedHealthCheckBox1.add(healthCheckBox.title!);
                     healthCheckBox.value = v;
                   });
-                }
-                else{
+                } else {
                   setState(() {
                     selectedHealthCheckBox1.remove(healthCheckBox.title!);
                     healthCheckBox.value = v;
@@ -4113,46 +4189,44 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                 }
               }
               print(selectedHealthCheckBox1);
-            }
-            else if(from == 'health2'){
-              if(healthCheckBox.title == healthCheckBox2.last.title){
+            } else if (from == 'health2') {
+              if (healthCheckBox.title == healthCheckBox2.last.title) {
                 print("if");
                 setState(() {
                   selectedHealthCheckBox2.clear();
                   healthCheckBox2.forEach((element) {
-                    if(element != healthCheckBox2.last.title){
+                    if (element != healthCheckBox2.last.title) {
                       element.value = false;
                     }
                   });
-                  if(v == true){
+                  if (v == true) {
                     selectedHealthCheckBox2.add(healthCheckBox.title!);
                     healthCheckBox.value = v;
-                  }
-                  else{
+                  } else {
                     selectedHealthCheckBox2.remove(healthCheckBox.title!);
                     healthCheckBox.value = v;
                   }
                 });
-              }
-              else{
+              } else {
                 // print("else");
-                if(v == true){
+                if (v == true) {
                   // print("if");
                   setState(() {
-                    if(selectedHealthCheckBox2.contains(healthCheckBox2.last.title)){
+                    if (selectedHealthCheckBox2
+                        .contains(healthCheckBox2.last.title)) {
                       // print("if");
-                        selectedHealthCheckBox2.removeWhere((element) => element == healthCheckBox2.last.title);
-                        healthCheckBox2.forEach((element) {
-                          if(element.title == healthCheckBox2.last.title){
-                            element.value = false;
-                          }
-                        });
+                      selectedHealthCheckBox2.removeWhere(
+                          (element) => element == healthCheckBox2.last.title);
+                      healthCheckBox2.forEach((element) {
+                        if (element.title == healthCheckBox2.last.title) {
+                          element.value = false;
+                        }
+                      });
                     }
                     selectedHealthCheckBox2.add(healthCheckBox.title!);
                     healthCheckBox.value = v;
                   });
-                }
-                else{
+                } else {
                   setState(() {
                     selectedHealthCheckBox2.remove(healthCheckBox.title!);
                     healthCheckBox.value = v;
@@ -4160,66 +4234,60 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                 }
               }
               print(selectedHealthCheckBox2);
-            }
-            else if(from == 'smell'){
-              if(urinSmellOtherSelected){
-                if(v == true){
+            } else if (from == 'smell') {
+              if (urinSmellOtherSelected) {
+                if (v == true) {
                   setState(() {
-                    urinSmellOtherSelected =  false;
+                    urinSmellOtherSelected = false;
                     selectedUrinSmellList.clear();
                     selectedUrinSmellList.add(healthCheckBox.title);
                     healthCheckBox.value = v;
                   });
                 }
-              }
-              else{
-                if(v == true){
+              } else {
+                if (v == true) {
                   setState(() {
                     selectedUrinSmellList.add(healthCheckBox.title);
                     healthCheckBox.value = v;
                   });
-                }
-                else{
+                } else {
                   setState(() {
                     selectedUrinSmellList.remove(healthCheckBox.title);
                     healthCheckBox.value = v;
                   });
                 }
-
               }
               print(selectedUrinSmellList);
-            }
-            else if(from == 'interventions'){
-              if(medicalInterventionsOtherSelected){
-                if(v == true){
+            } else if (from == 'interventions') {
+              if (medicalInterventionsOtherSelected) {
+                if (v == true) {
                   setState(() {
-                    medicalInterventionsOtherSelected =  false;
+                    medicalInterventionsOtherSelected = false;
                     selectedmedicalInterventionsDoneBeforeList.clear();
-                    selectedmedicalInterventionsDoneBeforeList.add(healthCheckBox.title);
+                    selectedmedicalInterventionsDoneBeforeList
+                        .add(healthCheckBox.title);
                     healthCheckBox.value = v;
                   });
                 }
-              }
-              else{
-                if(v == true){
+              } else {
+                if (v == true) {
                   setState(() {
-                    selectedmedicalInterventionsDoneBeforeList.add(healthCheckBox.title);
+                    selectedmedicalInterventionsDoneBeforeList
+                        .add(healthCheckBox.title);
                     healthCheckBox.value = v;
                   });
-                }
-                else{
+                } else {
                   setState(() {
-                    selectedmedicalInterventionsDoneBeforeList.remove(healthCheckBox.title);
+                    selectedmedicalInterventionsDoneBeforeList
+                        .remove(healthCheckBox.title);
                     healthCheckBox.value = v;
                   });
                 }
-
               }
               print(selectedmedicalInterventionsDoneBeforeList);
             }
 
             // print("${healthCheckBox.title}=> ${healthCheckBox.value}");
-
           },
         ),
       ),
@@ -4230,7 +4298,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
     );
   }
 
-  buildWrapingCheckBox(CheckBoxSettings healthCheckBox){
+  buildWrapingCheckBox(CheckBoxSettings healthCheckBox) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Row(
@@ -4333,27 +4401,25 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
     );
   }
 
-  buildLabelTextField(String name){
+  buildLabelTextField(String name) {
     return RichText(
         text: TextSpan(
-          text: name,
-          style: TextStyle(
-            fontSize: 9.sp,
-            color: gPrimaryColor,
-            fontFamily: "PoppinsSemiBold",
-          ),
-          children: [
-            TextSpan(
-              text: ' *',
-              style: TextStyle(
-                fontSize: 9.sp,
-                color: kPrimaryColor,
-                fontFamily: "PoppinsSemiBold",
-              ),
-            )
-          ]
-        )
-    );
+            text: name,
+            style: TextStyle(
+              fontSize: 9.sp,
+              color: gPrimaryColor,
+              fontFamily: "PoppinsSemiBold",
+            ),
+            children: [
+          TextSpan(
+            text: ' *',
+            style: TextStyle(
+              fontSize: 9.sp,
+              color: kPrimaryColor,
+              fontFamily: "PoppinsSemiBold",
+            ),
+          )
+        ]));
     return Text(
       'Full Name:*',
       style: TextStyle(
@@ -4366,13 +4432,12 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
 
   bool validEmail(String email) {
     return RegExp(
-        r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+            r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
         .hasMatch(email);
   }
 
-  bool isPhone(String input) => RegExp(
-      r'^(?:[+0]9)?[0-9]{10}$'
-  ).hasMatch(input);
+  bool isPhone(String input) =>
+      RegExp(r'^(?:[+0]9)?[0-9]{10}$').hasMatch(input);
 
   void addSelectedValuesToList() {
     addHealthCheck1();
@@ -4387,7 +4452,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
   void addHealthCheck1() {
     selectedHealthCheckBox1.clear();
     for (var element in healthCheckBox1) {
-      if(element.value == true){
+      if (element.value == true) {
         print(element.title);
         selectedHealthCheckBox1.add(element.title!);
       }
@@ -4397,7 +4462,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
   void addHealthCheck2() {
     selectedHealthCheckBox2.clear();
     for (var element in healthCheckBox2) {
-      if(element.value == true){
+      if (element.value == true) {
         print(element.title);
         selectedHealthCheckBox2.add(element.title!);
       }
@@ -4407,24 +4472,24 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
   void addUrinFrequencyDetails() {
     selectedUrinFrequencyList.clear();
     for (var element in urinFrequencyList) {
-      if(element.value == true){
+      if (element.value == true) {
         print(element.title);
         selectedUrinFrequencyList.add(element.title!);
       }
     }
   }
 
-
   void addUrinColorDetails() {
     selectedUrinColorList.clear();
-    if(urinColorList.any((element) => element.value == true) || urinColorOtherSelected){
+    if (urinColorList.any((element) => element.value == true) ||
+        urinColorOtherSelected) {
       for (var element in urinColorList) {
-        if(element.value == true){
+        if (element.value == true) {
           print(element.title);
           selectedUrinColorList.add(element.title!);
         }
       }
-      if(urinColorOtherSelected){
+      if (urinColorOtherSelected) {
         selectedUrinColorList.add(otherText);
       }
     }
@@ -4432,14 +4497,15 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
 
   void addUrinSmelldetails() {
     selectedUrinSmellList.clear();
-    if(urinSmellList.any((element) => element.value == true) || urinSmellOtherSelected){
+    if (urinSmellList.any((element) => element.value == true) ||
+        urinSmellOtherSelected) {
       for (var element in urinSmellList) {
-        if(element.value == true){
+        if (element.value == true) {
           print(element.title);
           selectedUrinSmellList.add(element.title!);
         }
       }
-      if(urinSmellOtherSelected){
+      if (urinSmellOtherSelected) {
         selectedUrinSmellList.add(otherText);
       }
     }
@@ -4447,14 +4513,15 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
 
   void addUrinLooksDetails() {
     selectedUrinLooksList.clear();
-    if(urinLooksList.any((element) => element.value == true) || urinLooksLikeOtherSelected){
+    if (urinLooksList.any((element) => element.value == true) ||
+        urinLooksLikeOtherSelected) {
       for (var element in urinLooksList) {
-        if(element.value == true){
+        if (element.value == true) {
           print(element.title);
           selectedUrinLooksList.add(element.title!);
         }
       }
-      if(urinLooksLikeOtherSelected){
+      if (urinLooksLikeOtherSelected) {
         selectedUrinLooksList.add(otherText);
       }
     }
@@ -4462,14 +4529,16 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
 
   void addMedicalInterventionsDetails() {
     selectedmedicalInterventionsDoneBeforeList.clear();
-    if(medicalInterventionsDoneBeforeList.any((element) => element.value == true) || medicalInterventionsOtherSelected){
+    if (medicalInterventionsDoneBeforeList
+            .any((element) => element.value == true) ||
+        medicalInterventionsOtherSelected) {
       for (var element in medicalInterventionsDoneBeforeList) {
-        if(element.value == true){
+        if (element.value == true) {
           print(element.title);
           selectedmedicalInterventionsDoneBeforeList.add(element.title!);
         }
       }
-      if(medicalInterventionsOtherSelected){
+      if (medicalInterventionsOtherSelected) {
         selectedmedicalInterventionsDoneBeforeList.add(otherText);
       }
     }
@@ -4502,18 +4571,22 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
     pinCodeController.text = model.patient?.user?.pincode ?? '';
     weightController.text = model.weight ?? '';
     heightText = model.height ?? '';
-    if(heightText.isNotEmpty){
+    if (heightText.isNotEmpty) {
       ft = int.tryParse(heightText.split(".").first) ?? -1;
       inches = int.tryParse(heightText.split(".").last) ?? -1;
     }
     healController.text = model.healthProblem ?? '';
     // print("model.listProblems:${jsonDecode(model.listProblems ?? '')}");
-    selectedHealthCheckBox1.addAll(List.from(jsonDecode(model.listProblems ?? '')));
+    selectedHealthCheckBox1
+        .addAll(List.from(jsonDecode(model.listProblems ?? '')));
     // print("selectedHealthCheckBox1[0]:${(selectedHealthCheckBox1[0].split(',') as List).map((e) => e).toList()}");
-    selectedHealthCheckBox1 = List.from((selectedHealthCheckBox1[0].split(',') as List).map((e) => e).toList());
+    selectedHealthCheckBox1 = List.from(
+        (selectedHealthCheckBox1[0].split(',') as List).map((e) => e).toList());
     healthCheckBox1.forEach((element) {
-      print('selectedHealthCheckBox1.any((element1) => element1 == element.title): ${selectedHealthCheckBox1.any((element1) => element1 == element.title)}');
-      if(selectedHealthCheckBox1.any((element1) => element1 == element.title)){
+      print(
+          'selectedHealthCheckBox1.any((element1) => element1 == element.title): ${selectedHealthCheckBox1.any((element1) => element1 == element.title)}');
+      if (selectedHealthCheckBox1
+          .any((element1) => element1 == element.title)) {
         element.value = true;
       }
     });
@@ -4528,12 +4601,17 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
     //   });
     // });
     checkbox1OtherController.text = model.listProblemsOther ?? '';
-    selectedHealthCheckBox2.addAll(List.from(jsonDecode(model.listBodyIssues ?? '')));
-    if(selectedHealthCheckBox2.first != null){
-      selectedHealthCheckBox2 = List.from((selectedHealthCheckBox2.first.split(',') as List).map((e) => e).toList());
+    selectedHealthCheckBox2
+        .addAll(List.from(jsonDecode(model.listBodyIssues ?? '')));
+    if (selectedHealthCheckBox2.first != null) {
+      selectedHealthCheckBox2 = List.from(
+          (selectedHealthCheckBox2.first.split(',') as List)
+              .map((e) => e)
+              .toList());
       healthCheckBox2.forEach((element) {
         // print('selectedHealthCheckBox2.any((element1) => element1 == element.title): ${selectedHealthCheckBox2.any((element1) => element1 == element.title)}');
-        if(selectedHealthCheckBox2.any((element1) => element1 == element.title)){
+        if (selectedHealthCheckBox2
+            .any((element1) => element1 == element.title)) {
           element.value = true;
         }
       });
@@ -4541,9 +4619,12 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
     tongueCoatingRadio = model.tongueCoating ?? '';
     tongueCoatingController.text = model.tongueCoatingOther ?? '';
 
-
-    selectedUrinFrequencyList.addAll(List.from(jsonDecode(model.anyUrinationIssue ?? '')));
-    selectedUrinFrequencyList = List.from((selectedUrinFrequencyList[0].split(',') as List).map((e) => e).toList());
+    selectedUrinFrequencyList
+        .addAll(List.from(jsonDecode(model.anyUrinationIssue ?? '')));
+    selectedUrinFrequencyList = List.from(
+        (selectedUrinFrequencyList[0].split(',') as List)
+            .map((e) => e)
+            .toList());
     urinationValue = selectedUrinFrequencyList.first;
     // urinFrequencyList.forEach((element) {
     //   if(selectedUrinFrequencyList.any((element1) => element1 == element.title)){
@@ -4552,7 +4633,8 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
     // });
 
     selectedUrinColorList.addAll(List.from(jsonDecode(model.urineColor ?? '')));
-    selectedUrinColorList = List.from((selectedUrinColorList[0].split(',') as List).map((e) => e).toList());
+    selectedUrinColorList = List.from(
+        (selectedUrinColorList[0].split(',') as List).map((e) => e).toList());
     urineColorValue = selectedUrinColorList.first;
     urinColorController.text = model.urineColorOther ?? '';
 
@@ -4563,21 +4645,25 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
     // });
 
     selectedUrinSmellList.addAll(List.from(jsonDecode(model.urineSmell ?? '')));
-    selectedUrinSmellList = List.from((selectedUrinSmellList[0].split(',') as List).map((e) => e).toList());
+    selectedUrinSmellList = List.from(
+        (selectedUrinSmellList[0].split(',') as List).map((e) => e).toList());
     urinSmellList.forEach((element) {
       print(selectedUrinSmellList);
-      print('urinSmellList.any((element1) => element1 == element.title): ${selectedUrinSmellList.any((element1) => element1 == element.title)}');
-      if(selectedUrinSmellList.any((element1) => element1 == element.title)){
+      print(
+          'urinSmellList.any((element1) => element1 == element.title): ${selectedUrinSmellList.any((element1) => element1 == element.title)}');
+      if (selectedUrinSmellList.any((element1) => element1 == element.title)) {
         element.value = true;
       }
-      if(selectedUrinSmellList.any((element) => element == otherText)){
+      if (selectedUrinSmellList.any((element) => element == otherText)) {
         urinSmellOtherSelected = true;
       }
     });
     urinSmellController.text = model.urineSmellOther ?? '';
 
-    selectedUrinLooksList.addAll(List.from(jsonDecode(model.urineLookLike ?? '')));
-    selectedUrinLooksList = List.from((selectedUrinLooksList[0].split(',') as List).map((e) => e).toList());
+    selectedUrinLooksList
+        .addAll(List.from(jsonDecode(model.urineLookLike ?? '')));
+    selectedUrinLooksList = List.from(
+        (selectedUrinLooksList[0].split(',') as List).map((e) => e).toList());
     urineLookLikeValue = selectedUrinLooksList.first;
     // urinLooksList.forEach((element) {
     //   if(selectedUrinLooksList.any((element1) => element1 == element.title)){
@@ -4590,29 +4676,38 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
     urinLooksLikeController.text = model.urineLookLikeOther ?? '';
     selectedStoolMatch = model.closestStoolType ?? '';
 
-    selectedmedicalInterventionsDoneBeforeList.addAll(List.from(jsonDecode(model.anyMedicalIntervationDoneBefore ?? '')));
-    selectedmedicalInterventionsDoneBeforeList = List.from((selectedmedicalInterventionsDoneBeforeList[0].split(',') as List).map((e) => e).toList());
+    selectedmedicalInterventionsDoneBeforeList.addAll(
+        List.from(jsonDecode(model.anyMedicalIntervationDoneBefore ?? '')));
+    selectedmedicalInterventionsDoneBeforeList = List.from(
+        (selectedmedicalInterventionsDoneBeforeList[0].split(',') as List)
+            .map((e) => e)
+            .toList());
     medicalInterventionsDoneBeforeList.forEach((element) {
       print(selectedmedicalInterventionsDoneBeforeList);
       print(element.title);
-      print('medicalInterventionsDoneBeforeList.any((element1) => element1 == element.title): ${selectedmedicalInterventionsDoneBeforeList.any((element1) => element1 == element.title)}');
-      if(selectedmedicalInterventionsDoneBeforeList.any((element1) => element1 == element.title)){
+      print(
+          'medicalInterventionsDoneBeforeList.any((element1) => element1 == element.title): ${selectedmedicalInterventionsDoneBeforeList.any((element1) => element1 == element.title)}');
+      if (selectedmedicalInterventionsDoneBeforeList
+          .any((element1) => element1 == element.title)) {
         element.value = true;
       }
-      if(selectedmedicalInterventionsDoneBeforeList.any((element) => element == otherText)){
+      if (selectedmedicalInterventionsDoneBeforeList
+          .any((element) => element == otherText)) {
         medicalInterventionsOtherSelected = true;
       }
     });
     print(model.anyMedicalIntervationDoneBeforeOther);
-    medicalInterventionsDoneController.text = model.anyMedicalIntervationDoneBeforeOther ?? '';
+    medicalInterventionsDoneController.text =
+        model.anyMedicalIntervationDoneBeforeOther ?? '';
     medicationsController.text = model.anyMedicationConsumeAtMoment ?? '';
     holisticController.text = model.anyTherapiesHaveDoneBefore ?? '';
-    print("model.medicalReport.runtimeType: ${model.medicalReport!.split(',')}");
+    print(
+        "model.medicalReport.runtimeType: ${model.medicalReport!.split(',')}");
     List list = jsonDecode(model.medicalReport ?? '');
     print("report list: $list ${list.length}");
 
     showMedicalReport.clear();
-    if(list.isNotEmpty){
+    if (list.isNotEmpty) {
       list.forEach((element) {
         print(element);
         showMedicalReport.add(element.toString());
@@ -4625,25 +4720,23 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
     showMedicalReport.forEach((e) {
       print("e==> $e ${e.runtimeType}");
     });
-    final widgetList = showMedicalReport.map<Widget>((element) => buildRecordList(element)).toList();
+    final widgetList = showMedicalReport
+        .map<Widget>((element) => buildRecordList(element))
+        .toList();
     return SizedBox(
       width: double.maxFinite,
-      child:  ListView(
+      child: ListView(
         shrinkWrap: true,
         children: widgetList,
       ),
     );
   }
 
-
-  buildRecordList(String filename, {int? index}){
+  buildRecordList(String filename, {int? index}) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 1.5.h),
       child: OutlinedButton(
-        onPressed: ()
-        {
-
-        },
+        onPressed: () {},
         style: ButtonStyle(
           overlayColor: getColor(Colors.white, const Color(0xffCBFE86)),
           backgroundColor: getColor(Colors.white, const Color(0xffCBFE86)),
@@ -4662,15 +4755,20 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                 ),
               ),
             ),
-            (widget.showData) ? SvgPicture.asset(
-                'assets/images/attach_icon.svg',
-              fit: BoxFit.cover,
-            ) : GestureDetector(
-              onTap: (){
-                medicalRecords.removeAt(index!);
-                setState(() {});
-              },
-                child: const Icon(Icons.delete_outline_outlined, color: gMainColor,)),
+            (widget.showData)
+                ? SvgPicture.asset(
+                    'assets/images/attach_icon.svg',
+                    fit: BoxFit.cover,
+                  )
+                : GestureDetector(
+                    onTap: () {
+                      medicalRecords.removeAt(index!);
+                      setState(() {});
+                    },
+                    child: const Icon(
+                      Icons.delete_outline_outlined,
+                      color: gMainColor,
+                    )),
           ],
         ),
       ),
@@ -4689,38 +4787,37 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
     return MaterialStateProperty.resolveWith(getColor);
   }
 
-
-
   TextEditingController editingController = TextEditingController();
   bool isLoading = false;
 
   List<String> newDataList = [];
 
-
   bool showLoading = false;
 
-  void fetchCountry(String pinCode, String countryCode) async{
+  void fetchCountry(String pinCode, String countryCode) async {
     Navigator.of(context).push(
       PageRouteBuilder(
-        opaque: false, // set to false
-        pageBuilder: (_, __, ___) => Container(
-          child: buildCircularIndicator(),
-          width: 70,height: 70,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            boxShadow: [
-              BoxShadow(blurRadius: 2, color: Colors.grey.withOpacity(0.5))
-            ],
-          ),
-        )
-      ),
+          opaque: false, // set to false
+          pageBuilder: (_, __, ___) => Container(
+                child: buildCircularIndicator(),
+                width: 70,
+                height: 70,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: [
+                    BoxShadow(
+                        blurRadius: 2, color: Colors.grey.withOpacity(0.5))
+                  ],
+                ),
+              )),
     );
 
-    final res = await EvaluationFormService(repository: repository).getCountryDetailsService(pinCode, countryCode);
+    final res = await EvaluationFormService(repository: repository)
+        .getCountryDetailsService(pinCode, countryCode);
     print(res);
-    if(res.runtimeType == GetCountryDetailsModel){
+    if (res.runtimeType == GetCountryDetailsModel) {
       GetCountryDetailsModel model = res as GetCountryDetailsModel;
-      if(model.postOffice!.isNotEmpty){
+      if (model.postOffice!.isNotEmpty) {
         print(model.postOffice?.first.state);
         setState(() {
           stateController.text = model.postOffice?.first.state ?? '';
@@ -4728,24 +4825,23 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
           countryController.text = model.postOffice?.first.country ?? '';
         });
       }
-    }
-    else{
+    } else {
       ErrorModel model = res as ErrorModel;
       print(model.message!);
       setState(() {
         _ignoreFields = false;
       });
-      AppConfig().showSnackbar(context, "Please Enter Valid Pincode", isError: true);
+      AppConfig()
+          .showSnackbar(context, "Please Enter Valid Pincode", isError: true);
     }
     Navigator.pop(context);
   }
 
-  Widget buildTabView({
-    required int index,
-    required String title,
-    required Color color,
-    int? itemId
-  }) {
+  Widget buildTabView(
+      {required int index,
+      required String title,
+      required Color color,
+      int? itemId}) {
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -4766,37 +4862,42 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
     );
   }
 
-  getProfileData() async{
+  getProfileData() async {
     Navigator.of(context).push(
       PageRouteBuilder(
           opaque: false, // set to false
           pageBuilder: (_, __, ___) => Container(
-            child: buildCircularIndicator(),
-            width: 70,height: 70,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              boxShadow: [
-                BoxShadow(blurRadius: 2, color: Colors.grey.withOpacity(0.5))
-              ],
-            ),
-          )
-      ),
+                child: buildCircularIndicator(),
+                width: 70,
+                height: 70,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: [
+                    BoxShadow(
+                        blurRadius: 2, color: Colors.grey.withOpacity(0.5))
+                  ],
+                ),
+              )),
     );
-    final res = await UserProfileService(repository: userRepository).getUserProfileService();
-    if(res.runtimeType == UserProfileModel){
+    final res = await UserProfileService(repository: userRepository)
+        .getUserProfileService();
+    if (res.runtimeType == UserProfileModel) {
       UserProfileModel data = res as UserProfileModel;
       fnameController.text = data.data?.fname ?? '';
       lnameController.text = data.data?.lname ?? '';
       ageController.text = data.data?.age ?? '';
       emailController.text = data.data?.email ?? '';
       mobileController.text = data.data?.phone ?? '';
-      gender = (data.data!.gender != null) ? data.data!.gender.toString().capitalize() : '';
+      gender = (data.data!.gender != null)
+          ? data.data!.gender.toString().capitalize()
+          : '';
       print(gender);
       print(data.data!.gender.toString());
-      setState((){});
+      setState(() {});
     }
     Navigator.pop(context);
   }
+
   final UserProfileRepository userRepository = UserProfileRepository(
     apiClient: ApiClient(
       httpClient: http.Client(),
@@ -4907,7 +5008,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
   }
 
   buildUrineLookRadioButton() {
-    return  Column(
+    return Column(
       children: [
         Row(
           children: [
@@ -4963,10 +5064,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
       ],
     );
   }
-
-
 }
-
 
 /*
 variables:

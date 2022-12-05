@@ -92,18 +92,19 @@ class _MyProfileDetailsState extends State<MyProfileDetails> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                buildAppBar(() {
-                  Navigator.pop(context);
-                }),
-                SizedBox(height: 3.h),
-                Text(
-                  "My Profile",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      fontFamily: "GothamRoundedBold_21016",
-                      color: gPrimaryColor,
-                      fontSize: 12.sp),
-                ),
+                // buildAppBar(() {
+                //   Navigator.pop(context);
+                // }),
+                // SizedBox(height: 3.h),
+                // Text(
+                //   "My Profile",
+                //   textAlign: TextAlign.center,
+                //   style: TextStyle(
+                //       fontFamily: "GothamRoundedBold_21016",
+                //       color: gPrimaryColor,
+                //       fontSize: 12.sp),
+                // ),
+
                 SizedBox(
                   height: height * 0.70,
                   child: FutureBuilder(

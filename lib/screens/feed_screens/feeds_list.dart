@@ -11,6 +11,7 @@ import 'package:http/http.dart' as http;
 import '../../repository/api_service.dart';
 import '../../widgets/constants.dart';
 import '../../widgets/widgets.dart';
+import 'feeds_details_screen.dart';
 
 class FeedsList extends StatefulWidget {
   const FeedsList({Key? key}) : super(key: key);
@@ -20,7 +21,6 @@ class FeedsList extends StatefulWidget {
 }
 
 class _FeedsListState extends State<FeedsList> {
-
   Future? feedsListFuture;
 
   @override
@@ -31,9 +31,11 @@ class _FeedsListState extends State<FeedsList> {
     loadAsset('top-view-indian-food-assortment.png');
   }
 
-  getFuture(){
-    feedsListFuture = AboutProgramService(repository: repository).serverAboutProgramService();
+  getFuture() {
+    feedsListFuture =
+        AboutProgramService(repository: repository).serverAboutProgramService();
   }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -43,12 +45,12 @@ class _FeedsListState extends State<FeedsList> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              buildAppBar(() => null, isBackEnable: false,
-                  showNotificationIcon: true,
-                  notificationOnTap: (){
-                    Navigator.push(context, MaterialPageRoute(builder: (_) => NotificationScreen()));
-                  }
-                  ),
+              buildAppBar(() => null,
+                  isBackEnable: false,
+                  showNotificationIcon: true, notificationOnTap: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (_) => NotificationScreen()));
+              }),
               SizedBox(height: 3.h),
               Text(
                 "Feeds",
@@ -148,7 +150,8 @@ class _FeedsListState extends State<FeedsList> {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(5),
                   child: const Image(
-                    image: AssetImage("assets/images/top-view-indian-food-assortment.png"),
+                    image: AssetImage(
+                        "assets/images/top-view-indian-food-assortment.png"),
                   ),
                 ),
                 SizedBox(height: 1.h),
@@ -159,8 +162,9 @@ class _FeedsListState extends State<FeedsList> {
                       children: [
                         GestureDetector(
                           onTap: () {},
-                          child:  Image(
-                            image:const AssetImage("assets/images/Union 4.png"),
+                          child: Image(
+                            image:
+                                const AssetImage("assets/images/Union 4.png"),
                             height: 2.h,
                           ),
                         ),
@@ -175,8 +179,9 @@ class _FeedsListState extends State<FeedsList> {
                         SizedBox(width: 4.w),
                         GestureDetector(
                           onTap: () {},
-                          child:  Image(
-                            image: const AssetImage("assets/images/noun_chat_1079099.png"),
+                          child: Image(
+                            image: const AssetImage(
+                                "assets/images/noun_chat_1079099.png"),
                             height: 2.h,
                           ),
                         ),
@@ -234,7 +239,7 @@ class _FeedsListState extends State<FeedsList> {
     );
   }
 
-  staticUI(BuildContext context){
+  staticUI(BuildContext context) {
     return ListView.builder(
       scrollDirection: Axis.vertical,
       physics: const ScrollPhysics(),
@@ -314,7 +319,8 @@ class _FeedsListState extends State<FeedsList> {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(5),
                   child: const Image(
-                    image: AssetImage("assets/images/top-view-indian-food-assortment.png"),
+                    image: AssetImage(
+                        "assets/images/top-view-indian-food-assortment.png"),
                   ),
                 ),
                 SizedBox(height: 1.h),
@@ -325,8 +331,9 @@ class _FeedsListState extends State<FeedsList> {
                       children: [
                         GestureDetector(
                           onTap: () {},
-                          child:  Image(
-                            image:const AssetImage("assets/images/Union 4.png"),
+                          child: Image(
+                            image:
+                                const AssetImage("assets/images/Union 4.png"),
                             height: 2.h,
                           ),
                         ),
@@ -341,8 +348,9 @@ class _FeedsListState extends State<FeedsList> {
                         SizedBox(width: 4.w),
                         GestureDetector(
                           onTap: () {},
-                          child:  Image(
-                            image: const AssetImage("assets/images/noun_chat_1079099.png"),
+                          child: Image(
+                            image: const AssetImage(
+                                "assets/images/noun_chat_1079099.png"),
                             height: 2.h,
                           ),
                         ),
@@ -407,28 +415,26 @@ class _FeedsListState extends State<FeedsList> {
     setState(() => placeHolderImage = data);
   }
 
-  apiUI(BuildContext context){
+  apiUI(BuildContext context) {
     return FutureBuilder(
-      future: feedsListFuture,
-        builder: (_, snapshot){
+        future: feedsListFuture,
+        builder: (_, snapshot) {
           print(snapshot.connectionState);
-          if(snapshot.connectionState == ConnectionState.done){
-            if(snapshot.hasData){
-              if(snapshot.data.runtimeType is ErrorModel){
+          if (snapshot.connectionState == ConnectionState.done) {
+            if (snapshot.hasData) {
+              if (snapshot.data.runtimeType is ErrorModel) {
                 final model = snapshot.data as ErrorModel;
                 return Center(
                   child: Text(model.message ?? ''),
                 );
-              }
-              else{
+              } else {
                 final model = snapshot.data as AboutProgramModel;
                 List<FeedsListModel> list = model.data?.feedsList ?? [];
-                if(list.isEmpty){
+                if (list.isEmpty) {
                   return Center(
                     child: Text("NO Feeds" ?? ''),
                   );
-                }
-                else{
+                } else {
                   return ListView.builder(
                     scrollDirection: Axis.vertical,
                     physics: const ScrollPhysics(),
@@ -437,15 +443,26 @@ class _FeedsListState extends State<FeedsList> {
                     itemBuilder: ((context, index) {
                       return GestureDetector(
                         onTap: () {
-                          // Navigator.of(context).push(
-                          //   MaterialPageRoute(
-                          //     builder: (ct) => const YogaPlanDetails(),
-                          //   ),
-                          // );
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (ct) => FeedsDetailsScreen(
+                                profile: "assets/images/cheerful.png",
+                                userName:
+                                    "${list[index].feed?.addedBy?.name}" ??
+                                        "Mr. Lorem Ipsum",
+                                userAddress:
+                                    "${list[index].feed?.addedBy?.address}" ??
+                                        "Bangalore",
+                                reelsImage: '${list[index].image}' ?? "",
+                                comments: '${list[index].feed?.title}' ?? "",
+                              ),
+                            ),
+                          );
                         },
                         child: Container(
                           margin: EdgeInsets.symmetric(vertical: 1.h),
-                          padding: EdgeInsets.symmetric(vertical: 2.h, horizontal: 3.w),
+                          padding: EdgeInsets.symmetric(
+                              vertical: 2.h, horizontal: 3.w),
                           width: double.maxFinite,
                           decoration: BoxDecoration(
                             color: gWhiteColor,
@@ -468,25 +485,29 @@ class _FeedsListState extends State<FeedsList> {
                                     child: ClipRRect(
                                       borderRadius: BorderRadius.circular(8),
                                       child: const Image(
-                                        image: AssetImage("assets/images/cheerful.png"),
+                                        image: AssetImage(
+                                            "assets/images/cheerful.png"),
                                       ),
                                     ),
                                   ),
                                   SizedBox(width: 3.w),
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
-                                        Text(list[index].feed?.addedBy?.name ??
-                                          "Mr. Lorem Ipsum",
+                                        Text(
+                                          list[index].feed?.addedBy?.name ??
+                                              "Mr. Lorem Ipsum",
                                           style: TextStyle(
                                               fontFamily: "GothamMedium",
                                               color: gPrimaryColor,
                                               fontSize: 11.sp),
                                         ),
                                         SizedBox(height: 0.5.h),
-                                        Text(list[index].feed?.addedBy?.address ??
-                                          "Bangalore",
+                                        Text(
+                                          list[index].feed?.addedBy?.address ??
+                                              "Bangalore",
                                           style: TextStyle(
                                               fontFamily: "GothamBook",
                                               color: gMainColor,
@@ -511,12 +532,14 @@ class _FeedsListState extends State<FeedsList> {
                               ClipRRect(
                                 borderRadius: BorderRadius.circular(5),
                                 child: FadeInImage.memoryNetwork(
-                                    placeholder: placeHolderImage!.buffer.asUint8List(),
+                                    placeholder:
+                                        placeHolderImage!.buffer.asUint8List(),
                                     image: list[index].image ?? ''),
                               ),
                               SizedBox(height: 1.h),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Visibility(
                                     visible: false,
@@ -524,14 +547,15 @@ class _FeedsListState extends State<FeedsList> {
                                       children: [
                                         GestureDetector(
                                           onTap: () {},
-                                          child:  Image(
-                                            image:const AssetImage("assets/images/Union 4.png"),
+                                          child: Image(
+                                            image: const AssetImage(
+                                                "assets/images/Union 4.png"),
                                             height: 2.h,
                                           ),
                                         ),
                                         SizedBox(width: 1.w),
-                                        Text(list[index].likes.toString() ??
-                                          "22",
+                                        Text(
+                                          list[index].likes.toString() ?? "22",
                                           style: TextStyle(
                                               fontFamily: "GothamMedium",
                                               color: gTextColor,
@@ -540,14 +564,19 @@ class _FeedsListState extends State<FeedsList> {
                                         SizedBox(width: 4.w),
                                         GestureDetector(
                                           onTap: () {},
-                                          child:  Image(
-                                            image: const AssetImage("assets/images/noun_chat_1079099.png"),
+                                          child: Image(
+                                            image: const AssetImage(
+                                                "assets/images/noun_chat_1079099.png"),
                                             height: 2.h,
                                           ),
                                         ),
                                         SizedBox(width: 1.w),
-                                        Text(list[index].comments?.length.toString() ??
-                                          "132",
+                                        Text(
+                                          list[index]
+                                                  .comments
+                                                  ?.length
+                                                  .toString() ??
+                                              "132",
                                           style: TextStyle(
                                               fontFamily: "GothamMedium",
                                               color: gTextColor,
@@ -556,8 +585,8 @@ class _FeedsListState extends State<FeedsList> {
                                       ],
                                     ),
                                   ),
-                                  Text(list[index].ago ??
-                                    "2 minutes ago",
+                                  Text(
+                                    list[index].ago ?? "2 minutes ago",
                                     style: TextStyle(
                                         fontFamily: "GothamMedium",
                                         color: gTextColor,
@@ -568,28 +597,32 @@ class _FeedsListState extends State<FeedsList> {
                               SizedBox(height: 1.h),
                               Row(
                                 children: [
-                                  Text(list[index].feed?.title ??
-                                    "Lorem",
-                                    style: TextStyle(
-                                        fontSize: 9.sp,
-                                        fontFamily: "GothamMedium",
-                                        color: gTextColor),
+                                  Expanded(
+                                    child: Text(
+                                      list[index].feed?.title ?? "Lorem",
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                          fontSize: 9.sp,
+                                          fontFamily: "GothamMedium",
+                                          color: gTextColor),
+                                    ),
                                   ),
-                                  SizedBox(width: 1.w),
+                                  // SizedBox(width: 1.w),
                                   // Container(
                                   //   color: gTextColor,
                                   //   height: 2.h,
                                   //   width: 0.5.w,
                                   // ),
                                   // SizedBox(width: 1.w),
-                                  // Text(
-                                  //   "Lorem lpsum is simply dummy text",
-                                  //   style: TextStyle(
-                                  //     fontSize: 9.sp,
-                                  //     color: gTextColor,
-                                  //     fontFamily: "GothamMedium",
-                                  //   ),
-                                  // ),
+                                  Text(
+                                    "See more",
+                                    style: TextStyle(
+                                      fontSize: 9.sp,
+                                      color: gPrimaryColor,
+                                      fontFamily: "GothamBook",
+                                    ),
+                                  ),
                                 ],
                               ),
                             ],
@@ -600,16 +633,14 @@ class _FeedsListState extends State<FeedsList> {
                   );
                 }
               }
-            }
-            else{
+            } else {
               return Center(
                 child: Text(snapshot.error.toString() ?? ''),
               );
             }
           }
           return buildCircularIndicator();
-        }
-    );
+        });
   }
 
   final AboutProgramRepository repository = AboutProgramRepository(

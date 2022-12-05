@@ -12,6 +12,7 @@ import 'package:gwc_customer/screens/profile_screens/call_support_method.dart';
 import 'package:gwc_customer/screens/profile_screens/faq_screens/faq_screen.dart';
 import 'package:gwc_customer/screens/profile_screens/reward/reward_screen.dart';
 import 'package:gwc_customer/screens/profile_screens/terms_conditions_screen.dart';
+import 'package:gwc_customer/screens/profile_screens/user_details_tap.dart';
 import 'package:gwc_customer/screens/user_registration/existing_user.dart';
 import 'package:gwc_customer/services/quick_blox_service/quick_blox_service.dart';
 import 'package:gwc_customer/widgets/constants.dart';
@@ -74,7 +75,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 profileTile("assets/images/Group 2753.png", "My Profile", () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (context) => const MyProfileDetails(),
+                      builder: (context) => const UserDetailsTap(),
                     ),
                   );
                 }),
@@ -101,60 +102,60 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                   );
                 }),
-                Container(
-                  height: 1,
-                  color: Colors.grey,
-                ),
-                profileTile(
-                    "assets/images/feedback.png", "Feedback", () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => const FeedbackRatingScreen(),
-                    ),
-                  );
-                }),
-                Container(
-                  height: 1,
-                  color: Colors.grey,
-                ),
-                profileTile(
-                    "assets/images/Group 2748.png", "My Report", () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => UploadFiles(isFromSettings: false,),
-                    ),
-                  );
-                }),
-                Container(
-                  height: 1,
-                  color: Colors.grey,
-                ),
-                profileTile(
-                    "assets/images/Group 2748.png", "My Evaluation Report", () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => const PersonalDetailsScreen(showData: true,),
-                    ),
-                  );
-                }),
-                Visibility(
-                  // visible: kDebugMode,
-                  child: Container(
-                    height: 1,
-                    color: Colors.grey,
-                  ),
-                ),
-                Visibility(
-                  // visible: kDebugMode,
-                    child:profileTile(
-                        "assets/images/Group 2748.png", "Eval form", () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => const EvaluationFormScreen(),
-                        ),
-                      );
-                    })
-                ),
+                // Container(
+                //   height: 1,
+                //   color: Colors.grey,
+                // ),
+                // profileTile(
+                //     "assets/images/feedback.png", "Feedback", () {
+                //   Navigator.of(context).push(
+                //     MaterialPageRoute(
+                //       builder: (context) => const FeedbackRatingScreen(),
+                //     ),
+                //   );
+                // }),
+                // Container(
+                //   height: 1,
+                //   color: Colors.grey,
+                // ),
+                // profileTile(
+                //     "assets/images/Group 2748.png", "My Report", () {
+                //   Navigator.of(context).push(
+                //     MaterialPageRoute(
+                //       builder: (context) => UploadFiles(isFromSettings: false,),
+                //     ),
+                //   );
+                // }),
+                // Container(
+                //   height: 1,
+                //   color: Colors.grey,
+                // ),
+                // profileTile(
+                //     "assets/images/Group 2748.png", "My Evaluation Report", () {
+                //   Navigator.of(context).push(
+                //     MaterialPageRoute(
+                //       builder: (context) => const PersonalDetailsScreen(showData: true,),
+                //     ),
+                //   );
+                // }),
+                // Visibility(
+                //   // visible: kDebugMode,
+                //   child: Container(
+                //     height: 1,
+                //     color: Colors.grey,
+                //   ),
+                // ),
+                // Visibility(
+                //   // visible: kDebugMode,
+                //     child:profileTile(
+                //         "assets/images/Group 2748.png", "Eval form", () {
+                //       Navigator.of(context).push(
+                //         MaterialPageRoute(
+                //           builder: (context) => const EvaluationFormScreen(),
+                //         ),
+                //       );
+                //     })
+                // ),
                 Container(
                   height: 1,
                   color: Colors.grey,
