@@ -242,9 +242,9 @@ class _FeedbackRatingScreenState extends State<FeedbackRatingScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              buildAppBar(() {
-                Navigator.pop(context);
-              }),
+              // buildAppBar(() {
+              //   Navigator.pop(context);
+              // }),
               Text('How would you rate your experience with our Program?',
                 style: TextStyle(
                     fontFamily: "GothamRoundedBold_21016",
