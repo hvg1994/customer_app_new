@@ -424,7 +424,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               width: eUser().buttonBorderWidth
                           ),
                         ),
-                        child: (isLoading) ? buildThreeBounceIndicator()
+                        child: (isLoading) ? buildThreeBounceIndicator(color: eUser().threeBounceIndicatorColor)
                             : Center(
                               child: Text(
                           'Next',

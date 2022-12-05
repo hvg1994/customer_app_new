@@ -81,6 +81,7 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
   @override
   void dispose() async {
     super.dispose();
+    print('dispose');
     await _videoPlayerController!.stop();
     await _videoPlayerController!.stopRendererScanning();
     await _videoPlayerController!.dispose();
@@ -168,16 +169,19 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
                                       ),
                                     ],
                                   ),
-                                  child: Text(
-                                    _programText,
-                                    // 'Lorem lpsum is simply dummy text of the printing and typesetting industry. Lorem lpsum has been the industry\'s standard dummy text ever since the 1500s,when an unknown printer took a gallery of type and scrambled it to make a type specimen book.',
-                                    style: TextStyle(
-                                      height: 1.7,
-                                      fontFamily: "GothamBook",
-                                      color: gTextColor,
-                                      fontSize: 9.sp,
-                                    ),
+                                  child: Image(
+                                    image: AssetImage('assets/images/about_program.jpeg'),
                                   ),
+                                  // child: Text(
+                                  //   _programText,
+                                  //   // 'Lorem lpsum is simply dummy text of the printing and typesetting industry. Lorem lpsum has been the industry\'s standard dummy text ever since the 1500s,when an unknown printer took a gallery of type and scrambled it to make a type specimen book.',
+                                  //   style: TextStyle(
+                                  //     height: 1.7,
+                                  //     fontFamily: "GothamBook",
+                                  //     color: gTextColor,
+                                  //     fontSize: 9.sp,
+                                  //   ),
+                                  // ),
                                 ),
                               ),
                               SizedBox(height: 2.h),
@@ -197,14 +201,12 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
                                 child: GestureDetector(
                                   onTap: () async{
                                     print("tap");
+                                    await _videoPlayerController?.stop();
                                     Navigator.of(context).push(
                                       MaterialPageRoute(
                                         builder: (context) => const RegisterScreen(),
                                       ),
-                                    ).then((value) async{
-                                        await _videoPlayerController?.stop();
-
-                                    });
+                                    );
                                   },
                                   child: Container(
                                     padding:

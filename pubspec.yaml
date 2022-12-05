@@ -108,6 +108,7 @@ flutter:
     - assets/images/
     - assets/lottie/
     - assets/images/notification/
+    - assets/images/dashboard_stages/
     - assets/images/faq/
   #   - images/a_dot_ham.jpeg
 

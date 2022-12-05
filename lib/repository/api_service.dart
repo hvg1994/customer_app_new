@@ -110,17 +110,22 @@ class ApiClient {
     return result;
   }
 
-  Future submitProblemList(List problemList, String deviceId) async {
+  Future submitProblemList(String deviceId, {List? problemList, String? otherProblem}) async {
     var url = submitProblemListUrl;
 
     Map param = {
       "device_id": deviceId,
     };
-    problemList.forEach((element) {
-      param.putIfAbsent(
-          "problems[${problemList.indexWhere((ele) => ele == element)}]",
-          () => element.toString());
-    });
+    if(problemList != null){
+      problemList.forEach((element) {
+        param.putIfAbsent(
+            "problems[${problemList.indexWhere((ele) => ele == element)}]",
+                () => element.toString());
+      });
+    }
+    if(otherProblem != null){
+      param.putIfAbsent("other_problem", () => otherProblem);
+    }
 
     print(jsonEncode(param));
     dynamic result;

@@ -46,6 +46,8 @@ class _ChooseYourProblemScreenState extends State<ChooseYourProblemScreen> {
       super.setState(fn);
     }
   }
+
+
   @override
   void initState() {
     super.initState();
@@ -56,8 +58,21 @@ class _ChooseYourProblemScreenState extends State<ChooseYourProblemScreen> {
       myFuture = getProblemList();
       getDeviceId();
     });
+
+    otherController.addListener(() {
+      setState(() { });
+    });
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+    otherController.removeListener(() {
+      setState(() { });
+
+    });
+    otherController.dispose();
+  }
 
   getDeviceId() async{
     _prefs = await SharedPreferences.getInstance();
@@ -111,7 +126,10 @@ class _ChooseYourProblemScreenState extends State<ChooseYourProblemScreen> {
               ),
               Center(
                       child: GestureDetector(
-                        onTap: selectedProblems.isEmpty ? () => AppConfig().showSnackbar(context, "Please Select your Problem") : () {
+                        onTap: selectedProblems.isEmpty && otherController.text.isEmpty ? (){
+                          print(otherController.text.isEmpty);
+                          AppConfig().showSnackbar(context, "Please Select/Mention your Problem");
+                        } : () {
                           submitProblems();
                         },
                         child: Container(
@@ -156,97 +174,162 @@ class _ChooseYourProblemScreenState extends State<ChooseYourProblemScreen> {
             if(snapshot.data.runtimeType == ChooseProblemModel){
               ChooseProblemModel model = snapshot.data as ChooseProblemModel;
               List<ChildChooseProblemModel>? problemList = model.data;
-              return GridView.builder(
-                  scrollDirection: Axis.vertical,
-                  physics: const ScrollPhysics(),
-                  shrinkWrap: true,
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 4,
-                    crossAxisSpacing: 5.0,
-                    mainAxisSpacing: 5.0,
-
-                    // childAspectRatio: MediaQuery.of(context).size.width /
-                    //     (MediaQuery.of(context).size.height / 1.4),
-                  ),
-                  // gridDelegate:SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4),
-                  itemCount: problemList?.length ?? 0,
-                  itemBuilder: (context, index) {
-                    return InkWell(
-                      onTap: () {
-                        print("Problem: ${problemList?[index].name}");
-                        buildChooseProblemOnClick(problemList![index]);
-                      },
-                      child: Container(
-                        height: 120,
-                        // margin: EdgeInsets.symmetric(horizontal: 2, vertical: 2),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(5),
-                          border: Border.all(
-                              color: eUser().buttonBorderColor,
-                              width: eUser().buttonBorderWidth
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.3),
-                              blurRadius: 5,
-                              offset: const Offset(2, 5),
-                            ),
-                          ],
-                          image: DecorationImage(
-                              image: AssetImage("assets/images/Group 4855.png"),
-                              fit: BoxFit.cover
-                          ),
+              return Column(
+                children: [
+                  Expanded(
+                    child: GridView.builder(
+                        scrollDirection: Axis.vertical,
+                        physics: const ScrollPhysics(),
+                        shrinkWrap: true,
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 4,
+                          crossAxisSpacing: 5.0,
+                          mainAxisSpacing: 5.0,
+                          // childAspectRatio: MediaQuery.of(context).size.width /
+                          //     (MediaQuery.of(context).size.height / 1.4),
                         ),
-                        child: Stack(
-                          children: [
-                            Center(
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 5),
-                                child: Column(
-                                  children: [
-                                    // SizedBox(height: 1.h),
-                                    Image(
-                                      height: 40,
-                                      width: 40,
-                                      image: NetworkImage(problemList?[index].image ?? ''),
+                        // gridDelegate:SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4),
+                        itemCount: problemList?.length ?? 0,
+                        itemBuilder: (context, index) {
+                          return InkWell(
+                            onTap: () {
+                              print("Problem: ${problemList?[index].name}");
+                              buildChooseProblemOnClick(problemList![index]);
+                            },
+                            child: Container(
+                              // margin: EdgeInsets.symmetric(horizontal: 2, vertical: 2),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(5),
+                                border: Border.all(
+                                    color: eUser().buttonBorderColor,
+                                    width: eUser().buttonBorderWidth
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.3),
+                                    blurRadius: 5,
+                                    offset: const Offset(2, 5),
+                                  ),
+                                ],
+                                image: DecorationImage(
+                                    image: AssetImage("assets/images/Group 4855.png"),
+                                    fit: BoxFit.cover
+                                ),
+                              ),
+                              child: Stack(
+                                children: [
+                                  Center(
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 5),
+                                      child: Column(
+                                        children: [
+                                          // SizedBox(height: 1.h),
+                                          Image(
+                                            height: 40,
+                                            width: 40,
+                                            image: NetworkImage(problemList?[index].image ?? ''),
+                                          ),
+                                          SizedBox(height: 1.5.h),
+                                          Expanded(
+                                            child: Text(
+                                              // 'Constipation Constipationdsd',
+                                              problemList?[index].name.toString().capitalize() ?? '',
+                                              style: TextStyle(
+                                                fontFamily: "GothamMedium",
+                                                color: gTextColor,
+                                                fontSize: (problemList![index].name.toString().length > 10) ? 8.sp : 9.sp,
+                                              ),
+                                            ),
+                                          ),
+                                          SizedBox(height: 1.h),
+                                        ],
+                                      ),
                                     ),
-                                    SizedBox(height: 1.5.h),
-                                    Expanded(
-                                      child: Text(
-                                        'Constipation Constipationdsd',
-                                        // problemList?[index].name.toString().capitalize() ?? '',
-                                            style: TextStyle(
-                                          fontFamily: "GothamMedium",
-                                          color: gTextColor,
-                                          fontSize: 9.sp,
+                                  ),
+                                  Positioned(
+                                    top: 10,
+                                    left: 10,
+                                    child: Visibility(
+                                      visible: selectedProblems.contains(problemList?[index].id),
+                                      child:  Align(
+                                        alignment: Alignment.topLeft,
+                                        child: Icon(
+                                          Icons.check_circle,
+                                          color: gMainColor,
+                                          size: 20,
                                         ),
                                       ),
                                     ),
-                                    SizedBox(height: 1.h),
-                                  ],
-                                ),
+                                  )
+                                ],
                               ),
                             ),
-                            Positioned(
-                              top: 10,
-                              left: 10,
-                              child: Visibility(
-                                visible: selectedProblems.contains(problemList?[index].id),
-                                child:  Align(
-                                  alignment: Alignment.topLeft,
-                                  child: Icon(
-                                    Icons.check_circle,
-                                    color: gMainColor,
-                                    size: 20,
-                                  ),
-                                ),
-                              ),
-                            )
-                          ],
+                          );
+                        })
+                  ),
+                  SizedBox(height: 1.h),
+                  // Text(
+                  //   "Mention Other Problems",
+                  //   style: TextStyle(
+                  //       fontFamily: eUser().userFieldLabelFont,
+                  //       fontSize: eUser().userFieldLabelFontSize,
+                  //       color: eUser().userFieldLabelColor
+                  //   ),
+                  // ),
+                  // SizedBox(height: 1.h),
+                  Container(
+                    height: 15.h,
+                    margin:
+                    EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.h),
+                    padding: EdgeInsets.symmetric(horizontal: 3.w),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(5),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.3),
+                          blurRadius: 20,
+                          offset: const Offset(2, 10),
+                        ),
+                      ],
+                    ),
+                    child: TextFormField(
+                      controller: otherController,
+                      cursorColor: gPrimaryColor,
+                      style: TextStyle(
+                          fontFamily: eUser().userTextFieldFont,
+                          fontSize: eUser().userTextFieldFontSize,
+                          color: eUser().userTextFieldColor
+                      ),
+                      decoration: InputDecoration(
+                        suffixIcon: otherController.text.isEmpty
+                            ? SizedBox()
+                            : InkWell(
+                          onTap: () {
+                            otherController.clear();
+                          },
+                          child: const Icon(
+                            Icons.close,
+                            color: gTextColor,
+                          ),
+                        ),
+                        hintText: "Mention Other Problems",
+                        border: InputBorder.none,
+                        hintStyle: TextStyle(
+                          fontFamily: eUser().userTextFieldHintFont,
+                          color: eUser().userTextFieldHintColor,
+                          fontSize: eUser().userTextFieldHintFontSize,
                         ),
                       ),
-                    );
-                  });
+                      textInputAction: TextInputAction.next,
+                      textAlign: TextAlign.start,
+                      keyboardType: TextInputType.emailAddress,
+                    ),
+                  ),
+                  SizedBox(height: 1.h),
+
+                ],
+              );
             }
             else{
               return const SizedBox(
@@ -294,7 +377,7 @@ class _ChooseYourProblemScreenState extends State<ChooseYourProblemScreen> {
     setState(() {
       isLoading = true;
     });
-    final res = await _chooseProblemService!.postProblems(selectedProblems, deviceId!);
+    final res = await _chooseProblemService!.postProblems(deviceId!, problemList: selectedProblems.isEmpty ? null : selectedProblems, otherProblem: otherController.text);
     print(res);
     print(res.runtimeType);
     setState(() {

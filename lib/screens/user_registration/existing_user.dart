@@ -490,7 +490,7 @@ class _ExistingUserState extends State<ExistingUser> {
                     ),
                   ),
                   child: (showLoginProgress)
-                      ? buildThreeBounceIndicator(color: gMainColor)
+                      ? buildThreeBounceIndicator(color: eUser().threeBounceIndicatorColor)
                       : Center(
                         child: Text(
                     'LOGIN',

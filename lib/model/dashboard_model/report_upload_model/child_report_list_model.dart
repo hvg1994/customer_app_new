@@ -2,7 +2,7 @@ class ChildReportListModel {
   int? id;
   String? doctorId;
   String? patientId;
-  Null? appointmentId;
+  String? appointmentId;
   String? report;
   String? reportType;
   String? reportId;

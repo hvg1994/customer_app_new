@@ -52,6 +52,47 @@ class GutList extends StatefulWidget {
 
 class GutListState extends State<GutList> {
 
+  String lockedStage = 'assets/images/dashboard_stages/lock.png';
+  String currentStage = 'assets/images/dashboard_stages/current_stage.png';
+  String openedStage = 'assets/images/dashboard_stages/green_done.png';
+
+  List<NewStageLevels> levels = [
+    NewStageLevels("assets/images/dashboard_stages/noun-appointment-3615898.png",
+        "Evaluation Done",
+        'assets/images/dashboard_stages/lock.png'
+    ),
+    NewStageLevels(
+        "assets/images/dashboard_stages/noun-appointment-4042317.png",
+        "Consultation Booked",
+        'assets/images/dashboard_stages/lock.png'
+    ),
+    NewStageLevels(
+        "assets/images/dashboard_stages/noun-information-book-1677218.png",
+        "Consultation Done",
+        'assets/images/dashboard_stages/lock.png'
+    ),
+    NewStageLevels(
+        "assets/images/dashboard_stages/noun-shipping-5332930.png",
+        "Tracker",
+        'assets/images/dashboard_stages/lock.png'
+    ),
+    NewStageLevels(
+        "assets/images/dashboard_stages/noun-appointment-4042317.png",
+        "Programs",
+        'assets/images/dashboard_stages/lock.png'
+    ),
+    NewStageLevels(
+        "assets/images/dashboard_stages/noun-information-book-1677218.png",
+        "Post Program\nConsultation Booked",
+        'assets/images/dashboard_stages/lock.png'
+    ),
+    NewStageLevels(
+        "assets/images/dashboard_stages/noun-shipping-5332930.png",
+        "Maintenance Guide\nUpdated",
+        'assets/images/dashboard_stages/lock.png'
+    ),
+  ];
+
   final _pref = AppConfig().preferences;
   String isSelected = "Consultation";
 
@@ -157,17 +198,19 @@ class GutListState extends State<GutList> {
           _gutDataModel = _getDashboardDataModel.normal_consultation;
           consultationStage = _gutDataModel?.data ?? '';
         }
+        updateNewStage(consultationStage);
         if(consultationStage != null && (shippingStage != null && shippingStage!.isNotEmpty)){
           isSelected = "Shipping";
         }
-
         if(_getDashboardDataModel.approved_shipping != null){
           _shippingApprovedModel = _getDashboardDataModel.approved_shipping;
           shippingStage = _shippingApprovedModel?.data ?? '';
+          updateNewStage(shippingStage);
         }
         else{
           _gutShipDataModel = _getDashboardDataModel.normal_shipping;
           shippingStage = _gutShipDataModel?.data ?? '';
+          updateNewStage(shippingStage);
           // abc();
         }
         if(shippingStage != null && shippingStage == "shipping_delivered"){
@@ -176,27 +219,31 @@ class GutListState extends State<GutList> {
         if(_getDashboardDataModel.data_program != null){
           _getProgramModel = _getDashboardDataModel.data_program;
           programOptionStage = _getProgramModel?.data ?? '';
+          updateNewStage(programOptionStage);
         }
         else{
           _gutProgramModel = _getDashboardDataModel.normal_program;
           programOptionStage = _getProgramModel?.data ?? '';
+          updateNewStage(programOptionStage);
           abc();
         }
         // this is for other postprogram model
         if(_getDashboardDataModel.normal_postprogram != null){
           _gutPostProgramModel = _getDashboardDataModel.normal_postprogram;
           postProgramStage = _gutPostProgramModel?.data ?? '';
+          updateNewStage(postProgramStage);
         }
         else{
           _postConsultationAppointment = _getDashboardDataModel.postprogram_consultation;
           print(_getDashboardDataModel.postprogram_consultation?.data);
           postProgramStage = _postConsultationAppointment?.data ?? '';
+          updateNewStage(postProgramStage);
         }
         print("postProgramStage: ${postProgramStage}");
         if(postProgramStage != null && postProgramStage!.isNotEmpty){
           isSelected = "Post Program";
+          updateNewStage(postProgramStage);
         }
-
         Navigator.pop(context);
 
       });
@@ -270,16 +317,8 @@ class GutListState extends State<GutList> {
               ),
               SizedBox(height: 1.h),
               Expanded(
-                child: ListViewEffect(
-                  duration: _duration,
-                  children: programStage.map((s) => _buildWidgetExample(
-                      ProgramsData(s['title']!, s['image']!,
-                          isCompleted: getIsCompleted(s['title']!)
-                      ),
-                      programStage.indexWhere((element) => element.containsValue(s['title']!)))).toList(),
-                ),
+                child: showImage(),
               ),
-
             ],
           ),
         ),
@@ -338,6 +377,63 @@ class GutListState extends State<GutList> {
     setState(() {
       isSelected = index;
     });
+  }
+
+  showShippingScreen(){
+    if(shippingStage != null && shippingStage!.isNotEmpty){
+      if(_shippingApprovedModel != null){
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => CookKitTracking(awb_number: _shippingApprovedModel?.value?.awbCode ?? '',currentStage: shippingStage!,),
+          ),
+        ).then((value) => reloadUI());
+      }
+      else{
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => CookKitTracking(currentStage: shippingStage ?? ''),
+          ),
+        ).then((value) => reloadUI());
+      }
+    }
+  }
+  showProgramScreen(){
+    if(shippingStage == "shipping_delivered" && programOptionStage != null){
+      if(_getProgramModel!.value!.startProgram == '0'){
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => const ProgramPlanScreen(),
+          ),
+        ).then((value) => reloadUI());
+      }
+      else{
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DaysProgramPlan(postProgramStage: postProgramStage,),
+          ),
+        ).then((value) => reloadUI());
+      }
+    }
+    else{
+      AppConfig().showSnackbar(context, "program stage not getting", isError:  true);
+    }
+  }
+  showPostProgramScreen(){
+    if(postProgramStage != null && _postConsultationAppointment != null){
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => PostProgramScreen(postProgramStage: postProgramStage,consultationData: _postConsultationAppointment,),
+        ),
+      ).then((value) => reloadUI());
+    }
+    else{
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => PostProgramScreen(postProgramStage: postProgramStage,),
+        ),
+      ).then((value) => reloadUI());
+    }
   }
 
   Widget _buildWidgetExample(ProgramsData programsData, int index) {
@@ -685,6 +781,332 @@ class GutListState extends State<GutList> {
       httpClient: http.Client(),
     ),
   );
+
+  showLevels() {
+    return ListView.builder(
+        padding: EdgeInsets.symmetric(horizontal: 3.w),
+        shrinkWrap: true,
+        reverse: true,
+        itemCount: 4,
+        itemBuilder: (_, index) {
+          if (index.isEven) {
+            return Align(
+              alignment: Alignment.center,
+              child: Padding(
+                padding:
+                const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    GestureDetector(
+                      onTap: () {},
+                      child: Image(
+                          image: AssetImage("assets/images/current_stage.png"),
+                          height: 60),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 20.0),
+                      child: Image(
+                        image: AssetImage("assets/images/Mask Group 20.png"),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          } else {
+            return Align(
+              alignment: Alignment.center,
+              child: Padding(
+                padding: const EdgeInsets.only(
+                  left: 00,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    GestureDetector(
+                      onTap: () {},
+                      child: Image(
+                          image: AssetImage("assets/images/lock.png"),
+                          height: 60),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(left: 25.0, right: 30),
+                      child: Image(
+                        image: AssetImage("assets/images/Group 10334.png"),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+        });
+  }
+
+  showImage() {
+    return ListView.builder(
+        padding: EdgeInsets.symmetric(horizontal: 3.w),
+        shrinkWrap: true,
+        reverse: true,
+        itemCount: levels.length,
+        itemBuilder: (_, index) {
+          if (index.isEven) {
+            return Align(
+              alignment: Alignment.centerRight,
+              child: Padding(
+                padding:
+                const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Column(
+                          // crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            GestureDetector(
+                              onTap: () {},
+                              child: Image(
+                                  image: AssetImage(levels[index].image),
+                                  height: 60),
+                            ),
+                            SizedBox(height: 1.h),
+                            Text(
+                              levels[index].title,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  fontFamily: "GothamBook",
+                                  height: 1.3,
+                                  color: gsecondaryColor,
+                                  fontSize: 10.sp),
+                            )
+                          ],
+                        ),
+                        SizedBox(width: 80),
+                        Visibility(
+                          visible: levels[index].title != levels.last.title,
+                          child: GestureDetector(
+                            onTap: () {
+                              print(index);
+                              // print("right");
+                              print(levels[index].title);
+                              // print(levels[index].stage == openedStage);
+                              // goToScreen(screenName)
+                              if(levels[index].stage == openedStage || levels[index].stage == currentStage){
+                                if(index == 0 || index == 1){
+                                  showConsultationScreenFromStages(consultationStage);
+                                }
+                                else if(index == 2){
+                                  showShippingScreen();
+                                }
+                                else if(index == 3){
+                                  showProgramScreen();
+                                }
+                                else if(index == 4){
+                                  showPostProgramScreen();
+                                }
+                                else if(index == 5){
+                                  showPostProgramScreen();
+                                }
+
+                              }
+                              else{
+                                AppConfig().showSnackbar(context, "Can't access Locked Stage");
+                              }
+                            },
+                            child: Image(
+                                image: AssetImage(levels[index].stage),
+                                height: 60),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 20.0),
+                      child: Image(
+                        image: AssetImage("assets/images/dashboard_stages/Mask Group 8.png"),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+          else {
+            return Align(
+              alignment: Alignment.centerLeft,
+              child: Padding(
+                padding: const EdgeInsets.only(
+                  left: 00,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            print(index);
+                            print(levels[index].title);
+                            if(levels[index].stage == openedStage || levels[index].stage == currentStage){
+                              if(index == 0 || index == 1){
+                                showConsultationScreenFromStages(consultationStage);
+                              }
+                              else if(index == 2){
+                                showShippingScreen();
+                              }
+                              else if(index == 3){
+                                showProgramScreen();
+                              }
+                              else if(index == 4){
+                                showPostProgramScreen();
+                              }
+                              else if(index == 5){
+                                showPostProgramScreen();
+                              }
+                            }
+                            else{
+                              AppConfig().showSnackbar(context, "Can't access Locked Stage");
+                            }
+                          },
+                          child: Image(
+                              image: AssetImage(levels[index].stage),
+                              height: 60),
+                        ),
+                        SizedBox(width: 80),
+                        Column(
+                          // crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            GestureDetector(
+                              onTap: () {},
+                              child: Image(
+                                  image: AssetImage(levels[index].image),
+                                  height: 60),
+                            ),
+                            SizedBox(height: 1.h),
+                            Text(
+                              levels[index].title,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  fontFamily: "GothamBook",
+                                  height: 1.3,
+                                  color: gsecondaryColor,
+                                  fontSize: 10.sp),
+                            )
+                          ],
+                        ),
+                      ],
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(left: 25.0, right: 30),
+                      child: Image(
+                        image: AssetImage("assets/images/dashboard_stages/Mask Group 9.png"),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+        });
+  }
+
+  showOldProgramStages(){
+    return ListViewEffect(
+      duration: _duration,
+      children: programStage.map((s) => _buildWidgetExample(
+          ProgramsData(s['title']!, s['image']!,
+              isCompleted: getIsCompleted(s['title']!)
+          ),
+          programStage.indexWhere((element) => element.containsValue(s['title']!)))).toList(),
+    );
+  }
+
+  String showStageImage(int index) {
+    String asset = '';
+    String title = levels[index].title.toString().toLowerCase().trim();
+    if(consultationStage == 'evaluation_done' || consultationStage == 'pending'){
+      asset = currentStage;
+    }
+    else if(consultationStage == 'consultation_reschedule'){
+      asset = lockedStage;
+    }
+
+    return asset;
+  }
+
+  void updateNewStage(String? stage) {
+    print("consultationStage: ==> ${stage}");
+    switch(stage){
+      case 'evaluation_done'  :
+        levels[0].stage = currentStage;
+        break;
+      case 'pending' :
+        levels[0].stage = currentStage;
+        break;
+      case 'consultation_reschedule' :
+        levels[0].stage = currentStage;
+        break;
+      case 'appointment_booked':
+        levels[0].stage = openedStage;
+        levels[1].stage = currentStage;
+        break;
+      case 'consultation_done':
+        levels[0].stage = openedStage;
+        levels[1].stage = currentStage;
+        break;
+      case 'consultation_accepted':
+        levels[0].stage = openedStage;
+        levels[1].stage = openedStage;
+        break;
+      case 'consultation_waiting':
+        levels[0].stage = openedStage;
+        levels[1].stage = openedStage;
+        break;
+      case 'consultation_rejected':
+        levels[0].stage = openedStage;
+        levels[1].stage = openedStage;
+        break;
+      case 'report_upload':
+        levels[0].stage = openedStage;
+        levels[1].stage = openedStage;
+        break;
+      case 'shipping_delivered':
+        levels[0].stage = openedStage;
+        levels[1].stage = openedStage;
+        levels[2].stage = currentStage;
+        break;
+      case 'shipping_approved':
+        levels[0].stage = openedStage;
+        levels[1].stage = openedStage;
+        levels[2].stage = currentStage;
+        break;
+      case 'start_program':
+        levels[0].stage = openedStage;
+        levels[1].stage = openedStage;
+        levels[2].stage = openedStage;
+        levels[3].stage = currentStage;
+        break;
+      case 'post_appointment_booked':
+        levels[0].stage = openedStage;
+        levels[1].stage = openedStage;
+        levels[2].stage = openedStage;
+        levels[3].stage = openedStage;
+        levels[4].stage = currentStage;
+        break;
+      case 'protocol_guide':
+        levels[0].stage = openedStage;
+        levels[1].stage = openedStage;
+        levels[2].stage = openedStage;
+        levels[3].stage = openedStage;
+        levels[4].stage = openedStage;
+        levels[5].stage = currentStage;
+        break;
+    }
+  }
 }
 
 class ProgramsData {
@@ -693,6 +1115,12 @@ class ProgramsData {
   bool isCompleted;
 
   ProgramsData(this.title, this.image, {this.isCompleted = false});
+}
 
+class NewStageLevels{
+  String image;
+  String title;
+  String stage;
 
+  NewStageLevels(this.image, this.title, this.stage);
 }
