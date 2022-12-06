@@ -201,7 +201,10 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
                                 child: GestureDetector(
                                   onTap: () async{
                                     print("tap");
-                                    await _videoPlayerController?.stop();
+                                    final res = await _videoPlayerController?.isPlaying();
+                                    if(res != null && res == true){
+                                      await _videoPlayerController?.stop();
+                                    }
                                     Navigator.of(context).push(
                                       MaterialPageRoute(
                                         builder: (context) => const RegisterScreen(),

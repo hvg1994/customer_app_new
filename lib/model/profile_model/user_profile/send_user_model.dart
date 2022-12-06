@@ -37,8 +37,8 @@ class SendUserModel {
     data['email'] = this.email;
     data['phone'] = this.phone;
     data['gender'] = this.gender;
-    if(profile!.isNotEmpty || profile != null){
-      data['photo'] = this.profile;
+    if(profile != null){
+      if(profile!.isNotEmpty) data['photo'] = this.profile;
     }
     data['age'] = this.age;
     return data;

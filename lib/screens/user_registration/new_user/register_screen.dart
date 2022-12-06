@@ -56,7 +56,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _userRegisterService = UserRegisterService(registerRepo: repository);
     _nameFocus = FocusNode();
     _nameFocus.addListener(() {});
-    // emailController.addListener(() {});
+    emailController.addListener(() {
+      setState(() {});
+    });
+    nameController.addListener(() {
+      setState(() {});
+    });
+    ageController.addListener(() {
+      setState(() {});
+    });
+    mobileController.addListener(() {
+      setState(() {});
+    });
     getDeviceId();
   }
 
@@ -72,7 +83,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   void dispose() {
     // TODO: implement dispose
-    // emailController.removeListener(() {});
+    _nameFocus.removeListener(() { });
+    nameController.removeListener(() {});
+    ageController.removeListener(() {});
+    mobileController.removeListener(() {});
+    emailController.removeListener(() {});
     super.dispose();
   }
 
@@ -139,7 +154,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             focusNode: _nameFocus,
                             decoration:
                                 CommonDecoration.buildTextInputDecoration(
-                                    "Name", nameController
+                                    "Name", nameController,
+                                  enabledBorder: (nameController.text.isEmpty) ? null : UnderlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: eUser().focusedBorderColor,
+                                          width: eUser().focusedBorderWidth
+                                      )
+                                  ),
+                                  focusBoder: UnderlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: eUser().focusedBorderColor,
+                                          width: eUser().focusedBorderWidth
+                                      )
+                                    // borderRadius: BorderRadius.circular(25.0),
+                                  ),
                                 ),
                             style: TextStyle(
                                 fontFamily: eUser().userTextFieldFont,
@@ -179,7 +207,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             },
                             decoration:
                                 CommonDecoration.buildTextInputDecoration(
-                                    "Age", ageController),
+                                    "Age", ageController,
+                                  enabledBorder: (ageController.text.isEmpty) ? null : UnderlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: eUser().focusedBorderColor,
+                                          width: eUser().focusedBorderWidth
+                                      )
+                                  ),
+                                  focusBoder: UnderlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: eUser().focusedBorderColor,
+                                          width: eUser().focusedBorderWidth
+                                      )
+                                    // borderRadius: BorderRadius.circular(25.0),
+                                  ),
+                                ),
                             style: TextStyle(
                                 fontFamily: "GothamBook",
                                 color: gMainColor,
@@ -236,7 +278,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             },
                             decoration:
                                 CommonDecoration.buildTextInputDecoration(
-                                    "Email", emailController),
+                                    "Email", emailController,
+                                  enabledBorder: (emailController.text.isEmpty) ? null : UnderlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: eUser().focusedBorderColor,
+                                          width: eUser().focusedBorderWidth
+                                      )
+                                  ),
+                                  focusBoder: UnderlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: eUser().focusedBorderColor,
+                                          width: eUser().focusedBorderWidth
+                                      )
+                                    // borderRadius: BorderRadius.circular(25.0),
+                                  ),
+                                ),
                             style: TextStyle(
                                 fontFamily: eUser().userTextFieldFont,
                                 fontSize: eUser().userTextFieldFontSize,
@@ -360,7 +416,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   },
                                   decoration:
                                       CommonDecoration.buildTextInputDecoration(
-                                          "Mobile Number", mobileController),
+                                          "Mobile Number", mobileController,
+                                        enabledBorder: (mobileController.text.isEmpty) ? null : UnderlineInputBorder(
+                                            borderSide: BorderSide(
+                                                color: eUser().focusedBorderColor,
+                                                width: eUser().focusedBorderWidth
+                                            )
+                                        ),
+                                        focusBoder: UnderlineInputBorder(
+                                            borderSide: BorderSide(
+                                                color: eUser().focusedBorderColor,
+                                                width: eUser().focusedBorderWidth
+                                            )
+                                          // borderRadius: BorderRadius.circular(25.0),
+                                        ),
+                                      ),
                                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                                   style: TextStyle(
                                       fontFamily: eUser().userTextFieldFont,

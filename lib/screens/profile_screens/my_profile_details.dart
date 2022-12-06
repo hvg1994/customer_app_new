@@ -199,7 +199,7 @@ class _MyProfileDetailsState extends State<MyProfileDetails> {
                                                             gender: genderController.text,
                                                             email: subData!.email,
                                                             phone: subData.phone,
-                                                            profile: _image!.path.split('/').last
+                                                            profile: (_image != null) ? _image!.path.split('/').last : null
                                                           );
                                                           updateProfileData(user.toJson());
                                                           // toggleEdit();

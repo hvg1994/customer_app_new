@@ -99,9 +99,9 @@ class _ExistingUserState extends State<ExistingUser> {
     phoneController.addListener(() {
       setState(() {});
     });
-    // otpController.addListener(() {
-    //   setState(() {});
-    // });
+    otpController.addListener(() {
+      setState(() {});
+    });
     _phoneFocus.addListener(() {
       if(!_phoneFocus.hasFocus){
         mobileFormKey.currentState!.validate();
@@ -121,7 +121,8 @@ class _ExistingUserState extends State<ExistingUser> {
     _timer!.cancel();
     _phoneFocus.removeListener(() { });
     phoneController.dispose();
-    // otpController.dispose();
+    otpController.dispose();
+    otpController.removeListener(() { });
   }
 
   @override
@@ -273,6 +274,12 @@ class _ExistingUserState extends State<ExistingUser> {
                           )
                           // borderRadius: BorderRadius.circular(25.0),
                         ),
+                        enabledBorder: (phoneController.text.isEmpty) ? null : UnderlineInputBorder(
+                            borderSide: BorderSide(
+                                color: eUser().focusedBorderColor,
+                                width: eUser().focusedBorderWidth
+                            )
+                        ),
                         isDense: true,
                         counterText: '',
                         contentPadding: EdgeInsets.symmetric(horizontal: 2),
@@ -384,6 +391,12 @@ class _ExistingUserState extends State<ExistingUser> {
                           width: eUser().focusedBorderWidth
                       )
                     // borderRadius: BorderRadius.circular(25.0),
+                  ),
+                  enabledBorder: (otpController.text.isEmpty) ? null :UnderlineInputBorder(
+                      borderSide: BorderSide(
+                          color: eUser().focusedBorderColor,
+                          width: eUser().focusedBorderWidth
+                      )
                   ),
                   isDense: true,
                   counterText: '',

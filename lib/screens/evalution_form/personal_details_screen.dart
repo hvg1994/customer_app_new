@@ -377,9 +377,10 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
     );
   }
 
+  /// for showData ChildGetEvaluationDataModel? model this is mandatory
   showUI(BuildContext context, {ChildGetEvaluationDataModel? model}) {
     return widget.showData
-        ? buildEvaluationForm()
+        ? buildEvaluationForm(model: model)
         : Column(
             children: [
               SizedBox(height: 1.h),
@@ -472,6 +473,9 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                SizedBox(
+                  height: 1.5.h,
+                ),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [

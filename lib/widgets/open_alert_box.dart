@@ -132,7 +132,9 @@ openProgressDialog(BuildContext context){
     context: context,
     barrierColor: gGreyColor.withOpacity(0.1),
     builder: (BuildContext context) {
-      return alert;
+      return WillPopScope(child: alert,
+        onWillPop: () async => false,
+      );
     },
   );
 }

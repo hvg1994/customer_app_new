@@ -31,6 +31,7 @@ class UploadFiles extends StatefulWidget {
 }
 
 class _UploadFilesState extends State<UploadFiles> {
+  final _pref = AppConfig().preferences;
   List<PlatformFile> files = [];
   List<File> fileFormatList = [];
   List<MultipartFile> newList = <MultipartFile>[];
@@ -55,8 +56,12 @@ class _UploadFilesState extends State<UploadFiles> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    getUserReportList();
-    if (!widget.isFromSettings) getDoctorRequestedReportList();
+    if (!widget.isFromSettings) {
+      getDoctorRequestedReportList();
+    }
+    else{
+      getUserReportList();
+    }
   }
 
   @override
@@ -383,6 +388,7 @@ class _UploadFilesState extends State<UploadFiles> {
   }
 
   getUserReportList() async {
+
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       openProgressDialog(context);
     });

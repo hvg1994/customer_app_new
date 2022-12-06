@@ -30,7 +30,7 @@ class CommonDecoration {
     );
   }
 
-  static InputDecoration buildTextInputDecoration(String hintText, TextEditingController controller, {Widget? suffixIcon}) {
+  static InputDecoration buildTextInputDecoration(String hintText, TextEditingController controller, {Widget? suffixIcon, InputBorder? enabledBorder, InputBorder? focusBoder }) {
     return InputDecoration(
       hintText: hintText,
       hintStyle: TextStyle(
@@ -45,7 +45,9 @@ class CommonDecoration {
             style: BorderStyle.solid
         ),
       ),
-      suffixIcon: suffixIcon
+      suffixIcon: suffixIcon,
+      enabledBorder: enabledBorder,
+      focusedBorder: focusBoder
       // controller.text.isEmpty
       //     ? const SizedBox()
       //     : IconButton(

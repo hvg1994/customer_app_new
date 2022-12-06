@@ -854,7 +854,7 @@ class ApiClient {
   }
 
   Future getUploadedReportListListApi() async {
-    final path = getUserReportListUrl;
+    String path = getUserReportListUrl;
     var result;
 
     try {
