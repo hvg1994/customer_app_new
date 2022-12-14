@@ -48,8 +48,8 @@ class _FaqAnswerScreenState extends State<FaqAnswerScreen> {
     return SafeArea(
         child: Scaffold(
           body: Container(
-            width: 60.w,
-            height: 60.w,
+            // width: 60.w,
+            // height: 60.w,
             foregroundDecoration: BoxDecoration(
               image: DecorationImage(
                 alignment: Alignment.topLeft,

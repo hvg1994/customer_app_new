@@ -18,7 +18,7 @@ class FaqScreen extends StatefulWidget {
 }
 
 class _FaqScreenState extends State<FaqScreen> {
-
+  final searchController = TextEditingController();
   //FAQs
   //
   // GENERAL QUERY
@@ -89,26 +89,28 @@ class _FaqScreenState extends State<FaqScreen> {
   ];
   List<FAQ> faq = [];
 
+  List<FAQ> searchFAQResults = [];
+
   Future? faqFuture;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    for(int i = 0; i<questions.length; i++){
+    for (int i = 0; i < questions.length; i++) {
       faq.add(FAQ(questions[i], paths[i], answers[i]));
     }
 
     faqFuture = SettingsService(repository: repo).getFaqListService();
   }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          child: Padding(
-            padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 5.w),
+        body: Padding(
+          padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 5.w),
+          child: SingleChildScrollView(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -116,19 +118,18 @@ class _FaqScreenState extends State<FaqScreen> {
                 buildAppBar(() {
                   Navigator.pop(context);
                 }),
-                SizedBox(height: 3.h),
+                //SizedBox(height: 1.h),
                 Text(
                   "FAQ",
-                  textAlign: TextAlign.center,
                   style: TextStyle(
-                      fontFamily: "GothamRoundedBold_21016",
-                      color: gPrimaryColor,
+                      fontFamily: "GothamBold",
+                      color: gBlackColor,
                       fontSize: 13.sp),
                 ),
-                SizedBox(
-                  height: 3.h,
-                ),
-                newDesignUI(context)
+                SizedBox(height: 1.h),
+                buildSearchWidget(),
+                buildExpansionTiles(),
+                //  newDesignUI(context)
                 // buildQuestions("Can I skip a day and restart?", 0),
               ],
             ),
@@ -140,7 +141,7 @@ class _FaqScreenState extends State<FaqScreen> {
 
   buildQuestionsOld(FAQ faq, int index) {
     return GestureDetector(
-      onTap: (){
+      onTap: () {
         // goto(faq);
       },
       child: Column(
@@ -165,69 +166,406 @@ class _FaqScreenState extends State<FaqScreen> {
     );
   }
 
-  goto(FaqList faq){
-    Navigator.push(context, MaterialPageRoute(builder: (_) =>
-        FaqAnswerScreen(
-          faqList: faq,
-            // question: faq.questions,
-            // icon: faq.path,
-            // answer: faq.answers
-        )));
-  }
-
-  oldDesignUI(BuildContext context){
-    return faq.map((e) => buildQuestionsOld(e, faq.indexOf(e))).toList();
-  }
-
-  newDesignUI(BuildContext context){
+  buildExpansionTiles() {
     return FutureBuilder(
-      future: faqFuture,
-        builder: (_, snapshot){
-        print(snapshot.connectionState);
-          if(snapshot.connectionState == ConnectionState.done){
+        future: faqFuture,
+        builder: (_, snapshot) {
+          print(snapshot.connectionState);
+          if (snapshot.connectionState == ConnectionState.done) {
             print(snapshot.hasError);
             print(snapshot.hasData);
-            if(snapshot.hasData){
+            if (snapshot.hasData) {
               print(snapshot.data.runtimeType);
-              if(snapshot.data.runtimeType is ErrorModel){
+              if (snapshot.data.runtimeType is ErrorModel) {
                 ErrorModel model = snapshot.data as ErrorModel;
                 return Center(
                   child: Text(model.message ?? ''),
                 );
-              }
-              else{
+              } else {
                 print("else");
                 FaqListModel model = snapshot.data as FaqListModel;
-                return ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: model.faqList?.length ?? 0,
-                    itemBuilder: (_, index){
-                      return buildQuestionsNew(model.faqList![index]);
-                    }
+
+                return Column(
+                  children: [
+                    searchController.text.isNotEmpty
+                        ? buildSearchList()
+                        : Column(
+                            children: [
+                              generalQueries(model),
+                              mealPlanQueries(model),
+                              yogaPlanQueries(model),
+                              symptomQueries(model),
+                            ],
+                          )
+                  ],
                 );
                 model.faqList?.map((e) {
                   return buildQuestionsNew(e);
                 }).toList();
               }
-
-            }
-            else if(snapshot.hasError){
+            } else if (snapshot.hasError) {
               return Center(
                 child: Text(snapshot.error.toString() ?? ''),
               );
             }
           }
-          else {
+          return buildCircularIndicator();
+        });
+  }
+
+  generalQueries(FaqListModel que) {
+    return ExpansionTile(
+      title: Text(
+        "General Queries",
+        style: TextStyle(
+          color: Colors.black87,
+          fontSize: 12.sp,
+          fontFamily: "GothamMedium",
+        ),
+      ),
+      // leading: Image(
+      //   image: AssetImage("assets/images/Group 2747.png"),
+      // ),
+      children: [
+        ListView.builder(
+            shrinkWrap: true,
+            scrollDirection: Axis.vertical,
+            itemCount: que.faqList?.length,
+            itemBuilder: (_, index) {
+              // print("Type: ${model.faqList![index].faqType}");
+              if (que.faqList![index].faqType == "general") {
+                return Padding(
+                  padding: const EdgeInsets.only(left: 20),
+                  child: buildMenuItem(
+                    onClicked: () {
+                      goto(que.faqList![index]);
+                    },
+                    text: "${que.faqList![index].question}",
+                  ),
+                );
+              } else {
+                return SizedBox();
+              }
+            }),
+      ],
+    );
+  }
+
+  mealPlanQueries(FaqListModel que) {
+    return ExpansionTile(
+      title: Text(
+        "Meal Plan Queries",
+        style: TextStyle(
+          color: Colors.black87,
+          fontSize: 12.sp,
+          fontFamily: "GothamMedium",
+        ),
+      ),
+      // leading: Image(
+      //   image: AssetImage("assets/images/Group 2747.png"),
+      // ),
+      children: [
+        ListView.builder(
+            shrinkWrap: true,
+            scrollDirection: Axis.vertical,
+            itemCount: que.faqList?.length,
+            itemBuilder: (_, index) {
+              // print("Type: ${model.faqList![index].faqType}");
+              if (que.faqList![index].faqType == "meal") {
+                return Padding(
+                  padding: const EdgeInsets.only(left: 20),
+                  child: buildMenuItem(
+                    onClicked: () {
+                      goto(que.faqList![index]);
+                    },
+                    text: "${que.faqList![index].question}",
+                  ),
+                );
+              } else {
+                return SizedBox();
+              }
+            }),
+      ],
+    );
+  }
+
+  yogaPlanQueries(FaqListModel que) {
+    return ExpansionTile(
+      title: Text(
+        "Yoga Plan Queries",
+        style: TextStyle(
+          color: Colors.black87,
+          fontSize: 12.sp,
+          fontFamily: "GothamMedium",
+        ),
+      ),
+      // leading: Image(
+      //   image: AssetImage("assets/images/Group 2747.png"),
+      // ),
+      children: [
+        ListView.builder(
+            shrinkWrap: true,
+            scrollDirection: Axis.vertical,
+            itemCount: que.faqList?.length,
+            itemBuilder: (_, index) {
+              // print("Type: ${model.faqList![index].faqType}");
+              if (que.faqList![index].faqType == "yoga") {
+                return Padding(
+                  padding: const EdgeInsets.only(left: 20),
+                  child: buildMenuItem(
+                    onClicked: () {
+                      goto(que.faqList![index]);
+                    },
+                    text: "${que.faqList![index].question}",
+                  ),
+                );
+              } else {
+                return SizedBox();
+              }
+            }),
+      ],
+    );
+  }
+
+  symptomQueries(FaqListModel que) {
+    return ExpansionTile(
+      title: Text(
+        "Symptom Queries",
+        style: TextStyle(
+          color: Colors.black87,
+          fontSize: 12.sp,
+          fontFamily: "GothamMedium",
+        ),
+      ),
+      // leading: Image(
+      //   image: AssetImage("assets/images/Group 2747.png"),
+      // ),
+      children: [
+        ListView.builder(
+            shrinkWrap: true,
+            scrollDirection: Axis.vertical,
+            itemCount: que.faqList?.length,
+            itemBuilder: (_, index) {
+              // print("Type: ${model.faqList![index].faqType}");
+              if (que.faqList![index].faqType == "symptom") {
+                return Padding(
+                  padding: const EdgeInsets.only(left: 20),
+                  child: buildMenuItem(
+                    onClicked: () {
+                      goto(que.faqList![index]);
+                    },
+                    text: "${que.faqList![index].question}",
+                  ),
+                );
+              } else {
+                return SizedBox();
+              }
+            }),
+      ],
+    );
+  }
+
+  buildSearchWidget() {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(6),
+        color: Colors.white,
+        // border: Border.all(color: gGreyColor.withOpacity(0.5), width: 1.0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.3),
+            blurRadius: 2,
+          ),
+        ],
+      ),
+      padding: EdgeInsets.symmetric(horizontal: 2.w),
+      margin: EdgeInsets.symmetric(horizontal: 0.w, vertical: 1.h),
+      child: TextFormField(
+        textAlignVertical: TextAlignVertical.center,
+        controller: searchController,
+        textAlign: TextAlign.left,
+        decoration: InputDecoration(
+          prefixIcon: Icon(
+            Icons.search,
+            color: gBlackColor,
+            size: 2.5.h,
+          ),
+          hintText: "Search...",
+          // suffixIcon: searchController.text.isNotEmpty
+          //     ? GestureDetector(
+          //         child:
+          //             Icon(Icons.close_outlined, size: 2.h, color: gBlackColor),
+          //         onTap: () {
+          //           searchController.clearComposing();
+          //           FocusScope.of(context).requestFocus(FocusNode());
+          //         },
+          //       )
+          //     : null,
+          hintStyle: TextStyle(
+            fontFamily: "GothamBook",
+            color: gBlackColor,
+            fontSize: 9.sp,
+          ),
+          border: InputBorder.none,
+        ),
+        style: TextStyle(
+            fontFamily: "GothamBook", color: gBlackColor, fontSize: 11.sp),
+        onChanged: (value) {
+          onSearchTextChanged(value);
+        },
+      ),
+    );
+  }
+
+  onSearchTextChanged(String text) async {
+    searchFAQResults.clear();
+    if (text.isEmpty) {
+      setState(() {});
+      return;
+    }
+    faq?.forEach((userDetail) {
+      if (userDetail.questions!
+          .toLowerCase()
+          .contains(text.trim().toLowerCase())) {
+        searchFAQResults.add(userDetail);
+      }
+    });
+    setState(() {});
+  }
+
+  buildSearchList() {
+    return SingleChildScrollView(
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 2.h, horizontal: 2.w),
+        decoration: BoxDecoration(
+          color: gWhiteColor,
+          borderRadius: BorderRadius.circular(10),
+          boxShadow: [
+            BoxShadow(
+              blurRadius: 2,
+              color: Colors.grey.withOpacity(0.5),
+            ),
+          ],
+        ),
+        child: Column(
+          children: [
+            ListView.builder(
+              scrollDirection: Axis.vertical,
+              padding: EdgeInsets.symmetric(horizontal: 1.w),
+              physics: const ScrollPhysics(),
+              shrinkWrap: true,
+              itemCount: searchFAQResults.length,
+              itemBuilder: ((context, index) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                       // goto(searchFAQResults);
+                      },
+                      child: Text(
+                        searchFAQResults[index].questions ?? "",
+                        style: TextStyle(
+                            fontFamily: "GothamBook",
+                            color: gBlackColor,
+                            fontSize: 10.sp),
+                      ),
+                    ),
+                    Container(
+                      height: 1,
+                      margin: EdgeInsets.symmetric(vertical: 1.5.h),
+                      color: Colors.grey.withOpacity(0.3),
+                    ),
+                  ],
+                );
+              }),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget buildMenuItem({
+    required String text,
+    VoidCallback? onClicked,
+  }) {
+    const color = kPrimaryColor;
+    const hoverColor = Colors.grey;
+
+    return ListTile(
+      title: Text(
+        text,
+        style: TextStyle(
+          fontFamily: eUser().userTextFieldFont,
+          color: eUser().userTextFieldColor,
+          fontSize: eUser().userTextFieldFontSize,
+        ),
+      ),
+      hoverColor: hoverColor,
+      onTap: onClicked,
+    );
+  }
+
+  goto(FaqList faq) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (_) => FaqAnswerScreen(
+                  faqList: faq,
+                  // question: faq.questions,
+                  // icon: faq.path,
+                  // answer: faq.answers
+                )));
+  }
+
+  oldDesignUI(BuildContext context) {
+    return faq.map((e) => buildQuestionsOld(e, faq.indexOf(e))).toList();
+  }
+
+  newDesignUI(BuildContext context) {
+    return FutureBuilder(
+        future: faqFuture,
+        builder: (_, snapshot) {
+          print(snapshot.connectionState);
+          if (snapshot.connectionState == ConnectionState.done) {
+            print(snapshot.hasError);
+            print(snapshot.hasData);
+            if (snapshot.hasData) {
+              print(snapshot.data.runtimeType);
+              if (snapshot.data.runtimeType is ErrorModel) {
+                ErrorModel model = snapshot.data as ErrorModel;
+                return Center(
+                  child: Text(model.message ?? ''),
+                );
+              } else {
+                print("else");
+                FaqListModel model = snapshot.data as FaqListModel;
+                return ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: model.faqList?.length ?? 0,
+                    itemBuilder: (_, index) {
+                      return buildQuestionsNew(model.faqList![index]);
+                    });
+                model.faqList?.map((e) {
+                  return buildQuestionsNew(e);
+                }).toList();
+              }
+            } else if (snapshot.hasError) {
+              return Center(
+                child: Text(snapshot.error.toString() ?? ''),
+              );
+            }
+          } else {
             return buildCircularIndicator();
           }
           return buildCircularIndicator();
-        }
-    );
+        });
   }
 
   buildQuestionsNew(FaqList faq) {
     return GestureDetector(
-      onTap: (){
+      onTap: () {
         goto(faq);
       },
       child: Column(
@@ -252,18 +590,14 @@ class _FaqScreenState extends State<FaqScreen> {
     );
   }
 
-
-  SettingsRepository repo = SettingsRepository(
-      apiClient: ApiClient(
-        httpClient: http.Client()
-      )
-  );
+  SettingsRepository repo =
+      SettingsRepository(apiClient: ApiClient(httpClient: http.Client()));
 }
 
-
-class FAQ{
+class FAQ {
   String questions;
   String path;
   String answers;
-  FAQ(this.questions,  this.path,  this.answers);
+
+  FAQ(this.questions, this.path, this.answers);
 }

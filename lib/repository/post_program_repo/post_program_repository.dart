@@ -10,8 +10,8 @@ class PostProgramRepository{
     return await apiClient.startPostProgram();
   }
 
-  Future getBreakfastRepo(String day) async{
-    return await apiClient.getBreakfastOnclickApi(day);
+  Future getPPMealsOnStagesRepo(int stage,String day) async{
+    return await apiClient.getPPMealsOnStagesApi(stage, day);
   }
   Future getLunchRepo(String day) async{
     return await apiClient.getLunchOnclickApi(day);
@@ -19,9 +19,13 @@ class PostProgramRepository{
   Future getDinnerRepo(String day) async{
     return await apiClient.getDinnerOnclickApi(day);
   }
-
+  //not using
   Future submitPostProgramMealTrackingRepo(String mealType, int selectedType, int? dayNumber) async{
     return await apiClient.submitPostProgramMealTrackingApi(mealType, selectedType, dayNumber);
+  }
+  // new method
+  Future submitPPMealsRepo(String stageType,String followId, int itemId, int? dayNumber) async{
+    return await apiClient.submitPPMealsApi(stageType, followId, itemId, dayNumber);
   }
 
   Future getProtocolDayDetailsRepo({String? dayNumber}) async{

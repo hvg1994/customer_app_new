@@ -17,7 +17,7 @@ class _PPDashboardScreenState extends State<PPDashboardScreen> {
         child: TextButton(
           child: Text('Next'),
           onPressed: (){
-            Navigator.push(context, MaterialPageRoute(builder: (_) => PPDailyTasksUI()));
+            Navigator.push(context, MaterialPageRoute(builder: (_) => PPDailyTasksUI(day: "1",)));
           },
         ),
       ),

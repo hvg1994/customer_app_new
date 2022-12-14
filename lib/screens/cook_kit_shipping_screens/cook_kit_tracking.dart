@@ -35,6 +35,8 @@ class _CookKitTrackingState extends State<CookKitTracking>{
   double gap = 23.0;
   int activeStep = -1;
 
+  final tableHeadingBg = gGreyColor.withOpacity(0.4);
+
   Timer? timer;
   int upperBound = -1;
 
@@ -199,15 +201,14 @@ class _CookKitTrackingState extends State<CookKitTracking>{
                         Container(
                           height: (sortedData.entries.elementAt(index).key == sortedData.entries.first.key && ind ==0) ? 5.h : 0,
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(8),
-                                topRight: Radius.circular(8)
-                            ),
-                            gradient: (sortedData.keys.first == sortedData.entries.first.key || ind ==0) ? LinearGradient(colors: [
-                              Color(0xffE06666),
-                              Color(0xff93C47D),
-                              Color(0xffFFD966),
-                            ], begin: Alignment.topLeft, end: Alignment.topRight) : null,
+                              borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(8), topRight: Radius.circular(8)),
+                              color: tableHeadingBg,
+                            // gradient: (sortedData.keys.first == sortedData.entries.first.key || ind ==0) ? LinearGradient(colors: [
+                            //   Color(0xffE06666),
+                            //   Color(0xff93C47D),
+                            //   Color(0xffFFD966),
+                            // ], begin: Alignment.topLeft, end: Alignment.topRight) : null,
                           ),
                         ),
                         Center(
@@ -227,9 +228,9 @@ class _CookKitTrackingState extends State<CookKitTracking>{
                                   label: Text('Meal Name',
                                     style: TextStyle(
                                       height: 1.5,
-                                      color: gWhiteColor,
+                                      color: eUser().userFieldLabelColor,
                                       fontSize: 11.sp,
-                                      fontFamily: "GothamBold",
+                                      fontFamily: kFontBold,
                                     ),
                                   ),
                                 ),
@@ -243,9 +244,9 @@ class _CookKitTrackingState extends State<CookKitTracking>{
                                       textAlign: TextAlign.right,
                                       style: TextStyle(
                                         height: 1.5,
-                                        color: gWhiteColor,
+                                        color: eUser().userFieldLabelColor,
                                         fontSize: 11.sp,
-                                        fontFamily: "GothamBold",
+                                        fontFamily: kFontBold,
                                       ),
                                     ),
                                   ),

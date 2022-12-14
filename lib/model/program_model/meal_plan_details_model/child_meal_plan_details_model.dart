@@ -7,6 +7,9 @@ class ChildMealPlanDetailsModel {
   String? weightType;
   String? url;
   String? status;
+  String? itemImage;
+  String? subTitle;
+  String? benefits;
 
   ChildMealPlanDetailsModel(
       {this.type,
@@ -16,7 +19,10 @@ class ChildMealPlanDetailsModel {
         this.mealWeight,
         this.weightType,
         this.url,
-        this.status
+        this.status,
+        this.subTitle,
+        this.itemImage,
+        this.benefits
       });
 
   ChildMealPlanDetailsModel.fromJson(Map<String, dynamic> json) {
@@ -28,7 +34,11 @@ class ChildMealPlanDetailsModel {
     weightType = json['weight_type'] ?? '';
     url = json['url'] ?? '';
     status = json['status'] ?? '';
+    subTitle = json['subtitle'] ?? '';
+    itemImage = json['item_photo'] ?? '';
+    benefits = json['benefits'] ?? '';
   }
+
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
@@ -40,6 +50,9 @@ class ChildMealPlanDetailsModel {
     data['weight_type'] = this.weightType;
     data['url'] = this.url;
     data['status'] = this.status;
+    data['subtitle'] = this.subTitle;
+    data['item_photo'] = this.itemImage;
+    data['benefits'] = this.benefits;
     return data;
   }
 }

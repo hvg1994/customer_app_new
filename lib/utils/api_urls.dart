@@ -65,13 +65,21 @@ var chatGroupIdUrl = "${AppConfig().BASE_URL}/api/getData/get_chat_messages_grou
 /// this is called after all 15 days completed than on click on next clap ui we need to hit this api
 var startPostProgramUrl = "${AppConfig().BASE_URL}/api/submitForm/post_program";
 
-var getBreakfastOnclickUrl = "${AppConfig().BASE_URL}/api/getDataList/protocol_guide_meal_plan/breakfast";
-
 var submitPostProgramMealTrackingUrl = "${AppConfig().BASE_URL}/api/submitData/post_program_meal_tracking";
 
-var getLunchOnclickUrl = "${AppConfig().BASE_URL}/api/getDataList/protocol_guide_meal_plan/lunch";
+var getPPEarlyMorningUrl = "${AppConfig().BASE_URL}/api/getDataList/protocol_guide_meal_plan/early_morning";
 
-var getDinnerOnclickUrl = "${AppConfig().BASE_URL}/api/getDataList/protocol_guide_meal_plan/dinner";
+var getPPBreakfastUrl = "${AppConfig().BASE_URL}/api/getDataList/protocol_guide_meal_plan/breakfast";
+
+var getPPMidDayUrl = "${AppConfig().BASE_URL}/api/getDataList/protocol_guide_meal_plan/mid_day";
+
+var getPPLunchUrl = "${AppConfig().BASE_URL}/api/getDataList/protocol_guide_meal_plan/lunch";
+
+var getPPEveningUrl = "${AppConfig().BASE_URL}/api/getDataList/protocol_guide_meal_plan/evening";
+
+var getPPDinnerUrl = "${AppConfig().BASE_URL}/api/getDataList/protocol_guide_meal_plan/dinner";
+
+var getPPPostDinnerUrl = "${AppConfig().BASE_URL}/api/getDataList/protocol_guide_meal_plan/post_dinner";
 
 /// this is called on protocol home page and also
 /// if user already submited details based on the day selection details will get

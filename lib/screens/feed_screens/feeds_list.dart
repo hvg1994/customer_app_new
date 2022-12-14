@@ -55,9 +55,10 @@ class _FeedsListState extends State<FeedsList> {
               Text(
                 "Feeds",
                 style: TextStyle(
-                    fontFamily: "GothamRoundedBold_21016",
-                    color: gPrimaryColor,
-                    fontSize: 12.sp),
+                    fontFamily: eUser().mainHeadingFont,
+                    color: eUser().mainHeadingColor,
+                    fontSize: eUser().mainHeadingFontSize
+                ),
               ),
               SizedBox(height: 1.h),
               Expanded(

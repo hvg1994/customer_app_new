@@ -612,6 +612,7 @@ class _MessageScreenState extends State<MessageScreen>
 
   buildMessageList(List<QBMessageWrapper> messageList) {
     return GroupedListView<QBMessageWrapper, DateTime>(
+      shrinkWrap: true,
       elements: messageList,
       order: GroupedListOrder.DESC,
       reverse: true,

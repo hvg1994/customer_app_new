@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:gwc_customer/model/program_model/proceed_model/send_proceed_program_model.dart';
 import 'package:gwc_customer/screens/notification_screen.dart';
+import 'package:gwc_customer/screens/post_program_screens/new_post_program/pp_levels_screen.dart';
 import 'package:gwc_customer/screens/post_program_screens/post_program_screen.dart';
 import 'package:gwc_customer/screens/profile_screens/reward/reward_screen.dart';
 import 'package:gwc_customer/screens/profile_screens/settings_screen.dart';
@@ -68,7 +69,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     switch (index) {
       case 0:
         {
-          return PPDashboardScreen();
+          return PPLevelsScreen();
           // return LevelStatus();
           // return DayMealTracerUI(proceedProgramDayModel: ProceedProgramDayModel(),);
         }

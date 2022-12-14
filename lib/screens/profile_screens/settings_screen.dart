@@ -10,6 +10,7 @@ import 'package:gwc_customer/screens/evalution_form/personal_details_screen.dart
 import 'package:gwc_customer/screens/notification_screen.dart';
 import 'package:gwc_customer/screens/profile_screens/call_support_method.dart';
 import 'package:gwc_customer/screens/profile_screens/faq_screens/faq_screen.dart';
+import 'package:gwc_customer/screens/profile_screens/faq_screens/faq_screen_old.dart';
 import 'package:gwc_customer/screens/profile_screens/reward/reward_screen.dart';
 import 'package:gwc_customer/screens/profile_screens/terms_conditions_screen.dart';
 import 'package:gwc_customer/screens/profile_screens/user_details_tap.dart';
@@ -68,9 +69,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   "Settings",
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                      fontFamily: 'GothamRoundedBold_21016',
-                      color: gPrimaryColor,
-                      fontSize: 12.sp),
+                      fontFamily: eUser().mainHeadingFont,
+                      color: eUser().mainHeadingColor,
+                      fontSize: eUser().mainHeadingFontSize
+                  ),
                 ),
                 profileTile("assets/images/Group 2753.png", "My Profile", () {
                   Navigator.of(context).push(

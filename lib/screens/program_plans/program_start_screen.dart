@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gwc_customer/model/error_model.dart';
+import 'package:gwc_customer/screens/program_plans/meal_plan_screen.dart';
 import 'package:gwc_customer/services/program_service/program_service.dart';
 import 'package:sizer/sizer.dart';
 import 'package:slide_to_confirm/slide_to_confirm.dart';
@@ -100,7 +101,7 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => const DaysProgramPlan(),
+          builder: (context) => const MealPlanScreen(),
         ),
       );
     }

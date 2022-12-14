@@ -23,7 +23,7 @@ openAlertBox({
       builder: (context) => WillPopScope(
         onWillPop: () async => false,
         child: AlertDialog(
-          backgroundColor: kPrimaryColor,
+         // backgroundColor: kPrimaryColor,
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(15.0.sp))),
           contentPadding: EdgeInsets.only(top: 1.h),
@@ -44,8 +44,8 @@ openAlertBox({
                     textAlign: TextAlign.center,
                     style: TextStyle(
                         fontFamily: "GothamRoundedBold_21016",
-                        color: gPrimaryColor,
-                        fontSize: 13.sp),
+                        color: gsecondaryColor,
+                        fontSize: 11.sp),
                   ),
                 ),
                 Container(
@@ -58,7 +58,7 @@ openAlertBox({
                   textAlign: TextAlign.center,
                   style: TextStyle(
                       fontFamily: "GothamMedium",
-                      color: gsecondaryColor,
+                      color: gBlackColor,
                       fontSize: 11.sp),
                 ),
                 SizedBox(height: 3.h),
@@ -73,13 +73,13 @@ openAlertBox({
                           padding: EdgeInsets.symmetric(
                               vertical: 1.h, horizontal: 5.w),
                           decoration: BoxDecoration(
-                              color: gMainColor,
-                              borderRadius: BorderRadius.circular(5)),
+                              color: gGreyColor.withOpacity(0.4),
+                              borderRadius: BorderRadius.circular(25)),
                           child: Text(
                             negativeButtonName ?? "NO",
                             style: TextStyle(
                               fontFamily: "GothamRoundedBold_21016",
-                              color: gPrimaryColor,
+                              color: gWhiteColor,
                               fontSize: 11.sp,
                             ),
                           ),
@@ -95,13 +95,13 @@ openAlertBox({
                         padding: EdgeInsets.symmetric(
                             vertical: 1.h, horizontal: 5.w),
                         decoration: BoxDecoration(
-                            color: gPrimaryColor,
-                            borderRadius: BorderRadius.circular(5)),
+                            color: gsecondaryColor,
+                            borderRadius: BorderRadius.circular(25)),
                         child: Text(
                           positiveButtonName ?? "YES",
                           style: TextStyle(
                             fontFamily: "GothamRoundedBold_21016",
-                            color: gMainColor,
+                            color: gWhiteColor,
                             fontSize: 11.sp,
                           ),
                         ),

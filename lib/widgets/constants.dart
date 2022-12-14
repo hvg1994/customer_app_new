@@ -109,3 +109,75 @@ class eUser{
   double loginSignupTextFontSize = 10.5.sp;
 
 }
+
+class PPConstants{
+  final bgColor = Color(0xffFAFAFA).withOpacity(1);
+
+  var kDayText = gBlackColor;
+  double kDayTextFontSize = 13.sp;
+  var kDayTextFont = kFontRBold2;
+
+  var topViewHeadingText = gBlackColor;
+  double topViewHeadingFontSize = 12.sp;
+  var topViewHeadingFont = kFontMedium;
+
+  var topViewSubText = gBlackColor.withOpacity(0.5);
+  double topViewSubFontSize = 9.sp;
+  var topViewSubFont = kFontBook;
+
+  var kBottomViewHeadingText = gsecondaryColor;
+  double kBottomViewHeadingFontSize = 12.sp;
+  var kBottomViewHeadingFont = kFontMedium;
+
+  var kBottomViewSubText = gGreyColor;
+  double kBottomViewSubFontSize = 8.5.sp;
+  var kBottomViewSubFont = kFontBook;
+
+  var kBottomViewSuffixText = gBlackColor.withOpacity(0.5);
+  double kBottomViewSuffixFontSize = 8.sp;
+  var kBottomViewSuffixFont = kFontBook;
+
+  var kBottomSheetHeadingText = gsecondaryColor;
+  double kBottomSheetHeadingFontSize = 12.sp;
+  var kBottomSheetHeadingFont = kFontMedium;
+
+  /// this is for benefits answer
+  var kBottomSheetBenefitsText = gBlackColor;
+  /// this is for benefits answer
+  double kBottomSheetBenefitsFontSize = 10.sp;
+  /// this is for benefits answer
+  var kBottomSheetBenefitsFont = kFontLight;
+
+  var threeBounceIndicatorColor = gWhiteColor;
+}
+
+
+class MealPlanConstants{
+  var dayBorderColor = Color(0xFFE2E2E2);
+  var dayBorderDisableColor = gGreyColor;
+  var dayTextColor = gBlackColor;
+  var dayTextSelectedColor = gWhiteColor;
+  var dayBgNormalColor = gWhiteColor;
+  var dayBgSelectedColor = gPrimaryColor;
+  var dayBgPresentdayColor = gsecondaryColor;
+  double dayBorderRadius = 8.0;
+  double presentDayTextSize = 10.sp;
+  double DisableDayTextSize = 10.sp;
+  var dayTextFontFamily = kFontMedium;
+  var dayUnSelectedTextFontFamily = kFontBook;
+
+  var groupHeaderTextColor = gBlackColor;
+  var groupHeaderFont = kFontRBold1;
+  double groupHeaderFontSize = 12.sp;
+
+  var mustHaveTextColor = gsecondaryColor;
+  var mustHaveFont = kFontBold;
+  double mustHaveFontSize = 6.sp;
+
+  var mealNameTextColor = gBlackColor;
+  var mealNameFont = kFontBold;
+  double mealNameFontSize = 12.sp;
+
+  var benifitsFont = kFontLight;
+  double benifitsFontSize = 8.sp;
+}

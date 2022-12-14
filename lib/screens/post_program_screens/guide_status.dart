@@ -72,8 +72,7 @@ class _GuideStatusState extends State<GuideStatus> {
   }
 
   getDetails(String day) async {
-    mealPlanFuture = PostProgramService(repository: postProgramRepository)
-        .getBreakfastService(day, selectedType: widget.title.toLowerCase());
+    // mealPlanFuture = PostProgramService(repository: postProgramRepository).getBreakfastService(day, selectedType: widget.title.toLowerCase());
   }
 
   final PostProgramRepository postProgramRepository = PostProgramRepository(

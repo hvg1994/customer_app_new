@@ -31,7 +31,8 @@ import 'package:gwc_customer/widgets/dart_extensions.dart';
 
 class PersonalDetailsScreen extends StatefulWidget {
   final bool showData;
-  const PersonalDetailsScreen({Key? key, this.showData = false})
+  final EdgeInsetsGeometry? padding;
+  const PersonalDetailsScreen({Key? key, this.showData = false, this.padding})
       : super(key: key);
 
   @override
@@ -434,30 +435,33 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
   buildEvaluationForm({ChildGetEvaluationDataModel? model}) {
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
-      child: Column(
-        children: [
-          buildPersonalDetails(),
-          buildHealthDetails(),
-          // buildFoodHabitsDetails(),
-          // buildSleepDetails(),
-          // buildLifeStyleDetails(),
-          // buildGutTypeDetails(),
-          Center(
-            child: CommonButton.sendButton(() {
-              if (widget.showData) {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (ctx) => PersonalDetailsScreen2(
-                              showData: true,
-                              childGetEvaluationDataModel: model,
-                            )));
-              } else {
-                checkFields(context);
-              }
-            }, "Next"),
-          ),
-        ],
+      child: Container(
+        padding: (widget.padding != null) ? widget.padding : EdgeInsets.zero,
+        child: Column(
+          children: [
+            buildPersonalDetails(),
+            buildHealthDetails(),
+            // buildFoodHabitsDetails(),
+            // buildSleepDetails(),
+            // buildLifeStyleDetails(),
+            // buildGutTypeDetails(),
+            Center(
+              child: CommonButton.sendButton(() {
+                if (widget.showData) {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (ctx) => PersonalDetailsScreen2(
+                                showData: true,
+                                childGetEvaluationDataModel: model,
+                              )));
+                } else {
+                  checkFields(context);
+                }
+              }, "Next"),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -118,7 +118,9 @@ class _ExistingUserState extends State<ExistingUser> {
   @override
   void dispose() {
     super.dispose();
-    _timer!.cancel();
+    if(_timer != null){
+      _timer!.cancel();
+    }
     _phoneFocus.removeListener(() { });
     phoneController.dispose();
     otpController.dispose();

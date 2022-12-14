@@ -4,6 +4,8 @@ import 'package:sizer/sizer.dart';
 import '../../../widgets/constants.dart';
 import '../../../widgets/widgets.dart';
 import 'medical_report_details.dart';
+import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
+
 
 class MedicalReportScreen extends StatelessWidget {
   final String pdfLink;
@@ -22,35 +24,23 @@ class MedicalReportScreen extends StatelessWidget {
               buildAppBar(() {
                 Navigator.pop(context);
               }),
-              Expanded(
-                child: buildDetails(),
+              SizedBox(height: 2.h),
+              Padding(
+                padding:  EdgeInsets.symmetric(horizontal: 4.w),
+                child: Text(
+                  "Your Consultation is done Successfully,\nNow you can view your MEDICAL REPORT",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      height: 1.5,
+                      fontFamily: "GothamMedium",
+                      color: gTextColor,
+                      fontSize: 12.sp),
+                ),
               ),
-              Center(
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => MedicalReportDetails(pdfLink: this.pdfLink,),
-                      ),
-                    );
-                  },
-                  child: Container(
-                    padding:
-                        EdgeInsets.symmetric(vertical: 1.h, horizontal: 12.w),
-                    decoration: BoxDecoration(
-                      color: gPrimaryColor,
-                      borderRadius: BorderRadius.circular(13),
-                      border: Border.all(color: gMainColor, width: 1),
-                    ),
-                    child: Text(
-                      'View',
-                      style: TextStyle(
-                        fontFamily: "GothamRoundedBold_21016",
-                        color: gWhiteColor,
-                        fontSize: 11.sp,
-                      ),
-                    ),
-                  ),
+              SizedBox(height: 2.h),
+              Expanded(
+                child: SfPdfViewer.network(
+                    this.pdfLink
                 ),
               ),
             ],
@@ -60,27 +50,4 @@ class MedicalReportScreen extends StatelessWidget {
     );
   }
 
-  buildDetails() {
-    return Column(
-      children: [
-        SizedBox(height: 2.h),
-       const  Image(
-          image:  AssetImage("assets/images/Group 3828.png"),
-        ),
-        SizedBox(height: 4.h),
-        Padding(
-          padding:  EdgeInsets.symmetric(horizontal: 4.w),
-          child: Text(
-            "Your Consultation is done Successfully, Now you can view your MEDICAL REPORT",
-            textAlign: TextAlign.center,
-            style: TextStyle(
-                height: 1.5,
-                fontFamily: "GothamMedium",
-                color: gTextColor,
-                fontSize: 13.sp),
-          ),
-        ),
-      ],
-    );
-  }
 }

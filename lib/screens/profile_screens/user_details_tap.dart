@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gwc_customer/screens/evalution_form/evaluation_get_details.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../widgets/constants.dart';
@@ -62,7 +63,7 @@ class _UserDetailsTapState extends State<UserDetailsTap> {
                       physics: const NeverScrollableScrollPhysics(),
                       children: [
                         const MyProfileDetails(),
-                        const PersonalDetailsScreen(showData: true,),
+                        const EvaluationGetDetails(isFromProfile: true,),
                         UploadFiles(
                           isFromSettings: true,
                         ),

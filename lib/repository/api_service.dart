@@ -13,6 +13,7 @@ import 'package:gwc_customer/model/new_user_model/about_program_model/about_prog
 import 'package:gwc_customer/model/notification_model/NotificationModel.dart';
 import 'package:gwc_customer/model/post_program_model/breakfast/protocol_breakfast_get.dart';
 import 'package:gwc_customer/model/post_program_model/post_program_base_model.dart';
+import 'package:gwc_customer/model/post_program_model/post_program_new_model/pp_get_model.dart';
 import 'package:gwc_customer/model/post_program_model/protocol_guide_day_score.dart';
 import 'package:gwc_customer/model/profile_model/feedback_model.dart';
 import 'package:gwc_customer/model/profile_model/logout_model.dart';
@@ -1348,6 +1349,7 @@ class ApiClient {
     return result;
   }
 
+  // this function is used for old flow now not using
   Future submitPostProgramMealTrackingApi(
       String mealType, int selectedType, int? dayNumber) async {
     print("submit :");
@@ -1393,9 +1395,72 @@ class ApiClient {
     return result;
   }
 
+  Future submitPPMealsApi(
+      String stageType,String followId, int itemId, int? dayNumber) async {
+    print("submit :");
+    var url = submitPostProgramMealTrackingUrl;
+
+    dynamic result;
+
+    Map bodyParam = {
+      'type': stageType,
+      'follow_id': followId,
+      'day': dayNumber.toString(),
+      'item_id': itemId.toString()
+    };
+
+    print('body: $bodyParam');
+    // print("token: ${getHeaderToken()}");
+
+    try {
+      final response = await httpClient.post(Uri.parse(url),
+          headers: {
+            "Authorization": getHeaderToken(),
+          },
+          body: Map.from(bodyParam)
+      );
+
+      print(
+          'submitPPMealsApi Response status: ${response.statusCode}');
+      print('submitPPMealsApi Response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final json = jsonDecode(response.body);
+        print('submitPPMealsApi result: $json');
+        result = PostProgramBaseModel.fromJson(json);
+      } else {
+        print(
+            'submitPPMealsApi error: ${response.reasonPhrase}');
+        result = ErrorModel(
+            status: response.statusCode.toString(), message: response.body);
+      }
+    } catch (e) {
+      print(e);
+      result = ErrorModel(status: "", message: e.toString());
+    }
+    return result;
+  }
+
   /// selectedType ==> breakfast/lunch/dinner
-  Future getBreakfastOnclickApi(String day) async {
-    var url = '$getBreakfastOnclickUrl/$day';
+  Future getPPMealsOnStagesApi(int stage, String day) async {
+
+    var url;
+    switch(stage){
+      case 0: url ='$getPPEarlyMorningUrl/$day';
+      break;
+      case 1: url ='$getPPBreakfastUrl/$day';
+      break;
+      case 2: url ='$getPPMidDayUrl/$day';
+      break;
+      case 3: url ='$getPPLunchUrl/$day';
+      break;
+      case 4: url ='$getPPEveningUrl/$day';
+      break;
+      case 5: url ='$getPPDinnerUrl/$day';
+      break;
+      case 6: url ='$getPPPostDinnerUrl/$day';
+      break;
+    }
 
     dynamic result;
 
@@ -1407,15 +1472,15 @@ class ApiClient {
         },
       );
 
-      print('getBreakfastOnclickApi Response status: ${response.statusCode}');
-      print('getBreakfastOnclickApi Response body: ${response.body}');
+      print('getPPMealsOnStagesApi Response status: ${response.statusCode}');
+      print('getPPMealsOnStagesApi Response body: ${response.body}');
 
       if (response.statusCode == 200) {
         final json = jsonDecode(response.body);
-        print('getBreakfastOnclickApi result: $json');
-        result = GetProtocolBreakfastModel.fromJson(json);
+        print('getPPMealsOnStagesApi result: $json');
+        result = PPGetMealModel.fromJson(json);
       } else {
-        print('getBreakfastOnclickApi error: ${response.reasonPhrase}');
+        print('getPPMealsOnStagesApi error: ${response.reasonPhrase}');
         result = ErrorModel(
             status: response.statusCode.toString(), message: response.body);
       }
@@ -1427,7 +1492,8 @@ class ApiClient {
   }
 
   Future getLunchOnclickApi(String day) async {
-    var url = '$getLunchOnclickUrl/$day';
+    // var url = '$getLunchOnclickUrl/$day';
+    var url = '';
 
     dynamic result;
 
@@ -1459,7 +1525,8 @@ class ApiClient {
   }
 
   Future getDinnerOnclickApi(String day) async {
-    var url = '$getDinnerOnclickUrl/$day';
+    // var url = '$getDinnerOnclickUrl/$day';
+    var url = '';
 
     dynamic result;
 
@@ -1490,6 +1557,7 @@ class ApiClient {
     return result;
   }
 
+  /// this is for old flow
   Future getProtocolDayDetailsApi({String? dayNumber}) async {
     var url;
     if (dayNumber != null) {
@@ -1783,6 +1851,44 @@ class ApiClient {
     }
     return result;
   }
+
+  Future getPPDayDetailsApi({String? dayNumber}) async {
+    var url;
+    if (dayNumber != null) {
+      url = '$getProtocolDayDetailsUrl/$dayNumber';
+    } else {
+      url = getProtocolDayDetailsUrl;
+    }
+
+    dynamic result;
+
+    try {
+      final response = await httpClient.get(
+        Uri.parse(url),
+        headers: {
+          "Authorization": getHeaderToken(),
+        },
+      );
+
+      print('getPPDayDetailsApi Response status: ${response.statusCode}');
+      print('getPPDayDetailsApi Response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final json = jsonDecode(response.body);
+        print('getPPDayDetailsApi result: $json');
+        result = PPGetMealModel.fromJson(json);
+      } else {
+        print('getPPDayDetailsApi error: ${response.reasonPhrase}');
+        result = ErrorModel(
+            status: response.statusCode.toString(), message: response.body);
+      }
+    } catch (e) {
+      print(e);
+      result = ErrorModel(status: "", message: e.toString());
+    }
+    return result;
+  }
+
 
 
 

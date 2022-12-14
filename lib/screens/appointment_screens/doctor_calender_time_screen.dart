@@ -124,18 +124,18 @@ class _DoctorCalenderTimeScreenState extends State<DoctorCalenderTimeScreen> {
                 }),
                 SizedBox(height: 2.h),
                 buildDoctor(),
-                SizedBox(height: 1.h),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    buildDoctorDetails(
-                        "Patient", "10K", "assets/images/Patient.svg"),
-                    buildDoctorDetails("Experience", "12 Years",
-                        "assets/images/Experences.svg"),
-                    buildDoctorDetails(
-                        "Rating", "4.5", "assets/images/star.svg"),
-                  ],
-                ),
+                // SizedBox(height: 1.h),
+                // Row(
+                //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                //   children: [
+                //     buildDoctorDetails(
+                //         "Patient", "10K", "assets/images/Patient.svg"),
+                //     buildDoctorDetails("Experience", "12 Years",
+                //         "assets/images/Experences.svg"),
+                //     buildDoctorDetails(
+                //         "Rating", "4.5", "assets/images/star.svg"),
+                //   ],
+                // ),
                 SizedBox(
                   height: 3.h,
                 ),

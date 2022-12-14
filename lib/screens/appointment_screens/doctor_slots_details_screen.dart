@@ -10,6 +10,7 @@ import 'package:gwc_customer/model/error_model.dart';
 import 'package:gwc_customer/model/message_model/get_chat_groupid_model.dart';
 import 'package:gwc_customer/screens/chat_support/message_screen.dart';
 import 'package:gwc_customer/screens/dashboard_screen.dart';
+import 'package:gwc_customer/screens/evalution_form/evaluation_get_details.dart';
 import 'package:gwc_customer/screens/evalution_form/personal_details_screen.dart';
 import 'package:gwc_customer/services/quick_blox_service/quick_blox_service.dart';
 import 'package:gwc_customer/utils/app_config.dart';
@@ -501,8 +502,8 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
   }
 
   void getEvaluationReport() {
-    Navigator.push(context, MaterialPageRoute(builder: (c) => PersonalDetailsScreen(showData: true,)));
-
+    Navigator.push(context, MaterialPageRoute(builder: (c) =>
+        EvaluationGetDetails()));
   }
 
   final MessageRepository chatRepository = MessageRepository(

@@ -8,10 +8,13 @@ import 'package:gwc_customer/model/error_model.dart';
 import 'package:gwc_customer/repository/dashboard_repo/gut_repository/dashboard_repository.dart';
 import 'package:gwc_customer/screens/appointment_screens/consultation_screens/consultation_rejected.dart';
 import 'package:gwc_customer/screens/appointment_screens/consultation_screens/upload_files.dart';
+import 'package:gwc_customer/screens/evalution_form/personal_details_screen.dart';
 import 'package:gwc_customer/screens/gut_list_screens/meal_popup.dart';
 import 'package:gwc_customer/screens/notification_screen.dart';
+import 'package:gwc_customer/screens/post_program_screens/new_post_program/pp_levels_screen.dart';
 import 'package:gwc_customer/screens/post_program_screens/post_program_screen.dart';
 import 'package:gwc_customer/screens/profile_screens/call_support_method.dart';
+import 'package:gwc_customer/screens/program_plans/meal_plan_screen.dart';
 import 'package:gwc_customer/screens/program_plans/program_start_screen.dart';
 import 'package:gwc_customer/services/dashboard_service/gut_service/dashboard_data_service.dart';
 import 'package:gwc_customer/services/quick_blox_service/quick_blox_service.dart';
@@ -58,17 +61,16 @@ class GutListState extends State<GutList> {
 
   List<NewStageLevels> levels = [
     NewStageLevels("assets/images/dashboard_stages/noun-appointment-3615898.png",
+        "Enquiry Completed",
+        'assets/images/dashboard_stages/green_done.png'
+    ),
+    NewStageLevels("assets/images/dashboard_stages/noun-appointment-3615898.png",
         "Evaluation Done",
         'assets/images/dashboard_stages/lock.png'
     ),
     NewStageLevels(
         "assets/images/dashboard_stages/noun-appointment-4042317.png",
-        "Consultation Booked",
-        'assets/images/dashboard_stages/lock.png'
-    ),
-    NewStageLevels(
-        "assets/images/dashboard_stages/noun-information-book-1677218.png",
-        "Consultation Done",
+        "Consultation",
         'assets/images/dashboard_stages/lock.png'
     ),
     NewStageLevels(
@@ -284,9 +286,10 @@ class GutListState extends State<GutList> {
                     "Program Stages",
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                        fontFamily: "GothamRoundedBold_21016",
-                        color: gPrimaryColor,
-                        fontSize: 12.sp),
+                        fontFamily: eUser().mainHeadingFont,
+                        color: eUser().mainHeadingColor,
+                        fontSize: eUser().mainHeadingFontSize
+                    ),
                   ),
                   GestureDetector(
                     onTap: (){
@@ -410,7 +413,7 @@ class GutListState extends State<GutList> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => DaysProgramPlan(postProgramStage: postProgramStage,),
+            builder: (context) => MealPlanScreen(postProgramStage: postProgramStage,),
           ),
         ).then((value) => reloadUI());
       }
@@ -568,7 +571,7 @@ class GutListState extends State<GutList> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => DaysProgramPlan(postProgramStage: postProgramStage,),
+                              builder: (context) => MealPlanScreen(postProgramStage: postProgramStage,),
                             ),
                           ).then((value) => reloadUI());
                         }
@@ -782,68 +785,6 @@ class GutListState extends State<GutList> {
     ),
   );
 
-  showLevels() {
-    return ListView.builder(
-        padding: EdgeInsets.symmetric(horizontal: 3.w),
-        shrinkWrap: true,
-        reverse: true,
-        itemCount: 4,
-        itemBuilder: (_, index) {
-          if (index.isEven) {
-            return Align(
-              alignment: Alignment.center,
-              child: Padding(
-                padding:
-                const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    GestureDetector(
-                      onTap: () {},
-                      child: Image(
-                          image: AssetImage("assets/images/current_stage.png"),
-                          height: 60),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(right: 20.0),
-                      child: Image(
-                        image: AssetImage("assets/images/Mask Group 20.png"),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          } else {
-            return Align(
-              alignment: Alignment.center,
-              child: Padding(
-                padding: const EdgeInsets.only(
-                  left: 00,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    GestureDetector(
-                      onTap: () {},
-                      child: Image(
-                          image: AssetImage("assets/images/lock.png"),
-                          height: 60),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(left: 25.0, right: 30),
-                      child: Image(
-                        image: AssetImage("assets/images/Group 10334.png"),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }
-        });
-  }
-
   showImage() {
     return ListView.builder(
         padding: EdgeInsets.symmetric(horizontal: 3.w),
@@ -885,41 +826,43 @@ class GutListState extends State<GutList> {
                           ],
                         ),
                         SizedBox(width: 80),
-                        Visibility(
-                          visible: levels[index].title != levels.last.title,
-                          child: GestureDetector(
-                            onTap: () {
-                              print(index);
-                              // print("right");
-                              print(levels[index].title);
-                              // print(levels[index].stage == openedStage);
-                              // goToScreen(screenName)
-                              if(levels[index].stage == openedStage || levels[index].stage == currentStage){
-                                if(index == 0 || index == 1){
-                                  showConsultationScreenFromStages(consultationStage);
-                                }
-                                else if(index == 2){
-                                  showShippingScreen();
-                                }
-                                else if(index == 3){
-                                  showProgramScreen();
-                                }
-                                else if(index == 4){
-                                  showPostProgramScreen();
-                                }
-                                else if(index == 5){
-                                  showPostProgramScreen();
-                                }
+                        GestureDetector(
+                          onTap: () {
+                            print(index);
+                            // print("right");
+                            print(levels[index].title);
+                            // print(levels[index].stage == openedStage);
+                            // goToScreen(screenName)
+                            if(levels[index].stage == openedStage || levels[index].stage == currentStage){
+                              if(index == 1){
+                                goToScreen(PersonalDetailsScreen(showData: true,
+                                  padding: EdgeInsets.symmetric(horizontal: 10),
+                                ));
+                              }
+                              else if(index == 2){
+                                showConsultationScreenFromStages(consultationStage);
+                              }
+                              else if(index == 3){
+                                showShippingScreen();
+                              }
+                              else if(index == 4){
+                                showProgramScreen();
+                              }
+                              else if(index == 5){
+                                showPostProgramScreen();
+                              }
+                              else if(index == 6){
+                                goToScreen(PPLevelsScreen());
+                              }
 
-                              }
-                              else{
-                                AppConfig().showSnackbar(context, "Can't access Locked Stage");
-                              }
-                            },
-                            child: Image(
-                                image: AssetImage(levels[index].stage),
-                                height: 60),
-                          ),
+                            }
+                            else{
+                              AppConfig().showSnackbar(context, "Can't access Locked Stage");
+                            }
+                          },
+                          child: Image(
+                              image: AssetImage(levels[index].stage),
+                              height: 60),
                         ),
                       ],
                     ),
@@ -952,20 +895,25 @@ class GutListState extends State<GutList> {
                             print(index);
                             print(levels[index].title);
                             if(levels[index].stage == openedStage || levels[index].stage == currentStage){
-                              if(index == 0 || index == 1){
-                                showConsultationScreenFromStages(consultationStage);
+                              if(index == 1){
+                                goToScreen(PersonalDetailsScreen(showData: true,
+                                  padding: EdgeInsets.symmetric(horizontal: 10),
+                                ));
                               }
                               else if(index == 2){
-                                showShippingScreen();
+                                showConsultationScreenFromStages(consultationStage);
                               }
                               else if(index == 3){
-                                showProgramScreen();
+                                showShippingScreen();
                               }
                               else if(index == 4){
-                                showPostProgramScreen();
+                                showProgramScreen();
                               }
                               else if(index == 5){
                                 showPostProgramScreen();
+                              }
+                              else if(index == 6){
+                                goToScreen(PPLevelsScreen());
                               }
                             }
                             else{
@@ -1042,68 +990,71 @@ class GutListState extends State<GutList> {
     print("consultationStage: ==> ${stage}");
     switch(stage){
       case 'evaluation_done'  :
-        levels[0].stage = currentStage;
+        levels[1].stage = openedStage;
+        levels[2].stage = currentStage;
         break;
       case 'pending' :
-        levels[0].stage = currentStage;
+        levels[1].stage = openedStage;
+        levels[2].stage = currentStage;
         break;
       case 'consultation_reschedule' :
-        levels[0].stage = currentStage;
+        levels[1].stage = openedStage;
+        levels[2].stage = currentStage;
         break;
       case 'appointment_booked':
-        levels[0].stage = openedStage;
-        levels[1].stage = currentStage;
+        levels[1].stage = openedStage;
+        levels[2].stage = currentStage;
         break;
       case 'consultation_done':
-        levels[0].stage = openedStage;
-        levels[1].stage = currentStage;
+        levels[1].stage = openedStage;
+        levels[2].stage = currentStage;
         break;
       case 'consultation_accepted':
-        levels[0].stage = openedStage;
         levels[1].stage = openedStage;
+        levels[2].stage = currentStage;
         break;
       case 'consultation_waiting':
-        levels[0].stage = openedStage;
         levels[1].stage = openedStage;
+        levels[2].stage = currentStage;
         break;
       case 'consultation_rejected':
-        levels[0].stage = openedStage;
         levels[1].stage = openedStage;
+        levels[2].stage = currentStage;
         break;
       case 'report_upload':
-        levels[0].stage = openedStage;
         levels[1].stage = openedStage;
+        levels[2].stage = openedStage;
         break;
       case 'shipping_delivered':
-        levels[0].stage = openedStage;
         levels[1].stage = openedStage;
         levels[2].stage = currentStage;
+        levels[3].stage = currentStage;
         break;
       case 'shipping_approved':
-        levels[0].stage = openedStage;
-        levels[1].stage = openedStage;
-        levels[2].stage = currentStage;
-        break;
-      case 'start_program':
-        levels[0].stage = openedStage;
         levels[1].stage = openedStage;
         levels[2].stage = openedStage;
         levels[3].stage = currentStage;
         break;
-      case 'post_appointment_booked':
-        levels[0].stage = openedStage;
+      case 'start_program':
         levels[1].stage = openedStage;
         levels[2].stage = openedStage;
         levels[3].stage = openedStage;
         levels[4].stage = currentStage;
         break;
-      case 'protocol_guide':
-        levels[0].stage = openedStage;
+      case 'post_appointment_booked':
         levels[1].stage = openedStage;
         levels[2].stage = openedStage;
         levels[3].stage = openedStage;
         levels[4].stage = openedStage;
         levels[5].stage = currentStage;
+        break;
+      case 'protocol_guide':
+        levels[1].stage = openedStage;
+        levels[2].stage = openedStage;
+        levels[3].stage = openedStage;
+        levels[4].stage = openedStage;
+        levels[5].stage = openedStage;
+        levels[6].stage = currentStage;
         break;
     }
   }
