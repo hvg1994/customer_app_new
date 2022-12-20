@@ -422,20 +422,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_vlc_player:
-    dependency: "direct main"
-    description:
-      name: flutter_vlc_player
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "7.1.5"
-  flutter_vlc_player_platform_interface:
-    dependency: transitive
-    description:
-      name: flutter_vlc_player_platform_interface
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.0.1"
   flutter_web_plugins:
     dependency: transitive
     description: flutter
@@ -1013,6 +999,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.10.0"
+  stories_for_flutter:
+    dependency: "direct main"
+    description:
+      name: stories_for_flutter
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.2.0"
   stream_channel:
     dependency: transitive
     description:

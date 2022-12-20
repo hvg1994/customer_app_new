@@ -101,6 +101,10 @@ var submitStatusTrackerUrl = "${AppConfig().BASE_URL}/api/submitData/patient_mea
 
 var getHomeDetailsUrl = "${AppConfig().BASE_URL}/api/getDataList/user_stages_data";
 
+var daySummaryUrl = "${AppConfig().BASE_URL}/api/getDataList/protocol_summary";
+
+var ppCalendarUrl = "${AppConfig().BASE_URL}/api/getDataList/protocol_meal_tracking_calendar";
+
 
 
 //  old apis
