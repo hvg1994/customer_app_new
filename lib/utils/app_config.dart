@@ -30,6 +30,8 @@ class AppConfig{
   static const String QB_CURRENT_USERID = 'curr_userId';
   static const String GET_QB_SESSION = 'qb_session';
   static const String IS_QB_LOGIN = 'is_qb_login';
+  static const String KALEYRA_USER_ID = 'kaleyra_uid';
+
 
   static const String QB_USERNAME = 'qb_username';
 

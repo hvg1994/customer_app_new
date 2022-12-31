@@ -340,6 +340,8 @@ class ConsultationDetails {
   String? appointmentDate;
   String? appointmentStartTime;
   TeamPatients? teamPatients;
+  String? kaleyraJoinurl;
+
 
   ConsultationDetails(
       {this.id,
@@ -357,6 +359,7 @@ class ConsultationDetails {
         this.updatedAt,
         this.appointmentDate,
         this.appointmentStartTime,
+        this.kaleyraJoinurl,
         this.teamPatients});
 
   ConsultationDetails.fromJson(Map<String, dynamic> json) {
@@ -371,6 +374,7 @@ class ConsultationDetails {
     zoomStartUrl = json['zoom_start_url'];
     zoomId = json['zoom_id'];
     zoomPassword = json['zoom_password'];
+    kaleyraJoinurl = json['kaleyra_user_url'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
     appointmentDate = json['appointment_date'];
@@ -391,6 +395,7 @@ class ConsultationDetails {
     data['status'] = this.status;
     data['zoom_join_url'] = this.zoomJoinUrl;
     data['zoom_start_url'] = this.zoomStartUrl;
+    data['kaleyra_user_url'] = this.kaleyraJoinurl;
     data['zoom_id'] = this.zoomId;
     data['zoom_password'] = this.zoomPassword;
     data['created_at'] = this.createdAt;
@@ -691,6 +696,7 @@ class Appointments {
   String? zoomStartUrl;
   String? zoomId;
   String? zoomPassword;
+  String? kaleyraJoinurl;
   String? createdAt;
   String? updatedAt;
   String? appointmentDate;
@@ -711,6 +717,7 @@ class Appointments {
         this.createdAt,
         this.updatedAt,
         this.appointmentDate,
+        this.kaleyraJoinurl,
         this.appointmentStartTime});
 
   Appointments.fromJson(Map<String, dynamic> json) {
@@ -725,6 +732,7 @@ class Appointments {
     zoomStartUrl = json['zoom_start_url'];
     zoomId = json['zoom_id'];
     zoomPassword = json['zoom_password'];
+    kaleyraJoinurl = json['kaleyra_user_url'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
     appointmentDate = json['appointment_date'];
@@ -748,6 +756,7 @@ class Appointments {
     data['updated_at'] = this.updatedAt;
     data['appointment_date'] = this.appointmentDate;
     data['appointment_start_time'] = this.appointmentStartTime;
+    data['kaleyra_user_url'] = this.kaleyraJoinurl;
     return data;
   }
 }

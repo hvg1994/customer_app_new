@@ -64,21 +64,25 @@ class GetDashboardDataModel {
     if(json['Program'] != null){
       if(json['Program']['value'].runtimeType == String){
         normal_program = GutDataModel.fromJson(json['Program']);
+        print("program: ${normal_program!.toJson()}");
       }
       else{
         data_program = GetProgramModel.fromJson(json['Program']);
+        print("program: ${data_program!.toJson()}");
       }
     }
     print('json postProgram: ${json['Postprogram']['value'].runtimeType}');
+
     if(json['Postprogram'] != null && json['Postprogram']['data'] != null){
       if(json['Postprogram']['value'].runtimeType == String || json['Postprogram']['value'] == null){
         normal_postprogram = GutDataModel.fromJson(json['Postprogram']);
+        print('json postProgram: ${normal_postprogram!.toJson()}');
       }
       else{
         print((json['Postprogram']['value'] as Map).containsKey('zoom_join_url'));
         if((json['Postprogram']['value'] as Map).containsKey('zoom_join_url')){
           postprogram_consultation = GetAppointmentDetailsModel.fromJson(json['Postprogram']);
-          print(postprogram_consultation);
+          print("postProgram:${postprogram_consultation!.toJson()}");
         }
       }
     }

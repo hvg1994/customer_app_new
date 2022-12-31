@@ -1,6 +1,10 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:gwc_customer/model/error_model.dart';
+import 'package:gwc_customer/repository/api_service.dart';
+import 'package:gwc_customer/repository/post_program_repo/post_program_repository.dart';
+import 'package:gwc_customer/services/post_program_service/post_program_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
 import 'package:http/http.dart' as http;
@@ -21,29 +25,16 @@ class PPSummaryScreen extends StatefulWidget {
 class _PPSummaryScreenState extends State<PPSummaryScreen> {
   ProtocolSummary? protocolSummary;
 
+  Future? summaryFuture;
+
   @override
   void initState() {
     super.initState();
     getDaySummary();
   }
 
-  Future<ProtocolSummary> getDaySummary() async {
-    dynamic res;
-
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    var token = preferences.getString(AppConfig().BEARER_TOKEN)!;
-
-    final response = await http.get(Uri.parse("$daySummaryUrl/1"), headers: {
-      'Authorization': 'Bearer $token',
-    });
-    // print("Summary response: ${response.body}");
-    if (response.statusCode == 200) {
-      res = jsonDecode(response.body);
-      protocolSummary = ProtocolSummary.fromJson(res);
-    } else {
-      throw Exception();
-    }
-    return ProtocolSummary.fromJson(res);
+  Future getDaySummary() async {
+    summaryFuture = PostProgramService(repository: repository).getPPDaySummaryService("1");
   }
 
   @override
@@ -52,94 +43,109 @@ class _PPSummaryScreenState extends State<PPSummaryScreen> {
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 3.w),
         child: FutureBuilder(
-            future: getDaySummary(),
+            future: summaryFuture,
             builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-              if (snapshot.hasError) {
-                return Padding(
-                  padding: EdgeInsets.symmetric(vertical: 7.h),
-                  child: Image(
-                    image: const AssetImage("assets/images/Group 5294.png"),
-                    height: 35.h,
-                  ),
-                );
-              } else if (snapshot.hasData) {
-                var data = snapshot.data;
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    //SizedBox(height: 1.h),
-                    buildAppBar(
-                      () {
-                        Navigator.pop(context);
-                      },
-                      isBackEnable: true,
-                      showNotificationIcon: false,
+              if(snapshot.connectionState == ConnectionState.done){
+                if (snapshot.hasError) {
+                  return Padding(
+                    padding: EdgeInsets.symmetric(vertical: 7.h),
+                    child: Image(
+                      image: const AssetImage("assets/images/Group 5294.png"),
+                      height: 35.h,
                     ),
-                    Text(
-                      "Day 1 Summary",
-                      style: TextStyle(
-                          fontFamily: "GothamBold",
-                          color: gBlackColor,
-                          fontSize: 11.sp),
-                    ),
-                    SizedBox(height: 3.h),
-                    buildEmoji(data),
+                  );
+                }
+                else if (snapshot.hasData) {
+                  var data = snapshot.data;
+                  if(data.runtimeType == ErrorModel){
+                    final res = data as ErrorModel;
+                    return Padding(
+                      padding: EdgeInsets.symmetric(vertical: 7.h),
+                      child: Image(
+                        image: const AssetImage("assets/images/Group 5294.png"),
+                        height: 35.h,
+                      ),
+                    );
+                  }
+                  else{
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        //SizedBox(height: 1.h),
+                        buildAppBar(
+                              () {
+                            Navigator.pop(context);
+                          },
+                          isBackEnable: true,
+                          showNotificationIcon: false,
+                        ),
+                        Text(
+                          "Day 1 Summary",
+                          style: TextStyle(
+                              fontFamily: "GothamBold",
+                              color: gBlackColor,
+                              fontSize: 11.sp),
+                        ),
+                        SizedBox(height: 3.h),
+                        buildEmoji(data),
 
-                    SizedBox(height: 3.h),
-                    ListView.builder(
-                      scrollDirection: Axis.vertical,
-                      padding: EdgeInsets.symmetric(horizontal: 1.w),
-                      physics: const ScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: data.summary.length,
-                      itemBuilder: ((context, index) {
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: <Widget>[
-                            buildTile(
-                              "assets/images/empty_stomach.png",
-                              "Early Morning",
-                              getMorningColor(data.summary[index].earlyMorning),
-                            ),
-                            buildTile(
-                              "assets/images/breakfast_icon.png",
-                              "BreakFast",
-                              getBreakfastColor(data.summary[index].breakfast),
-                            ),
-                            buildTile(
-                              "assets/images/midday_icon.png",
-                              "Mid Day",
-                              getMidDayColor(data.summary[index].midDay),
-                            ),
-                            buildTile(
-                              "assets/images/lunch_icon.png",
-                              "Lunch",
-                              getLunchColor(data.summary[index].lunch),
-                            ),
-                            buildTile(
-                              "assets/images/evening_icon.png",
-                              "Evening",
-                              getEveningColor(data.summary[index].evening),
-                            ),
-                            buildTile(
-                              "assets/images/dinner_icon.png",
-                              "Dinner",
-                              getDinnerColor(data.summary[index].dinner),
-                            ),
-                            buildTile(
-                              "assets/images/pp_icon.png",
-                              "Post Dinner",
-                              getPostDinnerColor(
-                                  data.summary[index].postDinner),
-                            ),
-                          ],
-                        );
-                      }),
-                    ),
-                  ],
-                );
+                        SizedBox(height: 3.h),
+                        ListView.builder(
+                          scrollDirection: Axis.vertical,
+                          padding: EdgeInsets.symmetric(horizontal: 1.w),
+                          physics: const ScrollPhysics(),
+                          shrinkWrap: true,
+                          itemCount: data.summary.length,
+                          itemBuilder: ((context, index) {
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: <Widget>[
+                                buildTile(
+                                  "assets/images/empty_stomach.png",
+                                  "Early Morning",
+                                  getMorningColor(data.summary[index].earlyMorning),
+                                ),
+                                buildTile(
+                                  "assets/images/breakfast_icon.png",
+                                  "BreakFast",
+                                  getBreakfastColor(data.summary[index].breakfast),
+                                ),
+                                buildTile(
+                                  "assets/images/midday_icon.png",
+                                  "Mid Day",
+                                  getMidDayColor(data.summary[index].midDay),
+                                ),
+                                buildTile(
+                                  "assets/images/lunch_icon.png",
+                                  "Lunch",
+                                  getLunchColor(data.summary[index].lunch),
+                                ),
+                                buildTile(
+                                  "assets/images/evening_icon.png",
+                                  "Evening",
+                                  getEveningColor(data.summary[index].evening),
+                                ),
+                                buildTile(
+                                  "assets/images/dinner_icon.png",
+                                  "Dinner",
+                                  getDinnerColor(data.summary[index].dinner),
+                                ),
+                                buildTile(
+                                  "assets/images/pp_icon.png",
+                                  "Post Dinner",
+                                  getPostDinnerColor(
+                                      data.summary[index].postDinner),
+                                ),
+                              ],
+                            );
+                          }),
+                        ),
+                      ],
+                    );
+                  }
+                }
               }
               return Padding(
                 padding: EdgeInsets.symmetric(vertical: 10.h),
@@ -283,4 +289,10 @@ class _PPSummaryScreenState extends State<PPSummaryScreen> {
       return gWhiteColor;
     }
   }
+
+  PostProgramRepository repository = PostProgramRepository(
+      apiClient: ApiClient(
+        httpClient: http.Client()
+      )
+  );
 }

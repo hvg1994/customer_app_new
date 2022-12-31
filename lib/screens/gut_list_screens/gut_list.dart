@@ -426,14 +426,23 @@ class GutListState extends State<GutList> {
     if(postProgramStage != null && _postConsultationAppointment != null){
       Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (context) => PostProgramScreen(postProgramStage: postProgramStage,consultationData: _postConsultationAppointment,),
+          builder: (context) =>
+          DoctorSlotsDetailsScreen(
+        bookingDate: _postConsultationAppointment!.value!.date!,
+          bookingTime: _postConsultationAppointment!.value!.slotStartTime!,
+          isPostProgram: true,
+          dashboardValueMap: _postConsultationAppointment!.value!.toJson() ,)
+              // PostProgramScreen(postProgramStage: postProgramStage,
+              //   consultationData: _postConsultationAppointment,),
         ),
       ).then((value) => reloadUI());
     }
     else{
       Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (context) => PostProgramScreen(postProgramStage: postProgramStage,),
+          builder: (context) =>
+              DoctorCalenderTimeScreen(isPostProgram: true,)
+          // PostProgramScreen(postProgramStage: postProgramStage,),
         ),
       ).then((value) => reloadUI());
     }
@@ -758,6 +767,8 @@ class GutListState extends State<GutList> {
 
   getUserProfile() async{
     print("user profile: ${_pref!.getInt(AppConfig.QB_CURRENT_USERID)}");
+    print("user id: ${_pref!.getInt(AppConfig.KALEYRA_USER_ID)}");
+
     if(_pref!.getString(AppConfig.User_Name) != null || _pref!.getString(AppConfig.User_Name)!.isNotEmpty){
       final profile = await UserProfileService(repository: userRepository).getUserProfileService();
       if(profile.runtimeType == UserProfileModel){
@@ -766,6 +777,8 @@ class GutListState extends State<GutList> {
         _pref!.setInt(AppConfig.USER_ID, model1.data?.id ?? -1);
         _pref!.setString(AppConfig.QB_USERNAME, model1.data!.qbUsername!);
         _pref!.setInt(AppConfig.QB_CURRENT_USERID, int.tryParse(model1.data!.qbUserId!)!);
+        _pref!.setString(AppConfig.KALEYRA_USER_ID, model1.data!.kaleyraUID!);
+
       }
     }
     // if(_pref!.getInt(AppConfig.QB_CURRENT_USERID) != null && !await _qbService!.getSession() || _pref!.getBool(AppConfig.IS_QB_LOGIN) == null){
@@ -1040,6 +1053,14 @@ class GutListState extends State<GutList> {
         levels[2].stage = openedStage;
         levels[3].stage = openedStage;
         levels[4].stage = currentStage;
+        levels[5].stage = lockedStage;
+        break;
+      case 'post_program':
+        levels[1].stage = openedStage;
+        levels[2].stage = openedStage;
+        levels[3].stage = openedStage;
+        levels[4].stage = openedStage;
+        levels[5].stage = currentStage;
         break;
       case 'post_appointment_booked':
         levels[1].stage = openedStage;

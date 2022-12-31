@@ -15,6 +15,7 @@ class ChildAppointmentDetails {
   String? createdAt;
   String? updatedAt;
   String? appointmentDate;
+  String? kaleyraJoinurl;
   String? appointmentStartTime;
   ChildTeamPatientsAppointment? teamPatients;
 
@@ -34,6 +35,7 @@ class ChildAppointmentDetails {
         this.updatedAt,
         this.appointmentDate,
         this.appointmentStartTime,
+        this.kaleyraJoinurl,
         this.teamPatients});
 
   ChildAppointmentDetails.fromJson(Map<String, dynamic> json) {
@@ -48,6 +50,7 @@ class ChildAppointmentDetails {
     zoomStartUrl = json['zoom_start_url'];
     zoomId = json['zoom_id'];
     zoomPassword = json['zoom_password'];
+    kaleyraJoinurl = json['kaleyra_user_url'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
     appointmentDate = json['appointment_date'];
@@ -70,6 +73,7 @@ class ChildAppointmentDetails {
     data['zoom_start_url'] = this.zoomStartUrl;
     data['zoom_id'] = this.zoomId;
     data['zoom_password'] = this.zoomPassword;
+    data['kaleyra_user_url'] = this.kaleyraJoinurl;
     data['created_at'] = this.createdAt;
     data['updated_at'] = this.updatedAt;
     data['appointment_date'] = this.appointmentDate;

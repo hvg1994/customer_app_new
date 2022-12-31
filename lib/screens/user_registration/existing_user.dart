@@ -70,6 +70,8 @@ class _ExistingUserState extends State<ExistingUser> {
   Timer? _timer;
   int _resendTimer = 0;
 
+  bool enableResendOtp = false;
+
   void startTimer() {
     _resendTimer = 60;
     const oneSec = const Duration(seconds: 1);
@@ -79,6 +81,7 @@ class _ExistingUserState extends State<ExistingUser> {
         if (_resendTimer == 0) {
           setState(() {
             timer.cancel();
+            enableResendOtp = true;
           });
         } else {
           setState(() {
@@ -442,8 +445,9 @@ class _ExistingUserState extends State<ExistingUser> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 GestureDetector(
-                  onTap: (_resendTimer != 0) ? null : (){
-                    Navigator.push(context, MaterialPageRoute(builder: (_) => ResendOtpScreen()));
+                  onTap: (_resendTimer != 0 || !enableResendOtp) ? null : (){
+                    getOtp(phoneController.text);
+                    // Navigator.push(context, MaterialPageRoute(builder: (_) => ResendOtpScreen()));
                   },
                   child: Text(
                     "Resend OTP",
@@ -452,7 +456,7 @@ class _ExistingUserState extends State<ExistingUser> {
                         decorationThickness: 3,
                         // decoration: TextDecoration.underline,
                       fontFamily: eUser().resendOtpFont,
-                      color: (_resendTimer != 0) ? eUser().userTextFieldHintColor : eUser().resendOtpFontColor,
+                      color: (_resendTimer != 0 || !enableResendOtp) ? eUser().userTextFieldHintColor : eUser().resendOtpFontColor,
                       fontSize: eUser().resendOtpFontSize,
                     ),
                   ),
@@ -710,6 +714,7 @@ class _ExistingUserState extends State<ExistingUser> {
       _pref.setInt(AppConfig.USER_ID, model1.data?.id ?? -1);
       _pref.setString(AppConfig.QB_USERNAME, model1.data!.qbUsername!);
       _pref.setInt(AppConfig.QB_CURRENT_USERID, int.tryParse(model1.data!.qbUserId!)!);
+      _pref.setString(AppConfig.KALEYRA_USER_ID, model1.data!.kaleyraUID!);
       print("pref id: ${_pref.getInt(AppConfig.USER_ID)}");
     }
   }

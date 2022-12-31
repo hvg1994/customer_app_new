@@ -1010,7 +1010,6 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
               children: [
                 GestureDetector(
                   onTap: (){
-                    _scrollController.easyScrollToIndex(index: 10);
                   },
                   child: Container(
                     height: 120,

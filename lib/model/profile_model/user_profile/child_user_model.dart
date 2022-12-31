@@ -19,6 +19,7 @@ class ChildUserModel {
   String? qbUserId;
   String? qbUsername;
   String? pincode;
+  String? kaleyraUID;
   String? isActive;
   String? addedBy;
   String? createdAt;
@@ -45,6 +46,7 @@ class ChildUserModel {
         this.pincode,
         this.isActive,
         this.addedBy,
+        this.kaleyraUID,
         this.createdAt,
         this.updatedAt});
 
@@ -62,12 +64,14 @@ class ChildUserModel {
     profile = json['profile'];
     address = json['address'];
     otp = json['otp'].toString();
+    deviceId = json['kaleyra_user_id'].toString();
     deviceToken = json['device_token'];
     deviceType = json['device_type'];
     deviceId = json['device_id'].toString();
     age = json['age'];
     qbUserId = json['chat_id'];
     qbUsername = json['login_username'];
+    kaleyraUID = json['kaleyra_user_id'];
     pincode = json['pincode'].toString();
     isActive = json['is_active'];
     addedBy = json['added_by'];
@@ -90,6 +94,7 @@ class ChildUserModel {
     data['profile'] = this.profile;
     data['address'] = this.address;
     data['otp'] = this.otp;
+    data['kaleyra_user_id'] = this.kaleyraUID;
     data['device_token'] = this.deviceToken;
     data['device_type'] = this.deviceType;
     data['device_id'] = this.deviceId;

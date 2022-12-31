@@ -8,6 +8,7 @@ import 'package:flutter_zoom_sdk/zoom_options.dart';
 import 'package:flutter_zoom_sdk/zoom_view.dart';
 import 'package:gwc_customer/model/error_model.dart';
 import 'package:gwc_customer/model/message_model/get_chat_groupid_model.dart';
+import 'package:gwc_customer/repository/consultation_repository/get_slots_list_repository.dart';
 import 'package:gwc_customer/screens/chat_support/message_screen.dart';
 import 'package:gwc_customer/screens/dashboard_screen.dart';
 import 'package:gwc_customer/screens/evalution_form/evaluation_get_details.dart';
@@ -21,6 +22,7 @@ import '../../model/dashboard_model/get_appointment/child_appintment_details.dar
 import '../../repository/api_service.dart';
 import '../../repository/chat_repository/message_repo.dart';
 import '../../services/chat_service/chat_service.dart';
+import '../../services/consultation_service/consultation_service.dart';
 import '../../widgets/constants.dart';
 import '../../widgets/widgets.dart';
 import 'package:http/http.dart' as http;
@@ -62,6 +64,8 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
 
   List<String> doctorNames = [];
 
+  String accessToken = '';
+
   @override
   void initState() {
     // TODO: implement initState
@@ -85,6 +89,23 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
         print('from appoi: ${element.toJson()}');
         doctorNames.add(element.user!.name ?? '');
       });
+      if(model.teamPatients!.patient!.user!.kaleyraId != null){
+        String kaleyraUID = model.teamPatients!.patient!.user!.kaleyraId ?? '';
+        getAccessToken(kaleyraUID);
+      }
+    }
+  }
+
+  Future getAccessToken(String kaleyraId) async{
+    final res = await ConsultationService(repository: _consultationRepository).getAccessToken(kaleyraId);
+
+    print(res);
+    if(res.runtimeType == ErrorModel){
+      final model = res as ErrorModel;
+      AppConfig().showSnackbar(context, model.message ?? '', isError: true);
+    }
+    else{
+      accessToken = res;
     }
   }
 
@@ -256,17 +277,66 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
                                   ),
                                 ),
                                 SizedBox(height: 8.h),
+                                // zoom join
+                                Visibility(
+                                  visible: false,
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        isJoinPressed = true;
+                                      });
+                                      ChildAppointmentDetails? model;
+                                      if(widget.isFromDashboard){
+                                        model = ChildAppointmentDetails.fromJson(Map.from(widget.dashboardValueMap!));
+                                      }
+                                      launchZoomUrl();
+                                      // joinZoom(context);
+                                    },
+                                    child: Container(
+                                      width: 60.w,
+                                      height: 5.h,
+                                      padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 10.w),
+                                      decoration: BoxDecoration(
+                                        color: gWhiteColor,
+                                        borderRadius: BorderRadius.circular(10),
+                                        border: Border.all(
+                                            color: gMainColor, width: 1),
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          'Join',
+                                          style: TextStyle(
+                                            fontFamily: "GothamMedium",
+                                            color: gMainColor,
+                                            fontSize: 12.sp,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                // kaleyra join
                                 GestureDetector(
                                   onTap: () {
-                                    setState(() {
-                                      isJoinPressed = true;
-                                    });
                                     ChildAppointmentDetails? model;
-                                    if(widget.isFromDashboard){
+                                    if(widget.isFromDashboard || widget.isPostProgram){
                                       model = ChildAppointmentDetails.fromJson(Map.from(widget.dashboardValueMap!));
                                     }
-                                    launchZoomUrl();
-                                    // joinZoom(context);
+                                    // String zoomUrl = model.;
+
+                                    String? kaleyraurl = (widget.isFromDashboard || widget.isPostProgram) ? model?.kaleyraJoinurl : widget.data?.kaleyraJoinurl;
+
+                                    print(_pref!.getString(AppConfig.KALEYRA_USER_ID));
+                                    print("kaleyraurl:=>$kaleyraurl");
+                                    print('token: $accessToken');
+                                    String UID = _pref!.getString(AppConfig.KALEYRA_USER_ID) ?? '';
+                                    // send kaleyra id to native
+                                    if(UID != null || kaleyraurl != null || accessToken.isNotEmpty){
+                                      Provider.of<ConsultationService>(context, listen: false).joinWithKaleyra(UID, kaleyraurl!, accessToken);
+                                    }
+                                    else{
+                                      AppConfig().showSnackbar(context, "Uid/accessToken/join url not found");
+                                    }
                                   },
                                   child: Container(
                                     width: 60.w,
@@ -512,6 +582,12 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
     ),
   );
 
+  final ConsultationRepository _consultationRepository = ConsultationRepository(
+    apiClient: ApiClient(
+      httpClient: http.Client(),
+    ),
+  );
+
   getChatGroupId() async{
     final res = await ChatService(repository: chatRepository).getChatGroupIdService();
     String? chatGroupId;
@@ -524,7 +600,7 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
       ErrorModel model = res as ErrorModel;
       AppConfig().showSnackbar(context, model.message.toString(), isError: true);
     }
-    
+
   }
 
   void launchZoomUrl() async{

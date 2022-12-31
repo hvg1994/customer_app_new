@@ -12,6 +12,7 @@ class ChildUserAppointment {
   String? profile;
   String? address;
   String? otp;
+  String? kaleyraId;
   String? deviceToken;
   String? deviceType;
   String? deviceId;
@@ -37,6 +38,7 @@ class ChildUserAppointment {
         this.profile,
         this.address,
         this.otp,
+        this.kaleyraId,
         this.deviceToken,
         this.deviceType,
         this.deviceId,
@@ -62,6 +64,7 @@ class ChildUserAppointment {
     profile = json['profile'];
     address = json['address'];
     otp = json['otp'];
+    kaleyraId = json['kaleyra_user_id'];
     deviceToken = json['device_token'];
     deviceType = json['device_type'];
     deviceId = json['device_id'];
@@ -89,6 +92,7 @@ class ChildUserAppointment {
     data['profile'] = this.profile;
     data['address'] = this.address;
     data['otp'] = this.otp;
+    data['kaleyra_user_id'] = this.kaleyraId;
     data['device_token'] = this.deviceToken;
     data['device_type'] = this.deviceType;
     data['device_id'] = this.deviceId;

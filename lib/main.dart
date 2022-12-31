@@ -24,6 +24,7 @@ import 'package:sizer/sizer.dart';
 import 'package:get/get.dart';
 import 'repository/api_service.dart';
 import 'repository/enquiry_status_repository.dart';
+import 'services/consultation_service/consultation_service.dart';
 import 'services/vlc_service/check_state.dart';
 import 'utils/app_config.dart';
 import 'package:http/http.dart' as http;
@@ -279,6 +280,7 @@ class _MyAppState extends State<MyApp> {
         providers: [
           ChangeNotifierProvider(create: (_) => CheckState()),
           ListenableProvider<QuickBloxService>.value(value: QuickBloxService()),
+          ChangeNotifierProvider(create: (_)=> ConsultationService())
         ],
         child: const GetMaterialApp(
             supportedLocales: [

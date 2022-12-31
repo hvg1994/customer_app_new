@@ -4,6 +4,7 @@ import 'package:gwc_customer/model/error_model.dart';
 import 'package:gwc_customer/model/new_user_model/about_program_model/about_program_model.dart';
 import 'package:gwc_customer/model/new_user_model/about_program_model/feeds_model/feedsListModel.dart';
 import 'package:gwc_customer/repository/new_user_repository/about_program_repository.dart';
+import 'package:gwc_customer/screens/feed_screens/gwc_stories_screen.dart';
 import 'package:gwc_customer/screens/notification_screen.dart';
 import 'package:gwc_customer/services/new_user_service/about_program_service.dart';
 import 'package:sizer/sizer.dart';
@@ -52,15 +53,16 @@ class _FeedsListState extends State<FeedsList> {
                     MaterialPageRoute(builder: (_) => NotificationScreen()));
               }),
               SizedBox(height: 3.h),
-              Text(
-                "Feeds",
-                style: TextStyle(
-                    fontFamily: eUser().mainHeadingFont,
-                    color: eUser().mainHeadingColor,
-                    fontSize: eUser().mainHeadingFontSize
-                ),
-              ),
-              SizedBox(height: 1.h),
+              const GWCStoriesScreen(),
+              // Text(
+              //   "Feeds",
+              //   style: TextStyle(
+              //       fontFamily: eUser().mainHeadingFont,
+              //       color: eUser().mainHeadingColor,
+              //       fontSize: eUser().mainHeadingFontSize
+              //   ),
+              // ),
+              // SizedBox(height: 1.h),
               Expanded(
                 child: apiUI(context),
               ),

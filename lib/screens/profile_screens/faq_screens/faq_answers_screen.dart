@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_vlc_player/flutter_vlc_player.dart';
 import 'package:gwc_customer/model/faq_model/faq_list_model.dart';
-import 'package:gwc_customer/screens/user_registration/new_user/video_player.dart';
 import 'package:gwc_customer/widgets/widgets.dart';
 import 'package:sizer/sizer.dart';
+import 'package:flutter_vlc_player/flutter_vlc_player.dart';
 
 import '../../../widgets/constants.dart';
 

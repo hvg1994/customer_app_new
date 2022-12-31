@@ -36,8 +36,7 @@ class _ProtocolGuideScreenState extends State<ProtocolGuideScreen> {
   }
 
   getFuture({String? dayNumber}) {
-    getDayProtocolFuture = PostProgramService(repository: postProgramRepository)
-        .getProtocolDayDetailsService(dayNumber: dayNumber);
+    getDayProtocolFuture = PostProgramService(repository: postProgramRepository).getProtocolDayDetailsService(dayNumber: dayNumber);
   }
 
   PostProgramRepository postProgramRepository =

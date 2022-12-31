@@ -131,14 +131,51 @@ class _EvaluationFormScreenState extends State<EvaluationFormScreen> {
                     height: 4.h,
                   ),
                   Center(
-                    child: CommonButton.submitButton(() {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => const PersonalDetailsScreen(),
+                    child: GestureDetector(
+                      // onTap: (showLoginProgress) ? null : () {
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const PersonalDetailsScreen(),
+                          ),
+                        );
+                      },
+                      child: Container(
+                        width: 50.w,
+                        height: 5.h,
+                        margin: EdgeInsets.symmetric(vertical: 4.h),
+                        padding:
+                        EdgeInsets.symmetric(vertical: 1.h, horizontal: 10.w),
+                        decoration: BoxDecoration(
+                          color: eUser().buttonColor,
+                          borderRadius: BorderRadius.circular(eUser().buttonBorderRadius),
+                          border: Border.all(
+                              color: eUser().buttonBorderColor,
+                              width: eUser().buttonBorderWidth
+                          ),
                         ),
-                      );
-                    }, "NEXT"),
+                        child: Center(
+                          child: Text(
+                            'NEXT',
+                            style: TextStyle(
+                              fontFamily: eUser().buttonTextFont,
+                              color: eUser().buttonTextColor,
+                              fontSize: eUser().buttonTextSize,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
+                  // Center(
+                  //   child: CommonButton.submitButton(() {
+                  //     Navigator.of(context).push(
+                  //       MaterialPageRoute(
+                  //         builder: (context) => const PersonalDetailsScreen(),
+                  //       ),
+                  //     );
+                  //   }, "NEXT"),
+                  // ),
                 ],
               ),
             ),

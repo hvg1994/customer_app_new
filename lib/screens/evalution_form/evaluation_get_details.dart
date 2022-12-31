@@ -416,19 +416,26 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
   buildEvaluationForm({ChildGetEvaluationDataModel? model}) {
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
-      child: Column(
-        children: [
-          SizedBox(height: 2.h),
-          buildPersonalDetails(model),
-          SizedBox(height: 1.h),
-          buildHealthDetails(model),
-          SizedBox(height: 1.h),
-          buildFoodHabitsDetails(model),
-          SizedBox(height: 1.h),
-          buildLifeStyleDetails(model),
-          SizedBox(height: 1.h),
-          buildBowelDetails(model),
-        ],
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: (widget.isFromProfile) ? 0 : 8),
+        child: Column(
+          children: [
+            if(!widget.isFromProfile)
+            buildAppBar(() {
+              Navigator.pop(context);
+            }),
+              SizedBox(height: 2.h),
+            buildPersonalDetails(model),
+            SizedBox(height: 1.h),
+            buildHealthDetails(model),
+            SizedBox(height: 1.h),
+            buildFoodHabitsDetails(model),
+            SizedBox(height: 1.h),
+            buildLifeStyleDetails(model),
+            SizedBox(height: 1.h),
+            buildBowelDetails(model),
+          ],
+        ),
       ),
     );
   }

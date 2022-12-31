@@ -147,17 +147,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 //     color: Colors.grey,
                 //   ),
                 // ),
-                // Visibility(
-                //   // visible: kDebugMode,
-                //     child:profileTile(
-                //         "assets/images/Group 2748.png", "Eval form", () {
-                //       Navigator.of(context).push(
-                //         MaterialPageRoute(
-                //           builder: (context) => const EvaluationFormScreen(),
-                //         ),
-                //       );
-                //     })
-                // ),
+                Visibility(
+                  // visible: kDebugMode,
+                    child:profileTile(
+                        "assets/images/Group 2748.png", "Eval form", () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const EvaluationFormScreen(),
+                        ),
+                      );
+                    })
+                ),
                 Container(
                   height: 1,
                   color: Colors.grey,

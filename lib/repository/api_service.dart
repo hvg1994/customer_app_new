@@ -14,7 +14,9 @@ import 'package:gwc_customer/model/notification_model/NotificationModel.dart';
 import 'package:gwc_customer/model/post_program_model/breakfast/protocol_breakfast_get.dart';
 import 'package:gwc_customer/model/post_program_model/post_program_base_model.dart';
 import 'package:gwc_customer/model/post_program_model/post_program_new_model/pp_get_model.dart';
+import 'package:gwc_customer/model/post_program_model/post_program_new_model/protocol_calendar_model.dart';
 import 'package:gwc_customer/model/post_program_model/protocol_guide_day_score.dart';
+import 'package:gwc_customer/model/post_program_model/protocol_summary_model.dart';
 import 'package:gwc_customer/model/profile_model/feedback_model.dart';
 import 'package:gwc_customer/model/profile_model/logout_model.dart';
 import 'package:gwc_customer/model/profile_model/user_profile/update_user_model.dart';
@@ -1884,6 +1886,85 @@ class ApiClient {
       }
     } catch (e) {
       print(e);
+      result = ErrorModel(status: "", message: e.toString());
+    }
+    return result;
+  }
+
+  Future getPPDaySummaryApi(String day) async {
+    dynamic res;
+    dynamic result;
+    try{
+      final response = await http.get(Uri.parse("$daySummaryUrl/$day"),
+          headers: {
+            'Authorization': getHeaderToken(),
+          });
+      res = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        result = ProtocolSummary.fromJson(res);
+      }
+      else{
+        result = ErrorModel.fromJson(res);
+      }
+    }
+    catch(e){
+      return ErrorModel(status: "", message: e.toString());
+    }
+    return result;
+  }
+
+  Future getPPCalendarApi() async {
+
+    dynamic result;
+    try{
+      final response = await http.get(Uri.parse(ppCalendarUrl),
+          headers: {
+            'Authorization': getHeaderToken(),
+          });
+      //  print("PPCalendar response: ${response.body}");
+      final res = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        result = ProtocolCalendarModel.fromJson(res);
+        // print("PPCalendar: ${calendarEvents[0].date?.year}, ${calendarEvents[0].date?.month}, ${calendarEvents[0].date?.day}");
+      } else {
+        result = ErrorModel.fromJson(res);
+      }
+    }
+    catch(e){
+      result = ErrorModel(status: "", message: e.toString());
+    }
+    return result;
+  }
+
+  Future getKaleyraAccessTokenApi(String kaleyraUID) async{
+    dynamic result;
+    // production or sandbox
+    final environment = "sandbox"; 
+    final region = "eu";
+    
+    final endPoint = "https://cs.${environment}.${region}.bandyer.com";
+    
+    final String url = "$endPoint/rest/sdk/credentials";
+    try{
+      
+      final response = await httpClient.post(Uri.parse(url),
+        headers: {
+        'apikey': 'ak_live_c1ef0ed161003e0a2b419d20'
+        },
+        body: {
+        "user_id": kaleyraUID
+        }
+      );
+      if(response.statusCode == 200){
+        final json = jsonDecode(response.body);
+        result = json['access_token'];
+      }
+      else{
+        final json = jsonDecode(response.body);
+        result = ErrorModel.fromJson(json);
+      }
+    }
+    catch(e){
       result = ErrorModel(status: "", message: e.toString());
     }
     return result;

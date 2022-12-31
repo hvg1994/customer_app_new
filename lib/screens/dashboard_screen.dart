@@ -20,6 +20,7 @@ import 'gut_list_screens/gut_list.dart';
 import 'home_screens/home_screen.dart';
 import 'post_program_screens/new_post_program/day_breakfast.dart';
 import 'post_program_screens/new_post_program/pp_dashboard.dart';
+import 'post_program_screens/new_post_program/pp_levels_demo.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({Key? key}) : super(key: key);
@@ -69,7 +70,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     switch (index) {
       case 0:
         {
-          return PPLevelsScreen();
+          return PPLevelsDemo();
           // return LevelStatus();
           // return DayMealTracerUI(proceedProgramDayModel: ProceedProgramDayModel(),);
         }

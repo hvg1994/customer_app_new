@@ -15,4 +15,8 @@ class ConsultationRepository{
     return await apiClient.bookAppointmentApi(date, slotTime, appointmentId: appointmentId, isPostprogram: isPostprogram);
   }
 
+  Future getAccessTokenRepo(String kaleyraUID) async{
+    return await apiClient.getKaleyraAccessTokenApi(kaleyraUID);
+  }
+
 }

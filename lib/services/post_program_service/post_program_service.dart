@@ -24,8 +24,22 @@ class PostProgramService extends ChangeNotifier{
   Future submitPPMealsService(String stageType,String followId, int itemId, int? dayNumber) async{
     return await repository.submitPPMealsRepo(stageType, followId, itemId, dayNumber);
   }
+  /// not using
   Future getProtocolDayDetailsService({String? dayNumber}) async{
     return await repository.getProtocolDayDetailsRepo(dayNumber: dayNumber);
+  }
+
+  /// new
+  Future getPPDayDetailsService({String? dayNumber}) async{
+    return await repository.getPPDayDetailsRepo(dayNumber: dayNumber);
+  }
+  /// new
+  Future getPPDaySummaryService(String dayNumber) async{
+    return await repository.getPPDaySummaryRepo(dayNumber);
+  }
+  /// new
+  Future getPPDayCalenderService() async{
+    return await repository.getPPDayCalenderRepo();
   }
 
 }

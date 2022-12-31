@@ -28,8 +28,22 @@ class PostProgramRepository{
     return await apiClient.submitPPMealsApi(stageType, followId, itemId, dayNumber);
   }
 
+  /// not using
   Future getProtocolDayDetailsRepo({String? dayNumber}) async{
     return await apiClient.getProtocolDayDetailsApi(dayNumber: dayNumber);
+  }
+
+  Future getPPDayDetailsRepo({String? dayNumber}) async{
+    return await apiClient.getPPDayDetailsApi(dayNumber: dayNumber);
+  }
+
+  Future getPPDaySummaryRepo(String dayNumber) async{
+    return await apiClient.getPPDaySummaryApi(dayNumber);
+  }
+
+  /// new calender api
+  Future getPPDayCalenderRepo() async{
+    return await apiClient.getPPCalendarApi();
   }
 
 }

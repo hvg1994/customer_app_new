@@ -1,11 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:gwc_customer/model/post_program_model/protocol_guide_day_score.dart';
 import 'package:gwc_customer/screens/post_program_screens/new_post_program/day_breakfast.dart';
 import 'package:gwc_customer/screens/post_program_screens/new_post_program/pp_calendar.dart';
+import 'package:gwc_customer/screens/post_program_screens/protcol_guide_details.dart';
 import 'package:gwc_customer/widgets/constants.dart';
+import 'package:gwc_customer/widgets/widgets.dart';
+import 'package:lottie/lottie.dart';
 import 'dart:math';
 import 'package:sizer/sizer.dart';
-
+import 'package:gwc_customer/repository/post_program_repo/post_program_repository.dart';
+import 'package:gwc_customer/services/post_program_service/post_program_service.dart';
 import 'pp_redeem_rewards_popuop.dart';
+import 'package:gwc_customer/model/error_model.dart';
+import 'package:gwc_customer/model/post_program_model/post_program_new_model/protocol_calendar_model.dart';
+import 'package:http/http.dart' as http;
+import 'package:gwc_customer/repository/api_service.dart';
+
 
 class PPLevelsScreen extends StatefulWidget {
   const PPLevelsScreen({Key? key}) : super(key: key);
@@ -15,38 +25,68 @@ class PPLevelsScreen extends StatefulWidget {
 }
 
 class _PPLevelsScreenState extends State<PPLevelsScreen> {
-  List<NewStageLevels> levels = [
-    NewStageLevels("assets/images/gmg/Group 11807.png", "80 pts Earned", '1'),
-    NewStageLevels("assets/images/gmg/Group 11808.png", "50 pts Earned", '2'),
-    NewStageLevels("assets/images/gmg/Group 11809.png", "30 pts Earned", '3'),
-    NewStageLevels(
-      "assets/images/gmg/Group 11809.png",
-      "30 pts Earned",
-      '4',
-    ),
-    NewStageLevels("assets/images/gmg/Group 11807.png", "80 pts Earned", '5'),
-    NewStageLevels("assets/images/gmg/Group 11810.png", "You Have Missed", '6'),
-    NewStageLevels(
-      "assets/images/gmg/Group 11808.png",
-      "50 pts Earned",
-      '7',
-    ),
-    NewStageLevels("assets/images/gmg/Group 11807.png", "80 pts Earned", '8'),
-    NewStageLevels("assets/images/gmg/Group 11811.png", "Not Yet Started", '9'),
-    NewStageLevels("assets/images/gmg/Group 11811.png", "Not Yet Started", '10'),
-    NewStageLevels(
-      "assets/images/gmg/Group 11811.png",
-      "Not Yet Started",
-      '11',
-    ),
-    NewStageLevels("assets/images/gmg/Group 11811.png", "Not Yet Started", '12'),
-    NewStageLevels("assets/images/gmg/Group 11811.png", "Not Yet Started", '13'),
-    NewStageLevels(
-      "assets/images/gmg/Group 11811.png",
-      "Not Yet Started",
-      '14',
-    ),
-  ];
+  final String greenBg = "assets/images/gmg/Group 11807.png";
+  final String yellowBg = "assets/images/gmg/Group 11808.png";
+  final String redBg = "assets/images/gmg/Group 11809.png";
+  final String missedBg = "assets/images/gmg/Group 11810.png";
+  final String notStartedBg = "assets/images/gmg/Group 11811.png";
+
+  // late List<NewStageLevels> levels = [
+  //   NewStageLevels(greenBg, "80 pts Earned", '1'),
+  //   NewStageLevels("assets/images/gmg/Group 11808.png", "50 pts Earned", '2'),
+  //   NewStageLevels("assets/images/gmg/Group 11809.png", "30 pts Earned", '3'),
+  //   NewStageLevels(
+  //     "assets/images/gmg/Group 11809.png",
+  //     "30 pts Earned",
+  //     '4',
+  //   ),
+  //   NewStageLevels("assets/images/gmg/Group 11807.png", "80 pts Earned", '5'),
+  //   NewStageLevels("assets/images/gmg/Group 11810.png", "You Have Missed", '6'),
+  //   NewStageLevels(
+  //     "assets/images/gmg/Group 11808.png",
+  //     "50 pts Earned",
+  //     '7',
+  //   ),
+  //   NewStageLevels("assets/images/gmg/Group 11807.png", "80 pts Earned", '8'),
+  //   NewStageLevels("assets/images/gmg/Group 11811.png", "Not Yet Started", '9'),
+  //   NewStageLevels("assets/images/gmg/Group 11811.png", "Not Yet Started", '10'),
+  //   NewStageLevels(
+  //     "assets/images/gmg/Group 11811.png",
+  //     "Not Yet Started",
+  //     '11',
+  //   ),
+  //   NewStageLevels("assets/images/gmg/Group 11811.png", "Not Yet Started", '12'),
+  //   NewStageLevels("assets/images/gmg/Group 11811.png", "Not Yet Started", '13'),
+  //   NewStageLevels(
+  //     "assets/images/gmg/Group 11811.png",
+  //     "Not Yet Started",
+  //     '14',
+  //   ),
+  // ];
+
+  List<NewStageLevels> levels = [];
+
+  String protocolGuidePdfLink = '';
+
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getPPCalendar();
+    getPPGuidePdfLink();
+  }
+
+  getPPGuidePdfLink() async{
+    final res = await PostProgramService(repository: repository).getProtocolDayDetailsService();
+
+    if(res.runtimeType != ErrorModel){
+      ProtocolGuideDayScoreModel model = res as ProtocolGuideDayScoreModel;
+      protocolGuidePdfLink = model.protocolGuidePdf ?? '';
+    }
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -109,6 +149,22 @@ class _PPLevelsScreenState extends State<PPLevelsScreen> {
                         height: 3.h,
                       ),
                     ),
+                    SizedBox(
+                      width: 2.w,
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => ProtocolGuideDetails(pdfLink: protocolGuidePdfLink,),
+                          ),
+                        );
+                      },
+                      child: SizedBox(
+                        height: 3.5.h,
+                        child: Lottie.asset('assets/lottie/alert.json'),
+                      ),
+                    ),
                   ],
                 )
               ],
@@ -127,12 +183,13 @@ class _PPLevelsScreenState extends State<PPLevelsScreen> {
           ),
           SizedBox(height: 1.h),
           Expanded(
-            child: showLevels(),
+            child: levels.isEmpty ? Center(child: buildCircularIndicator(),) : showLevels(),
           ),
         ],
       ),
     );
   }
+
 
   showLevels() {
     return ListView.builder(
@@ -356,9 +413,73 @@ class _PPLevelsScreenState extends State<PPLevelsScreen> {
               ),
             );
           }
-          ;
         });
   }
+
+  bool isError = false;
+  String errorText = '';
+  bool isLoading = false;
+
+  String? currentDay;
+
+
+  Future getPPCalendar() async {
+    setState(() {
+      isLoading = true;
+    });
+    final res = await PostProgramService(repository: repository).getPPDayCalenderService();
+
+    if(res.runtimeType == ErrorModel){
+      final model = res as ErrorModel;
+      setState(() {
+        isLoading = false;
+        isError = true;
+        errorText = model.message ?? '';
+      });
+    }
+    else{
+      final model = res as ProtocolCalendarModel;
+      List<ProtocolCalendar> arrData = model.protocolCalendar!;
+
+      setState(() {
+        isLoading = false;
+        currentDay = model.presentDay;
+      });
+      addLevels(arrData);
+    }
+  }
+
+  addLevels(List<ProtocolCalendar> data){
+    levels.clear();
+    data.forEach((protocolCalender) {
+      if(protocolCalender.day.toString() == currentDay){
+        levels.add(NewStageLevels(notStartedBg, "", currentDay!));
+      }
+      else if(protocolCalender.day.toString() != currentDay){
+        print(protocolCalender.score);
+        if(protocolCalender.score == "1"){
+          levels.add(NewStageLevels(greenBg, "", protocolCalender.day.toString()));
+        }
+        else if(protocolCalender.score == "2"){
+          levels.add(NewStageLevels(yellowBg, "", protocolCalender.day.toString()));
+        }
+        else if(protocolCalender.score == "3"){
+          levels.add(NewStageLevels(redBg, "", protocolCalender.day.toString()));
+        }
+        else if(protocolCalender.score == "4" || protocolCalender.score == ""){
+          levels.add(NewStageLevels(missedBg, "Missed", protocolCalender.day.toString()));
+        }
+      }
+    });
+  }
+
+
+  PostProgramRepository repository = PostProgramRepository(
+      apiClient: ApiClient(
+          httpClient: http.Client()
+      )
+  );
+
 }
 
 class TestPathPainter extends CustomPainter {

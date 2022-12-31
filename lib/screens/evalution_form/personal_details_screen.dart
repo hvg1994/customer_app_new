@@ -4135,6 +4135,11 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
 
   buildHealthCheckBox(CheckBoxSettings healthCheckBox, String from) {
     return ListTile(
+      onTap: (){
+        print(healthCheckBox.value);
+        print(healthCheckBox.title);
+
+      },
       minLeadingWidth: 30,
       horizontalTitleGap: 3,
       dense: true,
@@ -4197,7 +4202,8 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                 }
               }
               print(selectedHealthCheckBox1);
-            } else if (from == 'health2') {
+            }
+            else if (from == 'health2') {
               if (healthCheckBox.title == healthCheckBox2.last.title) {
                 print("if");
                 setState(() {
@@ -4242,7 +4248,8 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                 }
               }
               print(selectedHealthCheckBox2);
-            } else if (from == 'smell') {
+            }
+            else if (from == 'smell') {
               if (urinSmellOtherSelected) {
                 if (v == true) {
                   setState(() {
@@ -4266,7 +4273,8 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                 }
               }
               print(selectedUrinSmellList);
-            } else if (from == 'interventions') {
+            }
+            else if (from == 'interventions') {
               if (medicalInterventionsOtherSelected) {
                 if (v == true) {
                   setState(() {
