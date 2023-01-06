@@ -52,9 +52,8 @@ class AppConfig{
   static const String SHIPPING_ADDRESS = "ship_address";
   static const String User_Name = "userName";
   static const String USER_ID = "userId";
-
-
-
+  static const String KALEYRA_SUCCESS_ID = "kaleyra_success_id";
+  static const String KALEYRA_ACCESS_TOKEN = "kaleyra_access_token";
 
 
   static const String countryCode = "COUNTRY_CODE";
@@ -77,6 +76,7 @@ class AppConfig{
 
   static String slotErrorText = "Slots Not Available Please select different day";
   static String networkErrorText = "Network Error! Please Retry..";
+  static String oopsMessage = "OOps ! Something went wrong.";
 
   static const String isSmallMode = "isShrunk";
 

@@ -16,6 +16,7 @@ class ChildAppointmentDetails {
   String? updatedAt;
   String? appointmentDate;
   String? kaleyraJoinurl;
+  String? kaleyraSuccessTeamId;
   String? appointmentStartTime;
   ChildTeamPatientsAppointment? teamPatients;
 
@@ -36,6 +37,7 @@ class ChildAppointmentDetails {
         this.appointmentDate,
         this.appointmentStartTime,
         this.kaleyraJoinurl,
+        this.kaleyraSuccessTeamId,
         this.teamPatients});
 
   ChildAppointmentDetails.fromJson(Map<String, dynamic> json) {
@@ -53,6 +55,7 @@ class ChildAppointmentDetails {
     kaleyraJoinurl = json['kaleyra_user_url'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
+    kaleyraSuccessTeamId = json['kaleyra_success_team_id'];
     appointmentDate = json['appointment_date'];
     appointmentStartTime = json['slot_start_time'] ?? json['appointment_start_time'];
     teamPatients = json['team_patients'] != null
@@ -76,6 +79,7 @@ class ChildAppointmentDetails {
     data['kaleyra_user_url'] = this.kaleyraJoinurl;
     data['created_at'] = this.createdAt;
     data['updated_at'] = this.updatedAt;
+    data['kaleyra_success_team_id'] = this.kaleyraSuccessTeamId;
     data['appointment_date'] = this.appointmentDate;
     data['appointment_start_time'] = this.appointmentStartTime;
     if (this.teamPatients != null) {

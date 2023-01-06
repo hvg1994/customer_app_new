@@ -446,19 +446,39 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
             // buildLifeStyleDetails(),
             // buildGutTypeDetails(),
             Center(
-              child: CommonButton.sendButton(() {
-                if (widget.showData) {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (ctx) => PersonalDetailsScreen2(
-                                showData: true,
-                                childGetEvaluationDataModel: model,
-                              )));
-                } else {
-                  checkFields(context);
-                }
-              }, "Next"),
+              child: GestureDetector(
+                onTap: () {
+                  if (widget.showData) {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (ctx) => PersonalDetailsScreen2(
+                              childGetEvaluationDataModel: model,
+                            )));
+                  } else {
+                    checkFields(context);
+                  }
+                },
+                child: Container(
+                  padding:
+                  EdgeInsets.symmetric(vertical: 1.h, horizontal: 15.w),
+                  decoration: BoxDecoration(
+                    color: eUser().buttonColor,
+                    borderRadius: BorderRadius.circular(eUser().buttonBorderRadius),
+                    border: Border.all(
+                        color: eUser().buttonBorderColor,
+                        width: eUser().buttonBorderWidth                                      ),
+                  ),
+                  child: Text(
+                    'Next',
+                    style: TextStyle(
+                      fontFamily: eUser().buttonTextFont,
+                      color: eUser().buttonTextColor,
+                      fontSize: eUser().buttonTextSize,
+                    ),
+                  ),
+                ),
+              ),
             ),
           ],
         ),
@@ -792,7 +812,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
               cursorColor: kPrimaryColor,
               validator: (value) {
                 if (value!.isEmpty) {
-                  return 'Please enter your Address';
+                  return 'Please enter your Flat/House Number';
                 } else {
                   return null;
                 }
@@ -801,7 +821,8 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                   "Flat/House Number", address1Controller),
               textInputAction: TextInputAction.next,
               textAlign: TextAlign.start,
-              keyboardType: TextInputType.streetAddress,
+              keyboardType: TextInputType.number,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             ),
             SizedBox(
               height: 2.h,
@@ -2068,7 +2089,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
       email: emailController.text,
       age: ageController.text,
       gender: gender,
-      address1: address1Controller.text,
+      address1: "No. " + address1Controller.text,
       address2: address2Controller.text,
       city: cityController.text,
       state: stateController.text,

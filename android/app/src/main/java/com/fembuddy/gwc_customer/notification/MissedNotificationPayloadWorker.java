@@ -25,6 +25,8 @@
 //import com.bandyer.android_sdk.utils.provider.UserDetailsFormatter;
 //import com.bandyer.android_sdk.utils.provider.UserDetailsProvider;
 //import com.fembuddy.gwc_customer.MainActivity;
+//import com.fembuddy.gwc_customer.utils.UserDetailsUtils;
+//import com.fembuddy.gwc_customer.R.drawable;
 //
 //import org.json.JSONArray;
 //import org.json.JSONObject;
@@ -102,39 +104,40 @@
 //    }
 //
 //    private void showMissedCallNotification(UserDetails userDetails, Integer notificationId, ArrayList<String> callbackUsers) {
-////        UserDetailsUtils.getUserImageBitmap(userDetails, new Completion<Bitmap>() {
-////            @Override
-////            public void success(Bitmap data) {
-////                onBitmapLoaded(data);
-////            }
-////
-////            @Override
-////            public void error(@NonNull Exception error) {
-////                onBitmapLoaded(UserDetailsUtils.getFallbackUserBitmapIcon());
-////            }
-////
-////            @Override
-////            public void error(@NonNull Throwable error) {
-////                onBitmapLoaded(UserDetailsUtils.getFallbackUserBitmapIcon());
-////            }
-////
-////            private void onBitmapLoaded(Bitmap image) {
-////                String callerDisplayName = getUserDetailsFormatter().format(userDetails, new FormatContext(BandyerComponent.CallComponent.INSTANCE, true));
-////                NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), getNotificationChannel())
-////                        .setSmallIcon(drawable.ic_missed_call)
-////                        .setContentTitle(callerDisplayName)
-////                        .setContentText(getApplicationContext().getString(string.missed_call))
-////                        .setAutoCancel(true)
-////                        .setLargeIcon(image)
-////                        .setContentIntent(openMainActivity())
-////                        .addAction(drawable.ic_kaleyra_audio_call, getApplicationContext().getString(string.callback), callBack(callbackUsers, notificationId))
-////                        .setPriority(NotificationCompat.PRIORITY_HIGH);
+//        UserDetailsUtils.getUserImageBitmap(userDetails, new Completion<Bitmap>() {
+//            @Override
+//            public void success(Bitmap data) {
+//                onBitmapLoaded(data);
+//            }
+//
+//            @Override
+//            public void error(@NonNull Exception error) {
+//                onBitmapLoaded(UserDetailsUtils.getFallbackUserBitmapIcon());
+//            }
+//
+//            @Override
+//            public void error(@NonNull Throwable error) {
+//                onBitmapLoaded(UserDetailsUtils.getFallbackUserBitmapIcon());
+//            }
+//
+//            private void onBitmapLoaded(Bitmap image) {
+//                String callerDisplayName = getUserDetailsFormatter().format(userDetails, new FormatContext(BandyerComponent.CallComponent.INSTANCE, true));
+//                NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), getNotificationChannel())
+//                        .setSmallIcon(drawable.ic_missed_call)
+//                        .setContentTitle(callerDisplayName)
+//                        .setContentText("Missed call")
+//                        .setAutoCancel(true)
+//                        .setLargeIcon(image)
+//                        .setContentIntent(openMainActivity())
+//                        .addAction(drawable.ic_kaleyra_audio_call, "Call back", callBack(callbackUsers, notificationId))
+//                        .setPriority(NotificationCompat.PRIORITY_HIGH);
 ////                if (callbackUsers.size() == 1)
 ////                    builder.addAction(drawable.ic_kaleyra_chat, getApplicationContext().getString(string.chatback), chatBack(callbackUsers.get(0), notificationId));
-////                NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getApplicationContext());
-////                notificationManager.notify(notificationId, builder.build());
-////            }
-////        });
+////
+//                NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getApplicationContext());
+//                notificationManager.notify(notificationId, builder.build());
+//            }
+//        });
 //    }
 //
 //    private ArrayList<String> callbackUsers(Session session, JSONObject missedCall) throws org.json.JSONException {

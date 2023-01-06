@@ -114,7 +114,7 @@ class _SplashScreenState extends State<SplashScreen> {
           errorMsg = AppConfig.networkErrorText;
         }
         else{
-          errorMsg = model.message ?? 'Unauthenticated';
+          errorMsg = model.message ?? AppConfig.oopsMessage;
         }
       });
     }

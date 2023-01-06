@@ -81,10 +81,15 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
       widget.data?.team?.teamMember?.forEach((element) {
         doctorNames.add(element.user!.name ?? '');
       });
+      if(_pref!.getString(AppConfig.KALEYRA_USER_ID) != null){
+        String kaleyraUID = _pref?.getString(AppConfig.KALEYRA_USER_ID) ?? '';
+        getAccessToken(kaleyraUID);
+      }
     }
     ChildAppointmentDetails? model;
     if(widget.isFromDashboard || widget.isPostProgram){
       model = ChildAppointmentDetails.fromJson(Map.from(widget.dashboardValueMap!));
+      print("moddd: ${model.teamPatients!.team!.toJson()}");
       model.teamPatients?.team?.teamMember?.forEach((element) {
         print('from appoi: ${element.toJson()}');
         doctorNames.add(element.user!.name ?? '');

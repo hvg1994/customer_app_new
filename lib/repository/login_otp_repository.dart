@@ -16,4 +16,8 @@ class LoginOtpRepository{
   Future logoutRepo() async{
     return await apiClient.serverLogoutApi();
   }
+
+  Future getAccessTokenRepo(String kaleyraUID) async{
+    return await apiClient.getKaleyraAccessTokenApi(kaleyraUID);
+  }
 }

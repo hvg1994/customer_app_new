@@ -17,4 +17,8 @@ class LoginWithOtpService extends ChangeNotifier{
   Future logoutService() async{
     return await repository.logoutRepo();
   }
+
+  Future getAccessToken(String kaleyraUID) async{
+    return await repository.getAccessTokenRepo(kaleyraUID);
+  }
 }

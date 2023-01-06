@@ -11,6 +11,7 @@ openAlertBox({
   String? title,
   String? content,
   bool isSingleButton = false,
+  bool isContentNeeded = true,
   String? negativeButtonName,
   required String positiveButtonName,
   VoidCallback? negativeButton,
@@ -21,7 +22,7 @@ openAlertBox({
       context: context,
       barrierDismissible: barrierDismissible,
       builder: (context) => WillPopScope(
-        onWillPop: () async => false,
+        onWillPop: () async => barrierDismissible,
         child: AlertDialog(
          // backgroundColor: kPrimaryColor,
           shape: RoundedRectangleBorder(
@@ -48,18 +49,24 @@ openAlertBox({
                         fontSize: 11.sp),
                   ),
                 ),
-                Container(
-                  margin: EdgeInsets.symmetric(vertical: 2.h),
-                  height: 1,
-                  color: Colors.grey.withOpacity(0.3),
+                Visibility(
+                  visible: titleNeeded,
+                  child: Container(
+                    margin: EdgeInsets.symmetric(vertical: 2.h),
+                    height: 1,
+                    color: Colors.grey.withOpacity(0.3),
+                  ),
                 ),
-                Text(
-                  content ?? 'Do you want to exit an App?',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      fontFamily: "GothamMedium",
-                      color: gBlackColor,
-                      fontSize: 11.sp),
+                Visibility(
+                  visible: isContentNeeded,
+                  child: Text(
+                    content ?? 'Do you want to exit an App?',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        fontFamily: "GothamMedium",
+                        color: gBlackColor,
+                        fontSize: 11.sp),
+                  ),
                 ),
                 SizedBox(height: 3.h),
                 Row(

@@ -1,4 +1,10 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:gwc_customer/services/local_notification_service.dart';
 import 'package:quickblox_sdk/models/qb_settings.dart';
+import 'package:quickblox_sdk/push/constants.dart';
 import 'package:quickblox_sdk/quickblox_sdk.dart';
 
 class QuickBloxRepository {
@@ -35,4 +41,27 @@ class QuickBloxRepository {
   Future<void> enableAutoReconnect(bool enable) async {
     await QB.settings.enableAutoReconnect(enable);
   }
+
+  void initSubscription(String fcmToken) async {
+    print("QB initSubscription to fcm- ${fcmToken}");
+    if(fcmToken.isNotEmpty){
+      QB.subscriptions.create(fcmToken, QBPushChannelNames.GCM);
+      try {
+        FirebaseMessaging.onMessage.listen((message) {
+          print("message recieved: ${message.toMap()}");
+          LocalNotificationService().showQBNotification(message);
+          // LocalNotificationService.createanddisplaynotification(message);
+
+        });
+      } on PlatformException catch (e) {
+        //some error occurred
+        print("qb subscribe error: ${e.message}");
+      }
+    }
+    else{
+      if (kDebugMode) {
+        print("fcm Token is empty");
+      }}
+  }
+
 }

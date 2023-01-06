@@ -6,6 +6,7 @@ import 'package:gwc_customer/model/dashboard_model/get_program_model.dart';
 import 'package:gwc_customer/model/dashboard_model/gut_model/gut_data_model.dart';
 import 'package:gwc_customer/model/error_model.dart';
 import 'package:gwc_customer/repository/dashboard_repo/gut_repository/dashboard_repository.dart';
+import 'package:gwc_customer/repository/login_otp_repository.dart';
 import 'package:gwc_customer/screens/appointment_screens/consultation_screens/consultation_rejected.dart';
 import 'package:gwc_customer/screens/appointment_screens/consultation_screens/upload_files.dart';
 import 'package:gwc_customer/screens/evalution_form/personal_details_screen.dart';
@@ -17,6 +18,7 @@ import 'package:gwc_customer/screens/profile_screens/call_support_method.dart';
 import 'package:gwc_customer/screens/program_plans/meal_plan_screen.dart';
 import 'package:gwc_customer/screens/program_plans/program_start_screen.dart';
 import 'package:gwc_customer/services/dashboard_service/gut_service/dashboard_data_service.dart';
+import 'package:gwc_customer/services/login_otp_service.dart';
 import 'package:gwc_customer/services/quick_blox_service/quick_blox_service.dart';
 import 'package:gwc_customer/services/shipping_service/ship_track_service.dart';
 import 'package:gwc_customer/utils/program_stages_enum.dart';
@@ -293,7 +295,39 @@ class GutListState extends State<GutList> {
                   ),
                   GestureDetector(
                     onTap: (){
-                      callSupport();
+                      openAlertBox(
+                          context: context,
+                          isContentNeeded: false,
+                          titleNeeded: true,
+                          title: "Select Call Type",
+                          positiveButtonName: "In App Call",
+                          positiveButton: (){
+                            callSupport();
+                            Navigator.pop(context);
+                          },
+                        negativeButtonName: "Direct Call",
+                        negativeButton: (){
+                          Navigator.pop(context);
+                          if(_pref!.getString(AppConfig.KALEYRA_SUCCESS_ID) == null){
+                            AppConfig().showSnackbar(context, "Success Team Not available", isError: true);
+                          }
+                          else{
+                            // // click-to-call
+                            // callSupport();
+
+                            if(_pref!.getString(AppConfig.KALEYRA_ACCESS_TOKEN) != null){
+                              final accessToken = _pref!.getString(AppConfig.KALEYRA_ACCESS_TOKEN);
+                              final uId = _pref!.getString(AppConfig.KALEYRA_USER_ID);
+                              final successId = _pref!.getString(AppConfig.KALEYRA_SUCCESS_ID);
+                              // voice- call
+                              supportVoiceCall(uId!, successId!, accessToken!);
+                            }
+                            else{
+                              AppConfig().showSnackbar(context, "Something went wrong!!", isError: true);
+                            }
+                          }
+                        }
+                      );
                     },
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -369,6 +403,7 @@ class GutListState extends State<GutList> {
                 });
                 // sendApproveStatus('no', fromNull: true);
                 print("pop: $value");
+                getData();
               }
             });
           }
@@ -767,7 +802,7 @@ class GutListState extends State<GutList> {
 
   getUserProfile() async{
     print("user profile: ${_pref!.getInt(AppConfig.QB_CURRENT_USERID)}");
-    print("user id: ${_pref!.getInt(AppConfig.KALEYRA_USER_ID)}");
+    // print("user id: ${_pref!.getInt(AppConfig.KALEYRA_USER_ID)}");
 
     if(_pref!.getString(AppConfig.User_Name) != null || _pref!.getString(AppConfig.User_Name)!.isNotEmpty){
       final profile = await UserProfileService(repository: userRepository).getUserProfileService();
@@ -779,6 +814,9 @@ class GutListState extends State<GutList> {
         _pref!.setInt(AppConfig.QB_CURRENT_USERID, int.tryParse(model1.data!.qbUserId!)!);
         _pref!.setString(AppConfig.KALEYRA_USER_ID, model1.data!.kaleyraUID!);
 
+        if(_pref!.getString(AppConfig.KALEYRA_ACCESS_TOKEN) == null){
+          await LoginWithOtpService(repository: loginOtpRepository).getAccessToken(model1.data!.kaleyraUID!);
+        }
       }
     }
     // if(_pref!.getInt(AppConfig.QB_CURRENT_USERID) != null && !await _qbService!.getSession() || _pref!.getBool(AppConfig.IS_QB_LOGIN) == null){
@@ -1038,9 +1076,14 @@ class GutListState extends State<GutList> {
         levels[1].stage = openedStage;
         levels[2].stage = openedStage;
         break;
+      case 'shipping_packed':
+        levels[1].stage = openedStage;
+        levels[2].stage = openedStage;
+        levels[3].stage = currentStage;
+        break;
       case 'shipping_delivered':
         levels[1].stage = openedStage;
-        levels[2].stage = currentStage;
+        levels[2].stage = openedStage;
         levels[3].stage = currentStage;
         break;
       case 'shipping_approved':
@@ -1079,6 +1122,12 @@ class GutListState extends State<GutList> {
         break;
     }
   }
+
+  final LoginOtpRepository loginOtpRepository = LoginOtpRepository(
+    apiClient: ApiClient(
+      httpClient: http.Client(),
+    ),
+  );
 }
 
 class ProgramsData {

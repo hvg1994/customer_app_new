@@ -348,6 +348,8 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
 
 
   getMeals() async{
+    statusList.clear();
+    lst.clear();
     final result = await ProgramService(repository: repository).getMealPlanDetailsService(selectedDay.toString());
     print("result: $result");
 
@@ -373,7 +375,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
       });
       print('meal list: ${mealPlanData1}');
       // when day completed
-      if(isDayCompleted != null){
+      if(isDayCompleted != null && isDayCompleted == true){
         mealPlanData1.forEach((key, value) {
           (value).forEach((element) {
             statusList.putIfAbsent(element.itemId, () => element.status.toString().capitalize);
@@ -711,7 +713,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                   //                buildMealPlan(),
                   ...groupList(),
                   Visibility(
-                    visible: (statusList.isNotEmpty && statusList.values.any((element) => element.toString().contains('Unfollowed'))) || isDayCompleted != null,
+                    visible: (statusList.isNotEmpty && statusList.values.any((element) => element.toString().toLowerCase().contains('unfollowed'))),
                     child: IgnorePointer(
                       ignoring: isDayCompleted != null,
                       child: Container(
@@ -768,7 +770,12 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                     visible: buttonVisibility(),
                     child: Center(
                       child: GestureDetector(
-                        onTap: (statusList.length != lst.length)
+                        onTap:
+                        // (){
+                        //   print(statusList.length);
+                        //   print(statusList);
+                        // },
+                        (statusList.length != lst.length)
                             ? () => AppConfig().showSnackbar(context, "Please complete the Meal Plan Status", isError: true)
                             : (statusList.values.any((element) => element.toString().toLowerCase() == 'unfollowed') && commentController.text.isEmpty)
                             ? () => AppConfig().showSnackbar(context, "Please Mention the comments why you unfollowed?", isError: true)
@@ -1009,8 +1016,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
             child: Column(
               children: [
                 GestureDetector(
-                  onTap: (){
-                  },
+                  onTap: e.url == null ? null : e.type == 'item' ? () => showPdf(e.url!) : () => showVideo(e),
                   child: Container(
                     height: 120,
                     padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
@@ -1025,7 +1031,6 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                               width: 90,
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(15),
-                                color: Colors.red,
                               ),
                               child: (e.itemImage != null && e.itemImage!.isNotEmpty)
                                   ? ClipRRect(
@@ -1036,7 +1041,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                                   ) :
                               ClipRRect(
                                 borderRadius: BorderRadius.circular(15),
-                                child: Image.asset('assets/images/Mask Group 2171.png',
+                                child: Image.asset('assets/images/meal_placeholder.png',
                                   fit: BoxFit.fill,
                                 ),
                               ),
@@ -1170,8 +1175,8 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                               // ),
                               Expanded(
                                 child: Text(
-                                  // e.benefits ??
-                                      "- Good for Health and super food\n\n- Good for Health and super food\n\n- Good for Health and super food\n\n- Very Effective and quick recipe,\n\n- Ready To Cook",
+                                  e.benefits ?? '',
+                                      // "- Good for Health and super food\n\n- Good for Health and super food\n\n- Good for Health and super food\n\n- Very Effective and quick recipe,\n\n- Ready To Cook",
                                   style: TextStyle(
                                       fontSize: MealPlanConstants().benifitsFontSize,
                                       fontFamily: MealPlanConstants().benifitsFont
@@ -1360,193 +1365,6 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
       height: 30.0,
       enabled: true,
       disabledOpacity: 0.5,
-    );
-  }
-
-
-  buildNewItemList(){
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10),
-      child: Column(
-        children: [
-          Container(
-            height: 120,
-            padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    Container(
-                      height: 100,
-                      width: 110,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(15),
-                        color: Colors.red,
-                      ),
-                      child: Image.asset('assets/images/Mask Group 2171.png',
-                        fit: BoxFit.fill,
-                      ),
-                    ),
-                    // Positioned(
-                    //   bottom: -15,
-                    //     left: 10,
-                    //     right: 10,
-                    //     child: Container(
-                    //       margin: EdgeInsets.only(bottom: 4),
-                    //       child: PopupMenuButton(
-                    //         offset: const Offset(0, 30),
-                    //         shape: RoundedRectangleBorder(
-                    //             borderRadius: BorderRadius.circular(5)),
-                    //         itemBuilder: (context) => [
-                    //           // PopupMenuItem(
-                    //           //   child: Column(
-                    //           //     crossAxisAlignment: CrossAxisAlignment.start,
-                    //           //     children: [
-                    //           //       SizedBox(height: 0.6.h),
-                    //           //       buildTabView(
-                    //           //           index: 1,
-                    //           //           title: list[0],
-                    //           //           color: gPrimaryColor,
-                    //           //           itemId: e.itemId!
-                    //           //       ),
-                    //           //       SizedBox(height: 0.6.h),
-                    //           //       Container(
-                    //           //         margin: EdgeInsets.symmetric(vertical: 1.h),
-                    //           //         height: 1,
-                    //           //         color: gGreyColor.withOpacity(0.3),
-                    //           //       ),
-                    //           //       SizedBox(height: 0.6.h),
-                    //           //       buildTabView(
-                    //           //           index: 2,
-                    //           //           title: list[1],
-                    //           //           color: gsecondaryColor,
-                    //           //           itemId: e.itemId!
-                    //           //       ),
-                    //           //       SizedBox(height: 0.6.h),
-                    //           //     ],
-                    //           //   ),
-                    //           //   onTap: null,
-                    //           // ),
-                    //         ],
-                    //         child: GestureDetector(
-                    //           onTap: (){
-                    //             print("tap");
-                    //             openAlertBox(
-                    //               title: 'Did you Follow this item ?',
-                    //                 titleNeeded: true,
-                    //                 context: context,
-                    //                 content: 'Please select any of the following to submit your status',
-                    //                 positiveButtonName: 'Followed',
-                    //                 positiveButton: (){
-                    //                   Navigator.pop(context);
-                    //                 },
-                    //                 negativeButtonName: 'UnFollowed',
-                    //                 negativeButton: (){
-                    //                   Navigator.pop(context);
-                    //                 }
-                    //             );
-                    //           },
-                    //           child: Container(
-                    //             height: 30,
-                    //             padding: EdgeInsets.symmetric(
-                    //                 horizontal: 2.w, vertical: 0.2.h),
-                    //             decoration: BoxDecoration(
-                    //               color: gWhiteColor,
-                    //               borderRadius: BorderRadius.circular(5),
-                    //               border: Border.all(color: gMainColor, width: 1),
-                    //             ),
-                    //             child: Center(
-                    //               child: Text(
-                    //                 'UnFollowed',
-                    //                 textAlign: TextAlign.start,
-                    //                 overflow: TextOverflow.ellipsis,
-                    //                 style: TextStyle(
-                    //                     fontFamily: "GothamMedium",
-                    //                     color: gBlackColor,
-                    //                     fontSize: 8.sp),
-                    //               ),
-                    //             ),
-                    //           ),
-                    //         ),
-                    //       ),
-                    //     )
-                    // )
-                  ],
-                ),
-                SizedBox(
-                  width: 8,
-                ),
-                Expanded(
-                  child: Column(
-                    // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text("* Must Have",
-                        style: TextStyle(
-                          fontSize: MealPlanConstants().mustHaveFontSize,
-                          fontFamily: MealPlanConstants().mustHaveFont,
-                          color: MealPlanConstants().mustHaveTextColor,
-                        ),
-                      ),
-                      SizedBox(
-                        height: 5,
-                      ),
-                      Text('Morning Yoga',
-                        style: TextStyle(
-                            fontSize: MealPlanConstants().mealNameFontSize,
-                            fontFamily: MealPlanConstants().mealNameFont
-                        ),
-                      ),
-                      SizedBox(
-                        height: 8,
-                      ),
-                      Text("B/W 6-8am",
-                        style: TextStyle(
-                            fontSize: 9.sp,
-                            fontFamily: kFontMedium
-                        ),
-                      ),
-                      SizedBox(
-                        height: 8,
-                      ),
-                      Text("- Good for Health and super food\n\n- Very Effective and quick recipe,\n\n- Ready To Cook",
-                        style: TextStyle(
-                            fontSize: MealPlanConstants().benifitsFontSize,
-                            fontFamily: MealPlanConstants().benifitsFont
-                        ),
-                      ),
-                      SizedBox(
-                        height: 4,
-                      ),
-                    ],
-                  ),
-                ),
-                IconButton(
-                    onPressed: (){
-                      openAlertBox(
-                          title: 'Did you Follow this item ?',
-                          titleNeeded: true,
-                          context: context,
-                          content: 'Please select any of the following to submit your status',
-                          positiveButtonName: 'Followed',
-                          positiveButton: (){
-                            Navigator.pop(context);
-                          },
-                          negativeButtonName: 'UnFollowed',
-                          negativeButton: (){
-                            Navigator.pop(context);
-                          }
-                      );
-                    },
-                    icon: Icon(Icons.edit))
-              ],
-            ),
-          ),
-          Divider()
-        ],
-      ),
     );
   }
 

@@ -301,12 +301,12 @@ class _MyProfileDetailsState extends State<MyProfileDetails> {
                         }
                         else{
                           ErrorModel data = snapshot.data as ErrorModel;
-                          AppConfig().showSnackbar(context, data.message ?? 'Unauthenticated', isError: true);
+                          // AppConfig().showSnackbar(context, data.message ?? 'Unauthenticated', isError: true);
                           errorDisplayLayout();
                         }
                       }
                       else if(snapshot.hasError){
-                        AppConfig().showSnackbar(context, snapshot.error.toString(), isError: true);
+                        // AppConfig().showSnackbar(context, snapshot.error.toString(), isError: true);
                         errorDisplayLayout();
                       }
                       return buildCircularIndicator();

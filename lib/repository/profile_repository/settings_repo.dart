@@ -18,4 +18,12 @@ class SettingsRepository{
     return await apiClient.getFaqListApi();
   }
 
+  // ********** call support kaleyra ***************
+
+  Future getAccessTokenRepo(String kaleyraUID) async{
+    return await apiClient.getKaleyraAccessTokenApi(kaleyraUID);
+  }
+
+  // ***********************************************
+
 }

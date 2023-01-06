@@ -14,6 +14,7 @@ import 'package:gwc_customer/repository/quick_blox_repository/message_wrapper.da
 import 'package:gwc_customer/screens/profile_screens/call_support_method.dart';
 import 'package:gwc_customer/screens/program_plans/meal_pdf.dart';
 import 'package:gwc_customer/utils/app_config.dart';
+import 'package:gwc_customer/widgets/open_alert_box.dart';
 import 'package:gwc_customer/widgets/unfocus_widget.dart';
 import 'package:gwc_customer/widgets/widgets.dart';
 import 'package:image_picker/image_picker.dart';
@@ -247,7 +248,46 @@ class _MessageScreenState extends State<MessageScreen>
                             ),
                             GestureDetector(
                               onTap: () {
-                                callSupport();
+                                openAlertBox(
+                                    context: context,
+                                    isContentNeeded: false,
+                                    titleNeeded: true,
+                                    title: "Select Call Type",
+                                    positiveButtonName: "In App Call",
+                                    positiveButton: (){
+                                      callSupport();
+                                      Navigator.pop(context);
+                                    },
+                                    negativeButtonName: "Direct Call",
+                                    negativeButton: (){
+                                      final uId = _pref!.getString(AppConfig.KALEYRA_USER_ID);
+                                      print(uId);
+
+                                      Navigator.pop(context);
+                                      if(_pref!.getString(AppConfig.KALEYRA_SUCCESS_ID) == null){
+                                        AppConfig().showSnackbar(context, "SuccessTeam Not Assigned", isError: true);
+                                      }
+                                      else if(uId == null){
+                                        AppConfig().showSnackbar(context, "KaleyraId Not Assigned", isError: true);
+                                      }
+                                      else{
+                                        print(_pref!.getString(AppConfig.KALEYRA_USER_ID) == "null");
+                                        if(_pref!.getString(AppConfig.KALEYRA_USER_ID) == "null"){
+                                          AppConfig().showSnackbar(context, "KaleyraId Not Assigned", isError: true);
+                                        }
+                                        else if(_pref!.getString(AppConfig.KALEYRA_ACCESS_TOKEN) != null){
+                                          final accessToken = _pref!.getString(AppConfig.KALEYRA_ACCESS_TOKEN);
+                                          final uId = _pref!.getString(AppConfig.KALEYRA_USER_ID);
+                                          final successId = _pref!.getString(AppConfig.KALEYRA_SUCCESS_ID);
+                                          // voice- call
+                                          supportVoiceCall(uId!, successId!, accessToken!);
+                                        }
+                                        else{
+                                          AppConfig().showSnackbar(context, "Something went wrong!!", isError: true);
+                                        }
+                                      }
+                                    }
+                                );
                               },
                               child: Container(
                                 padding: const EdgeInsets.all(5),
@@ -300,10 +340,11 @@ class _MessageScreenState extends State<MessageScreen>
                                         if (snapshot.hasData) {
                                           return buildMessageList(snapshot.data
                                               as List<QBMessageWrapper>);
-                                        } else if (snapshot.hasError) {
+                                        }
+                                        else if (snapshot.hasError || isError) {
                                           return Center(
                                             child:
-                                                Text(snapshot.error.toString()),
+                                                Text((isError) ? errorMsg : snapshot.error.toString()),
                                           );
                                         }
                                         return Center(
@@ -1144,6 +1185,9 @@ class _MessageScreenState extends State<MessageScreen>
   //   }
   // }
 
+  bool isError  = false;
+  String errorMsg = '';
+
   joinChatRoom(String groupId) async {
     print("groupId: ${groupId}");
     Provider.of<QuickBloxService>(context, listen: false).joinDialog(groupId).then((value) {
@@ -1158,6 +1202,10 @@ class _MessageScreenState extends State<MessageScreen>
           joinWithLogin(groupId);
         }
         else{
+          setState((){
+            isError = true;
+            errorMsg = e.message ?? '';
+          });
           // _qbService.connect(_pref.getInt(AppConfig.QB_CURRENT_USERID)!);
         }
       }

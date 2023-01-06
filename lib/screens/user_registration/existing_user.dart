@@ -667,6 +667,10 @@ class _ExistingUserState extends State<ExistingUser> {
 
       _pref.setString(AppConfig.EVAL_STATUS, model.userEvaluationStatus!);
       storeBearerToken(model.accessToken ?? '');
+      _pref.setString(AppConfig.KALEYRA_USER_ID, model.kaleyraUserId!);
+      _pref.setString(AppConfig.KALEYRA_SUCCESS_ID, model.kaleyraSuccessId!);
+
+      _loginWithOtpService.getAccessToken(model.kaleyraUserId!);
 
       if(model.userEvaluationStatus!.contains("no_evaluation") || model.userEvaluationStatus!.contains("pending"))
         {

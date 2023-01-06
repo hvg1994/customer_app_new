@@ -107,7 +107,7 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
     }
     else{
       ErrorModel model = response as ErrorModel;
-      AppConfig().showSnackbar(context, model.message ?? 'UnAuthenticated');
+      AppConfig().showSnackbar(context, model.message ?? AppConfig.oopsMessage);
     }
   }
 }

@@ -71,4 +71,32 @@ class LocalNotificationService {
       print(e);
     }
   }
+
+  void showQBNotification(RemoteMessage message) {
+    print("Notification Message: ${message.toMap()}");
+    AndroidNotificationChannel channel = const AndroidNotificationChannel(
+        'channel_id', 'some_title', description: 'some_description',
+        importance: Importance.high);
+
+    // message recieved: {senderId: null, category: null, collapseKey: event38739295,
+    // contentAvailable: false, data: {msg: hello sjsnjlasjnas,
+    // fcm: abc, message: This is Notification Test Message},
+    // from: 728114586270, messageId: 0:1672989796313608%021842b3f9fd7ecd,
+    // messageType: null, mutableContent: false, notification: null,
+    // sentTime: 1672989796282, threadId: null, ttl: 86400}
+
+    AndroidNotificationDetails details = AndroidNotificationDetails(
+        channel.id, channel.name, channelDescription:  channel.description,
+        icon: "@mipmap/ic_launcher");
+
+    int id = message.hashCode;
+    String title = "New Chat Message";
+    String body = message.data["message"];
+
+    _notificationsPlugin.show(id, title, body,
+        NotificationDetails(android: details),
+      payload: message.data.toString()
+    );
+  }
+
 }

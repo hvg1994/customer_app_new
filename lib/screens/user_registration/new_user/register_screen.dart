@@ -78,6 +78,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       fcmToken = _pref!.getString(AppConfig.FCM_TOKEN);
     });
     print("fcm token: $fcmToken");
+    print("devId: $deviceId");
   }
 
   @override

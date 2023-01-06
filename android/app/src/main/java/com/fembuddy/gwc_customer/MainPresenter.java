@@ -43,7 +43,10 @@ import com.kaleyra.collaboration_suite_networking.Environment;
 import com.kaleyra.collaboration_suite_networking.Region;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodChannel;
@@ -176,6 +179,8 @@ public class MainPresenter extends AppCompatActivity implements BandyerModuleObs
                 session,
                 errorReason -> Log.e(TAG, "Unable to connect BandyerSDK with error: " + errorReason)
         );
+
+//        BandyerSDK.getInstance().handleNotification();
     }
 
 
@@ -203,6 +208,22 @@ public class MainPresenter extends AppCompatActivity implements BandyerModuleObs
 
         mContext.startActivity(bandyerIntent);
 
+    }
+
+    public void normalCall(String userId, String successTeamId,String accessToken){
+        sdkConfig(userId, accessToken);
+//        Uri uri = Uri.parse("https://sandbox.bandyer.com/eu/direct-rest-call-handler/54e99cced226c5bec7787245be");
+
+        addObservers();
+
+        ArrayList<String> l = new ArrayList<>();
+        l.add(successTeamId);
+        BandyerIntent bandyerIntent = new BandyerIntent.Builder()
+                .startWithAudioCall(mContext)
+                .with(l)
+                .build();
+
+        mContext.startActivity(bandyerIntent);
     }
 
     private boolean areObserversAdded = false;
@@ -360,6 +381,7 @@ public class MainPresenter extends AppCompatActivity implements BandyerModuleObs
 
         };
     }
+
 
 
     @Override

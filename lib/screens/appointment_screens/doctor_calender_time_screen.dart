@@ -96,7 +96,7 @@ class _DoctorCalenderTimeScreenState extends State<DoctorCalenderTimeScreen> {
           slotErrorText = result.message!;
         }
         else if(result.message!.toLowerCase().contains("unauthenticated")){
-          slotErrorText = 'Something went wrong! Please Retry..';
+          slotErrorText = AppConfig.oopsMessage;
         }
         else{
           slotErrorText = AppConfig.slotErrorText;
@@ -234,19 +234,22 @@ class _DoctorCalenderTimeScreenState extends State<DoctorCalenderTimeScreen> {
                       // padding: EdgeInsets.symmetric(
                       //     vertical: 1.h, horizontal: 25.w),
                       decoration: BoxDecoration(
-                        color: isSelected.isEmpty ? gMainColor : gPrimaryColor,
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: gMainColor, width: 1),
+                        color: eUser().buttonColor,
+                        borderRadius: BorderRadius.circular(eUser().buttonBorderRadius),
+                        border: Border.all(
+                            color: eUser().buttonBorderColor,
+                            width: eUser().buttonBorderWidth
+                        ),
                       ),
                       child: (showBookingProgress)
-                          ? buildThreeBounceIndicator()
+                          ? buildThreeBounceIndicator(color: eUser().threeBounceIndicatorColor)
                           : Center(
                         child: Text(
                           'Next',
                           style: TextStyle(
-                            fontFamily: "GothamRoundedBold_21016",
-                            color: isSelected.isEmpty ? gPrimaryColor : gWhiteColor,
-                            fontSize: 13.sp,
+                            fontFamily: eUser().buttonTextFont,
+                            color: eUser().buttonTextColor,
+                            fontSize: eUser().buttonTextSize,
                           ),
                         ),
                       ),

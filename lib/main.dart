@@ -96,6 +96,7 @@ void main() async {
 
   QuickBloxRepository().init(AppConfig.QB_APP_ID, AppConfig.QB_AUTH_KEY, AppConfig.QB_AUTH_SECRET, AppConfig.QB_ACCOUNT_KEY);
 
+  QuickBloxRepository().initSubscription(fcmToken!);
 }
 
 

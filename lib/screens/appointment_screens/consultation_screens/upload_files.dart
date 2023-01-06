@@ -350,41 +350,47 @@ class _UploadFilesState extends State<UploadFiles> {
     });
     final res = await ReportService(repository: repository)
         .doctorRequestedReportListService();
+    Navigator.pop(context);
     if (res.runtimeType == GetReportListModel) {
       GetReportListModel result = res;
-      setState(() {
-        showUploadProgress = false;
-        doctorRequestedReports.addAll(result.data!);
-      });
-      Map reportObj = {};
-      late ReportObject _reports;
-      if (doctorRequestedReports.isNotEmpty) {
-        doctorRequestedReports.forEach((element) {
-          _reports = ReportObject(
-              element.reportType!, element.reportId ?? '', '', false);
-          // reportObj.putIfAbsent('name', () => element.reportType);
-          // reportObj.putIfAbsent('id', () => element.reportId);
-          // reportObj.putIfAbsent('path', () => '');
-          reportsObject.add(_reports);
+      if(result.data != null){
+        setState(() {
+          showUploadProgress = false;
+          doctorRequestedReports.addAll(result.data!);
         });
+        Map reportObj = {};
+        late ReportObject _reports;
+        if (doctorRequestedReports.isNotEmpty) {
+          doctorRequestedReports.forEach((element) {
+            print("element.reportId:${element.reportId}");
+            _reports = ReportObject(
+                element.reportType!, element.id.toString() ?? '', '', false);
+            // reportObj.putIfAbsent('name', () => element.reportType);
+            // reportObj.putIfAbsent('id', () => element.reportId);
+            // reportObj.putIfAbsent('path', () => '');
+            reportsObject.add(_reports);
+          });
+        }
+        doctorRequestedReports.forEach((element) {
+          print("doc req: ${element.reportType}");
+        });
+        reportsObject.forEach((element) {
+          print("req obj: ${element.name}");
+        });
+        print("result.data: ${result.data}");
+        setState(() {});
       }
-      doctorRequestedReports.forEach((element) {
-        print("doc req: ${element.reportType}");
-      });
-      reportsObject.forEach((element) {
-        print("req obj: ${element.name}");
-      });
-      print("result.data: ${result.data}");
-      setState(() {});
+      else{
+      }
       // AppConfig().showSnackbar(context, result.message ?? '');
-    } else {
+    }
+    else {
       ErrorModel result = res;
       AppConfig().showSnackbar(context, result.message ?? '', isError: true);
       setState(() {
         showUploadProgress = false;
       });
     }
-    Navigator.pop(context);
   }
 
   getUserReportList() async {
@@ -686,6 +692,7 @@ class _UploadFilesState extends State<UploadFiles> {
   }
 
   void pickFromFile({String? type}) async {
+    print('type: $type');
     final result = await FilePicker.platform.pickFiles(
       withReadStream: true,
       type: FileType.any,
@@ -704,7 +711,7 @@ class _UploadFilesState extends State<UploadFiles> {
         if (type != null) {
           if (reportsObject.isNotEmpty) {
             reportsObject.forEach((element) {
-              if (element.name.contains(type)) {
+              if (element.id.toString().contains(type)) {
                 element.path = result.paths.first ?? '';
               }
             });
@@ -760,7 +767,7 @@ class _UploadFilesState extends State<UploadFiles> {
   }
 
   buildReportList(String text,
-      {bool isSingleIcon = true,
+      {String id = '', bool isSingleIcon = true,
       VoidCallback? onTap,
       bool isDoneIcon = false}) {
     return Column(
@@ -814,7 +821,7 @@ class _UploadFilesState extends State<UploadFiles> {
                 itemBuilder: (context, index) {
                   final file = File(reportsObject[index].path);
                   return Visibility(
-                      visible: reportsObject[index].name == text &&
+                      visible: reportsObject[index].id == id &&
                           reportsObject[index].path.isNotEmpty,
                       child: buildFile(file, index));
                 },
@@ -856,7 +863,7 @@ class _UploadFilesState extends State<UploadFiles> {
         //   isDone =  element.isSubmited;
         // }
         if (element.path.isNotEmpty &&
-            element.name == doctorRequestedReports[index].reportType) {
+            element.id.toString() == doctorRequestedReports[index].id.toString()) {
           isDone = true;
         }
       });
@@ -925,20 +932,21 @@ class _UploadFilesState extends State<UploadFiles> {
                         // print(reportsObject[reportsObject.indexWhere((element) => element.name == doctorRequestedReports[index].reportType)].isSubmited);
                         return buildReportList(
                             doctorRequestedReports[index].reportType ?? '',
+                            id: doctorRequestedReports[index].id.toString() ?? '',
                             isDoneIcon: getIsDone(reportsObject, index),
                             onTap: () {
                           reportsObject.forEach((element) {
+                            print(element.id);
                             print(
-                                '${element.name} ${doctorRequestedReports[index].reportType}');
-                            print(element.name ==
-                                    doctorRequestedReports[index].reportType &&
-                                element.path.isEmpty);
-                            if (element.name ==
-                                    doctorRequestedReports[index].reportType &&
+                                '${element.id} ${doctorRequestedReports[index].id}');
+                            print(element.id.toString() ==
+                                doctorRequestedReports[index].id.toString());
+                            if (element.id.toString() ==
+                                    doctorRequestedReports[index].id.toString() &&
                                 element.path.isEmpty) {
                               showChooserSheet(
                                   type:
-                                      doctorRequestedReports[index].reportType);
+                                      doctorRequestedReports[index].id.toString());
                             } else if (element.name ==
                                     doctorRequestedReports[index].reportType &&
                                 element.path.isEmpty) {

@@ -18,13 +18,11 @@ import '../../widgets/widgets.dart';
 import 'check_box_settings.dart';
 
 class PersonalDetailsScreen2 extends StatefulWidget {
-  final bool showData;
   final EvaluationModelFormat1? evaluationModelFormat1;
   final List? medicalReportList;
   /// this is called when showData is true
   final ChildGetEvaluationDataModel? childGetEvaluationDataModel;
   const PersonalDetailsScreen2({Key? key,
-    this.showData = false,
     this.evaluationModelFormat1,
     this.childGetEvaluationDataModel,
     this.medicalReportList}) : super(key: key);
@@ -97,10 +95,6 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    print(widget.showData);
-    if(widget.showData){
-      storeData();
-    }
   }
 
   void storeData() {
@@ -207,43 +201,33 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
                         Center(
                           child: GestureDetector(
                             onTap: () {
-                              if(widget.showData){
-                                Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (c) => DashboardScreen()), (route) => route.isFirst);
-                              }
-                              else if(formKey1.currentState!.validate() && formKey2.currentState!.validate() && formKey3.currentState!.validate()){
+                              if(formKey1.currentState!.validate() && formKey2.currentState!.validate() && formKey3.currentState!.validate()){
                                 print(widget.medicalReportList.runtimeType);
                                 submitFormDetails();
                               }
                             },
                             child: Container(
-                              width: 60.w,
+                              width: 50.w,
                               height: 5.h,
                               // padding: EdgeInsets.symmetric(
                               //     vertical: 1.h, horizontal: 25.w),
                               decoration: BoxDecoration(
-                                color: gPrimaryColor,
-                                borderRadius: BorderRadius.circular(8),
-                                border: Border.all(color: gMainColor, width: 1),
+                                color: eUser().buttonColor,
+                                borderRadius: BorderRadius.circular(eUser().buttonBorderRadius),
+                                border: Border.all(
+                                    color: eUser().buttonBorderColor,
+                                    width: eUser().buttonBorderWidth
+                                ),
                               ),
-                              child: widget.showData
-                                  ? Center(
-                                child: Text(
-                                  'Go to Home',
-                                  style: TextStyle(
-                                    fontFamily: "GothamRoundedBold_21016",
-                                    color: gWhiteColor,
-                                    fontSize: 13.sp,
-                                  ),
-                                ))
-                                  : (isSubmitPressed)
-                                  ? buildThreeBounceIndicator()
+                              child:(isSubmitPressed)
+                                  ? buildThreeBounceIndicator(color: eUser().threeBounceIndicatorColor)
                                   : Center(
                                 child: Text(
                                   'Submit',
                                   style: TextStyle(
-                                    fontFamily: "GothamRoundedBold_21016",
-                                    color: gWhiteColor,
-                                    fontSize: 13.sp,
+                                    fontFamily: eUser().buttonTextFont,
+                                    color: eUser().buttonTextColor,
+                                    fontSize: eUser().buttonTextSize,
                                   ),
                                 ),
                               ),
@@ -265,275 +249,272 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
   buildFoodHabitsDetails() {
     return Form(
       key: formKey1,
-      child: IgnorePointer(
-        ignoring: widget.showData,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      "Food Habits",
-                      textAlign: TextAlign.start,
-                      style: TextStyle(
-                          fontFamily: "PoppinsBold",
-                          color: kPrimaryColor,
-                          fontSize: 15.sp),
-                    ),
-                    SizedBox(
-                      width: 2.w,
-                    ),
-                    Expanded(
-                      child: Container(
-                        height: 1,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    "Food Habits",
+                    textAlign: TextAlign.start,
+                    style: TextStyle(
+                        fontFamily: "PoppinsBold",
                         color: kPrimaryColor,
-                      ),
+                        fontSize: 15.sp),
+                  ),
+                  SizedBox(
+                    width: 2.w,
+                  ),
+                  Expanded(
+                    child: Container(
+                      height: 1,
+                      color: kPrimaryColor,
                     ),
-                  ],
-                ),
-                Text(
-                  "To Make Your Meal Plans As Simple & Easy For You To Follow As Possible",
-                  textAlign: TextAlign.start,
-                  style: TextStyle(
-                      fontFamily: "PoppinsRegular",
-                      color: gMainColor,
-                      fontSize: 9.sp),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 3.h,
-            ),
-            buildLabelTextField("Do Certain Food Affect Your Digestion? If So Please Provide Details."),
-            SizedBox(
-              height: 1.h,
-            ),
-            TextFormField(
-              controller: digestionController,
-              cursorColor: kPrimaryColor,
-              validator: (value) {
-                if (value!.isEmpty ) {
-                  return 'Please enter your Changed';
-                } else if (value.length < 2) {
-                  return emptyStringMsg;
-                } else {
-                  return null;
-                }
-              },
-              decoration: CommonDecoration.buildTextInputDecoration(
-                  "Your answer", digestionController),
-              textInputAction: TextInputAction.next,
-              textAlign: TextAlign.start,
-              keyboardType: TextInputType.text,
-            ),
-            SizedBox(
-              height: 2.h,
-            ),
-            buildLabelTextField("Do You Follow Any Special Diet(Keto,Etc)? If So Please Provide Details"),
-            SizedBox(
-              height: 1.h,
-            ),
-            TextFormField(
-              controller: specialDietController,
-              cursorColor: kPrimaryColor,
-              validator: (value) {
-                if (value!.isEmpty) {
-                  return 'Please enter your Changed';
-                } else if (value.length < 2) {
-                  return emptyStringMsg;
-                } else {
-                  return null;
-                }
-              },
-              decoration: CommonDecoration.buildTextInputDecoration(
-                  "Your answer", specialDietController),
-              textInputAction: TextInputAction.next,
-              textAlign: TextAlign.start,
-              keyboardType: TextInputType.text,
-            ),
-            SizedBox(
-              height: 2.h,
-            ),
-            buildLabelTextField("Do You Have Any Known Food Allergy? If So Please Provide Details."),
-            SizedBox(
-              height: 1.h,
-            ),
-            TextFormField(
-              controller: foodAllergyController,
-              cursorColor: kPrimaryColor,
-              validator: (value) {
-                if (value!.isEmpty ) {
-                  return 'Please enter your Changed';
-                }else if (value.length < 2) {
-                  return emptyStringMsg;
-                }else {
-                  return null;
-                }
-              },
-              decoration: CommonDecoration.buildTextInputDecoration(
-                  "Your answer", foodAllergyController),
-              textInputAction: TextInputAction.next,
-              textAlign: TextAlign.start,
-              keyboardType: TextInputType.text,
-            ),
-            SizedBox(
-              height: 2.h,
-            ),
-            buildLabelTextField("Do You Have Any Known Intolerance? If So Please Provide Details."),
-            SizedBox(
-              height: 1.h,
-            ),
-            TextFormField(
-              controller: intoleranceController,
-              cursorColor: kPrimaryColor,
-              validator: (value) {
-                if (value!.isEmpty ) {
-                  return 'Please enter your Changed';
-                } else if (value.length < 2) {
-                  return emptyStringMsg;
-                } else {
-                  return null;
-                }
-              },
-              decoration: CommonDecoration.buildTextInputDecoration(
-                  "Your answer", intoleranceController),
-              textInputAction: TextInputAction.next,
-              textAlign: TextAlign.start,
-              keyboardType: TextInputType.text,
-            ),
-            SizedBox(
-              height: 2.h,
-            ),
-            buildLabelTextField("Do You Have Any Severe Food Cravings? If So Please Provide Details."),
-            SizedBox(
-              height: 1.h,
-            ),
-            TextFormField(
-              controller: cravingsController,
-              cursorColor: kPrimaryColor,
-              validator: (value) {
-                if (value!.isEmpty ) {
-                  return 'Please enter your Changed';
-                }else if (value.length < 2) {
-                  return emptyStringMsg;
-                }else {
-                  return null;
-                }
-              },
-              decoration: CommonDecoration.buildTextInputDecoration(
-                  "Your answer", cravingsController),
-              textInputAction: TextInputAction.next,
-              textAlign: TextAlign.start,
-              keyboardType: TextInputType.text,
-            ),
-            SizedBox(
-              height: 2.h,
-            ),
-            buildLabelTextField("Do You Dislike Any Food?Please Mention All Of Them"),
-            SizedBox(
-              height: 1.h,
-            ),
-            TextFormField(
-              controller: dislikeFoodController,
-              cursorColor: kPrimaryColor,
-              validator: (value) {
-                if (value!.isEmpty ) {
-                  return 'Please enter your Changed';
-                } else if (value.length < 2) {
-                  return emptyStringMsg;
-                } else {
-                  return null;
-                }
-              },
-              decoration: CommonDecoration.buildTextInputDecoration(
-                  "Your answer", dislikeFoodController),
-              textInputAction: TextInputAction.next,
-              textAlign: TextAlign.start,
-              keyboardType: TextInputType.text,
-            ),
-            SizedBox(
-              height: 2.h,
-            ),
-            buildLabelTextField("How Many Glasses Of Water Do You Have A Day?"),
-            SizedBox(
-              height: 1.h,
-            ),
-            Row(
-              children: [
-                Radio(
-                  value: "1-2",
-                  activeColor: kPrimaryColor,
+                  ),
+                ],
+              ),
+              Text(
+                "To Make Your Meal Plans As Simple & Easy For You To Follow As Possible",
+                textAlign: TextAlign.start,
+                style: TextStyle(
+                    fontFamily: "PoppinsRegular",
+                    color: gMainColor,
+                    fontSize: 9.sp),
+              ),
+            ],
+          ),
+          SizedBox(
+            height: 3.h,
+          ),
+          buildLabelTextField("Do Certain Food Affect Your Digestion? If So Please Provide Details."),
+          SizedBox(
+            height: 1.h,
+          ),
+          TextFormField(
+            controller: digestionController,
+            cursorColor: kPrimaryColor,
+            validator: (value) {
+              if (value!.isEmpty ) {
+                return 'Please enter your Changed';
+              } else if (value.length < 2) {
+                return emptyStringMsg;
+              } else {
+                return null;
+              }
+            },
+            decoration: CommonDecoration.buildTextInputDecoration(
+                "Your answer", digestionController),
+            textInputAction: TextInputAction.next,
+            textAlign: TextAlign.start,
+            keyboardType: TextInputType.text,
+          ),
+          SizedBox(
+            height: 2.h,
+          ),
+          buildLabelTextField("Do You Follow Any Special Diet(Keto,Etc)? If So Please Provide Details"),
+          SizedBox(
+            height: 1.h,
+          ),
+          TextFormField(
+            controller: specialDietController,
+            cursorColor: kPrimaryColor,
+            validator: (value) {
+              if (value!.isEmpty) {
+                return 'Please enter your Changed';
+              } else if (value.length < 2) {
+                return emptyStringMsg;
+              } else {
+                return null;
+              }
+            },
+            decoration: CommonDecoration.buildTextInputDecoration(
+                "Your answer", specialDietController),
+            textInputAction: TextInputAction.next,
+            textAlign: TextAlign.start,
+            keyboardType: TextInputType.text,
+          ),
+          SizedBox(
+            height: 2.h,
+          ),
+          buildLabelTextField("Do You Have Any Known Food Allergy? If So Please Provide Details."),
+          SizedBox(
+            height: 1.h,
+          ),
+          TextFormField(
+            controller: foodAllergyController,
+            cursorColor: kPrimaryColor,
+            validator: (value) {
+              if (value!.isEmpty ) {
+                return 'Please enter your Changed';
+              }else if (value.length < 2) {
+                return emptyStringMsg;
+              }else {
+                return null;
+              }
+            },
+            decoration: CommonDecoration.buildTextInputDecoration(
+                "Your answer", foodAllergyController),
+            textInputAction: TextInputAction.next,
+            textAlign: TextAlign.start,
+            keyboardType: TextInputType.text,
+          ),
+          SizedBox(
+            height: 2.h,
+          ),
+          buildLabelTextField("Do You Have Any Known Intolerance? If So Please Provide Details."),
+          SizedBox(
+            height: 1.h,
+          ),
+          TextFormField(
+            controller: intoleranceController,
+            cursorColor: kPrimaryColor,
+            validator: (value) {
+              if (value!.isEmpty ) {
+                return 'Please enter your Changed';
+              } else if (value.length < 2) {
+                return emptyStringMsg;
+              } else {
+                return null;
+              }
+            },
+            decoration: CommonDecoration.buildTextInputDecoration(
+                "Your answer", intoleranceController),
+            textInputAction: TextInputAction.next,
+            textAlign: TextAlign.start,
+            keyboardType: TextInputType.text,
+          ),
+          SizedBox(
+            height: 2.h,
+          ),
+          buildLabelTextField("Do You Have Any Severe Food Cravings? If So Please Provide Details."),
+          SizedBox(
+            height: 1.h,
+          ),
+          TextFormField(
+            controller: cravingsController,
+            cursorColor: kPrimaryColor,
+            validator: (value) {
+              if (value!.isEmpty ) {
+                return 'Please enter your Changed';
+              }else if (value.length < 2) {
+                return emptyStringMsg;
+              }else {
+                return null;
+              }
+            },
+            decoration: CommonDecoration.buildTextInputDecoration(
+                "Your answer", cravingsController),
+            textInputAction: TextInputAction.next,
+            textAlign: TextAlign.start,
+            keyboardType: TextInputType.text,
+          ),
+          SizedBox(
+            height: 2.h,
+          ),
+          buildLabelTextField("Do You Dislike Any Food?Please Mention All Of Them"),
+          SizedBox(
+            height: 1.h,
+          ),
+          TextFormField(
+            controller: dislikeFoodController,
+            cursorColor: kPrimaryColor,
+            validator: (value) {
+              if (value!.isEmpty ) {
+                return 'Please enter your Changed';
+              } else if (value.length < 2) {
+                return emptyStringMsg;
+              } else {
+                return null;
+              }
+            },
+            decoration: CommonDecoration.buildTextInputDecoration(
+                "Your answer", dislikeFoodController),
+            textInputAction: TextInputAction.next,
+            textAlign: TextAlign.start,
+            keyboardType: TextInputType.text,
+          ),
+          SizedBox(
+            height: 2.h,
+          ),
+          buildLabelTextField("How Many Glasses Of Water Do You Have A Day?"),
+          SizedBox(
+            height: 1.h,
+          ),
+          Row(
+            children: [
+              Radio(
+                value: "1-2",
+                activeColor: kPrimaryColor,
+                groupValue: glassesOfWater,
+                onChanged: (value) {
+                  setState(() {
+                    glassesOfWater = value as String;
+                  });
+                },
+              ),
+              Text(
+                '1-2',
+                style: buildTextStyle(),
+              ),
+              SizedBox(
+                width: 3.w,
+              ),
+              Radio(
+                value: "3-4",
+                activeColor: kPrimaryColor,
+                groupValue: glassesOfWater,
+                onChanged: (value) {
+                  setState(() {
+                    glassesOfWater = value as String;
+                  });
+                },
+              ),
+              Text(
+                '3-4',
+                style: buildTextStyle(),
+              ),
+              SizedBox(
+                width: 3.w,
+              ),
+              Radio(
+                  value: "6-8",
                   groupValue: glassesOfWater,
+                  activeColor: kPrimaryColor,
                   onChanged: (value) {
                     setState(() {
                       glassesOfWater = value as String;
                     });
-                  },
-                ),
-                Text(
-                  '1-2',
-                  style: buildTextStyle(),
-                ),
-                SizedBox(
-                  width: 3.w,
-                ),
-                Radio(
-                  value: "3-4",
-                  activeColor: kPrimaryColor,
+                  }),
+              Text(
+                "6-8",
+                style: buildTextStyle(),
+              ),
+              SizedBox(
+                width: 3.w,
+              ),
+              Radio(
+                  value: "9+",
                   groupValue: glassesOfWater,
+                  activeColor: kPrimaryColor,
                   onChanged: (value) {
                     setState(() {
                       glassesOfWater = value as String;
                     });
-                  },
-                ),
-                Text(
-                  '3-4',
-                  style: buildTextStyle(),
-                ),
-                SizedBox(
-                  width: 3.w,
-                ),
-                Radio(
-                    value: "6-8",
-                    groupValue: glassesOfWater,
-                    activeColor: kPrimaryColor,
-                    onChanged: (value) {
-                      setState(() {
-                        glassesOfWater = value as String;
-                      });
-                    }),
-                Text(
-                  "6-8",
-                  style: buildTextStyle(),
-                ),
-                SizedBox(
-                  width: 3.w,
-                ),
-                Radio(
-                    value: "9+",
-                    groupValue: glassesOfWater,
-                    activeColor: kPrimaryColor,
-                    onChanged: (value) {
-                      setState(() {
-                        glassesOfWater = value as String;
-                      });
-                    }),
-                Text(
-                  "9+",
-                  style: buildTextStyle(),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 4.h,
-            ),
-          ],
-        ),
+                  }),
+              Text(
+                "9+",
+                style: buildTextStyle(),
+              ),
+            ],
+          ),
+          SizedBox(
+            height: 4.h,
+          ),
+        ],
       ),
     );
   }
@@ -541,469 +522,463 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
   buildLifeStyleDetails() {
     return Form(
       key: formKey2,
-      child: IgnorePointer(
-        ignoring: widget.showData,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    "Life Style",
+                    textAlign: TextAlign.start,
+                    style: TextStyle(
+                        fontFamily: "PoppinsBold",
+                        color: kPrimaryColor,
+                        fontSize: 15.sp),
+                  ),
+                  SizedBox(
+                    width: 2.w,
+                  ),
+                  Expanded(
+                    child: Container(
+                      height: 1,
+                      color: kPrimaryColor,
+                    ),
+                  ),
+                ],
+              ),
+              Text(
+                "This Tells Us How Your Gut Is & Has Been Treated",
+                textAlign: TextAlign.start,
+                style: TextStyle(
+                    fontFamily: "PoppinsRegular",
+                    color: gMainColor,
+                    fontSize: 9.sp),
+              ),
+            ],
+          ),
+          SizedBox(
+            height: 3.h,
+          ),
+          buildLabelTextField("Habits Or Addiction"),
+          SizedBox(
+            height: 1.h,
+          ),
+          ListView(
+            shrinkWrap: true,
+            physics: const BouncingScrollPhysics(),
+            children: [
+              Wrap(
+                children: [
+                  ...habitCheckBox.map(buildWrapingCheckBox).toList(),
+                ],
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(
-                      "Life Style",
-                      textAlign: TextAlign.start,
-                      style: TextStyle(
-                          fontFamily: "PoppinsBold",
-                          color: kPrimaryColor,
-                          fontSize: 15.sp),
+                    SizedBox(
+                      width: 20,
+                      child: Checkbox(
+                        activeColor: kPrimaryColor,
+                        value: habitOtherSelected,
+                        onChanged: (v) {
+                          setState(() {
+                            habitOtherSelected = v!;
+                          });
+                        },
+                      ),
                     ),
                     SizedBox(
-                      width: 2.w,
+                      width: 4,
                     ),
-                    Expanded(
-                      child: Container(
-                        height: 1,
-                        color: kPrimaryColor,
-                      ),
+                    Text(
+                      'Other:',
+                      style: buildTextStyle(),
                     ),
                   ],
                 ),
-                Text(
-                  "This Tells Us How Your Gut Is & Has Been Treated",
-                  textAlign: TextAlign.start,
-                  style: TextStyle(
-                      fontFamily: "PoppinsRegular",
-                      color: gMainColor,
-                      fontSize: 9.sp),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 3.h,
-            ),
-            buildLabelTextField("Habits Or Addiction"),
-            SizedBox(
-              height: 1.h,
-            ),
-            ListView(
-              shrinkWrap: true,
-              physics: const BouncingScrollPhysics(),
-              children: [
-                Wrap(
-                  children: [
-                    ...habitCheckBox.map(buildWrapingCheckBox).toList(),
-                  ],
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      SizedBox(
-                        width: 20,
-                        child: Checkbox(
-                          activeColor: kPrimaryColor,
-                          value: habitOtherSelected,
-                          onChanged: (v) {
-                            setState(() {
-                              habitOtherSelected = v!;
-                            });
-                          },
-                        ),
-                      ),
-                      SizedBox(
-                        width: 4,
-                      ),
-                      Text(
-                        'Other:',
-                        style: buildTextStyle(),
-                      ),
-                    ],
-                  ),
-                ),
-                TextFormField(
-                  controller: habitOtherController,
-                  cursorColor: kPrimaryColor,
-                  validator: (value) {
-                    if (value!.isEmpty && habitOtherSelected) {
-                      return 'Please mention other habits/addiction which not mentioned above';
-                    } else {
-                      return null;
-                    }
-                  },
-                  decoration: CommonDecoration.buildTextInputDecoration(
-                      "Your answer", habitOtherController),
-                  textInputAction: TextInputAction.next,
-                  textAlign: TextAlign.start,
-                  keyboardType: TextInputType.text,
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 5.h,
-            ),
-          ],
-        ),
+              ),
+              TextFormField(
+                controller: habitOtherController,
+                cursorColor: kPrimaryColor,
+                validator: (value) {
+                  if (value!.isEmpty && habitOtherSelected) {
+                    return 'Please mention other habits/addiction which not mentioned above';
+                  } else {
+                    return null;
+                  }
+                },
+                decoration: CommonDecoration.buildTextInputDecoration(
+                    "Your answer", habitOtherController),
+                textInputAction: TextInputAction.next,
+                textAlign: TextAlign.start,
+                keyboardType: TextInputType.text,
+              ),
+            ],
+          ),
+          SizedBox(
+            height: 5.h,
+          ),
+        ],
       ),
     );
   }
 
   buildBowelDetails() {
-    return IgnorePointer(
-      ignoring: widget.showData,
-      child: Form(
-        key: formKey3,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      "Bowel Type",
-                      textAlign: TextAlign.start,
-                      style: TextStyle(
-                          fontFamily: "PoppinsBold",
-                          color: kPrimaryColor,
-                          fontSize: 15.sp),
-                    ),
-                    SizedBox(
-                      width: 2.w,
-                    ),
-                    Expanded(
-                      child: Container(
-                        height: 1,
+    return Form(
+      key: formKey3,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    "Bowel Type",
+                    textAlign: TextAlign.start,
+                    style: TextStyle(
+                        fontFamily: "PoppinsBold",
                         color: kPrimaryColor,
-                      ),
+                        fontSize: 15.sp),
+                  ),
+                  SizedBox(
+                    width: 2.w,
+                  ),
+                  Expanded(
+                    child: Container(
+                      height: 1,
+                      color: kPrimaryColor,
                     ),
-                  ],
-                ),
-                Text(
-                  "Is a Barometer For Your Gut Health",
-                  textAlign: TextAlign.start,
-                  style: TextStyle(
-                      fontFamily: "PoppinsRegular",
-                      color: gMainColor,
-                      fontSize: 9.sp),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 3.h,
-            ),
-            buildLabelTextField("What is your after meal preference?"),
-            SizedBox(
-              height: 1.h,
-            ),
-            ListView(
-              shrinkWrap: true,
-              physics: const BouncingScrollPhysics(),
-              children: [
-                Row(
-                  children: [
-                    Radio(
-                      value: mealPreferenceList[0],
-                      activeColor: kPrimaryColor,
-                      groupValue: mealPreferenceSelected,
-                      onChanged: (value) {
-                        setState(() {
-                          mealPreferenceSelected = value as String;
-                        });
-                      },
-                    ),
-                    Expanded(
-                      child: Text(
-                        mealPreferenceList[0],
-                        style: buildTextStyle(),
-                      ),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    Radio(
-                      value: mealPreferenceList[1],
-                      activeColor: kPrimaryColor,
-                      groupValue: mealPreferenceSelected,
-                      onChanged: (value) {
-                        setState(() {
-                          mealPreferenceSelected = value as String;
-                        });
-                      },
-                    ),
-                    Expanded(
-                      child: Text(
-                        mealPreferenceList[1],
-                        style: buildTextStyle(),
-                      ),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    Radio(
-                      value: mealPreferenceList[2],
-                      activeColor: kPrimaryColor,
-                      groupValue: mealPreferenceSelected,
-                      onChanged: (value) {
-                        setState(() {
-                          mealPreferenceSelected = value as String;
-                        });
-                      },
-                    ),
-                    Text(
-                      mealPreferenceList[2],
+                  ),
+                ],
+              ),
+              Text(
+                "Is a Barometer For Your Gut Health",
+                textAlign: TextAlign.start,
+                style: TextStyle(
+                    fontFamily: "PoppinsRegular",
+                    color: gMainColor,
+                    fontSize: 9.sp),
+              ),
+            ],
+          ),
+          SizedBox(
+            height: 3.h,
+          ),
+          buildLabelTextField("What is your after meal preference?"),
+          SizedBox(
+            height: 1.h,
+          ),
+          ListView(
+            shrinkWrap: true,
+            physics: const BouncingScrollPhysics(),
+            children: [
+              Row(
+                children: [
+                  Radio(
+                    value: mealPreferenceList[0],
+                    activeColor: kPrimaryColor,
+                    groupValue: mealPreferenceSelected,
+                    onChanged: (value) {
+                      setState(() {
+                        mealPreferenceSelected = value as String;
+                      });
+                    },
+                  ),
+                  Expanded(
+                    child: Text(
+                      mealPreferenceList[0],
                       style: buildTextStyle(),
                     ),
-                  ],
-                ),
-                TextFormField(
-                  controller: mealPreferenceController,
-                  cursorColor: kPrimaryColor,
-                  validator: (value) {
-                    if (value!.isEmpty && mealPreferenceSelected.contains(mealPreferenceList[2])) {
-                      return 'Please enter Medical Interventions';
-                    } else {
-                      return null;
-                    }
-                  },
-                  decoration: CommonDecoration.buildTextInputDecoration(
-                      "Your answer", mealPreferenceController),
-                  textInputAction: TextInputAction.next,
-                  textAlign: TextAlign.start,
-                  keyboardType: TextInputType.text,
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 2.h,
-            ),
-            buildLabelTextField("Hunger Pattern"),
-            SizedBox(
-              height: 1.h,
-            ),
-            ListView(
-              shrinkWrap: true,
-              physics: const BouncingScrollPhysics(),
-              children: [
-                Row(
-                  children: [
-                    Radio(
-                      value: hungerPatternList[0],
-                      activeColor: kPrimaryColor,
-                      groupValue: hungerPatternSelected,
-                      onChanged: (value) {
-                        setState(() {
-                          hungerPatternSelected = value as String;
-                        });
-                      },
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  Radio(
+                    value: mealPreferenceList[1],
+                    activeColor: kPrimaryColor,
+                    groupValue: mealPreferenceSelected,
+                    onChanged: (value) {
+                      setState(() {
+                        mealPreferenceSelected = value as String;
+                      });
+                    },
+                  ),
+                  Expanded(
+                    child: Text(
+                      mealPreferenceList[1],
+                      style: buildTextStyle(),
                     ),
-                    Expanded(
-                      child: Text(
-                        hungerPatternList[0],
-                        style: buildTextStyle(),
-                      ),
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  Radio(
+                    value: mealPreferenceList[2],
+                    activeColor: kPrimaryColor,
+                    groupValue: mealPreferenceSelected,
+                    onChanged: (value) {
+                      setState(() {
+                        mealPreferenceSelected = value as String;
+                      });
+                    },
+                  ),
+                  Text(
+                    mealPreferenceList[2],
+                    style: buildTextStyle(),
+                  ),
+                ],
+              ),
+              TextFormField(
+                controller: mealPreferenceController,
+                cursorColor: kPrimaryColor,
+                validator: (value) {
+                  if (value!.isEmpty && mealPreferenceSelected.contains(mealPreferenceList[2])) {
+                    return 'Please enter Medical Interventions';
+                  } else {
+                    return null;
+                  }
+                },
+                decoration: CommonDecoration.buildTextInputDecoration(
+                    "Your answer", mealPreferenceController),
+                textInputAction: TextInputAction.next,
+                textAlign: TextAlign.start,
+                keyboardType: TextInputType.text,
+              ),
+            ],
+          ),
+          SizedBox(
+            height: 2.h,
+          ),
+          buildLabelTextField("Hunger Pattern"),
+          SizedBox(
+            height: 1.h,
+          ),
+          ListView(
+            shrinkWrap: true,
+            physics: const BouncingScrollPhysics(),
+            children: [
+              Row(
+                children: [
+                  Radio(
+                    value: hungerPatternList[0],
+                    activeColor: kPrimaryColor,
+                    groupValue: hungerPatternSelected,
+                    onChanged: (value) {
+                      setState(() {
+                        hungerPatternSelected = value as String;
+                      });
+                    },
+                  ),
+                  Expanded(
+                    child: Text(
+                      hungerPatternList[0],
+                      style: buildTextStyle(),
                     ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    Radio(
-                      value: hungerPatternList[1],
-                      activeColor: kPrimaryColor,
-                      groupValue: hungerPatternSelected,
-                      onChanged: (value) {
-                        setState(() {
-                          hungerPatternSelected = value as String;
-                        });
-                      },
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  Radio(
+                    value: hungerPatternList[1],
+                    activeColor: kPrimaryColor,
+                    groupValue: hungerPatternSelected,
+                    onChanged: (value) {
+                      setState(() {
+                        hungerPatternSelected = value as String;
+                      });
+                    },
+                  ),
+                  Expanded(
+                    child: Text(
+                      hungerPatternList[1],
+                      style: buildTextStyle(),
                     ),
-                    Expanded(
-                      child: Text(
-                        hungerPatternList[1],
-                        style: buildTextStyle(),
-                      ),
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  Radio(
+                    value: hungerPatternList[2],
+                    activeColor: kPrimaryColor,
+                    groupValue: hungerPatternSelected,
+                    onChanged: (value) {
+                      setState(() {
+                        hungerPatternSelected = value as String;
+                      });
+                    },
+                  ),
+                  Expanded(
+                    child: Text(
+                      hungerPatternList[2],
+                      style: buildTextStyle(),
                     ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    Radio(
-                      value: hungerPatternList[2],
-                      activeColor: kPrimaryColor,
-                      groupValue: hungerPatternSelected,
-                      onChanged: (value) {
-                        setState(() {
-                          hungerPatternSelected = value as String;
-                        });
-                      },
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  Radio(
+                    value: hungerPatternList[3],
+                    activeColor: kPrimaryColor,
+                    groupValue: hungerPatternSelected,
+                    onChanged: (value) {
+                      setState(() {
+                        hungerPatternSelected = value as String;
+                      });
+                    },
+                  ),
+                  Expanded(
+                    child: Text(
+                      hungerPatternList[3],
+                      style: buildTextStyle(),
                     ),
-                    Expanded(
-                      child: Text(
-                        hungerPatternList[2],
-                        style: buildTextStyle(),
-                      ),
+                  ),
+                ],
+              ),
+              TextFormField(
+                controller: hungerPatternController,
+                cursorColor: kPrimaryColor,
+                validator: (value) {
+                  if (value!.isEmpty && hungerPatternSelected.contains(hungerPatternList[3])) {
+                    return 'Please enter Hunger Pattern';
+                  } else {
+                    return null;
+                  }
+                },
+                decoration: CommonDecoration.buildTextInputDecoration(
+                    "Your answer", hungerPatternController),
+                textInputAction: TextInputAction.next,
+                textAlign: TextAlign.start,
+                keyboardType: TextInputType.text,
+              ),
+            ],
+          ),
+          SizedBox(
+            height: 2.h,
+          ),
+          buildLabelTextField("Bowel Pattern"),
+          SizedBox(
+            height: 1.h,
+          ),
+          ListView(
+            shrinkWrap: true,
+            physics: const BouncingScrollPhysics(),
+            children: [
+              Row(
+                children: [
+                  Radio(
+                    value: bowelPatternList[0],
+                    activeColor: kPrimaryColor,
+                    groupValue: bowelPatternSelected,
+                    onChanged: (value) {
+                      setState(() {
+                        bowelPatternSelected = value as String;
+                      });
+                    },
+                  ),
+                  Expanded(
+                    child: Text(
+                      bowelPatternList[0],
+                      style: buildTextStyle(),
                     ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    Radio(
-                      value: hungerPatternList[3],
-                      activeColor: kPrimaryColor,
-                      groupValue: hungerPatternSelected,
-                      onChanged: (value) {
-                        setState(() {
-                          hungerPatternSelected = value as String;
-                        });
-                      },
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  Radio(
+                    value: bowelPatternList[1],
+                    activeColor: kPrimaryColor,
+                    groupValue: bowelPatternSelected,
+                    onChanged: (value) {
+                      setState(() {
+                        bowelPatternSelected = value as String;
+                      });
+                    },
+                  ),
+                  Expanded(
+                    child: Text(
+                      bowelPatternList[1],
+                      style: buildTextStyle(),
                     ),
-                    Expanded(
-                      child: Text(
-                        hungerPatternList[3],
-                        style: buildTextStyle(),
-                      ),
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  Radio(
+                    value: bowelPatternList[2],
+                    activeColor: kPrimaryColor,
+                    groupValue: bowelPatternSelected,
+                    onChanged: (value) {
+                      setState(() {
+                        bowelPatternSelected = value as String;
+                      });
+                    },
+                  ),
+                  Expanded(
+                    child: Text(
+                      bowelPatternList[2],
+                      style: buildTextStyle(),
                     ),
-                  ],
-                ),
-                TextFormField(
-                  controller: hungerPatternController,
-                  cursorColor: kPrimaryColor,
-                  validator: (value) {
-                    if (value!.isEmpty && hungerPatternSelected.contains(hungerPatternList[3])) {
-                      return 'Please enter Hunger Pattern';
-                    } else {
-                      return null;
-                    }
-                  },
-                  decoration: CommonDecoration.buildTextInputDecoration(
-                      "Your answer", hungerPatternController),
-                  textInputAction: TextInputAction.next,
-                  textAlign: TextAlign.start,
-                  keyboardType: TextInputType.text,
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 2.h,
-            ),
-            buildLabelTextField("Bowel Pattern"),
-            SizedBox(
-              height: 1.h,
-            ),
-            ListView(
-              shrinkWrap: true,
-              physics: const BouncingScrollPhysics(),
-              children: [
-                Row(
-                  children: [
-                    Radio(
-                      value: bowelPatternList[0],
-                      activeColor: kPrimaryColor,
-                      groupValue: bowelPatternSelected,
-                      onChanged: (value) {
-                        setState(() {
-                          bowelPatternSelected = value as String;
-                        });
-                      },
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  Radio(
+                    value: bowelPatternList[3],
+                    activeColor: kPrimaryColor,
+                    groupValue: bowelPatternSelected,
+                    onChanged: (value) {
+                      setState(() {
+                        bowelPatternSelected = value as String;
+                      });
+                    },
+                  ),
+                  Expanded(
+                    child: Text(
+                      bowelPatternList[3],
+                      style: buildTextStyle(),
                     ),
-                    Expanded(
-                      child: Text(
-                        bowelPatternList[0],
-                        style: buildTextStyle(),
-                      ),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    Radio(
-                      value: bowelPatternList[1],
-                      activeColor: kPrimaryColor,
-                      groupValue: bowelPatternSelected,
-                      onChanged: (value) {
-                        setState(() {
-                          bowelPatternSelected = value as String;
-                        });
-                      },
-                    ),
-                    Expanded(
-                      child: Text(
-                        bowelPatternList[1],
-                        style: buildTextStyle(),
-                      ),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    Radio(
-                      value: bowelPatternList[2],
-                      activeColor: kPrimaryColor,
-                      groupValue: bowelPatternSelected,
-                      onChanged: (value) {
-                        setState(() {
-                          bowelPatternSelected = value as String;
-                        });
-                      },
-                    ),
-                    Expanded(
-                      child: Text(
-                        bowelPatternList[2],
-                        style: buildTextStyle(),
-                      ),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    Radio(
-                      value: bowelPatternList[3],
-                      activeColor: kPrimaryColor,
-                      groupValue: bowelPatternSelected,
-                      onChanged: (value) {
-                        setState(() {
-                          bowelPatternSelected = value as String;
-                        });
-                      },
-                    ),
-                    Expanded(
-                      child: Text(
-                        bowelPatternList[3],
-                        style: buildTextStyle(),
-                      ),
-                    ),
-                  ],
-                ),
-                TextFormField(
-                  controller: bowelPatternController,
-                  cursorColor: kPrimaryColor,
-                  validator: (value) {
-                    if (value!.isEmpty && bowelPatternSelected.contains(bowelPatternList[3])) {
-                      return 'Please enter bowel pattern';
-                    } else {
-                      return null;
-                    }
-                  },
-                  decoration: CommonDecoration.buildTextInputDecoration(
-                      "Your answer", bowelPatternController),
-                  textInputAction: TextInputAction.next,
-                  textAlign: TextAlign.start,
-                  keyboardType: TextInputType.text,
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 5.h,
-            ),
-          ],
-        ),
+                  ),
+                ],
+              ),
+              TextFormField(
+                controller: bowelPatternController,
+                cursorColor: kPrimaryColor,
+                validator: (value) {
+                  if (value!.isEmpty && bowelPatternSelected.contains(bowelPatternList[3])) {
+                    return 'Please enter bowel pattern';
+                  } else {
+                    return null;
+                  }
+                },
+                decoration: CommonDecoration.buildTextInputDecoration(
+                    "Your answer", bowelPatternController),
+                textInputAction: TextInputAction.next,
+                textAlign: TextAlign.start,
+                keyboardType: TextInputType.text,
+              ),
+            ],
+          ),
+          SizedBox(
+            height: 5.h,
+          ),
+        ],
       ),
     );
   }

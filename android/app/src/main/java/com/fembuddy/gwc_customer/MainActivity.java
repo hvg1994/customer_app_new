@@ -51,6 +51,12 @@ public class MainActivity extends FlutterActivity {
                             String kaleyraAccessToken = call.argument("access_token");
                             mMainPresenter.joinMeeting(userId, joinUrl,kaleyraAccessToken, result);
                         }
+                        else if(call.method.equals("call_support")){
+                            String userId = call.argument("user_id");
+                            String successKaleyraId = call.argument("success_id");
+                            String kaleyraAccessToken = call.argument("access_token");
+                            mMainPresenter.normalCall(userId, successKaleyraId,kaleyraAccessToken);
+                        }
                     }
                 }
         );

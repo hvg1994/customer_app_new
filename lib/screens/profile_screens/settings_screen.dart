@@ -17,6 +17,7 @@ import 'package:gwc_customer/screens/profile_screens/user_details_tap.dart';
 import 'package:gwc_customer/screens/user_registration/existing_user.dart';
 import 'package:gwc_customer/services/quick_blox_service/quick_blox_service.dart';
 import 'package:gwc_customer/widgets/constants.dart';
+import 'package:gwc_customer/widgets/open_alert_box.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
@@ -147,17 +148,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 //     color: Colors.grey,
                 //   ),
                 // ),
-                Visibility(
-                  // visible: kDebugMode,
-                    child:profileTile(
-                        "assets/images/Group 2748.png", "Eval form", () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => const EvaluationFormScreen(),
-                        ),
-                      );
-                    })
-                ),
+                // Visibility(
+                //   // visible: kDebugMode,
+                //     child:profileTile(
+                //         "assets/images/Group 2748.png", "Eval form", () {
+                //       Navigator.of(context).push(
+                //         MaterialPageRoute(
+                //           builder: (context) => const EvaluationFormScreen(),
+                //         ),
+                //       );
+                //     })
+                // ),
                 Container(
                   height: 1,
                   color: Colors.grey,
@@ -183,7 +184,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   color: Colors.grey,
                 ),
                 profileTile("assets/images/Group 2744.png", "Logout", () {
-                  logOut();
+                  openAlertBox(
+                    context: context,
+                    titleNeeded: false,
+                    content: "Are you sure to Logout?",
+                    positiveButton: (){
+                      logOut();
+                    },
+                    positiveButtonName: "Logout",
+                    negativeButton: (){
+                      Navigator.pop(context);
+                    },
+                    negativeButtonName: "Cancel"
+                  );
+
 
                   // _pref.setBool(AppConfig.isLogin, false);
                   // _pref.remove(AppConfig().BEARER_TOKEN);

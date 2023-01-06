@@ -100,7 +100,10 @@ class ApiClient {
       if (response.statusCode != 200) {
         result = ErrorModel(
             status: response.statusCode.toString(), message: response.body);
-      } else {
+      }   else if(response.statusCode == 500){
+        result = ErrorModel(status: "0", message: AppConfig.oopsMessage);
+      }
+      else {
         if (json['status'] != 200) {
           result = ErrorModel.fromJson(json);
         } else {
@@ -146,7 +149,9 @@ class ApiClient {
         final json = jsonDecode(response.body);
         print('submitProblemList result: $json');
         result = SubmitProblemResponse.fromJson(json);
-      } else {
+      }   else if(response.statusCode == 500){
+        result = ErrorModel(status: "0", message: AppConfig.oopsMessage);
+      }else {
         print('submitProblemList error: ${response.reasonPhrase}');
         result = ErrorModel(
             status: response.statusCode.toString(),
@@ -198,7 +203,11 @@ class ApiClient {
 
       if (response.statusCode != 200) {
         result = ErrorModel.fromJson(json);
-      } else {
+      }
+      else if(response.statusCode == 500){
+        result = ErrorModel(status: "0", message: AppConfig.oopsMessage);
+      }
+      else {
         print('submitProblemList result: $json');
         if (json['status'].toString() == '201') {
           result = RegisterResponse.fromJson(json);
@@ -239,7 +248,11 @@ class ApiClient {
       if (response.statusCode != 200) {
         print("error: $json");
         result = ErrorModel.fromJson(json);
-      } else if (json['status'].toString().contains("200")) {
+      }
+      else if(response.statusCode == 500){
+        result = ErrorModel(status: "0", message: AppConfig.oopsMessage);
+      }
+      else if (json['status'].toString().contains("200")) {
         result = AboutProgramModel.fromJson(json);
       } else {
         result = ErrorModel.fromJson(json);
@@ -265,7 +278,10 @@ class ApiClient {
 
       if (response.statusCode != 200) {
         result = ErrorModel.fromJson(jsonDecode(response.body));
-      } else {
+      }   else if(response.statusCode == 500){
+        result = ErrorModel(status: "0", message: AppConfig.oopsMessage);
+      }
+      else {
         result = ShipRocketTokenModel.fromJson(jsonDecode(response.body));
         storeShipRocketToken(result);
       }
@@ -303,7 +319,10 @@ class ApiClient {
       if (response.statusCode != 200) {
         final res = jsonDecode(response.body);
         result = ErrorModel.fromJson(res);
-      } else {
+      }   else if(response.statusCode == 500){
+        result = ErrorModel(status: "0", message: AppConfig.oopsMessage);
+      }
+      else {
         final res = jsonDecode(response.body);
         result = ShippingTrackModel.fromJson(res);
       }
@@ -337,7 +356,11 @@ class ApiClient {
         } else {
           result = ErrorModel.fromJson(res);
         }
-      } else {
+      }
+      else if(response.statusCode == 500){
+        result = ErrorModel(status: "0", message: AppConfig.oopsMessage);
+      }
+      else {
         result = ErrorModel.fromJson(res);
       }
     } catch (e) {
@@ -371,7 +394,11 @@ class ApiClient {
         } else {
           result = ErrorModel.fromJson(res);
         }
-      } else {
+      }
+      else if(response.statusCode == 500){
+        result = ErrorModel(status: "0", message: AppConfig.oopsMessage);
+      }
+      else {
         result = ErrorModel.fromJson(res);
       }
     } catch (e) {
@@ -400,7 +427,11 @@ class ApiClient {
 
       if (response.statusCode != 200) {
         result = ErrorModel.fromJson(res);
-      } else {
+      }
+      else if(response.statusCode == 500){
+        result = ErrorModel(status: "0", message: AppConfig.oopsMessage);
+      }
+      else {
         if (res['status'] == 200) {
           result = getOtpFromJson(response.body);
         } else {
@@ -458,9 +489,14 @@ class ApiClient {
       print('${res['status'].runtimeType} ${res['status']}');
       if (res['status'] == 200) {
         result = SlotModel.fromJson(res);
-      } else {
+      }
+      else if(response.statusCode == 500){
+        result = ErrorModel(status: "0", message: AppConfig.oopsMessage);
+      }
+      else {
         result = ErrorModel.fromJson(res);
       }
+
     } catch (e) {
       print("catch error $e");
       result = ErrorModel(status: "0", message: e.toString());
@@ -510,7 +546,11 @@ class ApiClient {
       print('${res['status'].runtimeType} ${res['status']}');
       if (res['status'].toString() == '200') {
         result = AppointmentBookingModel.fromJson(res);
-      } else {
+      }
+      else if(response.statusCode == 500){
+        result = ErrorModel(status: "0", message: AppConfig.oopsMessage);
+      }
+      else {
         result = ErrorModel.fromJson(res);
       }
     } catch (e) {
@@ -571,7 +611,10 @@ class ApiClient {
         result = ErrorModel.fromJson(res);
       } else if (res['status'].toString() == '200') {
         result = EnquiryStatusModel.fromJson(res);
-      } else {
+      }
+      else if(response.statusCode == 500){
+        result = ErrorModel(status: "0", message: AppConfig.oopsMessage);
+      }else {
         result = ErrorModel.fromJson(res);
       }
     } catch (e) {
@@ -621,7 +664,10 @@ class ApiClient {
       print('${res['status'].runtimeType} ${res['status']}');
       if (res['status'].toString() == '200') {
         result = ReportUploadModel.fromJson(res);
-      } else {
+      }
+      else if(response.statusCode == 500){
+        result = ErrorModel(status: "0", message: AppConfig.oopsMessage);
+      }else {
         result = ErrorModel.fromJson(res);
       }
     } catch (e) {
@@ -663,15 +709,18 @@ class ApiClient {
 
       print('serverGetEvaluationDetails result: $json');
 
-      if (response.statusCode != 200) {
-        result = ErrorModel(
-            status: response.statusCode.toString(), message: response.body);
-      } else {
+      if (response.statusCode == 200) {
         if (json['status'].toString() != '200') {
           result = ErrorModel.fromJson(json);
         } else {
           result = GetEvaluationDataModel.fromJson(json);
         }
+      }
+      else if(response.statusCode == 500){
+        result = ErrorModel(status: "0", message: AppConfig.oopsMessage);
+      }else {
+        result = ErrorModel(
+            status: response.statusCode.toString(), message: response.body);
       }
     } catch (e) {
       result = ErrorModel(status: "0", message: e.toString());
@@ -703,15 +752,19 @@ class ApiClient {
 
       print('serverGetDashboardData result: $json');
 
-      if (response.statusCode != 200) {
-        result = ErrorModel(
-            status: response.statusCode.toString(), message: response.body);
-      } else {
+      if (response.statusCode == 200) {
         if (json['status'].toString() != '200') {
           result = ErrorModel.fromJson(json);
         } else {
           result = GetDashboardDataModel.fromJson(json);
         }
+      }
+      else if(response.statusCode == 500){
+        result = ErrorModel(status: "0", message: AppConfig.oopsMessage);
+      }
+      else {
+        result = ErrorModel(
+            status: response.statusCode.toString(), message: response.body);
       }
     } catch (e) {
       result = ErrorModel(status: "0", message: e.toString());
@@ -740,7 +793,11 @@ class ApiClient {
       print('${res['status'].runtimeType} ${res['status']}');
       if (res['status'].toString() == '200') {
         result = UserProfileModel.fromJson(jsonDecode(response.body));
-      } else {
+      }
+      else if(response.statusCode == 500){
+        result = ErrorModel(status: "0", message: AppConfig.oopsMessage);
+      }
+      else {
         result = ErrorModel.fromJson(res);
       }
     } catch (e) {
@@ -772,7 +829,11 @@ class ApiClient {
       print('${res['status'].runtimeType} ${res['status']}');
       if (res['status'].toString() == '200') {
         result = UpdateUserModel.fromJson(jsonDecode(response.body));
-      } else {
+      }
+      else if(response.statusCode == 500){
+        result = ErrorModel(status: "0", message: AppConfig.oopsMessage);
+      }
+      else {
         result = ErrorModel.fromJson(res);
       }
     } catch (e) {
@@ -800,7 +861,11 @@ class ApiClient {
       final json = jsonDecode(response.body);
       print('serverGetTermsAndCondition error: $json');
       result = ErrorModel.fromJson(json);
-    } else if (response.statusCode != 200) {
+    }
+    else if(response.statusCode == 500){
+      result = ErrorModel(status: "0", message: AppConfig.oopsMessage);
+    }
+    else if (response.statusCode != 200) {
       throw Exception('error getting quotes');
     }
 
@@ -846,7 +911,11 @@ class ApiClient {
       print('${res['status'].runtimeType} ${res['status']}');
       if (res['status'].toString() == '200') {
         result = ReportUploadModel.fromJson(res);
-      } else {
+      }
+      else if(response.statusCode == 500){
+        result = ErrorModel(status: "0", message: AppConfig.oopsMessage);
+      }
+      else {
         result = ErrorModel.fromJson(res);
       }
     } catch (e) {
@@ -877,7 +946,11 @@ class ApiClient {
       print('${res['status'].runtimeType} ${res['status']}');
       if (res['status'].toString() == '200') {
         result = GetReportListModel.fromJson(jsonDecode(response.body));
-      } else {
+      }
+      else if(response.statusCode == 500){
+        result = ErrorModel(status: "0", message: AppConfig.oopsMessage);
+      }
+      else {
         result = ErrorModel.fromJson(res);
       }
     } catch (e) {
@@ -904,11 +977,7 @@ class ApiClient {
           response.statusCode.toString());
       print("getProgramDayListApi response body:" + response.body);
 
-      if (response.statusCode != 200) {
-        print('status not equal called');
-        final res = jsonDecode(response.body);
-        result = ErrorModel.fromJson(res);
-      } else {
+      if (response.statusCode == 200) {
         final res = jsonDecode(response.body);
         print('${res['status'].runtimeType} ${res['status']}');
         if (res['status'].toString() == '200') {
@@ -916,6 +985,14 @@ class ApiClient {
         } else {
           result = ErrorModel.fromJson(res);
         }
+      }
+      else if(response.statusCode == 500){
+        result = ErrorModel(status: "0", message: AppConfig.oopsMessage);
+      }
+      else {
+        print('status not equal called');
+        final res = jsonDecode(response.body);
+        result = ErrorModel.fromJson(res);
       }
     } catch (e) {
       print("catch error::> $e");
@@ -937,7 +1014,7 @@ class ApiClient {
           "Authorization": getHeaderToken(),
         },
       ).timeout(const Duration(seconds: 45));
-
+      print("url: $path");
       print("getMealPlanDetailsApi response code:" +
           response.statusCode.toString());
       print("getMealPlanDetailsApi response body:" + response.body);
@@ -947,7 +1024,11 @@ class ApiClient {
 
       if (res['status'].toString() == '200') {
         result = MealPlanDetailsModel.fromJson(jsonDecode(response.body));
-      } else {
+      }
+      else if(response.statusCode == 500){
+        result = ErrorModel(status: "0", message: AppConfig.oopsMessage);
+      }
+      else {
         result = ErrorModel.fromJson(res);
       }
     } catch (e) {
@@ -961,25 +1042,6 @@ class ApiClient {
     var url = submitDayPlanDetailsUrl;
 
     dynamic result;
-
-    Map staticData =
-    {
-    'patient_meal_tracking[]':[{"user_meal_item_id":1658,"day":2,"status":"followed"},{"user_meal_item_id":1500,"day":2,"status":"followed"},{"user_meal_item_id":1501,"day":2,"status":"unfollowed"},{"user_meal_item_id":1502,"day":2,"status":"followed"},{"user_meal_item_id":1503,"day":2,"status":"followed"},
-      {"user_meal_item_id":1504,"day":2,"status":"followed"},{"user_meal_item_id":1505,"day":2,"status":"unfollowed"},
-      {"user_meal_item_id":1506,"day":2,"status":"followed"},
-      {"user_meal_item_id":1659,"day":2,"status":"unfollowed"},
-      {"user_meal_item_id":1507,"day":2,"status":"followed"},
-      {"user_meal_item_id":1508,"day":2,"status":"followed"}],
-    'user_program_status_tracking':1,
-    'day':2,
-    'did_u_miss':'no',
-    'withdrawal_symptoms[]': ['Aches, pain, and soreness', 'Nausea'],
-    'detoxification[]': ['Lightness in the Chest / Abdomen', 'Odour free burps'],
-    'have_any_other_worries':'No',
-    'eat_something_other':'no',
-    'completed_calm_move_modules':'Yes',
-    'had_a_medical_exam_medications':'No'
-  };
 
     print("proceedDayProgramList path: $url");
 
@@ -1008,7 +1070,11 @@ class ApiClient {
       if (response.statusCode == 200) {
         print('proceedDayProgramList result: $json');
         result = GetProceedModel.fromJson(json);
-      } else {
+      }
+      else if(response.statusCode == 500){
+        result = ErrorModel(status: "0", message: AppConfig.oopsMessage);
+      }
+      else {
         print('proceedDayProgramList error: ${response.reasonPhrase}');
         result = ErrorModel.fromJson(json);
       }
@@ -1040,7 +1106,11 @@ class ApiClient {
         final res = jsonDecode(response.body);
         if (res['status'] == 200) {
           result = GetShoppingListModel.fromJson(res);
-        } else {
+        }
+        else if(response.statusCode == 500){
+          result = ErrorModel(status: "0", message: AppConfig.oopsMessage);
+        }
+        else {
           result = ErrorModel.fromJson(jsonDecode(response.body));
         }
       } else {
@@ -1081,7 +1151,11 @@ class ApiClient {
         } else {
           result = ErrorModel.fromJson(jsonDecode(response.body));
         }
-      } else {
+      }
+      else if(response.statusCode == 500){
+        result = ErrorModel(status: "0", message: AppConfig.oopsMessage);
+      }
+      else {
         print('shippingApproveApi error: ${response.reasonPhrase}');
         result = ErrorModel.fromJson(jsonDecode(response.body));
       }
@@ -1120,7 +1194,11 @@ class ApiClient {
         } else {
           result = ErrorModel(status: "0", message: "No Data");
         }
-      } else {
+      }
+      else if(response.statusCode == 500){
+        result = ErrorModel(status: "0", message: AppConfig.oopsMessage);
+      }
+      else {
         print('getCountryDetails error: ${response.reasonPhrase}');
         result = ErrorModel.fromJson(jsonDecode(response.body));
       }
@@ -1164,15 +1242,19 @@ class ApiClient {
 
       print('submitUserFeedbackDetails result: $json');
 
-      if (response.statusCode != 200) {
-        result = ErrorModel(
-            status: response.statusCode.toString(), message: response.body);
-      } else {
+      if (response.statusCode == 200) {
         if (json['status'].toString() != '200') {
           result = ErrorModel.fromJson(json);
         } else {
           result = FeedbackModel.fromJson(json);
         }
+      }
+      else if(response.statusCode == 500){
+        result = ErrorModel(status: "0", message: AppConfig.oopsMessage);
+      }
+      else {
+        result = ErrorModel(
+            status: response.statusCode.toString(), message: response.body);
       }
     } catch (e) {
       result = ErrorModel(status: "0", message: e.toString());
@@ -1204,10 +1286,10 @@ class ApiClient {
       final json = jsonDecode(response.body);
       print('serverGetCallSupportDetails result: $json');
       print(json['status'].toString().contains("200"));
-      if (response.statusCode != 200) {
-        print("error: $json");
-        result = ErrorModel.fromJson(json);
-      } else if (json['status'].toString().contains("200")) {
+      if(response.statusCode == 500){
+        result = ErrorModel(status: "0", message: AppConfig.oopsMessage);
+      }
+      else if (json['status'].toString().contains("200")) {
         result = AboutProgramModel.fromJson(json);
       } else {
         result = ErrorModel.fromJson(json);
@@ -1269,8 +1351,9 @@ class ApiClient {
       print('${res['status'].runtimeType} ${res['status']}');
 
       if (response.statusCode != 200) {
-        result = ErrorModel.fromJson(res);
-      } else if (res['status'].toString() == '200') {
+        result = ErrorModel(status: "0", message: AppConfig.oopsMessage);
+      }
+      else if (res['status'].toString() == '200') {
         result = StartProgramOnSwipeModel.fromJson(res);
       } else {
         result = ErrorModel.fromJson(res);
@@ -1308,7 +1391,11 @@ class ApiClient {
           result = ErrorModel(
               status: res['status'].toString(), message: res.toString());
         }
-      } else {
+      }
+      else if(response.statusCode == 500){
+        result = ErrorModel(status: "0", message: AppConfig.oopsMessage);
+      }
+      else {
         print('getChatGroupId error: ${response.reasonPhrase}');
         result = ErrorModel.fromJson(jsonDecode(response.body));
       }
@@ -1339,7 +1426,11 @@ class ApiClient {
         final json = jsonDecode(response.body);
         print('startPostProgram result: $json');
         result = StartPostProgramModel.fromJson(json);
-      } else {
+      }
+      else if(response.statusCode == 500){
+        result = ErrorModel(status: "0", message: AppConfig.oopsMessage);
+      }
+      else {
         print('startPostProgram error: ${response.reasonPhrase}');
         result = ErrorModel(
             status: response.statusCode.toString(), message: response.body);
@@ -1384,7 +1475,11 @@ class ApiClient {
         final json = jsonDecode(response.body);
         print('submitPostProgramMealTrackingApi result: $json');
         result = PostProgramBaseModel.fromJson(json);
-      } else {
+      }
+      else if(response.statusCode == 500){
+        result = ErrorModel(status: "0", message: AppConfig.oopsMessage);
+      }
+      else {
         print(
             'submitPostProgramMealTrackingApi error: ${response.reasonPhrase}');
         result = ErrorModel(
@@ -1430,7 +1525,11 @@ class ApiClient {
         final json = jsonDecode(response.body);
         print('submitPPMealsApi result: $json');
         result = PostProgramBaseModel.fromJson(json);
-      } else {
+      }
+      else if(response.statusCode == 500){
+        result = ErrorModel(status: "0", message: AppConfig.oopsMessage);
+      }
+      else {
         print(
             'submitPPMealsApi error: ${response.reasonPhrase}');
         result = ErrorModel(
@@ -1481,7 +1580,11 @@ class ApiClient {
         final json = jsonDecode(response.body);
         print('getPPMealsOnStagesApi result: $json');
         result = PPGetMealModel.fromJson(json);
-      } else {
+      }
+      else if(response.statusCode == 500){
+        result = ErrorModel(status: "0", message: AppConfig.oopsMessage);
+      }
+      else {
         print('getPPMealsOnStagesApi error: ${response.reasonPhrase}');
         result = ErrorModel(
             status: response.statusCode.toString(), message: response.body);
@@ -1514,7 +1617,11 @@ class ApiClient {
         final json = jsonDecode(response.body);
         print('getLunchOnclickApi result: $json');
         result = GetProtocolBreakfastModel.fromJson(json);
-      } else {
+      }
+      else if(response.statusCode == 500){
+        result = ErrorModel(status: "0", message: AppConfig.oopsMessage);
+      }
+      else {
         print('getLunchOnclickApi error: ${response.reasonPhrase}');
         result = ErrorModel(
             status: response.statusCode.toString(), message: response.body);
@@ -1547,7 +1654,11 @@ class ApiClient {
         final json = jsonDecode(response.body);
         print('getDinnerOnclickApi result: $json');
         result = GetProtocolBreakfastModel.fromJson(json);
-      } else {
+      }
+      else if(response.statusCode == 500){
+        result = ErrorModel(status: "0", message: AppConfig.oopsMessage);
+      }
+      else {
         print('getDinnerOnclickApi error: ${response.reasonPhrase}');
         result = ErrorModel(
             status: response.statusCode.toString(), message: response.body);
@@ -1585,7 +1696,11 @@ class ApiClient {
         final json = jsonDecode(response.body);
         print('getProtocolDayDetailsApi result: $json');
         result = ProtocolGuideDayScoreModel.fromJson(json);
-      } else {
+      }
+      else if(response.statusCode == 500){
+        result = ErrorModel(status: "0", message: AppConfig.oopsMessage);
+      }
+      else {
         print('getProtocolDayDetailsApi error: ${response.reasonPhrase}');
         result = ErrorModel(
             status: response.statusCode.toString(), message: response.body);
@@ -1638,7 +1753,11 @@ class ApiClient {
       print('${res['status'].runtimeType} ${res['status']}');
       if (res['status'].toString() == '200') {
         result = ReportUploadModel.fromJson(res);
-      } else {
+      }
+      else if(response.statusCode == 500){
+        result = ErrorModel(status: "0", message: AppConfig.oopsMessage);
+      }
+      else {
         result = ErrorModel.fromJson(res);
       }
     } catch (e) {
@@ -1671,15 +1790,18 @@ class ApiClient {
 
       print('doctorRequestedReportListApi result: $json');
 
-      if (response.statusCode != 200) {
-        result = ErrorModel(
-            status: response.statusCode.toString(), message: response.body);
-      } else {
+      if (response.statusCode == 200) {
         if (json['status'] != 200) {
           result = ErrorModel.fromJson(json);
         } else {
           result = GetReportListModel.fromJson(json);
         }
+      }
+      else if(response.statusCode == 500){
+        result = ErrorModel(status: "0", message: AppConfig.oopsMessage);
+      }
+      else {
+        result = ErrorModel(status: response.statusCode.toString(), message: response.body);
       }
     } catch (e) {
       result = ErrorModel(status: "0", message: e.toString());
@@ -1711,6 +1833,9 @@ class ApiClient {
         else{
           result = ErrorModel.fromJson(json);
         }
+      }
+      else if(response.statusCode == 500) {
+        result = ErrorModel(status: "0", message: AppConfig.oopsMessage);
       }
       else{
         result = ErrorModel(status: response.statusCode.toString(), message: response.body);
@@ -1958,6 +2083,7 @@ class ApiClient {
       if(response.statusCode == 200){
         final json = jsonDecode(response.body);
         result = json['access_token'];
+        _prefs!.setString(AppConfig.KALEYRA_ACCESS_TOKEN, result);
       }
       else{
         final json = jsonDecode(response.body);
