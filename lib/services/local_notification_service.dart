@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:gwc_customer/utils/app_config.dart';
@@ -85,18 +87,37 @@ class LocalNotificationService {
     // messageType: null, mutableContent: false, notification: null,
     // sentTime: 1672989796282, threadId: null, ttl: 86400}
 
+    //Notification Message: {
+    // senderId: null, category: null,
+    // collapseKey: event38755058, contentAvailable: false,
+    // data: {message: {"title":"You have New Message","message":"ghghghgh","type":"chat"}},
+    // from: 223001521272, messageId: 0:1673589826135148%021842b3f9fd7ecd,
+    // messageType: null,
+    // mutableContent: false,
+    // notification: null, sentTime: 1673589826107, threadId: null, ttl: 86400}
+
     AndroidNotificationDetails details = AndroidNotificationDetails(
         channel.id, channel.name, channelDescription:  channel.description,
         icon: "@mipmap/ic_launcher");
 
-    int id = message.hashCode;
-    String title = "New Chat Message";
-    String body = message.data["message"];
+    if(message.data != null ||message.data.isNotEmpty){
+      int id = message.hashCode;
+      String title = "New Chat Message";
+      String body = message.data["message"];
 
-    _notificationsPlugin.show(id, title, body,
-        NotificationDetails(android: details),
-      payload: message.data.toString()
-    );
+      Map payload = jsonDecode(body);
+      String textMsg = payload["message"];
+      payload["type"] = "chat";
+      String senderId = payload['senderId'].toString();
+
+
+      if(senderId != "82272762"){
+        _notificationsPlugin.show(id, title, textMsg,
+            NotificationDetails(android: details),
+            payload: message.data.toString()
+        );
+      }
+    }
   }
 
 }

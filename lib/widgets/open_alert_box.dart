@@ -124,10 +124,11 @@ openAlertBox({
       ));
 }
 
-openProgressDialog(BuildContext context){
+openProgressDialog(BuildContext context, {bool willPop = false}){
   var height = MediaQuery.of(context).size.height;
   var width = MediaQuery.of(context).size.width;
   AlertDialog alert = AlertDialog(
+
     backgroundColor: Colors.transparent,
     elevation: 0,
     contentPadding: EdgeInsets.zero,
@@ -140,7 +141,7 @@ openProgressDialog(BuildContext context){
     barrierColor: gGreyColor.withOpacity(0.1),
     builder: (BuildContext context) {
       return WillPopScope(child: alert,
-        onWillPop: () async => false,
+        onWillPop: () async => willPop,
       );
     },
   );

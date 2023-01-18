@@ -3,7 +3,7 @@ import 'child_program_day.dart';
 class ProgramDayModel {
   int? status;
   int? errorCode;
-  int? presentDay;
+  String? presentDay;
   List<ChildProgramDayModel>? data;
 
   ProgramDayModel({this.status, this.errorCode, this.data, this.presentDay});

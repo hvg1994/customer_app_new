@@ -19,11 +19,15 @@ import 'package:gwc_customer/screens/evalution_form/evaluation_form_screen.dart'
 import 'package:gwc_customer/screens/user_registration/existing_user.dart';
 import 'package:gwc_customer/screens/user_registration/new_user/sit_back_screen.dart';
 import 'package:gwc_customer/services/enquiry_status_service.dart';
+import 'package:gwc_customer/services/local_notification_service.dart';
+import 'package:gwc_customer/services/quick_blox_service/quick_blox_service.dart';
 import 'package:gwc_customer/utils/app_config.dart';
 import 'package:gwc_customer/widgets/background_widget.dart';
 import 'package:gwc_customer/widgets/dart_extensions.dart';
+import 'package:gwc_customer/widgets/notification_class.dart';
 import 'package:gwc_customer/widgets/open_alert_box.dart';
 import 'package:gwc_customer/widgets/will_pop_widget.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'model/enquiry_status_model.dart';
 import 'model/error_model.dart';
@@ -31,6 +35,12 @@ import 'repository/api_service.dart';
 import 'package:http/http.dart' as http;
 
 import 'screens/dashboard_screen.dart';
+import 'package:flutter_sim_country_code/flutter_sim_country_code.dart';
+import 'package:gwc_customer/repository/quick_blox_repository/quick_blox_repository.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+
+
+
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -65,6 +75,103 @@ class _SplashScreenState extends State<SplashScreen> {
     deviceId = _pref.getString(AppConfig().deviceId);
     getEnquiryStatus(deviceId!);
     super.initState();
+    runAllAsync();
+    listenMessages();
+  }
+  runAllAsync() async{
+    await Future.wait([
+      getPermission(),
+    listenNotifications(),
+      getSession(),
+    ]);
+    print("starting Application!");
+  }
+
+  Future getSession() async{
+    await notificationFunction();
+
+    final _qbService = Provider.of<QuickBloxService>(context, listen: false);
+    final res = await _qbService.getSession();
+    print("QB session is $res");
+  }
+
+  Future listenNotifications()async{
+    LocalNotificationService.onNotifications.stream
+        .listen(onClickedNotifications);}
+
+  void onClickedNotifications(String? payload)
+  {
+    print("on notification click: $payload");
+    // Navigator.of(context).push(
+    //   MaterialPageRoute(
+    //     builder: (context) => const NotificationsList(),
+    //   ),
+    // );
+  }
+
+  listenMessages(){
+    FirebaseMessaging.instance.getInitialMessage().then(
+          (message) {
+        print("FirebaseMessaging.instance.getInitialMessage");
+        if (message != null) {
+          print("New Notification");
+          // if (message.data['_id'] != null) {
+          //   Navigator.of(context).push(
+          //     MaterialPageRoute(
+          //       builder: (context) => DemoScreen(
+          //         id: message.data['_id'],
+          //       ),
+          //     ),
+          //   );
+          // }
+        }
+      },
+    );
+    FirebaseMessaging.onMessage.listen(
+          (message) {
+        print("FirebaseMessaging.onMessage.listen");
+        if (message.notification != null) {
+          print(message.notification!.title);
+          print(message.notification!.body);
+          print("message.data11 ${message.data}");
+          LocalNotificationService.createanddisplaynotification(message);
+        }
+      },
+    );
+    FirebaseMessaging.onMessageOpenedApp.listen(
+          (message) {
+        print("FirebaseMessaging.onMessageOpenedApp.listen");
+        if (message.notification != null) {
+          print(message.notification!.title);
+          print(message.notification!.body);
+          print("message.data22 ${message.data['_id']}");
+        }
+      },
+    );
+  }
+
+  Future getPermission() async{
+
+    String? fcmToken = await FirebaseMessaging.instance.getToken();
+    _pref!.setString(AppConfig.FCM_TOKEN, fcmToken!);
+
+    QuickBloxRepository().init(AppConfig.QB_APP_ID, AppConfig.QB_AUTH_KEY, AppConfig.QB_AUTH_SECRET, AppConfig.QB_ACCOUNT_KEY);
+
+    QuickBloxRepository().initSubscription(fcmToken);
+
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+    NotificationSettings settings = await messaging.requestPermission(
+      alert: true,
+      announcement: false,
+      badge: true,
+      carPlay: false,
+      criticalAlert: false,
+      provisional: false,
+      sound: true,
+    );
+
+    print('User granted permission: ${settings.authorizationStatus}');
   }
 
   startTimer(){

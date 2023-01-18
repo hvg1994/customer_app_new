@@ -85,6 +85,7 @@ dependencies:
   easy_scroll_to_index: any
   stories_for_flutter: ^1.2.0
   liquid_progress_indicator: ^0.4.0
+  crypto: any
 #  change_app_package_name: ^1.1.0
 
 dev_dependencies:

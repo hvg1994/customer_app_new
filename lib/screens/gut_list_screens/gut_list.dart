@@ -9,6 +9,7 @@ import 'package:gwc_customer/repository/dashboard_repo/gut_repository/dashboard_
 import 'package:gwc_customer/repository/login_otp_repository.dart';
 import 'package:gwc_customer/screens/appointment_screens/consultation_screens/consultation_rejected.dart';
 import 'package:gwc_customer/screens/appointment_screens/consultation_screens/upload_files.dart';
+import 'package:gwc_customer/screens/evalution_form/evaluation_get_details.dart';
 import 'package:gwc_customer/screens/evalution_form/personal_details_screen.dart';
 import 'package:gwc_customer/screens/gut_list_screens/meal_popup.dart';
 import 'package:gwc_customer/screens/notification_screen.dart';
@@ -161,20 +162,32 @@ class GutListState extends State<GutList> {
   // _hideLoading(BuildContext context) {
   //   BrandLogoLoading.dismissLoading(context: context);
   // }
+  /// THIS IS FOR ABC DIALOG MEAL PLAN
   bool isProgressOpened = false;
 
+  bool isProgressDialogOpened = false;
+  BuildContext? _progressContext;
+
   getData() async{
+    print("isProgressDialogOpened: $isProgressDialogOpened");
     Future.delayed(Duration(seconds: 0)).whenComplete(() {
-      isProgressOpened = true;
-      openProgressDialog(context);
+      if(mounted) {
+        isProgressDialogOpened = true;
+        _progressContext = context;
+        openProgressDialog(_progressContext!, willPop: true);
+      }
     });
     _gutDataService = GutDataService(repository: repository);
+    print("isProgressDialogOpened: $isProgressDialogOpened");
+
     final _getData = await _gutDataService.getGutDataService();
     print("_getData: $_getData");
     if(_getData.runtimeType == ErrorModel){
+      if(isProgressDialogOpened){
+        Navigator.of(_progressContext!, rootNavigator: true).pop();
+      }
       ErrorModel model = _getData;
       print(model.message);
-      Navigator.pop(context);
       Future.delayed(Duration(seconds: 0)).whenComplete(() =>
           AppConfig().showSnackbar(context, model.message ?? '', isError: true,
             duration: 50000,
@@ -189,9 +202,14 @@ class GutListState extends State<GutList> {
       );
     }
     else{
+      if(isProgressDialogOpened){
+        Navigator.of(_progressContext!, rootNavigator: true).pop();
+      }
+      print("isProgressDialogOpened: $isProgressDialogOpened");
       GetDashboardDataModel _getDashboardDataModel = _getData as GetDashboardDataModel;
-
       print("_getDashboardDataModel.app_consulation: ${_getDashboardDataModel.app_consulation}");
+
+
       // checking for the consultation data if data = appointment_booked
       setState(() {
         if(_getDashboardDataModel.app_consulation != null){
@@ -248,7 +266,6 @@ class GutListState extends State<GutList> {
           isSelected = "Post Program";
           updateNewStage(postProgramStage);
         }
-        Navigator.pop(context);
 
       });
     }
@@ -364,19 +381,24 @@ class GutListState extends State<GutList> {
   }
 
   abc(){
-    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
-        //shipping_approved  meal_plan_completed
-      print("isShown: $isShown $shippingStage");
-        if(shippingStage == 'meal_plan_completed'){
-          if(!isShown){
-            setState(() {
-              isShown = true;
-            });
-            Navigator.of(context).push(
-              PageRouteBuilder(
-                opaque: false, // set to false
-                pageBuilder: (_, __, ___) => MealPopup(
+    Future.delayed(Duration(seconds: 0)).whenComplete(() {
+      if(shippingStage == 'meal_plan_completed'){
+        if(!isShown){
+          setState(() {
+            isShown = true;
+          });
+        }
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              isProgressOpened = true;
+              return Dialog(
+                shape: RoundedRectangleBorder(
+                    borderRadius:
+                    BorderRadius.circular(20.0)), //this right here
+                child: MealPopup(
                   yesButton:(isPressed) ? (){} : () {
+                    Navigator.pop(context);
                     sendApproveStatus('yes');
                     setState(() {
                       isShown = false;
@@ -395,19 +417,9 @@ class GutListState extends State<GutList> {
                     }
                   },
                 ),
-              ),
-            ).then((value) {
-              if(value == null){
-                setState(() {
-                  isShown = false;
-                });
-                // sendApproveStatus('no', fromNull: true);
-                print("pop: $value");
-                getData();
-              }
+              );
             });
-          }
-        }
+      }
     });
   }
 
@@ -667,7 +679,6 @@ class GutListState extends State<GutList> {
         isSendApproveStatus = true;
         isPressed = true;
       });
-      Navigator.pop(context);
       print("isPressed: $isPressed");
       final res = await ShipTrackService(repository: shipTrackRepository).sendSippingApproveStatusService(status);
 
@@ -675,6 +686,7 @@ class GutListState extends State<GutList> {
         ShippingApproveModel model = res as ShippingApproveModel;
         print('success: ${model.message}');
         AppConfig().showSnackbar(context, model.message!);
+        getData();
       }
       else{
         ErrorModel model = res as ErrorModel;
@@ -886,9 +898,7 @@ class GutListState extends State<GutList> {
                             // goToScreen(screenName)
                             if(levels[index].stage == openedStage || levels[index].stage == currentStage){
                               if(index == 1){
-                                goToScreen(PersonalDetailsScreen(showData: true,
-                                  padding: EdgeInsets.symmetric(horizontal: 10),
-                                ));
+                                goToScreen(EvaluationGetDetails());
                               }
                               else if(index == 2){
                                 showConsultationScreenFromStages(consultationStage);
@@ -947,9 +957,7 @@ class GutListState extends State<GutList> {
                             print(levels[index].title);
                             if(levels[index].stage == openedStage || levels[index].stage == currentStage){
                               if(index == 1){
-                                goToScreen(PersonalDetailsScreen(showData: true,
-                                  padding: EdgeInsets.symmetric(horizontal: 10),
-                                ));
+                                goToScreen(EvaluationGetDetails());
                               }
                               else if(index == 2){
                                 showConsultationScreenFromStages(consultationStage);

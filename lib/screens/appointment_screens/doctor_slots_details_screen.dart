@@ -65,6 +65,7 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
   List<String> doctorNames = [];
 
   String accessToken = '';
+  String kaleyraUID = "";
 
   @override
   void initState() {
@@ -79,10 +80,19 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
     }
     if(!widget.isPostProgram && !widget.isFromDashboard){
       widget.data?.team?.teamMember?.forEach((element) {
-        doctorNames.add(element.user!.name ?? '');
+        if(element.user!.roleId == "2"){
+          doctorNames.add(element.user!.name ?? '');
+        }
       });
-      if(_pref!.getString(AppConfig.KALEYRA_USER_ID) != null){
-        String kaleyraUID = _pref?.getString(AppConfig.KALEYRA_USER_ID) ?? '';
+      if(widget.data?.kaleyraSuccessId != null){
+
+      }
+      if(widget.data?.kaleyraUserId != null){
+        kaleyraUID = widget.data?.kaleyraUserId ?? '';
+        getAccessToken(kaleyraUID);
+      }
+      else if(_pref!.getString(AppConfig.KALEYRA_USER_ID) != null){
+        kaleyraUID = _pref?.getString(AppConfig.KALEYRA_USER_ID) ?? '';
         getAccessToken(kaleyraUID);
       }
     }
@@ -90,9 +100,11 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
     if(widget.isFromDashboard || widget.isPostProgram){
       model = ChildAppointmentDetails.fromJson(Map.from(widget.dashboardValueMap!));
       print("moddd: ${model.teamPatients!.team!.toJson()}");
-      model.teamPatients?.team?.teamMember?.forEach((element) {
+      model.teamMember?.forEach((element) {
         print('from appoi: ${element.toJson()}');
-        doctorNames.add(element.user!.name ?? '');
+        if(element.user!.roleId == "2"){
+          doctorNames.add(element.user!.name ?? '');
+        }
       });
       if(model.teamPatients!.patient!.user!.kaleyraId != null){
         String kaleyraUID = model.teamPatients!.patient!.user!.kaleyraId ?? '';
@@ -334,10 +346,10 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
                                     print(_pref!.getString(AppConfig.KALEYRA_USER_ID));
                                     print("kaleyraurl:=>$kaleyraurl");
                                     print('token: $accessToken');
-                                    String UID = _pref!.getString(AppConfig.KALEYRA_USER_ID) ?? '';
+                                    print("kaleyraID: $kaleyraUID");
                                     // send kaleyra id to native
-                                    if(UID != null || kaleyraurl != null || accessToken.isNotEmpty){
-                                      Provider.of<ConsultationService>(context, listen: false).joinWithKaleyra(UID, kaleyraurl!, accessToken);
+                                    if(kaleyraUID != null || kaleyraurl != null || accessToken.isNotEmpty){
+                                      Provider.of<ConsultationService>(context, listen: false).joinWithKaleyra(kaleyraUID, kaleyraurl!, accessToken);
                                     }
                                     else{
                                       AppConfig().showSnackbar(context, "Uid/accessToken/join url not found");

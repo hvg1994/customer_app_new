@@ -20,10 +20,14 @@ class AppConfig{
 
   // ****** QuickBlox Credentials ****************
 
-  static const String QB_APP_ID = "98585";
-  static const String QB_AUTH_KEY = "aPtW8zaYg-Qmhf9";
-  static const String QB_AUTH_SECRET = "MDvw-kpzNRGVLt4";
-  static const String QB_ACCOUNT_KEY = "1s1UERbtsu13uQFYVF9Y";
+  // static const String QB_APP_ID = "98585";
+  // static const String QB_AUTH_KEY = "aPtW8zaYg-Qmhf9";
+  // static const String QB_AUTH_SECRET = "MDvw-kpzNRGVLt4";
+  // static const String QB_ACCOUNT_KEY = "1s1UERbtsu13uQFYVF9Y";
+  static const String QB_APP_ID = "99437";
+  static const String QB_AUTH_KEY = "zhVfP2jWfvrhe2r";
+  static const String QB_AUTH_SECRET = "WhzcEcT3tau5Mfj";
+  static const String QB_ACCOUNT_KEY = "dj8Pc_dxe2u4K8x9CzRj";
   static const String QB_DEFAULT_PASSWORD = "GWC@2022";
 
   static const String GROUP_ID = 'groupId';

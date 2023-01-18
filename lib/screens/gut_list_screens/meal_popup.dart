@@ -9,10 +9,7 @@ class MealPopup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black.withOpacity(0.8),
-      body: Center(
-        child: Container(
+    return Container(
           padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           width: MediaQuery.of(context).size.width * 0.85,
           height: MediaQuery.of(context).size.height * 0.74,
@@ -48,9 +45,8 @@ class MealPopup extends StatelessWidget {
               SizedBox(height: 5.h,),
             ],
           ),
-        ),
-      ),
-    );
+        );
+
   }
 
   buildButton(String name, VoidCallback onTap, {bool isFilledColor = false}){

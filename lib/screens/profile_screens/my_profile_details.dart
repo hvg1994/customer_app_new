@@ -185,6 +185,7 @@ class _MyProfileDetailsState extends State<MyProfileDetails> {
                                                     GestureDetector(
                                                       onTap: (){
                                                         toggleEdit();
+                                                        _image = null;
                                                       },
                                                         child: Icon(Icons.clear)),
                                                     SizedBox(
@@ -222,7 +223,7 @@ class _MyProfileDetailsState extends State<MyProfileDetails> {
                                               height: 1,
                                               color: Colors.grey,
                                             ),
-                                            profileTile("Age: ", subData?.age ?? '', controller: ageController),
+                                            profileTile("Age: ", subData?.age ?? '', controller: ageController, maxLength: 2),
                                             Container(
                                               height: 1,
                                               color: Colors.grey,
@@ -258,7 +259,7 @@ class _MyProfileDetailsState extends State<MyProfileDetails> {
                                         backgroundColor: Colors.black26,
                                         backgroundImage: (subData!.profile == null || photoError) ? ExactAssetImage(
                                             "assets/images/cheerful.png") :
-                                        CachedNetworkImageProvider(
+                              (_image != null) ? FileImage(_image!) : CachedNetworkImageProvider(
                                             subData.profile!,
                                           errorListener: (){
                                               print("image error");
@@ -321,7 +322,9 @@ class _MyProfileDetailsState extends State<MyProfileDetails> {
     );
   }
 
-  profileTile(String title, String subTitle, {TextEditingController? controller}) {
+  profileTile(String title, String subTitle, {TextEditingController? controller, int? maxLength}) {
+    print(controller);
+    print(controller.runtimeType);
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 3.h, horizontal: 3.w),
       child: Row(
@@ -346,6 +349,7 @@ class _MyProfileDetailsState extends State<MyProfileDetails> {
               ),
               minLines: 1,
               maxLines: 1,
+              maxLength: maxLength,
               // onSaved: (String value) {
               //   // This optional block of code can be used to run
               //   // code when the user saves the form.

@@ -7,8 +7,9 @@ import '../../../widgets/widgets.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
 class MealPdf extends StatelessWidget {
+  final String? heading;
   final String pdfLink;
-  const MealPdf({Key? key, required this.pdfLink}) : super(key: key);
+  const MealPdf({Key? key, required this.pdfLink, this.heading}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +67,7 @@ class MealPdf extends StatelessWidget {
                                 Expanded(
                                   child: Center(
                                     child: Text(
-                                      'Meal',
+                                      heading ?? 'Meal',
                                       style: TextStyle(
                                           fontFamily: "GothamRoundedBold_21016",
                                           color: gTextColor,

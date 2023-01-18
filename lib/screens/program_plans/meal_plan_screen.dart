@@ -130,10 +130,16 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
       //   print('${element.dayNumber} -- ${element.color}');
       // });
       _pref!.setInt(AppConfig.STORE_LENGTH, model.data!.length);
-      presentDay = model.presentDay;
-      nextDay = model.presentDay!+1;
-      selectedDay = model.presentDay;
+      presentDay = int.tryParse(model.presentDay!);
+      nextDay = int.tryParse(model.presentDay!)!+1;
+      selectedDay = int.tryParse(model.presentDay!);
+      model.data!.forEach((element) {
+        if(element.dayNumber == presentDay.toString()){
+          isDayCompleted = element.isCompleted == 1;
+        }
+      });
       print("next day: $nextDay");
+      print(isDayCompleted);
       Future.delayed(Duration(seconds: 1)).then((value) {
         _scrollController.easyScrollToIndex(index: model.data!.indexWhere((element) => element.dayNumber == presentDay.toString())+1);
       });
@@ -442,7 +448,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
     print("init url: $url");
     _controller = VlcPlayerController.network(
       // url ??
-      'https://media.w3.org/2010/05/sintel/trailer.mp4',
+      Uri.parse('https://gwc.disol.in/storage/uploads/users/recipes/Calm Module - Functional (AR).mp4').toString(),
       hwAcc: HwAcc.full,
       options: VlcPlayerOptions(
         advanced: VlcAdvancedOptions([
@@ -575,6 +581,9 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
     else if(int.parse(listData[index].dayNumber!) == nextDay){
       return true;
     }
+    else if(int.parse(listData[index].dayNumber!) < presentDay! && listData[index].isCompleted == 0){
+      return true;
+    }
     else{
       return false;
     }
@@ -596,6 +605,9 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
       return 1.0;
     }
     else if(int.parse(listData[index].dayNumber!) == nextDay){
+      return 1.0;
+    }
+    else if(int.parse(listData[index].dayNumber!) < presentDay! && listData[index].isCompleted == 0){
       return 1.0;
     }
     else{
@@ -715,7 +727,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                   Visibility(
                     visible: (statusList.isNotEmpty && statusList.values.any((element) => element.toString().toLowerCase().contains('unfollowed'))),
                     child: IgnorePointer(
-                      ignoring: isDayCompleted != null,
+                      ignoring: isDayCompleted == true,
                       child: Container(
                         height: 15.h,
                         margin:
@@ -780,7 +792,18 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                             : (statusList.values.any((element) => element.toString().toLowerCase() == 'unfollowed') && commentController.text.isEmpty)
                             ? () => AppConfig().showSnackbar(context, "Please Mention the comments why you unfollowed?", isError: true)
                             : () {
-                          sendData();
+                          for(int i = 1; i< presentDay!; i++){
+                            if(listData[i].isCompleted == 0 && i+1 != presentDay!){
+                              AppConfig().showSnackbar(context, "Please Complete Day ${listData[i].dayNumber}", isError: true);
+                              break;
+                            }
+                            else if(listData[i].isCompleted == 1) {
+                            }
+                            else if(i+1 == presentDay){
+                              print("u can access $presentDay");
+                              sendData();
+                            }
+                          }
                         },
                         child: Container(
                           margin: EdgeInsets.symmetric(vertical: 2.h),
@@ -1036,6 +1059,11 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                                   ? ClipRRect(
                                 borderRadius: BorderRadius.circular(15),
                                 child: Image.network(e.itemImage!,
+                                errorBuilder: (ctx, _,__){
+                                  return Image.asset('assets/images/meal_placeholder.png',
+                                    fit: BoxFit.fill,
+                                  );
+                                },
                                 fit: BoxFit.fill,
                               ),
                                   ) :

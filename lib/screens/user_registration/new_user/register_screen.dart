@@ -178,7 +178,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             textInputAction: TextInputAction.next,
                             textAlign: TextAlign.start,
                             keyboardType: TextInputType.name,
-                            inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[a-zA-Z]"))],
+                            inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[a-zA-Z ]"))],
                           ),
                         ),
                         SizedBox(
@@ -202,7 +202,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             validator: (value) {
                               if (value!.isEmpty) {
                                 return 'Please enter your Age';
-                              } else {
+                              }
+                              else if(value == "0"){
+                                return 'Age should be above 0';
+                              }
+                              else {
                                 return null;
                               }
                             },

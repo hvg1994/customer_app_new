@@ -576,33 +576,81 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
                   ...habitCheckBox.map(buildWrapingCheckBox).toList(),
                 ],
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    SizedBox(
-                      width: 20,
-                      child: Checkbox(
-                        activeColor: kPrimaryColor,
-                        value: habitOtherSelected,
-                        onChanged: (v) {
-                          setState(() {
-                            habitOtherSelected = v!;
-                          });
-                        },
-                      ),
-                    ),
-                    SizedBox(
-                      width: 4,
-                    ),
-                    Text(
+              SizedBox(
+                child: CheckboxListTile(
+                  dense: true,
+                  contentPadding: EdgeInsets.symmetric(horizontal: 5),
+                  controlAffinity: ListTileControlAffinity.leading,
+                  title: Transform.translate(
+                    offset: const Offset(-10, 0),
+                    child: Text(
                       'Other:',
                       style: buildTextStyle(),
                     ),
-                  ],
+                  ),
+                  activeColor: kPrimaryColor,
+                  value: habitOtherSelected,
+                  onChanged: (v) {
+                    setState(() {
+                      habitOtherSelected = v!;
+                      if (habitOtherSelected) {
+                        selectedHabitCheckBoxList.clear();
+                        habitCheckBox
+                            .forEach((element) {
+                          element.value = false;
+                        });
+                        selectedHabitCheckBoxList
+                            .add(otherText);
+                      }
+                      else {
+                        selectedHabitCheckBoxList
+                            .remove(otherText);
+                      }
+                    });
+                  },
                 ),
               ),
+              // Padding(
+              //   padding: const EdgeInsets.symmetric(horizontal: 8),
+              //   child: Row(
+              //     mainAxisSize: MainAxisSize.min,
+              //     children: [
+              //       SizedBox(
+              //         width: 20,
+              //         child: Checkbox(
+              //           activeColor: kPrimaryColor,
+              //           value: habitOtherSelected,
+              //           onChanged: (v) {
+              //             setState(() {
+              //               habitOtherSelected = v!;
+              //               if (habitOtherSelected) {
+              //                 selectedHabitCheckBoxList
+              //                     .add(otherText);
+              //                 selectedHabitCheckBoxList.clear();
+              //                 selectedHabitCheckBoxList
+              //                     .forEach((element) {
+              //                   element.value = false;
+              //                 });
+              //                 selectedHabitCheckBoxList
+              //                     .add(otherText);
+              //               } else {
+              //                 selectedHabitCheckBoxList
+              //                     .remove(otherText);
+              //               }
+              //             });
+              //           },
+              //         ),
+              //       ),
+              //       SizedBox(
+              //         width: 4,
+              //       ),
+              //       Text(
+              //         'Other:',
+              //         style: buildTextStyle(),
+              //       ),
+              //     ],
+              //   ),
+              // ),
               TextFormField(
                 controller: habitOtherController,
                 cursorColor: kPrimaryColor,
@@ -1006,6 +1054,47 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
   }
 
   buildWrapingCheckBox(CheckBoxSettings healthCheckBox){
+    return SizedBox(
+      child: CheckboxListTile(
+        contentPadding: EdgeInsets.symmetric(horizontal: 5),
+        controlAffinity: ListTileControlAffinity.leading,
+        title: Transform.translate(
+          offset: const Offset(-10, 0),
+          child: Text(
+            healthCheckBox.title.toString(),
+            style: buildTextStyle(),
+          ),
+        ),
+        dense: true,
+        activeColor: kPrimaryColor,
+        value: healthCheckBox.value,
+        onChanged: (v) {
+          if(habitOtherSelected){
+            if(v == true){
+              habitOtherSelected = false;
+              selectedHabitCheckBoxList.clear();
+              selectedHabitCheckBoxList.add(healthCheckBox.title);
+              healthCheckBox.value = v;
+            }
+          }
+          else{
+            if (v == true) {
+              setState(() {
+                selectedHabitCheckBoxList.add(healthCheckBox.title);
+                healthCheckBox.value = v;
+              });
+            }
+            else {
+              setState(() {
+                selectedHabitCheckBoxList.remove(healthCheckBox.title);
+                healthCheckBox.value = v;
+              });
+            }
+            print(selectedHabitCheckBoxList);
+          }
+        },
+      ),
+    );
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Row(
@@ -1162,7 +1251,7 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
         MaterialPageRoute(
             builder: (context) =>
             const DashboardScreen()), (route) {
-          print(route.currentResult);
+          print("route.currentResult:${route.currentResult}");
           print(route.isFirst);
         return route.isFirst;
       }

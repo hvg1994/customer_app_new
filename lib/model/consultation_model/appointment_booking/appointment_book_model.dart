@@ -15,6 +15,8 @@ class AppointmentBookingModel {
   String? zoomId;
   String? zoomPassword;
   String? kaleyraJoinurl;
+  String? kaleyraUserId;
+  String? kaleyraSuccessId;
 
   AppointmentBookingModel(
       {this.status,
@@ -28,7 +30,9 @@ class AppointmentBookingModel {
         this.zoomId,
         this.zoomPassword,
         this.patientName,
-        this.kaleyraJoinurl
+        this.kaleyraJoinurl,
+        this.kaleyraUserId,
+        this.kaleyraSuccessId
       });
 
   AppointmentBookingModel.fromJson(Map<String, dynamic> json) {
@@ -43,6 +47,8 @@ class AppointmentBookingModel {
     zoomId = json['zoom_id'].toString();
     zoomPassword = json['zoom_password'];
     kaleyraJoinurl = json['kaleyra_user_url'];
+    kaleyraUserId = json['kaleyra_user_id'];
+    kaleyraSuccessId = json['kaleyra_success_team_id'];
     patientName = json['patient_name'];
   }
 
@@ -64,6 +70,8 @@ class AppointmentBookingModel {
     data['zoom_id'] = this.zoomId;
     data['zoom_password'] = this.zoomPassword;
     data['kaleyra_user_url'] = this.kaleyraJoinurl;
+    data['kaleyra_user_id'] = this.kaleyraUserId;
+    data['kaleyra_success_team_id'] = this.kaleyraSuccessId;
     return data;
   }
 }

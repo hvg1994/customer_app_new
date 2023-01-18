@@ -218,7 +218,7 @@ class _RewardScreenState extends State<RewardScreen> {
                                         top: -10.w,
                                         child: GestureDetector(
                                           onTap:(){
-                                            Navigator.push(context, MaterialPageRoute(builder: (_)=> LevelsScreen()));
+                                            // Navigator.push(context, MaterialPageRoute(builder: (_)=> LevelsScreen()));
                                           },
                                           child: Container(
                                             padding: EdgeInsets.symmetric(

@@ -527,6 +527,8 @@ class _DoctorCalenderTimeScreenState extends State<DoctorCalenderTimeScreen> {
         showBookingProgress = false;
       });
       _pref.setString(AppConfig.appointmentId, result.appointmentId ?? '');
+      _pref.setString(AppConfig.KALEYRA_SUCCESS_ID, result.kaleyraSuccessId ?? '');
+
       // _pref.setString(AppConfig.doctorId, result.doctorId ?? '');
 
       // AppConfig().showSnackbar(context, result.message ?? '');

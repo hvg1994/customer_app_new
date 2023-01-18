@@ -5,6 +5,7 @@ import 'package:gwc_customer/repository/api_service.dart';
 import 'package:gwc_customer/repository/profile_repository/settings_repo.dart';
 import 'package:gwc_customer/screens/profile_screens/faq_screens/faq_answers_screen.dart';
 import 'package:gwc_customer/services/profile_screen_service/settings_service.dart';
+import 'package:gwc_customer/widgets/unfocus_widget.dart';
 import 'package:sizer/sizer.dart';
 import 'package:http/http.dart' as http;
 import '../../../widgets/constants.dart';
@@ -88,8 +89,12 @@ class _FaqScreenState extends State<FaqScreen> {
     'Get in touch with us & we’ll have it changed for you.'
   ];
   List<FAQ> faq = [];
-
   List<FAQ> searchFAQResults = [];
+
+
+
+  List<FaqList> fullFaq = [];
+  List<FaqList> searchedFAQResults = [];
 
   Future? faqFuture;
 
@@ -106,32 +111,34 @@ class _FaqScreenState extends State<FaqScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        body: Padding(
-          padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 5.w),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                buildAppBar(() {
-                  Navigator.pop(context);
-                }),
-                //SizedBox(height: 1.h),
-                Text(
-                  "FAQ",
-                  style: TextStyle(
-                      fontFamily: "GothamBold",
-                      color: gBlackColor,
-                      fontSize: 13.sp),
-                ),
-                SizedBox(height: 1.h),
-                buildSearchWidget(),
-                buildExpansionTiles(),
-                //  newDesignUI(context)
-                // buildQuestions("Can I skip a day and restart?", 0),
-              ],
+    return UnfocusWidget(
+      child: SafeArea(
+        child: Scaffold(
+          body: Padding(
+            padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 5.w),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  buildAppBar(() {
+                    Navigator.pop(context);
+                  }),
+                  //SizedBox(height: 1.h),
+                  Text(
+                    "FAQ",
+                    style: TextStyle(
+                        fontFamily: "GothamBold",
+                        color: gBlackColor,
+                        fontSize: 13.sp),
+                  ),
+                  SizedBox(height: 1.h),
+                  buildSearchWidget(),
+                  buildExpansionTiles(),
+                  //  newDesignUI(context)
+                  // buildQuestions("Can I skip a day and restart?", 0),
+                ],
+              ),
             ),
           ),
         ),
@@ -184,19 +191,21 @@ class _FaqScreenState extends State<FaqScreen> {
               } else {
                 print("else");
                 FaqListModel model = snapshot.data as FaqListModel;
-
+                fullFaq.addAll(model.faqList!);
                 return Column(
                   children: [
                     searchController.text.isNotEmpty
                         ? buildSearchList()
-                        : Column(
-                            children: [
-                              generalQueries(model),
-                              mealPlanQueries(model),
-                              yogaPlanQueries(model),
-                              symptomQueries(model),
-                            ],
-                          )
+                        : SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          generalQueries(model),
+                          mealPlanQueries(model),
+                          yogaPlanQueries(model),
+                          symptomQueries(model),
+                        ],
+                      ),
+                    )
                   ],
                 );
                 model.faqList?.map((e) {
@@ -228,6 +237,7 @@ class _FaqScreenState extends State<FaqScreen> {
       // ),
       children: [
         ListView.builder(
+          physics: NeverScrollableScrollPhysics(),
             shrinkWrap: true,
             scrollDirection: Axis.vertical,
             itemCount: que.faqList?.length,
@@ -266,6 +276,7 @@ class _FaqScreenState extends State<FaqScreen> {
       // ),
       children: [
         ListView.builder(
+            physics: NeverScrollableScrollPhysics(),
             shrinkWrap: true,
             scrollDirection: Axis.vertical,
             itemCount: que.faqList?.length,
@@ -304,6 +315,7 @@ class _FaqScreenState extends State<FaqScreen> {
       // ),
       children: [
         ListView.builder(
+            physics: NeverScrollableScrollPhysics(),
             shrinkWrap: true,
             scrollDirection: Axis.vertical,
             itemCount: que.faqList?.length,
@@ -342,6 +354,7 @@ class _FaqScreenState extends State<FaqScreen> {
       // ),
       children: [
         ListView.builder(
+            physics: NeverScrollableScrollPhysics(),
             shrinkWrap: true,
             scrollDirection: Axis.vertical,
             itemCount: que.faqList?.length,
@@ -390,6 +403,19 @@ class _FaqScreenState extends State<FaqScreen> {
             color: gBlackColor,
             size: 2.5.h,
           ),
+          suffixIcon: GestureDetector(
+            onTap: (){
+              setState(() {
+                searchController.clear();
+                searchedFAQResults.clear();
+              });
+            },
+            child: Icon(
+              Icons.cancel_outlined,
+              color: gBlackColor,
+              size: 2.5.h,
+            ),
+          ),
           hintText: "Search...",
           // suffixIcon: searchController.text.isNotEmpty
           //     ? GestureDetector(
@@ -419,17 +445,37 @@ class _FaqScreenState extends State<FaqScreen> {
 
   onSearchTextChanged(String text) async {
     searchFAQResults.clear();
+    searchedFAQResults.clear();
+
     if (text.isEmpty) {
       setState(() {});
       return;
     }
-    faq?.forEach((userDetail) {
-      if (userDetail.questions!
-          .toLowerCase()
-          .contains(text.trim().toLowerCase())) {
-        searchFAQResults.add(userDetail);
+    // faq?.forEach((userDetail) {
+    //   if (userDetail.questions!
+    //       .toLowerCase()
+    //       .contains(text.trim().toLowerCase())) {
+    //     searchFAQResults.add(userDetail);
+    //   }
+    // });
+
+    if(fullFaq != null || fullFaq.isNotEmpty){
+
+      for (var details in fullFaq) {
+        print(details.question);
+        print(text.trim());
+        if(details.question!.toLowerCase().contains(text.trim().toLowerCase())){
+          if(searchedFAQResults.isNotEmpty){
+            if(!searchedFAQResults.contains(details)){
+              searchedFAQResults.add(details);
+            }
+          }
+          else{
+            searchedFAQResults.add(details);
+          }
+        }
       }
-    });
+    }
     setState(() {});
   }
 
@@ -454,17 +500,17 @@ class _FaqScreenState extends State<FaqScreen> {
               padding: EdgeInsets.symmetric(horizontal: 1.w),
               physics: const ScrollPhysics(),
               shrinkWrap: true,
-              itemCount: searchFAQResults.length,
+              itemCount: searchedFAQResults.length,
               itemBuilder: ((context, index) {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     GestureDetector(
                       onTap: () {
-                       // goto(searchFAQResults);
+                       goto(searchedFAQResults[index]);
                       },
                       child: Text(
-                        searchFAQResults[index].questions ?? "",
+                        searchedFAQResults[index].question ?? "",
                         style: TextStyle(
                             fontFamily: "GothamBook",
                             color: gBlackColor,

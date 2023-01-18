@@ -5,12 +5,15 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:grouped_list/grouped_list.dart';
 import 'package:gwc_customer/repository/quick_blox_repository/message_wrapper.dart';
+import 'package:gwc_customer/repository/quick_blox_repository/quick_blox_repository.dart';
 import 'package:gwc_customer/screens/profile_screens/call_support_method.dart';
 import 'package:gwc_customer/screens/program_plans/meal_pdf.dart';
 import 'package:gwc_customer/utils/app_config.dart';
@@ -71,7 +74,12 @@ class _MessageScreenState extends State<MessageScreen>
     if (_pref != null) {
       if (_pref?.getString(AppConfig.GROUP_ID) != null) {
         _groupId = _pref!.getString(AppConfig.GROUP_ID);
-        joinChatRoom(_pref!.getString(AppConfig.GROUP_ID)!);
+        //test
+        // joinWithLogin(_groupId!);
+        _groupId = "63bfe5b907a49d00325819d9";
+        joinChatRoom(_groupId!);
+
+        // joinChatRoom(_pref!.getString(AppConfig.GROUP_ID)!);
       }
     }
     commentController.addListener(() {
@@ -222,8 +230,10 @@ class _MessageScreenState extends State<MessageScreen>
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            buildAppBar(() {
+                            buildAppBar(() async{
+                              await _quickBloxService!.disconnect().then((value) {
                               Navigator.pop(context);
+                              });
                             }),
                             Column(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -439,6 +449,7 @@ class _MessageScreenState extends State<MessageScreen>
                     GestureDetector(
                       onTap: () async{
                         await _quickBloxService!.disconnect().then((value) {
+                          _quickBloxService!.logout();
                           Navigator.pop(context);
                           Navigator.pop(context);
                         });
@@ -543,6 +554,8 @@ class _MessageScreenState extends State<MessageScreen>
                         setState(() {
                           messages.add(message);
                         });
+                        // need to remove
+                        _groupId = "63bfe5b907a49d00325819d9";
                         _quickBloxService!.sendMessage(_groupId!,
                             message: commentController.text);
 
@@ -1190,23 +1203,36 @@ class _MessageScreenState extends State<MessageScreen>
 
   joinChatRoom(String groupId) async {
     print("groupId: ${groupId}");
-    Provider.of<QuickBloxService>(context, listen: false).joinDialog(groupId).then((value) {
+
+    Provider.of<QuickBloxService>(context, listen: false).joinDialog("63bfe5b907a49d00325819d9").then((value) async{
       print("value: $value");
+      // await Firebase.initializeApp();
+      final fcmToken = await FirebaseMessaging.instance.getToken();
+      QuickBloxRepository().initSubscription(fcmToken!);
+
     }).onError((error, stackTrace) {
-      print('err: ${error.runtimeType}');
-      print(stackTrace);
+      print('err: ${error}');
       // if(PlatformException(e)
       if(error.runtimeType == PlatformException){
         PlatformException e = error as PlatformException;
-        if(e.message!.toLowerCase().contains('need user')){
-          joinWithLogin(groupId);
-        }
-        else{
+        if(e.message == null){
+          print(e.code);
           setState((){
             isError = true;
-            errorMsg = e.message ?? '';
+            errorMsg = e.code ?? '';
           });
-          // _qbService.connect(_pref.getInt(AppConfig.QB_CURRENT_USERID)!);
+        }
+        else{
+          if(e.message!.toLowerCase().contains('need user')){
+            joinWithLogin(groupId);
+          }
+          else{
+            setState((){
+              isError = true;
+              errorMsg = e.message ?? '';
+            });
+            // _qbService.connect(_pref.getInt(AppConfig.QB_CURRENT_USERID)!);
+          }
         }
       }
     });

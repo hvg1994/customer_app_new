@@ -10,11 +10,10 @@ import 'package:catcher/catcher.dart';
 import 'package:country_code_picker/country_localizations.dart';
 import 'package:device_preview/device_preview.dart' hide DeviceType;
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:gwc_customer/repository/quick_blox_repository/quick_blox_repository.dart';
+import 'package:flutter_sim_country_code/flutter_sim_country_code.dart';
 import 'package:gwc_customer/services/local_notification_service.dart';
 import 'package:gwc_customer/services/quick_blox_service/quick_blox_service.dart';
 import 'package:gwc_customer/splash_screen.dart';
@@ -30,17 +29,9 @@ import 'utils/app_config.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
-import 'package:flutter_sim_country_code/flutter_sim_country_code.dart';
 
 import 'utils/http_override.dart';
 
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-    print('Handling a background message ${message.messageId}');
-    await Firebase.initializeApp();
-
-    print(message.data.toString());
-    print(message.notification!.title);
-}
 
 cacheManager(){
   CatcherOptions debugOptions =
@@ -72,31 +63,23 @@ void main() async {
     [DeviceOrientation.portraitUp],
   );
   //***** firebase notification ******
-  await Firebase.initializeApp();
+  await Firebase.initializeApp().then((value) {
+    print("firebase initialized");
+  }).onError((error, stackTrace) {
+    print("firebase initialize error: ${error}");
+  });
 
-  await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
-    alert: true,
-    badge: true,
-    sound: true,
-  );
 
-  await FirebaseMessaging.instance.getToken();
+  // await FirebaseMessaging.instance.getToken();
 
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  final fcmToken = await FirebaseMessaging.instance.getToken();
-
-  LocalNotificationService.initialize();
-
-  print("fcmToken: $fcmToken");
+  // FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  //
+  // LocalNotificationService.initialize();
 
   // *****  end *************
   runApp(const MyApp());
 
-  print("fcmToken: $fcmToken");
 
-  QuickBloxRepository().init(AppConfig.QB_APP_ID, AppConfig.QB_AUTH_KEY, AppConfig.QB_AUTH_SECRET, AppConfig.QB_ACCOUNT_KEY);
-
-  QuickBloxRepository().initSubscription(fcmToken!);
 }
 
 
@@ -167,7 +150,18 @@ class _MyAppState extends State<MyApp> {
 
   final _pref = AppConfig().preferences;
 
-  getDeviceId() async{
+
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    storeLastLogin();
+    getDeviceId();
+
+  }
+
+  Future getDeviceId() async{
     final _pref = AppConfig().preferences;
     await AppConfig().getDeviceId().then((id) {
       print("deviceId: $id");
@@ -179,102 +173,20 @@ class _MyAppState extends State<MyApp> {
     // this is for getting the state and city name
     // this was not using currently
     String? n = await FlutterSimCountryCode.simCountryCode;
+    print("country: $n");
     if(n!= null) _pref!.setString(AppConfig.countryCode, n);
     // print("country_code:${n}");
 
-    String? fcmToken = await FirebaseMessaging.instance.getToken();
-    _pref!.setString(AppConfig.FCM_TOKEN, fcmToken!);
-
   }
 
 
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    getDeviceId();
-    storeLastLogin();
-
-    getPermission();
-    listenMessages();
-    listenNotifications();
-  }
-  void listenNotifications()async{
-    LocalNotificationService.onNotifications.stream
-      .listen(onClickedNotifications);}
-
-  void onClickedNotifications(String? payload)
-  {
-    print("on notification click: $payload");
-    // Navigator.of(context).push(
-    //   MaterialPageRoute(
-    //     builder: (context) => const NotificationsList(),
-    //   ),
-    // );
-  }
-
-  listenMessages(){
-    FirebaseMessaging.instance.getInitialMessage().then(
-          (message) {
-        print("FirebaseMessaging.instance.getInitialMessage");
-        if (message != null) {
-          print("New Notification");
-          // if (message.data['_id'] != null) {
-          //   Navigator.of(context).push(
-          //     MaterialPageRoute(
-          //       builder: (context) => DemoScreen(
-          //         id: message.data['_id'],
-          //       ),
-          //     ),
-          //   );
-          // }
-        }
-      },
-    );
-    FirebaseMessaging.onMessage.listen(
-          (message) {
-        print("FirebaseMessaging.onMessage.listen");
-        if (message.notification != null) {
-          print(message.notification!.title);
-          print(message.notification!.body);
-          print("message.data11 ${message.data}");
-          LocalNotificationService.createanddisplaynotification(message);
-        }
-      },
-    );
-    FirebaseMessaging.onMessageOpenedApp.listen(
-          (message) {
-        print("FirebaseMessaging.onMessageOpenedApp.listen");
-        if (message.notification != null) {
-          print(message.notification!.title);
-          print(message.notification!.body);
-          print("message.data22 ${message.data['_id']}");
-        }
-      },
-    );
-  }
-
-  getPermission() async{
-    FirebaseMessaging messaging = FirebaseMessaging.instance;
-
-    NotificationSettings settings = await messaging.requestPermission(
-      alert: true,
-      announcement: false,
-      badge: true,
-      carPlay: false,
-      criticalAlert: false,
-      provisional: false,
-      sound: true,
-    );
-
-    print('User granted permission: ${settings.authorizationStatus}');
-  }
 
 
 
 
   @override
   Widget build(BuildContext context) {
+
     return Sizer(builder:
         (BuildContext context, Orientation orientation, DeviceType deviceType) {
       return  MultiProvider(

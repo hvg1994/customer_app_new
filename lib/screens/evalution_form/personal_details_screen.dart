@@ -891,7 +891,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                     String code =
                         _pref?.getString(AppConfig.countryCode) ?? 'IN';
                     if (code.isNotEmpty && code == 'IN') {
-                      fetchCountry(value, code);
+                      fetchCountry(value, 'IN');
                     }
                     FocusManager.instance.primaryFocus?.unfocus();
                   }
@@ -905,9 +905,12 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                           onTap: () {
                             String code =
                                 _pref?.getString(AppConfig.countryCode) ?? '';
-                            if (code.isNotEmpty && code == 'IN') {
-                              fetchCountry(pinCodeController.text, code);
-                            }
+                            print('code: $code');
+                            // if (code.isNotEmpty && code == 'IN') {
+                            //   fetchCountry(pinCodeController.text, code);
+                            // }
+                            fetchCountry(pinCodeController.text, 'IN');
+
                             FocusManager.instance.primaryFocus?.unfocus();
                           },
                           child: Icon(
@@ -1469,35 +1472,66 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                         .toList(),
                   ],
                 ),
-                ListTile(
-                  minLeadingWidth: 0,
-                  leading: SizedBox(
-                    width: 20,
-                    child: Checkbox(
-                      activeColor: kPrimaryColor,
-                      value: urinSmellOtherSelected,
-                      onChanged: (v) {
-                        setState(() {
-                          urinSmellOtherSelected = v!;
-                          if (urinSmellOtherSelected) {
-                            selectedUrinSmellList.clear();
-                            urinSmellList.forEach((element) {
-                              element.value = false;
-                            });
-                            selectedUrinSmellList.add(otherText);
-                          } else {
-                            selectedUrinSmellList.remove(otherText);
-                          }
-                          print(selectedUrinSmellList);
-                        });
-                      },
+                SizedBox(
+                  child: CheckboxListTile(
+                    dense: true,
+                    contentPadding: EdgeInsets.symmetric(horizontal: 5),
+                    controlAffinity: ListTileControlAffinity.leading,
+                    title: Transform.translate(
+                      offset: const Offset(-10, 0),
+                      child: Text(
+                        'Other:',
+                        style: buildTextStyle(),
+                      ),
                     ),
-                  ),
-                  title: Text(
-                    'Other:',
-                    style: buildTextStyle(),
+                    activeColor: kPrimaryColor,
+                    value: urinSmellOtherSelected,
+                    onChanged: (v) {
+                      setState(() {
+                        urinSmellOtherSelected = v!;
+                        if (urinSmellOtherSelected) {
+                          selectedUrinSmellList.clear();
+                          urinSmellList.forEach((element) {
+                            element.value = false;
+                          });
+                          selectedUrinSmellList.add(otherText);
+                        } else {
+                          selectedUrinSmellList.remove(otherText);
+                        }
+                        print(selectedUrinSmellList);
+                      });
+                    },
                   ),
                 ),
+                // ListTile(
+                //   minLeadingWidth: 0,
+                //   leading: SizedBox(
+                //     width: 20,
+                //     child: Checkbox(
+                //       activeColor: kPrimaryColor,
+                //       value: urinSmellOtherSelected,
+                //       onChanged: (v) {
+                //         setState(() {
+                //           urinSmellOtherSelected = v!;
+                //           if (urinSmellOtherSelected) {
+                //             selectedUrinSmellList.clear();
+                //             urinSmellList.forEach((element) {
+                //               element.value = false;
+                //             });
+                //             selectedUrinSmellList.add(otherText);
+                //           } else {
+                //             selectedUrinSmellList.remove(otherText);
+                //           }
+                //           print(selectedUrinSmellList);
+                //         });
+                //       },
+                //     ),
+                //   ),
+                //   title: Text(
+                //     'Other:',
+                //     style: buildTextStyle(),
+                //   ),
+                // ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8),
                   child: TextFormField(
@@ -1752,39 +1786,74 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                         .toList(),
                   ],
                 ),
-                ListTile(
-                  minLeadingWidth: 0,
-                  leading: SizedBox(
-                    width: 20,
-                    child: Checkbox(
+                SizedBox(
+                  child: CheckboxListTile(
+                    dense: true,
+                    contentPadding: EdgeInsets.symmetric(horizontal: 5),
+                    controlAffinity: ListTileControlAffinity.leading,
+                      title: Transform.translate(
+                        offset: const Offset(-10, 0),
+                        child: Text(
+                          'Other:',
+                          style: buildTextStyle(),
+                        ),
+                      ),
                       activeColor: kPrimaryColor,
                       value: medicalInterventionsOtherSelected,
-                      onChanged: (v) {
-                        setState(() {
-                          medicalInterventionsOtherSelected = v!;
-                          if (medicalInterventionsOtherSelected) {
-                            selectedmedicalInterventionsDoneBeforeList
-                                .add(otherText);
-                            selectedmedicalInterventionsDoneBeforeList.clear();
-                            medicalInterventionsDoneBeforeList
-                                .forEach((element) {
-                              element.value = false;
-                            });
-                            selectedmedicalInterventionsDoneBeforeList
-                                .add(otherText);
-                          } else {
-                            selectedmedicalInterventionsDoneBeforeList
-                                .remove(otherText);
-                          }
-                        });
-                      },
-                    ),
-                  ),
-                  title: Text(
-                    'Other:',
-                    style: buildTextStyle(),
+                    onChanged: (v) {
+                      setState(() {
+                        medicalInterventionsOtherSelected = v!;
+                        if (medicalInterventionsOtherSelected) {
+                          selectedmedicalInterventionsDoneBeforeList
+                              .add(otherText);
+                          selectedmedicalInterventionsDoneBeforeList.clear();
+                          medicalInterventionsDoneBeforeList
+                              .forEach((element) {
+                            element.value = false;
+                          });
+                          selectedmedicalInterventionsDoneBeforeList
+                              .add(otherText);
+                        } else {
+                          selectedmedicalInterventionsDoneBeforeList
+                              .remove(otherText);
+                        }
+                      });
+                    },
                   ),
                 ),
+                // ListTile(
+                //   minLeadingWidth: 0,
+                //   leading: SizedBox(
+                //     width: 20,
+                //     child: Checkbox(
+                //       activeColor: kPrimaryColor,
+                //       value: medicalInterventionsOtherSelected,
+                //       onChanged: (v) {
+                //         setState(() {
+                //           medicalInterventionsOtherSelected = v!;
+                //           if (medicalInterventionsOtherSelected) {
+                //             selectedmedicalInterventionsDoneBeforeList
+                //                 .add(otherText);
+                //             selectedmedicalInterventionsDoneBeforeList.clear();
+                //             medicalInterventionsDoneBeforeList
+                //                 .forEach((element) {
+                //               element.value = false;
+                //             });
+                //             selectedmedicalInterventionsDoneBeforeList
+                //                 .add(otherText);
+                //           } else {
+                //             selectedmedicalInterventionsDoneBeforeList
+                //                 .remove(otherText);
+                //           }
+                //         });
+                //       },
+                //     ),
+                //   ),
+                //   title: Text(
+                //     'Other:',
+                //     style: buildTextStyle(),
+                //   ),
+                // ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8),
                   child: TextFormField(
@@ -1851,7 +1920,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
               },
               decoration: CommonDecoration.buildTextInputDecoration(
                   "Your answer", holisticController),
-              textInputAction: TextInputAction.next,
+              textInputAction: TextInputAction.done,
               textAlign: TextAlign.start,
               keyboardType: TextInputType.name,
             ),
@@ -3542,797 +3611,363 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
     );
   }
 
-  buildLifeStyleDetails() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              "Life Style",
-              textAlign: TextAlign.start,
-              style: TextStyle(
-                  fontFamily: "PoppinsBold",
-                  color: kPrimaryColor,
-                  fontSize: 15.sp),
-            ),
-            SizedBox(
-              width: 2.w,
-            ),
-            Expanded(
-              child: Container(
-                height: 1,
-                color: kPrimaryColor,
-              ),
-            ),
-          ],
-        ),
-        SizedBox(
-          height: 3.h,
-        ),
-        Text(
-          'Your Thoughts*',
-          style: TextStyle(
-            fontSize: 9.sp,
-            color: kTextColor,
-            fontFamily: "PoppinsSemiBold",
-          ),
-        ),
-        SizedBox(
-          height: 1.h,
-        ),
-        Column(
-          children: [
-            Row(
-              children: [
-                Radio(
-                    value:
-                        "My Past,Future & External Environment Affects Me At Time But I Bounce Back Quick & Don't Brood",
-                    groupValue: selectedValue17,
-                    activeColor: kPrimaryColor,
-                    onChanged: (value) {
-                      setState(() {
-                        selectedValue17 = value as String;
-                      });
-                    }),
-                Text(
-                  "My Past,Future & External Environment Affects Me \nAt Time But I Bounce Back Quick & Don't Brood",
-                  style: buildTextStyle(),
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                Radio(
-                    value:
-                        "Spend A Lot Of Time Thinking About My Past,Future & External Evnironment",
-                    groupValue: selectedValue17,
-                    activeColor: kPrimaryColor,
-                    onChanged: (value) {
-                      setState(() {
-                        selectedValue17 = value as String;
-                      });
-                    }),
-                Text(
-                  "Spend A Lot Of Time Thinking About My Past,\nFuture & External Evnironment",
-                  style: buildTextStyle(),
-                ),
-              ],
-            ),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Radio(
-                    value:
-                        "I Take Life As It Comes, Don't Dwell Much On My Past,Future Or External Factors",
-                    groupValue: selectedValue17,
-                    activeColor: kPrimaryColor,
-                    onChanged: (value) {
-                      setState(() {
-                        selectedValue17 = value as String;
-                      });
-                    }),
-                Text(
-                  "I Take Life As It Comes, Don't Dwell Much On \nMy Past,Future Or External Factors",
-                  style: buildTextStyle(),
-                ),
-              ],
-            ),
-          ],
-        ),
-        SizedBox(
-          height: 2.h,
-        ),
-        Text(
-          'Would You Say You Have Been More Unhappy Than Happy Over The Last Few Months?*',
-          style: TextStyle(
-            fontSize: 9.sp,
-            color: kTextColor,
-            fontFamily: "PoppinsSemiBold",
-          ),
-        ),
-        SizedBox(
-          height: 1.h,
-        ),
-        Row(
-          children: [
-            Radio(
-              value: "Yes",
-              activeColor: kPrimaryColor,
-              groupValue: selectedValue18,
-              onChanged: (value) {
-                setState(() {
-                  selectedValue18 = value as String;
-                });
-              },
-            ),
-            Text(
-              'Yes',
-              style: buildTextStyle(),
-            ),
-            SizedBox(
-              width: 2.w,
-            ),
-            Radio(
-              value: "No",
-              activeColor: kPrimaryColor,
-              groupValue: selectedValue18,
-              onChanged: (value) {
-                setState(() {
-                  selectedValue18 = value as String;
-                });
-              },
-            ),
-            Text(
-              'No',
-              style: buildTextStyle(),
-            ),
-          ],
-        ),
-        SizedBox(
-          height: 2.h,
-        ),
-        Text(
-          'Do You Consume Any Of The Followimg? Pick All That Apply.*',
-          style: TextStyle(
-            fontSize: 9.sp,
-            color: kTextColor,
-            fontFamily: "PoppinsSemiBold",
-          ),
-        ),
-        SizedBox(
-          height: 1.h,
-        ),
-        ListView(
-          shrinkWrap: true,
-          physics: const BouncingScrollPhysics(),
-          children: [
-            ...lifeStyleCheckBox.map(buildLifeStyleCheckBox).toList(),
-          ],
-        ),
-        SizedBox(
-          height: 2.h,
-        ),
-        Text(
-          'Do You Like The Digital Life More Than Your Family/Friend Time?*',
-          style: TextStyle(
-            fontSize: 9.sp,
-            color: kTextColor,
-            fontFamily: "PoppinsSemiBold",
-          ),
-        ),
-        SizedBox(
-          height: 1.h,
-        ),
-        Row(
-          children: [
-            Radio(
-              value: "Yes",
-              activeColor: kPrimaryColor,
-              groupValue: selectedValue19,
-              onChanged: (value) {
-                setState(() {
-                  selectedValue19 = value as String;
-                });
-              },
-            ),
-            Text(
-              'Yes',
-              style: buildTextStyle(),
-            ),
-            SizedBox(
-              width: 2.w,
-            ),
-            Radio(
-              value: "No",
-              activeColor: kPrimaryColor,
-              groupValue: selectedValue19,
-              onChanged: (value) {
-                setState(() {
-                  selectedValue19 = value as String;
-                });
-              },
-            ),
-            Text(
-              'No',
-              style: buildTextStyle(),
-            ),
-          ],
-        ),
-        SizedBox(
-          height: 2.h,
-        ),
-        Text(
-          'Do You Exercise? If So Please Mention Details.*',
-          style: TextStyle(
-            fontSize: 9.sp,
-            color: kTextColor,
-            fontFamily: "PoppinsSemiBold",
-          ),
-        ),
-        SizedBox(
-          height: 1.h,
-        ),
-        TextFormField(
-          controller: exerciseController,
-          cursorColor: kPrimaryColor,
-          validator: (value) {
-            if (value!.isEmpty || !RegExp(r"^[a-z A-Z]").hasMatch(value)) {
-              return 'Please enter your Changed';
-            } else if (!RegExp(r"^[a-z A-Z]").hasMatch(value)) {
-              return 'Please enter your valid Changed';
-            } else {
-              return null;
-            }
-          },
-          decoration: CommonDecoration.buildTextInputDecoration(
-              "Your answer", exerciseController),
-          textInputAction: TextInputAction.next,
-          textAlign: TextAlign.start,
-          keyboardType: TextInputType.number,
-        ),
-        SizedBox(
-          height: 5.h,
-        ),
-      ],
-    );
-  }
-
-  buildGutTypeDetails() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              "Gut Type",
-              textAlign: TextAlign.start,
-              style: TextStyle(
-                  fontFamily: "PoppinsBold",
-                  color: kPrimaryColor,
-                  fontSize: 15.sp),
-            ),
-            SizedBox(
-              width: 2.w,
-            ),
-            Expanded(
-              child: Container(
-                height: 1,
-                color: kPrimaryColor,
-              ),
-            ),
-          ],
-        ),
-        SizedBox(
-          height: 3.h,
-        ),
-        Text(
-          'What Is Your Preference Past A Meal*',
-          style: TextStyle(
-            fontSize: 9.sp,
-            color: kTextColor,
-            fontFamily: "PoppinsSemiBold",
-          ),
-        ),
-        SizedBox(
-          height: 1.h,
-        ),
-        Column(
-          children: [
-            Row(
-              children: [
-                Radio(
-                    value: "Eat Something Sweet Within 2 Hours Of Your Meal",
-                    groupValue: selectedValue20,
-                    activeColor: kPrimaryColor,
-                    onChanged: (value) {
-                      setState(() {
-                        selectedValue20 = value as String;
-                      });
-                    }),
-                Text(
-                  "Eat Something Sweet Within 2 Hours Of Your Meal",
-                  style: buildTextStyle(),
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                Radio(
-                    value:
-                        "Have Something Bitter Or Astringent Within 1 Hour Of Your Meal",
-                    groupValue: selectedValue20,
-                    activeColor: kPrimaryColor,
-                    onChanged: (value) {
-                      setState(() {
-                        selectedValue20 = value as String;
-                      });
-                    }),
-                Text(
-                  "Have Something Bitter Or Astringent Within \n1 Hour Of Your Meal",
-                  style: buildTextStyle(),
-                ),
-              ],
-            ),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Radio(
-                    value: "To Have A Hot Drink Within An Hour Of A Meal",
-                    groupValue: selectedValue20,
-                    activeColor: kPrimaryColor,
-                    onChanged: (value) {
-                      setState(() {
-                        selectedValue20 = value as String;
-                      });
-                    }),
-                Text(
-                  "To Have A Hot Drink Within An Hour Of A Meal",
-                  style: buildTextStyle(),
-                ),
-              ],
-            ),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Radio(
-                    value: "None",
-                    groupValue: selectedValue20,
-                    activeColor: kPrimaryColor,
-                    onChanged: (value) {
-                      setState(() {
-                        selectedValue20 = value as String;
-                      });
-                    }),
-                Text(
-                  "None",
-                  style: buildTextStyle(),
-                ),
-              ],
-            ),
-          ],
-        ),
-        SizedBox(
-          height: 2.h,
-        ),
-        Text(
-          'What Does Hunger Look Like For You?*',
-          style: TextStyle(
-            fontSize: 9.sp,
-            color: kTextColor,
-            fontFamily: "PoppinsSemiBold",
-          ),
-        ),
-        SizedBox(
-          height: 1.h,
-        ),
-        Column(
-          children: [
-            Row(
-              children: [
-                Radio(
-                    value: "Intense But Small Portions Frequently.",
-                    groupValue: selectedValue21,
-                    activeColor: kPrimaryColor,
-                    onChanged: (value) {
-                      setState(() {
-                        selectedValue21 = value as String;
-                      });
-                    }),
-                Text(
-                  "Intense But Small Portions Frequently.",
-                  style: buildTextStyle(),
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                Radio(
-                    value: "Intense But Large Portions A Few Times",
-                    groupValue: selectedValue21,
-                    activeColor: kPrimaryColor,
-                    onChanged: (value) {
-                      setState(() {
-                        selectedValue21 = value as String;
-                      });
-                    }),
-                Text(
-                  "Intense But Large Portions A Few Times",
-                  style: buildTextStyle(),
-                ),
-              ],
-            ),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Radio(
-                    value: "Not So Intense & Small Portions Multiple Times",
-                    groupValue: selectedValue21,
-                    activeColor: kPrimaryColor,
-                    onChanged: (value) {
-                      setState(() {
-                        selectedValue21 = value as String;
-                      });
-                    }),
-                Text(
-                  "Not So Intense & Small Portions Multiple Times",
-                  style: buildTextStyle(),
-                ),
-              ],
-            ),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Radio(
-                    value: "Not So Intense But Large Portions A Few Times",
-                    groupValue: selectedValue21,
-                    activeColor: kPrimaryColor,
-                    onChanged: (value) {
-                      setState(() {
-                        selectedValue21 = value as String;
-                      });
-                    }),
-                Text(
-                  "Not So Intense But Large Portions A Few Times",
-                  style: buildTextStyle(),
-                ),
-              ],
-            ),
-          ],
-        ),
-        SizedBox(
-          height: 2.h,
-        ),
-        Text(
-          'Stools*',
-          style: TextStyle(
-            fontSize: 9.sp,
-            color: kTextColor,
-            fontFamily: "PoppinsSemiBold",
-          ),
-        ),
-        SizedBox(
-          height: 1.h,
-        ),
-        Column(
-          children: [
-            Row(
-              children: [
-                Radio(
-                    value: "Watery Stool",
-                    groupValue: selectedValue22,
-                    activeColor: kPrimaryColor,
-                    onChanged: (value) {
-                      setState(() {
-                        selectedValue22 = value as String;
-                      });
-                    }),
-                Text(
-                  "Watery Stool",
-                  style: buildTextStyle(),
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                Radio(
-                    value: "Constipated With Dry/Hard Stool",
-                    groupValue: selectedValue22,
-                    activeColor: kPrimaryColor,
-                    onChanged: (value) {
-                      setState(() {
-                        selectedValue22 = value as String;
-                      });
-                    }),
-                Text(
-                  "Constipated With Dry/Hard Stool",
-                  style: buildTextStyle(),
-                ),
-              ],
-            ),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Radio(
-                    value: "Well Formed Stool",
-                    groupValue: selectedValue22,
-                    activeColor: kPrimaryColor,
-                    onChanged: (value) {
-                      setState(() {
-                        selectedValue22 = value as String;
-                      });
-                    }),
-                Text(
-                  "Well Formed Stool",
-                  style: buildTextStyle(),
-                ),
-              ],
-            ),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Radio(
-                    value: "Others",
-                    groupValue: selectedValue22,
-                    activeColor: kPrimaryColor,
-                    onChanged: (value) {
-                      setState(() {
-                        selectedValue22 = value as String;
-                      });
-                    }),
-                Text(
-                  "Others",
-                  style: buildTextStyle(),
-                ),
-              ],
-            ),
-          ],
-        ),
-        TextFormField(
-          controller: stoolsController,
-          cursorColor: kPrimaryColor,
-          validator: (value) {
-            if (value!.isEmpty || !RegExp(r"^[a-z A-Z]").hasMatch(value)) {
-              return 'Please enter your Condition';
-            } else if (!RegExp(r"^[a-z A-Z]").hasMatch(value)) {
-              return 'Please enter your valid Condition';
-            } else {
-              return null;
-            }
-          },
-          decoration: CommonDecoration.buildTextInputDecoration(
-              "Your answer", stoolsController),
-          textInputAction: TextInputAction.next,
-          textAlign: TextAlign.start,
-          keyboardType: TextInputType.emailAddress,
-        ),
-        SizedBox(
-          height: 2.h,
-        ),
-        Text(
-          'Any Other Gut Symptoms? Pick All That Apply*',
-          style: TextStyle(
-            fontSize: 9.sp,
-            color: kTextColor,
-            fontFamily: "PoppinsSemiBold",
-          ),
-        ),
-        SizedBox(
-          height: 1.h,
-        ),
-        ListView(
-          shrinkWrap: true,
-          physics: const BouncingScrollPhysics(),
-          children: [
-            ...gutTypeCheckBox.map(buildGutTypeCheckBox).toList(),
-          ],
-        ),
-        TextFormField(
-          controller: symptomsController,
-          cursorColor: kPrimaryColor,
-          validator: (value) {
-            if (value!.isEmpty || !RegExp(r"^[a-z A-Z]").hasMatch(value)) {
-              return 'Please enter your Changed';
-            } else if (!RegExp(r"^[a-z A-Z]").hasMatch(value)) {
-              return 'Please enter your valid Changed';
-            } else {
-              return null;
-            }
-          },
-          decoration: CommonDecoration.buildTextInputDecoration(
-              "Your answer", symptomsController),
-          textInputAction: TextInputAction.next,
-          textAlign: TextAlign.start,
-          keyboardType: TextInputType.number,
-        ),
-        SizedBox(
-          height: 5.h,
-        ),
-      ],
-    );
-  }
-
   buildHealthCheckBox(CheckBoxSettings healthCheckBox, String from) {
-    return ListTile(
-      onTap: (){
-        print(healthCheckBox.value);
-        print(healthCheckBox.title);
-
-      },
-      minLeadingWidth: 30,
-      horizontalTitleGap: 3,
-      dense: true,
-      leading: SizedBox(
-        width: 20,
-        child: Checkbox(
-          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-          activeColor: kPrimaryColor,
-          value: healthCheckBox.value,
-          onChanged: (v) {
-            if (from == 'health1') {
-              if (healthCheckBox.title == healthCheckBox1[13].title) {
+    return SizedBox(
+      child: CheckboxListTile(
+          contentPadding: EdgeInsets.symmetric(horizontal: 5),
+          controlAffinity: ListTileControlAffinity.leading,
+          title: Transform.translate(
+            offset: const Offset(-10, 0),
+            child: Text(
+              healthCheckBox.title.toString(),
+              style: buildTextStyle(),
+            ),
+          ),
+          dense: true,
+        activeColor: kPrimaryColor,
+        value: healthCheckBox.value,
+        onChanged: (v) {
+          if (from == 'health1') {
+            if (healthCheckBox.title == healthCheckBox1[13].title)
+            {
+              print("if");
+              setState(() {
+                selectedHealthCheckBox1.clear();
+                healthCheckBox1.forEach((element) {
+                  element.value = false;
+                });
+                selectedHealthCheckBox1.add(healthCheckBox.title!);
+                healthCheckBox.value = v;
+              });
+            }
+            else if (healthCheckBox.title == healthCheckBox1[12].title) {
+              print(" else if");
+              setState(() {
+                selectedHealthCheckBox1.clear();
+                healthCheckBox1.forEach((element) {
+                  element.value = false;
+                });
+                selectedHealthCheckBox1.add(healthCheckBox.title!);
+                healthCheckBox.value = v;
+              });
+            }
+            else {
+              print("else");
+              if (selectedHealthCheckBox1
+                  .contains(healthCheckBox1[13].title)) {
                 print("if");
                 setState(() {
                   selectedHealthCheckBox1.clear();
-                  healthCheckBox1.forEach((element) {
-                    element.value = false;
-                  });
-                  selectedHealthCheckBox1.add(healthCheckBox.title!);
-                  healthCheckBox.value = v;
+                  healthCheckBox1[13].value = false;
                 });
-              } else if (healthCheckBox.title == healthCheckBox1[12].title) {
-                print(" else if");
+              } else if (selectedHealthCheckBox1
+                  .contains(healthCheckBox1[12].title)) {
+                print("else if");
+
                 setState(() {
                   selectedHealthCheckBox1.clear();
-                  healthCheckBox1.forEach((element) {
-                    element.value = false;
-                  });
+                  healthCheckBox1[12].value = false;
+                });
+              }
+              if (v == true) {
+                setState(() {
                   selectedHealthCheckBox1.add(healthCheckBox.title!);
                   healthCheckBox.value = v;
                 });
               } else {
-                print("else");
-                if (selectedHealthCheckBox1
-                    .contains(healthCheckBox1[13].title)) {
-                  print("if");
-                  setState(() {
-                    selectedHealthCheckBox1.clear();
-                    healthCheckBox1[13].value = false;
-                  });
-                } else if (selectedHealthCheckBox1
-                    .contains(healthCheckBox1[12].title)) {
-                  print("else if");
-
-                  setState(() {
-                    selectedHealthCheckBox1.clear();
-                    healthCheckBox1[12].value = false;
-                  });
-                }
-                if (v == true) {
-                  setState(() {
-                    selectedHealthCheckBox1.add(healthCheckBox.title!);
-                    healthCheckBox.value = v;
-                  });
-                } else {
-                  setState(() {
-                    selectedHealthCheckBox1.remove(healthCheckBox.title!);
-                    healthCheckBox.value = v;
-                  });
-                }
-              }
-              print(selectedHealthCheckBox1);
-            }
-            else if (from == 'health2') {
-              if (healthCheckBox.title == healthCheckBox2.last.title) {
-                print("if");
                 setState(() {
-                  selectedHealthCheckBox2.clear();
-                  healthCheckBox2.forEach((element) {
-                    if (element != healthCheckBox2.last.title) {
-                      element.value = false;
-                    }
-                  });
-                  if (v == true) {
-                    selectedHealthCheckBox2.add(healthCheckBox.title!);
-                    healthCheckBox.value = v;
-                  } else {
-                    selectedHealthCheckBox2.remove(healthCheckBox.title!);
-                    healthCheckBox.value = v;
+                  selectedHealthCheckBox1.remove(healthCheckBox.title!);
+                  healthCheckBox.value = v;
+                });
+              }
+            }
+            print(selectedHealthCheckBox1);
+          }
+          else if (from == 'health2') {
+            if (healthCheckBox.title == healthCheckBox2.last.title) {
+              print("if");
+              setState(() {
+                selectedHealthCheckBox2.clear();
+                healthCheckBox2.forEach((element) {
+                  if (element != healthCheckBox2.last.title) {
+                    element.value = false;
                   }
                 });
-              } else {
-                // print("else");
                 if (v == true) {
-                  // print("if");
-                  setState(() {
-                    if (selectedHealthCheckBox2
-                        .contains(healthCheckBox2.last.title)) {
-                      // print("if");
-                      selectedHealthCheckBox2.removeWhere(
-                          (element) => element == healthCheckBox2.last.title);
-                      healthCheckBox2.forEach((element) {
-                        if (element.title == healthCheckBox2.last.title) {
-                          element.value = false;
-                        }
-                      });
-                    }
-                    selectedHealthCheckBox2.add(healthCheckBox.title!);
-                    healthCheckBox.value = v;
-                  });
+                  selectedHealthCheckBox2.add(healthCheckBox.title!);
+                  healthCheckBox.value = v;
                 } else {
-                  setState(() {
-                    selectedHealthCheckBox2.remove(healthCheckBox.title!);
-                    healthCheckBox.value = v;
-                  });
+                  selectedHealthCheckBox2.remove(healthCheckBox.title!);
+                  healthCheckBox.value = v;
                 }
-              }
-              print(selectedHealthCheckBox2);
-            }
-            else if (from == 'smell') {
-              if (urinSmellOtherSelected) {
-                if (v == true) {
-                  setState(() {
-                    urinSmellOtherSelected = false;
-                    selectedUrinSmellList.clear();
-                    selectedUrinSmellList.add(healthCheckBox.title);
-                    healthCheckBox.value = v;
-                  });
-                }
+              });
+            } else {
+              // print("else");
+              if (v == true) {
+                // print("if");
+                setState(() {
+                  if (selectedHealthCheckBox2
+                      .contains(healthCheckBox2.last.title)) {
+                    // print("if");
+                    selectedHealthCheckBox2.removeWhere(
+                            (element) => element == healthCheckBox2.last.title);
+                    healthCheckBox2.forEach((element) {
+                      if (element.title == healthCheckBox2.last.title) {
+                        element.value = false;
+                      }
+                    });
+                  }
+                  selectedHealthCheckBox2.add(healthCheckBox.title!);
+                  healthCheckBox.value = v;
+                });
               } else {
-                if (v == true) {
-                  setState(() {
-                    selectedUrinSmellList.add(healthCheckBox.title);
-                    healthCheckBox.value = v;
-                  });
-                } else {
-                  setState(() {
-                    selectedUrinSmellList.remove(healthCheckBox.title);
-                    healthCheckBox.value = v;
-                  });
-                }
+                setState(() {
+                  selectedHealthCheckBox2.remove(healthCheckBox.title!);
+                  healthCheckBox.value = v;
+                });
               }
-              print(selectedUrinSmellList);
             }
-            else if (from == 'interventions') {
-              if (medicalInterventionsOtherSelected) {
-                if (v == true) {
-                  setState(() {
-                    medicalInterventionsOtherSelected = false;
-                    selectedmedicalInterventionsDoneBeforeList.clear();
-                    selectedmedicalInterventionsDoneBeforeList
-                        .add(healthCheckBox.title);
-                    healthCheckBox.value = v;
-                  });
-                }
+            print(selectedHealthCheckBox2);
+          }
+          else if (from == 'smell') {
+            if (urinSmellOtherSelected) {
+              if (v == true) {
+                setState(() {
+                  urinSmellOtherSelected = false;
+                  selectedUrinSmellList.clear();
+                  selectedUrinSmellList.add(healthCheckBox.title);
+                  healthCheckBox.value = v;
+                });
+              }
+            }
+            else {
+              if (v == true) {
+                setState(() {
+                  selectedUrinSmellList.add(healthCheckBox.title);
+                  healthCheckBox.value = v;
+                });
+              }
+              else {
+                setState(() {
+                  selectedUrinSmellList.remove(healthCheckBox.title);
+                  healthCheckBox.value = v;
+                });
+              }
+            }
+            print(selectedUrinSmellList);
+          }
+          else if (from == 'interventions') {
+            if (medicalInterventionsOtherSelected) {
+              if (v == true) {
+                setState(() {
+                  medicalInterventionsOtherSelected = false;
+                  selectedmedicalInterventionsDoneBeforeList.clear();
+                  selectedmedicalInterventionsDoneBeforeList
+                      .add(healthCheckBox.title);
+                  healthCheckBox.value = v;
+                });
+              }
+            } else {
+              if (v == true) {
+                setState(() {
+                  selectedmedicalInterventionsDoneBeforeList
+                      .add(healthCheckBox.title);
+                  healthCheckBox.value = v;
+                });
               } else {
-                if (v == true) {
-                  setState(() {
-                    selectedmedicalInterventionsDoneBeforeList
-                        .add(healthCheckBox.title);
-                    healthCheckBox.value = v;
-                  });
-                } else {
-                  setState(() {
-                    selectedmedicalInterventionsDoneBeforeList
-                        .remove(healthCheckBox.title);
-                    healthCheckBox.value = v;
-                  });
-                }
+                setState(() {
+                  selectedmedicalInterventionsDoneBeforeList
+                      .remove(healthCheckBox.title);
+                  healthCheckBox.value = v;
+                });
               }
-              print(selectedmedicalInterventionsDoneBeforeList);
             }
+            print(selectedmedicalInterventionsDoneBeforeList);
+          }
 
-            // print("${healthCheckBox.title}=> ${healthCheckBox.value}");
-          },
-        ),
-      ),
-      title: Text(
-        healthCheckBox.title.toString(),
-        style: buildTextStyle(),
+          // print("${healthCheckBox.title}=> ${healthCheckBox.value}");
+        },
       ),
     );
+    // return ListTile(
+    //   onTap: (){
+    //     print(healthCheckBox.value);
+    //     print(healthCheckBox.title);
+    //
+    //   },
+    //   minLeadingWidth: 30,
+    //   horizontalTitleGap: 3,
+    //   dense: true,
+    //   leading: SizedBox(
+    //     width: 20,
+    //     child: Checkbox(
+    //       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+    //       activeColor: kPrimaryColor,
+    //       value: healthCheckBox.value,
+    //       onChanged: (v) {
+    //         if (from == 'health1') {
+    //           if (healthCheckBox.title == healthCheckBox1[13].title)
+    //           {
+    //             print("if");
+    //             setState(() {
+    //               selectedHealthCheckBox1.clear();
+    //               healthCheckBox1.forEach((element) {
+    //                 element.value = false;
+    //               });
+    //               selectedHealthCheckBox1.add(healthCheckBox.title!);
+    //               healthCheckBox.value = v;
+    //             });
+    //           } else if (healthCheckBox.title == healthCheckBox1[12].title) {
+    //             print(" else if");
+    //             setState(() {
+    //               selectedHealthCheckBox1.clear();
+    //               healthCheckBox1.forEach((element) {
+    //                 element.value = false;
+    //               });
+    //               selectedHealthCheckBox1.add(healthCheckBox.title!);
+    //               healthCheckBox.value = v;
+    //             });
+    //           } else {
+    //             print("else");
+    //             if (selectedHealthCheckBox1
+    //                 .contains(healthCheckBox1[13].title)) {
+    //               print("if");
+    //               setState(() {
+    //                 selectedHealthCheckBox1.clear();
+    //                 healthCheckBox1[13].value = false;
+    //               });
+    //             } else if (selectedHealthCheckBox1
+    //                 .contains(healthCheckBox1[12].title)) {
+    //               print("else if");
+    //
+    //               setState(() {
+    //                 selectedHealthCheckBox1.clear();
+    //                 healthCheckBox1[12].value = false;
+    //               });
+    //             }
+    //             if (v == true) {
+    //               setState(() {
+    //                 selectedHealthCheckBox1.add(healthCheckBox.title!);
+    //                 healthCheckBox.value = v;
+    //               });
+    //             } else {
+    //               setState(() {
+    //                 selectedHealthCheckBox1.remove(healthCheckBox.title!);
+    //                 healthCheckBox.value = v;
+    //               });
+    //             }
+    //           }
+    //           print(selectedHealthCheckBox1);
+    //         }
+    //         else if (from == 'health2') {
+    //           if (healthCheckBox.title == healthCheckBox2.last.title) {
+    //             print("if");
+    //             setState(() {
+    //               selectedHealthCheckBox2.clear();
+    //               healthCheckBox2.forEach((element) {
+    //                 if (element != healthCheckBox2.last.title) {
+    //                   element.value = false;
+    //                 }
+    //               });
+    //               if (v == true) {
+    //                 selectedHealthCheckBox2.add(healthCheckBox.title!);
+    //                 healthCheckBox.value = v;
+    //               } else {
+    //                 selectedHealthCheckBox2.remove(healthCheckBox.title!);
+    //                 healthCheckBox.value = v;
+    //               }
+    //             });
+    //           } else {
+    //             // print("else");
+    //             if (v == true) {
+    //               // print("if");
+    //               setState(() {
+    //                 if (selectedHealthCheckBox2
+    //                     .contains(healthCheckBox2.last.title)) {
+    //                   // print("if");
+    //                   selectedHealthCheckBox2.removeWhere(
+    //                       (element) => element == healthCheckBox2.last.title);
+    //                   healthCheckBox2.forEach((element) {
+    //                     if (element.title == healthCheckBox2.last.title) {
+    //                       element.value = false;
+    //                     }
+    //                   });
+    //                 }
+    //                 selectedHealthCheckBox2.add(healthCheckBox.title!);
+    //                 healthCheckBox.value = v;
+    //               });
+    //             } else {
+    //               setState(() {
+    //                 selectedHealthCheckBox2.remove(healthCheckBox.title!);
+    //                 healthCheckBox.value = v;
+    //               });
+    //             }
+    //           }
+    //           print(selectedHealthCheckBox2);
+    //         }
+    //         else if (from == 'smell') {
+    //           if (urinSmellOtherSelected) {
+    //             if (v == true) {
+    //               setState(() {
+    //                 urinSmellOtherSelected = false;
+    //                 selectedUrinSmellList.clear();
+    //                 selectedUrinSmellList.add(healthCheckBox.title);
+    //                 healthCheckBox.value = v;
+    //               });
+    //             }
+    //           } else {
+    //             if (v == true) {
+    //               setState(() {
+    //                 selectedUrinSmellList.add(healthCheckBox.title);
+    //                 healthCheckBox.value = v;
+    //               });
+    //             } else {
+    //               setState(() {
+    //                 selectedUrinSmellList.remove(healthCheckBox.title);
+    //                 healthCheckBox.value = v;
+    //               });
+    //             }
+    //           }
+    //           print(selectedUrinSmellList);
+    //         }
+    //         else if (from == 'interventions') {
+    //           if (medicalInterventionsOtherSelected) {
+    //             if (v == true) {
+    //               setState(() {
+    //                 medicalInterventionsOtherSelected = false;
+    //                 selectedmedicalInterventionsDoneBeforeList.clear();
+    //                 selectedmedicalInterventionsDoneBeforeList
+    //                     .add(healthCheckBox.title);
+    //                 healthCheckBox.value = v;
+    //               });
+    //             }
+    //           } else {
+    //             if (v == true) {
+    //               setState(() {
+    //                 selectedmedicalInterventionsDoneBeforeList
+    //                     .add(healthCheckBox.title);
+    //                 healthCheckBox.value = v;
+    //               });
+    //             } else {
+    //               setState(() {
+    //                 selectedmedicalInterventionsDoneBeforeList
+    //                     .remove(healthCheckBox.title);
+    //                 healthCheckBox.value = v;
+    //               });
+    //             }
+    //           }
+    //           print(selectedmedicalInterventionsDoneBeforeList);
+    //         }
+    //
+    //         // print("${healthCheckBox.title}=> ${healthCheckBox.value}");
+    //       },
+    //     ),
+    //   ),
+    //   title: Text(
+    //     healthCheckBox.title.toString(),
+    //     style: buildTextStyle(),
+    //   ),
+    // );
   }
 
   buildWrapingCheckBox(CheckBoxSettings healthCheckBox) {

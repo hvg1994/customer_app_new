@@ -23,6 +23,7 @@ import 'package:quickblox_sdk/models/qb_message.dart';
 import 'package:quickblox_sdk/models/qb_session.dart';
 import 'package:quickblox_sdk/models/qb_sort.dart';
 import 'package:quickblox_sdk/models/qb_user.dart';
+import 'package:quickblox_sdk/notifications/constants.dart';
 import 'package:quickblox_sdk/quickblox_sdk.dart';
 import 'package:quickblox_sdk/users/constants.dart';
 
@@ -125,13 +126,16 @@ class QuickBloxService extends ChangeNotifier{
   Future<bool> login(String userName) async {
     bool isLogin;
     try {
-      QBLoginResult result = await QB.auth.login(userName, AppConfig.QB_DEFAULT_PASSWORD);
+      // QBLoginResult result = await QB.auth.login(userName, AppConfig.QB_DEFAULT_PASSWORD);
+      QBLoginResult result = await QB.auth.login("abc", AppConfig.QB_DEFAULT_PASSWORD);
 
       QBUser? qbUser = result.qbUser;
       _localUserId = qbUser?.id ?? -1;
-      connect(qbUser!.id!);
+      // connect(qbUser!.id!);
+      //test
+      connect(136562497);
       // on login success store username, password, userid to local
-      _pref!.setInt(AppConfig.QB_CURRENT_USERID, _localUserId!);
+      // _pref!.setInt(AppConfig.QB_CURRENT_USERID, _localUserId!);
 
       QBSession? _qbSession = result.qbSession;
       qbSession = _qbSession;
@@ -140,7 +144,12 @@ class QuickBloxService extends ChangeNotifier{
       _pref!.setInt(AppConfig.GET_QB_SESSION, DateTime.parse(_qbSession!.expirationDate!).millisecondsSinceEpoch);
       print("login success..");
     } on PlatformException catch (e) {
-      _errorMsg = e.details;
+      if (e.code == "Unauthorized" || e.code.contains('401')) {
+        _errorMsg = "Need User";
+      }
+      else{
+        _errorMsg = makeErrorMessage(e);
+      }
       isLogin = false;
       print('login catch error: ${e.message}');
     }
@@ -212,6 +221,7 @@ class QuickBloxService extends ChangeNotifier{
     }
   }
 
+
   void sendMessage(String chatRoomId, {String? message, List<QBAttachment>? attachments,}) async {
     try {
     //   Map<String, String> properties = Map();
@@ -219,9 +229,40 @@ class QuickBloxService extends ChangeNotifier{
     //   properties["testProperty2"] = "testPropertyValue2";
     //   properties["testProperty3"] = "testPropertyValue3";
 
+      /*To send push Notification
+      String eventType = QBNotificationEventTypes.ONE_SHOT;
+      String notificationEventType = QBNotificationTypes.PUSH;
+      int pushType = QBNotificationPushTypes.GCM;
+      int senderId = _pref!.getInt(AppConfig.QB_CURRENT_USERID)!;
+
+      Map<String, Object> payload = new Map();
+      payload["title"] = "You have New Message";
+      payload["message"] = message!;
+      payload["type"] = "chat";
+            await QB.events.create(eventType, notificationEventType, senderId, payload, pushType: pushType);
+
+*/
       await QB.chat.sendMessage(chatRoomId,
           attachments: attachments,
           body: message, saveToHistory: true,);
+
+      String eventType = QBNotificationEventTypes.ONE_SHOT;
+      String notificationEventType = QBNotificationTypes.PUSH;
+      int pushType = QBNotificationPushTypes.GCM;
+      // int senderId = _pref!.getInt(AppConfig.QB_CURRENT_USERID)!;
+      int senderId = 82272762;
+      // List<String> recipientsIds = ["82273007"];
+
+      Map<String, Object> payload = new Map();
+      payload["message"] = message!;
+      payload["type"] = "chat";
+      payload['senderId'] = senderId;
+      await QB.events.create(eventType, notificationEventType, senderId, payload, pushType: pushType).then((value) {
+        print("chat notification sent");
+      }).onError((error, stackTrace) {
+        print("Notification send error: ${error}");
+      });
+
       print("The message was sent to dialog: $_dialogId");
       // SnackBarUtils.showResult(
       //     _scaffoldKey!, "The message was sent to dialog: $_dialogId");
@@ -315,6 +356,7 @@ class QuickBloxService extends ChangeNotifier{
     list = _wrappedMessageSet.toList();
     list.sort((first, second) => first.date.compareTo(second.date));
     _stream.sink.add(list);
+    // _stream.add(list);
     hasMore = true;
     print('sink added:$list');
     list.forEach((element) {
@@ -363,7 +405,10 @@ class QuickBloxService extends ChangeNotifier{
       }
       String senderName = sender?.fullName ?? sender?.login ?? "DELETED User";
       print(_localUserId);
-      wrappedMessages.add(QBMessageWrapper(senderName, message, _pref!.getInt(AppConfig.QB_CURRENT_USERID)!));
+      // test
+      wrappedMessages.add(QBMessageWrapper(senderName, message, 82272762));
+
+      // wrappedMessages.add(QBMessageWrapper(senderName, message, _pref!.getInt(AppConfig.QB_CURRENT_USERID)!));
     }
     return wrappedMessages;
   }
@@ -449,6 +494,7 @@ class QuickBloxService extends ChangeNotifier{
     });
     print("_typingUsersNames:$_typingUsersNames");
     typingStream.sink.add(_typingUsersNames);
+    notifyListeners();
   }
 
   void _processStopTypingEvent(dynamic data) {
@@ -807,7 +853,11 @@ class QuickBloxService extends ChangeNotifier{
       return error;
     }
   }
-
+  String makeErrorMessage(PlatformException? e) {
+    String message = e?.message ?? "";
+    String code = e?.code ?? "";
+    return code + " : " + message;
+  }
 
 }
 
@@ -823,4 +873,6 @@ class TypingStatusTimer {
   cancel() {
     _timer?.cancel();
   }
+
+
 }

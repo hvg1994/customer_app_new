@@ -1,5 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:crypto/crypto.dart';
+import 'package:gwc_customer/repository/in_memory_cache.dart';
+import 'package:intl/intl.dart';
 import 'package:flutter/foundation.dart';
 import 'package:gwc_customer/model/dashboard_model/get_appointment/get_appointment_after_appointed.dart';
 import 'package:gwc_customer/model/dashboard_model/get_dashboard_data_model.dart';
@@ -222,12 +225,13 @@ class ApiClient {
     return result;
   }
 
+  final inMemoryStorage = InMemoryCache();
+
   Future serverGetAboutProgramDetails() async {
     final String path = getAboutProgramUrl;
+    dynamic result;
 
     print('serverGetAboutProgramDetails Response header: $path');
-
-    dynamic result;
 
     try {
       final response = await httpClient
@@ -253,8 +257,22 @@ class ApiClient {
         result = ErrorModel(status: "0", message: AppConfig.oopsMessage);
       }
       else if (json['status'].toString().contains("200")) {
-        result = AboutProgramModel.fromJson(json);
-      } else {
+        print("else 1st");
+        final newHash = sha1.convert(utf8.encode(json.toString())).toString();
+
+        if(inMemoryStorage.cache.containsKey(path)){
+          print("if");
+          if(sha1.convert(utf8.encode(inMemoryStorage.get(path).toString())).toString() == newHash){
+            result = AboutProgramModel.fromJson(inMemoryStorage.get(path));
+          }
+        }
+        else{
+          print("else");
+          result = AboutProgramModel.fromJson(json);
+          inMemoryStorage.set(path, json);
+        }
+      }
+      else {
         result = ErrorModel.fromJson(json);
       }
     } catch (e) {
@@ -688,6 +706,12 @@ class ApiClient {
     final String path = getEvaluationDataUrl;
 
     dynamic result;
+    print(inMemoryStorage.cache.containsKey(path));
+
+    if(inMemoryStorage.cache.containsKey(path)){
+      print("from cache");
+      return result = GetEvaluationDataModel.fromJson(inMemoryStorage.get(path));
+    }
 
     var headers = {
       // "Authorization": "Bearer ${AppConfig().bearerToken}",
@@ -713,6 +737,7 @@ class ApiClient {
         if (json['status'].toString() != '200') {
           result = ErrorModel.fromJson(json);
         } else {
+          inMemoryStorage.set(path, json);
           result = GetEvaluationDataModel.fromJson(json);
         }
       }
@@ -792,7 +817,22 @@ class ApiClient {
       final res = jsonDecode(response.body);
       print('${res['status'].runtimeType} ${res['status']}');
       if (res['status'].toString() == '200') {
-        result = UserProfileModel.fromJson(jsonDecode(response.body));
+        final newHash = sha1.convert(utf8.encode(res.toString())).toString();
+
+        print(inMemoryStorage.cache.containsKey(path));
+        if(inMemoryStorage.cache.containsKey(path)){
+          if(sha1.convert(utf8.encode(inMemoryStorage.get(path).toString())).toString() == newHash){
+            result = UserProfileModel.fromJson(inMemoryStorage.get(path));
+          }
+          else{
+            inMemoryStorage.set(path, res);
+            result = UserProfileModel.fromJson(res);
+          }
+        }
+        else{
+          inMemoryStorage.set(path, res);
+          result = UserProfileModel.fromJson(res);
+        }
       }
       else if(response.statusCode == 500){
         result = ErrorModel(status: "0", message: AppConfig.oopsMessage);
@@ -801,7 +841,7 @@ class ApiClient {
         result = ErrorModel.fromJson(res);
       }
     } catch (e) {
-      print("getUserProfileApi catch error");
+      print("getUserProfileApi catch error ${e}");
       result = ErrorModel(status: "0", message: e.toString());
     }
     return result;
@@ -846,6 +886,7 @@ class ApiClient {
   Future serverGetTermsAndCondition() async {
     final String path = termsConditionUrl;
 
+
     final response = await httpClient.get(
       Uri.parse(path),
       headers: {"Content-Type": "application/json"},
@@ -857,6 +898,7 @@ class ApiClient {
       print('serverGetTermsAndCondition Response body: ${response.body}');
     }
     dynamic result;
+
     if (response.statusCode == 401) {
       final json = jsonDecode(response.body);
       print('serverGetTermsAndCondition error: $json');
@@ -866,7 +908,7 @@ class ApiClient {
       result = ErrorModel(status: "0", message: AppConfig.oopsMessage);
     }
     else if (response.statusCode != 200) {
-      throw Exception('error getting quotes');
+      throw Exception('error  getting quotes');
     }
 
     final json = jsonDecode(response.body);
@@ -1307,7 +1349,7 @@ class ApiClient {
 
     Map<String, String> param = {
       'start_program': startProgram,
-      'date': DateTime.now().toString()
+      'date': DateFormat('dd-MM-yyyy').format(DateTime.now())
     };
 
     final startTime = DateTime.now().millisecondsSinceEpoch;
