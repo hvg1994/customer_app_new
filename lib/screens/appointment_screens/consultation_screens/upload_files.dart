@@ -209,7 +209,7 @@ class _UploadFilesState extends State<UploadFiles> {
                                               'Submit',
                                               style: TextStyle(
                                                 fontFamily:
-                                                    "GothamRoundedBold_21016",
+                                                kFontRBold2,
                                                 color: gWhiteColor,
                                                 fontSize: 11.sp,
                                               ),
@@ -225,8 +225,21 @@ class _UploadFilesState extends State<UploadFiles> {
                             child: Center(
                               child: GestureDetector(
                                 onTap: () async {
-                                  Stream s = sendStream();
-                                  print("s.length:${s.length}");
+                                  List totalReportLengthExceptPrescription = [];
+                                  doctorRequestedReports.forEach((element) {
+                                    if(element.reportType != 'prescription'){
+                                      totalReportLengthExceptPrescription.add(element);
+                                    }
+                                  });
+
+                                  if(reportsObject.length == totalReportLengthExceptPrescription.length){
+                                    Stream s = sendStream();
+                                    print("s.length:${s.length}");
+                                  }
+                                  else{
+                                    AppConfig().showSnackbar(context, "Please add all the files");
+                                  }
+
                                   // for(int i=0;i<reportsObject.length;i++){
                                   //   if(reportsObject[i].path.isNotEmpty){
                                   //     final res = await submitDoctorRequestedReport(reportsObject[i].path, reportsObject[i].id);
@@ -919,31 +932,8 @@ class _UploadFilesState extends State<UploadFiles> {
           height: 10,
         ),
         (doctorRequestedReports.isEmpty)
-            ? Padding(
-                padding: padding,
-                child: Container(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      buildReportList('Blood Report', onTap: () {
-                        showChooserSheet();
-                      }),
-                      buildReportList('Xray Report', onTap: () async {
-                        // var file = await getApplicationSupportDirectory();
-                        // var packageRoot = file.path.substring(0, file.path.lastIndexOf('/'));
-                        // var rootPath = packageRoot.substring(0, packageRoot.lastIndexOf('/'));
-                        // print(rootPath);
-                        // var directory = await Directory('$rootPath/Reports').create(recursive: true);
-                        // print(directory.path);
-
-                        // File file1 = new File('$rootPath/$filename');
-
-                        showChooserSheet();
-                      }),
-                    ],
-                  ),
-                ),
-              )
+            // ? dummyReport()
+          ? const SizedBox()
             : Padding(
                 padding: padding,
                 child: Container(
@@ -1039,6 +1029,34 @@ class _UploadFilesState extends State<UploadFiles> {
         // print("button res: $res  ${res.runtimeType}");
       }
     }
+  }
+
+  dummyReport() {
+    return Padding(
+      padding: padding,
+      child: Container(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            buildReportList('Blood Report', onTap: () {
+              showChooserSheet();
+            }),
+            buildReportList('Xray Report', onTap: () async {
+              // var file = await getApplicationSupportDirectory();
+              // var packageRoot = file.path.substring(0, file.path.lastIndexOf('/'));
+              // var rootPath = packageRoot.substring(0, packageRoot.lastIndexOf('/'));
+              // print(rootPath);
+              // var directory = await Directory('$rootPath/Reports').create(recursive: true);
+              // print(directory.path);
+
+              // File file1 = new File('$rootPath/$filename');
+
+              showChooserSheet();
+            }),
+          ],
+        ),
+      ),
+    );
   }
 }
 

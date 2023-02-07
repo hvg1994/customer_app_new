@@ -12,9 +12,12 @@ import 'package:gwc_customer/screens/appointment_screens/consultation_screens/up
 import 'package:gwc_customer/screens/evalution_form/evaluation_get_details.dart';
 import 'package:gwc_customer/screens/evalution_form/personal_details_screen.dart';
 import 'package:gwc_customer/screens/gut_list_screens/meal_popup.dart';
+import 'package:gwc_customer/screens/help_screens/help_screen.dart';
 import 'package:gwc_customer/screens/notification_screen.dart';
 import 'package:gwc_customer/screens/post_program_screens/new_post_program/pp_levels_screen.dart';
 import 'package:gwc_customer/screens/post_program_screens/post_program_screen.dart';
+import 'package:gwc_customer/screens/prepratory%20plan/prepratory_plan_screen.dart';
+import 'package:gwc_customer/screens/prepratory%20plan/schedule_screen.dart';
 import 'package:gwc_customer/screens/profile_screens/call_support_method.dart';
 import 'package:gwc_customer/screens/program_plans/meal_plan_screen.dart';
 import 'package:gwc_customer/screens/program_plans/program_start_screen.dart';
@@ -27,6 +30,7 @@ import 'package:gwc_customer/widgets/constants.dart';
 import 'package:gwc_customer/widgets/widgets.dart';
 import 'package:jwt_decode/jwt_decode.dart';
 import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:sizer/sizer.dart';
 import '../../model/dashboard_model/shipping_approved/ship_approved_model.dart';
 import '../../model/profile_model/user_profile/user_profile_model.dart';
@@ -41,6 +45,8 @@ import '../appointment_screens/consultation_screens/consultation_success.dart';
 import '../appointment_screens/consultation_screens/medical_report_screen.dart';
 import '../appointment_screens/doctor_slots_details_screen.dart';
 import '../cook_kit_shipping_screens/cook_kit_tracking.dart';
+import '../prepratory plan/prepratory_meal_completed_screen.dart';
+import '../prepratory plan/transition_mealplan_screen.dart';
 import '../program_plans/day_program_plans.dart';
 import 'List/list_view_effect.dart';
 import 'package:gwc_customer/screens/appointment_screens/doctor_calender_time_screen.dart';
@@ -83,7 +89,17 @@ class GutListState extends State<GutList> {
     ),
     NewStageLevels(
         "assets/images/dashboard_stages/noun-appointment-4042317.png",
+        "Prepratory Meal Plan",
+        'assets/images/dashboard_stages/lock.png'
+    ),
+    NewStageLevels(
+        "assets/images/dashboard_stages/noun-appointment-4042317.png",
         "Programs",
+        'assets/images/dashboard_stages/lock.png'
+    ),
+    NewStageLevels(
+        "assets/images/dashboard_stages/noun-appointment-4042317.png",
+        "Transition Meal Plan",
         'assets/images/dashboard_stages/lock.png'
     ),
     NewStageLevels(
@@ -109,7 +125,7 @@ class GutListState extends State<GutList> {
 
   late final Future myFuture;
 
-  String? consultationStage, shippingStage, programOptionStage, postProgramStage;
+  String? consultationStage, shippingStage, programOptionStage, postProgramStage, transStage, prepratoryMealStage;
 
   /// this is used when data=appointment_booked status
   GetAppointmentDetailsModel? _getAppointmentDetailsModel, _postConsultationAppointment;
@@ -119,8 +135,10 @@ class GutListState extends State<GutList> {
 
   GetProgramModel? _getProgramModel;
 
+  GetPrePostMealModel? _prepratoryModel, _transModel;
+
   /// for other status we use this one(except shipping_approved & appointment_booked)
-  GutDataModel? _gutDataModel, _gutShipDataModel, _gutProgramModel, _gutPostProgramModel;
+  GutDataModel? _gutDataModel, _gutShipDataModel, _gutProgramModel, _gutPostProgramModel, _preProgramModel, _transMealModel;
 
   @override
   void initState() {
@@ -165,16 +183,16 @@ class GutListState extends State<GutList> {
   /// THIS IS FOR ABC DIALOG MEAL PLAN
   bool isProgressOpened = false;
 
-  bool isProgressDialogOpened = false;
+  bool isProgressDialogOpened = true;
   BuildContext? _progressContext;
 
   getData() async{
+    isProgressDialogOpened = true;
     print("isProgressDialogOpened: $isProgressDialogOpened");
     Future.delayed(Duration(seconds: 0)).whenComplete(() {
       if(mounted) {
-        isProgressDialogOpened = true;
         _progressContext = context;
-        openProgressDialog(_progressContext!, willPop: true);
+        //openProgressDialog(_progressContext!, willPop: true);
       }
     });
     _gutDataService = GutDataService(repository: repository);
@@ -183,11 +201,9 @@ class GutListState extends State<GutList> {
     final _getData = await _gutDataService.getGutDataService();
     print("_getData: $_getData");
     if(_getData.runtimeType == ErrorModel){
-      if(isProgressDialogOpened){
-        Navigator.of(_progressContext!, rootNavigator: true).pop();
-      }
       ErrorModel model = _getData;
       print(model.message);
+      isProgressDialogOpened = false;
       Future.delayed(Duration(seconds: 0)).whenComplete(() =>
           AppConfig().showSnackbar(context, model.message ?? '', isError: true,
             duration: 50000,
@@ -202,9 +218,7 @@ class GutListState extends State<GutList> {
       );
     }
     else{
-      if(isProgressDialogOpened){
-        Navigator.of(_progressContext!, rootNavigator: true).pop();
-      }
+      isProgressDialogOpened = false;
       print("isProgressDialogOpened: $isProgressDialogOpened");
       GetDashboardDataModel _getDashboardDataModel = _getData as GetDashboardDataModel;
       print("_getDashboardDataModel.app_consulation: ${_getDashboardDataModel.app_consulation}");
@@ -224,6 +238,18 @@ class GutListState extends State<GutList> {
         if(consultationStage != null && (shippingStage != null && shippingStage!.isNotEmpty)){
           isSelected = "Shipping";
         }
+        if(_getDashboardDataModel.prepratory_meal_program != null){
+          _preProgramModel = _getDashboardDataModel.prepratory_meal_program;
+        }
+        else if(_getDashboardDataModel.prepratory_program != null){
+          _prepratoryModel = _getDashboardDataModel.prepratory_program;
+        }
+        if(_getDashboardDataModel.transition_meal_program != null){
+          _transMealModel = _getDashboardDataModel.transition_meal_program;
+        }
+        else if(_getDashboardDataModel.trans_program != null){
+          _transModel = _getDashboardDataModel.trans_program;
+        }
         if(_getDashboardDataModel.approved_shipping != null){
           _shippingApprovedModel = _getDashboardDataModel.approved_shipping;
           shippingStage = _shippingApprovedModel?.data ?? '';
@@ -232,6 +258,7 @@ class GutListState extends State<GutList> {
         else{
           _gutShipDataModel = _getDashboardDataModel.normal_shipping;
           shippingStage = _gutShipDataModel?.data ?? '';
+          _preProgramModel = _getDashboardDataModel.prepratory_meal_program;
           updateNewStage(shippingStage);
           // abc();
         }
@@ -249,6 +276,18 @@ class GutListState extends State<GutList> {
           updateNewStage(programOptionStage);
           abc();
         }
+
+        if(_getDashboardDataModel.data_program != null){
+          _transModel = _getDashboardDataModel.trans_program;
+          transStage = _transModel?.data ?? '';
+          updateNewStage(transStage);
+        }
+        else{
+          _transMealModel = _getDashboardDataModel.transition_meal_program;
+          transStage = _transMealModel?.data ?? '';
+          updateNewStage(transStage);
+        }
+        // post program will open once transition meal plan is completed
         // this is for other postprogram model
         if(_getDashboardDataModel.normal_postprogram != null){
           _gutPostProgramModel = _getDashboardDataModel.normal_postprogram;
@@ -266,7 +305,6 @@ class GutListState extends State<GutList> {
           isSelected = "Post Program";
           updateNewStage(postProgramStage);
         }
-
       });
     }
   }
@@ -295,7 +333,12 @@ class GutListState extends State<GutList> {
                 showNotificationIcon: true,
                 notificationOnTap: (){
                 Navigator.push(context, MaterialPageRoute(builder: (_) => NotificationScreen()));
+                },
+                showHelpIcon: true,
+                helpOnTap: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => HelpScreen()));
                 }
+
               ),
               SizedBox(height: 3.h),
               Row(
@@ -310,68 +353,84 @@ class GutListState extends State<GutList> {
                         fontSize: eUser().mainHeadingFontSize
                     ),
                   ),
-                  GestureDetector(
-                    onTap: (){
-                      openAlertBox(
-                          context: context,
-                          isContentNeeded: false,
-                          titleNeeded: true,
-                          title: "Select Call Type",
-                          positiveButtonName: "In App Call",
-                          positiveButton: (){
-                            callSupport();
-                            Navigator.pop(context);
+                  Row(
+                    children: [
+                      TextButton(
+                          onPressed: (){
+                            Navigator.push(context, MaterialPageRoute(builder: (_)=> const NewScheduleScreen()));
                           },
-                        negativeButtonName: "Direct Call",
-                        negativeButton: (){
-                          Navigator.pop(context);
-                          if(_pref!.getString(AppConfig.KALEYRA_SUCCESS_ID) == null){
-                            AppConfig().showSnackbar(context, "Success Team Not available", isError: true);
-                          }
-                          else{
-                            // // click-to-call
-                            // callSupport();
-
-                            if(_pref!.getString(AppConfig.KALEYRA_ACCESS_TOKEN) != null){
-                              final accessToken = _pref!.getString(AppConfig.KALEYRA_ACCESS_TOKEN);
-                              final uId = _pref!.getString(AppConfig.KALEYRA_USER_ID);
-                              final successId = _pref!.getString(AppConfig.KALEYRA_SUCCESS_ID);
-                              // voice- call
-                              supportVoiceCall(uId!, successId!, accessToken!);
-                            }
-                            else{
-                              AppConfig().showSnackbar(context, "Something went wrong!!", isError: true);
-                            }
-                          }
-                        }
-                      );
-                    },
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Image.asset('assets/images/call.png',
-                          width: 12,
-                          height: 12,
-                        ),
-                        SizedBox(
-                          width: 4,
-                        ),
-                        Text("Support",
+                          child: Text("New Schedule UI",
                           style: TextStyle(
-                            color: kTextColor,
-                            fontFamily: 'GothamBook',
-                            fontSize: 10.sp,
-                          ),
-                        )
-                      ],
-                    ),
+                            fontSize: 10.sp
+                          ),)),
+                      GestureDetector(
+                        onTap: (){
+                          openAlertBox(
+                              context: context,
+                              isContentNeeded: false,
+                              titleNeeded: true,
+                              title: "Select Call Type",
+                              positiveButtonName: "In App Call",
+                              positiveButton: (){
+                                callSupport();
+                                Navigator.pop(context);
+                              },
+                            negativeButtonName: "Direct Call",
+                            negativeButton: (){
+                              Navigator.pop(context);
+                              if(_pref!.getString(AppConfig.KALEYRA_SUCCESS_ID) == null){
+                                AppConfig().showSnackbar(context, "Success Team Not available", isError: true);
+                              }
+                              else{
+                                // // click-to-call
+                                // callSupport();
+
+                                if(_pref!.getString(AppConfig.KALEYRA_ACCESS_TOKEN) != null){
+                                  final accessToken = _pref!.getString(AppConfig.KALEYRA_ACCESS_TOKEN);
+                                  final uId = _pref!.getString(AppConfig.KALEYRA_USER_ID);
+                                  final successId = _pref!.getString(AppConfig.KALEYRA_SUCCESS_ID);
+                                  // voice- call
+                                  supportVoiceCall(uId!, successId!, accessToken!);
+                                }
+                                else{
+                                  AppConfig().showSnackbar(context, "Something went wrong!!", isError: true);
+                                }
+                              }
+                            }
+                          );
+                        },
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.asset('assets/images/call.png',
+                              width: 12,
+                              height: 12,
+                            ),
+                            SizedBox(
+                              width: 4,
+                            ),
+                            Text("Support",
+                              style: TextStyle(
+                                color: kTextColor,
+                                fontFamily: 'GothamBook',
+                                fontSize: 10.sp,
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    ],
                   )
                 ],
               ),
               SizedBox(height: 1.h),
               Expanded(
-                child: showImage(),
+                child: (isProgressDialogOpened) ? Shimmer.fromColors(
+                  baseColor: Colors.grey.withOpacity(0.3),
+                  highlightColor: Colors.grey.withOpacity(0.7),
+                  child: showImage(),
+                ) : showImage(),
               ),
             ],
           ),
@@ -447,12 +506,56 @@ class GutListState extends State<GutList> {
       }
     }
   }
+
+  showPrepratoryMealScreen(){
+    if(_prepratoryModel != null){
+      if(_prepratoryModel!.value!.isPrepratoryStarted == false){
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => ProgramPlanScreen(from: ProgramMealType.prepratory.name,),
+          ),
+        ).then((value) => reloadUI());
+      }
+      else{
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) =>
+                PrepratoryMealCompletedScreen()
+                // PrepratoryPlanScreen(dayNumber: _prepratoryModel!.value!.days!),
+          ),
+        ).then((value) => reloadUI());
+      }
+    }
+  }
+
+  showTransitionMealScreen(){
+    if(_prepratoryModel != null){
+      if(_prepratoryModel!.value!.isTransMealStarted == false){
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => ProgramPlanScreen(from: ProgramMealType.transition.name,),
+          ),
+        ).then((value) => reloadUI());
+      }
+      else{
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => TransitionMealPlanScreen(dayNumber: _prepratoryModel!.value!.days!),
+          ),
+        ).then((value) => reloadUI());
+      }
+    }
+  }
+
+
   showProgramScreen(){
     if(shippingStage == "shipping_delivered" && programOptionStage != null){
       if(_getProgramModel!.value!.startProgram == '0'){
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (context) => const ProgramPlanScreen(),
+            builder: (context) => ProgramPlanScreen(from: ProgramMealType.program.name,),
           ),
         ).then((value) => reloadUI());
       }
@@ -619,7 +722,7 @@ class GutListState extends State<GutList> {
                         if(_getProgramModel!.value!.startProgram == '0'){
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) => const ProgramPlanScreen(),
+                              builder: (context) => ProgramPlanScreen(from: ProgramMealType.program.name,),
                             ),
                           ).then((value) => reloadUI());
                         }
@@ -813,7 +916,6 @@ class GutListState extends State<GutList> {
   }
 
   getUserProfile() async{
-    print("user profile: ${_pref!.getInt(AppConfig.QB_CURRENT_USERID)}");
     // print("user id: ${_pref!.getInt(AppConfig.KALEYRA_USER_ID)}");
 
     if(_pref!.getString(AppConfig.User_Name) != null || _pref!.getString(AppConfig.User_Name)!.isNotEmpty){
@@ -823,12 +925,14 @@ class GutListState extends State<GutList> {
         _pref!.setString(AppConfig.User_Name, model1.data?.name ?? model1.data?.fname ?? '');
         _pref!.setInt(AppConfig.USER_ID, model1.data?.id ?? -1);
         _pref!.setString(AppConfig.QB_USERNAME, model1.data!.qbUsername!);
-        _pref!.setInt(AppConfig.QB_CURRENT_USERID, int.tryParse(model1.data!.qbUserId!)!);
+        _pref!.setString(AppConfig.QB_CURRENT_USERID, model1.data!.qbUserId!);
         _pref!.setString(AppConfig.KALEYRA_USER_ID, model1.data!.kaleyraUID!);
 
         if(_pref!.getString(AppConfig.KALEYRA_ACCESS_TOKEN) == null){
           await LoginWithOtpService(repository: loginOtpRepository).getAccessToken(model1.data!.kaleyraUID!);
         }
+        print("user profile: ${_pref!.getString(AppConfig.QB_CURRENT_USERID)}");
+
       }
     }
     // if(_pref!.getInt(AppConfig.QB_CURRENT_USERID) != null && !await _qbService!.getSession() || _pref!.getBool(AppConfig.IS_QB_LOGIN) == null){
@@ -907,12 +1011,18 @@ class GutListState extends State<GutList> {
                                 showShippingScreen();
                               }
                               else if(index == 4){
-                                showProgramScreen();
+                                showPrepratoryMealScreen();
                               }
                               else if(index == 5){
-                                showPostProgramScreen();
+                                showProgramScreen();
                               }
                               else if(index == 6){
+                                showTransitionMealScreen();
+                              }
+                              else if(index == 7){
+                                showPostProgramScreen();
+                              }
+                              else if(index == 8){
                                 goToScreen(PPLevelsScreen());
                               }
 
@@ -966,12 +1076,18 @@ class GutListState extends State<GutList> {
                                 showShippingScreen();
                               }
                               else if(index == 4){
-                                showProgramScreen();
+                                showPrepratoryMealScreen();
                               }
                               else if(index == 5){
-                                showPostProgramScreen();
+                                showProgramScreen();
                               }
                               else if(index == 6){
+                                showTransitionMealScreen();
+                              }
+                              else if(index == 7){
+                                showPostProgramScreen();
+                              }
+                              else if(index == 8){
                                 goToScreen(PPLevelsScreen());
                               }
                             }
@@ -1088,37 +1204,54 @@ class GutListState extends State<GutList> {
         levels[1].stage = openedStage;
         levels[2].stage = openedStage;
         levels[3].stage = currentStage;
+        levels[4].stage = currentStage;
+
         break;
       case 'shipping_delivered':
         levels[1].stage = openedStage;
         levels[2].stage = openedStage;
         levels[3].stage = currentStage;
+        levels[4].stage = currentStage;
         break;
       case 'shipping_approved':
         levels[1].stage = openedStage;
         levels[2].stage = openedStage;
         levels[3].stage = currentStage;
+        levels[4].stage = currentStage;
         break;
       case 'start_program':
         levels[1].stage = openedStage;
         levels[2].stage = openedStage;
         levels[3].stage = openedStage;
-        levels[4].stage = currentStage;
-        levels[5].stage = lockedStage;
+        levels[4].stage = openedStage;
+        levels[5].stage = currentStage;
+        levels[6].stage = lockedStage;
+        break;
+      case 'trans_program':
+        levels[1].stage = openedStage;
+        levels[2].stage = openedStage;
+        levels[3].stage = openedStage;
+        levels[4].stage = openedStage;
+        levels[5].stage = openedStage;
+        levels[6].stage = currentStage;
         break;
       case 'post_program':
         levels[1].stage = openedStage;
         levels[2].stage = openedStage;
         levels[3].stage = openedStage;
         levels[4].stage = openedStage;
-        levels[5].stage = currentStage;
+        levels[5].stage = openedStage;
+        levels[6].stage = openedStage;
+        levels[7].stage = currentStage;
         break;
       case 'post_appointment_booked':
         levels[1].stage = openedStage;
         levels[2].stage = openedStage;
         levels[3].stage = openedStage;
         levels[4].stage = openedStage;
-        levels[5].stage = currentStage;
+        levels[5].stage = openedStage;
+        levels[6].stage = openedStage;
+        levels[7].stage = currentStage;
         break;
       case 'protocol_guide':
         levels[1].stage = openedStage;
@@ -1126,7 +1259,9 @@ class GutListState extends State<GutList> {
         levels[3].stage = openedStage;
         levels[4].stage = openedStage;
         levels[5].stage = openedStage;
-        levels[6].stage = currentStage;
+        levels[6].stage = openedStage;
+        levels[7].stage = openedStage;
+        levels[8].stage = currentStage;
         break;
     }
   }

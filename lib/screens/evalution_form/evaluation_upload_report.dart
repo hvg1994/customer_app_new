@@ -1,0 +1,652 @@
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_vlc_player/flutter_vlc_player.dart';
+import 'package:gwc_customer/model/evaluation_from_models/evaluation_model_format1.dart';
+import 'package:gwc_customer/screens/evalution_form/personal_details_screen2.dart';
+import 'package:gwc_customer/utils/app_config.dart';
+import 'package:gwc_customer/widgets/constants.dart';
+import 'package:gwc_customer/widgets/vlc_player/vlc_player_with_controls.dart';
+import 'package:gwc_customer/widgets/widgets.dart';
+import 'package:sizer/sizer.dart';
+
+class EvaluationUploadReport extends StatefulWidget {
+  final EvaluationModelFormat1 evaluationModelFormat1;
+  const EvaluationUploadReport({Key? key, required this.evaluationModelFormat1}) : super(key: key);
+
+  @override
+  State<EvaluationUploadReport> createState() => _EvaluationUploadReportState();
+}
+
+class _EvaluationUploadReportState extends State<EvaluationUploadReport> {
+  dynamic padding = EdgeInsets.symmetric(vertical: 1.h, horizontal: 5.w);
+
+  List<PlatformFile> medicalRecords = [];
+
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    addUrlToVideoPlayer("");
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        image: DecorationImage(
+            image: const AssetImage("assets/images/eval_bg.png"),
+            fit: BoxFit.fitWidth,
+            colorFilter: ColorFilter.mode(kPrimaryColor, BlendMode.lighten)),
+      ),
+      child: SafeArea(
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          body: showUI(context),
+        ),
+      ),
+    );
+  }
+
+  showUI(BuildContext context) {
+    return Column(
+      children: [
+        SizedBox(height: 1.h),
+        Padding(
+          padding: EdgeInsets.only(left: 4.w, right: 4.w, top: 3.h),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              buildAppBar(() {
+                Navigator.pop(context);
+              }),
+              SizedBox(
+                width: 3.w,
+              ),
+              FittedBox(
+                child: Text(
+                  "Gut Wellness Club \nEvaluation Form",
+                  textAlign: TextAlign.start,
+                  style: TextStyle(
+                      fontFamily: "PoppinsMedium",
+                      color: Colors.white,
+                      fontSize: 12.sp),
+                ),
+              ),
+            ],
+          ),
+        ),
+        SizedBox(
+          height: 4.h,
+        ),
+        Expanded(
+          child: Container(
+              width: double.maxFinite,
+              padding:
+              EdgeInsets.symmetric(horizontal: 3.w, vertical: 3.h),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                      blurRadius: 2, color: Colors.grey.withOpacity(0.5))
+                ],
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(30),
+                  topRight: Radius.circular(30),
+                ),
+              ),
+              child: buildUI(context)
+          ),
+        ),
+      ],
+    );
+  }
+
+  buildUI(BuildContext context){
+    return SingleChildScrollView(
+      child: Column(
+        mainAxisSize: MainAxisSize.max,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Text(
+            "User Reports",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+                fontFamily: eUser().mainHeadingFont,
+                color: eUser().mainHeadingColor,
+                fontSize: eUser().mainHeadingFontSize
+            ),
+          ),
+          SizedBox(
+            height: 1.h,
+          ),
+          buildVideoPlayer(),
+          SizedBox(height: 2.h),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 5.w),
+            child: Text(
+              "Please Upload All Medical Records That Might Be Helpful To Evaluate Your Condition Better",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  height: 1.5,
+                  fontFamily: kFontRBold2,
+                  color: gTextColor,
+                  fontSize: 10.sp),
+            ),
+          ),
+          // upload button
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 5.w),
+            child: GestureDetector(
+              onTap: () async {
+                final result = await FilePicker.platform
+                    .pickFiles(withReadStream: true, allowMultiple: false);
+
+                if (result == null) return;
+                if (result.files.first.extension!.contains("pdf") ||
+                    result.files.first.extension!.contains("png") ||
+                    result.files.first.extension!.contains("jpg")) {
+                  medicalRecords.add(result.files.first);
+                } else {
+                  AppConfig().showSnackbar(
+                      context, "Please select png/jpg/Pdf files",
+                      isError: true);
+                }
+                setState(() {});
+              },
+              child: Container(
+                margin: EdgeInsets.symmetric(
+                    vertical: 3.h, horizontal: 3.w),
+                padding: EdgeInsets.symmetric(vertical: 2.h),
+                decoration: BoxDecoration(
+                  color: gMainColor,
+                  borderRadius: BorderRadius.circular(5),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      blurRadius: 20,
+                      offset: const Offset(2, 10),
+                    ),
+                  ],
+                ),
+                child: Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image(
+                        image: const AssetImage(
+                            "assets/images/Group 3323.png"),
+                        height: 2.5.h,
+                      ),
+                      Text(
+                        "   Choose file",
+                        style: TextStyle(
+                            fontFamily: "GothamMedium",
+                            color: Colors.black,
+                            fontSize: 10.sp),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+          SizedBox(
+            height: 0.5.h,
+          ),
+          if(medicalRecords.isNotEmpty)
+            SizedBox(
+              width: double.maxFinite,
+              child: ListView.builder(
+                physics: NeverScrollableScrollPhysics(),
+                itemCount: medicalRecords.length,
+                shrinkWrap: true,
+                itemBuilder: (context, index) {
+                  final file = medicalRecords[index];
+                  return buildFile(file, index);
+                },
+              ),
+            ),
+          SizedBox(
+            height: 5.h,
+          ),
+          //submit button
+          Visibility(
+            visible: medicalRecords.isNotEmpty,
+            child: Padding(
+              padding: padding,
+              child: Center(
+                child: GestureDetector(
+                  onTap: () async {
+                    final res = await _videoPlayerController?.isPlaying();
+                    if(res != null && res == true){
+                      await _videoPlayerController?.stop();
+                    }
+                    if(medicalRecords.isNotEmpty){
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (ctx) => PersonalDetailsScreen2(
+                                  evaluationModelFormat1: widget.evaluationModelFormat1,
+                                  medicalReportList:
+                                  medicalRecords.map((e) => e.path).toList())
+                          ));
+                    }
+                  },
+                  child: Container(
+                    width: 60.w,
+                    height: 5.h,
+                    // padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 10.w),
+                    decoration: BoxDecoration(
+                      color: gPrimaryColor,
+                      borderRadius: BorderRadius.circular(8),
+                      border:
+                      Border.all(color: gMainColor, width: 1),
+                    ),
+                    child: (showUploadProgress)
+                        ? buildThreeBounceIndicator()
+                        : Center(
+                      child: Text(
+                        'Submit',
+                        style: TextStyle(
+                          fontFamily:
+                          "GothamRoundedBold_21016",
+                          color: gWhiteColor,
+                          fontSize: 11.sp,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+
+  uiLikeUpload(){
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+            colors: [Color(0xffFFE889), Color(0xffFFF3C2)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter),
+      ),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Padding(
+                padding: padding,
+                child: Align(
+                  alignment: Alignment.topLeft,
+                  child: buildAppBar(() {
+                    Navigator.pop(context);
+                  }),
+                ),
+              ),
+              SizedBox(height: 5.h),
+              Text(
+                "User Reports",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontFamily: eUser().mainHeadingFont,
+                    color: eUser().mainHeadingColor,
+                    fontSize: eUser().mainHeadingFontSize
+                ),
+              ),
+              SizedBox(
+                height: 2.h,
+              ),
+              buildVideoPlayer(),
+              SizedBox(height: 2.h),
+              Padding(
+                padding: padding,
+                child: Text(
+                  "Please Upload Any & All Medical Records That Might Be Helpful To Evaluate Your Condition Better",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      height: 1.5,
+                      fontFamily: kFontRBold2,
+                      color: gTextColor,
+                      fontSize: 12.sp),
+                ),
+              ),
+              // upload button
+              Padding(
+                padding: padding,
+                child: GestureDetector(
+                  onTap: () async {
+                    final result = await FilePicker.platform
+                        .pickFiles(withReadStream: true, allowMultiple: false);
+
+                    if (result == null) return;
+                    if (result.files.first.extension!.contains("pdf") ||
+                        result.files.first.extension!.contains("png") ||
+                        result.files.first.extension!.contains("jpg")) {
+                      medicalRecords.add(result.files.first);
+                    } else {
+                      AppConfig().showSnackbar(
+                          context, "Please select png/jpg/Pdf files",
+                          isError: true);
+                    }
+                    setState(() {});
+                  },
+                  child: Container(
+                    margin: EdgeInsets.symmetric(
+                        vertical: 5.h, horizontal: 3.w),
+                    padding: EdgeInsets.symmetric(vertical: 2.h),
+                    decoration: BoxDecoration(
+                      color: gMainColor,
+                      borderRadius: BorderRadius.circular(5),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.5),
+                          blurRadius: 20,
+                          offset: const Offset(2, 10),
+                        ),
+                      ],
+                    ),
+                    child: Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image(
+                            image: const AssetImage(
+                                "assets/images/Group 3323.png"),
+                            height: 2.5.h,
+                          ),
+                          Text(
+                            "   Choose file",
+                            style: TextStyle(
+                                fontFamily: "GothamMedium",
+                                color: Colors.black,
+                                fontSize: 10.sp),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 1.8.h,
+              ),
+              if(medicalRecords.isNotEmpty)
+                SizedBox(
+                  width: double.maxFinite,
+                  child: ListView.builder(
+                    itemCount: medicalRecords.length,
+                    shrinkWrap: true,
+                    itemBuilder: (context, index) {
+                      final file = medicalRecords[index];
+                      return buildFile(file, index);
+                    },
+                  ),
+                ),
+              SizedBox(
+                height: 5.h,
+              ),
+              //submit button
+              Padding(
+                padding: padding,
+                child: Center(
+                  child: GestureDetector(
+                    onTap: () async {
+                      if(medicalRecords.isNotEmpty){
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (ctx) => PersonalDetailsScreen2(
+                                    evaluationModelFormat1: widget.evaluationModelFormat1,
+                                    medicalReportList:
+                                    medicalRecords.map((e) => e.path).toList())
+                            ));
+                      }
+                    },
+                    child: Container(
+                      width: 60.w,
+                      height: 5.h,
+                      // padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 10.w),
+                      decoration: BoxDecoration(
+                        color: gPrimaryColor,
+                        borderRadius: BorderRadius.circular(8),
+                        border:
+                        Border.all(color: gMainColor, width: 1),
+                      ),
+                      child: (showUploadProgress)
+                          ? buildThreeBounceIndicator()
+                          : Center(
+                        child: Text(
+                          'Submit',
+                          style: TextStyle(
+                            fontFamily:
+                            "GothamRoundedBold_21016",
+                            color: gWhiteColor,
+                            fontSize: 11.sp,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+  Widget buildFile(PlatformFile file, int index) {
+    final kb = file.size / 1024;
+    final mb = kb / 1024;
+    final size = (mb >= 1)
+        ? '${mb.toStringAsFixed(2)} MB'
+        : '${kb.toStringAsFixed(2)} KB';
+    return buildRecordList(file, index: index);
+
+    // return Wrap(
+    //   children: [
+    //     RawChip(
+    //         label: Text(file.name),
+    //       deleteIcon: Icon(
+    //         Icons.cancel,
+    //       ),
+    //       deleteIconColor: gMainColor,
+    //       onDeleted: (){
+    //         medicalRecords.removeAt(index);
+    //         setState(() {});
+    //       },
+    //     )
+    //   ],
+    // );
+  }
+
+  buildRecordList(PlatformFile filename, {int? index}) {
+    return ListTile(
+      shape: Border(
+        bottom: BorderSide()
+      ),
+      leading: SizedBox(
+          width: 50,
+          height: 50,
+          child: Image.file(File(filename.path!))
+      ),
+      title: Text(
+        filename.name.split("/").last,
+        textAlign: TextAlign.start,
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+        style: TextStyle(
+          fontFamily: "PoppinsBold",
+          fontSize: 11.sp,
+        ),
+      ),
+      trailing: GestureDetector(
+          onTap: () {
+            medicalRecords.removeAt(index!);
+            setState(() {});
+          },
+          child: const Icon(
+            Icons.delete_outline_outlined,
+            color: gMainColor,
+          )),
+    );
+    // return Padding(
+    //   padding: EdgeInsets.symmetric(vertical: 1.5.h),
+    //   child: OutlinedButton(
+    //     onPressed: () {},
+    //     style: ButtonStyle(
+    //       overlayColor: getColor(Colors.white, const Color(0xffCBFE86)),
+    //       backgroundColor: getColor(Colors.white, const Color(0xffCBFE86)),
+    //     ),
+    //     child: Row(
+    //       children: [
+    //         Expanded(
+    //           child: Text(
+    //             filename.split("/").last,
+    //             textAlign: TextAlign.start,
+    //             maxLines: 2,
+    //             overflow: TextOverflow.ellipsis,
+    //             style: TextStyle(
+    //               fontFamily: "PoppinsBold",
+    //               fontSize: 11.sp,
+    //             ),
+    //           ),
+    //         ),
+    //         (widget.showData)
+    //             ? SvgPicture.asset(
+    //           'assets/images/attach_icon.svg',
+    //           fit: BoxFit.cover,
+    //         )
+    //             : GestureDetector(
+    //             onTap: () {
+    //               medicalRecords.removeAt(index!);
+    //               setState(() {});
+    //             },
+    //             child: const Icon(
+    //               Icons.delete_outline_outlined,
+    //               color: gMainColor,
+    //             )),
+    //       ],
+    //     ),
+    //   ),
+    // );
+  }
+
+
+  VlcPlayerController? _videoPlayerController;
+  final _key = GlobalKey<VlcPlayerWithControlsState>();
+  bool showUploadProgress = false;
+
+  addUrlToVideoPlayer(String url){
+    print("url"+ url);
+    _videoPlayerController = VlcPlayerController.network(
+      // url,
+      // 'http://samples.mplayerhq.hu/MPEG-4/embedded_subs/1Video_2Audio_2SUBs_timed_text_streams_.mp4',
+      'https://media.w3.org/2010/05/sintel/trailer.mp4',
+      hwAcc: HwAcc.auto,
+      options: VlcPlayerOptions(
+        advanced: VlcAdvancedOptions([
+          VlcAdvancedOptions.networkCaching(2000),
+        ]),
+        subtitle: VlcSubtitleOptions([
+          VlcSubtitleOptions.boldStyle(true),
+          VlcSubtitleOptions.fontSize(30),
+          VlcSubtitleOptions.outlineColor(VlcSubtitleColor.yellow),
+          VlcSubtitleOptions.outlineThickness(VlcSubtitleThickness.normal),
+          // works only on externally added subtitles
+          VlcSubtitleOptions.color(VlcSubtitleColor.navy),
+        ]),
+        http: VlcHttpOptions([
+          VlcHttpOptions.httpReconnect(true),
+        ]),
+        rtp: VlcRtpOptions([
+          VlcRtpOptions.rtpOverRtsp(true),
+        ]),
+      ),
+    );
+  }
+
+
+  buildVideoPlayer() {
+    if(_videoPlayerController != null){
+      return AspectRatio(
+        aspectRatio: 16/9,
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(5),
+            border: Border.all(color: gPrimaryColor, width: 1),
+            // boxShadow: [
+            //   BoxShadow(
+            //     color: Colors.grey.withOpacity(0.3),
+            //     blurRadius: 20,
+            //     offset: const Offset(2, 10),
+            //   ),
+            // ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(5),
+            child: Center(
+              child: VlcPlayerWithControls(
+                key: _key,
+                controller: _videoPlayerController!,
+                showVolume: false,
+                showVideoProgress: false,
+                seekButtonIconSize: 10.sp,
+                playButtonIconSize: 14.sp,
+                replayButtonSize: 10.sp,
+              ),
+              // child: VlcPlayer(
+              //   controller: _videoPlayerController!,
+              //   aspectRatio: 16 / 9,
+              //   virtualDisplay: false,
+              //   placeholder: Center(child: CircularProgressIndicator()),
+              // ),
+            ),
+          ),
+          // child: Stack(
+          //   children: <Widget>[
+          //     ClipRRect(
+          //       borderRadius: BorderRadius.circular(5),
+          //       child: Center(
+          //         child: VlcPlayer(
+          //           controller: _videoPlayerController!,
+          //           aspectRatio: 16 / 9,
+          //           virtualDisplay: false,
+          //           placeholder: Center(child: CircularProgressIndicator()),
+          //         ),
+          //       ),
+          //     ),
+          //     ControlsOverlay(controller: _videoPlayerController,)
+          //   ],
+          // ),
+        ),
+      );
+    }
+    else {
+      return SizedBox.shrink();
+    }
+  }
+
+  isPlaying() async {
+    if(_videoPlayerController != null) {
+      final value = await _videoPlayerController?.isPlaying();
+      print("isPlaying: $value");
+      return value;
+    }
+    else{
+      return false;
+    }
+  }
+
+}

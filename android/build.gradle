@@ -6,6 +6,7 @@ buildscript {
     ext.buildToolsVersion = "31.0.0"
     ext.stethoVersion = "1.5.0"
 
+
     ext.keyStoreAlias = { buildType -> return " " }
     ext.keyStorePassword = { buildType -> return " " }
     ext.keyStoreFilePath = { buildType -> return " " }

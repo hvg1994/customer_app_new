@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:crypto/crypto.dart';
+import 'package:gwc_customer/model/prepratory_meal_model/prep_meal_model.dart';
+import 'package:gwc_customer/model/prepratory_meal_model/transition_meal_model.dart';
 import 'package:gwc_customer/repository/in_memory_cache.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/foundation.dart';
@@ -50,6 +52,7 @@ import '../model/profile_model/terms_condition_model.dart';
 import '../model/profile_model/user_profile/user_profile_model.dart';
 import '../model/program_model/meal_plan_details_model/meal_plan_details_model.dart';
 import '../model/ship_track_model/shipping_track_model.dart';
+import '../model/success_message_model.dart';
 import '../utils/api_urls.dart';
 import '../utils/app_config.dart';
 import 'package:gwc_customer/model/home_model/home_model.dart';
@@ -1111,7 +1114,12 @@ class ApiClient {
 
       if (response.statusCode == 200) {
         print('proceedDayProgramList result: $json');
-        result = GetProceedModel.fromJson(json);
+        if(json['status'].toString() == "200"){
+          result = GetProceedModel.fromJson(json);
+        }
+        else{
+          result = ErrorModel.fromJson(json);
+        }
       }
       else if(response.statusCode == 500){
         result = ErrorModel(status: "0", message: AppConfig.oopsMessage);
@@ -2133,6 +2141,102 @@ class ApiClient {
       }
     }
     catch(e){
+      result = ErrorModel(status: "", message: e.toString());
+    }
+    return result;
+  }
+
+  Future getPrepraoryMealsApi() async{
+    dynamic result;
+
+    try{
+      final response = await httpClient.get(Uri.parse(prepratoryMealUrl),
+          headers: {
+            'Authorization': getHeaderToken(),
+          }
+      );
+      print("getPrepraoryMealsApi status code: ${response.statusCode}");
+      print("getPrepraoryMealsApi body : ${response.body}");
+
+      final json = jsonDecode(response.body);
+      if(response.statusCode == 200){
+        if(json['status'].toString() == '200'){
+          result = PrepratoryMealModel.fromJson(json);
+        }
+        else{
+          result = ErrorModel.fromJson(json);
+        }
+      }
+      else{
+        result = ErrorModel.fromJson(json);
+      }
+    }
+    catch (e){
+      result = ErrorModel(status: "", message: e.toString());
+    }
+    return result;
+  }
+
+  Future getTransitionMealsApi() async{
+    dynamic result;
+
+    try{
+      final response = await httpClient.get(Uri.parse(transitionMealUrl),
+          headers: {
+            'Authorization': getHeaderToken(),
+          }
+      );
+      print("getTransitionMealsApi status code: ${response.statusCode}");
+      print("getTransitionMealsApi body : ${response.body}");
+
+      final json = jsonDecode(response.body);
+      if(response.statusCode == 200){
+        if(json['status'].toString() == '200'){
+          result = TransitionMealModel.fromJson(json);
+        }
+        else{
+          result = ErrorModel.fromJson(json);
+        }
+      }
+      else{
+        result = ErrorModel.fromJson(json);
+      }
+    }
+    catch (e){
+      result = ErrorModel(status: "", message: e.toString());
+    }
+    return result;
+  }
+
+  Future sendPrepratoryMealTrackDetailsApi(Map trackDetails) async{
+    dynamic result;
+
+
+    try{
+      final response = await httpClient.post(Uri.parse(submitPrepratoryMealTrackUrl),
+          headers: {
+            'Authorization': getHeaderToken(),
+          },
+        body: trackDetails
+      );
+      print("submitPrepratoryMealTrackApi status code: ${response.statusCode}");
+      print("submitPrepratoryMealTrackApi body : ${response.body}");
+
+      final json = jsonDecode(response.body);
+      if(response.statusCode == 200){
+        if(json['status'].toString() == '200'){
+          print('result: $response');
+          result = SuccessMessageModel.fromJson(json);
+        }
+        else{
+          result = ErrorModel.fromJson(json);
+        }
+      }
+      else{
+        result = ErrorModel.fromJson(json);
+      }
+    }
+    catch (e){
       result = ErrorModel(status: "", message: e.toString());
     }
     return result;

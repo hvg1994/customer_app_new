@@ -110,8 +110,10 @@ class LocalNotificationService {
       payload["type"] = "chat";
       String senderId = payload['senderId'].toString();
 
+      final _pref = AppConfig().preferences;
+      int? userId = int.parse(_pref!.getString(AppConfig.QB_CURRENT_USERID)!);
 
-      if(senderId != "82272762"){
+      if(senderId != userId.toString()){
         _notificationsPlugin.show(id, title, textMsg,
             NotificationDetails(android: details),
             payload: message.data.toString()

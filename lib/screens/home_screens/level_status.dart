@@ -3,6 +3,7 @@ import 'package:gwc_customer/model/error_model.dart';
 import 'package:gwc_customer/screens/appointment_screens/consultation_screens/medical_report_details.dart';
 import 'package:gwc_customer/screens/appointment_screens/consultation_screens/upload_files.dart';
 import 'package:gwc_customer/screens/cook_kit_shipping_screens/cook_kit_tracking.dart';
+import 'package:gwc_customer/screens/evalution_form/evaluation_get_details.dart';
 import 'package:gwc_customer/screens/evalution_form/personal_details_screen.dart';
 import 'package:gwc_customer/widgets/constants.dart';
 import 'package:simple_circular_progress_bar/simple_circular_progress_bar.dart';
@@ -61,38 +62,34 @@ class _LevelStatusState extends State<LevelStatus> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: gPrimaryColor,
-      child: SafeArea(
-        child: Scaffold(
-            backgroundColor: Colors.transparent,
-            body: FutureBuilder(
-              future: levelFuture,
-              builder: (_, snapshot){
-                if(snapshot.connectionState == ConnectionState.done){
-                  if(snapshot.hasData){
-                    if(snapshot.data is ErrorModel){
-                      final model = snapshot.data as ErrorModel;
-                      print(model.message);
-                    }
-                    else{
-                      final model = snapshot.data as HomeScreenModel;
-                      addData(model);
-                      return showUI(model);
-                    }
-                  }
-                  else if(snapshot.hasError){
+    return SafeArea(
+      child: Scaffold(
+          body: FutureBuilder(
+            future: levelFuture,
+            builder: (_, snapshot){
+              if(snapshot.connectionState == ConnectionState.done){
+                if(snapshot.hasData){
+                  if(snapshot.data is ErrorModel){
                     final model = snapshot.data as ErrorModel;
                     print(model.message);
                   }
                   else{
-                    return SizedBox();
+                    final model = snapshot.data as HomeScreenModel;
+                    addData(model);
+                    return showUI(model);
                   }
                 }
-                return buildCircularIndicator();
-              },
-            )
-        ),
+                else if(snapshot.hasError){
+                  final model = snapshot.data as ErrorModel;
+                  print(model.message);
+                }
+                else{
+                  return SizedBox();
+                }
+              }
+              return buildCircularIndicator();
+            },
+          )
       ),
     );
   }
@@ -102,42 +99,45 @@ class _LevelStatusState extends State<LevelStatus> {
   String selectedStage = '';
 
   showUI(HomeScreenModel model){
-    return Column(
-      children: [
-        buildPercentage(),
-        Expanded(
-          child: Container(
-            width: double.maxFinite,
-            padding: EdgeInsets.only(
-                right: 3.w, top: 3.h, left: 3.w),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                    blurRadius: 2, color: Colors.grey.withOpacity(0.5))
-              ],
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(30),
-                topRight: Radius.circular(30),
-              ),
-            ),
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  (l[selectedIndex] is Evaluation) ? buildEvaluationDone(l[selectedIndex] as Evaluation) :
-                  (l[selectedIndex] is Consultation && (l[selectedIndex] as Consultation).consultationStatus == 'Consultation Booked') ? buildConsultationBooked(l[selectedIndex] as Consultation) :
-                  (l[selectedIndex] is Consultation && (l[selectedIndex] as Consultation).consultationStatus == 'Consultation Done') ? buildConsultationDone(l[selectedIndex] as Consultation) :
-                  (l[selectedIndex] is Tracker && (l[selectedIndex] as Tracker).trackerStatus == 'Shipment Delivered') ? buildTracker(l[selectedIndex] as Tracker) :
-                  (l[selectedIndex] is Tracker && (l[selectedIndex] as Tracker).trackerStatus == 'Shipment Approved') ? buildTracker(l[selectedIndex] as Tracker) :
-                  (l[selectedIndex] is Program && (l[selectedIndex] as Program).programStatus == 'Start Program') ? buildMealPlan(l[selectedIndex] as Program) :
-                  (l[selectedIndex] is PostConsultation && (l[selectedIndex] as PostConsultation).consultationStatus == '') ? buildPPBooked(l[selectedIndex] as PostConsultation) :
-                  (l[selectedIndex] is ProtocolGuide && (l[selectedIndex] as ProtocolGuide).consultationStatus == 'Protocol Guide') ? buildPPConsultation(l[selectedIndex] as ProtocolGuide) : SizedBox(child: Text(showName() ?? ''),)
+    return Container(
+      color: gPrimaryColor,
+      child: Column(
+        children: [
+          buildPercentage(),
+          Expanded(
+            child: Container(
+              width: double.maxFinite,
+              padding: EdgeInsets.only(
+                  right: 3.w, top: 3.h, left: 3.w),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                      blurRadius: 2, color: Colors.grey.withOpacity(0.5))
                 ],
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(30),
+                  topRight: Radius.circular(30),
+                ),
+              ),
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    (l[selectedIndex] is Evaluation) ? buildEvaluationDone(l[selectedIndex] as Evaluation) :
+                    (l[selectedIndex] is Consultation && (l[selectedIndex] as Consultation).consultationStatus == 'Consultation Booked') ? buildConsultationBooked(l[selectedIndex] as Consultation) :
+                    (l[selectedIndex] is Consultation && (l[selectedIndex] as Consultation).consultationStatus == 'Consultation Done') ? buildConsultationDone(l[selectedIndex] as Consultation) :
+                    (l[selectedIndex] is Tracker && (l[selectedIndex] as Tracker).trackerStatus == 'Shipment Delivered') ? buildTracker(l[selectedIndex] as Tracker) :
+                    (l[selectedIndex] is Tracker && (l[selectedIndex] as Tracker).trackerStatus == 'Shipment Approved') ? buildTracker(l[selectedIndex] as Tracker) :
+                    (l[selectedIndex] is Program && (l[selectedIndex] as Program).programStatus == 'Start Program') ? buildMealPlan(l[selectedIndex] as Program) :
+                    (l[selectedIndex] is PostConsultation && (l[selectedIndex] as PostConsultation).consultationStatus == '') ? buildPPBooked(l[selectedIndex] as PostConsultation) :
+                    (l[selectedIndex] is ProtocolGuide && (l[selectedIndex] as ProtocolGuide).consultationStatus == 'Protocol Guide') ? buildPPConsultation(l[selectedIndex] as ProtocolGuide) : SizedBox(child: Text(showName() ?? ''),)
+                  ],
+                ),
               ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -304,7 +304,7 @@ class _LevelStatusState extends State<LevelStatus> {
                 onTap: (){
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (context) => const PersonalDetailsScreen(showData: true,),
+                      builder: (context) => const EvaluationGetDetails(),
                     ),
                   );
                 },

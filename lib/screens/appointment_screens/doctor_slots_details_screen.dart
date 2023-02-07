@@ -4,8 +4,6 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:flutter_zoom_sdk/zoom_options.dart';
-import 'package:flutter_zoom_sdk/zoom_view.dart';
 import 'package:gwc_customer/model/error_model.dart';
 import 'package:gwc_customer/model/message_model/get_chat_groupid_model.dart';
 import 'package:gwc_customer/repository/consultation_repository/get_slots_list_repository.dart';
@@ -185,24 +183,24 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
                   ),
                   SizedBox(height: 3.h),
                   Center(
-                    child: Row(mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Image(
-                          image: const AssetImage(
-                              "assets/images/noun-chat-5153452.png"),
-                          height: 2.h,
-                        ),
-                        SizedBox(width: 2.w),
-                        GestureDetector(
-                          onTap: () {
-                            getChatGroupId();
-                            // Navigator.of(context).push(
-                            //   MaterialPageRoute(
-                            //       builder: (context) =>
-                            //           const DoctorCalenderTimeScreen()),
-                            // );
-                          },
-                          child: Text(
+                    child: InkWell(
+                      onTap: () {
+                        getChatGroupId();
+                        // Navigator.of(context).push(
+                        //   MaterialPageRoute(
+                        //       builder: (context) =>
+                        //           const DoctorCalenderTimeScreen()),
+                        // );
+                      },
+                      child: Row(mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image(
+                            image: const AssetImage(
+                                "assets/images/noun-chat-5153452.png"),
+                            height: 2.h,
+                          ),
+                          SizedBox(width: 2.w),
+                          Text(
                             'Chat Support',
                             style: TextStyle(
                               decoration: TextDecoration.underline,
@@ -211,8 +209,8 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
                               fontSize: 10.sp,
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ],
@@ -307,7 +305,6 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
                                         model = ChildAppointmentDetails.fromJson(Map.from(widget.dashboardValueMap!));
                                       }
                                       launchZoomUrl();
-                                      // joinZoom(context);
                                     },
                                     child: Container(
                                       width: 60.w,
@@ -344,11 +341,12 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
                                     String? kaleyraurl = (widget.isFromDashboard || widget.isPostProgram) ? model?.kaleyraJoinurl : widget.data?.kaleyraJoinurl;
 
                                     print(_pref!.getString(AppConfig.KALEYRA_USER_ID));
+                                    kaleyraUID = _pref!.getString(AppConfig.KALEYRA_USER_ID) ?? '';
                                     print("kaleyraurl:=>$kaleyraurl");
                                     print('token: $accessToken');
                                     print("kaleyraID: $kaleyraUID");
                                     // send kaleyra id to native
-                                    if(kaleyraUID != null || kaleyraurl != null || accessToken.isNotEmpty){
+                                    if(kaleyraUID.isNotEmpty || kaleyraurl != null || accessToken.isNotEmpty){
                                       Provider.of<ConsultationService>(context, listen: false).joinWithKaleyra(kaleyraUID, kaleyraurl!, accessToken);
                                     }
                                     else{
@@ -467,125 +465,6 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
         ),
       ),
     );
-  }
-
-  joinZoom(BuildContext context) {
-    print(widget.data?.patientName);
-    print(widget.isPostProgram);
-    ChildAppointmentDetails? model;
-    if(widget.isFromDashboard || widget.isPostProgram){
-      model = ChildAppointmentDetails.fromJson(Map.from(widget.dashboardValueMap!));
-    }
-
-    print("model: ${model!.zoomId}");
-
-    String? userId = (widget.isFromDashboard || widget.isPostProgram) ? model?.teamPatients!.patient?.user?.name : widget.data?.patientName ?? _pref?.getString(AppConfig.User_Name) ?? '';
-    String meetingId = (widget.isFromDashboard || widget.isPostProgram) ? model!.zoomId! : widget.data?.zoomId ?? '';
-    String meetingPwd = (widget.isFromDashboard || widget.isPostProgram) ? model!.zoomPassword! : widget.data?.zoomPassword ?? '';
-    print('$meetingId $meetingPwd');
-
-    setState(() {
-      isJoinPressed = false;
-    });
-
-    bool _isMeetingEnded(String status) {
-      var result = false;
-
-      if (Platform.isAndroid) {
-        result = status == "MEETING_STATUS_DISCONNECTING" ||
-            status == "MEETING_STATUS_FAILED";
-      } else {
-        result = status == "MEETING_STATUS_IDLE";
-
-      }
-      return result;
-    }
-
-    if (meetingId.isNotEmpty &&
-        meetingPwd.isNotEmpty) {
-      ZoomOptions zoomOptions = ZoomOptions(
-        domain: "zoom.us",
-        appKey:
-            "FN4n7k0rOGDRf8t8fmhKvbjGLiA98ovbzEjJ",
-        // "FxjLOPbhuE5ecpjRS7PCKUWSeCo7Xb3bGjEU", //API KEY FROM ZOOM - Sdk API Key
-        appSecret:
-          "Hp7Lyy9nD5EjQN2B5aF2S4yogk55mbz0rN9X",
-        // "sN2sN5jrXUXzdmBQrGNmdEVzQwBbOlFSas0B", //API SECRET FROM ZOOM - Sdk API Secret
-      );
-      var meetingOptions = ZoomMeetingOptions(
-          userId: userId, //pass username for join meeting only --- Any name eg:- EVILRATT.
-          meetingId: meetingId
-              .toString(), //pass meeting id for join meeting only
-          meetingPassword: meetingPwd
-              .toString(), //pass meeting password for join meeting only
-          disableDialIn: "true",
-          disableDrive: "true",
-          disableInvite: "true",
-          disableShare: "true",
-          disableTitlebar: "false",
-          viewOptions: "true",
-          noAudio: "false",
-          noDisconnectAudio: "false");
-
-      var zoom = ZoomView();
-      zoom.initZoom(zoomOptions).then((results) {
-        if (results[0] == 0) {
-          StreamSubscription? stream;
-          stream = zoom.onMeetingStatus().listen((status) {
-            print("meeting status: $status");
-            print("[Meeting Status Stream] : " + status[0] + " - " + status[1]);
-            if (_isMeetingEnded(status[0])) {
-              print("[Meeting Status] :- Ended");
-              timer?.cancel();
-              stream?.cancel();
-              // Navigator.of(context).pushAndRemoveUntil(
-              //     MaterialPageRoute(
-              //         builder: (context) =>
-              //         const DashboardScreen()
-              //       // DoctorConsultationCompleted(
-              //       //   bookingDate: widget.bookingDate,
-              //       //   bookingTime: widget.bookingTime,
-              //       // ),
-              //     ), (route) => route.isFirst
-              // );
-            }
-            if(status[0] == "MEETING_STATUS_INMEETING"){
-              zoom.meetinDetails().then((meetingDetailsResult) {
-                print("[MeetingDetailsResult] :- " + meetingDetailsResult.toString());
-              });
-            }
-          });
-          print("listen on event channel");
-          zoom.joinMeeting(meetingOptions).then((joinMeetingResult) {
-            timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-              zoom.meetingStatus(meetingOptions.meetingId!).then((status) {
-                print("[Meeting Status Polling] : " +
-                    status[0] +
-                    " - " +
-                    status[1]);
-                // if(status[0] == 'MEETING_STATUS_IDLE'){
-                //   stream!.cancel();
-                //   timer.cancel();
-                // }
-              });
-            });
-          });
-        }
-      }).catchError((error) {
-        print("[Error Generated] : " + error);
-      });
-    }
-    else {
-      if (meetingId.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text("Enter a valid meeting id to continue."),
-        ));
-      } else if (meetingPwd.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text("Enter a meeting password to start."),
-        ));
-      }
-    }
   }
 
   void getEvaluationReport() {

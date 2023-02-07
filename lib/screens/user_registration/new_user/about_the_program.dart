@@ -126,19 +126,19 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                "Testimonial",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    fontFamily: eUser().mainHeadingFont,
-                                    color: eUser().mainHeadingColor,
-                                    fontSize: eUser().mainHeadingFontSize
-                                ),
-                              ),
-                              SizedBox(
-                                height: 2.h,
-                              ),
-                              buildTestimonial(),
+                              // Text(
+                              //   "Testimonial",
+                              //   textAlign: TextAlign.center,
+                              //   style: TextStyle(
+                              //       fontFamily: eUser().mainHeadingFont,
+                              //       color: eUser().mainHeadingColor,
+                              //       fontSize: eUser().mainHeadingFontSize
+                              //   ),
+                              // ),
+                              // SizedBox(
+                              //   height: 2.h,
+                              // ),
+                              //buildTestimonial(),
                               SizedBox(height: 2.h),
                               Text(
                                 "About The Program",
@@ -201,10 +201,10 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
                                 child: GestureDetector(
                                   onTap: () async{
                                     print("tap");
-                                    final res = await _videoPlayerController?.isPlaying();
-                                    if(res != null && res == true){
-                                      await _videoPlayerController?.stop();
-                                    }
+                                    // final res = await _videoPlayerController?.isPlaying();
+                                    // if(res != null && res == true){
+                                    //   await _videoPlayerController?.stop();
+                                    // }
                                     Navigator.of(context).push(
                                       MaterialPageRoute(
                                         builder: (context) => const RegisterScreen(),

@@ -105,6 +105,12 @@ var daySummaryUrl = "${AppConfig().BASE_URL}/api/getDataList/protocol_summary";
 
 var ppCalendarUrl = "${AppConfig().BASE_URL}/api/getDataList/protocol_meal_tracking_calendar";
 
+/// to get the list of prepratory meal list
+var prepratoryMealUrl = "${AppConfig().BASE_URL}/api/getDataList/user_prep_meal_plan";
+
+var transitionMealUrl = "${AppConfig().BASE_URL}/api/getDataList/user_trans_meal_plan";
+
+var submitPrepratoryMealTrackUrl = "${AppConfig().BASE_URL}/api/getData/prep_meal_submit";
 
 
 //  old apis

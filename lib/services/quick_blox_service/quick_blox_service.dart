@@ -84,8 +84,8 @@ class QuickBloxService extends ChangeNotifier{
     subscribeUserStopTyping();
   }
   getInstance(){
-    if(_pref!.getInt(AppConfig.QB_CURRENT_USERID) != null){
-      _localUserId = _pref!.getInt(AppConfig.QB_CURRENT_USERID);
+    if(_pref!.getString(AppConfig.QB_CURRENT_USERID) != null){
+      _localUserId = int.parse(_pref!.getString(AppConfig.QB_CURRENT_USERID)!);
     }
   }
 
@@ -126,14 +126,14 @@ class QuickBloxService extends ChangeNotifier{
   Future<bool> login(String userName) async {
     bool isLogin;
     try {
-      // QBLoginResult result = await QB.auth.login(userName, AppConfig.QB_DEFAULT_PASSWORD);
-      QBLoginResult result = await QB.auth.login("abc", AppConfig.QB_DEFAULT_PASSWORD);
+      QBLoginResult result = await QB.auth.login(userName, AppConfig.QB_DEFAULT_PASSWORD);
+      // QBLoginResult result = await QB.auth.login("abc", AppConfig.QB_DEFAULT_PASSWORD);
 
       QBUser? qbUser = result.qbUser;
       _localUserId = qbUser?.id ?? -1;
-      // connect(qbUser!.id!);
+      connect(qbUser!.id!);
       //test
-      connect(136562497);
+      // connect(136562497);
       // on login success store username, password, userid to local
       // _pref!.setInt(AppConfig.QB_CURRENT_USERID, _localUserId!);
 
@@ -171,7 +171,7 @@ class QuickBloxService extends ChangeNotifier{
   }
   //2nd connect
   // PASS AppConfig.DEFAULT_PASSWORD IF PASSWORD NOT THERE
-  connect(int userId) async {
+  Future connect(int userId) async {
     try {
       await QB.chat.connect(userId, AppConfig.QB_DEFAULT_PASSWORD);
       await QB.settings.enableAutoReconnect(true);
@@ -210,13 +210,21 @@ class QuickBloxService extends ChangeNotifier{
 
   Future joinDialog(String dialogId) async {
     try {
+      _dialogId = dialogId;
       await QB.chat.joinDialog(dialogId);
       print("The dialog $_dialogId was joined");
 
       loadMessages(dialogId);
     } on PlatformException catch (e) {
       print("join room error: ${e}");
-      print(e.message);
+      print("e.message: ${e.code}");
+      if(e.code.contains("Client is not, or no longer, connected.")){
+        print("called  ${int.parse(_pref!.getString(AppConfig.QB_CURRENT_USERID)!) } ${_localUserId}");
+        await connect(_localUserId!).then((value) {
+          print("value got: $value");
+          joinDialog(dialogId);
+        });
+      }
       rethrow;
     }
   }
@@ -249,8 +257,8 @@ class QuickBloxService extends ChangeNotifier{
       String eventType = QBNotificationEventTypes.ONE_SHOT;
       String notificationEventType = QBNotificationTypes.PUSH;
       int pushType = QBNotificationPushTypes.GCM;
-      // int senderId = _pref!.getInt(AppConfig.QB_CURRENT_USERID)!;
-      int senderId = 82272762;
+      int senderId = int.parse(_pref!.getString(AppConfig.QB_CURRENT_USERID)!);
+      // int senderId = 82272762;
       // List<String> recipientsIds = ["82273007"];
 
       Map<String, Object> payload = new Map();
@@ -292,6 +300,7 @@ class QuickBloxService extends ChangeNotifier{
     if (messages != null || _localUserId != null) {
       List<QBMessageWrapper> wrappedMessages = await _wrapMessages(messages!);
 
+
       _wrappedMessageSet.addAll(wrappedMessages);
       hasMore = messages.length == PAGE_SIZE;
       print("hasmore: $hasMore");
@@ -300,6 +309,9 @@ class QuickBloxService extends ChangeNotifier{
       list.sort((first, second) => first.date.compareTo(second.date));
       _stream.sink.add(list);
       print('sink added from loadmessage:$list');
+      list.forEach((element) {
+        print(element.currentUserId);
+      });
       notifyListeners();
     }
   }
@@ -406,9 +418,9 @@ class QuickBloxService extends ChangeNotifier{
       String senderName = sender?.fullName ?? sender?.login ?? "DELETED User";
       print(_localUserId);
       // test
-      wrappedMessages.add(QBMessageWrapper(senderName, message, 82272762));
+      // wrappedMessages.add(QBMessageWrapper(senderName, message, 82272762));
 
-      // wrappedMessages.add(QBMessageWrapper(senderName, message, _pref!.getInt(AppConfig.QB_CURRENT_USERID)!));
+      wrappedMessages.add(QBMessageWrapper(senderName, message, _localUserId!));
     }
     return wrappedMessages;
   }
@@ -527,7 +539,7 @@ class QuickBloxService extends ChangeNotifier{
     QBMessage qbMessage = QBMessage();
     qbMessage.dialogId = _dialogId;
     qbMessage.id = _messageId;
-    qbMessage.senderId = (_localUserId == null) ? _pref!.getInt(AppConfig.QB_CURRENT_USERID) : _localUserId;
+    qbMessage.senderId = (_localUserId == null) ? int.parse(_pref!.getString(AppConfig.QB_CURRENT_USERID)!) : _localUserId;
 
     try {
       await QB.chat.markMessageRead(qbMessage);
@@ -542,7 +554,7 @@ class QuickBloxService extends ChangeNotifier{
     QBMessage qbMessage = QBMessage();
     qbMessage.dialogId = _dialogId;
     qbMessage.id = _messageId;
-    qbMessage.senderId = (_localUserId == null) ? _pref!.getInt(AppConfig.QB_CURRENT_USERID) : _localUserId;
+    qbMessage.senderId = (_localUserId == null) ? int.parse(_pref!.getString(AppConfig.QB_CURRENT_USERID)!) : _localUserId;
 
     try {
       await QB.chat.markMessageDelivered(qbMessage);

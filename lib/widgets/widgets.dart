@@ -180,7 +180,7 @@ SnackbarController buildSnackBar(String title, String subTitle) {
   );
 }
 
-buildAppBar(VoidCallback func, {bool isBackEnable = true, bool showNotificationIcon = false, VoidCallback? notificationOnTap}) {
+buildAppBar(VoidCallback func, {bool isBackEnable = true, bool showNotificationIcon = false, VoidCallback? notificationOnTap, bool showHelpIcon = false, VoidCallback? helpOnTap}) {
   return Row(
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
     children: [
@@ -212,14 +212,28 @@ buildAppBar(VoidCallback func, {bool isBackEnable = true, bool showNotificationI
           ],
         ),
       ),
-      Visibility(
-        visible: showNotificationIcon,
-        child: IconButton(
-          icon: Icon(Icons.notifications_none_sharp,
-            color: gMainColor,
+      Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Visibility(
+            visible: showNotificationIcon,
+            child: IconButton(
+              icon: Icon(Icons.notifications_none_sharp,
+                color: gMainColor,
+              ),
+              onPressed: notificationOnTap,
+            ),
           ),
-          onPressed: notificationOnTap,
-        ),
+          Visibility(
+            visible: showHelpIcon,
+            child: IconButton(
+              icon: Icon(Icons.help_outline_rounded,
+                color: gMainColor,
+              ),
+              onPressed: helpOnTap,
+            ),
+          ),
+        ],
       )
     ],
   );

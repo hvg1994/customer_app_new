@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:easy_scroll_to_index/easy_scroll_to_index.dart';
-import 'package:flutter_advanced_switch/flutter_advanced_switch.dart';
 import 'package:auto_orientation/auto_orientation.dart';
 import 'package:dropdown_button2/custom_dropdown_button2.dart';
 import 'package:flutter/cupertino.dart';
@@ -785,23 +784,30 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                         onTap:
                         // (){
                         //   print(statusList.length);
-                        //   print(statusList);
+                        //   print(lst.length);
+                        //
                         // },
                         (statusList.length != lst.length)
                             ? () => AppConfig().showSnackbar(context, "Please complete the Meal Plan Status", isError: true)
-                            : (statusList.values.any((element) => element.toString().toLowerCase() == 'unfollowed') && commentController.text.isEmpty)
-                            ? () => AppConfig().showSnackbar(context, "Please Mention the comments why you unfollowed?", isError: true)
+                            // : (statusList.values.any((element) => element.toString().toLowerCase() == 'unfollowed') && commentController.text.isEmpty)
+                            // ? () => AppConfig().showSnackbar(context, "Please Mention the comments why you unfollowed?", isError: true)
                             : () {
-                          for(int i = 1; i< presentDay!; i++){
+                          print("this one $presentDay");
+                          for(int i = 0; i< presentDay!; i++){
+                            print(presentDay);
                             if(listData[i].isCompleted == 0 && i+1 != presentDay!){
                               AppConfig().showSnackbar(context, "Please Complete Day ${listData[i].dayNumber}", isError: true);
                               break;
                             }
                             else if(listData[i].isCompleted == 1) {
+                              print("completed already");
                             }
                             else if(i+1 == presentDay){
                               print("u can access $presentDay");
                               sendData();
+                            }
+                            else{
+                              print("u r trying else");
                             }
                           }
                         },
@@ -1326,21 +1332,6 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                           ),
                               ),
                         ),
-                        Visibility(
-                          visible: false,
-                          child: Align(
-                            alignment: Alignment.bottomCenter,
-                            // child: Container(
-                            //   width: 80,
-                            //   height: 80,
-                            //   child: Image.asset('assets/images/follow.png',
-                            //     // fit: BoxFit.none,
-                            //     alignment: Alignment.bottomCenter,
-                            //   ),
-                            // ),
-                            child: buildToggleSwitch(),
-                          ),
-                        )
                       ],
                     ),
                   ),
@@ -1355,46 +1346,6 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
     return _data;
   }
 
-
-
-  buildToggleSwitch(){
-    return AdvancedSwitch(
-      controller: _switchController,
-      activeColor: gPrimaryColor,
-      inactiveColor: gsecondaryColor,
-      thumb: ValueListenableBuilder(
-        valueListenable: _switchController,
-        builder: (_,bool value, __) {
-          return (value
-              ? Image.asset('assets/images/followed2.png',)
-              : Image.asset('assets/images/unfollowed.png')
-            // color: gWhiteColor,
-          );
-        },
-      ),
-      activeChild: Text('Followed',
-        style: TextStyle(
-          fontSize: 8.sp,
-          fontFamily: kFontMedium
-        ),
-      ),
-      inactiveChild: FittedBox(
-        child: Text('Unfollowed',
-          style: TextStyle(
-              fontSize: 8.sp,
-              fontFamily: kFontLight
-          ),
-        ),
-      ),
-      // activeImage: AssetImage('assets/images/Union 4.png'),
-      // inactiveImage: AssetImage('assets/images/progress_logo.png'),
-      borderRadius: BorderRadius.all(const Radius.circular(15)),
-      width: 90.0,
-      height: 30.0,
-      enabled: true,
-      disabledOpacity: 0.5,
-    );
-  }
 
   showDataRow(){
     return mealPlanData1.entries.map((e) {

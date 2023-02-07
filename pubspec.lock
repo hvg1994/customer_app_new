@@ -135,7 +135,7 @@ packages:
     source: hosted
     version: "0.3.3+2"
   crypto:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: crypto
       url: "https://pub.dartlang.org"
@@ -335,13 +335,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_advanced_switch:
-    dependency: "direct main"
-    description:
-      name: flutter_advanced_switch
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "3.0.1"
   flutter_blurhash:
     dependency: transitive
     description:
@@ -462,13 +455,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_zoom_sdk:
-    dependency: "direct main"
-    description:
-      name: flutter_zoom_sdk
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.1.0+4"
   fluttertoast:
     dependency: transitive
     description:
@@ -980,6 +966,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.2"
+  shimmer:
+    dependency: "direct main"
+    description:
+      name: shimmer
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0"
   simple_circular_progress_bar:
     dependency: "direct main"
     description:

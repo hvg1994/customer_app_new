@@ -537,7 +537,9 @@ class _FeedsListState extends State<FeedsList> {
                                 child: FadeInImage.memoryNetwork(
                                     placeholder:
                                         placeHolderImage!.buffer.asUint8List(),
-                                    image: list[index].image ?? ''),
+                                    image: list[index].image ?? '',
+                                  fit: BoxFit.fill,
+                                ),
                               ),
                               SizedBox(height: 1.h),
                               Row(

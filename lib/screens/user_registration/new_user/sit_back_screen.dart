@@ -37,7 +37,7 @@ class _SitBackScreenState extends State<SitBackScreen> {
                   Text(
                     "Sit Back And Relax..!!",
                     style: TextStyle(
-                        fontFamily: "GothamRoundedBook_21018",
+                        fontFamily: kFontRBold2,
                         color: gTextColor,
                         fontSize: 14.sp),
                   ),
@@ -46,7 +46,7 @@ class _SitBackScreenState extends State<SitBackScreen> {
                     "Our Success Team Will Contact \nYou Soon ..!!",
                     style: TextStyle(
                         height: 1.5,
-                        fontFamily: "GothamRoundedBold_21016",
+                        fontFamily: "GothamRoundedBook_21018",
                         color: gTextColor,
                         fontSize: 12.sp),
                   ),

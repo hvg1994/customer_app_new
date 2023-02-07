@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gwc_customer/model/error_model.dart';
+import 'package:gwc_customer/screens/prepratory%20plan/prepratory_plan_screen.dart';
+import 'package:gwc_customer/screens/prepratory%20plan/transition_mealplan_screen.dart';
 import 'package:gwc_customer/screens/program_plans/meal_plan_screen.dart';
 import 'package:gwc_customer/services/program_service/program_service.dart';
 import 'package:sizer/sizer.dart';
@@ -13,8 +15,13 @@ import '../../widgets/widgets.dart';
 import 'day_program_plans.dart';
 import 'package:http/http.dart' as http;
 
+enum ProgramMealType {
+  prepratory, program, transition
+}
+
 class ProgramPlanScreen extends StatefulWidget {
-  const ProgramPlanScreen({Key? key}) : super(key: key);
+  final String from;
+  const ProgramPlanScreen({Key? key, required this.from}) : super(key: key);
 
   @override
   State<ProgramPlanScreen> createState() => _ProgramPlanScreenState();
@@ -95,19 +102,51 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
   );
 
   void startProgram() async{
-    final response = await ProgramService(repository: repository).startProgramOnSwipeService('1');
-
-    if(response.runtimeType == StartProgramOnSwipeModel){
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const MealPlanScreen(),
-        ),
-      );
+    String? start;
+    if(widget.from == ProgramMealType.prepratory.name){
+      start = "2";
     }
-    else{
-      ErrorModel model = response as ErrorModel;
-      AppConfig().showSnackbar(context, model.message ?? AppConfig.oopsMessage);
+    else if(widget.from == ProgramMealType.program.name){
+      start = "1";
+    }
+    else if(widget.from == ProgramMealType.transition.name){
+      start = "3";
+    }
+
+    if(start != null){
+      final response = await ProgramService(repository: repository).startProgramOnSwipeService(start);
+
+      if(response.runtimeType == StartProgramOnSwipeModel){
+        //PrepratoryPlanScreen()
+        if(widget.from == ProgramMealType.prepratory.name){
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => PrepratoryPlanScreen(dayNumber: "1",),
+            ),
+          );
+        }
+        else if(widget.from == ProgramMealType.program.name){
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const MealPlanScreen(),
+            ),
+          );
+        }
+        else if(widget.from == ProgramMealType.transition.name){
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => TransitionMealPlanScreen(dayNumber: "1",),
+            ),
+          );
+        }
+      }
+      else{
+        ErrorModel model = response as ErrorModel;
+        AppConfig().showSnackbar(context, model.message ?? AppConfig.oopsMessage);
+      }
     }
   }
 }

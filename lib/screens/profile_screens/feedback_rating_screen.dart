@@ -374,17 +374,20 @@ class _FeedbackRatingScreenState extends State<FeedbackRatingScreen> {
                         padding:
                         EdgeInsets.symmetric(horizontal: 5.w),
                         decoration: BoxDecoration(
-                          color: (feedbackController.text.isEmpty || rating == 0.0) ? gMainColor : gPrimaryColor,
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: gMainColor, width: 1),
+                          color: eUser().buttonColor,
+                          borderRadius: BorderRadius.circular(eUser().buttonBorderRadius),
+                          border: Border.all(
+                              color: eUser().buttonBorderColor,
+                              width: eUser().buttonBorderWidth
+                          ),
                         ),
                         child: Center(
-                          child: (isSubmitted) ? buildThreeBounceIndicator() : Text(
+                          child: (isSubmitted) ?  buildThreeBounceIndicator(color: eUser().threeBounceIndicatorColor) : Text(
                             'Submit',
                             style: TextStyle(
-                              fontFamily: "GothamRoundedBold_21016",
-                              color: (feedbackController.text.isEmpty || rating == 0.0) ? gPrimaryColor : gMainColor,
-                              fontSize: 12.sp,
+                              fontFamily: eUser().buttonTextFont,
+                              color: eUser().buttonTextColor,
+                              fontSize: eUser().buttonTextSize,
                             ),
                           ),
                         ),

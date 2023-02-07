@@ -22,6 +22,7 @@
        android:allowBackup="true"
        tools:ignore="GoogleAppIndexingWarning"
        tools:node="merge"
+       android:networkSecurityConfig="@xml/network_security_config"
        tools:replace="android:label,usesCleartextTraffic,allowBackup"
        >
         <activity

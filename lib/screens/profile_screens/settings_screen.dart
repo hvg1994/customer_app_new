@@ -7,7 +7,9 @@ import 'package:gwc_customer/model/profile_model/logout_model.dart';
 import 'package:gwc_customer/screens/appointment_screens/consultation_screens/upload_files.dart';
 import 'package:gwc_customer/screens/chat_support/message_screen.dart';
 import 'package:gwc_customer/screens/evalution_form/personal_details_screen.dart';
+import 'package:gwc_customer/screens/help_screens/help_screen.dart';
 import 'package:gwc_customer/screens/notification_screen.dart';
+import 'package:gwc_customer/screens/prepratory%20plan/prepratory_plan_screen.dart';
 import 'package:gwc_customer/screens/profile_screens/call_support_method.dart';
 import 'package:gwc_customer/screens/profile_screens/faq_screens/faq_screen.dart';
 import 'package:gwc_customer/screens/profile_screens/faq_screens/faq_screen_old.dart';
@@ -61,6 +63,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     showNotificationIcon: true,
                     notificationOnTap: (){
                       Navigator.push(context, MaterialPageRoute(builder: (_) => NotificationScreen()));
+                    },
+                    showHelpIcon: true,
+                    helpOnTap: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => HelpScreen()));
                     }
                 ),
                 SizedBox(
@@ -110,18 +116,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 //   color: Colors.grey,
                 // ),
                 // profileTile(
-                //     "assets/images/feedback.png", "Feedback", () {
-                //   Navigator.of(context).push(
-                //     MaterialPageRoute(
-                //       builder: (context) => const FeedbackRatingScreen(),
-                //     ),
-                //   );
-                // }),
-                // Container(
-                //   height: 1,
-                //   color: Colors.grey,
-                // ),
-                // profileTile(
                 //     "assets/images/Group 2748.png", "My Report", () {
                 //   Navigator.of(context).push(
                 //     MaterialPageRoute(
@@ -149,7 +143,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 //   ),
                 // ),
                 Visibility(
-                  // visible: kDebugMode,
+                  visible: kDebugMode,
                     child:profileTile(
                         "assets/images/Group 2748.png", "Eval form", () {
                       Navigator.of(context).push(
@@ -291,7 +285,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
     else{
       if(await _qbService.isConnected() == false){
-        _qbService.connect(_pref.getInt(AppConfig.QB_CURRENT_USERID)!);
+        _qbService.connect(int.parse(_pref.getString(AppConfig.QB_CURRENT_USERID)!));
       }
     }
     final res = await ChatService(repository: chatRepository).getChatGroupIdService();

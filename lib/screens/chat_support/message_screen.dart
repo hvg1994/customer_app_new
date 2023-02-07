@@ -74,9 +74,11 @@ class _MessageScreenState extends State<MessageScreen>
     if (_pref != null) {
       if (_pref?.getString(AppConfig.GROUP_ID) != null) {
         _groupId = _pref!.getString(AppConfig.GROUP_ID);
+        print("userId: ${_pref!.getString(AppConfig.QB_CURRENT_USERID)}");
+
         //test
         // joinWithLogin(_groupId!);
-        _groupId = "63bfe5b907a49d00325819d9";
+        // _groupId = "63bfe5b907a49d00325819d9";
         joinChatRoom(_groupId!);
 
         // joinChatRoom(_pref!.getString(AppConfig.GROUP_ID)!);
@@ -235,27 +237,27 @@ class _MessageScreenState extends State<MessageScreen>
                               Navigator.pop(context);
                               });
                             }),
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  "Ms. Lorem Ipsum Daries",
-                                  style: TextStyle(
-                                      fontFamily: "PoppinsRegular",
-                                      color: gWhiteColor,
-                                      fontSize: 10.sp),
-                                ),
-                                SizedBox(height: 0.5.h),
-                                Text(
-                                  "Age : 26 Female",
-                                  style: TextStyle(
-                                      fontFamily: "PoppinsLight",
-                                      color: gWhiteColor,
-                                      fontSize: 9.sp),
-                                ),
-                                SizedBox(height: 2.h),
-                              ],
-                            ),
+                            // Column(
+                            //   mainAxisAlignment: MainAxisAlignment.center,
+                            //   children: [
+                            //     Text(
+                            //       "Ms. Lorem Ipsum Daries",
+                            //       style: TextStyle(
+                            //           fontFamily: "PoppinsRegular",
+                            //           color: gWhiteColor,
+                            //           fontSize: 10.sp),
+                            //     ),
+                            //     SizedBox(height: 0.5.h),
+                            //     Text(
+                            //       "Age : 26 Female",
+                            //       style: TextStyle(
+                            //           fontFamily: "PoppinsLight",
+                            //           color: gWhiteColor,
+                            //           fontSize: 9.sp),
+                            //     ),
+                            //     SizedBox(height: 2.h),
+                            //   ],
+                            // ),
                             GestureDetector(
                               onTap: () {
                                 openAlertBox(
@@ -449,7 +451,7 @@ class _MessageScreenState extends State<MessageScreen>
                     GestureDetector(
                       onTap: () async{
                         await _quickBloxService!.disconnect().then((value) {
-                          _quickBloxService!.logout();
+                          // _quickBloxService!.logout();
                           Navigator.pop(context);
                           Navigator.pop(context);
                         });
@@ -555,7 +557,7 @@ class _MessageScreenState extends State<MessageScreen>
                           messages.add(message);
                         });
                         // need to remove
-                        _groupId = "63bfe5b907a49d00325819d9";
+                        // _groupId = "63bfe5b907a49d00325819d9";
                         _quickBloxService!.sendMessage(_groupId!,
                             message: commentController.text);
 
@@ -666,7 +668,7 @@ class _MessageScreenState extends State<MessageScreen>
 
   buildMessageList(List<QBMessageWrapper> messageList) {
     return GroupedListView<QBMessageWrapper, DateTime>(
-      shrinkWrap: true,
+      // shrinkWrap: true,
       elements: messageList,
       order: GroupedListOrder.DESC,
       reverse: true,
@@ -1204,7 +1206,11 @@ class _MessageScreenState extends State<MessageScreen>
   joinChatRoom(String groupId) async {
     print("groupId: ${groupId}");
 
-    Provider.of<QuickBloxService>(context, listen: false).joinDialog("63bfe5b907a49d00325819d9").then((value) async{
+    Provider.of<QuickBloxService>(context, listen: false).
+    joinDialog(groupId)
+
+    // joinDialog("63bfe5b907a49d00325819d9")
+        .then((value) async{
       print("value: $value");
       // await Firebase.initializeApp();
       final fcmToken = await FirebaseMessaging.instance.getToken();
@@ -1248,6 +1254,7 @@ class _MessageScreenState extends State<MessageScreen>
 
   joinWithLogin(String groupId) async{
     String? username = _pref!.getString(AppConfig.QB_USERNAME)!;
+    print(username);
     final res = await _quickBloxService!.login(username);
 
     if(res){
@@ -1256,7 +1263,7 @@ class _MessageScreenState extends State<MessageScreen>
   }
 
   joinWithConnect(String groupId) async{
-    int? userId = _pref!.getInt(AppConfig.QB_CURRENT_USERID)!;
+    int? userId = int.parse(_pref!.getString(AppConfig.QB_CURRENT_USERID)!);
     _quickBloxService!.connect(userId);
 
     // if(res){
