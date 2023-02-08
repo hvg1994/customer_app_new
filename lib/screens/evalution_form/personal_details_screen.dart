@@ -263,7 +263,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
 
   final urinColorList = [
     CheckBoxSettings(title: "Clear"),
-    CheckBoxSettings(title: "Pale Yello"),
+    CheckBoxSettings(title: "Pale Yellow"),
     CheckBoxSettings(title: "Red"),
     CheckBoxSettings(title: "Black"),
     CheckBoxSettings(title: "Yellow"),
@@ -4551,7 +4551,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
               width: 3.w,
             ),
             Radio(
-              value: "Pale Yello",
+              value: "Pale Yellow",
               activeColor: kPrimaryColor,
               groupValue: urineColorValue,
               onChanged: (value) {
@@ -4561,7 +4561,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
               },
             ),
             Text(
-              'Pale Yello',
+              'Pale Yellow',
               style: buildTextStyle(),
             ),
             SizedBox(

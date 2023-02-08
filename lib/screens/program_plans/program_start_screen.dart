@@ -138,7 +138,7 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => TransitionMealPlanScreen(dayNumber: "1",),
+              builder: (context) => TransitionMealPlanScreen(dayNumber: "1",totalDays: "1",),
             ),
           );
         }

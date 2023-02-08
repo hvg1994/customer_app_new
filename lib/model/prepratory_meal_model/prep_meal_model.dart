@@ -120,6 +120,7 @@ class MealSlot {
   int? id;
   int? itemId;
   String? name;
+  String? subTitle;
   String? benefits;
   String? itemPhoto;
   String? recipeUrl;
@@ -128,6 +129,7 @@ class MealSlot {
       {this.id,
       this.itemId,
       this.name,
+        this.subTitle,
       this.benefits,
       this.itemPhoto,
       this.recipeUrl});
@@ -136,6 +138,7 @@ class MealSlot {
     id = json['id'];
     itemId = json['item_id'];
     name = json['name'];
+    subTitle = json['subtitle'];
     benefits = json['benefits'];
     itemPhoto = json['item_photo'];
     recipeUrl = json['recipe_url'];
@@ -146,6 +149,7 @@ class MealSlot {
     data['id'] = this.id;
     data['item_id'] = this.itemId;
     data['name'] = this.name;
+    data['subtitle'] = this.subTitle;
     data['benefits'] = this.benefits;
     data['item_photo'] = this.itemPhoto;
     data['recipe_url'] = this.recipeUrl;

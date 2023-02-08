@@ -47,7 +47,9 @@ class _PrepratoryPlanScreenState extends State<PrepratoryPlanScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  buildAppBar((){}),
+                  buildAppBar((){
+                    Navigator.pop(context);
+                  }),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     child: Text('${widget.dayNumber} days Preparatory Meal Plan',
@@ -136,8 +138,12 @@ class _PrepratoryPlanScreenState extends State<PrepratoryPlanScreen> {
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   child: Text(e.key,
                     style: TextStyle(
-                        fontSize: MealPlanConstants().mealNameFontSize,
-                        fontFamily: MealPlanConstants().mealNameFont
+                      height: 1.5,
+                      color: gGreyColor,
+                      fontSize: 12.sp,
+                      fontFamily: kFontMedium,
+                        // fontSize: MealPlanConstants().mealNameFontSize,
+                        // fontFamily: MealPlanConstants().mealNameFont
                     ),
                   ),
                 ),
@@ -151,10 +157,11 @@ class _PrepratoryPlanScreenState extends State<PrepratoryPlanScreen> {
                         showPdf(lst[index].recipeUrl ?? ' ');
                       },
                       child: Container(
-                        height: 120,
+                        // color: Colors.red,
+                        height: 95,
                         padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                         child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Container(
                               height: 85,
@@ -189,7 +196,7 @@ class _PrepratoryPlanScreenState extends State<PrepratoryPlanScreen> {
                                     height: 3,
                                   ),
                                   Text(
-                                    "* Mandatory Practice",
+                                    lst[index].subTitle ?? "* Mandatory Practice",
                                     style: TextStyle(
                                       fontSize: MealPlanConstants().mustHaveFontSize,
                                       fontFamily: MealPlanConstants().mustHaveFont,
@@ -209,7 +216,7 @@ class _PrepratoryPlanScreenState extends State<PrepratoryPlanScreen> {
                                     height: 8,
                                   ),
                                   Expanded(
-                                    child: Text(lst[index].benefits ??
+                                    child: Text(lst[index].benefits!.replaceAll("-", '\n-') ??
                                         "- It Calms the nervous system.\n\n- It simulates the pituitary and pineal glands.",
                                       style: TextStyle(
                                           fontSize: MealPlanConstants().benifitsFontSize,

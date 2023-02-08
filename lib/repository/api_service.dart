@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:crypto/crypto.dart';
+import 'package:gwc_customer/model/prepratory_meal_model/get_prep_meal_track_model.dart';
 import 'package:gwc_customer/model/prepratory_meal_model/prep_meal_model.dart';
 import 'package:gwc_customer/model/prepratory_meal_model/transition_meal_model.dart';
 import 'package:gwc_customer/repository/in_memory_cache.dart';
@@ -263,17 +264,8 @@ class ApiClient {
         print("else 1st");
         final newHash = sha1.convert(utf8.encode(json.toString())).toString();
 
-        if(inMemoryStorage.cache.containsKey(path)){
-          print("if");
-          if(sha1.convert(utf8.encode(inMemoryStorage.get(path).toString())).toString() == newHash){
-            result = AboutProgramModel.fromJson(inMemoryStorage.get(path));
-          }
-        }
-        else{
-          print("else");
           result = AboutProgramModel.fromJson(json);
-          inMemoryStorage.set(path, json);
-        }
+
       }
       else {
         result = ErrorModel.fromJson(json);
@@ -2241,6 +2233,92 @@ class ApiClient {
     }
     return result;
   }
+
+  Future getPrepratoryMealTrackDetailsApi() async{
+    dynamic result;
+
+    try{
+      final response = await httpClient.get(Uri.parse(getPrepratoryMealTrackUrl),
+          headers: {
+            'Authorization': getHeaderToken(),
+          }
+      );
+      print("getPrepratoryMealTrackDetailsApi status code: ${response.statusCode}");
+      print("getPrepratoryMealTrackDetailsApi body : ${response.body}");
+
+      final json = jsonDecode(response.body);
+      if(response.statusCode == 200){
+        if(json['status'].toString() == '200'){
+          result = GetPreparatoryMealTrackModel.fromJson(json);
+        }
+        else{
+          result = ErrorModel.fromJson(json);
+        }
+      }
+      else{
+        result = ErrorModel.fromJson(json);
+      }
+    }
+    catch (e){
+      result = ErrorModel(status: "", message: e.toString());
+    }
+    return result;
+  }
+
+  Future proceedTransitionDayProgramList(ProceedProgramDayModel model) async {
+    var url = submitTransMealTrackingUrl;
+
+    dynamic result;
+
+    print("proceedTransitionDayProgramList path: $url");
+
+    print(Map.from(model.toJson()));
+    Map<String, String> m = Map.unmodifiable(model.toJson());
+
+    // print(
+    //     "model: ${json.encode(model.toJson()) == jsonEncode(model.toJson())}");
+
+    try {
+      final response = await httpClient.post(
+        Uri.parse(url),
+        headers: {
+          // "Content-Type": "application/json",
+          "Authorization": getHeaderToken(),
+        },
+        body: m,
+        // body: staticData
+      );
+
+      print('proceedTransitionDayProgramList Response status: ${response.statusCode}');
+      print('proceedTransitionDayProgramList Response body: ${response.body}');
+
+      final json = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        print('proceedTransitionDayProgramList result: $json');
+        if(json['status'].toString() == "200"){
+          result = GetProceedModel.fromJson(json);
+        }
+        else{
+          result = ErrorModel.fromJson(json);
+        }
+      }
+      else if(response.statusCode == 500){
+        result = ErrorModel(status: "0", message: AppConfig.oopsMessage);
+      }
+      else {
+        print('proceedTransitionDayProgramList error: ${response.reasonPhrase}');
+        result = ErrorModel.fromJson(json);
+      }
+    } catch (e) {
+      print(e);
+      result = ErrorModel(status: "", message: e.toString());
+    }
+    return result;
+  }
+
+
+
 
 
 

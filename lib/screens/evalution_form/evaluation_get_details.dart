@@ -206,7 +206,7 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
 
   final urinColorList = [
     CheckBoxSettings(title: "Clear"),
-    CheckBoxSettings(title: "Pale Yello"),
+    CheckBoxSettings(title: "Pale Yellow"),
     CheckBoxSettings(title: "Red"),
     CheckBoxSettings(title: "Black"),
     CheckBoxSettings(title: "Yellow"),
@@ -907,7 +907,7 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
         SizedBox(height: 1.h),
         buildLabelTextField("Uploaded Files"),
         SizedBox(height: 1.h),
-        showFiles(),
+        showFiles(model!.medicalReport),
         SizedBox(height: 2.h),
       ],
     );
@@ -1361,11 +1361,17 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
     ),
   );
 
-  showFiles() {
-    print(showMedicalReport.runtimeType);
-    showMedicalReport.forEach((e) {
-      print("e==> $e ${e.runtimeType}");
-    });
+  showFiles(String? medicalReport) {
+    List list = jsonDecode(medicalReport ?? '');
+    print("showMedicalReport.runtimeType: ${showMedicalReport.runtimeType}");
+    print(showMedicalReport);
+    showMedicalReport.clear();
+    if (list.isNotEmpty) {
+      list.forEach((element) {
+        print(element);
+        showMedicalReport.add(element.toString());
+      });
+    }
     final widgetList = showMedicalReport
         .map<Widget>((element) => buildRecordList(element))
         .toList();
@@ -1511,13 +1517,13 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
               width: 3.w,
             ),
             Radio(
-              value: "Pale Yello",
+              value: "Pale Yellow",
               activeColor: kPrimaryColor,
               groupValue: urineColorValue,
               onChanged: (value) {},
             ),
             Text(
-              'Pale Yello',
+              'Pale Yellow',
               style: buildTextStyle(),
             ),
             SizedBox(

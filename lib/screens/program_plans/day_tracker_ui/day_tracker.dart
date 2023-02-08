@@ -9,12 +9,16 @@ import 'package:gwc_customer/repository/program_repository/program_repository.da
 import 'package:gwc_customer/screens/evalution_form/check_box_settings.dart';
 import 'package:gwc_customer/screens/program_plans/day_program_plans.dart';
 import 'package:gwc_customer/screens/program_plans/meal_plan_screen.dart';
+import 'package:gwc_customer/screens/program_plans/program_start_screen.dart';
+import 'package:gwc_customer/services/prepratory_service/prepratory_service.dart';
 import 'package:gwc_customer/services/program_service/program_service.dart';
 import 'package:gwc_customer/utils/app_config.dart';
 import 'package:gwc_customer/widgets/constants.dart';
 import 'package:gwc_customer/widgets/widgets.dart';
 import 'package:sizer/sizer.dart';
 import 'package:http/http.dart' as http;
+
+import '../../../repository/prepratory_repository/prep_repository.dart';
 
 // class DayMealTracerUI extends StatefulWidget {
 //   final ProceedProgramDayModel proceedProgramDayModel;
@@ -706,8 +710,9 @@ import 'package:http/http.dart' as http;
 
 
 class TrackerUI extends StatefulWidget {
-  final ProceedProgramDayModel proceedProgramDayModel;
-  const TrackerUI({Key? key, required this.proceedProgramDayModel}) : super(key: key);
+  final ProceedProgramDayModel? proceedProgramDayModel;
+  final String from;
+  const TrackerUI({Key? key, this.proceedProgramDayModel, required this.from}) : super(key: key);
 
   @override
   State<TrackerUI> createState() => _TrackerUIState();
@@ -1312,14 +1317,28 @@ class _TrackerUIState extends State<TrackerUI> {
 
   void proceed() async {
     ProceedProgramDayModel? model;
-    model = ProceedProgramDayModel(
-        patientMealTracking: widget.proceedProgramDayModel.patientMealTracking,
-        comment: widget.proceedProgramDayModel.comment,
+    model = (ProgramMealType.program.name == widget.from) ? ProceedProgramDayModel(
+        patientMealTracking: widget.proceedProgramDayModel!.patientMealTracking,
+        comment: widget.proceedProgramDayModel!.comment,
         userProgramStatusTracking: '1',
-        day: widget.proceedProgramDayModel.day,
-        missedAnyThingRadio: widget.proceedProgramDayModel.patientMealTracking!.any((element) => element.status == 'unfollowed') ? missedAnything[0] : missedAnything[1],
+        day: widget.proceedProgramDayModel!.day,
+        missedAnyThingRadio: widget.proceedProgramDayModel!.patientMealTracking!.any((element) => element.status == 'unfollowed') ? missedAnything[0] : missedAnything[1],
         // didUMiss: mealPlanMissedController.text,
-        didUMiss: widget.proceedProgramDayModel.comment,
+        didUMiss: widget.proceedProgramDayModel!.comment,
+        withdrawalSymptoms: selectedSymptoms1.join(','),
+        detoxification: selectedSymptoms2.join(','),
+        haveAnyOtherWorries: worriesController.text,
+        eatSomthingOther: eatSomethingController.text,
+        completedCalmMoveModules: selectedCalmModule,
+        hadAMedicalExamMedications: anyMedicationsController.text
+    )
+        : ProceedProgramDayModel(
+        day: widget.proceedProgramDayModel!.day,
+        userProgramStatusTracking: '1',
+
+        //missedAnyThingRadio: selectedMissedAnything,
+        // didUMiss: mealPlanMissedController.text,
+        //didUMiss: "",
         withdrawalSymptoms: selectedSymptoms1.join(','),
         detoxification: selectedSymptoms2.join(','),
         haveAnyOtherWorries: worriesController.text,
@@ -1327,12 +1346,17 @@ class _TrackerUIState extends State<TrackerUI> {
         completedCalmMoveModules: selectedCalmModule,
         hadAMedicalExamMedications: anyMedicationsController.text
     );
-    final result = await ProgramService(repository: repository).proceedDayMealDetailsService(model);
+    final result =
+    (ProgramMealType.program.name == widget.from)
+        ? await ProgramService(repository: repository).proceedDayMealDetailsService(model)
+        : await PrepratoryMealService(repository: prepRepository).proceedDayMealDetailsService(model);
 
     print("result: $result");
 
     if(result.runtimeType == GetProceedModel){
-      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => MealPlanScreen()), (route) => route.isFirst);
+      (ProgramMealType.program.name == widget.from)
+          ? Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => MealPlanScreen()), (route) => route.isFirst)
+          : Navigator.pop(context);
     }
     else{
       ErrorModel model = result as ErrorModel;
@@ -1345,6 +1369,13 @@ class _TrackerUIState extends State<TrackerUI> {
       httpClient: http.Client(),
     ),
   );
+
+  final PrepratoryRepository prepRepository = PrepratoryRepository(
+    apiClient: ApiClient(
+      httpClient: http.Client(),
+    ),
+  );
+
 
 
 }

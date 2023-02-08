@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gwc_customer/model/program_model/proceed_model/send_proceed_program_model.dart';
 import 'package:gwc_customer/repository/prepratory_repository/prep_repository.dart';
 
 class PrepratoryMealService extends ChangeNotifier{
@@ -16,4 +17,13 @@ class PrepratoryMealService extends ChangeNotifier{
   Future sendPrepratoryMealTrackDetailsService(Map trackDetails) async{
     return await repository.sendPrepratoryMealTrackDetailsRepo(trackDetails);
   }
+
+  Future getPrepratoryMealTrackDetailsService() async{
+    return await repository.getPrepratoryMealTrackDetailsRepo();
+  }
+
+  Future proceedDayMealDetailsService(ProceedProgramDayModel day) async{
+    return await repository.proceedDayMealDetailsRepo(day);
+  }
+
 }

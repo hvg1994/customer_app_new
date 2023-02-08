@@ -15,6 +15,7 @@ import 'package:gwc_customer/repository/post_program_repo/post_program_repositor
 import 'package:gwc_customer/repository/program_repository/program_repository.dart';
 import 'package:gwc_customer/screens/dashboard_screen.dart';
 import 'package:gwc_customer/screens/program_plans/day_tracker_ui/day_tracker.dart';
+import 'package:gwc_customer/screens/program_plans/program_start_screen.dart';
 import 'package:gwc_customer/services/post_program_service/post_program_service.dart';
 import 'package:gwc_customer/widgets/open_alert_box.dart';
 import 'package:lottie/lottie.dart';
@@ -255,7 +256,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 3.w),
                 child: Text(
-                  "You Have completed the 15 days Meal Plan, Now you can proceed to Post Protocol",
+                  "You Have completed the ${listData.length-1} days Meal Plan, Now you can proceed to Post Protocol",
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     height: 1.5,
@@ -1209,7 +1210,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                               // ),
                               Expanded(
                                 child: Text(
-                                  e.benefits ?? '',
+                                  e.benefits!.replaceAll("-", '\n-') ?? '',
                                       // "- Good for Health and super food\n\n- Good for Health and super food\n\n- Good for Health and super food\n\n- Very Effective and quick recipe,\n\n- Ready To Cook",
                                   style: TextStyle(
                                       fontSize: MealPlanConstants().benifitsFontSize,
@@ -2200,7 +2201,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
         builder: (ctx) {
           return Wrap(
             children: [
-              TrackerUI(proceedProgramDayModel: model,)
+              TrackerUI(proceedProgramDayModel: model, from: ProgramMealType.program.name,)
             ],
           );
         });

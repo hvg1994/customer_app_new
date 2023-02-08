@@ -862,7 +862,7 @@ class _UploadFilesState extends State<UploadFiles> {
                       child: buildFile(file, index));
                 },
               )
-            : Divider(),
+            : const Divider(),
       ],
     );
   }

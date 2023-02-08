@@ -5,15 +5,20 @@ import 'package:gwc_customer/model/prepratory_meal_model/transition_meal_model.d
 import 'package:gwc_customer/repository/api_service.dart';
 import 'package:gwc_customer/repository/prepratory_repository/prep_repository.dart';
 import 'package:gwc_customer/screens/program_plans/meal_pdf.dart';
+import 'package:gwc_customer/screens/program_plans/program_start_screen.dart';
 import 'package:gwc_customer/services/prepratory_service/prepratory_service.dart';
 import 'package:gwc_customer/widgets/constants.dart';
 import 'package:gwc_customer/widgets/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:sizer/sizer.dart';
 
+import '../../model/program_model/proceed_model/send_proceed_program_model.dart';
+import '../program_plans/day_tracker_ui/day_tracker.dart';
+
 class TransitionMealPlanScreen extends StatefulWidget {
+  String totalDays;
   String dayNumber;
-  TransitionMealPlanScreen({Key? key, required this.dayNumber}) : super(key: key);
+  TransitionMealPlanScreen({Key? key, required this.dayNumber, required this.totalDays}) : super(key: key);
 
   @override
   State<TransitionMealPlanScreen> createState() => _TransitionMealPlanScreenState();
@@ -48,14 +53,26 @@ class _TransitionMealPlanScreenState extends State<TransitionMealPlanScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  buildAppBar((){}),
+                  buildAppBar((){
+                    Navigator.pop(context);
+                  }),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 12),
-                    child: Text('${widget.dayNumber} days Transition Meal Plan',
+                    child: Text('${widget.totalDays} days Transition Meal Plan',
                       style: TextStyle(
                         fontFamily: eUser().mainHeadingFont,
                         color: eUser().mainHeadingColor,
                         fontSize: eUser().mainHeadingFontSize
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    child: Text('Current Day: ${widget.dayNumber}',
+                      style: TextStyle(
+                          fontFamily: kFontMedium,
+                          color: gPrimaryColor,
+                          fontSize: 11.sp
                       ),
                     ),
                   ),
@@ -76,23 +93,17 @@ class _TransitionMealPlanScreenState extends State<TransitionMealPlanScreen> {
                         }
                         else{
                           TransitionMealModel res = snapshot.data as TransitionMealModel;
+                          final String currentDayStatus = res.currentDayStatus.toString();
                           final dataList = res.data!.toJson();
 
-                          return customMealPlanTile(dataList);
-                          // lst.addAll(dataList.values.map((e) => MealSlot.fromJson(e)));
-                          // return customMealPlanTile(key, lst);
-
-                          // dataList.map((key, value) {
-                          //   List<MealSlot> lst = [];
-                          //   print("$key==$value");
-                          //   value.forEach((e){
-                          //     lst.add(MealSlot.fromJson(e));
-                          //   });
-                          //   return ;
-                          // });
-                          // return SizedBox();
-
-
+                          if(res.previousDayStatus == 0){
+                            Future.delayed(Duration(seconds: 0)).then((value) {
+                              return showSymptomsTrackerSheet(context, (int.parse(widget.dayNumber)-1).toString());
+                            });
+                          }
+                          else{
+                            return customMealPlanTile(dataList, currentDayStatus);
+                          }
                         }
                       }
                       else if(snapshot.hasError){
@@ -116,11 +127,13 @@ class _TransitionMealPlanScreenState extends State<TransitionMealPlanScreen> {
     );
   }
 
-  customMealPlanTile(Map<String, dynamic> dataList){
+  customMealPlanTile(Map<String, dynamic> dataList, String currentDayStatus){
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: ListView(
+        physics: NeverScrollableScrollPhysics(),
+        shrinkWrap: true,
+        // crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ...dataList.entries.map((e) {
             print("${e.key}==${e.value}");
@@ -137,8 +150,12 @@ class _TransitionMealPlanScreenState extends State<TransitionMealPlanScreen> {
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   child: Text(e.key,
                     style: TextStyle(
-                        fontSize: MealPlanConstants().mealNameFontSize,
-                        fontFamily: MealPlanConstants().mealNameFont
+                      height: 1.5,
+                      color: gGreyColor,
+                      fontSize: 12.sp,
+                      fontFamily: kFontMedium,
+                        // fontSize: MealPlanConstants().mealNameFontSize,
+                        // fontFamily: MealPlanConstants().mealNameFont
                     ),
                   ),
                 ),
@@ -152,7 +169,7 @@ class _TransitionMealPlanScreenState extends State<TransitionMealPlanScreen> {
                         showPdf(lst[index].recipeUrl ?? ' ');
                       },
                       child: Container(
-                        height: 120,
+                        height: 95,
                         padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -170,9 +187,9 @@ class _TransitionMealPlanScreenState extends State<TransitionMealPlanScreen> {
                                 ) :
                                 Image.network(lst[index].itemPhoto?? '',
                                   errorBuilder: (_, widget, child){
-                                  return Image.asset('assets/images/meal_placeholder.png',
-                                    fit: BoxFit.fill,
-                                  );
+                                    return Image.asset('assets/images/meal_placeholder.png',
+                                      fit: BoxFit.fill,
+                                    );
                                   },
                                   fit: BoxFit.fill,
                                 ),
@@ -190,7 +207,7 @@ class _TransitionMealPlanScreenState extends State<TransitionMealPlanScreen> {
                                     height: 3,
                                   ),
                                   Text(
-                                    "* Mandatory Practice",
+                                    lst[index].subTitle ?? "* Mandatory Practice",
                                     style: TextStyle(
                                       fontSize: MealPlanConstants().mustHaveFontSize,
                                       fontFamily: MealPlanConstants().mustHaveFont,
@@ -206,11 +223,11 @@ class _TransitionMealPlanScreenState extends State<TransitionMealPlanScreen> {
                                         fontFamily: MealPlanConstants().mealNameFont
                                     ),
                                   ),
-                                  SizedBox(
-                                    height: 8,
-                                  ),
+                                  // SizedBox(
+                                  //   height: 2,
+                                  // ),
                                   Expanded(
-                                    child: Text(lst[index].benefits ??
+                                    child: Text(lst[index].benefits!.replaceAll("-", '\n-') ??
                                         "- It Calms the nervous system.\n\n- It simulates the pituitary and pineal glands.",
                                       style: TextStyle(
                                           fontSize: MealPlanConstants().benifitsFontSize,
@@ -238,7 +255,8 @@ class _TransitionMealPlanScreenState extends State<TransitionMealPlanScreen> {
                 ),
               ],
             );
-          })
+          }),
+          if(currentDayStatus == "0") btn()
         ],
       ),
     );
@@ -263,7 +281,7 @@ class _TransitionMealPlanScreenState extends State<TransitionMealPlanScreen> {
 
   orFiled(){
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 8),
+      padding: EdgeInsets.symmetric(horizontal: 8,vertical: 4),
       child: Center(
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -291,4 +309,59 @@ class _TransitionMealPlanScreenState extends State<TransitionMealPlanScreen> {
       ),
     );
   }
+
+  btn(){
+    return Center(
+      child: GestureDetector(
+        onTap: () {
+          showSymptomsTrackerSheet(context, widget.dayNumber);
+        },
+        child: Container(
+          margin: EdgeInsets.symmetric(vertical: 2.h),
+          width: 60.w,
+          height: 5.h,
+          decoration: BoxDecoration(
+            color: eUser().buttonColor,
+            borderRadius: BorderRadius.circular(eUser().buttonBorderRadius),
+            // border: Border.all(color: eUser().buttonBorderColor,
+            //     width: eUser().buttonBorderWidth),
+          ),
+          child: Center(
+            child: Text(
+              'Proceed to Symptoms Tracker',
+              // 'Proceed to Day $proceedToDay',
+              style: TextStyle(
+                fontFamily: eUser().buttonTextFont,
+                color: eUser().buttonTextColor,
+                // color: (statusList.length != lst.length) ? gPrimaryColor : gMainColor,
+                fontSize: eUser().buttonTextSize,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  showSymptomsTrackerSheet(BuildContext context, String day) {
+    return showModalBottomSheet(
+        isDismissible: false,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        context: context,
+        enableDrag: false,
+        builder: (ctx) {
+          return Wrap(
+            children: [
+              TrackerUI(from: ProgramMealType.transition.name,proceedProgramDayModel: ProceedProgramDayModel(day: day),)
+            ],
+          );
+        }).then((value) {
+          setState(() {
+
+          });
+          getTransitionMeals();
+    });
+  }
+
 }

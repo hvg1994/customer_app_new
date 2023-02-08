@@ -91,6 +91,7 @@ class GetDashboardDataModel {
       }
     }
     if(json['TransProgram'] != null){
+      print("json['TransProgram']: ${json['TransProgram']}");
       if(json['TransProgram']['value'].runtimeType == String){
         transition_meal_program = GutDataModel.fromJson(json['TransProgram']);
       }
@@ -160,16 +161,21 @@ class GetPrePostMealModel{
 }
 
 class GetPrePostMealvalue{
-  String? days;
+  String? prep_days;
+  String? trans_days;
   bool? isPrepratoryStarted;
   bool? isTransMealStarted;
   String? currentDay;
 
 
-  GetPrePostMealvalue({this.days, this.isPrepratoryStarted, this.isTransMealStarted, this.currentDay});
+  GetPrePostMealvalue({this.prep_days, this.trans_days,this.isPrepratoryStarted, this.isTransMealStarted, this.currentDay});
 
   GetPrePostMealvalue.fromJson(Map<String, dynamic> json){
-    days = json['days'];
+    print("json['days']===> ${json['days']}");
+    print("json['days']===> ${json['trans_days']}");
+
+    prep_days = json['days'];
+    trans_days = json['days'];
     isPrepratoryStarted = json['is_prep_program_started'].toString().contains("0") ? false : true;
     isTransMealStarted = json['is_trans_program_started'].toString().contains("0") ? false : true;
     currentDay = json['current_day'];
@@ -177,7 +183,8 @@ class GetPrePostMealvalue{
 
   Map<String, dynamic> toJson(){
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['days'] = this.days;
+    data['days'] = this.prep_days;
+    data['trans_days'] = this.trans_days;
     data['is_prep_program_started'] = this.isPrepratoryStarted;
     data['is_trans_program_started'] = this.isTransMealStarted;
     data['current_day'] = this.currentDay;

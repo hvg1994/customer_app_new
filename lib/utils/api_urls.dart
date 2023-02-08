@@ -112,6 +112,13 @@ var transitionMealUrl = "${AppConfig().BASE_URL}/api/getDataList/user_trans_meal
 
 var submitPrepratoryMealTrackUrl = "${AppConfig().BASE_URL}/api/getData/prep_meal_submit";
 
+var getPrepratoryMealTrackUrl = "${AppConfig().BASE_URL}/api/getDataList/tracking_prep_meal";
+
+var submitTransMealTrackingUrl = "${AppConfig().BASE_URL}/api/submitData/trans_meal_tracking";
+
+
+
+
 
 //  old apis
 // var welcomeTextUrl = "${AppConfig().BASE_URL}/api/list/welcome_text";

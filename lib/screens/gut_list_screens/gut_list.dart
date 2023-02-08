@@ -520,9 +520,9 @@ class GutListState extends State<GutList> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) =>
+            builder: (context) =>(_prepratoryModel!.value!.prep_days! == _prepratoryModel!.value!.currentDay) ?
                 PrepratoryMealCompletedScreen()
-                // PrepratoryPlanScreen(dayNumber: _prepratoryModel!.value!.days!),
+                 : PrepratoryPlanScreen(dayNumber: _prepratoryModel!.value!.prep_days!),
           ),
         ).then((value) => reloadUI());
       }
@@ -530,8 +530,8 @@ class GutListState extends State<GutList> {
   }
 
   showTransitionMealScreen(){
-    if(_prepratoryModel != null){
-      if(_prepratoryModel!.value!.isTransMealStarted == false){
+    if(_transModel != null){
+      if(_transModel!.value!.isTransMealStarted == false){
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) => ProgramPlanScreen(from: ProgramMealType.transition.name,),
@@ -539,10 +539,11 @@ class GutListState extends State<GutList> {
         ).then((value) => reloadUI());
       }
       else{
+        print(_transModel!.value!.toJson());
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => TransitionMealPlanScreen(dayNumber: _prepratoryModel!.value!.days!),
+            builder: (context) => TransitionMealPlanScreen(totalDays: _transModel!.value!.trans_days ?? '', dayNumber: _transModel?.value?.currentDay ??'',),
           ),
         ).then((value) => reloadUI());
       }

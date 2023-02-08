@@ -6,6 +6,7 @@ import 'package:gwc_customer/services/prepratory_service/prepratory_service.dart
 import 'package:gwc_customer/utils/app_config.dart';
 import 'package:sizer/sizer.dart';
 import 'package:http/http.dart' as http;
+import '../../model/prepratory_meal_model/get_prep_meal_track_model.dart';
 import '../../model/success_message_model.dart';
 import '../../widgets/constants.dart';
 import '../../widgets/widgets.dart';
@@ -29,15 +30,60 @@ class _PrepratoryMealCompletedScreenState extends State<PrepratoryMealCompletedS
 
   bool showProgress = false;
 
+  bool showDetails = false;
+
+  bool showCenterLoading = true;
+
+
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getPrepratoryMealTrackDetails();
+  }
+  getPrepratoryMealTrackDetails() async{
+
+    final res = await PrepratoryMealService(repository: repository).getPrepratoryMealTrackDetailsService();
+
+    if(res.runtimeType == ErrorModel){
+      ErrorModel err = res as ErrorModel;
+      print("error: ${err.message}");
+    }
+    else{
+      final result = res as GetPreparatoryMealTrackModel;
+
+      if(result.trackingPrepMeals != null){
+        showDetails = true;
+        questions.forEach((element) {
+          final json = result.trackingPrepMeals!.toJson();
+          json.forEach((key, value) {
+            if(key == element.sendKey){
+              element.selected = (value == "Yes") ? 0 : 1;
+            }
+          });
+        });
+        setState(() {
+
+        });
+      }
+    }
+    setState(() {
+      showCenterLoading = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(child: Scaffold(
-      body: SingleChildScrollView(
+      body: (showCenterLoading) ? Center(child: buildCircularIndicator(),) : SingleChildScrollView(
         child: Container(
           padding: EdgeInsets.all(8),
           child: Column(
             children: [
-              buildAppBar((){}),
+              buildAppBar((){
+                Navigator.pop(context);
+              }),
               Center(child: SizedBox(
                 width: 50.w,
                 height: 50.w,
@@ -73,36 +119,39 @@ class _PrepratoryMealCompletedScreenState extends State<PrepratoryMealCompletedS
               SizedBox(
                 height: 5.h,
               ),
-              GestureDetector(
-                onTap: (){
-                  if(questions.any((element) => element.selected == -1)){
-                    AppConfig().showSnackbar(context, "Please Fill all questions", isError: true);
-                  }
-                  else{
-                    submitPrepratoryMealTrackDetails();
-                  }
-                },
-                child: Center(
-                  child: Container(
-                    width: 40.w,
-                    height: 4.5.h,
-                    // padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 10.w),
-                    decoration: BoxDecoration(
-                      color: eUser().buttonColor,
-                      borderRadius: BorderRadius.circular(eUser().buttonBorderRadius),
-                      // border: Border.all(color: eUser().buttonBorderColor,
-                      //     width: eUser().buttonBorderWidth),
-                    ),
-                    child: (showProgress)
-                        ? buildThreeBounceIndicator(color: eUser().threeBounceIndicatorColor)
-                        : Center(
-                      child: Text(
-                        'SUBMIT',
-                        style: TextStyle(
-                          fontFamily:
-                          kFontRBold2,
-                          color: gWhiteColor,
-                          fontSize: 11.sp,
+              Visibility(
+                visible: !showDetails,
+                child: GestureDetector(
+                  onTap: (){
+                    if(questions.any((element) => element.selected == -1)){
+                      AppConfig().showSnackbar(context, "Please Fill all questions", isError: true);
+                    }
+                    else{
+                      submitPrepratoryMealTrackDetails();
+                    }
+                  },
+                  child: Center(
+                    child: Container(
+                      width: 40.w,
+                      height: 4.5.h,
+                      // padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 10.w),
+                      decoration: BoxDecoration(
+                        color: eUser().buttonColor,
+                        borderRadius: BorderRadius.circular(eUser().buttonBorderRadius),
+                        // border: Border.all(color: eUser().buttonBorderColor,
+                        //     width: eUser().buttonBorderWidth),
+                      ),
+                      child: (showProgress)
+                          ? buildThreeBounceIndicator(color: eUser().threeBounceIndicatorColor)
+                          : Center(
+                        child: Text(
+                          'SUBMIT',
+                          style: TextStyle(
+                            fontFamily:
+                            kFontRBold2,
+                            color: gWhiteColor,
+                            fontSize: 11.sp,
+                          ),
                         ),
                       ),
                     ),
@@ -117,45 +166,48 @@ class _PrepratoryMealCompletedScreenState extends State<PrepratoryMealCompletedS
   }
 
   radioView(QuestionsView view, int index){
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(view.question,
-            style: TextStyle(
-                fontFamily: kFontMedium,
-                fontSize: 11.sp,
-                color: gBlackColor
-            ),
-          ),
-          Row(
-            children: [
-              radioBtnView(view.selected, "Yes", index),
-              SizedBox( width: 25,),
-              radioBtnView(view.selected, "No", index)
-            ],
-          ),
-          Container(
-            height: 5,
-            decoration: BoxDecoration(
-              border: Border(
-                top: BorderSide(
-                  color: Colors.grey.withOpacity(0.7),
-                  width: 1.0,
-                ),
+    return IgnorePointer(
+      ignoring: showDetails,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(view.question,
+              style: TextStyle(
+                  fontFamily: kFontMedium,
+                  fontSize: 11.sp,
+                  color: gBlackColor
               ),
-              // gradient: LinearGradient(
-              //   begin: Alignment.topCenter,
-              //   end: Alignment.bottomCenter,
-              //   colors: [
-              //     Colors.grey.withOpacity(0.3),
-              //     Colors.grey.withOpacity(0.3),
-              //   ],
-              // ),
             ),
-          )
-        ],
+            Row(
+              children: [
+                radioBtnView(view.selected, "Yes", index),
+                SizedBox( width: 25,),
+                radioBtnView(view.selected, "No", index)
+              ],
+            ),
+            Container(
+              height: 5,
+              decoration: BoxDecoration(
+                border: Border(
+                  top: BorderSide(
+                    color: Colors.grey.withOpacity(0.7),
+                    width: 1.0,
+                  ),
+                ),
+                // gradient: LinearGradient(
+                //   begin: Alignment.topCenter,
+                //   end: Alignment.bottomCenter,
+                //   colors: [
+                //     Colors.grey.withOpacity(0.3),
+                //     Colors.grey.withOpacity(0.3),
+                //   ],
+                // ),
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
