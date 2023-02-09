@@ -589,7 +589,7 @@ class _PPCalendarState extends State<PPCalendar> {
                 Image(
                   image: const AssetImage("assets/images/gmg/Group 11552.png"),
                   height: 2.5.h,
-                  //color: gGreyColor.withOpacity(0.3),
+                  //color: gHintTextColor.withOpacity(0.3),
                 ),
                 SizedBox(width: 2.w),
                 Text(

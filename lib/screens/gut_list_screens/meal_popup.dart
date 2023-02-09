@@ -30,7 +30,7 @@ class MealPopup extends StatelessWidget {
               textAlign: TextAlign.center,
               style: TextStyle(
                 // height: 0.5,
-                fontFamily: "GothamRoundedBold_21016",
+                fontFamily: kFontBold,
                 color: gBlackColor,
                 fontSize: 13.5.sp,
               ),),

@@ -191,7 +191,7 @@ class _LevelStatusState extends State<LevelStatus> {
                 },
                 child: Icon(
                   Icons.arrow_back_ios_new_outlined,
-                  color: (selectedIndex == 0) ? gGreyColor : gWhiteColor.withOpacity(0.7),
+                  color: (selectedIndex == 0) ? gHintTextColor : gWhiteColor.withOpacity(0.7),
                 ),
               ),
               Container(
@@ -260,7 +260,7 @@ class _LevelStatusState extends State<LevelStatus> {
                 },
                 child: Icon(
                   Icons.arrow_forward_ios_outlined,
-                  color: (selectedIndex == l.length-1) ? gGreyColor : gWhiteColor.withOpacity(0.7),
+                  color: (selectedIndex == l.length-1) ? gHintTextColor : gWhiteColor.withOpacity(0.7),
                 ),
               ),
             ],
@@ -340,7 +340,7 @@ class _LevelStatusState extends State<LevelStatus> {
                 margin: EdgeInsets.symmetric(vertical: 2.h),
                 width: double.maxFinite,
                 height: 1,
-                color: gGreyColor.withOpacity(0.5),
+                color: gHintTextColor,
               ),
               GestureDetector(
                 onTap: (){
@@ -715,7 +715,7 @@ class _LevelStatusState extends State<LevelStatus> {
                 margin: EdgeInsets.symmetric(vertical: 2.h),
                 width: double.maxFinite,
                 height: 1,
-                color: gGreyColor.withOpacity(0.5),
+                color: gHintTextColor,
               ),
               GestureDetector(
                 onTap: (){

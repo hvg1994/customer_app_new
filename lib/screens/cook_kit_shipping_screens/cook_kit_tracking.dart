@@ -35,7 +35,7 @@ class _CookKitTrackingState extends State<CookKitTracking>{
   double gap = 23.0;
   int activeStep = -1;
 
-  final tableHeadingBg = gGreyColor.withOpacity(0.4);
+  final tableHeadingBg = gHintTextColor.withOpacity(0.4);
 
   Timer? timer;
   int upperBound = -1;

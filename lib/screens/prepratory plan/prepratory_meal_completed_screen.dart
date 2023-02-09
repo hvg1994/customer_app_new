@@ -148,7 +148,7 @@ class _PrepratoryMealCompletedScreenState extends State<PrepratoryMealCompletedS
                           'SUBMIT',
                           style: TextStyle(
                             fontFamily:
-                            kFontRBold2,
+                            kFontBold,
                             color: gWhiteColor,
                             fontSize: 11.sp,
                           ),
@@ -248,7 +248,7 @@ class _PrepratoryMealCompletedScreenState extends State<PrepratoryMealCompletedS
           SizedBox( width: 5,),
           Text(btnName,
             style: TextStyle(
-                fontFamily: kFontLight,
+                fontFamily: kFontMedium,
                 fontSize: 10.sp,
                 color: (questions[index].selected == 1 && btnName == "No" ||
                     questions[index].selected == 0 && btnName == "Yes" ) ? gsecondaryColor : gBlackColor,

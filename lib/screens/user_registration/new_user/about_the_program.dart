@@ -10,6 +10,7 @@ import 'package:gwc_customer/widgets/vlc_player/vlc_player_with_controls.dart';
 import 'package:sizer/sizer.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:smooth_star_rating_null_safety/smooth_star_rating_null_safety.dart';
+import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import '../../../repository/api_service.dart';
 import '../../../widgets/constants.dart';
 import '../../../widgets/vlc_player/controls_overlay.dart';
@@ -91,6 +92,7 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        backgroundColor: gBackgroundColor,
         body: Padding(
           padding: EdgeInsets.only(left: 4.w, right: 4.w, top: 1.h, bottom: 1.h),
           child: Column(
@@ -154,35 +156,42 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
                               ),
                               Card(
                                 elevation: 7,
-                                child: Container(
-                                  padding: EdgeInsets.symmetric(
-                                      vertical: 1.h, horizontal: 3.w),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(5),
-                                    border: Border.all(color: gPrimaryColor, width: 1),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.grey.withOpacity(0.3),
-                                        blurRadius: 20,
-                                        offset: const Offset(2, 10),
-                                      ),
-                                    ],
+                                child: SizedBox(
+                                  height: 30.h,
+                                  child: SfPdfViewer.asset(
+                                      'assets/GWC Program Details.pdf',
+                                    scrollDirection: PdfScrollDirection.horizontal,
                                   ),
-                                  child: Image(
-                                    image: AssetImage('assets/images/about_program.jpeg'),
-                                  ),
-                                  // child: Text(
-                                  //   _programText,
-                                  //   // 'Lorem lpsum is simply dummy text of the printing and typesetting industry. Lorem lpsum has been the industry\'s standard dummy text ever since the 1500s,when an unknown printer took a gallery of type and scrambled it to make a type specimen book.',
-                                  //   style: TextStyle(
-                                  //     height: 1.7,
-                                  //     fontFamily: "GothamBook",
-                                  //     color: gTextColor,
-                                  //     fontSize: 9.sp,
-                                  //   ),
-                                  // ),
                                 ),
+                                // child: Container(
+                                //   padding: EdgeInsets.symmetric(
+                                //       vertical: 1.h, horizontal: 3.w),
+                                //   decoration: BoxDecoration(
+                                //     color: Colors.white,
+                                //     borderRadius: BorderRadius.circular(5),
+                                //     border: Border.all(color: gPrimaryColor, width: 1),
+                                //     boxShadow: [
+                                //       BoxShadow(
+                                //         color: Colors.grey.withOpacity(0.3),
+                                //         blurRadius: 20,
+                                //         offset: const Offset(2, 10),
+                                //       ),
+                                //     ],
+                                //   ),
+                                //   child: Image(
+                                //     image: AssetImage('assets/images/about_program.jpeg'),
+                                //   ),
+                                //   // child: Text(
+                                //   //   _programText,
+                                //   //   // 'Lorem lpsum is simply dummy text of the printing and typesetting industry. Lorem lpsum has been the industry\'s standard dummy text ever since the 1500s,when an unknown printer took a gallery of type and scrambled it to make a type specimen book.',
+                                //   //   style: TextStyle(
+                                //   //     height: 1.7,
+                                //   //     fontFamily: "GothamBook",
+                                //   //     color: gTextColor,
+                                //   //     fontSize: 9.sp,
+                                //   //   ),
+                                //   // ),
+                                // ),
                               ),
                               SizedBox(height: 2.h),
                               Text(
@@ -212,6 +221,8 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
                                     );
                                   },
                                   child: Container(
+                                    width: 40.w,
+                                    height: 5.h,
                                     padding:
                                     EdgeInsets.symmetric(vertical: 1.h, horizontal: 15.w),
                                     decoration: BoxDecoration(
@@ -221,12 +232,14 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
                                           color: eUser().buttonBorderColor,
                                           width: eUser().buttonBorderWidth                                      ),
                                     ),
-                                    child: Text(
-                                      'Next',
-                                      style: TextStyle(
-                                        fontFamily: eUser().buttonTextFont,
-                                        color: eUser().buttonTextColor,
-                                        fontSize: eUser().buttonTextSize,
+                                    child: Center(
+                                      child: Text(
+                                        'Next',
+                                        style: TextStyle(
+                                          fontFamily: eUser().buttonTextFont,
+                                          color: eUser().buttonTextColor,
+                                          fontSize: eUser().buttonTextSize,
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -358,7 +371,7 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(5),
-          border: Border.all(color: gPrimaryColor, width: 1),
+          border: Border.all(color: kLineColor, width: 1),
           boxShadow: [
             BoxShadow(
               color: Colors.grey.withOpacity(0.3),
@@ -448,25 +461,29 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
                 Text(
                   feedback.addedBy?.name ?? '',
                   style: TextStyle(
-                      fontFamily: "GothamRoundedBold_21016",
-                      color: gPrimaryColor,
+                      fontFamily: kFontMedium,
+                      color: gTextColor,
                       fontSize: 10.sp),
                 ),
-                SizedBox(height: 0.3.h),
+                SizedBox(height: 0.6.h),
                 buildRating(feedback.rating ?? ''),
               ],
             ),
           ],
         ),
+        SizedBox(
+          height: 10,
+        ),
         Text(
           feedback.feedback ??
               'Lorem lpsum is simply dummy text of the printing and typesetting industry. Lorem lpsum has been the industry\'s standard dummy text ever since the 1500s,when an unknown printer took a gallery of type and scrambled it to make a type specimen book.',
           style: TextStyle(
-            height: 1.7,
-            fontFamily: "GothamBook",
+            height: 1.5,
+            fontFamily: kFontBook,
             color: gTextColor,
-            fontSize: 9.sp,
+            fontSize: 10.sp,
           ),
+          textAlign: TextAlign.justify,
         ),
       ],
     );

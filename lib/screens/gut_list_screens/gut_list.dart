@@ -89,12 +89,12 @@ class GutListState extends State<GutList> {
     ),
     NewStageLevels(
         "assets/images/dashboard_stages/noun-appointment-4042317.png",
-        "Prepratory Meal Plan",
+        "Preparatory Meal Plan",
         'assets/images/dashboard_stages/lock.png'
     ),
     NewStageLevels(
         "assets/images/dashboard_stages/noun-appointment-4042317.png",
-        "Programs",
+        "Program",
         'assets/images/dashboard_stages/lock.png'
     ),
     NewStageLevels(
@@ -109,7 +109,7 @@ class GutListState extends State<GutList> {
     ),
     NewStageLevels(
         "assets/images/dashboard_stages/noun-shipping-5332930.png",
-        "Maintenance Guide\nUpdated",
+        "Gut Maintenance Guide\nUpdated",
         'assets/images/dashboard_stages/lock.png'
     ),
   ];
@@ -327,9 +327,11 @@ class GutListState extends State<GutList> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              buildAppBar(() {
+              buildAppBar(
+                      () {
                 Navigator.pop(context);
-              }, isBackEnable: false,
+              },
+                  isBackEnable: false,
                 showNotificationIcon: true,
                 notificationOnTap: (){
                 Navigator.push(context, MaterialPageRoute(builder: (_) => NotificationScreen()));
@@ -340,7 +342,7 @@ class GutListState extends State<GutList> {
                 }
 
               ),
-              SizedBox(height: 3.h),
+              // SizedBox(height: 1.5.h),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -522,7 +524,7 @@ class GutListState extends State<GutList> {
           MaterialPageRoute(
             builder: (context) =>(_prepratoryModel!.value!.prep_days! == _prepratoryModel!.value!.currentDay) ?
                 PrepratoryMealCompletedScreen()
-                 : PrepratoryPlanScreen(dayNumber: _prepratoryModel!.value!.prep_days!),
+                 : PrepratoryPlanScreen(dayNumber: _prepratoryModel!.value!.currentDay!, totalDays: _prepratoryModel!.value!.prep_days ?? ''),
           ),
         ).then((value) => reloadUI());
       }
@@ -622,7 +624,7 @@ class GutListState extends State<GutList> {
           margin: EdgeInsets.symmetric(vertical: 1.5.h),
           decoration: BoxDecoration(
             // color: kWhiteColor,
-            color: index == 0 ? kWhiteColor : (index == 1 && shippingStage != null && shippingStage!.isNotEmpty) ? kWhiteColor : (index == 2 && shippingStage == 'shipping_delivered') ? kWhiteColor : (index == 3 && postProgramStage != null && postProgramStage!.isNotEmpty) ? kWhiteColor : gGreyColor.withOpacity(0.05),
+            color: index == 0 ? kWhiteColor : (index == 1 && shippingStage != null && shippingStage!.isNotEmpty) ? kWhiteColor : (index == 2 && shippingStage == 'shipping_delivered') ? kWhiteColor : (index == 3 && postProgramStage != null && postProgramStage!.isNotEmpty) ? kWhiteColor : gHintTextColor.withOpacity(0.05),
             borderRadius: BorderRadius.circular(20),
             border: Border.all(color: gMainColor.withOpacity(0.3), width: 1),
             boxShadow: (isSelected != programsData.title)
@@ -672,7 +674,7 @@ class GutListState extends State<GutList> {
                 child: Text(
                   programsData.title,
                   style: TextStyle(
-                    fontFamily: "GothamMedium",
+                    fontFamily: kFontMedium,
                     color: (isSelected == programsData.title)
                         ? gMainColor
                         : (programsData.isCompleted) ? gPrimaryColor : gsecondaryColor,
@@ -986,9 +988,9 @@ class GutListState extends State<GutList> {
                               levels[index].title,
                               textAlign: TextAlign.center,
                               style: TextStyle(
-                                  fontFamily: "GothamBook",
+                                  fontFamily: kFontBook,
                                   height: 1.3,
-                                  color: gsecondaryColor,
+                                  color: gTextColor,
                                   fontSize: 10.sp),
                             )
                           ],
@@ -1115,9 +1117,9 @@ class GutListState extends State<GutList> {
                               levels[index].title,
                               textAlign: TextAlign.center,
                               style: TextStyle(
-                                  fontFamily: "GothamBook",
+                                  fontFamily: kFontBook,
                                   height: 1.3,
-                                  color: gsecondaryColor,
+                                  color: gTextColor,
                                   fontSize: 10.sp),
                             )
                           ],

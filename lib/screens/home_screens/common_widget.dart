@@ -49,7 +49,7 @@ class _CommonWidgetsState extends State<CommonWidgets> {
                 radius: 60,
                 linesLength: 6,
                 linesWidth: 3,
-                linesColor: (widget.points == '1') ? gPrimaryColor : gGreyColor,
+                linesColor: (widget.points == '1') ? gPrimaryColor : gHintTextColor,
                 percent: _percent,
                 centerWidgetBuilder: (context) => Text(
                   '${widget.points}Pts',

@@ -112,7 +112,7 @@ class _EvaluationUploadReportState extends State<EvaluationUploadReport> {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Text(
-            "User Reports",
+            "Upload your reports here",
             textAlign: TextAlign.center,
             style: TextStyle(
                 fontFamily: eUser().mainHeadingFont,
@@ -128,11 +128,11 @@ class _EvaluationUploadReportState extends State<EvaluationUploadReport> {
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 5.w),
             child: Text(
-              "Please Upload All Medical Records That Might Be Helpful To Evaluate Your Condition Better",
+              "The reports are a reflection of specific parameters, which might be affecting your gut or overall health, so knowing your health history can be of significance. So, this is yet another important step to diagnose and continue towards the program.",
               textAlign: TextAlign.center,
               style: TextStyle(
                   height: 1.5,
-                  fontFamily: kFontRBold2,
+                  fontFamily: kFontBold,
                   color: gTextColor,
                   fontSize: 10.sp),
             ),
@@ -237,14 +237,18 @@ class _EvaluationUploadReportState extends State<EvaluationUploadReport> {
                     }
                   },
                   child: Container(
-                    width: 60.w,
+                    width: 40.w,
                     height: 5.h,
-                    // padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 10.w),
+                    margin: EdgeInsets.symmetric(vertical: 4.h),
+                    padding:
+                    EdgeInsets.symmetric(vertical: 1.h, horizontal: 10.w),
                     decoration: BoxDecoration(
-                      color: gPrimaryColor,
-                      borderRadius: BorderRadius.circular(8),
-                      border:
-                      Border.all(color: gMainColor, width: 1),
+                      color: eUser().buttonColor,
+                      borderRadius: BorderRadius.circular(eUser().buttonBorderRadius),
+                      // border: Border.all(
+                      //     color: eUser().buttonBorderColor,
+                      //     width: eUser().buttonBorderWidth
+                      // ),
                     ),
                     child: (showUploadProgress)
                         ? buildThreeBounceIndicator()
@@ -252,10 +256,9 @@ class _EvaluationUploadReportState extends State<EvaluationUploadReport> {
                       child: Text(
                         'Submit',
                         style: TextStyle(
-                          fontFamily:
-                          "GothamRoundedBold_21016",
-                          color: gWhiteColor,
-                          fontSize: 11.sp,
+                          fontFamily: eUser().buttonTextFont,
+                          color: eUser().buttonTextColor,
+                          fontSize: eUser().buttonTextSize,
                         ),
                       ),
                     ),
@@ -316,7 +319,7 @@ class _EvaluationUploadReportState extends State<EvaluationUploadReport> {
                   textAlign: TextAlign.center,
                   style: TextStyle(
                       height: 1.5,
-                      fontFamily: kFontRBold2,
+                      fontFamily: kFontBold,
                       color: gTextColor,
                       fontSize: 12.sp),
                 ),

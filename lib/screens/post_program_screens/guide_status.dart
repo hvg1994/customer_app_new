@@ -161,7 +161,7 @@ class _GuideStatusState extends State<GuideStatus> {
                     Container(
                       width: double.maxFinite,
                       height: 1,
-                      color: gGreyColor.withOpacity(0.3),
+                      color: gHintTextColor.withOpacity(0.3),
                     ),
                     SizedBox(height: 1.5.h),
                     buildTile('assets/lottie/loading_tick.json', types[0],
@@ -231,7 +231,7 @@ class _GuideStatusState extends State<GuideStatus> {
           Container(
             width: double.maxFinite,
             height: 1,
-            color: gGreyColor.withOpacity(0.3),
+            color: gHintTextColor.withOpacity(0.3),
           ),
           SizedBox(height: 1.h),
           Text(

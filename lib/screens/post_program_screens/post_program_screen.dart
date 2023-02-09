@@ -85,7 +85,7 @@ class _PostProgramScreenState extends State<PostProgramScreen> {
                     ),
                   );
                 } : () => null,
-                color: (widget.postProgramStage == 'protocol_guide') ? kWhiteColor : gGreyColor.withOpacity(0.05)
+                color: (widget.postProgramStage == 'protocol_guide') ? kWhiteColor : gHintTextColor.withOpacity(0.05)
               ),
             ],
           ),

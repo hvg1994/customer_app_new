@@ -64,7 +64,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
 
   Map<String, List<ChildMealPlanDetailsModel>> mealPlanData1 = {};
 
-  final tableHeadingBg = gGreyColor.withOpacity(0.4);
+  final tableHeadingBg = gHintTextColor.withOpacity(0.4);
 
   List<String> list = [
     "Followed",
@@ -1035,9 +1035,9 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                 dayTime,
                 style: TextStyle(
                   height: 1.5,
-                  color: gGreyColor,
+                  color: MealPlanConstants().mealNameTextColor,
                   fontSize: 12.sp,
-                  fontFamily: kFontMedium,
+                  fontFamily: MealPlanConstants().mealNameFont,
                 ),
               ),
             ),
@@ -1081,90 +1081,6 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                                 ),
                               ),
                             ),
-                            // Positioned(
-                            //   bottom: -15,
-                            //     left: 10,
-                            //     right: 10,
-                            //     child: Container(
-                            //       margin: EdgeInsets.only(bottom: 4),
-                            //       child: PopupMenuButton(
-                            //         offset: const Offset(0, 30),
-                            //         shape: RoundedRectangleBorder(
-                            //             borderRadius: BorderRadius.circular(5)),
-                            //         itemBuilder: (context) => [
-                            //           // PopupMenuItem(
-                            //           //   child: Column(
-                            //           //     crossAxisAlignment: CrossAxisAlignment.start,
-                            //           //     children: [
-                            //           //       SizedBox(height: 0.6.h),
-                            //           //       buildTabView(
-                            //           //           index: 1,
-                            //           //           title: list[0],
-                            //           //           color: gPrimaryColor,
-                            //           //           itemId: e.itemId!
-                            //           //       ),
-                            //           //       SizedBox(height: 0.6.h),
-                            //           //       Container(
-                            //           //         margin: EdgeInsets.symmetric(vertical: 1.h),
-                            //           //         height: 1,
-                            //           //         color: gGreyColor.withOpacity(0.3),
-                            //           //       ),
-                            //           //       SizedBox(height: 0.6.h),
-                            //           //       buildTabView(
-                            //           //           index: 2,
-                            //           //           title: list[1],
-                            //           //           color: gsecondaryColor,
-                            //           //           itemId: e.itemId!
-                            //           //       ),
-                            //           //       SizedBox(height: 0.6.h),
-                            //           //     ],
-                            //           //   ),
-                            //           //   onTap: null,
-                            //           // ),
-                            //         ],
-                            //         child: GestureDetector(
-                            //           onTap: (){
-                            //             print("tap");
-                            //             openAlertBox(
-                            //               title: 'Did you Follow this item ?',
-                            //                 titleNeeded: true,
-                            //                 context: context,
-                            //                 content: 'Please select any of the following to submit your status',
-                            //                 positiveButtonName: 'Followed',
-                            //                 positiveButton: (){
-                            //                   Navigator.pop(context);
-                            //                 },
-                            //                 negativeButtonName: 'UnFollowed',
-                            //                 negativeButton: (){
-                            //                   Navigator.pop(context);
-                            //                 }
-                            //             );
-                            //           },
-                            //           child: Container(
-                            //             height: 30,
-                            //             padding: EdgeInsets.symmetric(
-                            //                 horizontal: 2.w, vertical: 0.2.h),
-                            //             decoration: BoxDecoration(
-                            //               color: gWhiteColor,
-                            //               borderRadius: BorderRadius.circular(5),
-                            //               border: Border.all(color: gMainColor, width: 1),
-                            //             ),
-                            //             child: Center(
-                            //               child: Text(
-                            //                 'UnFollowed',
-                            //                 textAlign: TextAlign.start,
-                            //                 overflow: TextOverflow.ellipsis,
-                            //                 style: TextStyle(
-                            //                     fontFamily: "GothamMedium",
-                            //                     color: gBlackColor,
-                            //                     fontSize: 8.sp),
-                            //               ),
-                            //             ),
-                            //           ),
-                            //         ),
-                            //       ),
-                            //     )
-                            // )
                           ],
                         ),
                         SizedBox(
@@ -1193,11 +1109,9 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                               Text(e.name ?? 'Morning Yoga',
                                 style: TextStyle(
                                     fontSize: MealPlanConstants().mealNameFontSize,
-                                    fontFamily: MealPlanConstants().mealNameFont
+                                    fontFamily: MealPlanConstants().mealNameFont,
+                                    color: gHintTextColor
                                 ),
-                              ),
-                              SizedBox(
-                                height: 8,
                               ),
                               // Text(e.mealTime ?? "B/W 6-8am",
                               //   style: TextStyle(
@@ -1210,12 +1124,13 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                               // ),
                               Expanded(
                                 child: Text(
-                                  e.benefits!.replaceAll("-", '\n-') ?? '',
+                                  e.benefits!.replaceAll("- ", '\n') ?? '',
                                       // "- Good for Health and super food\n\n- Good for Health and super food\n\n- Good for Health and super food\n\n- Very Effective and quick recipe,\n\n- Ready To Cook",
                                   style: TextStyle(
                                       fontSize: MealPlanConstants().benifitsFontSize,
                                       fontFamily: MealPlanConstants().benifitsFont
                                   ),
+                                  overflow: TextOverflow.visible,
                                 ),
                               ),
                               SizedBox(
@@ -1224,37 +1139,19 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                             ],
                           ),
                         ),
-                        // IconButton(
-                        //     onPressed: (){
-                        //       openAlertBox(
-                        //           title: 'Did you Follow this item ?',
-                        //           titleNeeded: true,
-                        //           context: context,
-                        //           content: 'Please select any of the following to submit your status',
-                        //           positiveButtonName: 'Followed',
-                        //           positiveButton: (){
-                        //             Navigator.pop(context);
-                        //           },
-                        //           negativeButtonName: 'UnFollowed',
-                        //           negativeButton: (){
-                        //             Navigator.pop(context);
-                        //           }
-                        //       );
-                        //     },
-                        //     icon: Icon(Icons.edit)),
                         GestureDetector(
                           onTap: (){
                             openAlertBox(
-                                title: 'Did you Follow this item ?',
+                                title: 'Did you Follow this?',
                                 titleNeeded: true,
                                 context: context,
-                                content: 'Please select any of the following to submit your status',
+                                isContentNeeded: false,
                                 positiveButtonName: 'Followed',
                                 positiveButton: (){
                                   onChangedTab(0, id: e.itemId, title: list[0]);
                                   Navigator.pop(context);
                                 },
-                                negativeButtonName: 'UnFollowed',
+                                negativeButtonName: 'Missed It',
                                 negativeButton: (){
                                   onChangedTab(0, id: e.itemId, title: list[1]);
                                   Navigator.pop(context);
@@ -1263,7 +1160,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                           },
                           child: (statusList.isNotEmpty && statusList.containsKey(e.itemId) && statusList[e.itemId] == list[0])
                               ? Align(
-                            alignment: Alignment.bottomCenter,
+                            alignment: Alignment.topCenter,
                                 child: Container(
                             padding: EdgeInsets.symmetric(horizontal: 6, vertical: 4),
                             decoration: BoxDecoration(
@@ -1290,7 +1187,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                               )
                               : (statusList.isNotEmpty && statusList.containsKey(e.itemId) && statusList[e.itemId] == list[1])
                               ? Align(
-                            alignment: Alignment.bottomCenter,
+                            alignment: Alignment.topCenter,
                             child: Container(
                             padding: EdgeInsets.symmetric(horizontal: 6, vertical: 4),
                             decoration: BoxDecoration(
@@ -1300,10 +1197,10 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                             child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Text('UnFollowed',
+                                  Text('Missed It',
                                     style: TextStyle(
                                         fontSize: 8.sp,
-                                        fontFamily: kFontLight,
+                                        fontFamily: kFontMedium,
                                         color: gWhiteColor
                                     ),
                                   ),
@@ -1798,7 +1695,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                       Container(
                         margin: EdgeInsets.symmetric(vertical: 1.h),
                         height: 1,
-                        color: gGreyColor.withOpacity(0.3),
+                        color: gHintTextColor.withOpacity(0.3),
                       ),
                       buildDummyTabView(
                           index: 2,
@@ -1807,7 +1704,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                       Container(
                         margin: EdgeInsets.symmetric(vertical: 1.h),
                         height: 1,
-                        color: gGreyColor.withOpacity(0.3),
+                        color: gHintTextColor.withOpacity(0.3),
                       ),
                       SizedBox(height: 0.6.h),
                     ],
@@ -1831,14 +1728,14 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                         textAlign: TextAlign.start,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                            fontFamily: "GothamBook",
+                            fontFamily: kFontBook,
                             color: buildDummyTextColor(),
                             fontSize: 8.sp),
                       ),
                     ),
                     Icon(
                       Icons.expand_more,
-                      color: gGreyColor,
+                      color: gHintTextColor,
                       size: 2.h,
                     ),
                   ],
@@ -1996,7 +1893,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
       tracking.add(PatientMealTracking(
           day: selectedDay,
           userMealItemId: key,
-          status: (value == list[0]) ? sendList[0] : sendList[1]
+          status: (value == list[1]) ? sendList[0] : sendList[1]
       ));
     });
 
@@ -2085,7 +1982,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                   Container(
                     margin: EdgeInsets.symmetric(vertical: 1.h),
                     height: 1,
-                    color: gGreyColor.withOpacity(0.3),
+                    color: gHintTextColor.withOpacity(0.3),
                   ),
                   SizedBox(height: 0.6.h),
                   buildTabView(
@@ -2124,7 +2021,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                 ),
                 Icon(
                   Icons.expand_more,
-                  color: gGreyColor,
+                  color: gHintTextColor,
                   size: 2.h,
                 ),
               ],

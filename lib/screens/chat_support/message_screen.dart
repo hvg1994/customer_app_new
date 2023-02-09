@@ -726,7 +726,7 @@ class _MessageScreenState extends State<MessageScreen>
                                 // padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 1.5.h),
                                 decoration: BoxDecoration(
                                     color: message.isIncoming
-                                        ? gGreyColor.withOpacity(0.2)
+                                        ? gHintTextColor
                                         : gsecondaryColor,
                                     borderRadius: BorderRadius.only(
                                         topLeft: Radius.circular(18),
@@ -820,8 +820,7 @@ class _MessageScreenState extends State<MessageScreen>
                                                 'application/pdf')
                                             ? BoxDecoration(
                                                 color: message.isIncoming
-                                                    ? gGreyColor
-                                                        .withOpacity(0.2)
+                                                    ? gHintTextColor
                                                     : gsecondaryColor,
                                                 borderRadius: BorderRadius.only(
                                                     topLeft:
@@ -840,7 +839,7 @@ class _MessageScreenState extends State<MessageScreen>
                                                         FilterQuality.high,
                                                     fit: BoxFit.fill,
                                                     image: CachedNetworkImageProvider((imgUrl.data as Map)['url'])),
-                                                boxShadow: [BoxShadow(color: gGreyColor.withOpacity(0.5), blurRadius: 0.2)],
+                                                boxShadow: [BoxShadow(color: gHintTextColor, blurRadius: 0.2)],
                                                 borderRadius: BorderRadius.only(topLeft: Radius.circular(18), topRight: Radius.circular(18), bottomLeft: message.isIncoming ? Radius.circular(0) : Radius.circular(18), bottomRight: message.isIncoming ? Radius.circular(18) : Radius.circular(0))),
                                         child: (message.qbMessage.attachments!
                                                     .first!.type ==
@@ -933,9 +932,9 @@ class _MessageScreenState extends State<MessageScreen>
         size: 14,
       );
     } else if (deliveredIds != null && deliveredIds.length > 1) {
-      return Icon(Icons.done_all, color: gGreyColor, size: 14);
+      return Icon(Icons.done_all, color: gHintTextColor, size: 14);
     } else {
-      return Icon(Icons.done, color: gGreyColor, size: 14);
+      return Icon(Icons.done, color: gHintTextColor, size: 14);
     }
   }
 
@@ -1012,7 +1011,7 @@ class _MessageScreenState extends State<MessageScreen>
                       decoration: BoxDecoration(
                           border: Border(
                         bottom: BorderSide(
-                          color: gGreyColor,
+                          color: gHintTextColor,
                           width: 3.0,
                         ),
                       )),

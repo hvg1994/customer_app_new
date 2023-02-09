@@ -61,7 +61,7 @@ class _NewScheduleScreenState extends State<NewScheduleScreen> {
                 Text(topText,
                     style: TextStyle(
                       fontFamily:
-                      kFontRBold2,
+                      kFontBold,
                       color: gsecondaryColor,
                       fontSize: 11.5.sp,
                     ),
@@ -90,7 +90,7 @@ class _NewScheduleScreenState extends State<NewScheduleScreen> {
                         Text('Day 09',
                           style: TextStyle(
                             fontFamily:
-                            kFontRBold1,
+                            kFontBold,
                             color: gBlackColor,
                             fontSize: 10.sp,
                           ),
@@ -199,7 +199,7 @@ class _NewScheduleScreenState extends State<NewScheduleScreen> {
                       'Submit',
                       style: TextStyle(
                         fontFamily:
-                        kFontRBold2,
+                        kFontBold,
                         color: gWhiteColor,
                         fontSize: 11.sp,
                       ),

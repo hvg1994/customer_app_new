@@ -63,7 +63,7 @@
 //
 //   Map<String, List<ChildMealPlanDetailsModel>> mealPlanData1 = {};
 //
-//   final tableHeadingBg = gGreyColor.withOpacity(0.4);
+//   final tableHeadingBg = gHintTextColor.withOpacity(0.4);
 //
 //   List<String> list = [
 //     "Followed",
@@ -661,7 +661,7 @@
 //                     //           //       Container(
 //                     //           //         margin: EdgeInsets.symmetric(vertical: 1.h),
 //                     //           //         height: 1,
-//                     //           //         color: gGreyColor.withOpacity(0.3),
+//                     //           //         color: gHintTextColor.withOpacity(0.3),
 //                     //           //       ),
 //                     //           //       SizedBox(height: 0.6.h),
 //                     //           //       buildTabView(
@@ -1246,7 +1246,7 @@
 //                       Container(
 //                         margin: EdgeInsets.symmetric(vertical: 1.h),
 //                         height: 1,
-//                         color: gGreyColor.withOpacity(0.3),
+//                         color: gHintTextColor.withOpacity(0.3),
 //                       ),
 //                       buildDummyTabView(
 //                           index: 2,
@@ -1255,7 +1255,7 @@
 //                       Container(
 //                         margin: EdgeInsets.symmetric(vertical: 1.h),
 //                         height: 1,
-//                         color: gGreyColor.withOpacity(0.3),
+//                         color: gHintTextColor.withOpacity(0.3),
 //                       ),
 //                       SizedBox(height: 0.6.h),
 //                     ],
@@ -1286,7 +1286,7 @@
 //                     ),
 //                     Icon(
 //                       Icons.expand_more,
-//                       color: gGreyColor,
+//                       color: gHintTextColor,
 //                       size: 2.h,
 //                     ),
 //                   ],
@@ -1533,7 +1533,7 @@
 //                   Container(
 //                     margin: EdgeInsets.symmetric(vertical: 1.h),
 //                     height: 1,
-//                     color: gGreyColor.withOpacity(0.3),
+//                     color: gHintTextColor.withOpacity(0.3),
 //                   ),
 //                   SizedBox(height: 0.6.h),
 //                   buildTabView(
@@ -1572,7 +1572,7 @@
 //                 ),
 //                 Icon(
 //                   Icons.expand_more,
-//                   color: gGreyColor,
+//                   color: gHintTextColor,
 //                   size: 2.h,
 //                 ),
 //               ],

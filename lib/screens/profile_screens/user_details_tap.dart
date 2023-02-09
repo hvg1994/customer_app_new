@@ -46,7 +46,7 @@ class _UserDetailsTapState extends State<UserDetailsTap> {
                     indicatorPadding: EdgeInsets.only(right: 5.w),
                     unselectedLabelStyle: TextStyle(
                         fontFamily: "GothamBook",
-                        color: gGreyColor,
+                        color: gHintTextColor,
                         fontSize: 9.sp),
                     labelStyle: TextStyle(
                         fontFamily: "GothamMedium",

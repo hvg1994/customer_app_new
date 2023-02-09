@@ -123,7 +123,7 @@ class _ProtocolGuideScreenState extends State<ProtocolGuideScreen> {
                               padding: EdgeInsets.symmetric(
                                   vertical: 2.h, horizontal: 6.w),
                               margin: EdgeInsets.symmetric(vertical: 1.h),
-                              color: gGreyColor.withOpacity(0.1),
+                              color: gHintTextColor.withOpacity(0.1),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [

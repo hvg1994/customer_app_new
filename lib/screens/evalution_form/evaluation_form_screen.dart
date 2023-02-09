@@ -46,7 +46,7 @@ class _EvaluationFormScreenState extends State<EvaluationFormScreen> {
                   Text(
                     "Gut Wellness Club Evaluation Form",
                     style: TextStyle(
-                        fontFamily: "PoppinsBold",
+                        fontFamily: kFontBold,
                         color: kTextColor,
                         fontSize: 12.sp),
                   ),
@@ -57,7 +57,7 @@ class _EvaluationFormScreenState extends State<EvaluationFormScreen> {
                     "Hello There,",
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                        fontFamily: "PoppinsBold",
+                        fontFamily: kFontMedium,
                         color: gMainColor,
                         fontSize: 11.sp),
                   ),
@@ -68,7 +68,7 @@ class _EvaluationFormScreenState extends State<EvaluationFormScreen> {
                     "Welcome To The 1st Step Of Your Gut Wellness Journey.",
                     textAlign: TextAlign.start,
                     style: TextStyle(
-                        fontFamily: "PoppinsRegular",
+                        fontFamily: kFontBook,
                         color: kTextColor,
                         fontSize: 10.sp),
                   ),
@@ -76,43 +76,22 @@ class _EvaluationFormScreenState extends State<EvaluationFormScreen> {
                     height: 2.h,
                   ),
                   Text(
-                    "This Form Will Be Evaluated By Your Senior Doctors To",
-                    textAlign: TextAlign.start,
+                    newText1 + newText2,
+                    textAlign: TextAlign.justify,
                     style: TextStyle(
-                        fontFamily: "PoppinsRegular",
+                        fontFamily: kFontBook,
                         color: kTextColor,
-                        fontSize: 10.sp),
-                  ),
-                  SizedBox(
-                    height: 2.h,
-                  ),
-                  Text(
-                    newText1,
-                    textAlign: TextAlign.start,
-                    style: TextStyle(
-                        fontFamily: "PoppinsRegular",
-                        color: kTextColor,
-                        fontSize: 10.sp),
-                  ),
-                  SizedBox(
-                    height: 2.h,
-                  ),
-                  Text(
-                    newText2,
-                    textAlign: TextAlign.start,
-                    style: TextStyle(
-                        fontFamily: "PoppinsRegular",
-                        color: kTextColor,
-                        fontSize: 10.sp),
+                        fontSize: 10.sp
+                    ),
                   ),
                   SizedBox(
                     height: 2.h,
                   ),
                   Text(
                     newText3,
-                    textAlign: TextAlign.start,
+                    textAlign: TextAlign.justify,
                     style: TextStyle(
-                        fontFamily: "PoppinsRegular",
+                        fontFamily: kFontBook,
                         color: kTextColor,
                         fontSize: 10.sp),
                   ),
@@ -120,10 +99,10 @@ class _EvaluationFormScreenState extends State<EvaluationFormScreen> {
                     height: 2.h,
                   ),
                   Text(
-                    "This Form Will Be Confidential & Only Visible To Your Doctors & Few Executives Responsible For Supporting Your Doctors.",
-                    textAlign: TextAlign.start,
+                    "This Form Will Be Confidential & Only Visible To Your Doctors.",
+                    textAlign: TextAlign.justify,
                     style: TextStyle(
-                        fontFamily: "PoppinsRegular",
+                        fontFamily: kFontBook,
                         color: kTextColor,
                         fontSize: 10.sp),
                   ),
@@ -141,7 +120,7 @@ class _EvaluationFormScreenState extends State<EvaluationFormScreen> {
                         );
                       },
                       child: Container(
-                        width: 50.w,
+                        width: 40.w,
                         height: 5.h,
                         margin: EdgeInsets.symmetric(vertical: 4.h),
                         padding:
@@ -149,10 +128,10 @@ class _EvaluationFormScreenState extends State<EvaluationFormScreen> {
                         decoration: BoxDecoration(
                           color: eUser().buttonColor,
                           borderRadius: BorderRadius.circular(eUser().buttonBorderRadius),
-                          border: Border.all(
-                              color: eUser().buttonBorderColor,
-                              width: eUser().buttonBorderWidth
-                          ),
+                          // border: Border.all(
+                          //     color: eUser().buttonBorderColor,
+                          //     width: eUser().buttonBorderWidth
+                          // ),
                         ),
                         child: Center(
                           child: Text(
@@ -281,7 +260,7 @@ class _EvaluationFormScreenState extends State<EvaluationFormScreen> {
   final String oldText2 = "2) If Accepted What Sort Of Customization is Required To Heal Your Condition(s) Please Fill This To The Best Of Your Knowledge As This is Critical. Time To Fill 10-15Mins";
   final String oldText3 = "Your Doctors Might Personally Get In Touch With You If More Information Is Needed.";
 
-  final String newText1 = "Preliminarily Evaluate Your Condition & Determine What Sort Of Customization Is Required";
+  final String newText1 = "This Form Will Be Evaluated By Your Senior Doctors To Preliminarily Evaluate Your Condition & Determine What Sort Of Customization Is Required";
   final String newText2 = "To Heal Your Condition(s) & To Ship Your Customized Ready To Cook Kit.";
-  final String newText3 = "Please Fill This To The Best Of Your KnowledgeAs This Is Critical. Time To Fill 3-4Mins";
+  final String newText3 = "Please Fill This To The Best Of Your Knowledge As This Is Critical. Time To Fill 3-4Mins";
 }

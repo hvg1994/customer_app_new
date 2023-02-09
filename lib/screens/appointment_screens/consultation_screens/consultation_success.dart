@@ -58,19 +58,20 @@ class ConsultationSuccess extends StatelessWidget {
                       textAlign: TextAlign.center,
                       style: TextStyle(
                           height: 1.5,
-                          fontFamily: "GothamMedium",
+                          fontFamily: kFontMedium,
                           color: gPrimaryColor,
                           fontSize: 10.sp),
                     ),
                     SizedBox(height: 1.h),
                     Text(
-                      "Your Medical Report is getting ready and uploaded within 24 hours",
+                      "Your Medical Report is getting ready and will be uploaded within 24 hours",
                       textAlign: TextAlign.center,
                       style: TextStyle(
                           height: 1.5,
-                          fontFamily: "GothamMedium",
+                          fontFamily: kFontMedium,
                           color: gPrimaryColor,
-                          fontSize: 8.sp),
+                          fontSize: 8.sp
+                      ),
                     ),
                   ],
                 ),

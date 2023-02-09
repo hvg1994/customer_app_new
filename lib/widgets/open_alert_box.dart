@@ -68,7 +68,9 @@ openAlertBox({
                         fontSize: 11.sp),
                   ),
                 ),
-                SizedBox(height: 3.h),
+                Visibility(
+                    visible: isContentNeeded,
+                    child: SizedBox(height: 3.h)),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -80,7 +82,7 @@ openAlertBox({
                           padding: EdgeInsets.symmetric(
                               vertical: 1.h, horizontal: 5.w),
                           decoration: BoxDecoration(
-                              color: gGreyColor.withOpacity(0.4),
+                              color: gHintTextColor.withOpacity(0.4),
                               borderRadius: BorderRadius.circular(25)),
                           child: Text(
                             negativeButtonName ?? "NO",
@@ -138,7 +140,7 @@ openProgressDialog(BuildContext context, {bool willPop = false}){
   showDialog(
     barrierDismissible: false,
     context: context,
-    barrierColor: gGreyColor.withOpacity(0.1),
+    barrierColor: gHintTextColor.withOpacity(0.1),
     builder: (BuildContext context) {
       return WillPopScope(child: alert,
         onWillPop: () async => willPop,

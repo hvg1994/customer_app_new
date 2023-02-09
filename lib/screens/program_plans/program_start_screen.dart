@@ -62,7 +62,7 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
                     offset: const Offset(2, 10),
                   ),
                   textStyle: TextStyle(
-                      fontFamily: "GothamMedium",
+                      fontFamily: kFontMedium,
                       color: gTextColor,
                       fontSize: 10.sp),
                   onConfirmation: () {
@@ -83,11 +83,15 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
         ),
         SizedBox(height: 4.h),
         Text(
-          "Lorem ipsum is simply dummy text of the printing and typesetting industry.Lorem ipsum has been the industry's standard dummy text ever since the 1500s,when an unknown printer took a gallery of type and scrambled it to make a type specimen book.",
-          textAlign: TextAlign.center,
+          (widget.from == ProgramMealType.prepratory.name)
+              ? "The preparatory phase aids in the optimal preparation of the gastrointestinal tract for detoxification and repair. Gut acid and enzyme optimization can be achieved by adapting typical diets to your gut type and condition, as well as avoiding certain addictions/habits such as smoking, drinking, and so on."
+              : widget.from == ProgramMealType.program.name
+              ? "Our approach on healing the condition: To cleanse and heal your stomach, we employ integrated Calm, Move, and Nourish modules that are tailored to your gut type. \n\nEvery meal is scheduled based on the Metabolic nature of your gut and its relationship to your biological clock. This implies that each food item at each meal time has a distinct role in resetting your gut's functionality by adjusting to your biological clock. "
+              : "Lorem ipsum is simply dummy text of the printing and typesetting industry.Lorem ipsum has been the industry's standard dummy text ever since the 1500s,when an unknown printer took a gallery of type and scrambled it to make a type specimen book.",
+          textAlign: TextAlign.justify,
           style: TextStyle(
               height: 1.5,
-              fontFamily: "GothamMedium",
+              fontFamily: kFontMedium,
               color: gTextColor,
               fontSize: 10.sp),
         ),
@@ -122,7 +126,7 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => PrepratoryPlanScreen(dayNumber: "1",),
+              builder: (context) => PrepratoryPlanScreen(dayNumber: "1", totalDays: '1',),
             ),
           );
         }

@@ -312,7 +312,8 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
                   image: AssetImage("assets/images/eval_bg.png"),
                   fit: BoxFit.fitWidth,
                   colorFilter:
-                      ColorFilter.mode(kPrimaryColor, BlendMode.lighten)),
+                      ColorFilter.mode(
+                          kPrimaryColor, BlendMode.lighten)),
             ),
       child: SafeArea(
         child: SafeArea(
@@ -322,7 +323,7 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
                 fit: StackFit.expand,
                 children: [
                   const Opacity(
-                    opacity: 0.2,
+                    opacity: 0.075,
                     child: Image(
                       image: AssetImage("assets/images/Group 10082.png"),
                       fit: BoxFit.fill,
@@ -415,7 +416,7 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
 
   buildEvaluationForm({ChildGetEvaluationDataModel? model}) {
     return SingleChildScrollView(
-      physics: const BouncingScrollPhysics(),
+      physics: const AlwaysScrollableScrollPhysics(),
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: (widget.isFromProfile) ? 0 : 8),
         child: Column(
@@ -442,12 +443,11 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
 
   buildContainer(String title) {
     return Container(
-      // padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 3.w),
-      margin: EdgeInsets.symmetric(vertical: 1.h),
+      // padding: EdgeInsets.symmetric(vertical: 1.h),
       // width: double.maxFinite,
       // decoration: BoxDecoration(
       //   border: Border.all(
-      //     color: gGreyColor.withOpacity(0.5),
+      //     color: gHintTextColor,
       //     width: 1,
       //   ),
       //   borderRadius: BorderRadius.circular(8),
@@ -457,7 +457,10 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
         title,
         textAlign: TextAlign.start,
         style: TextStyle(
-            fontFamily: "GothamBook", color: gBlackColor, fontSize: 9.sp),
+            fontFamily: kFontBook,
+            color: gBlackColor,
+            fontSize: 9.sp
+        ),
       ),
     );
   }
@@ -476,31 +479,36 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
                   "Personal Details",
                   textAlign: TextAlign.start,
                   style: TextStyle(
-                      fontFamily: "PoppinsBold",
-                      color: kPrimaryColor,
-                      fontSize: 15.sp),
+                      fontFamily: kFontMedium,
+                      color: gBlackColor,
+                      fontSize: headingFont
+                  ),
                 ),
                 SizedBox(width: 2.w),
                 Expanded(
                   child: Container(
                     height: 1,
-                    color: kPrimaryColor,
+                    color: kLineColor,
                   ),
                 ),
               ],
+            ),
+            SizedBox(
+              height: 10,
             ),
             Text(
               "Let Us Know You Better",
               textAlign: TextAlign.start,
               style: TextStyle(
-                  fontFamily: "PoppinsRegular",
-                  color: gMainColor,
-                  fontSize: 9.sp),
+                  fontFamily: kFontMedium,
+                  color: gHintTextColor,
+                  fontSize: subHeadingFont
+              ),
             ),
           ],
         ),
         SizedBox(height: 2.h),
-        buildLabelTextField("Full Name:"),
+        buildLabelTextField("Full Name:", fontSize: questionFont),
         SizedBox(height: 1.h),
         Row(
           children: [
@@ -508,7 +516,10 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
               model?.patient?.user?.fname ?? '',
               textAlign: TextAlign.start,
               style: TextStyle(
-                  fontFamily: "GothamBook", color: gBlackColor, fontSize: 9.sp),
+                  fontFamily: kFontBook,
+                  color: gBlackColor,
+                  fontSize: 9.sp
+              ),
             ),
             // buildContainer(model?.patient?.user?.fname ?? ''),
             SizedBox(width: 2.w),
@@ -516,13 +527,13 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
               model?.patient?.user?.lname ?? '',
               textAlign: TextAlign.start,
               style: TextStyle(
-                  fontFamily: "GothamBook", color: gBlackColor, fontSize: 9.sp),
+                  fontFamily: kFontBook, color: gBlackColor, fontSize: 9.sp),
             ),
             // buildContainer(model?.patient?.user?.lname ?? ''),
           ],
         ),
         SizedBox(height: 2.h),
-        buildLabelTextField('Marital Status:'),
+        buildLabelTextField('Marital Status:', fontSize: questionFont),
         Row(
           children: [
             Radio(
@@ -546,7 +557,10 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
             ),
             Text(
               'Married',
-              style: buildTextStyle(),
+              style: buildTextStyle(
+                color: getFontColor(model?.patient?.maritalStatus.toString() ?? ''),
+                fontFamily: getFontFamily(model?.patient?.maritalStatus.toString() ?? '')
+              ),
             ),
             SizedBox(
               width: 3.w,
@@ -564,16 +578,19 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
           ],
         ),
         SizedBox(height: 1.h),
-        buildLabelTextField('Phone Number'),
+        buildLabelTextField('Phone Number', fontSize: questionFont),
+        SizedBox(height: 1.h),
         buildContainer(model?.patient?.user?.phone ?? ''),
         SizedBox(height: 1.h),
-        buildLabelTextField('Email ID -'),
+        buildLabelTextField('Email ID', fontSize: questionFont),
+        SizedBox(height: 1.h),
         buildContainer(model?.patient?.user?.email ?? ''),
         SizedBox(height: 1.h),
-        buildLabelTextField('Age'),
+        buildLabelTextField('Age', fontSize: questionFont),
+        SizedBox(height: 1.h),
         buildContainer(model?.patient?.user?.age ?? ''),
         SizedBox(height: 1.h),
-        buildLabelTextField('Gender:'),
+        buildLabelTextField('Gender', fontSize: questionFont),
         Row(
           children: [
             Radio(
@@ -612,7 +629,8 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
           ],
         ),
         SizedBox(height: 1.h),
-        buildLabelTextField('Address'),
+        buildLabelTextField('Address', fontSize: questionFont),
+        SizedBox(height: 1.h),
         Row(
           children: [
             buildContainer("${model?.patient?.user?.address ?? ''},"),
@@ -621,16 +639,20 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
           ],
         ),
         SizedBox(height: 1.h),
-        buildLabelTextField('Pin Code'),
+        buildLabelTextField('Pin Code', fontSize: questionFont),
+        SizedBox(height: 1.h),
         buildContainer(model?.patient?.user?.pincode ?? ""),
         SizedBox(height: 1.h),
-        buildLabelTextField('City'),
+        buildLabelTextField('City', fontSize: questionFont),
+                SizedBox(height: 1.h),
         buildContainer(model?.patient?.city ?? ''),
         SizedBox(height: 1.h),
-        buildLabelTextField('State'),
+        buildLabelTextField('State', fontSize: questionFont),
+                SizedBox(height: 1.h),
         buildContainer(model?.patient?.state ?? ''),
         SizedBox(height: 1.h),
-        buildLabelTextField('Country'),
+        buildLabelTextField('Country', fontSize: questionFont),
+                SizedBox(height: 1.h),
         buildContainer(model?.patient?.country ?? ''),
         // SizedBox(height: 3.h),
       ],
@@ -651,9 +673,10 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
                   "Health",
                   textAlign: TextAlign.start,
                   style: TextStyle(
-                      fontFamily: "PoppinsBold",
-                      color: kPrimaryColor,
-                      fontSize: 15.sp),
+                      fontFamily: kFontMedium,
+                      color: gBlackColor,
+                      fontSize: headingFont
+                  ),
                 ),
                 SizedBox(
                   width: 2.w,
@@ -661,42 +684,49 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
                 Expanded(
                   child: Container(
                     height: 1,
-                    color: kPrimaryColor,
+                    color: kLineColor,
                   ),
                 ),
               ],
+            ),
+            SizedBox(
+              height: 10,
             ),
             Text(
               "Important For Your Doctors To Know What You Have Been Through Or Are Going Through At The Moment",
               textAlign: TextAlign.start,
               style: TextStyle(
-                  fontFamily: "PoppinsRegular",
-                  color: gMainColor,
-                  fontSize: 9.sp),
+                  fontFamily: kFontMedium,
+                  color: gHintTextColor,
+                  fontSize: subHeadingFont
+              ),
             ),
           ],
         ),
         SizedBox(height: 2.h),
-        buildLabelTextField('Weight In Kgs'),
+        buildLabelTextField('Weight In Kgs', fontSize: questionFont),
+        SizedBox(height: 1.h),
         buildContainer(model?.weight ?? ""),
         SizedBox(height: 1.h),
-        buildLabelTextField('Height In Feet & Inches'),
+        buildLabelTextField('Height In Feet & Inches', fontSize: questionFont),
+        SizedBox(height: 1.h),
         buildContainer(model?.height ?? ""),
         SizedBox(height: 1.h),
         buildLabelTextField(
-            'Brief Paragraph About Your Current Complaints Are & What You Are Looking To Heal Here'),
+            'Brief Paragraph About Your Current Complaints Are & What You Are Looking To Heal Here', fontSize: questionFont),
+        SizedBox(height: 1.h),
         buildContainer(model?.healthProblem ?? ""),
         SizedBox(height: 1.h),
-        buildLabelTextField('Please Check All That Apply To You'),
+        buildLabelTextField('Please Check All That Apply To You', fontSize: questionFont),
         SizedBox(height: 1.h),
         showSelectedHealthBox(),
         buildContainer(model?.listProblemsOther ?? ""),
         SizedBox(height: 1.h),
-        buildLabelTextField('Please Check All That Apply To You'),
+        buildLabelTextField('Please Check All That Apply To You', fontSize: questionFont),
         SizedBox(height: 1.h),
         showSelectedHealthBox2(),
         SizedBox(height: 1.h),
-        buildLabelTextField('Tongue Coating'),
+        buildLabelTextField('Tongue Coating', fontSize: questionFont),
         SizedBox(height: 1.h),
         Column(
           children: [
@@ -773,26 +803,28 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
         buildContainer(model?.tongueCoatingOther ?? ""),
         SizedBox(height: 1.h),
         buildLabelTextField(
-            "Has Frequency Of Urination Increased Or Decreased In The Recent Past"),
+            "Has Frequency Of Urination Increased Or Decreased In The Recent Past", fontSize: questionFont),
         SizedBox(height: 1.h),
         buildUrination("${model?.anyUrinationIssue}"),
-        buildLabelTextField("Urin Color"),
+        buildLabelTextField("Urin Color", fontSize: questionFont),
         SizedBox(height: 1.h),
         buildUrineColorRadioButton(
             "${model?.urineColor.toString().capitalize()}"),
         buildContainer(model?.urineColorOther ?? ""),
         SizedBox(height: 1.h),
-        buildLabelTextField("Urine Smell"),
+        buildLabelTextField("Urine Smell", fontSize: questionFont),
         SizedBox(height: 1.h),
         showSelectedUrinSmellList(),
+        SizedBox(height: 1.h),
         buildContainer(model?.urineSmellOther ?? ""),
         SizedBox(height: 1.h),
-        buildLabelTextField("What Does Your Urine Look Like"),
+        buildLabelTextField("What Does Your Urine Look Like", fontSize: questionFont),
         SizedBox(height: 1.h),
         buildUrineLookRadioButton("${model?.urineLookLike}"),
+        SizedBox(height: 1.h),
         buildContainer(model?.urineSmellOther ?? ""),
         SizedBox(height: 1.h),
-        buildLabelTextField("Which one is the closest match to your stool"),
+        buildLabelTextField("Which one is the closest match to your stool", fontSize: questionFont),
         SizedBox(height: 1.h),
         ListView(
           shrinkWrap: true,
@@ -891,21 +923,23 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
           ],
         ),
         SizedBox(height: 1.h),
-        buildLabelTextField("Medical Interventions Done Before"),
+        buildLabelTextField("Medical Interventions Done Before", fontSize: questionFont),
         SizedBox(height: 1.h),
         showSelectedMedicalInterventionsList(),
+        SizedBox(height: 1.h),
         buildContainer(model?.anyMedicalIntervationDoneBeforeOther ?? ""),
         SizedBox(height: 1.h),
         buildLabelTextField(
-            'Any Medications/Supplements/Inhalers/Contraceptives You Consume At The Moment'),
+            'Any Medications/Supplements/Inhalers/Contraceptives You Consume At The Moment', fontSize: questionFont),
+        SizedBox(height: 1.h),
         buildContainer(model?.anyMedicationConsumeAtMoment ?? ""),
         SizedBox(height: 1.h),
         buildLabelTextField(
-            'Holistic/Alternative Therapies You Have Been Through & When (Ayurveda, Homeopathy) '),
+            'Holistic/Alternative Therapies You Have Been Through & When (Ayurveda, Homeopathy) ', fontSize: questionFont),
         SizedBox(height: 1.h),
         buildContainer(model?.anyTherapiesHaveDoneBefore ?? ""),
         SizedBox(height: 1.h),
-        buildLabelTextField("Uploaded Files"),
+        buildLabelTextField("Uploaded Files", fontSize: questionFont),
         SizedBox(height: 1.h),
         showFiles(model!.medicalReport),
         SizedBox(height: 2.h),
@@ -927,9 +961,10 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
                   "Food Habits",
                   textAlign: TextAlign.start,
                   style: TextStyle(
-                      fontFamily: "PoppinsBold",
-                      color: kPrimaryColor,
-                      fontSize: 15.sp),
+                      fontFamily: kFontMedium,
+                      color: gBlackColor,
+                      fontSize: headingFont
+                  ),
                 ),
                 SizedBox(
                   width: 2.w,
@@ -937,53 +972,57 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
                 Expanded(
                   child: Container(
                     height: 1,
-                    color: kPrimaryColor,
+                    color: kLineColor,
                   ),
                 ),
               ],
+            ),
+            SizedBox(
+              height: 10,
             ),
             Text(
               "To Make Your Meal Plans As Simple & Easy For You To Follow As Possible",
               textAlign: TextAlign.start,
               style: TextStyle(
-                  fontFamily: "PoppinsRegular",
-                  color: gMainColor,
-                  fontSize: 9.sp),
+                  fontFamily: kFontMedium,
+                  color: gHintTextColor,
+                  fontSize: subHeadingFont
+              ),
             ),
           ],
         ),
         SizedBox(height: 2.h),
         buildLabelTextField(
-            "Do Certain Food Affect Your Digestion? If So Please Provide Details."),
+            "Do Certain Food Affect Your Digestion? If So Please Provide Details.", fontSize: questionFont),
         SizedBox(height: 1.h),
         buildContainer(model?.mentionIfAnyFoodAffectsYourDigesion ?? ""),
         SizedBox(height: 1.h),
         buildLabelTextField(
-            "Do You Follow Any Special Diet(Keto,Etc)? If So Please Provide Details"),
+            "Do You Follow Any Special Diet(Keto,Etc)? If So Please Provide Details", fontSize: questionFont),
         SizedBox(height: 1.h),
         buildContainer(model?.anySpecialDiet ?? ""),
         SizedBox(height: 1.h),
         buildLabelTextField(
-            "Do You Have Any Known Food Allergy? If So Please Provide Details."),
+            "Do You Have Any Known Food Allergy? If So Please Provide Details.", fontSize: questionFont),
         SizedBox(height: 1.h),
         buildContainer(model?.anyFoodAllergy ?? ""),
         SizedBox(height: 1.h),
         buildLabelTextField(
-            "Do You Have Any Known Intolerance? If So Please Provide Details."),
+            "Do You Have Any Known Intolerance? If So Please Provide Details.", fontSize: questionFont),
         SizedBox(height: 1.h),
         buildContainer(model?.anyIntolerance ?? ""),
         SizedBox(height: 1.h),
         buildLabelTextField(
-            "Do You Have Any Severe Food Cravings? If So Please Provide Details."),
+            "Do You Have Any Severe Food Cravings? If So Please Provide Details.", fontSize: questionFont),
         SizedBox(height: 1.h),
         buildContainer(model?.anySevereFoodCravings ?? ""),
         SizedBox(height: 1.h),
         buildLabelTextField(
-            "Do You Dislike Any Food?Please Mention All Of Them"),
+            "Do You Dislike Any Food?Please Mention All Of Them", fontSize: questionFont),
         SizedBox(height: 1.h),
         buildContainer(model?.anyDislikeFood ?? ""),
         SizedBox(height: 1.h),
-        buildLabelTextField("How Many Glasses Of Water Do You Have A Day?"),
+        buildLabelTextField("How Many Glasses Of Water Do You Have A Day?", fontSize: questionFont),
         SizedBox(height: 1.h),
         Row(
           children: [
@@ -1049,9 +1088,10 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
                   "Life Style",
                   textAlign: TextAlign.start,
                   style: TextStyle(
-                      fontFamily: "PoppinsBold",
-                      color: kPrimaryColor,
-                      fontSize: 15.sp),
+                      fontFamily: kFontMedium,
+                      color: gBlackColor,
+                      fontSize: headingFont
+                  ),
                 ),
                 SizedBox(
                   width: 2.w,
@@ -1059,23 +1099,28 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
                 Expanded(
                   child: Container(
                     height: 1,
-                    color: kPrimaryColor,
+                    color: kLineColor,
                   ),
                 ),
               ],
+            ),
+            SizedBox(
+              height: 10,
             ),
             Text(
               "This Tells Us How Your Gut Is & Has Been Treated",
               textAlign: TextAlign.start,
               style: TextStyle(
-                  fontFamily: "PoppinsRegular",
-                  color: gMainColor,
-                  fontSize: 9.sp),
+                  fontFamily: kFontMedium,
+                  color: gHintTextColor,
+                  fontSize: subHeadingFont
+              ),
             ),
           ],
         ),
-        SizedBox(height: 1.h),
-        buildLabelTextField("Habits Or Addiction"),
+        SizedBox(height: 2.h),
+
+        buildLabelTextField("Habits Or Addiction", fontSize: questionFont),
         SizedBox(height: 1.h),
         showSelectedHabitsList(),
         buildContainer(model?.anyHabbitOrAddictionOther ?? ""),
@@ -1098,9 +1143,10 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
                   "Bowel Type",
                   textAlign: TextAlign.start,
                   style: TextStyle(
-                      fontFamily: "PoppinsBold",
-                      color: kPrimaryColor,
-                      fontSize: 15.sp),
+                      fontFamily: kFontMedium,
+                      color: gBlackColor,
+                      fontSize: headingFont
+                  ),
                 ),
                 SizedBox(
                   width: 2.w,
@@ -1108,23 +1154,27 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
                 Expanded(
                   child: Container(
                     height: 1,
-                    color: kPrimaryColor,
+                    color: kLineColor,
                   ),
                 ),
               ],
+            ),
+            SizedBox(
+              height: 10,
             ),
             Text(
               "Is a Barometer For Your Gut Health",
               textAlign: TextAlign.start,
               style: TextStyle(
-                  fontFamily: "PoppinsRegular",
-                  color: gMainColor,
-                  fontSize: 9.sp),
+                  fontFamily: kFontMedium,
+                  color: gHintTextColor,
+                  fontSize: subHeadingFont
+              ),
             ),
           ],
         ),
         SizedBox(height: 1.h),
-        buildLabelTextField("What is your after meal preference?"),
+        buildLabelTextField("What is your after meal preference?", fontSize: questionFont),
         SizedBox(height: 1.h),
         ListView(
           shrinkWrap: true,
@@ -1180,7 +1230,7 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
           ],
         ),
         SizedBox(height: 1.h),
-        buildLabelTextField("Hunger Pattern"),
+        buildLabelTextField("Hunger Pattern", fontSize: questionFont),
         SizedBox(height: 1.h),
         ListView(
           shrinkWrap: true,
@@ -1254,7 +1304,7 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
           ],
         ),
         SizedBox(height: 1.h),
-        buildLabelTextField("Bowel Pattern"),
+        buildLabelTextField("Bowel Pattern", fontSize: questionFont),
         SizedBox(height: 1.h),
         ListView(
           shrinkWrap: true,
@@ -1332,28 +1382,6 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
     );
   }
 
-  buildLabelTextField(String name) {
-    return RichText(
-      text: TextSpan(
-        text: name,
-        style: TextStyle(
-          fontSize: 11.sp,
-          color: gBlackColor,
-          fontFamily: "GothamMedium",
-        ),
-        children: [
-          TextSpan(
-            text: ' *',
-            style: TextStyle(
-              fontSize: 9.sp,
-              color: gGreyColor,
-              fontFamily: "PoppinsSemiBold",
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   final EvaluationFormRepository repository = EvaluationFormRepository(
     apiClient: ApiClient(
@@ -1652,9 +1680,19 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
       itemCount: selectedHealthCheckBox1.length,
       itemBuilder: (context, index) {
         return ListTile(
-          leading: const Icon(
-            Icons.check_box_outlined,
-            color: gsecondaryColor,
+          visualDensity: VisualDensity(vertical: -3), // to compact
+          minVerticalPadding: 0,
+          minLeadingWidth: 30,
+          horizontalTitleGap: 0,
+          dense: true,
+          contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+
+          leading: SizedBox(
+            width: 15,
+            child: const Icon(
+              Icons.check_box_outlined,
+              color: gsecondaryColor,
+            ),
           ),
           title: Text(
             selectedHealthCheckBox1[index] ?? "",
@@ -1662,7 +1700,7 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
               fontSize: 10.sp,
               height: 1.3,
               color: gBlackColor,
-              fontFamily: "GothamBook",
+              fontFamily: kFontBook,
             ),
           ),
         );
@@ -1678,6 +1716,12 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
       itemCount: selectedHealthCheckBox2.length,
       itemBuilder: (context, index) {
         return ListTile(
+          visualDensity: VisualDensity(vertical: -3), // to compact
+          minVerticalPadding: 0,
+          minLeadingWidth: 30,
+          horizontalTitleGap: 0,
+          dense: true,
+          contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
           leading: const Icon(
             Icons.check_box_outlined,
             color: gsecondaryColor,
@@ -1688,7 +1732,7 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
               fontSize: 10.sp,
               height: 1.3,
               color: gBlackColor,
-              fontFamily: "GothamBook",
+              fontFamily: kFontBook,
             ),
           ),
         );
@@ -1703,6 +1747,12 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
       itemCount: selectedUrinSmellList.length,
       itemBuilder: (context, index) {
         return ListTile(
+          visualDensity: VisualDensity(vertical: -3), // to compact
+          minVerticalPadding: 0,
+          minLeadingWidth: 30,
+          horizontalTitleGap: 0,
+          dense: true,
+          contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
           leading: const Icon(
             Icons.check_box_outlined,
             color: gsecondaryColor,
@@ -1713,7 +1763,7 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
               fontSize: 10.sp,
               height: 1.3,
               color: gBlackColor,
-              fontFamily: "GothamBook",
+              fontFamily: kFontBook,
             ),
           ),
         );
@@ -1728,6 +1778,12 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
       itemCount: selectedmedicalInterventionsDoneBeforeList.length,
       itemBuilder: (context, index) {
         return ListTile(
+          visualDensity: VisualDensity(vertical: -3), // to compact
+          minVerticalPadding: 0,
+          minLeadingWidth: 30,
+          horizontalTitleGap: 0,
+          dense: true,
+          contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
           leading: const Icon(
             Icons.check_box_outlined,
             color: gsecondaryColor,
@@ -1738,7 +1794,7 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
               fontSize: 10.sp,
               height: 1.3,
               color: gBlackColor,
-              fontFamily: "GothamBook",
+              fontFamily: kFontBook,
             ),
           ),
         );
@@ -1753,6 +1809,12 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
       itemCount: selectedHabitCheckBoxList.length,
       itemBuilder: (context, index) {
         return ListTile(
+          visualDensity: VisualDensity(vertical: -3), // to compact
+          minVerticalPadding: 0,
+          minLeadingWidth: 30,
+          horizontalTitleGap: 0,
+          dense: true,
+          contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
           leading: const Icon(
             Icons.check_box_outlined,
             color: gsecondaryColor,
@@ -1763,7 +1825,7 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
               fontSize: 10.sp,
               height: 1.3,
               color: gBlackColor,
-              fontFamily: "GothamBook",
+              fontFamily: kFontBook,
             ),
           ),
         );
@@ -1827,5 +1889,40 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
     print(lifeStyle4);
     selectedHabitCheckBoxList = lifeStyle4;
     print("selectedHabitCheckBoxList: $selectedHabitCheckBoxList");
+  }
+
+  getFontColor(String name){
+    print("name====> $name");
+    Color? color;
+    if(name == "married"){
+      color = kTextColor;
+    }
+    else if(name == 'single'){
+      color = kTextColor;
+    }
+    else if(name == "separated"){
+      color = kTextColor;
+    }
+    else{
+      color = gHintTextColor;
+    }
+    return color;
+  }
+
+  getFontFamily(String name){
+    String? font;
+    if(name == "married"){
+      font = kFontMedium;
+    }
+    else if(name == 'single'){
+      font = kFontMedium;
+    }
+    else if(name == "separated"){
+      font = kFontMedium;
+    }
+    else{
+      font = kFontBook;
+    }
+    return font;
   }
 }

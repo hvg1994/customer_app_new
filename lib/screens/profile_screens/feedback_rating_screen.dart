@@ -316,7 +316,7 @@ class _FeedbackRatingScreenState extends State<FeedbackRatingScreen> {
                         enabledBorder: OutlineInputBorder(
                           borderSide: BorderSide(color: gMainColor, width: 1),
                         ),
-                        hintText: 'Your answer...',
+                        hintText: 'Tell us about your journey.....',
                       ),
                     ),
                   ),

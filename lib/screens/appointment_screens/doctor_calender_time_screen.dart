@@ -153,7 +153,7 @@ class _DoctorCalenderTimeScreenState extends State<DoctorCalenderTimeScreen> {
                             style: TextStyle(
                               height: 1.5,
                               fontSize: 12.sp,
-                              fontFamily: "GothamBook",
+                              fontFamily: kFontBook,
                               color: gBlackColor,
                             ),
                           ),
@@ -162,7 +162,7 @@ class _DoctorCalenderTimeScreenState extends State<DoctorCalenderTimeScreen> {
                             style: TextStyle(
                               height: 1.5,
                               fontSize: 12.sp,
-                              fontFamily: "GothamMedium",
+                              fontFamily: kFontMedium,
                               color: gMainColor,
                             ),
                           ),
@@ -178,9 +178,9 @@ class _DoctorCalenderTimeScreenState extends State<DoctorCalenderTimeScreen> {
                   ),
                 ),
                 Text(
-                  "Choose Day",
+                  "Choose Your Preferred Day",
                   style: TextStyle(
-                      fontFamily: "GothamRoundedBold_21016",
+                      fontFamily: kFontBold,
                       color: gPrimaryColor,
                       fontSize: 11.sp),
                 ),
@@ -189,9 +189,9 @@ class _DoctorCalenderTimeScreenState extends State<DoctorCalenderTimeScreen> {
                   height: 1.h,
                 ),
                 Text(
-                  "Choose Time",
+                  "Choose Your Preferred Time",
                   style: TextStyle(
-                      fontFamily: "GothamRoundedBold_21016",
+                      fontFamily: kFontBold,
                       color: gPrimaryColor,
                       fontSize: 11.sp),
                 ),
@@ -204,7 +204,7 @@ class _DoctorCalenderTimeScreenState extends State<DoctorCalenderTimeScreen> {
                     child:  Text(
                       slotErrorText,
                       style: TextStyle(
-                          fontFamily: "GothamRoundedBold_21016",
+                          fontFamily: kFontBold,
                           color: gPrimaryColor,
                           fontSize: 10.sp),
                     ),
@@ -236,10 +236,10 @@ class _DoctorCalenderTimeScreenState extends State<DoctorCalenderTimeScreen> {
                       decoration: BoxDecoration(
                         color: eUser().buttonColor,
                         borderRadius: BorderRadius.circular(eUser().buttonBorderRadius),
-                        border: Border.all(
-                            color: eUser().buttonBorderColor,
-                            width: eUser().buttonBorderWidth
-                        ),
+                        // border: Border.all(
+                        //     color: eUser().buttonBorderColor,
+                        //     width: eUser().buttonBorderWidth
+                        // ),
                       ),
                       child: (showBookingProgress)
                           ? buildThreeBounceIndicator(color: eUser().threeBounceIndicatorColor)
@@ -268,13 +268,13 @@ class _DoctorCalenderTimeScreenState extends State<DoctorCalenderTimeScreen> {
     return Column(
       children: [
         SizedBox(
-          height: 22.h,
+          height: 28.h,
           child: PageView(
             controller: pageController,
             children: [
-              buildFeedbackList(),
-              buildFeedbackList(),
-              buildFeedbackList(),
+              buildFeedbackList("assets/images/cons1.jpg"),
+              buildFeedbackList("assets/images/cons2.jpg"),
+              buildFeedbackList("assets/images/cons3.jpg"),
             ],
           ),
         ),
@@ -294,62 +294,19 @@ class _DoctorCalenderTimeScreenState extends State<DoctorCalenderTimeScreen> {
     );
   }
 
-  buildFeedbackList() {
+  buildFeedbackList(String assetName) {
     return Container(
       width: double.maxFinite,
       margin: EdgeInsets.symmetric(vertical: 1.h,horizontal: 1.w),
       padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 3.w),
       decoration: BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage(assetName),
+          fit: BoxFit.contain,
+          filterQuality: FilterQuality.high
+        ),
         color: gsecondaryColor,
         borderRadius: BorderRadius.circular(20),
-      ),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.3),
-                      blurRadius: 20,
-                      offset: const Offset(2, 10),
-                    ),
-                  ],
-                ),
-                child: CircleAvatar(
-                  radius: 3.h,
-                  backgroundImage:
-                      const AssetImage("assets/images/cheerful.png"),
-                ),
-              ),
-              SizedBox(width: 3.w),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Ms. Lorem Ipsum Daries",
-                    style: TextStyle(
-                        fontFamily: "GothamMedium",
-                        color: gWhiteColor,
-                        fontSize: 10.sp),
-                  ),
-                  SizedBox(height: 0.3.h),
-                  buildRating(),
-                ],
-              ),
-            ],
-          ),
-          Text(
-            'Lorem lpsum is simply dummy text of the printing and typesetting industry. Lorem lpsum has been the industry\'s standard dummy text ever since the 1500s,when an unknown printer took a gallery of type and scrambled it to make a type specimen book.',
-            style: TextStyle(
-              height: 1.7,
-              fontFamily: "GothamBook",
-              color: gWhiteColor,
-              fontSize: 8.sp,
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -387,7 +344,7 @@ class _DoctorCalenderTimeScreenState extends State<DoctorCalenderTimeScreen> {
           Text(
             title,
             style: TextStyle(
-              fontFamily: "GothamBook",
+              fontFamily: kFontBook,
               color: gPrimaryColor,
               fontSize: 9.sp,
             ),
@@ -396,7 +353,7 @@ class _DoctorCalenderTimeScreenState extends State<DoctorCalenderTimeScreen> {
           Text(
             subTitle,
             style: TextStyle(
-              fontFamily: "GothamMedium",
+              fontFamily: kFontMedium,
               color: gPrimaryColor,
               fontSize: 9.sp,
             ),
@@ -428,11 +385,12 @@ class _DoctorCalenderTimeScreenState extends State<DoctorCalenderTimeScreen> {
         width: 14.w,
         monthTextStyle: TextStyle(fontSize: 0.sp),
         dateTextStyle: TextStyle(
-            fontFamily: "GothamRoundedBold_21016",
+            fontFamily: kFontBold,
             fontSize: 13.sp,
             color: gPrimaryColor),
         dayTextStyle: TextStyle(
-            fontFamily: "GothamBook", fontSize: 8.sp, color: gPrimaryColor),
+            fontFamily: kFontBook,
+            fontSize: 8.sp, color: gPrimaryColor),
         initialSelectedDate: DateTime.now(),
         selectionColor: gPrimaryColor,
         selectedTextColor: gMainColor,
@@ -463,7 +421,7 @@ class _DoctorCalenderTimeScreenState extends State<DoctorCalenderTimeScreen> {
         decoration: BoxDecoration(
           border: Border.all(color: gMainColor, width: 1),
           borderRadius: BorderRadius.circular(8),
-          color: (model.isBooked == '0' && isSelected != slotName) ? gWhiteColor : model.isBooked == '1' ? gGreyColor : gPrimaryColor,
+          color: (model.isBooked == '0' && isSelected != slotName) ? gWhiteColor : model.isBooked == '1' ? gHintTextColor : gPrimaryColor,
           boxShadow: (model.isBooked == '0' && isSelected != slotName)
               ? [
             BoxShadow(
@@ -483,7 +441,7 @@ class _DoctorCalenderTimeScreenState extends State<DoctorCalenderTimeScreen> {
           slotName,
           style: TextStyle(
             fontSize: 10.sp,
-            fontFamily: "GothamBook",
+            fontFamily: kFontBook,
             color: (model.isBooked != '0' || isSelected == slotName) ? gMainColor : gTextColor,
           ),
         ),

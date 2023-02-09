@@ -736,7 +736,7 @@ class _TrackerUIState extends State<TrackerUI> {
     CheckBoxSettings(title: "Diarrhea"),
     CheckBoxSettings(title: "Constipation"),
     CheckBoxSettings(title: "Headache"),
-    CheckBoxSettings(title: "fever or flu-like symptoms"),
+    CheckBoxSettings(title: "Fever or flu-like symptoms"),
     CheckBoxSettings(title: "Cold"),
     CheckBoxSettings(title: "Frequent urination"),
     CheckBoxSettings(title: "Urinary tract discharges"),
@@ -808,6 +808,10 @@ class _TrackerUIState extends State<TrackerUI> {
     mealPlanMissedController.removeListener(() { });
   }
 
+  double headingFont = 12.sp;
+  double subHeadingFont = 10.sp;
+  double questionFont = 10.sp;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -840,9 +844,10 @@ class _TrackerUIState extends State<TrackerUI> {
                       "Gut Detox Program Status Tracker",
                       textAlign: TextAlign.start,
                       style: TextStyle(
-                          fontFamily: "PoppinsBold",
-                          color: kPrimaryColor,
-                          fontSize: 15.sp),
+                          fontFamily: kFontMedium,
+                          color: gBlackColor,
+                          fontSize: headingFont
+                      ),
                     ),
                     SizedBox(
                       width: 2.w,
@@ -850,18 +855,23 @@ class _TrackerUIState extends State<TrackerUI> {
                     Expanded(
                       child: Container(
                         height: 1,
-                        color: kPrimaryColor,
+                        color: kLineColor,
                       ),
                     ),
                   ],
+                ),
+                SizedBox(
+                  height: 10,
                 ),
                 Text(
                   "Your detox & healing program tracker that takes less than 1 minute to fill but essential for your doctors to track, manage & intervene effectively.",
                   textAlign: TextAlign.start,
                   style: TextStyle(
-                      fontFamily: "PoppinsRegular",
-                      color: gMainColor,
-                      fontSize: 9.sp),
+                      fontFamily: kFontMedium,
+                      height: 1.4,
+                      color: gHintTextColor,
+                      fontSize: subHeadingFont
+                  ),
                 ),
               ],
             ),
@@ -990,9 +1000,10 @@ class _TrackerUIState extends State<TrackerUI> {
                     "Symptom Tracker",
                     textAlign: TextAlign.start,
                     style: TextStyle(
-                        fontFamily: "PoppinsBold",
-                        color: kPrimaryColor,
-                        fontSize: 11.sp),
+                        fontFamily: kFontMedium,
+                        color: gBlackColor,
+                        fontSize: headingFont
+                    ),
                   ),
                   SizedBox(
                     width: 2.w,
@@ -1000,25 +1011,29 @@ class _TrackerUIState extends State<TrackerUI> {
                   Expanded(
                     child: Container(
                       height: 1,
-                      color: kPrimaryColor,
+                      color: kLineColor,
                     ),
                   ),
                 ],
+              ),
+              SizedBox(
+                height: 10,
               ),
               Text(
                 "For your doctor to know if you are on track :)",
                 textAlign: TextAlign.start,
                 style: TextStyle(
-                    fontFamily: "PoppinsRegular",
-                    color: gMainColor,
-                    fontSize: 9.sp),
+                    fontFamily: kFontMedium,
+                    color: gHintTextColor,
+                    fontSize: subHeadingFont
+                ),
               ),
             ],
           ),
           SizedBox(
             height: 3.h,
           ),
-          buildLabelTextField('Did you deal with any of the following withdrawal symptoms from detox today? If "Yes," then choose all that apply. If no, choose none of the above.'),
+          buildLabelTextField('Did you deal with any of the following withdrawal symptoms from detox today? If "Yes," then choose all that apply. If no, choose none of the above.', fontSize: questionFont),
           SizedBox(
             height: 1.h,
           ),
@@ -1026,7 +1041,7 @@ class _TrackerUIState extends State<TrackerUI> {
           SizedBox(
             height: 1.h,
           ),
-          buildLabelTextField('Did any of the following (adequate) detoxification / healing signs and symptoms happen to you today? If "Yes," then choose all that apply. If no, choose none of the above.'),
+          buildLabelTextField('Did any of the following (adequate) detoxification / healing signs and symptoms happen to you today? If "Yes," then choose all that apply. If no, choose none of the above.', fontSize: questionFont),
           SizedBox(
             height: 2.h,
           ),
@@ -1034,10 +1049,7 @@ class _TrackerUIState extends State<TrackerUI> {
           SizedBox(
             height: 2.h,
           ),
-          buildLabelTextField('Please let us know if you notice any other signs or have any other worries. If none, enter "No."'),
-          SizedBox(
-            height: 1.h,
-          ),
+          buildLabelTextField('Please let us know if you notice any other signs or have any other worries. If none, enter "No."', fontSize: questionFont),
           TextFormField(
             controller: worriesController,
             cursorColor: kPrimaryColor,
@@ -1055,12 +1067,9 @@ class _TrackerUIState extends State<TrackerUI> {
             keyboardType: TextInputType.name,
           ),
           SizedBox(
-            height: 2.h,
+            height: 3.h,
           ),
-          buildLabelTextField('Did you eat something other than what was on your meal plan? If "Yes", please give more information? If not, type "No."'),
-          SizedBox(
-            height: 1.h,
-          ),
+          buildLabelTextField('Did you eat something other than what was on your meal plan? If "Yes", please give more information? If not, type "No."', fontSize: questionFont),
           TextFormField(
             controller: eatSomethingController,
             cursorColor: kPrimaryColor,
@@ -1078,12 +1087,9 @@ class _TrackerUIState extends State<TrackerUI> {
             keyboardType: TextInputType.name,
           ),
           SizedBox(
-            height: 2.h,
+            height: 3.h,
           ),
-          buildLabelTextField('Did you complete the Calm and Move modules suggested today?'),
-          SizedBox(
-            height: 1.h,
-          ),
+          buildLabelTextField('Did you complete the Calm and Move modules suggested today?', fontSize: questionFont),
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
@@ -1105,7 +1111,9 @@ class _TrackerUIState extends State<TrackerUI> {
                   ),
                   Text(
                     'Yes',
-                    style: buildTextStyle(),
+                    style: buildTextStyle(
+                        color: selectedCalmModule == 'Yes' ? kTextColor : gHintTextColor,
+                        fontFamily: selectedCalmModule == 'Yes' ? kFontMedium : kFontBook),
                   ),
                 ],
               ),
@@ -1130,19 +1138,17 @@ class _TrackerUIState extends State<TrackerUI> {
                   ),
                   Text(
                     'No',
-                    style: buildTextStyle(),
+                    style: buildTextStyle(color: selectedCalmModule == 'No' ? kTextColor : gHintTextColor,
+                        fontFamily: selectedCalmModule == 'No' ? kFontMedium : kFontBook),
                   ),
                 ],
               )
             ],
           ),
           SizedBox(
-            height: 2.h,
+            height: 3.h,
           ),
-          buildLabelTextField('Have you had a medical exam or taken any medications during the program? If "Yes", please give more information. Type "No" if not.'),
-          SizedBox(
-            height: 1.h,
-          ),
+          buildLabelTextField('Have you had a medical exam or taken any medications during the program? If "Yes", please give more information. Type "No" if not.', fontSize: questionFont),
           TextFormField(
             controller: anyMedicationsController,
             cursorColor: kPrimaryColor,
@@ -1212,11 +1218,16 @@ class _TrackerUIState extends State<TrackerUI> {
 
   buildHealthCheckBox(CheckBoxSettings healthCheckBox, String from) {
     return ListTile(
+      visualDensity: VisualDensity(vertical: -3), // to compact
+
+      minVerticalPadding: 0,
       minLeadingWidth: 30,
-      horizontalTitleGap: 3,
+      horizontalTitleGap: 0,
       dense: true,
+      contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
       leading: SizedBox(
-        width: 20,
+        width: 24,
+        height: 10,
         child: Checkbox(
           materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
           activeColor: kPrimaryColor,
@@ -1310,7 +1321,9 @@ class _TrackerUIState extends State<TrackerUI> {
       ),
       title: Text(
         healthCheckBox.title.toString(),
-        style: buildTextStyle(),
+        style: buildTextStyle(color: healthCheckBox.value == true ? kTextColor : gHintTextColor,
+          fontFamily: healthCheckBox.value == true ? kFontMedium : kFontBook
+        ),
       ),
     );
   }
@@ -1375,7 +1388,6 @@ class _TrackerUIState extends State<TrackerUI> {
       httpClient: http.Client(),
     ),
   );
-
 
 
 }

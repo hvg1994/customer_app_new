@@ -1,5 +1,5 @@
 // ignore_for_file: deprecated_member_use
-
+import 'package:intl/intl.dart';
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
@@ -79,7 +79,7 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
     if(!widget.isPostProgram && !widget.isFromDashboard){
       widget.data?.team?.teamMember?.forEach((element) {
         if(element.user!.roleId == "2"){
-          doctorNames.add(element.user!.name ?? '');
+          doctorNames.add('Dr. ${element.user!.name}' ?? '');
         }
       });
       if(widget.data?.kaleyraSuccessId != null){
@@ -101,7 +101,7 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
       model.teamMember?.forEach((element) {
         print('from appoi: ${element.toJson()}');
         if(element.user!.roleId == "2"){
-          doctorNames.add(element.user!.name ?? '');
+          doctorNames.add('Dr. ${element.user!.name}' ?? '');
         }
       });
       if(model.teamPatients!.patient!.user!.kaleyraId != null){
@@ -149,9 +149,19 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
                   buildAppBar(() {
                     Navigator.pop(context);
                   }),
-                  const Center(
-                    child: Image(
-                      image: AssetImage("assets/images/Group 4865.png"),
+                  Container(
+                    height: 26.h,
+                    width: double.maxFinite,
+                    margin: EdgeInsets.symmetric(vertical: 1.h,horizontal: 1.w),
+                    padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 3.w),
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                          image: AssetImage('assets/images/appointment_top.png'),
+                          fit: BoxFit.contain,
+                          filterQuality: FilterQuality.high
+                      ),
+                      color: gsecondaryColor,
+                      borderRadius: BorderRadius.circular(20),
                     ),
                   ),
                   SizedBox(
@@ -159,10 +169,10 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
                   ),
                   Center(
                     child: Text(
-                      "Your Consultation will be with",
+                      "Your Consultation is booked with",
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                          fontFamily: "GothamMedium",
+                          fontFamily: kFontMedium,
                           color: gTextColor,
                           fontSize: 12.sp),
                     ),
@@ -204,7 +214,7 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
                             'Chat Support',
                             style: TextStyle(
                               decoration: TextDecoration.underline,
-                              fontFamily: "GothamMedium",
+                              fontFamily: kFontMedium,
                               color: gTextColor,
                               fontSize: 10.sp,
                             ),
@@ -243,11 +253,11 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
                                     text: TextSpan(
                                       children: <TextSpan>[
                                         TextSpan(
-                                          text: 'Your Slot Booked @ ',
+                                          text: 'Your Appointment @ ',
                                           style: TextStyle(
                                             height: 1.5,
                                             fontSize: 12.sp,
-                                            fontFamily: "GothamBook",
+                                            fontFamily: kFontBook,
                                             color: gWhiteColor,
                                           ),
                                         ),
@@ -256,7 +266,7 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
                                           style: TextStyle(
                                             height: 1.5,
                                             fontSize: 13.sp,
-                                            fontFamily: "GothamMedium",
+                                            fontFamily: kFontMedium,
                                             color: gWhiteColor,
                                           ),
                                         ),
@@ -265,16 +275,16 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
                                           style: TextStyle(
                                             height: 1.5,
                                             fontSize: 12.sp,
-                                            fontFamily: "GothamBook",
+                                            fontFamily: kFontBook,
                                             color: gWhiteColor,
                                           ),
                                         ),
                                         TextSpan(
-                                          text: widget.bookingDate.toString(),
+                                          text: DateFormat('dd-MM-yyyy').format(DateTime.parse((widget.bookingDate.toString()))).toString(),
                                           style: TextStyle(
                                             height: 1.5,
                                             fontSize: 13.sp,
-                                            fontFamily: "GothamMedium",
+                                            fontFamily: kFontMedium,
                                             color: gWhiteColor,
                                           ),
                                         ),
@@ -283,7 +293,7 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
                                           style: TextStyle(
                                             height: 1.5,
                                             fontSize: 12.sp,
-                                            fontFamily: "GothamBook",
+                                            fontFamily: kFontBook,
                                             color: gWhiteColor,
                                           ),
                                         ),
@@ -320,7 +330,7 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
                                         child: Text(
                                           'Join',
                                           style: TextStyle(
-                                            fontFamily: "GothamMedium",
+                                            fontFamily: kFontMedium,
                                             color: gMainColor,
                                             fontSize: 12.sp,
                                           ),
@@ -367,7 +377,7 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
                                       child: Text(
                                         'Join',
                                         style: TextStyle(
-                                          fontFamily: "GothamMedium",
+                                          fontFamily: kFontMedium,
                                           color: gMainColor,
                                           fontSize: 12.sp,
                                         ),
@@ -396,7 +406,7 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
                                       'Reschedule',
                                       style: TextStyle(
                                         decoration: TextDecoration.underline,
-                                        fontFamily: "GothamMedium",
+                                        fontFamily: kFontMedium,
                                         color: gWhiteColor,
                                         fontSize: 12.sp,
                                       ),
@@ -440,7 +450,7 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
                                     child: Text(
                                       "My Evaluation",
                                       style: TextStyle(
-                                          fontFamily: "GothamMedium",
+                                          fontFamily: kFontMedium,
                                           color: gTextColor,
                                           fontSize: 12.sp),
                                     ),

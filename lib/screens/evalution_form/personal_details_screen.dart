@@ -196,7 +196,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
     CheckBoxSettings(title: "Burping"),
     CheckBoxSettings(
         title:
-            "Sour Regurgitation/ Food Regurgitation.(Food Coming back to your mouth)"),
+            "Sour Regurgitation/ Food Regurgitation (Food Coming back to your mouth)"),
     CheckBoxSettings(title: "Burning while passing urine"),
     CheckBoxSettings(title: "None Of The Above")
   ];
@@ -364,17 +364,6 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                     buildAppBar(() {
                       Navigator.pop(context);
                     }),
-                    SizedBox(
-                      width: 3.w,
-                    ),
-                    Text(
-                      "Gut Wellness Club \nEvaluation Form",
-                      textAlign: TextAlign.start,
-                      style: TextStyle(
-                          fontFamily: "PoppinsMedium",
-                          color: Colors.white,
-                          fontSize: 12.sp),
-                    ),
                   ],
                 ),
               ),
@@ -422,14 +411,17 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                     checkFields(context);
                 },
                 child: Container(
+                  width: 40.w,
+                  height: 5.h,
                   padding:
                   EdgeInsets.symmetric(vertical: 1.h, horizontal: 15.w),
                   decoration: BoxDecoration(
                     color: eUser().buttonColor,
                     borderRadius: BorderRadius.circular(eUser().buttonBorderRadius),
-                    border: Border.all(
-                        color: eUser().buttonBorderColor,
-                        width: eUser().buttonBorderWidth                                      ),
+                    // border: Border.all(
+                    //     color: eUser().buttonBorderColor,
+                    //     width: eUser().buttonBorderWidth
+                    // ),
                   ),
                   child: Text(
                     'Next',
@@ -467,9 +459,10 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                     "Personal Details",
                     textAlign: TextAlign.start,
                     style: TextStyle(
-                        fontFamily: "PoppinsBold",
-                        color: kPrimaryColor,
-                        fontSize: 15.sp),
+                        fontFamily: kFontMedium,
+                        color: gBlackColor,
+                        fontSize: headingFont
+                    ),
                   ),
                   SizedBox(
                     width: 2.w,
@@ -477,7 +470,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                   Expanded(
                     child: Container(
                       height: 1,
-                      color: kPrimaryColor,
+                      color: kLineColor,
                     ),
                   ),
                 ],
@@ -486,9 +479,10 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                 "Let Us Know You Better",
                 textAlign: TextAlign.start,
                 style: TextStyle(
-                    fontFamily: "PoppinsRegular",
-                    color: gMainColor,
-                    fontSize: 9.sp),
+                    fontFamily: kFontMedium,
+                    color: gHintTextColor,
+                    fontSize: subHeadingFont
+                ),
               ),
             ],
           ),
@@ -1069,7 +1063,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
             height: 2.h,
           ),
           buildLabelTextField(
-              'Brief Paragraph About Your Current Complaints Are & What You Are Looking To Heal Here'),
+              'Brief Paragraph About Your Current Complaints & What You Are Looking To Heal Here'),
           SizedBox(
             height: 1.h,
           ),
@@ -1094,7 +1088,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
           SizedBox(
             height: 2.h,
           ),
-          buildLabelTextField('Please Check All That Apply To You'),
+          buildLabelTextField('Please check all that apply to you.'),
           SizedBox(
             height: 1.h,
           ),
@@ -1129,7 +1123,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
             height: 2.h,
           ),
           // health checkbox2
-          buildLabelTextField('Please Check All That Apply To You'),
+          buildLabelTextField('Please check all of the boxes that apply to you.'),
           SizedBox(
             height: 1.h,
           ),
@@ -1262,7 +1256,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
             height: 2.h,
           ),
           buildLabelTextField(
-              "Has Frequency Of Urination Increased Or Decreased In The Recent Past"),
+              "Has Frequency Of Urination Increased Or Decreased In The Recent Past?"),
           SizedBox(
             height: 1.h,
           ),
@@ -1320,7 +1314,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
           //     ...urinFrequencyList.map(buildWrapingCheckBox).toList()
           //   ],
           // ),
-          buildLabelTextField("Urin Color"),
+          buildLabelTextField("Urine Color"),
           SizedBox(
             height: 1.h,
           ),
@@ -1513,7 +1507,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
           SizedBox(
             height: 2.h,
           ),
-          buildLabelTextField("What Does Your Urine Look Like"),
+          buildLabelTextField("What Does Your Urine Look Like?"),
           SizedBox(
             height: 1.h,
           ),
@@ -1599,7 +1593,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
           SizedBox(
             height: 2.h,
           ),
-          buildLabelTextField("Which one is the closest match to your stool"),
+          buildLabelTextField("Which one is the closest match to your stool?"),
           SizedBox(
             height: 1.h,
           ),
@@ -1707,7 +1701,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                   Row(
                     children: [
                       Radio(
-                          value: "liquid consistency with no solid pieces",
+                          value: "Liquid consistency with no solid pieces",
                           groupValue: selectedStoolMatch,
                           activeColor: kPrimaryColor,
                           onChanged: (value) {
@@ -4480,7 +4474,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
       child: Text(
         title,
         style: TextStyle(
-          fontFamily: "GothamBook",
+          fontFamily: kFontBook,
           color: gTextColor,
           // color: (statusList[itemId] == title) ? color : gTextColor,
           fontSize: 8.sp,
@@ -4724,7 +4718,7 @@ initstate:
         padding: EdgeInsets.symmetric(vertical: 5, horizontal: 4),
         decoration: BoxDecoration(
             border: Border(bottom: BorderSide(
-                color: gGreyColor.withOpacity(0.5),
+                color: gHintTextColor,
                 width: 1.0,
                 style: BorderStyle.solid
             ),)
@@ -4765,7 +4759,7 @@ initstate:
         padding: EdgeInsets.symmetric(vertical: 5, horizontal: 4),
         decoration: BoxDecoration(
             border: Border(bottom: BorderSide(
-                color: gGreyColor.withOpacity(0.5),
+                color: gHintTextColor,
                 width: 1.0, style: BorderStyle.solid),)
         ),
         child: Row(

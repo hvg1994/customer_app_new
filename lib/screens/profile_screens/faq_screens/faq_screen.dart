@@ -383,7 +383,7 @@ class _FaqScreenState extends State<FaqScreen> {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(6),
         color: Colors.white,
-        // border: Border.all(color: gGreyColor.withOpacity(0.5), width: 1.0),
+        // border: Border.all(color: gHintTextColor, width: 1.0),
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(0.3),

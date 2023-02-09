@@ -159,17 +159,6 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
                     buildAppBar(() {
                       Navigator.pop(context);
                     }),
-                    SizedBox(
-                      width: 3.w,
-                    ),
-                    Text(
-                      "Gut Wellness Club \nEvaluation Form",
-                      textAlign: TextAlign.start,
-                      style: TextStyle(
-                          fontFamily: "PoppinsMedium",
-                          color: Colors.white,
-                          fontSize: 12.sp),
-                    ),
                   ],
                 ),
               ),
@@ -207,17 +196,18 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
                               }
                             },
                             child: Container(
-                              width: 50.w,
+                              width: 40.w,
                               height: 5.h,
-                              // padding: EdgeInsets.symmetric(
-                              //     vertical: 1.h, horizontal: 25.w),
+                              margin: EdgeInsets.symmetric(vertical: 4.h),
+                              padding:
+                              EdgeInsets.symmetric(vertical: 1.h, horizontal: 10.w),
                               decoration: BoxDecoration(
                                 color: eUser().buttonColor,
                                 borderRadius: BorderRadius.circular(eUser().buttonBorderRadius),
-                                border: Border.all(
-                                    color: eUser().buttonBorderColor,
-                                    width: eUser().buttonBorderWidth
-                                ),
+                                // border: Border.all(
+                                //     color: eUser().buttonBorderColor,
+                                //     width: eUser().buttonBorderWidth
+                                // ),
                               ),
                               child:(isSubmitPressed)
                                   ? buildThreeBounceIndicator(color: eUser().threeBounceIndicatorColor)
@@ -262,9 +252,10 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
                     "Food Habits",
                     textAlign: TextAlign.start,
                     style: TextStyle(
-                        fontFamily: "PoppinsBold",
+                        fontFamily: kFontBold,
                         color: kPrimaryColor,
-                        fontSize: 15.sp),
+                        fontSize: 15.sp
+                    ),
                   ),
                   SizedBox(
                     width: 2.w,
@@ -281,16 +272,17 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
                 "To Make Your Meal Plans As Simple & Easy For You To Follow As Possible",
                 textAlign: TextAlign.start,
                 style: TextStyle(
-                    fontFamily: "PoppinsRegular",
-                    color: gMainColor,
-                    fontSize: 9.sp),
+                    fontFamily: kFontBook,
+                    color: gTextColor,
+                    fontSize: 9.sp
+                ),
               ),
             ],
           ),
           SizedBox(
             height: 3.h,
           ),
-          buildLabelTextField("Do Certain Food Affect Your Digestion? If So Please Provide Details."),
+          buildLabelTextField("Do Certain Food Affect Your Digestion? If So, Please Provide Details."),
           SizedBox(
             height: 1.h,
           ),
@@ -307,7 +299,7 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
               }
             },
             decoration: CommonDecoration.buildTextInputDecoration(
-                "Your answer", digestionController),
+                "Enter Enter Your answer", digestionController),
             textInputAction: TextInputAction.next,
             textAlign: TextAlign.start,
             keyboardType: TextInputType.text,
@@ -315,7 +307,7 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
           SizedBox(
             height: 2.h,
           ),
-          buildLabelTextField("Do You Follow Any Special Diet(Keto,Etc)? If So Please Provide Details"),
+          buildLabelTextField("Do You Follow Any Special Diet(Keto,Etc)? If So, Please Provide Details"),
           SizedBox(
             height: 1.h,
           ),
@@ -332,7 +324,7 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
               }
             },
             decoration: CommonDecoration.buildTextInputDecoration(
-                "Your answer", specialDietController),
+                "Enter Your answer", specialDietController),
             textInputAction: TextInputAction.next,
             textAlign: TextAlign.start,
             keyboardType: TextInputType.text,
@@ -340,7 +332,7 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
           SizedBox(
             height: 2.h,
           ),
-          buildLabelTextField("Do You Have Any Known Food Allergy? If So Please Provide Details."),
+          buildLabelTextField("Do You Have Any Known Food Allergy? If So, Please Provide Details."),
           SizedBox(
             height: 1.h,
           ),
@@ -357,7 +349,7 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
               }
             },
             decoration: CommonDecoration.buildTextInputDecoration(
-                "Your answer", foodAllergyController),
+                "Enter Your answer", foodAllergyController),
             textInputAction: TextInputAction.next,
             textAlign: TextAlign.start,
             keyboardType: TextInputType.text,
@@ -365,7 +357,7 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
           SizedBox(
             height: 2.h,
           ),
-          buildLabelTextField("Do You Have Any Known Intolerance? If So Please Provide Details."),
+          buildLabelTextField("Do You Have Any Known Intolerance? If So, Please Provide Details."),
           SizedBox(
             height: 1.h,
           ),
@@ -382,7 +374,7 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
               }
             },
             decoration: CommonDecoration.buildTextInputDecoration(
-                "Your answer", intoleranceController),
+                "Enter Your answer", intoleranceController),
             textInputAction: TextInputAction.next,
             textAlign: TextAlign.start,
             keyboardType: TextInputType.text,
@@ -390,7 +382,7 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
           SizedBox(
             height: 2.h,
           ),
-          buildLabelTextField("Do You Have Any Severe Food Cravings? If So Please Provide Details."),
+          buildLabelTextField("Do You Have Any Severe Food Cravings? If So, Please Provide Details."),
           SizedBox(
             height: 1.h,
           ),
@@ -407,7 +399,7 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
               }
             },
             decoration: CommonDecoration.buildTextInputDecoration(
-                "Your answer", cravingsController),
+                "Enter Your answer", cravingsController),
             textInputAction: TextInputAction.next,
             textAlign: TextAlign.start,
             keyboardType: TextInputType.text,
@@ -415,7 +407,7 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
           SizedBox(
             height: 2.h,
           ),
-          buildLabelTextField("Do You Dislike Any Food?Please Mention All Of Them"),
+          buildLabelTextField("Do You Dislike Any Food? Please Mention All Of Them"),
           SizedBox(
             height: 1.h,
           ),
@@ -432,7 +424,7 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
               }
             },
             decoration: CommonDecoration.buildTextInputDecoration(
-                "Your answer", dislikeFoodController),
+                "Enter Your answer", dislikeFoodController),
             textInputAction: TextInputAction.next,
             textAlign: TextAlign.start,
             keyboardType: TextInputType.text,
@@ -440,7 +432,7 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
           SizedBox(
             height: 2.h,
           ),
-          buildLabelTextField("How Many Glasses Of Water Do You Have A Day?"),
+          buildLabelTextField("How Many Glasses Of Water Do You Drink A Day?"),
           SizedBox(
             height: 1.h,
           ),
@@ -535,7 +527,7 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
                     "Life Style",
                     textAlign: TextAlign.start,
                     style: TextStyle(
-                        fontFamily: "PoppinsBold",
+                        fontFamily: kFontBold,
                         color: kPrimaryColor,
                         fontSize: 15.sp),
                   ),
@@ -554,9 +546,10 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
                 "This Tells Us How Your Gut Is & Has Been Treated",
                 textAlign: TextAlign.start,
                 style: TextStyle(
-                    fontFamily: "PoppinsRegular",
-                    color: gMainColor,
-                    fontSize: 9.sp),
+                    fontFamily: kFontBook,
+                    color: gTextColor,
+                    fontSize: 9.sp
+                ),
               ),
             ],
           ),
@@ -662,7 +655,7 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
                   }
                 },
                 decoration: CommonDecoration.buildTextInputDecoration(
-                    "Your answer", habitOtherController),
+                    "Enter Your answer", habitOtherController),
                 textInputAction: TextInputAction.next,
                 textAlign: TextAlign.start,
                 keyboardType: TextInputType.text,
@@ -693,7 +686,7 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
                     "Bowel Type",
                     textAlign: TextAlign.start,
                     style: TextStyle(
-                        fontFamily: "PoppinsBold",
+                        fontFamily: kFontBold,
                         color: kPrimaryColor,
                         fontSize: 15.sp),
                   ),
@@ -712,9 +705,10 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
                 "Is a Barometer For Your Gut Health",
                 textAlign: TextAlign.start,
                 style: TextStyle(
-                    fontFamily: "PoppinsRegular",
-                    color: gMainColor,
-                    fontSize: 9.sp),
+                    fontFamily: kFontBook,
+                    color: gTextColor,
+                    fontSize: 9.sp
+                ),
               ),
             ],
           ),
@@ -798,7 +792,7 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
                   }
                 },
                 decoration: CommonDecoration.buildTextInputDecoration(
-                    "Your answer", mealPreferenceController),
+                    "Enter Your answer", mealPreferenceController),
                 textInputAction: TextInputAction.next,
                 textAlign: TextAlign.start,
                 keyboardType: TextInputType.text,
@@ -907,7 +901,7 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
                   }
                 },
                 decoration: CommonDecoration.buildTextInputDecoration(
-                    "Your answer", hungerPatternController),
+                    "Enter Your answer", hungerPatternController),
                 textInputAction: TextInputAction.next,
                 textAlign: TextAlign.start,
                 keyboardType: TextInputType.text,
@@ -1016,7 +1010,7 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
                   }
                 },
                 decoration: CommonDecoration.buildTextInputDecoration(
-                    "Your answer", bowelPatternController),
+                    "Enter Your answer", bowelPatternController),
                 textInputAction: TextInputAction.next,
                 textAlign: TextAlign.start,
                 keyboardType: TextInputType.text,

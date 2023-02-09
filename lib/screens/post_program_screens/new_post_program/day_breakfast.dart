@@ -1019,7 +1019,7 @@ class _PPDailyTasksUIState extends State<PPDailyTasksUI> {
                     ),
                     Divider(
                       thickness: 1,
-                      color: gGreyColor.withOpacity(0.5),
+                      color: gHintTextColor,
                     ),
                     SizedBox(
                       height: 1.h,

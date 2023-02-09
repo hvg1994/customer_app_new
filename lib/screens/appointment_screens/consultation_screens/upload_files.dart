@@ -111,11 +111,11 @@ class _UploadFilesState extends State<UploadFiles> {
                     Padding(
                       padding: padding,
                       child: Text(
-                        "Your Appointment has been Completed !\n Please upload the reports requested by Doctor.",
+                        "Appointment Completed Successfully !\n Please upload the reports requested by the Doctor to proceed further.",
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             height: 1.5,
-                            fontFamily: "GothamRoundedBold_21016",
+                            fontFamily: kFontBold,
                             color: gTextColor,
                             fontSize: 12.sp),
                       ),
@@ -155,7 +155,7 @@ class _UploadFilesState extends State<UploadFiles> {
                                   Text(
                                     "   Choose file",
                                     style: TextStyle(
-                                        fontFamily: "GothamMedium",
+                                        fontFamily: kFontMedium,
                                         color: Colors.black,
                                         fontSize: 10.sp),
                                   ),
@@ -199,8 +199,6 @@ class _UploadFilesState extends State<UploadFiles> {
                                     decoration: BoxDecoration(
                                       color: eUser().buttonColor,
                                       borderRadius: BorderRadius.circular(eUser().buttonBorderRadius),
-                                      // border: Border.all(color: eUser().buttonBorderColor,
-                                      //     width: eUser().buttonBorderWidth),
                                     ),
                                     child: (showUploadProgress)
                                         ? buildThreeBounceIndicator(color: eUser().threeBounceIndicatorColor)
@@ -208,10 +206,9 @@ class _UploadFilesState extends State<UploadFiles> {
                                             child: Text(
                                               'Submit',
                                               style: TextStyle(
-                                                fontFamily:
-                                                kFontRBold2,
-                                                color: gWhiteColor,
-                                                fontSize: 11.sp,
+                                                fontFamily: eUser().buttonTextFont,
+                                                color: eUser().buttonTextColor,
+                                                fontSize: eUser().buttonTextSize,
                                               ),
                                             ),
                                           ),
@@ -231,8 +228,10 @@ class _UploadFilesState extends State<UploadFiles> {
                                       totalReportLengthExceptPrescription.add(element);
                                     }
                                   });
+                                  print(totalReportLengthExceptPrescription.length);
+                                  print(reportsObject.length);
 
-                                  if(reportsObject.length == totalReportLengthExceptPrescription.length){
+                                  if(reportsObject.length-1 == totalReportLengthExceptPrescription.length){
                                     Stream s = sendStream();
                                     print("s.length:${s.length}");
                                   }
@@ -265,7 +264,7 @@ class _UploadFilesState extends State<UploadFiles> {
                                             'Submit',
                                             style: TextStyle(
                                               fontFamily:
-                                                  "GothamRoundedBold_21016",
+                                                  kFontBold,
                                               color: gWhiteColor,
                                               fontSize: 11.sp,
                                             ),
@@ -312,7 +311,7 @@ class _UploadFilesState extends State<UploadFiles> {
                     file.path.split('/').last,
                     style: TextStyle(
                         fontSize: 10.sp,
-                        fontFamily: "GothamMedium",
+                        fontFamily: kFontMedium,
                         color: gPrimaryColor),
                   ),
                   SizedBox(height: 0.5.h),
@@ -320,7 +319,7 @@ class _UploadFilesState extends State<UploadFiles> {
                   //   size,
                   //   style: TextStyle(
                   //       fontSize: 8.sp,
-                  //       fontFamily: "GothamMedium",
+                  //       fontFamily: kFontMedium,
                   //       color: gMainColor),
                   // ),
                 ],
@@ -533,9 +532,10 @@ class _UploadFilesState extends State<UploadFiles> {
                                 maxLines: 2,
                                 style: TextStyle(
                                     height: 1.2,
-                                    fontFamily: "GothamMedium",
+                                    fontFamily: kFontMedium,
                                     color: gPrimaryColor,
-                                    fontSize: 9.sp),
+                                    fontSize: 9.sp
+                                ),
                               ),
                               // SizedBox(height: 1.h),
                               // Text(
@@ -661,7 +661,7 @@ class _UploadFilesState extends State<UploadFiles> {
                       decoration: BoxDecoration(
                           border: Border(
                         bottom: BorderSide(
-                          color: gGreyColor,
+                          color: gHintTextColor,
                           width: 3.0,
                         ),
                       )),
@@ -690,7 +690,7 @@ class _UploadFilesState extends State<UploadFiles> {
                           decoration: BoxDecoration(
                               border: Border(
                             right: BorderSide(
-                              color: gGreyColor,
+                              color: gHintTextColor,
                               width: 1,
                             ),
                           )),
@@ -812,7 +812,7 @@ class _UploadFilesState extends State<UploadFiles> {
             text,
             style: TextStyle(
                 fontSize: 10.sp,
-                fontFamily: "GothamBold",
+                fontFamily: kFontBold,
                 color: gPrimaryColor),
           ),
           trailing: (isDoneIcon)
@@ -880,6 +880,7 @@ class _UploadFilesState extends State<UploadFiles> {
     } else {
       final result = res as ReportUploadModel;
       print(result.errorMsg);
+      AppConfig().showSnackbar(context, result.errorMsg ?? '', isError: true);
       reportsObject.forEach((element) {
         if (element.id == reportId) {
           element.isSubmited = true;
@@ -919,10 +920,10 @@ class _UploadFilesState extends State<UploadFiles> {
             alignment: Alignment.topLeft,
             child: Text(
               // "Uploaded Report",
-              'Requested Report',
+              'Requested Reports',
               textAlign: TextAlign.center,
               style: TextStyle(
-                  fontFamily: "GothamRoundedBold_21016",
+                  fontFamily: kFontBold,
                   color: gTextColor,
                   fontSize: 11.sp),
             ),
@@ -986,7 +987,7 @@ class _UploadFilesState extends State<UploadFiles> {
           height: 1.8.h,
         ),
         Divider(
-          color: gGreyColor,
+          color: kLineColor,
         ),
         Visibility(
           visible: false,

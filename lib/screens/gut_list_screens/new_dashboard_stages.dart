@@ -393,7 +393,7 @@
 //           margin: EdgeInsets.symmetric(vertical: 1.5.h),
 //           decoration: BoxDecoration(
 //             // color: kWhiteColor,
-//             color: index == 0 ? kWhiteColor : (index == 1 && shippingStage != null && shippingStage!.isNotEmpty) ? kWhiteColor : (index == 2 && shippingStage == 'shipping_delivered') ? kWhiteColor : (index == 3 && postProgramStage != null && postProgramStage!.isNotEmpty) ? kWhiteColor : gGreyColor.withOpacity(0.05),
+//             color: index == 0 ? kWhiteColor : (index == 1 && shippingStage != null && shippingStage!.isNotEmpty) ? kWhiteColor : (index == 2 && shippingStage == 'shipping_delivered') ? kWhiteColor : (index == 3 && postProgramStage != null && postProgramStage!.isNotEmpty) ? kWhiteColor : gHintTextColor.withOpacity(0.05),
 //             borderRadius: BorderRadius.circular(20),
 //             border: Border.all(color: gMainColor.withOpacity(0.3), width: 1),
 //             boxShadow: (isSelected != programsData.title)

@@ -10,6 +10,8 @@ import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 
 class HelpScreen extends StatefulWidget {
+  bool isFromLogin;
+  HelpScreen({this.isFromLogin = false});
   @override
   _HelpScreenState createState() => _HelpScreenState();
 }
@@ -21,57 +23,6 @@ class _HelpScreenState extends State<HelpScreen> {
   bool end = false;
 
   List<Map<String, String>> helpdata = [
-    {
-      "image": "assets/images/help_screens/1. Login Screen.png"
-    },
-    {
-      "image": "assets/images/help_screens/2. Choose your Program.png"
-    },
-    {
-      "image": "assets/images/help_screens/3. About App.png"
-    },
-    {
-      "image": "assets/images/help_screens/4. Enquiry Form.png"
-    },
-    {
-      "image": "assets/images/help_screens/5. Program Screen.png"
-    },
-    {
-      "image": "assets/images/help_screens/6. Shopping List.png"
-    },
-    {
-      "image": "assets/images/help_screens/7. Meal plan.png"
-    },
-    {
-      "image": "assets/images/help_screens/8. Popup.png"
-    },
-    {
-      "image": "assets/images/help_screens/9. Post Program Question Screen.png"
-    },
-    {
-      "image": "assets/images/help_screens/10. Post Program Answer screen.png"
-    },
-    {
-      "image": "assets/images/help_screens/11. Day 1 Summary.png"
-    },
-    {
-      "image": "assets/images/help_screens/12. Feed screen.png"
-    },
-    {
-      "image": "assets/images/help_screens/13. Testimonial Screen.png"
-    },
-    {
-      "image": "assets/images/help_screens/14. Settings.png"
-    },
-    {
-      "image": "assets/images/help_screens/15. My Profile.png"
-    },
-    {
-      "image": "assets/images/help_screens/16. FAQ.png"
-    },
-    {
-      "image": "assets/images/help_screens/17. Upload your Feedback.png"
-    }
   ];
 
   @override
@@ -84,13 +35,18 @@ class _HelpScreenState extends State<HelpScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    for(int i = 1; i<=17; i++){
+      helpdata.add({
+        "image": "assets/images/help_screens/$i.png"
+      });
+    }
     SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
     animatePageview();
   }
 
   animatePageview()
   {
-    Timer.periodic(Duration(seconds: 2), (Timer timer) {
+    Timer.periodic(Duration(seconds: 5), (Timer timer) {
       if (_currentPage == helpdata.length -1) {
         end = true;
       } else if (_currentPage == 0) {
@@ -160,11 +116,11 @@ class _HelpScreenState extends State<HelpScreen> {
                 right: 5,
                 child: GestureDetector(
                   onTap: () {
-                    Navigator.pop(context);
-                  //   Navigator.pushReplacement(
-                  //     context, MaterialPageRoute(
-                  //     builder: (ctx) => DashboardScreen())
-                  // );
+                    (!widget.isFromLogin) ?
+                    Navigator.pop(context) :   Navigator.pushReplacement(
+                        context, MaterialPageRoute(
+                        builder: (ctx) => DashboardScreen())
+                    );
                     },
                   child: Container(
                       height: 10.w,
@@ -172,9 +128,9 @@ class _HelpScreenState extends State<HelpScreen> {
                       alignment: Alignment.centerRight,
                       child: Text('Skip',
                         style: TextStyle(
-                            color: gsecondaryColor,
+                            color: gWhiteColor,
                             fontSize: PPConstants().topViewHeadingFontSize,
-                            fontFamily: kFontMedium
+                            fontFamily: kFontBold
                         ),
                       )
                   ),
@@ -204,22 +160,21 @@ class _HelpScreenState extends State<HelpScreen> {
                           visible: (_currentPage == helpdata.length-1) ? true : false,
                           child: GestureDetector(
                             onTap: (){
-                              Navigator.pop(context);
-
-                              // Navigator.pushReplacement(
-                              //     context, MaterialPageRoute(
-                              //     builder: (ctx) => DashboardScreen())
-                              // );
+                              (!widget.isFromLogin) ?
+                              Navigator.pop(context) :   Navigator.pushReplacement(
+                                  context, MaterialPageRoute(
+                                  builder: (ctx) => DashboardScreen())
+                              );
                             },
                             child: Container(
-                              width: 60.w,
-                              height: 5.h,
+                              width: 40.w,
+                              height: 4.5.h,
                               // padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 10.w),
                               decoration: BoxDecoration(
-                                color: gPrimaryColor,
-                                borderRadius: BorderRadius.circular(8),
-                                border:
-                                Border.all(color: gMainColor, width: 1),
+                                color: eUser().buttonColor,
+                                borderRadius: BorderRadius.circular(eUser().buttonBorderRadius),
+                                // border: Border.all(color: eUser().buttonBorderColor,
+                                //     width: eUser().buttonBorderWidth),
                               ),
                               child: Center(
                                 child: Text('Done',

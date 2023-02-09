@@ -158,7 +158,6 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     storeLastLogin();
     getDeviceId();
-
   }
 
   Future getDeviceId() async{

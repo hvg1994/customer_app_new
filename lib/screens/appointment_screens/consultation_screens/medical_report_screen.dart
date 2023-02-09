@@ -28,13 +28,14 @@ class MedicalReportScreen extends StatelessWidget {
               Padding(
                 padding:  EdgeInsets.symmetric(horizontal: 4.w),
                 child: Text(
-                  "Your Consultation is done Successfully,\nNow you can view your MEDICAL REPORT",
+                  "View your MEDICAL REPORT",
                   textAlign: TextAlign.center,
                   style: TextStyle(
                       height: 1.5,
-                      fontFamily: "GothamMedium",
+                      fontFamily: kFontMedium,
                       color: gTextColor,
-                      fontSize: 12.sp),
+                      fontSize: 12.sp
+                  ),
                 ),
               ),
               SizedBox(height: 2.h),

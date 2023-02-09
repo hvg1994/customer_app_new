@@ -528,7 +528,7 @@ class _MyProfileDetailsState extends State<MyProfileDetails> {
                       decoration: BoxDecoration(
                           border: Border(
                             bottom: BorderSide(
-                              color: gGreyColor,
+                              color: gHintTextColor,
                               width: 3.0,
                             ),
                           )
@@ -565,7 +565,7 @@ class _MyProfileDetailsState extends State<MyProfileDetails> {
                           decoration: BoxDecoration(
                               border: Border(
                                 right: BorderSide(
-                                  color: gGreyColor,
+                                  color: gHintTextColor,
                                   width: 1,
                                 ),
                               )

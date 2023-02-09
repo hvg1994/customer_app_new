@@ -85,7 +85,7 @@ class _GWCStoriesScreenState extends State<GWCStoriesScreen> {
                   ),
                 ),
                  Scaffold(
-                  backgroundColor: gContentColor,
+                  backgroundColor: gHintTextColor,
                   body: Center(
                     child: Text(
                       "Gut Wellness Club",

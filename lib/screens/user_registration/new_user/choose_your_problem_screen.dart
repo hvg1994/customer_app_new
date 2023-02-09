@@ -96,6 +96,7 @@ class _ChooseYourProblemScreenState extends State<ChooseYourProblemScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        backgroundColor: gBackgroundColor,
         body: Padding(
           padding:
               EdgeInsets.only(left: 4.w, right: 4.w, top: 2.h, bottom: 1.h),
@@ -110,7 +111,7 @@ class _ChooseYourProblemScreenState extends State<ChooseYourProblemScreen> {
                 height: 1.h,
               ),
               Text(
-                "Choose Your Problem",
+                "Choose Your Gut Issue",
                 textAlign: TextAlign.center,
                 style: TextStyle(
                     fontFamily: eUser().mainHeadingFont,
@@ -119,7 +120,7 @@ class _ChooseYourProblemScreenState extends State<ChooseYourProblemScreen> {
                 ),
               ),
               SizedBox(
-                height: 2.h,
+                height: 2.5.h,
               ),
               Expanded(
                 child: buildChooseProblem(),
@@ -181,10 +182,10 @@ class _ChooseYourProblemScreenState extends State<ChooseYourProblemScreen> {
                         scrollDirection: Axis.vertical,
                         physics: const ScrollPhysics(),
                         shrinkWrap: true,
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 4,
                           crossAxisSpacing: 5.0,
-                          mainAxisSpacing: 5.0,
+                          mainAxisSpacing: 6.8,
                           // childAspectRatio: MediaQuery.of(context).size.width /
                           //     (MediaQuery.of(context).size.height / 1.4),
                         ),
@@ -233,9 +234,9 @@ class _ChooseYourProblemScreenState extends State<ChooseYourProblemScreen> {
                                           Expanded(
                                             child: Text(
                                               // 'Constipation Constipationdsd',
-                                              problemList?[index].name.toString().capitalize() ?? '',
+                                              problemList?[index].name.toString() ?? '',
                                               style: TextStyle(
-                                                fontFamily: "GothamMedium",
+                                                fontFamily: kFontBold,
                                                 color: gTextColor,
                                                 fontSize: (problemList![index].name.toString().length > 10) ? 8.sp : 9.sp,
                                               ),
@@ -279,8 +280,7 @@ class _ChooseYourProblemScreenState extends State<ChooseYourProblemScreen> {
                   // SizedBox(height: 1.h),
                   Container(
                     height: 15.h,
-                    margin:
-                    EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.h),
+                    margin: EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.h),
                     padding: EdgeInsets.symmetric(horizontal: 3.w),
                     decoration: BoxDecoration(
                       color: Colors.white,
@@ -301,19 +301,21 @@ class _ChooseYourProblemScreenState extends State<ChooseYourProblemScreen> {
                           fontSize: eUser().userTextFieldFontSize,
                           color: eUser().userTextFieldColor
                       ),
+                      maxLines: null,
                       decoration: InputDecoration(
-                        suffixIcon: otherController.text.isEmpty
-                            ? SizedBox()
-                            : InkWell(
-                          onTap: () {
-                            otherController.clear();
-                          },
-                          child: const Icon(
-                            Icons.close,
-                            color: gTextColor,
-                          ),
-                        ),
-                        hintText: "Mention Other Problems",
+                        // suffixIcon: otherController.text.isEmpty
+                        //     ? SizedBox.shrink()
+                        //     : InkWell(
+                        //   onTap: () {
+                        //     otherController.clear();
+                        //   },
+                        //   child: const Icon(
+                        //     Icons.close,
+                        //     color: gTextColor,
+                        //   ),
+                        // ),
+                        hintMaxLines: 2,
+                        hintText: "Pick one or more from the list above, or write to us about the underlying issue that brought you here.",
                         border: InputBorder.none,
                         hintStyle: TextStyle(
                           fontFamily: eUser().userTextFieldHintFont,

@@ -4,45 +4,40 @@ import 'package:sizer/sizer.dart';
 const gPrimaryColor = Color(0xff4E7215);
 // const gsecondaryColor = Color(0xffC10B02);
 const gsecondaryColor = Color(0xffD10034);
+const gMainColor = Color(0xffC7A102);
+
 
 const gBlackColor = Color(0xff000000);
 const gWhiteColor = Color(0xffFFFFFF);
-const gContentColor = Color(0xff346604);
-const gGreyColor = Color(0xff707070);
-const gMainColor = Color(0xffC7A102);
-const gHintTextColor = Color(0xff4A4848);
+const gHintTextColor = Color(0xff676363);
+const kLineColor = Color(0xffB9B4B4);
 
-const gTextColor = Color(0xff2D414B);
+
+const gTextColor = gBlackColor;
 const gTapColor = Color(0xffF8FAFF);
-const gBackgroundColor = Color(0xffFFE889);
+const gBackgroundColor = Color(0xffFAFAFA);
+const gSitBackBgColor = Color(0xffFFE889);
+
 
 const kPrimaryColor = Color(0xffBB0A36);
 const kSecondaryColor = Color(0xffFFF5F5);
 const kTextColor = Color(0xff000000);
 const kWhiteColor = Color(0xffFFFFFF);
-const kContentColor = Color(0xffFE4F60);
-const kGutColor = Color(0xffFF0040);
-const kWellnessColor = Color(0xffFD5D5D);
-const kWellColor = Color(0xffCC4764);
-const kSectionColor = Color(0xffFF597D);
-const kSoundColor = Color(0xffE6A790);
-const kDetailsColor = Color(0xffFF5A7F);
-const kHealthColor = Color(0xffD10034);
 
 const kDividerColor = Color(0xff000029);
 
 
 const String kFontMedium = 'GothamMedium';
 const String kFontBook = 'GothamBook';
-const String kFontLight = 'GothamLight';
-const String kFontRBold1 = 'GothamRoundedBold';
 const String kFontBold = 'GothamBold';
-const String kFontRBold2 = 'GothamRoundedBold_21016';
-const String kFontBlack = 'GothamBlack';
-const String kFontPoppinsRegular = 'PoppinsRegular';
 
 
 const kButtonColor = Color(0xffD10034);
+
+/// tracker ui fonts
+double headingFont = 12.sp;
+double subHeadingFont = 10.sp;
+double questionFont = 10.sp;
 
 
 // existing user
@@ -51,23 +46,23 @@ class eUser{
   var threeBounceIndicatorColor = gWhiteColor;
 
   var mainHeadingColor = gBlackColor;
-  var mainHeadingFont = kFontRBold2;
+  var mainHeadingFont = kFontBold;
   double mainHeadingFontSize = 13.sp;
 
-  var userFieldLabelColor =  Colors.black87.withOpacity(0.7);
-  var userFieldLabelFont = kFontBlack;
+  var userFieldLabelColor =  gBlackColor;
+  var userFieldLabelFont = kFontMedium;
   double userFieldLabelFontSize = 11.sp;
   /*
   fontFamily: "GothamBook",
-  color: gGreyColor,
+  color: gHintTextColor,
   fontSize: 11.sp
    */
-  var userTextFieldColor =  gGreyColor;
+  var userTextFieldColor =  gHintTextColor;
   var userTextFieldFont = kFontBook;
   double userTextFieldFontSize = 11.sp;
 
   var userTextFieldHintColor =  Colors.grey.withOpacity(0.5);
-  var userTextFieldHintFont = kFontPoppinsRegular;
+  var userTextFieldHintFont = kFontMedium;
   double userTextFieldHintFontSize = 10.sp;
 
   var focusedBorderColor = gBlackColor;
@@ -82,14 +77,13 @@ class eUser{
 
   var resendOtpFontSize = 9.sp;
   var resendOtpFont = kFontBook;
-  var resendOtpFontColor = gBlackColor;
-  var resendOtpFontDisableColor = Colors.grey.withOpacity(0.5);
+  var resendOtpFontColor = gsecondaryColor;
 
   var buttonColor = kButtonColor;
   var buttonTextColor = gWhiteColor;
-  double buttonTextSize = 10.sp;
-  var buttonTextFont = kFontRBold2;
-  var buttonBorderColor = gMainColor;
+  double buttonTextSize = 12.sp;
+  var buttonTextFont = kFontBold;
+  var buttonBorderColor = kLineColor;
   double buttonBorderWidth = 1;
 
 
@@ -100,7 +94,7 @@ class eUser{
   var loginDummyTextFont = kFontBook;
   double loginDummyTextFontSize = 9.sp;
 
-  var anAccountTextColor =  gGreyColor;
+  var anAccountTextColor =  gHintTextColor;
   var anAccountTextFont = kFontMedium;
   double anAccountTextFontSize = 10.sp;
 
@@ -115,7 +109,7 @@ class PPConstants{
 
   var kDayText = gBlackColor;
   double kDayTextFontSize = 13.sp;
-  var kDayTextFont = kFontRBold2;
+  var kDayTextFont = kFontBold;
 
   var topViewHeadingText = gBlackColor;
   double topViewHeadingFontSize = 12.sp;
@@ -129,7 +123,7 @@ class PPConstants{
   double kBottomViewHeadingFontSize = 12.sp;
   var kBottomViewHeadingFont = kFontMedium;
 
-  var kBottomViewSubText = gGreyColor;
+  var kBottomViewSubText = gHintTextColor;
   double kBottomViewSubFontSize = 8.5.sp;
   var kBottomViewSubFont = kFontBook;
 
@@ -146,7 +140,7 @@ class PPConstants{
   /// this is for benefits answer
   double kBottomSheetBenefitsFontSize = 10.sp;
   /// this is for benefits answer
-  var kBottomSheetBenefitsFont = kFontLight;
+  var kBottomSheetBenefitsFont = kFontMedium;
 
   var threeBounceIndicatorColor = gWhiteColor;
 }
@@ -154,7 +148,7 @@ class PPConstants{
 
 class MealPlanConstants{
   var dayBorderColor = Color(0xFFE2E2E2);
-  var dayBorderDisableColor = gGreyColor;
+  var dayBorderDisableColor = gHintTextColor;
   var dayTextColor = gBlackColor;
   var dayTextSelectedColor = gWhiteColor;
   var dayBgNormalColor = gWhiteColor;
@@ -167,17 +161,18 @@ class MealPlanConstants{
   var dayUnSelectedTextFontFamily = kFontBook;
 
   var groupHeaderTextColor = gBlackColor;
-  var groupHeaderFont = kFontRBold1;
+  var groupHeaderFont = kFontBook;
   double groupHeaderFontSize = 12.sp;
 
   var mustHaveTextColor = gsecondaryColor;
   var mustHaveFont = kFontBold;
-  double mustHaveFontSize = 6.sp;
+  double mustHaveFontSize = 8.sp;
 
   var mealNameTextColor = gBlackColor;
-  var mealNameFont = kFontBold;
+  var mealNameFont = kFontMedium;
   double mealNameFontSize = 12.sp;
 
-  var benifitsFont = kFontLight;
-  double benifitsFontSize = 8.sp;
+  var benifitsFont = kFontBook;
+  double benifitsFontSize = 10.sp;
+
 }

@@ -175,7 +175,7 @@ class _TestimonialListScreenState extends State<TestimonialListScreen> {
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
-            color: gGreyColor.withOpacity(0.35),
+            color: gHintTextColor.withOpacity(0.35),
             // spreadRadius: 0.3,
             blurRadius: 5
           )

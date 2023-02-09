@@ -64,7 +64,7 @@ class ConsultationRejected extends StatelessWidget {
                     ),
                     SizedBox(height: 1.h),
                     Text(
-                      "Your Medical Report is getting ready and uploaded within 24 hours",
+                      "Your Medical Report is getting ready and will be uploaded within 24 hours",
                       textAlign: TextAlign.center,
                       style: TextStyle(
                           height: 1.5,

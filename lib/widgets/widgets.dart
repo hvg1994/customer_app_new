@@ -106,11 +106,12 @@ class CommonButton {
   }
 }
 
-TextStyle buildTextStyle() {
+TextStyle buildTextStyle({Color? color, String? fontFamily}) {
   return TextStyle(
-    color: kTextColor,
-    fontSize: 12,
-    fontFamily: "PoppinsRegular",
+    color: color ?? kTextColor,
+    fontSize: 10.sp,
+    height: 1.35,
+    fontFamily: fontFamily ?? kFontMedium,
   );
 }
 
@@ -239,14 +240,15 @@ buildAppBar(VoidCallback func, {bool isBackEnable = true, bool showNotificationI
   );
 }
 
-buildLabelTextField(String name){
+buildLabelTextField(String name, {double? fontSize}){
   return RichText(
       text: TextSpan(
           text: name,
           style: TextStyle(
-            fontSize: 9.sp,
-            color: gPrimaryColor,
-            fontFamily: "PoppinsSemiBold",
+            fontSize: fontSize ?? 9.sp,
+            color: gBlackColor,
+            height: 1.35,
+            fontFamily: kFontMedium,
           ),
           children: [
             TextSpan(

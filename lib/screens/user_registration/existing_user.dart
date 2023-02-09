@@ -8,6 +8,7 @@ import 'package:gwc_customer/model/error_model.dart';
 import 'package:gwc_customer/model/login_model/resend_otp_model.dart';
 import 'package:gwc_customer/repository/login_otp_repository.dart';
 import 'package:gwc_customer/screens/evalution_form/evaluation_form_screen.dart';
+import 'package:gwc_customer/screens/help_screens/help_screen.dart';
 import 'package:gwc_customer/screens/user_registration/resend_otp_screen.dart';
 import 'package:gwc_customer/services/login_otp_service.dart';
 import 'package:gwc_customer/widgets/constants.dart';
@@ -334,7 +335,7 @@ class _ExistingUserState extends State<ExistingUser> {
                           // ),
                         )
                             : SizedBox(),
-                        hintText: "MobileNumber",
+                        hintText: "Mobile Number",
                         hintStyle: TextStyle(
                           fontFamily: eUser().userTextFieldHintFont,
                           color: eUser().userTextFieldHintColor,
@@ -681,11 +682,25 @@ class _ExistingUserState extends State<ExistingUser> {
           );
         }
       else{
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (context) => const DashboardScreen(),
-          ),
-        );
+        bool? firstTime = _pref.getBool(AppConfig.isFirstTime);
+
+        if(firstTime == null){
+          _pref.setBool(AppConfig.isFirstTime, false);
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (context) => HelpScreen(isFromLogin: true,),
+            ),
+          );
+        }
+        else{
+          _pref.setBool(AppConfig.isFirstTime, false);
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (context) => const DashboardScreen(),
+            ),
+          );
+        }
+
       }
       final shipAddress = await EvaluationFormService(repository: evalrepository).getEvaluationDataService();
       if(shipAddress.runtimeType == GetEvaluationDataModel){

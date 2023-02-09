@@ -53,26 +53,29 @@ class _TransitionMealPlanScreenState extends State<TransitionMealPlanScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  buildAppBar((){
-                    Navigator.pop(context);
-                  }),
                   Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    child: Text('${widget.totalDays} days Transition Meal Plan',
+                    padding: const EdgeInsets.symmetric(horizontal: 5),
+                  child: buildAppBar((){
+                    Navigator.pop(context);
+                  })),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 5),
+                    child: Text('Day ${widget.dayNumber} of Transition meal plan',
                       style: TextStyle(
-                        fontFamily: eUser().mainHeadingFont,
-                        color: eUser().mainHeadingColor,
-                        fontSize: eUser().mainHeadingFontSize
+                          fontFamily: eUser().mainHeadingFont,
+                          color: eUser().mainHeadingColor,
+                          fontSize: 14.sp
+
                       ),
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4),
-                    child: Text('Current Day: ${widget.dayNumber}',
+                    padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                    child: Text('${int.parse(widget.totalDays) - int.parse(widget.dayNumber)} days Remaining',
                       style: TextStyle(
                           fontFamily: kFontMedium,
-                          color: gPrimaryColor,
-                          fontSize: 11.sp
+                          color: gHintTextColor,
+                          fontSize: 10.sp
                       ),
                     ),
                   ),
@@ -129,7 +132,7 @@ class _TransitionMealPlanScreenState extends State<TransitionMealPlanScreen> {
 
   customMealPlanTile(Map<String, dynamic> dataList, String currentDayStatus){
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 5),
       child: ListView(
         physics: NeverScrollableScrollPhysics(),
         shrinkWrap: true,
@@ -151,9 +154,9 @@ class _TransitionMealPlanScreenState extends State<TransitionMealPlanScreen> {
                   child: Text(e.key,
                     style: TextStyle(
                       height: 1.5,
-                      color: gGreyColor,
-                      fontSize: 12.sp,
-                      fontFamily: kFontMedium,
+                      color: MealPlanConstants().mealNameTextColor,
+                      fontSize: MealPlanConstants().mealNameFontSize,
+                      fontFamily: MealPlanConstants().mealNameFont,
                         // fontSize: MealPlanConstants().mealNameFontSize,
                         // fontFamily: MealPlanConstants().mealNameFont
                     ),
@@ -169,7 +172,7 @@ class _TransitionMealPlanScreenState extends State<TransitionMealPlanScreen> {
                         showPdf(lst[index].recipeUrl ?? ' ');
                       },
                       child: Container(
-                        height: 95,
+                        height:120 ,
                         padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -199,46 +202,60 @@ class _TransitionMealPlanScreenState extends State<TransitionMealPlanScreen> {
                               width: 8,
                             ),
                             Expanded(
-                              child: Column(
-                                // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  SizedBox(
-                                    height: 3,
-                                  ),
-                                  Text(
-                                    lst[index].subTitle ?? "* Mandatory Practice",
-                                    style: TextStyle(
-                                      fontSize: MealPlanConstants().mustHaveFontSize,
-                                      fontFamily: MealPlanConstants().mustHaveFont,
-                                      color: MealPlanConstants().mustHaveTextColor,
+                              child: Padding(
+                                padding: const EdgeInsets.only(right: 8.0),
+                                child: Column(
+                                  // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    SizedBox(
+                                      height: 3,
                                     ),
-                                  ),
-                                  SizedBox(
-                                    height: 5,
-                                  ),
-                                  Text(lst[index].name ?? 'Brahmari',
-                                    style: TextStyle(
-                                        fontSize: MealPlanConstants().mealNameFontSize,
-                                        fontFamily: MealPlanConstants().mealNameFont
-                                    ),
-                                  ),
-                                  // SizedBox(
-                                  //   height: 2,
-                                  // ),
-                                  Expanded(
-                                    child: Text(lst[index].benefits!.replaceAll("-", '\n-') ??
-                                        "- It Calms the nervous system.\n\n- It simulates the pituitary and pineal glands.",
-                                      style: TextStyle(
-                                          fontSize: MealPlanConstants().benifitsFontSize,
-                                          fontFamily: MealPlanConstants().benifitsFont
+                                    RichText(
+                                      textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                                      text: TextSpan(
+                                        text: lst[index].name,
+                                          style: TextStyle(
+                                              fontSize: MealPlanConstants().mealNameFontSize,
+                                              fontFamily: MealPlanConstants().mealNameFont,
+                                            color: gHintTextColor
+                                          ),
+                                        children:[
+                                          TextSpan(
+                                            text: (lst[index].subTitle == null) ? '' : '\t\t\t*${lst[index].subTitle}',
+                                            style: TextStyle(
+                                              fontSize: MealPlanConstants().mustHaveFontSize,
+                                              fontFamily: MealPlanConstants().mustHaveFont,
+                                              color: MealPlanConstants().mustHaveTextColor,
+                                            ),
+                                          )
+                                        ]
                                       ),
                                     ),
-                                  ),
-                                  SizedBox(
-                                    height: 4,
-                                  ),
-                                ],
+                                    // Text(lst[index].name ?? 'Brahmari',
+                                    //   style: TextStyle(
+                                    //       fontSize: MealPlanConstants().mealNameFontSize,
+                                    //       fontFamily: MealPlanConstants().mealNameFont
+                                    //   ),
+                                    // ),
+                                    // SizedBox(
+                                    //   height: 2,
+                                    // ),
+                                    Expanded(
+                                      child: Text(lst[index].benefits!.replaceAll("- ",'\n') ??
+                                          "- It Calms the nervous system.\n\n- It simulates the pituitary and pineal glands.",
+                                        style: TextStyle(
+                                          height: 1.2,
+                                            fontSize: MealPlanConstants().benifitsFontSize,
+                                            fontFamily: MealPlanConstants().benifitsFont
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: 4,
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ],
@@ -288,19 +305,19 @@ class _TransitionMealPlanScreenState extends State<TransitionMealPlanScreen> {
           children: [
             Text('------------ ',
               style: TextStyle(
-                fontFamily: kFontRBold1,
+                fontFamily: kFontBold,
                 color: gBlackColor
               ),
             ),
             Text('OR',
               style: TextStyle(
-                  fontFamily: kFontRBold1,
+                  fontFamily: kFontBold,
                   color: gBlackColor
               ),
             ),
             Text(' ------------',
               style: TextStyle(
-                  fontFamily: kFontRBold1,
+                  fontFamily: kFontBold,
                   color: gBlackColor
               ),
             ),

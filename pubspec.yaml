@@ -52,6 +52,7 @@ dependencies:
   smooth_star_rating_null_safety: ^1.0.4+2
   smooth_page_indicator: ^1.0.0+2
   country_code_picker: any
+#  country_code_picker_mp: 1.0.0
   flutter_spinkit: ^5.1.0
   auto_orientation: any
   path_provider: any
@@ -126,6 +127,7 @@ flutter:
     - assets/images/gmg/
     - assets/images/faq/
     - assets/images/help_screens/
+    - assets/GWC Program Details.pdf
   #   - images/a_dot_ham.jpeg
 
   fonts:

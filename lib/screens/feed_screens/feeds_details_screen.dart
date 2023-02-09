@@ -55,7 +55,7 @@ class _FeedsDetailsScreenState extends State<FeedsDetailsScreen> {
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: gGreyColor,
+                            color: gHintTextColor,
                             offset: Offset(2, 3),
                             blurRadius: 50,
                           ),
@@ -96,7 +96,7 @@ class _FeedsDetailsScreenState extends State<FeedsDetailsScreen> {
                         Text(
                           widget.userAddress,
                           style: TextStyle(
-                              fontFamily: "GothamBook",
+                              fontFamily: kFontBook,
                               color: gMainColor,
                               fontSize: 9.sp),
                         ),
@@ -131,7 +131,7 @@ class _FeedsDetailsScreenState extends State<FeedsDetailsScreen> {
                 style: TextStyle(
                     fontSize: 9.sp,
                     height: 1.3,
-                    fontFamily: "GothamBook",
+                    fontFamily: kFontBook,
                     color: gTextColor),
               ),
               SizedBox(height: 1.h),
@@ -144,7 +144,7 @@ class _FeedsDetailsScreenState extends State<FeedsDetailsScreen> {
                 ),
               ),
               Container(
-                color: gGreyColor.withOpacity(0.2),
+                color: gHintTextColor.withOpacity(0.2),
                 height: 2,
                 width: double.maxFinite,
                 margin: EdgeInsets.symmetric(vertical: 1.5.h, horizontal: 2.w),
@@ -161,7 +161,7 @@ class _FeedsDetailsScreenState extends State<FeedsDetailsScreen> {
                     style: TextStyle(
                       fontSize: 9.sp,
                       color: gBlackColor,
-                      fontFamily: "GothamBook",
+                      fontFamily: kFontBook,
                     ),
                   ),
                   SizedBox(width: 5.w),
@@ -175,7 +175,7 @@ class _FeedsDetailsScreenState extends State<FeedsDetailsScreen> {
                     style: TextStyle(
                       fontSize: 9.sp,
                       color: gBlackColor,
-                      fontFamily: "GothamBook",
+                      fontFamily: kFontBook,
                     ),
                   ),
                 ],

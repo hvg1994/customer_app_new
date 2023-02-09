@@ -11,8 +11,9 @@ import 'package:http/http.dart' as http;
 import 'package:sizer/sizer.dart';
 
 class PrepratoryPlanScreen extends StatefulWidget {
+  String totalDays;
   String dayNumber;
-  PrepratoryPlanScreen({Key? key, required this.dayNumber}) : super(key: key);
+  PrepratoryPlanScreen({Key? key, required this.dayNumber, required this.totalDays}) : super(key: key);
 
   @override
   State<PrepratoryPlanScreen> createState() => _PrepratoryPlanScreenState();
@@ -52,11 +53,21 @@ class _PrepratoryPlanScreenState extends State<PrepratoryPlanScreen> {
                   }),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 12),
-                    child: Text('${widget.dayNumber} days Preparatory Meal Plan',
+                    child: Text('Day ${widget.dayNumber} Preparatory Meal Plan',
                       style: TextStyle(
                         fontFamily: eUser().mainHeadingFont,
                         color: eUser().mainHeadingColor,
                         fontSize: eUser().mainHeadingFontSize
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                    child: Text('${int.parse(widget.totalDays) - int.parse(widget.dayNumber)} days Remaining',
+                      style: TextStyle(
+                          fontFamily: kFontMedium,
+                          color: gHintTextColor,
+                          fontSize: 10.sp
                       ),
                     ),
                   ),
@@ -139,7 +150,7 @@ class _PrepratoryPlanScreenState extends State<PrepratoryPlanScreen> {
                   child: Text(e.key,
                     style: TextStyle(
                       height: 1.5,
-                      color: gGreyColor,
+                      color: gHintTextColor,
                       fontSize: 12.sp,
                       fontFamily: kFontMedium,
                         // fontSize: MealPlanConstants().mealNameFontSize,
@@ -195,23 +206,33 @@ class _PrepratoryPlanScreenState extends State<PrepratoryPlanScreen> {
                                   SizedBox(
                                     height: 3,
                                   ),
-                                  Text(
-                                    lst[index].subTitle ?? "* Mandatory Practice",
-                                    style: TextStyle(
-                                      fontSize: MealPlanConstants().mustHaveFontSize,
-                                      fontFamily: MealPlanConstants().mustHaveFont,
-                                      color: MealPlanConstants().mustHaveTextColor,
+                                  RichText(
+                                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                                    text: TextSpan(
+                                        text: lst[index].name,
+                                        style: TextStyle(
+                                            fontSize: MealPlanConstants().mealNameFontSize,
+                                            fontFamily: MealPlanConstants().mealNameFont,
+                                            color: gHintTextColor
+                                        ),
+                                        children:[
+                                          TextSpan(
+                                            text: (lst[index].subTitle == null) ? '' : '\t\t\t*${lst[index].subTitle}',
+                                            style: TextStyle(
+                                              fontSize: MealPlanConstants().mustHaveFontSize,
+                                              fontFamily: MealPlanConstants().mustHaveFont,
+                                              color: MealPlanConstants().mustHaveTextColor,
+                                            ),
+                                          )
+                                        ]
                                     ),
                                   ),
-                                  SizedBox(
-                                    height: 5,
-                                  ),
-                                  Text(lst[index].name ?? 'Brahmari',
-                                    style: TextStyle(
-                                        fontSize: MealPlanConstants().mealNameFontSize,
-                                        fontFamily: MealPlanConstants().mealNameFont
-                                    ),
-                                  ),
+                                  // Text(lst[index].name ?? 'Brahmari',
+                                  //   style: TextStyle(
+                                  //       fontSize: MealPlanConstants().mealNameFontSize,
+                                  //       fontFamily: MealPlanConstants().mealNameFont
+                                  //   ),
+                                  // ),
                                   SizedBox(
                                     height: 8,
                                   ),
@@ -276,19 +297,19 @@ class _PrepratoryPlanScreenState extends State<PrepratoryPlanScreen> {
           children: [
             Text('------------ ',
               style: TextStyle(
-                fontFamily: kFontRBold1,
+                fontFamily: kFontBold,
                 color: gBlackColor
               ),
             ),
             Text('OR',
               style: TextStyle(
-                  fontFamily: kFontRBold1,
+                  fontFamily: kFontBold,
                   color: gBlackColor
               ),
             ),
             Text(' ------------',
               style: TextStyle(
-                  fontFamily: kFontRBold1,
+                  fontFamily: kFontBold,
                   color: gBlackColor
               ),
             ),

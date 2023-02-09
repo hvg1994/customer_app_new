@@ -16,7 +16,7 @@ class _SitBackScreenState extends State<SitBackScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: gBackgroundColor,
+      backgroundColor: gSitBackBgColor,
       body: Padding(
         padding: EdgeInsets.only(left: 4.w, top: 4.h),
         child: Column(
@@ -34,21 +34,27 @@ class _SitBackScreenState extends State<SitBackScreen> {
                     image: AssetImage("assets/images/Mask Group 2172.png"),
                   ),
                   SizedBox(height: 5.h),
-                  Text(
-                    "Sit Back And Relax..!!",
-                    style: TextStyle(
-                        fontFamily: kFontRBold2,
-                        color: gTextColor,
-                        fontSize: 14.sp),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Text(
+                      "Sit Back And Relax..!!",
+                      style: TextStyle(
+                          fontFamily: kFontBold,
+                          color: gTextColor,
+                          fontSize: 14.sp),
+                    ),
                   ),
                   SizedBox(height: 1.h),
-                  Text(
-                    "Our Success Team Will Contact \nYou Soon ..!!",
-                    style: TextStyle(
-                        height: 1.5,
-                        fontFamily: "GothamRoundedBook_21018",
-                        color: gTextColor,
-                        fontSize: 12.sp),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Text(
+                      "Congratulations on your initiative towards a healthy gut! Our team will reach out to you soon. . .",
+                      style: TextStyle(
+                          height: 1.5,
+                          fontFamily: "GothamRoundedBook_21018",
+                          color: gTextColor,
+                          fontSize: 12.sp),
+                    ),
                   ),
                 ],
               ),

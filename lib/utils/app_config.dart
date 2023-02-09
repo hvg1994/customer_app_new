@@ -49,6 +49,8 @@ class AppConfig{
 
 
 
+  static const String isFirstTime = "isFirstTime";
+
   static const String isLogin = "login";
   static const String EVAL_STATUS = 'eval_status';
   static const String last_login = "last_login";
