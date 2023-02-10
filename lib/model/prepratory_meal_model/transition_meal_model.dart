@@ -2,17 +2,19 @@ class TransitionMealModel {
   int? status;
   int? errorCode;
   String? key;
+  String? note;
   int? currentDayStatus;
   int? previousDayStatus;
   Data? data;
 
-  TransitionMealModel({this.status, this.errorCode, this.key, this.data, this.currentDayStatus, this.previousDayStatus});
+  TransitionMealModel({this.status, this.note, this.errorCode, this.key, this.data, this.currentDayStatus, this.previousDayStatus});
 
   TransitionMealModel.fromJson(Map<String, dynamic> json) {
     status = json['status'];
     errorCode = json['errorCode'];
     key = json['key'];
-    currentDayStatus = json['current_day_status'];
+    note = json['note'];
+    currentDayStatus =json['current_day_status'];
     previousDayStatus = json['previous_day_status'];
     data = json['data'] != null ? Data.fromJson(json['data']) : null;
   }
@@ -22,6 +24,7 @@ class TransitionMealModel {
     data['status'] = this.status;
     data['errorCode'] = this.errorCode;
     data['key'] = this.key;
+    data['note'] = this.note;
     data['previous_day_status'] = this.previousDayStatus;
     data['current_day_status'] = this.currentDayStatus;
     if (this.data != null) {

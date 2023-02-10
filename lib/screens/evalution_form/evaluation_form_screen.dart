@@ -113,7 +113,7 @@ class _EvaluationFormScreenState extends State<EvaluationFormScreen> {
                     child: GestureDetector(
                       // onTap: (showLoginProgress) ? null : () {
                       onTap: () {
-                        Navigator.of(context).push(
+                        Navigator.of(context).pushReplacement(
                           MaterialPageRoute(
                             builder: (context) => const PersonalDetailsScreen(),
                           ),

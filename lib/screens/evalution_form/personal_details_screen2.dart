@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:gwc_customer/model/evaluation_from_models/get_evaluation_model/child_get_evaluation_data_model.dart';
 import 'package:gwc_customer/screens/dashboard_screen.dart';
 import 'package:sizer/sizer.dart';
+import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import '../../../model/error_model.dart';
 import '../../../model/evaluation_from_models/evaluation_model_format2.dart';
@@ -1241,15 +1242,17 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
       });
       _pref!.setString(AppConfig.EVAL_STATUS, "evaluation_done");
       // AppConfig().showSnackbar(context, result.message ?? '');
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(
-            builder: (context) =>
-            const DashboardScreen()), (route) {
-          print("route.currentResult:${route.currentResult}");
-          print(route.isFirst);
-        return route.isFirst;
-      }
-      );
+      Get.offAll(DashboardScreen());
+      // Navigator.of(context).pushAndRemoveUntil(
+      //   MaterialPageRoute(
+      //       builder: (context) =>
+      //       const DashboardScreen()
+      //   ), (route) {
+      //     print("route.currentResult:${route.currentResult}");
+      //     print(route.isFirst);
+      //   return route.isFirst;
+      // }
+      // );
     }
     else{
       ErrorModel result = res;

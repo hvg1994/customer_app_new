@@ -446,21 +446,19 @@ class _FeedsListState extends State<FeedsList> {
                     itemBuilder: ((context, index) {
                       return GestureDetector(
                         onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (ct) => FeedsDetailsScreen(
-                                profile: "assets/images/cheerful.png",
-                                userName:
-                                    "${list[index].feed?.addedBy?.name}" ??
-                                        "Mr. Lorem Ipsum",
-                                userAddress:
-                                    "${list[index].feed?.addedBy?.address}" ??
-                                        "Bangalore",
-                                reelsImage: '${list[index].image}' ?? "",
-                                comments: '${list[index].feed?.title}' ?? "",
-                              ),
-                            ),
-                          );
+                          // Navigator.of(context).push(
+                          //   MaterialPageRoute(
+                          //     builder: (ct) => FeedsDetailsScreen(
+                          //       profile: "assets/images/cheerful.png",
+                          //       userName:
+                          //           "${list[index].feed?.addedBy?.name}" ??
+                          //               "Mr. Lorem Ipsum",
+                          //       userAddress: "${list[index].feed?.addedBy?.address}" ?? "",
+                          //       reelsImage: '${list[index].image}' ?? "",
+                          //       comments: '${list[index].feed?.title}' ?? "",
+                          //     ),
+                          //   ),
+                          // );
                         },
                         child: Container(
                           margin: EdgeInsets.symmetric(vertical: 1.h),
@@ -509,8 +507,7 @@ class _FeedsListState extends State<FeedsList> {
                                         ),
                                         SizedBox(height: 0.5.h),
                                         Text(
-                                          list[index].feed?.addedBy?.address ??
-                                              "Bangalore",
+                                          list[index].feed?.addedBy?.address ?? "",
                                           style: TextStyle(
                                               fontFamily: "GothamBook",
                                               color: gMainColor,

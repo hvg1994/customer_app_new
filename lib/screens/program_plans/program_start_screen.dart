@@ -126,7 +126,7 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => PrepratoryPlanScreen(dayNumber: "1", totalDays: '1',),
+              builder: (context) => PrepratoryPlanScreen(dayNumber: "1", totalDays: '',),
             ),
           );
         }

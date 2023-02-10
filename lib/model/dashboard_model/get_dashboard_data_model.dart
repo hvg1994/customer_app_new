@@ -13,7 +13,7 @@ class GetDashboardDataModel {
   GetAppointmentDetailsModel? app_consulation;
   GutDataModel? normal_consultation;
 
-  GutDataModel? prepratory_meal_program;
+  GutDataModel? prepratory_normal_program;
   // these 2 for shipping
   ShippingApprovedModel? approved_shipping;
   GutDataModel? normal_shipping;
@@ -35,7 +35,7 @@ class GetDashboardDataModel {
         this.errorCode,
         this.key,
         this.app_consulation,
-        this.prepratory_meal_program,
+        this.prepratory_normal_program,
         this.prepratory_program,
         this.approved_shipping,
         this.normal_program,
@@ -65,7 +65,7 @@ class GetDashboardDataModel {
     }
     if(json['PrepProgram'] != null){
       if(json['PrepProgram']['value'].runtimeType == String){
-        prepratory_meal_program = GutDataModel.fromJson(json['PrepProgram']);
+        prepratory_normal_program = GutDataModel.fromJson(json['PrepProgram']);
       }
       else{
         prepratory_program = GetPrePostMealModel.fromJson(json['PrepProgram']);
@@ -125,8 +125,8 @@ class GetDashboardDataModel {
     if (this.app_consulation != null) {
       data['Consulation'] = this.app_consulation!.toJson();
     }
-    if (this.prepratory_meal_program != null) {
-      data['PrepProgram'] = this.prepratory_meal_program!.toJson();
+    if (this.prepratory_normal_program != null) {
+      data['PrepProgram'] = this.prepratory_normal_program!.toJson();
     }
     if (this.approved_shipping != null) {
       data['Shipping'] = this.approved_shipping!.toJson();

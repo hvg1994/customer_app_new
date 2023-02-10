@@ -228,9 +228,10 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
                                     decoration: BoxDecoration(
                                       color: eUser().buttonColor,
                                       borderRadius: BorderRadius.circular(eUser().buttonBorderRadius),
-                                      border: Border.all(
-                                          color: eUser().buttonBorderColor,
-                                          width: eUser().buttonBorderWidth                                      ),
+                                      // border: Border.all(
+                                      //     color: eUser().buttonBorderColor,
+                                      //     width: eUser().buttonBorderWidth
+                                      // ),
                                     ),
                                     child: Center(
                                       child: Text(

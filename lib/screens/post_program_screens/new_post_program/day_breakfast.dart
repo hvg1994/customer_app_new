@@ -441,10 +441,10 @@ class _PPDailyTasksUIState extends State<PPDailyTasksUI> {
                 decoration: BoxDecoration(
                   color: eUser().buttonColor,
                   borderRadius: BorderRadius.circular(eUser().buttonBorderRadius),
-                  border: Border.all(
-                      color: eUser().buttonBorderColor,
-                      width: eUser().buttonBorderWidth
-                  ),
+                  // border: Border.all(
+                  //     color: eUser().buttonBorderColor,
+                  //     width: eUser().buttonBorderWidth
+                  // ),
                 ),
                 child: (isSubmitted) ? buildThreeBounceIndicator() : Center(
                   child: Text(
@@ -1080,10 +1080,10 @@ class _PPDailyTasksUIState extends State<PPDailyTasksUI> {
                           decoration: BoxDecoration(
                             color: eUser().buttonColor,
                             borderRadius: BorderRadius.circular(eUser().buttonBorderRadius),
-                            border: Border.all(
-                                color: eUser().buttonBorderColor,
-                                width: eUser().buttonBorderWidth
-                            ),
+                            // border: Border.all(
+                            //     color: eUser().buttonBorderColor,
+                            //     width: eUser().buttonBorderWidth
+                            // ),
                           ),
                           child: Text(
                             'Next',

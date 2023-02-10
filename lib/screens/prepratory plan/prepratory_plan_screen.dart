@@ -5,6 +5,7 @@ import 'package:gwc_customer/repository/api_service.dart';
 import 'package:gwc_customer/repository/prepratory_repository/prep_repository.dart';
 import 'package:gwc_customer/screens/program_plans/meal_pdf.dart';
 import 'package:gwc_customer/services/prepratory_service/prepratory_service.dart';
+import 'package:gwc_customer/utils/app_config.dart';
 import 'package:gwc_customer/widgets/constants.dart';
 import 'package:gwc_customer/widgets/widgets.dart';
 import 'package:http/http.dart' as http;
@@ -20,16 +21,22 @@ class PrepratoryPlanScreen extends StatefulWidget {
 }
 
 class _PrepratoryPlanScreenState extends State<PrepratoryPlanScreen> {
+  String? planNotePdfLink;
 
   late final prepratoryMealFuture;
   getPrepratoryMeals() {
     prepratoryMealFuture = PrepratoryMealService(repository: repository).getPrepratoryMealService();
   }
 
+  String? totalDays;
+  String? dayNumber;
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    totalDays = widget.totalDays;
+    dayNumber = widget.dayNumber;
     getPrepratoryMeals();
   }
 
@@ -50,6 +57,18 @@ class _PrepratoryPlanScreenState extends State<PrepratoryPlanScreen> {
                 children: [
                   buildAppBar((){
                     Navigator.pop(context);
+                  },
+                  showHelpIcon: true,
+                  helpOnTap: (){
+                    if(planNotePdfLink != null || planNotePdfLink!.isNotEmpty){
+                      Navigator.push(context, MaterialPageRoute(builder: (ctx)=>
+                          MealPdf(pdfLink: planNotePdfLink! ,
+                            heading: "Note",
+                          )));
+                    }
+                    else{
+                      AppConfig().showSnackbar(context, "Note Link Not available", isError: true);
+                    }
                   }),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 12),
@@ -88,7 +107,9 @@ class _PrepratoryPlanScreenState extends State<PrepratoryPlanScreen> {
                         }
                         else{
                           PrepratoryMealModel res = snapshot.data as PrepratoryMealModel;
+                          if(widget.totalDays.isEmpty) totalDays = res.days;
                           final dataList = res.data!.toJson();
+                          planNotePdfLink = res.note;
 
                           return customMealPlanTile(dataList);
                           // lst.addAll(dataList.values.map((e) => MealSlot.fromJson(e)));
@@ -285,7 +306,7 @@ class _PrepratoryPlanScreenState extends State<PrepratoryPlanScreen> {
       url = itemUrl;
     }
     print(url);
-    Navigator.push(context, MaterialPageRoute(builder: (ctx)=> MealPdf(pdfLink: url! ,)));
+    if(url.isNotEmpty) Navigator.push(context, MaterialPageRoute(builder: (ctx)=> MealPdf(pdfLink: url! ,)));
   }
 
   orFiled(){

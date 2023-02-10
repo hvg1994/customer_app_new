@@ -1,5 +1,5 @@
 import 'dart:async';
-
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -190,7 +190,7 @@ class _ExistingUserState extends State<ExistingUser> {
                 ),
                 Expanded(
                   child: Container(
-                    height: 2.0,
+                    height: 1.0,
                     color: gMainColor,
                     margin: EdgeInsets.symmetric(
                       horizontal: 1.5.w,
@@ -504,10 +504,10 @@ class _ExistingUserState extends State<ExistingUser> {
                         ? eUser().buttonColor
                         : eUser().buttonColor,
                     borderRadius: BorderRadius.circular(eUser().buttonBorderRadius),
-                    border: Border.all(
-                        color: eUser().buttonBorderColor,
-                        width: eUser().buttonBorderWidth
-                    ),
+                    // border: Border.all(
+                    //     color: eUser().buttonBorderColor,
+                    //     width: eUser().buttonBorderWidth
+                    // ),
                   ),
                   child: (showLoginProgress)
                       ? buildThreeBounceIndicator(color: eUser().threeBounceIndicatorColor)
@@ -630,15 +630,15 @@ class _ExistingUserState extends State<ExistingUser> {
       GetOtpResponse model = result as GetOtpResponse;
       setState(() {
         otpMessage = "OTP Sent";
-        otpController.text = result.otp!;
+        if(kDebugMode) otpController.text = result.otp!;
       });
       Future.delayed(Duration(seconds: 2)).whenComplete(() {
         setState(() {
           otpSent = false;
-          _resendTimer = 0;
+          if(kDebugMode)  _resendTimer = 0;
         });
       });
-      _timer!.cancel();
+      if(kDebugMode) _timer!.cancel();
     }
     else{
       setState(() {

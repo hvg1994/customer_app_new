@@ -43,6 +43,7 @@ class _CookKitTrackingState extends State<CookKitTracking>{
   List<ShipmentTrackActivities> trackerList = [];
   String estimatedDate = '';
   String estimatedDay = '';
+  String shipAddress = '';
 
   int tabSize = 2;
 
@@ -624,7 +625,7 @@ class _CookKitTrackingState extends State<CookKitTracking>{
                 Text(
                   "Delivery Address",
                   style: TextStyle(
-                    fontFamily: "GothamRoundedBold_21016",
+                    fontFamily: kFontBold,
                     fontSize: 12.sp,
                     color: gPrimaryColor,
                   ),
@@ -644,10 +645,11 @@ class _CookKitTrackingState extends State<CookKitTracking>{
                     ),
                   ),
                   title: Text(
-                    _pref?.getString(AppConfig.SHIPPING_ADDRESS) ??  "",
+                    shipAddress,
+                    // _pref?.getString(AppConfig.SHIPPING_ADDRESS) ??  "",
                     style: TextStyle(
                       height: 1.5,
-                      fontFamily: "GothamBook",
+                      fontFamily: kFontBook,
                       fontSize: 11.sp,
                       color: gTextColor,
                     ),
@@ -896,6 +898,7 @@ class _CookKitTrackingState extends State<CookKitTracking>{
             });
           }
         });
+        shipAddress = data.trackingData?.shipmentTrack?.first.deliveredTo ?? '';
         estimatedDate = data.trackingData!.etd!;
         estimatedDay = DateFormat('EEEE').format(DateTime.parse(estimatedDate));
         //print("estimatedDay: $estimatedDay");

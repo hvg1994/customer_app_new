@@ -7,6 +7,7 @@ import 'package:gwc_customer/repository/prepratory_repository/prep_repository.da
 import 'package:gwc_customer/screens/program_plans/meal_pdf.dart';
 import 'package:gwc_customer/screens/program_plans/program_start_screen.dart';
 import 'package:gwc_customer/services/prepratory_service/prepratory_service.dart';
+import 'package:gwc_customer/utils/app_config.dart';
 import 'package:gwc_customer/widgets/constants.dart';
 import 'package:gwc_customer/widgets/widgets.dart';
 import 'package:http/http.dart' as http;
@@ -26,6 +27,7 @@ class TransitionMealPlanScreen extends StatefulWidget {
 
 class _TransitionMealPlanScreenState extends State<TransitionMealPlanScreen> {
 
+  String? planNotePdfLink;
   late final transitionMealFuture;
   getTransitionMeals() {
     transitionMealFuture = PrepratoryMealService(repository: repository).getTransitionMealService();
@@ -57,7 +59,21 @@ class _TransitionMealPlanScreenState extends State<TransitionMealPlanScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 5),
                   child: buildAppBar((){
                     Navigator.pop(context);
-                  })),
+                  },
+                      showHelpIcon: true,
+                      helpOnTap: (){
+                    if(planNotePdfLink != null || planNotePdfLink!.isNotEmpty){
+                      Navigator.push(context, MaterialPageRoute(builder: (ctx)=>
+                          MealPdf(pdfLink: planNotePdfLink! ,
+                            heading: "Note",
+                          )));
+                    }
+                    else{
+                      AppConfig().showSnackbar(context, "Note Link Not available", isError: true);
+                    }
+                      }
+                      ),
+                  ),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 5),
                     child: Text('Day ${widget.dayNumber} of Transition meal plan',
@@ -98,7 +114,7 @@ class _TransitionMealPlanScreenState extends State<TransitionMealPlanScreen> {
                           TransitionMealModel res = snapshot.data as TransitionMealModel;
                           final String currentDayStatus = res.currentDayStatus.toString();
                           final dataList = res.data!.toJson();
-
+                          planNotePdfLink = res.note;
                           if(res.previousDayStatus == 0){
                             Future.delayed(Duration(seconds: 0)).then((value) {
                               return showSymptomsTrackerSheet(context, (int.parse(widget.dayNumber)-1).toString());

@@ -11,9 +11,10 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CAMERA"/>
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove"/>
 
    <application
-        android:label="gwc_customer"
+        android:label="Gut Wellness Club"
         android:name=".App"
        android:requestLegacyExternalStorage="true"
        android:icon="@mipmap/ic_launcher"

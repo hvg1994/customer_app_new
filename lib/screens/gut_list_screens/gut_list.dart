@@ -83,13 +83,13 @@ class GutListState extends State<GutList> {
         'assets/images/dashboard_stages/lock.png'
     ),
     NewStageLevels(
-        "assets/images/dashboard_stages/noun-shipping-5332930.png",
-        "Tracker",
+        "assets/images/dashboard_stages/noun-appointment-4042317.png",
+        "Preparatory\nMeal Plan",
         'assets/images/dashboard_stages/lock.png'
     ),
     NewStageLevels(
-        "assets/images/dashboard_stages/noun-appointment-4042317.png",
-        "Preparatory Meal Plan",
+        "assets/images/dashboard_stages/noun-shipping-5332930.png",
+        "Tracker",
         'assets/images/dashboard_stages/lock.png'
     ),
     NewStageLevels(
@@ -138,7 +138,7 @@ class GutListState extends State<GutList> {
   GetPrePostMealModel? _prepratoryModel, _transModel;
 
   /// for other status we use this one(except shipping_approved & appointment_booked)
-  GutDataModel? _gutDataModel, _gutShipDataModel, _gutProgramModel, _gutPostProgramModel, _preProgramModel, _transMealModel;
+  GutDataModel? _gutDataModel, _gutShipDataModel, _gutProgramModel, _gutPostProgramModel, _prepProgramModel, _transMealModel;
 
   @override
   void initState() {
@@ -235,14 +235,17 @@ class GutListState extends State<GutList> {
           consultationStage = _gutDataModel?.data ?? '';
         }
         updateNewStage(consultationStage);
-        if(consultationStage != null && (shippingStage != null && shippingStage!.isNotEmpty)){
-          isSelected = "Shipping";
-        }
-        if(_getDashboardDataModel.prepratory_meal_program != null){
-          _preProgramModel = _getDashboardDataModel.prepratory_meal_program;
+        if(_getDashboardDataModel.prepratory_normal_program != null){
+          _prepProgramModel = _getDashboardDataModel.prepratory_normal_program;
+          prepratoryMealStage = _prepProgramModel?.data ?? '';
         }
         else if(_getDashboardDataModel.prepratory_program != null){
           _prepratoryModel = _getDashboardDataModel.prepratory_program;
+          prepratoryMealStage = _prepratoryModel?.data ?? '';
+        }
+        updateNewStage(prepratoryMealStage);
+        if(consultationStage != null && (shippingStage != null && shippingStage!.isNotEmpty)){
+          isSelected = "Shipping";
         }
         if(_getDashboardDataModel.transition_meal_program != null){
           _transMealModel = _getDashboardDataModel.transition_meal_program;
@@ -253,12 +256,13 @@ class GutListState extends State<GutList> {
         if(_getDashboardDataModel.approved_shipping != null){
           _shippingApprovedModel = _getDashboardDataModel.approved_shipping;
           shippingStage = _shippingApprovedModel?.data ?? '';
+          prepratoryMealStage = _prepratoryModel?.data ?? '';
+
           updateNewStage(shippingStage);
         }
         else{
           _gutShipDataModel = _getDashboardDataModel.normal_shipping;
           shippingStage = _gutShipDataModel?.data ?? '';
-          _preProgramModel = _getDashboardDataModel.prepratory_meal_program;
           updateNewStage(shippingStage);
           // abc();
         }
@@ -357,14 +361,14 @@ class GutListState extends State<GutList> {
                   ),
                   Row(
                     children: [
-                      TextButton(
-                          onPressed: (){
-                            Navigator.push(context, MaterialPageRoute(builder: (_)=> const NewScheduleScreen()));
-                          },
-                          child: Text("New Schedule UI",
-                          style: TextStyle(
-                            fontSize: 10.sp
-                          ),)),
+                      // TextButton(
+                      //     onPressed: (){
+                      //       Navigator.push(context, MaterialPageRoute(builder: (_)=> const NewScheduleScreen()));
+                      //     },
+                      //     child: Text("New Schedule UI",
+                      //     style: TextStyle(
+                      //       fontSize: 10.sp
+                      //     ),)),
                       GestureDetector(
                         onTap: (){
                           openAlertBox(
@@ -1011,10 +1015,10 @@ class GutListState extends State<GutList> {
                                 showConsultationScreenFromStages(consultationStage);
                               }
                               else if(index == 3){
-                                showShippingScreen();
+                                showPrepratoryMealScreen();
                               }
                               else if(index == 4){
-                                showPrepratoryMealScreen();
+                                showShippingScreen();
                               }
                               else if(index == 5){
                                 showProgramScreen();
@@ -1076,10 +1080,10 @@ class GutListState extends State<GutList> {
                                 showConsultationScreenFromStages(consultationStage);
                               }
                               else if(index == 3){
-                                showShippingScreen();
+                                showPrepratoryMealScreen();
                               }
                               else if(index == 4){
-                                showPrepratoryMealScreen();
+                                showShippingScreen();
                               }
                               else if(index == 5){
                                 showProgramScreen();
@@ -1203,29 +1207,58 @@ class GutListState extends State<GutList> {
         levels[1].stage = openedStage;
         levels[2].stage = openedStage;
         break;
+      case 'prep_meal_plan_completed':
+        levels[1].stage = openedStage;
+        levels[2].stage = openedStage;
+        if(_prepratoryModel!.value!.prep_days! != _prepratoryModel!.value!.currentDay){
+          levels[3].stage = currentStage;
+        }
+        else{
+          levels[3].stage = openedStage;
+        }
+        break;
       case 'shipping_packed':
         levels[1].stage = openedStage;
         levels[2].stage = openedStage;
-        levels[3].stage = currentStage;
+        if(_prepratoryModel!.value!.prep_days! != _prepratoryModel!.value!.currentDay){
+          levels[3].stage = currentStage;
+        }
+        else{
+          levels[3].stage = openedStage;
+        }
         levels[4].stage = currentStage;
-
         break;
       case 'shipping_delivered':
         levels[1].stage = openedStage;
         levels[2].stage = openedStage;
-        levels[3].stage = currentStage;
+        if(_prepratoryModel!.value!.prep_days! != _prepratoryModel!.value!.currentDay){
+          levels[3].stage = currentStage;
+        }
+        else{
+          levels[3].stage = openedStage;
+        }
         levels[4].stage = currentStage;
         break;
       case 'shipping_approved':
         levels[1].stage = openedStage;
         levels[2].stage = openedStage;
-        levels[3].stage = currentStage;
+        if(_prepratoryModel!.value!.prep_days! != _prepratoryModel!.value!.currentDay){
+          levels[3].stage = currentStage;
+        }
+        else{
+          levels[3].stage = openedStage;
+        }
         levels[4].stage = currentStage;
         break;
       case 'start_program':
         levels[1].stage = openedStage;
         levels[2].stage = openedStage;
-        levels[3].stage = openedStage;
+        if(_prepratoryModel!.value!.prep_days! != _prepratoryModel!.value!.currentDay){
+          levels[3].stage = currentStage;
+        }
+        else{
+          levels[3].stage = openedStage;
+        }
         levels[4].stage = openedStage;
         levels[5].stage = currentStage;
         levels[6].stage = lockedStage;

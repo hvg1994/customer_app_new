@@ -2,14 +2,18 @@ class PrepratoryMealModel {
   int? status;
   int? errorCode;
   String? key;
+  String? days;
+  String? note;
   Data? data;
 
-  PrepratoryMealModel({this.status, this.errorCode, this.key, this.data});
+  PrepratoryMealModel({this.status, this.note, this.errorCode, this.key, this.data, this.days});
 
   PrepratoryMealModel.fromJson(Map<String, dynamic> json) {
     status = json['status'];
     errorCode = json['errorCode'];
     key = json['key'];
+    note = json['note'];
+    days = json['days'];
     data = json['data'] != null ? Data.fromJson(json['data']) : null;
   }
 
@@ -18,6 +22,8 @@ class PrepratoryMealModel {
     data['status'] = this.status;
     data['errorCode'] = this.errorCode;
     data['key'] = this.key;
+    data['days'] = this.days;
+    data['note'] = this.note;
     if (this.data != null) {
       data['data'] = this.data!.toJson();
     }

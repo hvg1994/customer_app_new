@@ -376,10 +376,10 @@ class _FeedbackRatingScreenState extends State<FeedbackRatingScreen> {
                         decoration: BoxDecoration(
                           color: eUser().buttonColor,
                           borderRadius: BorderRadius.circular(eUser().buttonBorderRadius),
-                          border: Border.all(
-                              color: eUser().buttonBorderColor,
-                              width: eUser().buttonBorderWidth
-                          ),
+                          // border: Border.all(
+                          //     color: eUser().buttonBorderColor,
+                          //     width: eUser().buttonBorderWidth
+                          // ),
                         ),
                         child: Center(
                           child: (isSubmitted) ?  buildThreeBounceIndicator(color: eUser().threeBounceIndicatorColor) : Text(

@@ -423,14 +423,14 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                     //     width: eUser().buttonBorderWidth
                     // ),
                   ),
-                  child: Text(
+                  child: Center(child: Text(
                     'Next',
                     style: TextStyle(
                       fontFamily: eUser().buttonTextFont,
                       color: eUser().buttonTextColor,
                       fontSize: eUser().buttonTextSize,
                     ),
-                  ),
+                  )),
                 ),
               ),
             ),

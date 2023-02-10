@@ -54,6 +54,8 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
   int planStatus = 0;
   String headerText = "";
   Color textColor = gWhiteColor;
+  String? planNotePdfLink;
+
 
 
   bool isLoading = false;
@@ -364,6 +366,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
       MealPlanDetailsModel model = result as MealPlanDetailsModel;
       setState(() {
         isLoading = false;
+        planNotePdfLink = model.note;
       });
       model.data!.keys.forEach((element) {
         print("before element $element");
@@ -667,7 +670,20 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
             children: [
               buildAppBar(() {
                 Navigator.pop(context);
-              }),
+              },
+                  showHelpIcon: true,
+                  helpOnTap: (){
+                    if(planNotePdfLink != null || planNotePdfLink!.isNotEmpty){
+                      Navigator.push(context, MaterialPageRoute(builder: (ctx)=>
+                          MealPdf(pdfLink: planNotePdfLink! ,
+                            heading: "Note",
+                          )));
+                    }
+                    else{
+                      AppConfig().showSnackbar(context, "Note Link Not available", isError: true);
+                    }
+                  }
+              ),
               SizedBox(height: 1.h),
               Text(
                 // "Day ${widget.day} Meal Plan",
