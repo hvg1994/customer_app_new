@@ -116,6 +116,10 @@ var getPrepratoryMealTrackUrl = "${AppConfig().BASE_URL}/api/getDataList/trackin
 
 var submitTransMealTrackingUrl = "${AppConfig().BASE_URL}/api/submitData/trans_meal_tracking";
 
+var getUserSlotDaysForScheduleUrl = "${AppConfig().BASE_URL}/api/getData/user_slot_days";
+
+var getFollowUpSlotUrl = "${AppConfig().BASE_URL}/api/getData/followup_slots/";
+
 
 
 

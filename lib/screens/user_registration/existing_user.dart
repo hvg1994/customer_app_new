@@ -663,7 +663,7 @@ class _ExistingUserState extends State<ExistingUser> {
       setState(() {
         showLoginProgress = false;
       });
-
+      storeUserProfile();
       print("model.userEvaluationStatus: ${model.userEvaluationStatus}");
 
       _pref.setString(AppConfig.EVAL_STATUS, model.userEvaluationStatus!);
@@ -725,21 +725,6 @@ class _ExistingUserState extends State<ExistingUser> {
       //   ),
       // );
     }
-
-    final profile = await UserProfileService(repository: userRepository).getUserProfileService();
-    if(profile.runtimeType == UserProfileModel){
-      UserProfileModel model1 = profile as UserProfileModel;
-      print("model1.datqbUserIda!.: ${model1.data!.qbUserId}");
-
-      _pref.setString(AppConfig.User_Name, model1.data?.name ?? model1.data?.fname ?? '');
-      _pref.setInt(AppConfig.USER_ID, model1.data?.id ?? -1);
-      _pref.setString(AppConfig.QB_USERNAME, model1.data!.qbUsername!);
-      _pref.setString(AppConfig.QB_CURRENT_USERID, model1.data!.qbUserId!);
-      _pref.setString(AppConfig.KALEYRA_USER_ID, model1.data!.kaleyraUID!);
-      print("pref id: ${_pref.getInt(AppConfig.USER_ID)}");
-      print("model1. after: ${_pref.getString(AppConfig.QB_CURRENT_USERID)}");
-
-    }
   }
 
   void storeBearerToken(String token) async {
@@ -759,4 +744,21 @@ class _ExistingUserState extends State<ExistingUser> {
       httpClient: http.Client(),
     ),
   );
+
+  void storeUserProfile() async{
+    final profile = await UserProfileService(repository: userRepository).getUserProfileService();
+    if(profile.runtimeType == UserProfileModel){
+      UserProfileModel model1 = profile as UserProfileModel;
+      print("model1.datqbUserIda!.: ${model1.data!.qbUserId}");
+
+      _pref.setString(AppConfig.User_Name, model1.data?.name ?? model1.data?.fname ?? '');
+      _pref.setInt(AppConfig.USER_ID, model1.data?.id ?? -1);
+      _pref.setString(AppConfig.QB_USERNAME, model1.data!.qbUsername!);
+      _pref.setString(AppConfig.QB_CURRENT_USERID, model1.data!.qbUserId!);
+      _pref.setString(AppConfig.KALEYRA_USER_ID, model1.data!.kaleyraUID!);
+      print("pref id: ${_pref.getInt(AppConfig.USER_ID)}");
+      print("model1. after: ${_pref.getString(AppConfig.QB_CURRENT_USERID)}");
+
+    }
+  }
 }

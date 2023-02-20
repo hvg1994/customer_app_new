@@ -69,12 +69,12 @@ class GutListState extends State<GutList> {
   String openedStage = 'assets/images/dashboard_stages/green_done.png';
 
   List<NewStageLevels> levels = [
+    // NewStageLevels("assets/images/dashboard_stages/noun-appointment-3615898.png",
+    //     "Enquiry Completed",
+    //     'assets/images/dashboard_stages/green_done.png'
+    // ),
     NewStageLevels("assets/images/dashboard_stages/noun-appointment-3615898.png",
-        "Enquiry Completed",
-        'assets/images/dashboard_stages/green_done.png'
-    ),
-    NewStageLevels("assets/images/dashboard_stages/noun-appointment-3615898.png",
-        "Evaluation Done",
+        "Evaluation",
         'assets/images/dashboard_stages/lock.png'
     ),
     NewStageLevels(
@@ -432,7 +432,8 @@ class GutListState extends State<GutList> {
               ),
               SizedBox(height: 1.h),
               Expanded(
-                child: (isProgressDialogOpened) ? Shimmer.fromColors(
+                child: (isProgressDialogOpened) ?
+                Shimmer.fromColors(
                   baseColor: Colors.grey.withOpacity(0.3),
                   highlightColor: Colors.grey.withOpacity(0.7),
                   child: showImage(),
@@ -526,9 +527,11 @@ class GutListState extends State<GutList> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) =>(_prepratoryModel!.value!.prep_days! == _prepratoryModel!.value!.currentDay) ?
+            builder: (context) =>
+            (_prepratoryModel!.value!.isPrepCompleted!) ?
                 PrepratoryMealCompletedScreen()
                  : PrepratoryPlanScreen(dayNumber: _prepratoryModel!.value!.currentDay!, totalDays: _prepratoryModel!.value!.prep_days ?? ''),
+              // ProgramPlanScreen(from: ProgramMealType.prepratory.name,)
           ),
         ).then((value) => reloadUI());
       }
@@ -1008,28 +1011,28 @@ class GutListState extends State<GutList> {
                             // print(levels[index].stage == openedStage);
                             // goToScreen(screenName)
                             if(levels[index].stage == openedStage || levels[index].stage == currentStage){
-                              if(index == 1){
+                              if(index == 0){
                                 goToScreen(EvaluationGetDetails());
                               }
-                              else if(index == 2){
+                              else if(index == 1){
                                 showConsultationScreenFromStages(consultationStage);
                               }
-                              else if(index == 3){
+                              else if(index == 2){
                                 showPrepratoryMealScreen();
                               }
-                              else if(index == 4){
+                              else if(index == 3){
                                 showShippingScreen();
                               }
-                              else if(index == 5){
+                              else if(index == 4){
                                 showProgramScreen();
                               }
-                              else if(index == 6){
+                              else if(index == 5){
                                 showTransitionMealScreen();
                               }
-                              else if(index == 7){
+                              else if(index == 6){
                                 showPostProgramScreen();
                               }
-                              else if(index == 8){
+                              else if(index == 7){
                                 goToScreen(PPLevelsScreen());
                               }
 
@@ -1073,28 +1076,28 @@ class GutListState extends State<GutList> {
                             print(index);
                             print(levels[index].title);
                             if(levels[index].stage == openedStage || levels[index].stage == currentStage){
-                              if(index == 1){
+                              if(index == 0){
                                 goToScreen(EvaluationGetDetails());
                               }
-                              else if(index == 2){
+                              else if(index == 1){
                                 showConsultationScreenFromStages(consultationStage);
                               }
-                              else if(index == 3){
+                              else if(index == 2){
                                 showPrepratoryMealScreen();
                               }
-                              else if(index == 4){
+                              else if(index == 3){
                                 showShippingScreen();
                               }
-                              else if(index == 5){
+                              else if(index == 4){
                                 showProgramScreen();
                               }
-                              else if(index == 6){
+                              else if(index == 5){
                                 showTransitionMealScreen();
                               }
-                              else if(index == 7){
+                              else if(index == 6){
                                 showPostProgramScreen();
                               }
-                              else if(index == 8){
+                              else if(index == 7){
                                 goToScreen(PPLevelsScreen());
                               }
                             }
@@ -1172,98 +1175,131 @@ class GutListState extends State<GutList> {
     print("consultationStage: ==> ${stage}");
     switch(stage){
       case 'evaluation_done'  :
-        levels[1].stage = openedStage;
-        levels[2].stage = currentStage;
+        levels[0].stage = openedStage;
+        levels[1].stage = currentStage;
         break;
       case 'pending' :
-        levels[1].stage = openedStage;
-        levels[2].stage = currentStage;
+        levels[0].stage = openedStage;
+        levels[1].stage = currentStage;
         break;
       case 'consultation_reschedule' :
-        levels[1].stage = openedStage;
-        levels[2].stage = currentStage;
+        levels[0].stage = openedStage;
+        levels[1].stage = currentStage;
         break;
       case 'appointment_booked':
-        levels[1].stage = openedStage;
-        levels[2].stage = currentStage;
+        levels[0].stage = openedStage;
+        levels[1].stage = currentStage;
         break;
       case 'consultation_done':
-        levels[1].stage = openedStage;
-        levels[2].stage = currentStage;
+        levels[0].stage = openedStage;
+        levels[1].stage = currentStage;
         break;
       case 'consultation_accepted':
-        levels[1].stage = openedStage;
-        levels[2].stage = currentStage;
+        levels[0].stage = openedStage;
+        levels[1].stage = currentStage;
         break;
       case 'consultation_waiting':
-        levels[1].stage = openedStage;
-        levels[2].stage = currentStage;
+        levels[0].stage = openedStage;
+        levels[1].stage = currentStage;
         break;
       case 'consultation_rejected':
-        levels[1].stage = openedStage;
-        levels[2].stage = currentStage;
+        levels[0].stage = openedStage;
+        levels[1].stage = currentStage;
         break;
       case 'report_upload':
+        levels[0].stage = openedStage;
         levels[1].stage = openedStage;
-        levels[2].stage = openedStage;
         break;
       case 'prep_meal_plan_completed':
+        levels[0].stage = openedStage;
         levels[1].stage = openedStage;
-        levels[2].stage = openedStage;
         if(_prepratoryModel!.value!.prep_days! != _prepratoryModel!.value!.currentDay){
-          levels[3].stage = currentStage;
+          levels[2].stage = currentStage;
         }
         else{
-          levels[3].stage = openedStage;
+          levels[2].stage = openedStage;
         }
         break;
       case 'shipping_packed':
+        levels[0].stage = openedStage;
         levels[1].stage = openedStage;
-        levels[2].stage = openedStage;
         if(_prepratoryModel!.value!.prep_days! != _prepratoryModel!.value!.currentDay){
-          levels[3].stage = currentStage;
+          levels[2].stage = currentStage;
         }
         else{
-          levels[3].stage = openedStage;
+          levels[2].stage = openedStage;
         }
-        levels[4].stage = currentStage;
+        levels[3].stage = currentStage;
         break;
       case 'shipping_delivered':
+        levels[0].stage = openedStage;
         levels[1].stage = openedStage;
-        levels[2].stage = openedStage;
-        if(_prepratoryModel!.value!.prep_days! != _prepratoryModel!.value!.currentDay){
-          levels[3].stage = currentStage;
+        if(_prepratoryModel!.value!.isPrepCompleted != null && _prepratoryModel!.value!.isPrepCompleted! == false){
+          levels[2].stage = currentStage;
         }
         else{
-          levels[3].stage = openedStage;
+          levels[2].stage = openedStage;
         }
-        levels[4].stage = currentStage;
+        levels[3].stage = currentStage;
         break;
       case 'shipping_approved':
+        levels[0].stage = openedStage;
         levels[1].stage = openedStage;
-        levels[2].stage = openedStage;
         if(_prepratoryModel!.value!.prep_days! != _prepratoryModel!.value!.currentDay){
-          levels[3].stage = currentStage;
+          levels[2].stage = currentStage;
         }
         else{
-          levels[3].stage = openedStage;
+          levels[2].stage = openedStage;
         }
-        levels[4].stage = currentStage;
+        levels[3].stage = currentStage;
         break;
       case 'start_program':
+        levels[0].stage = openedStage;
         levels[1].stage = openedStage;
-        levels[2].stage = openedStage;
         if(_prepratoryModel!.value!.prep_days! != _prepratoryModel!.value!.currentDay){
-          levels[3].stage = currentStage;
+          levels[2].stage = currentStage;
         }
         else{
-          levels[3].stage = openedStage;
+          levels[2].stage = openedStage;
         }
-        levels[4].stage = openedStage;
-        levels[5].stage = currentStage;
-        levels[6].stage = lockedStage;
+        levels[3].stage = openedStage;
+        levels[4].stage = currentStage;
+        levels[5].stage = lockedStage;
         break;
       case 'trans_program':
+        levels[0].stage = openedStage;
+        levels[1].stage = openedStage;
+        levels[2].stage = openedStage;
+        levels[3].stage = openedStage;
+        levels[4].stage = openedStage;
+        // levels[5].stage = currentStage;
+
+        print("_prepratoryModel!.value!.isPrepCompleted != null: ${_transModel!.value!.isTransMealCompleted != null}");
+        print("_prepratoryModel!.value!.isPrepCompleted! == true: ${_transModel!.value!.isTransMealCompleted == true} ${_transModel!.value!.isTransMealCompleted}");
+
+        if((_transModel!.value!.isTransMealCompleted != null) && _transModel!.value!.isTransMealCompleted == true){
+          levels[5].stage = openedStage;
+        }
+        else{
+          levels[5].stage = currentStage;
+        }
+        break;
+      case 'post_program':
+        levels[0].stage = openedStage;
+        levels[1].stage = openedStage;
+        levels[2].stage = openedStage;
+        levels[3].stage = openedStage;
+        levels[4].stage = openedStage;
+        if((_transModel!.value!.isTransMealCompleted != null) && _transModel!.value!.isTransMealCompleted == true){
+          levels[5].stage = openedStage;
+        }
+        else{
+          levels[5].stage = currentStage;
+        }
+        levels[6].stage = currentStage;
+        break;
+      case 'post_appointment_booked':
+        levels[0].stage = openedStage;
         levels[1].stage = openedStage;
         levels[2].stage = openedStage;
         levels[3].stage = openedStage;
@@ -1271,33 +1307,15 @@ class GutListState extends State<GutList> {
         levels[5].stage = openedStage;
         levels[6].stage = currentStage;
         break;
-      case 'post_program':
-        levels[1].stage = openedStage;
-        levels[2].stage = openedStage;
-        levels[3].stage = openedStage;
-        levels[4].stage = openedStage;
-        levels[5].stage = openedStage;
-        levels[6].stage = openedStage;
-        levels[7].stage = currentStage;
-        break;
-      case 'post_appointment_booked':
-        levels[1].stage = openedStage;
-        levels[2].stage = openedStage;
-        levels[3].stage = openedStage;
-        levels[4].stage = openedStage;
-        levels[5].stage = openedStage;
-        levels[6].stage = openedStage;
-        levels[7].stage = currentStage;
-        break;
       case 'protocol_guide':
+        levels[0].stage = openedStage;
         levels[1].stage = openedStage;
         levels[2].stage = openedStage;
         levels[3].stage = openedStage;
         levels[4].stage = openedStage;
         levels[5].stage = openedStage;
         levels[6].stage = openedStage;
-        levels[7].stage = openedStage;
-        levels[8].stage = currentStage;
+        levels[7].stage = currentStage;
         break;
     }
   }

@@ -221,11 +221,12 @@ class _EvaluationUploadReportState extends State<EvaluationUploadReport> {
               child: Center(
                 child: GestureDetector(
                   onTap: () async {
-                    final res = await _videoPlayerController?.isPlaying();
-                    if(res != null && res == true){
-                      await _videoPlayerController?.stop();
-                    }
+                    // final res = await _videoPlayerController?.isPlaying();
+                    // if(res != null && res == true){
+                    //
+                    // }
                     if(medicalRecords.isNotEmpty){
+                      _videoPlayerController?.stop();
                       Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -266,6 +267,46 @@ class _EvaluationUploadReportState extends State<EvaluationUploadReport> {
                 ),
               ),
             ),
+          ),
+          MediaQuery(
+            data: MediaQuery.of(context).copyWith(textScaleFactor: 0.8),
+            child: Center(child:  GestureDetector(
+                onTap: (){
+                  _videoPlayerController?.stop();
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (ctx) => PersonalDetailsScreen2(
+                              evaluationModelFormat1: widget.evaluationModelFormat1,
+                              medicalReportList: null)
+                      ));
+                },
+                child: Container(
+                  width: 30.w,
+                  height: 4.h,
+                  margin: EdgeInsets.symmetric(vertical: 4.h),
+                  padding:
+                  EdgeInsets.symmetric(vertical: 1.h, horizontal: 10.w),
+                  decoration: BoxDecoration(
+                    color: eUser().buttonColor,
+                    borderRadius: BorderRadius.circular(eUser().buttonBorderRadius),
+                    // border: Border.all(
+                    //     color: eUser().buttonBorderColor,
+                    //     width: eUser().buttonBorderWidth
+                    // ),
+                  ),
+                  child: Center(
+                    child: Text(
+                      'Skip',
+                      style: TextStyle(
+                        fontFamily: eUser().buttonTextFont,
+                        color: eUser().buttonTextColor,
+                        fontSize: eUser().buttonTextSize,
+                      ),
+                    ),
+                  ),
+                )
+            ),),
           ),
         ],
       ),

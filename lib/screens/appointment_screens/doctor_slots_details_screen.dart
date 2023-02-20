@@ -271,7 +271,7 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
                                           ),
                                         ),
                                         TextSpan(
-                                          text: " on ",
+                                          text: " on\n",
                                           style: TextStyle(
                                             height: 1.5,
                                             fontSize: 12.sp,
@@ -280,7 +280,7 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
                                           ),
                                         ),
                                         TextSpan(
-                                          text: DateFormat('dd-MM-yyyy').format(DateTime.parse((widget.bookingDate.toString()))).toString(),
+                                          text: DateFormat('dd MMM yyyy').format(DateTime.parse((widget.bookingDate.toString()))).toString(),
                                           style: TextStyle(
                                             height: 1.5,
                                             fontSize: 13.sp,

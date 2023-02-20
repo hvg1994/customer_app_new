@@ -140,6 +140,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         autovalidateMode: AutovalidateMode.onUserInteraction,
                         key: nameFormKey,
                         child: TextFormField(
+                          textCapitalization: TextCapitalization.words,
                           controller: nameController,
                           cursorColor: gPrimaryColor,
                           validator: (value) {
@@ -201,8 +202,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             if (value!.isEmpty) {
                               return 'Please enter your Age';
                             }
-                            else if(value == "0"){
-                              return 'Age should be above 0';
+                            else if(int.parse(value) < 10){
+                              return 'Age should be Greater than 10';
+                            }
+                            else if(int.parse(value) >= 100){
+                              return 'Age should be Lesser than 100';
                             }
                             else {
                               return null;
@@ -226,9 +230,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 ),
                               ),
                           style: TextStyle(
-                              fontFamily: "GothamBook",
-                              color: gMainColor,
-                              fontSize: 11.sp
+                              fontFamily: eUser().userTextFieldFont,
+                              fontSize: eUser().userTextFieldFontSize,
+                              color: eUser().userTextFieldColor
                           ),
                           textInputAction: TextInputAction.next,
                           textAlign: TextAlign.start,
@@ -528,62 +532,76 @@ class _RegisterScreenState extends State<RegisterScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SizedBox(
-                width: 10,
-                child: Radio(
-                  value: 0,
-                  groupValue: _selectedGender,
-                  onChanged: (int? value) {
-                    setState(() {
-                      _selectedGender = value!;
-                    });
-                  },
-                  activeColor: eUser().kRadioButtonColor,
+          GestureDetector(
+            onTap: (){
+              setState(() {
+                _selectedGender = 0;
+              });
+            },
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(
+                  width: 10,
+                  child: Radio(
+                    value: 0,
+                    groupValue: _selectedGender,
+                    onChanged: (int? value) {
+                      setState(() {
+                        _selectedGender = value!;
+                      });
+                    },
+                    activeColor: eUser().kRadioButtonColor,
+                  ),
                 ),
-              ),
-              SizedBox(width: 10,),
-              Text(
-                'Male',
-                style: TextStyle(
-                    fontFamily: eUser().userTextFieldFont,
-                    fontSize: eUser().userTextFieldFontSize,
-                    color: (_selectedGender == 0) ? eUser().kRadioButtonColor : eUser().userTextFieldColor,
+                SizedBox(width: 10,),
+                Text(
+                  'Male',
+                  style: TextStyle(
+                      fontFamily: eUser().userTextFieldFont,
+                      fontSize: eUser().userTextFieldFontSize,
+                      color: (_selectedGender == 0) ? eUser().kRadioButtonColor : eUser().userTextFieldColor,
 
-                ),
-              )
-            ],
+                  ),
+                )
+              ],
+            ),
           ),
           SizedBox(width: 20,),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SizedBox(
-                width: 10,
-                // height: 10,
-                child: Radio(
-                  value: 1,
-                  groupValue: _selectedGender,
-                  onChanged: (int? value) {
-                    setState(() {
-                      _selectedGender = value!;
-                    });
-                  },
-                  activeColor: eUser().kRadioButtonColor,
+          GestureDetector(
+            onTap: (){
+              setState(() {
+                _selectedGender = 1;
+              });
+            },
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(
+                  width: 10,
+                  // height: 10,
+                  child: Radio(
+                    value: 1,
+                    groupValue: _selectedGender,
+                    onChanged: (int? value) {
+                      setState(() {
+                        _selectedGender = value!;
+                      });
+                    },
+                    activeColor: eUser().kRadioButtonColor,
+                  ),
                 ),
-              ),
-              SizedBox(width: 10,),
-              Text(
-                'Female',
-                style: TextStyle(
-                  fontFamily: eUser().userTextFieldFont,
-                  fontSize: eUser().userTextFieldFontSize,
-                  color: (_selectedGender == 1) ? eUser().kRadioButtonColor : eUser().userTextFieldColor,
-                ),
-              )
-            ],
+                SizedBox(width: 10,),
+                Text(
+                  'Female',
+                  style: TextStyle(
+                    fontFamily: eUser().userTextFieldFont,
+                    fontSize: eUser().userTextFieldFontSize,
+                    color: (_selectedGender == 1) ? eUser().kRadioButtonColor : eUser().userTextFieldColor,
+                  ),
+                )
+              ],
+            ),
           )
         ],
       ),

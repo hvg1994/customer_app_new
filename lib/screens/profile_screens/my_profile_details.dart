@@ -193,16 +193,22 @@ class _MyProfileDetailsState extends State<MyProfileDetails> {
                                                     ),
                                                     GestureDetector(
                                                         onTap: (){
-                                                          SendUserModel user = SendUserModel(
-                                                            fname: fnameController.text,
-                                                            lname: lnameController.text,
-                                                            age: ageController.text,
-                                                            gender: genderController.text,
-                                                            email: subData!.email,
-                                                            phone: subData.phone,
-                                                            profile: (_image != null) ? _image!.path.split('/').last : null
-                                                          );
-                                                          updateProfileData(user.toJson());
+                                                          if(int.parse(ageController.text) < 10 || int.parse(ageController.text) > 100 ){
+                                                            AppConfig().showSnackbar(context, "Age Should be Greater than 10 and less than 100", isError: true);
+                                                          }
+                                                          else{
+                                                            SendUserModel user = SendUserModel(
+                                                                fname: fnameController.text,
+                                                                lname: lnameController.text,
+                                                                age: ageController.text,
+                                                                gender: genderController.text,
+                                                                email: subData!.email,
+                                                                phone: subData.phone,
+                                                                profile: (_image != null) ? _image!.path.split('/').last : null
+                                                            );
+                                                            updateProfileData(user.toJson());
+                                                          }
+
                                                           // toggleEdit();
                                                         },
                                                         child: Icon(Icons.check))
@@ -271,7 +277,7 @@ class _MyProfileDetailsState extends State<MyProfileDetails> {
                                             clipBehavior: Clip.none,
                                             children: [
                                               Visibility(
-                                                visible: isEdit,
+                                                visible: false,
                                                 child: GestureDetector(
                                                   onTap: showChooserSheet,
                                                   child: Align(
@@ -345,6 +351,7 @@ class _MyProfileDetailsState extends State<MyProfileDetails> {
               decoration: InputDecoration(
                 contentPadding: EdgeInsets.all(0.0),
                 isDense: true,
+                counterText: ""
                 // border: InputBorde,
               ),
               minLines: 1,

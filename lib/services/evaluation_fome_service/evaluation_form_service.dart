@@ -6,7 +6,7 @@ class EvaluationFormService extends ChangeNotifier{
 
   EvaluationFormService({required this.repository}) : assert(repository != null);
 
-  Future submitEvaluationFormService(Map form, List medicalReports) async{
+  Future submitEvaluationFormService(Map form, List? medicalReports) async{
     return await repository.submitEvaluationFormRepo(form, medicalReports);
   }
 

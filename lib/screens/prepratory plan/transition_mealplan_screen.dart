@@ -28,15 +28,20 @@ class TransitionMealPlanScreen extends StatefulWidget {
 class _TransitionMealPlanScreenState extends State<TransitionMealPlanScreen> {
 
   String? planNotePdfLink;
-  late final transitionMealFuture;
+  Future? transitionMealFuture;
   getTransitionMeals() {
     transitionMealFuture = PrepratoryMealService(repository: repository).getTransitionMealService();
   }
+
+  String? currentDay;
+  String? totalDays;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    currentDay = widget.dayNumber;
+    totalDays = widget.totalDays;
     getTransitionMeals();
   }
 
@@ -47,62 +52,72 @@ class _TransitionMealPlanScreenState extends State<TransitionMealPlanScreen> {
   );
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-        child: Scaffold(
-          body: SingleChildScrollView(
-            child: Container(
-              padding: EdgeInsets.all(8),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 5),
-                  child: buildAppBar((){
-                    Navigator.pop(context);
-                  },
-                      showHelpIcon: true,
-                      helpOnTap: (){
-                    if(planNotePdfLink != null || planNotePdfLink!.isNotEmpty){
-                      Navigator.push(context, MaterialPageRoute(builder: (ctx)=>
-                          MealPdf(pdfLink: planNotePdfLink! ,
-                            heading: "Note",
-                          )));
-                    }
-                    else{
-                      AppConfig().showSnackbar(context, "Note Link Not available", isError: true);
-                    }
+    return MediaQuery(
+      data: MediaQuery.of(context).copyWith(textScaleFactor: 0.8),
+      child: SafeArea(
+          child: Scaffold(
+            body: SingleChildScrollView(
+              child: Container(
+                padding: EdgeInsets.all(8),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 5),
+                    child: buildAppBar((){
+                      Navigator.pop(context);
+                    },
+                        showHelpIcon: true,
+                        helpOnTap: (){
+                      if(planNotePdfLink != null || planNotePdfLink!.isNotEmpty){
+                        Navigator.push(context, MaterialPageRoute(builder: (ctx)=>
+                            MealPdf(pdfLink: planNotePdfLink! ,
+                              heading: planNotePdfLink?.split('/').last ?? '',
+                            )));
                       }
-                      ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 5),
-                    child: Text('Day ${widget.dayNumber} of Transition meal plan',
-                      style: TextStyle(
-                          fontFamily: eUser().mainHeadingFont,
-                          color: eUser().mainHeadingColor,
-                          fontSize: 14.sp
-
-                      ),
+                      else{
+                        AppConfig().showSnackbar(context, "Note Link Not available", isError: true);
+                      }
+                        }
+                        ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
-                    child: Text('${int.parse(widget.totalDays) - int.parse(widget.dayNumber)} days Remaining',
-                      style: TextStyle(
-                          fontFamily: kFontMedium,
-                          color: gHintTextColor,
-                          fontSize: 10.sp
-                      ),
-                    ),
-                  ),
-                  FutureBuilder(
-                    future: transitionMealFuture,
-                      builder: (_, snapshot){
-                      if(snapshot.hasData){
-                        if(snapshot.data.runtimeType == ErrorModel){
-                          final res = snapshot.data as ErrorModel;
+                    FutureBuilder(
+                      future: transitionMealFuture,
+                        builder: (_, snapshot){
+                        if(snapshot.hasData){
+                          if(snapshot.data.runtimeType == ErrorModel){
+                            final res = snapshot.data as ErrorModel;
+                            return Center(
+                              child: Text(res.message ?? '',
+                                style: TextStyle(
+                                  fontSize: 10.sp,
+                                  fontFamily: kFontMedium,
+                                ),
+                              ),
+                            );
+                          }
+                          else{
+                            TransitionMealModel res = snapshot.data as TransitionMealModel;
+                            final String currentDayStatus = res.currentDayStatus.toString();
+                            final dataList = res.data!.toJson();
+                            if(res.currentDay != null) currentDay = res.currentDay;
+                            if(res.totalDays != null) totalDays = res.totalDays;
+                            planNotePdfLink = res.note;
+                            if(res.previousDayStatus == 0){
+                              Future.delayed(Duration(seconds: 0)).then((value) {
+                                return showSymptomsTrackerSheet(context, (int.parse(widget.dayNumber)-1).toString()).then((value) {
+                                  getTransitionMeals();
+                                });
+                              });
+                            }
+                            else{
+                              return customMealPlanTile(dataList, currentDayStatus);
+                            }
+                          }
+                        }
+                        else if(snapshot.hasError){
                           return Center(
-                            child: Text(res.message ?? '',
+                            child: Text(snapshot.error.toString() ?? '',
                               style: TextStyle(
                                 fontSize: 10.sp,
                                 fontFamily: kFontMedium,
@@ -110,39 +125,15 @@ class _TransitionMealPlanScreenState extends State<TransitionMealPlanScreen> {
                             ),
                           );
                         }
-                        else{
-                          TransitionMealModel res = snapshot.data as TransitionMealModel;
-                          final String currentDayStatus = res.currentDayStatus.toString();
-                          final dataList = res.data!.toJson();
-                          planNotePdfLink = res.note;
-                          if(res.previousDayStatus == 0){
-                            Future.delayed(Duration(seconds: 0)).then((value) {
-                              return showSymptomsTrackerSheet(context, (int.parse(widget.dayNumber)-1).toString());
-                            });
-                          }
-                          else{
-                            return customMealPlanTile(dataList, currentDayStatus);
-                          }
+                        return Center(child: buildCircularIndicator(),);
                         }
-                      }
-                      else if(snapshot.hasError){
-                        return Center(
-                          child: Text(snapshot.error.toString() ?? '',
-                            style: TextStyle(
-                              fontSize: 10.sp,
-                              fontFamily: kFontMedium,
-                            ),
-                          ),
-                        );
-                      }
-                      return Center(child: buildCircularIndicator(),);
-                      }
-                  )
-                ],
+                    )
+                  ],
+                ),
               ),
             ),
-          ),
-        )
+          )
+      ),
     );
   }
 
@@ -154,14 +145,32 @@ class _TransitionMealPlanScreenState extends State<TransitionMealPlanScreen> {
         shrinkWrap: true,
         // crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            child: Text('Day ${currentDay} of Transition meal plan',
+              style: TextStyle(
+                  fontFamily: eUser().mainHeadingFont,
+                  color: eUser().mainHeadingColor,
+                  fontSize: 14.sp
+
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 5),
+            child: Text('${int.parse(totalDays!) - int.parse(currentDay!)} days Remaining',
+              style: TextStyle(
+                  fontFamily: kFontMedium,
+                  color: gHintTextColor,
+                  fontSize: 10.sp
+              ),
+            ),
+          ),
           ...dataList.entries.map((e) {
-            print("${e.key}==${e.value}");
-            print(e.value.runtimeType);
             List<TransMealSlot> lst = (e.value as List).map((e) => TransMealSlot.fromJson(e)).toList();
             // (e.value as List).forEach((element) {
             //   lst.add(MealSlot.fromJson(element));
             // });
-            print(lst);
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -289,7 +298,7 @@ class _TransitionMealPlanScreenState extends State<TransitionMealPlanScreen> {
               ],
             );
           }),
-          if(currentDayStatus == "0") btn()
+          if(currentDayStatus == "0") btn(),
         ],
       ),
     );
@@ -309,7 +318,7 @@ class _TransitionMealPlanScreenState extends State<TransitionMealPlanScreen> {
       url = itemUrl;
     }
     print(url);
-    Navigator.push(context, MaterialPageRoute(builder: (ctx)=> MealPdf(pdfLink: url! ,)));
+    if(url.isNotEmpty) Navigator.push(context, MaterialPageRoute(builder: (ctx)=> MealPdf(pdfLink: url! ,heading: url.split('/').last,)));
   }
 
   orFiled(){
@@ -346,8 +355,10 @@ class _TransitionMealPlanScreenState extends State<TransitionMealPlanScreen> {
   btn(){
     return Center(
       child: GestureDetector(
-        onTap: () {
-          showSymptomsTrackerSheet(context, widget.dayNumber);
+        onTap: (){
+          showSymptomsTrackerSheet(context, widget.dayNumber).then((value) {
+            getTransitionMeals();
+          });
         },
         child: Container(
           margin: EdgeInsets.symmetric(vertical: 2.h),
@@ -376,8 +387,8 @@ class _TransitionMealPlanScreenState extends State<TransitionMealPlanScreen> {
     );
   }
 
-  showSymptomsTrackerSheet(BuildContext context, String day) {
-    return showModalBottomSheet(
+  Future showSymptomsTrackerSheet(BuildContext context, String day) async{
+    return await showModalBottomSheet(
         isDismissible: false,
         isScrollControlled: true,
         backgroundColor: Colors.transparent,

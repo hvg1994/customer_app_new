@@ -2,7 +2,7 @@ class ChildSpecialization {
   int? id;
   String? name;
   String? createdAt;
-  Null? updatedAt;
+  String? updatedAt;
 
   ChildSpecialization({this.id, this.name, this.createdAt, this.updatedAt});
 

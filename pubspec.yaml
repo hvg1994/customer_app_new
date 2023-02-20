@@ -69,6 +69,7 @@ dependencies:
   dropdown_button2: any
   firebase_core: ^1.24.0
   firebase_messaging: ^11.2.15
+#  flutter_local_notifications: ^13.0.0
   flutter_local_notifications: ^9.7.0
   grouped_list: any
   quickblox_sdk: ^0.6.0-beta

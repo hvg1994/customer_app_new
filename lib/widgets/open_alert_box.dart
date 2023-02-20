@@ -87,7 +87,7 @@ openAlertBox({
                           child: Text(
                             negativeButtonName ?? "NO",
                             style: TextStyle(
-                              fontFamily: "GothamRoundedBold_21016",
+                              fontFamily: kFontMedium,
                               color: gWhiteColor,
                               fontSize: 11.sp,
                             ),
@@ -109,7 +109,7 @@ openAlertBox({
                         child: Text(
                           positiveButtonName ?? "YES",
                           style: TextStyle(
-                            fontFamily: "GothamRoundedBold_21016",
+                            fontFamily: kFontMedium,
                             color: gWhiteColor,
                             fontSize: 11.sp,
                           ),

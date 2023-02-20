@@ -278,19 +278,23 @@ class _PrepratoryMealCompletedScreenState extends State<PrepratoryMealCompletedS
     final res = await PrepratoryMealService(repository: repository).sendPrepratoryMealTrackDetailsService(sendDetailsMap);
 
     if(res.runtimeType == ErrorModel){
+      setState(() {
+        showProgress = false;
+      });
       final result = res as ErrorModel;
       print("Submit error: ${res.message}");
       AppConfig().showSnackbar(context, result.message ?? '', isError: true);
     }
     else{
+      setState(() {
+        showProgress = false;
+      });
       final result = res as SuccessMessageModel;
       AppConfig().showSnackbar(context, result.errorMsg ?? '');
       Navigator.pop(context);
       print("submit success");
     }
-    setState(() {
-      showProgress = false;
-    });
+
   }
 
 

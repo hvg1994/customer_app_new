@@ -24,7 +24,7 @@ import 'package:sizer/sizer.dart';
 import 'package:http/http.dart' as http;
 
 enum NotificationTypeEnum{
-  meal_plan, enquiry, report, appointment, shopping
+  meal_plan, enquiry, report, appointment, shopping, reminder_appointment, new_appointment
 }
 class NotificationScreen extends StatefulWidget {
   const NotificationScreen({Key? key}) : super(key: key);
@@ -102,14 +102,15 @@ class _NotificationScreenState extends State<NotificationScreen> {
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                             child: Text('Notifications',
                               style: TextStyle(
-                                fontFamily: 'GothamBold',
-                                color: gMainColor,
-                                fontSize: 12.sp
+                                fontFamily: kFontBold,
+                                color: PPConstants().topViewHeadingText,
+                                fontSize: headingFont
                               ),
                             ),
                           ),
-                          Divider(
-                            thickness: 2,
+                          const Divider(
+                            thickness: 1,
+                            color: gHintTextColor,
                           ),
                           FutureBuilder(
                             future: notificationFuture,
@@ -126,8 +127,8 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                       child: Column(children: [
                                         Text(snapshot.error.toString(),
                                           style: TextStyle(
-                                              fontSize: 11.sp,
-                                              fontFamily: 'GothamMedium'
+                                              fontSize: eUser().userFieldLabelFontSize,
+                                              fontFamily: kFontMedium
                                           ),
                                         ),
                                         TextButton(
@@ -137,7 +138,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                             child: Text('Retry',
                                               style: TextStyle(
                                                   fontSize: 10.sp,
-                                                  fontFamily: 'GothamMedium'
+                                                  fontFamily: kFontMedium
                                               ),
                                             )
                                         )
@@ -163,7 +164,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                       Text(snapshot.error.toString(),
                                         style: TextStyle(
                                           fontSize: 11.sp,
-                                          fontFamily: 'GothamMedium'
+                                          fontFamily: kFontMedium
                                         ),
                                       ),
                                       TextButton(
@@ -173,7 +174,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                           child: Text('Retry',
                                             style: TextStyle(
                                                 fontSize: 10.sp,
-                                                fontFamily: 'GothamMedium'
+                                                fontFamily: kFontMedium
                                             ),
                                           )
                                       )
@@ -212,23 +213,21 @@ class _NotificationScreenState extends State<NotificationScreen> {
         ListTile(
           contentPadding: EdgeInsets.zero,
           horizontalTitleGap: 10,
-          leading: Card(
-            color: gMainColor,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Image.asset(asset,
-                fit: BoxFit.scaleDown,
-                width: 40,
-                // height: 70
-              ),
+          leading: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Image.asset(asset,
+              fit: BoxFit.scaleDown,
+              color: gBlackColor,
+              width: 40,
+              // height: 70
             ),
           ),
           minLeadingWidth: 30,
           title: Text(title,
             style: TextStyle(
-                fontFamily: 'GothamBold',
+                fontFamily: kFontBold,
                 color: gPrimaryColor,
-                fontSize: 11.sp
+                fontSize: eUser().userFieldLabelFontSize
             ),
           ),
           subtitle: Column(
@@ -237,15 +236,18 @@ class _NotificationScreenState extends State<NotificationScreen> {
             children: [
               Text(subTitle,
                 style: TextStyle(
-                    fontFamily: 'GothamMedium',
+                    fontFamily: kFontMedium,
                     color: gTextColor,
-                    fontSize: 10.sp
+                    fontSize: eUser().userTextFieldHintFontSize
                 ),
+              ),
+              SizedBox(
+                height: 5,
               ),
               Text(lastTitle,
                 style: TextStyle(
-                    fontFamily: 'GothamMedium',
-                    color: gTextColor,
+                    fontFamily: kFontMedium,
+                    color: gHintTextColor,
                     fontSize: 9.5.sp
                 ),
               )
@@ -321,8 +323,11 @@ class _NotificationScreenState extends State<NotificationScreen> {
     else if(type == NotificationTypeEnum.report.name){
       asset = 'assets/images/notification/appoint_schedule.png';
     }
-    else if(type == NotificationTypeEnum.appointment.name){
+    else if(type == NotificationTypeEnum.appointment.name || type == NotificationTypeEnum.reminder_appointment.name){
       asset = 'assets/images/notification/appoint_reminder.png';
+    }
+    else if(type == NotificationTypeEnum.new_appointment.name){
+      asset = 'assets/images/notification/booking.png';
     }
     else if(type == NotificationTypeEnum.shopping.name){
       asset = 'assets/images/notification/list_upload.png';

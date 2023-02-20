@@ -1,7 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:gwc_customer/model/consultation_model/appointment_slot_model.dart';
+import 'package:gwc_customer/model/consultation_model/child_slots_model.dart';
+import 'package:gwc_customer/model/error_model.dart';
+import 'package:gwc_customer/model/user_slot_for_schedule_model/user_slot_days_schedule_model.dart';
+import 'package:gwc_customer/repository/user_slot_for_schedule_repository/schedule_slot_repository.dart';
+import 'package:gwc_customer/services/user_slot_for_schedule_service/user_slot_for_schedule_service.dart';
+import 'package:gwc_customer/utils/app_config.dart';
 import 'package:gwc_customer/widgets/constants.dart';
 import 'package:gwc_customer/widgets/widgets.dart';
 import 'package:sizer/sizer.dart';
+import 'package:intl/intl.dart';
+import '../../repository/api_service.dart';
+import 'package:http/http.dart' as http;
 
 class NewScheduleScreen extends StatefulWidget {
   const NewScheduleScreen({Key? key}) : super(key: key);
@@ -11,6 +21,65 @@ class NewScheduleScreen extends StatefulWidget {
 }
 
 class _NewScheduleScreenState extends State<NewScheduleScreen> {
+
+  Future? getSlotDaysListFuture;
+
+  Map<String, ChildSlotModel>? followUpSlots;
+  final ScheduleSlotsRepository repository = ScheduleSlotsRepository(
+    apiClient: ApiClient(
+      httpClient: http.Client(),
+    ),
+  );
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getSlotDates();
+  }
+
+  getSlotDates() {
+    getSlotDaysListFuture = GetUserScheduleSlotsForService(repository: repository).getShoppingDetailsListService();
+  }
+
+  String errorMsg = "";
+  bool isLoading = false;
+
+  Future getSlotsData(String date) async{
+    setState(() {
+      isLoading = true;
+    });
+    var inputFormat = DateFormat('dd-MM-yyyy');
+    var date1 = inputFormat.parse(date);
+
+    var outputFormat = DateFormat('yyyy-MM-dd');
+    var date2 = outputFormat.format(date1);
+    print(date2);
+    final res = await GetUserScheduleSlotsForService(repository: repository).getFollowUpSlotsScheduleService(date2);
+
+    print("res: $res");
+
+    if(res.runtimeType == ErrorModel){
+      final result = res as ErrorModel;
+      setState(() {
+        errorMsg = result.message ?? '';
+        isLoading = false;
+      });
+    }
+    else{
+      print("else");
+      final result = res as SlotModel;
+      print(result);
+      setState(() {
+        errorMsg = "";
+        followUpSlots = result.data;
+        isLoading = false;
+      });
+    }
+    setState(() {
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -23,11 +92,41 @@ class _NewScheduleScreenState extends State<NewScheduleScreen> {
                 buildAppBar(() {
                   Navigator.pop(context);
                 }),
-                ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: 4,
-                    itemBuilder: (_, index){
-                    return slotListTile("${index+1} Slot Dates.", "Your first consultation , Please book your timings");
+                FutureBuilder(
+                  future: getSlotDaysListFuture,
+                    builder: (_, snapshot){
+                      if(snapshot.hasData){
+                        if(snapshot.data.runtimeType == ErrorModel){
+                          final res = snapshot.data as ErrorModel;
+                          print(res);
+                          return Center(
+                            child: Text(res.message.toString() ?? ''),
+                          );
+                        }
+                        else{
+                          final res = snapshot.data as GetUserSlotDaysForScheduleModel;
+                          return ListView.builder(
+                              shrinkWrap: true,
+                              itemCount: res.data?.length ?? 0,
+                              itemBuilder: (_, index){
+                                return slotListTile(" ${(res.data![index].day == 1) ? '${(res.data![index].day)}th'
+                                    : (res.data![index].day == 2) ? '${(res.data![index].day)}nd'
+                                    : (res.data![index].day == 3) ? '${(res.data![index].day)}rd'
+                                    : '${res.data![index].day}th'} Slot Dates.",
+                                    "Your ${(res.data![index].day == 1) ? '${(res.data![index].day)}th'
+                                        : (res.data![index].day == 2) ? '${(res.data![index].day)}nd'
+                                        : (res.data![index].day == 3) ? '${(res.data![index].day)}rd'
+                                        : '${res.data![index].day}th'} consultation , Please book your timings", res.data?[index].slot ?? '', res.data?[index].date ?? '');
+                              }
+                          );
+                        }
+                      }
+                      else if(snapshot.hasError){
+                        return Center(
+                          child: Text(snapshot.error.toString() ?? ''),
+                        );
+                      }
+                      return Center(child: buildCircularIndicator(),);
                     }
                 )
               ],
@@ -48,7 +147,7 @@ class _NewScheduleScreenState extends State<NewScheduleScreen> {
 
 
 
-  slotListTile(String topText, String middleText){
+  slotListTile(String topText, String middleText, String daySlotNumber, String date){
     return SizedBox(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -87,7 +186,7 @@ class _NewScheduleScreenState extends State<NewScheduleScreen> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(Icons.calendar_month),
-                        Text('Day 09',
+                        Text(daySlotNumber,
                           style: TextStyle(
                             fontFamily:
                             kFontBold,
@@ -98,8 +197,14 @@ class _NewScheduleScreenState extends State<NewScheduleScreen> {
                       ],
                     ),
                     GestureDetector(
-                      onTap: (){
-                        showScheduleDialog();
+                      onTap: () async {
+                        if(date.isEmpty){
+                          AppConfig().showSnackbar(context, "date getting empty", isError: true);
+                        }
+                        else{
+                          await getSlotsData(date);
+                          showScheduleDialog();
+                        }
                       },
                       child: Text("Schedule",
                         style: TextStyle(
@@ -127,6 +232,9 @@ class _NewScheduleScreenState extends State<NewScheduleScreen> {
   List eveningSlotList = ["05:30AM", "06:00AM", "06:30AM", "07:00AM", "07:30AM", "08:00AM"];
   String selectedEveningSlot = "";
 
+  List followUpSlotsList = [];
+  String selectedSlot = "";
+
   showScheduleDialog(){
     return showDialog(
         context: context,
@@ -149,33 +257,22 @@ class _NewScheduleScreenState extends State<NewScheduleScreen> {
       child: SingleChildScrollView(
         child: SizedBox(
           height: 50.h,
-          child: Column(
+          child: (isLoading) ? Center(child: buildCircularIndicator(),)
+              : (errorMsg.isNotEmpty) ? Center(
+        child: Text(errorMsg),
+    ) :
+          Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(
                 height: 6,
               ),
-              slotView("Morning"),
               Center(
                 child: Wrap(
-                  runAlignment: WrapAlignment.spaceBetween,
+                  runAlignment: WrapAlignment.spaceEvenly,
                   children: [
-                    ...morningSlotList.map((e) => slotChip(e, 'Morning',isSelected: selectedMorningSlot.contains(e), setstate: setState))
-                  ],
-                ),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              slotView("Evening"),
-              SizedBox(
-                height: 5,
-              ),
-              Center(
-                child: Wrap(
-                  children: [
-                    ...eveningSlotList.map((e) => slotChip(e, "Evening",isSelected: selectedEveningSlot.contains(e), setstate: setState))
+                    ...followUpSlots!.values.map((e) => slotChip(e.slot!, '',isSelected: selectedSlot.contains(e.slot!), setstate: setState))
                   ],
                 ),
               ),
@@ -233,18 +330,19 @@ class _NewScheduleScreenState extends State<NewScheduleScreen> {
     return GestureDetector(
       onTap: (){
         setstate!(() {
-          if(slotName == "Evening"){
-            selectedEveningSlot = time;
-          }
-          else{
-            selectedMorningSlot = time;
-          }
+          selectedSlot = time;
+          // if(slotName == "Evening"){
+          //   selectedEveningSlot = time;
+          // }
+          // else{
+          //   selectedMorningSlot = time;
+          // }
         });
       },
       child: Container(
         padding: EdgeInsets.symmetric(
-          horizontal: 8,
-          vertical: 7
+          horizontal: 10,
+          vertical: 10
         ),
         margin: EdgeInsets.symmetric(horizontal: 2, vertical: 3),
         decoration: BoxDecoration(

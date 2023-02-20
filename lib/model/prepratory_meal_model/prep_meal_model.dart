@@ -3,15 +3,19 @@ class PrepratoryMealModel {
   int? errorCode;
   String? key;
   String? days;
+  String? currentDay;
+  String? isPrepCompleted;
   String? note;
   Data? data;
 
-  PrepratoryMealModel({this.status, this.note, this.errorCode, this.key, this.data, this.days});
+  PrepratoryMealModel({this.status, this.note, this.currentDay, this.errorCode, this.key, this.data, this.isPrepCompleted, this.days});
 
   PrepratoryMealModel.fromJson(Map<String, dynamic> json) {
     status = json['status'];
     errorCode = json['errorCode'];
     key = json['key'];
+    currentDay = json['current_day'];
+    isPrepCompleted = json['is_prep_completed'];
     note = json['note'];
     days = json['days'];
     data = json['data'] != null ? Data.fromJson(json['data']) : null;
@@ -22,6 +26,8 @@ class PrepratoryMealModel {
     data['status'] = this.status;
     data['errorCode'] = this.errorCode;
     data['key'] = this.key;
+    data['current_day'] = this.currentDay;
+    data['is_prep_completed'] = this.isPrepCompleted;
     data['days'] = this.days;
     data['note'] = this.note;
     if (this.data != null) {

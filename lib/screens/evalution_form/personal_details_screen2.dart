@@ -1189,7 +1189,7 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
       finalMap.addAll(widget.evaluationModelFormat1!.toMap().cast());
       finalMap.addAll(eval2.toMap().cast());
       print("finalMap: $finalMap");
-      callApi(finalMap, widget.medicalReportList!);
+      callApi(finalMap, widget.medicalReportList);
     }
   }
 
@@ -1229,7 +1229,8 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
   }
 
   bool isSubmitPressed = false;
-  void callApi(Map form, List medicalReports) async{
+
+  void callApi(Map form, List? medicalReports) async{
     setState(() {
       isSubmitPressed = true;
     });

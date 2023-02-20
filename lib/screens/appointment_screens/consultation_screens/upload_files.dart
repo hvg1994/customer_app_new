@@ -230,13 +230,14 @@ class _UploadFilesState extends State<UploadFiles> {
                                   });
                                   print(totalReportLengthExceptPrescription.length);
                                   print(reportsObject.length);
+//                                  if(reportsObject.length-1 == totalReportLengthExceptPrescription.length){
 
-                                  if(reportsObject.length-1 == totalReportLengthExceptPrescription.length){
+                                  if(reportsObject.length == totalReportLengthExceptPrescription.length || reportsObject.length-1 == totalReportLengthExceptPrescription.length){
                                     Stream s = sendStream();
                                     print("s.length:${s.length}");
                                   }
                                   else{
-                                    AppConfig().showSnackbar(context, "Please add all the files");
+                                    AppConfig().showSnackbar(context, "Please add all the files", isError: true);
                                   }
 
                                   // for(int i=0;i<reportsObject.length;i++){
@@ -778,6 +779,7 @@ class _UploadFilesState extends State<UploadFiles> {
   Future getImageFromCamera() async {
     var image = await ImagePicker.platform.pickImage(
       source: ImageSource.camera,
+      imageQuality: 40
     );
 
     setState(() {
@@ -880,7 +882,7 @@ class _UploadFilesState extends State<UploadFiles> {
     } else {
       final result = res as ReportUploadModel;
       print(result.errorMsg);
-      AppConfig().showSnackbar(context, result.errorMsg ?? '', isError: true);
+      AppConfig().showSnackbar(context, result.errorMsg ?? '');
       reportsObject.forEach((element) {
         if (element.id == reportId) {
           element.isSubmited = true;

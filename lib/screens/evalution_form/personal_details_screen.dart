@@ -453,7 +453,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                 height: 1.5.h,
               ),
               Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
                     "Personal Details",
@@ -475,15 +475,15 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                   ),
                 ],
               ),
-              Text(
-                "Let Us Know You Better",
-                textAlign: TextAlign.start,
-                style: TextStyle(
-                    fontFamily: kFontMedium,
-                    color: gHintTextColor,
-                    fontSize: subHeadingFont
-                ),
-              ),
+              // Text(
+              //   "Let Us Know You Better",
+              //   textAlign: TextAlign.start,
+              //   style: TextStyle(
+              //       fontFamily: kFontMedium,
+              //       color: gHintTextColor,
+              //       fontSize: subHeadingFont
+              //   ),
+              // ),
             ],
           ),
           SizedBox(
@@ -494,6 +494,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
             height: 1.h,
           ),
           TextFormField(
+            textCapitalization: TextCapitalization.words,
             controller: fnameController,
             cursorColor: kPrimaryColor,
             validator: (value) {
@@ -520,6 +521,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
             height: 1.h,
           ),
           TextFormField(
+            textCapitalization: TextCapitalization.words,
             controller: lnameController,
             cursorColor: kPrimaryColor,
             validator: (value) {
@@ -552,52 +554,81 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
           ),
           Row(
             children: [
-              Radio(
-                value: "Single",
-                activeColor: kPrimaryColor,
-                groupValue: maritalStatus,
-                onChanged: (value) {
-                  setState(() {
-                    maritalStatus = value as String;
-                  });
+              GestureDetector(
+                onTap: (){
+                  setState(() => maritalStatus = "Single");
                 },
-              ),
-              Text(
-                'Single',
-                style: buildTextStyle(),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Radio(
+                      value: "Single",
+                      activeColor: kPrimaryColor,
+                      groupValue: maritalStatus,
+                      onChanged: (value) {
+                        setState(() {
+                          maritalStatus = value as String;
+                        });
+                      },
+                    ),
+                    Text(
+                      'Single',
+                      style: buildTextStyle(),
+                    ),
+                  ],
+                ),
               ),
               SizedBox(
                 width: 3.w,
               ),
-              Radio(
-                value: "Married",
-                activeColor: kPrimaryColor,
-                groupValue: maritalStatus,
-                onChanged: (value) {
-                  setState(() {
-                    maritalStatus = value as String;
-                  });
+              GestureDetector(
+                onTap: (){
+                  setState(() => maritalStatus = "Married");
                 },
-              ),
-              Text(
-                'Married',
-                style: buildTextStyle(),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Radio(
+                      value: "Married",
+                      activeColor: kPrimaryColor,
+                      groupValue: maritalStatus,
+                      onChanged: (value) {
+                        setState(() {
+                          maritalStatus = value as String;
+                        });
+                      },
+                    ),
+                    Text(
+                      'Married',
+                      style: buildTextStyle(),
+                    ),
+                  ],
+                ),
               ),
               SizedBox(
                 width: 3.w,
               ),
-              Radio(
-                  value: "Separated",
-                  groupValue: maritalStatus,
-                  activeColor: kPrimaryColor,
-                  onChanged: (value) {
-                    setState(() {
-                      maritalStatus = value as String;
-                    });
-                  }),
-              Text(
-                "Separated",
-                style: buildTextStyle(),
+              GestureDetector(
+                onTap: (){
+                  setState(() => maritalStatus = "Separated");
+                },
+                child: Row(
+                  children: [
+                    Radio(
+                        value: "Separated",
+                        groupValue: maritalStatus,
+                        activeColor: kPrimaryColor,
+                        onChanged: (value) {
+                          setState(() {
+                            maritalStatus = value as String;
+                          });
+                        }),
+                    Text(
+                      "Separated",
+                      style: buildTextStyle(),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
@@ -680,7 +711,13 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
             validator: (value) {
               if (value!.isEmpty) {
                 return 'Please enter your Age';
-              } else {
+              }  else if(int.parse(value) < 10){
+                return 'Age should be Greater than 10';
+              }
+              else if(int.parse(value) >= 100){
+                return 'Age should be Lesser than 100';
+              }
+              else {
                 return null;
               }
             },
@@ -688,6 +725,9 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                 "Your answer", ageController),
             textInputAction: TextInputAction.next,
             maxLength: 2,
+            inputFormatters:[
+              LengthLimitingTextInputFormatter(2),
+            ],
             textAlign: TextAlign.start,
             keyboardType: TextInputType.number,
           ),
@@ -708,49 +748,75 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
           ),
           Row(
             children: [
-              Radio(
-                value: "Male",
-                activeColor: kPrimaryColor,
-                groupValue: gender,
-                onChanged: (value) {
-                  setState(() {
-                    gender = value as String;
-                  });
+              GestureDetector(
+                onTap: (){
+                  setState(() => gender = "Male");
                 },
-              ),
-              Text('Male', style: buildTextStyle()),
+                child: Row(
+                children: [
+                  Radio(
+                    value: "Male",
+                    activeColor: kPrimaryColor,
+                    groupValue: gender,
+                    onChanged: (value) {
+                      setState(() {
+                        gender = value as String;
+                      });
+                    },
+                  ),
+                  Text('Male', style: buildTextStyle()),
+                ],
+              )),
               SizedBox(
                 width: 3.w,
               ),
-              Radio(
-                value: "Female",
-                activeColor: kPrimaryColor,
-                groupValue: gender,
-                onChanged: (value) {
-                  setState(() {
-                    gender = value as String;
-                  });
+              GestureDetector(
+                onTap: (){
+                  setState(() => gender = "Female");
                 },
-              ),
-              Text(
-                'Female',
-                style: buildTextStyle(),
+                child: Row(
+                  children: [
+                    Radio(
+                      value: "Female",
+                      activeColor: kPrimaryColor,
+                      groupValue: gender,
+                      onChanged: (value) {
+                        setState(() {
+                          gender = value as String;
+                        });
+                      },
+                    ),
+                    Text(
+                      'Female',
+                      style: buildTextStyle(),
+                    ),
+                  ],
+                ),
               ),
               SizedBox(
                 width: 3.w,
               ),
-              Radio(
-                  value: "Other",
-                  groupValue: gender,
-                  activeColor: kPrimaryColor,
-                  onChanged: (value) {
-                    setState(() {
-                      gender = value as String;
-                    });
-                  }),
-              Text(
-                "Other",
-                style: buildTextStyle(),
+              GestureDetector(
+                onTap: (){
+                  setState(() => gender = "Other");
+                },
+                child: Row(
+                  children: [
+                    Radio(
+                        value: "Other",
+                        groupValue: gender,
+                        activeColor: kPrimaryColor,
+                        onChanged: (value) {
+                          setState(() {
+                            gender = value as String;
+                          });
+                        }),
+                    Text(
+                      "Other",
+                      style: buildTextStyle(),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
@@ -793,6 +859,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
               if (value!.isEmpty) {
                 return 'Please enter your Address';
               } else if (value.length < 10) {
+                AppConfig().showSnackbar(context, 'Address length should be greater than 10', isError: true);
                 return 'Please enter your Address';
               } else {
                 return null;
@@ -887,27 +954,24 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
           SizedBox(
             height: 1.h,
           ),
-          IgnorePointer(
-            ignoring: _ignoreFields,
-            child: TextFormField(
-              controller: cityController,
-              cursorColor: kPrimaryColor,
-              validator: (value) {
-                if (value!.isEmpty ||
-                    !RegExp(r"^[a-z A-Z]").hasMatch(value)) {
-                  return 'Please Enter City';
-                } else if (!RegExp(r"^[a-z A-Z]").hasMatch(value)) {
-                  return 'Please Enter City';
-                } else {
-                  return null;
-                }
-              },
-              decoration: CommonDecoration.buildTextInputDecoration(
-                  "Please Select City", cityController),
-              textInputAction: TextInputAction.next,
-              textAlign: TextAlign.start,
-              keyboardType: TextInputType.streetAddress,
-            ),
+          TextFormField(
+            controller: cityController,
+            cursorColor: kPrimaryColor,
+            validator: (value) {
+              if (value!.isEmpty ||
+                  !RegExp(r"^[a-z A-Z]").hasMatch(value)) {
+                return 'Please Enter City';
+              } else if (!RegExp(r"^[a-z A-Z]").hasMatch(value)) {
+                return 'Please Enter City';
+              } else {
+                return null;
+              }
+            },
+            decoration: CommonDecoration.buildTextInputDecoration(
+                "Please Select City", cityController),
+            textInputAction: TextInputAction.next,
+            textAlign: TextAlign.start,
+            keyboardType: TextInputType.streetAddress,
           ),
           SizedBox(
             height: 2.h,
@@ -916,27 +980,24 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
           SizedBox(
             height: 1.h,
           ),
-          IgnorePointer(
-            ignoring: _ignoreFields,
-            child: TextFormField(
-              controller: stateController,
-              cursorColor: kPrimaryColor,
-              validator: (value) {
-                if (value!.isEmpty ||
-                    !RegExp(r"^[a-z A-Z]").hasMatch(value)) {
-                  return 'Please Enter State';
-                } else if (!RegExp(r"^[a-z A-Z]").hasMatch(value)) {
-                  return 'Please Enter State';
-                } else {
-                  return null;
-                }
-              },
-              decoration: CommonDecoration.buildTextInputDecoration(
-                  "Please Select State", stateController),
-              textInputAction: TextInputAction.next,
-              textAlign: TextAlign.start,
-              keyboardType: TextInputType.streetAddress,
-            ),
+          TextFormField(
+            controller: stateController,
+            cursorColor: kPrimaryColor,
+            validator: (value) {
+              if (value!.isEmpty ||
+                  !RegExp(r"^[a-z A-Z]").hasMatch(value)) {
+                return 'Please Enter State';
+              } else if (!RegExp(r"^[a-z A-Z]").hasMatch(value)) {
+                return 'Please Enter State';
+              } else {
+                return null;
+              }
+            },
+            decoration: CommonDecoration.buildTextInputDecoration(
+                "Please Select State", stateController),
+            textInputAction: TextInputAction.next,
+            textAlign: TextAlign.start,
+            keyboardType: TextInputType.streetAddress,
           ),
           SizedBox(
             height: 2.h,
@@ -945,27 +1006,24 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
           SizedBox(
             height: 1.h,
           ),
-          IgnorePointer(
-            ignoring: _ignoreFields,
-            child: TextFormField(
-              controller: countryController,
-              cursorColor: kPrimaryColor,
-              validator: (value) {
-                if (value!.isEmpty ||
-                    !RegExp(r"^[a-z A-Z]").hasMatch(value)) {
-                  return 'Please Enter Country';
-                } else if (!RegExp(r"^[a-z A-Z]").hasMatch(value)) {
-                  return 'Please Enter Country';
-                } else {
-                  return null;
-                }
-              },
-              decoration: CommonDecoration.buildTextInputDecoration(
-                  "Please Select Country", countryController),
-              textInputAction: TextInputAction.next,
-              textAlign: TextAlign.start,
-              keyboardType: TextInputType.streetAddress,
-            ),
+          TextFormField(
+            controller: countryController,
+            cursorColor: kPrimaryColor,
+            validator: (value) {
+              if (value!.isEmpty ||
+                  !RegExp(r"^[a-z A-Z]").hasMatch(value)) {
+                return 'Please Enter Country';
+              } else if (!RegExp(r"^[a-z A-Z]").hasMatch(value)) {
+                return 'Please Enter Country';
+              } else {
+                return null;
+              }
+            },
+            decoration: CommonDecoration.buildTextInputDecoration(
+                "Please Select Country", countryController),
+            textInputAction: TextInputAction.next,
+            textAlign: TextAlign.start,
+            keyboardType: TextInputType.streetAddress,
           ),
           SizedBox(
             height: 5.h,
@@ -1099,23 +1157,26 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
               ...healthCheckBox1
                   .map((e) => buildHealthCheckBox(e, 'health1'))
                   .toList(),
-              TextFormField(
-                controller: checkbox1OtherController,
-                cursorColor: kPrimaryColor,
-                validator: (value) {
-                  if (value!.isEmpty &&
-                      selectedHealthCheckBox1
-                          .any((element) => element.contains("Other:"))) {
-                    return 'Please Mention Other Details with minimum 2 characters';
-                  } else {
-                    return null;
-                  }
-                },
-                decoration: CommonDecoration.buildTextInputDecoration(
-                    "Your answer", checkbox1OtherController),
-                textInputAction: TextInputAction.next,
-                textAlign: TextAlign.start,
-                keyboardType: TextInputType.text,
+              Visibility(
+                visible: selectedHealthCheckBox1.any((element) => element.contains("Other:")),
+                child: TextFormField(
+                  controller: checkbox1OtherController,
+                  cursorColor: kPrimaryColor,
+                  validator: (value) {
+                    if (value!.isEmpty &&
+                        selectedHealthCheckBox1
+                            .any((element) => element.contains("Other:"))) {
+                      return 'Please Mention Other Details with minimum 2 characters';
+                    } else {
+                      return null;
+                    }
+                  },
+                  decoration: CommonDecoration.buildTextInputDecoration(
+                      "Your answer", checkbox1OtherController),
+                  textInputAction: TextInputAction.next,
+                  textAlign: TextAlign.start,
+                  keyboardType: TextInputType.text,
+                ),
               ),
             ],
           ),
@@ -1143,112 +1204,143 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
               ),
               Column(
                 children: [
-                  Row(
-                    children: [
-                      Radio(
-                          value: "clear",
-                          groupValue: tongueCoatingRadio,
-                          activeColor: kPrimaryColor,
-                          onChanged: (value) {
-                            setState(() {
-                              tongueCoatingRadio = value as String;
-                            });
-                          }),
-                      Text(
-                        "Clear",
-                        style: buildTextStyle(),
-                      ),
-                    ],
+                  GestureDetector(
+                    onTap: (){
+                      setState(() => tongueCoatingRadio = "clear");
+                    },
+                    child: Row(
+                      children: [
+                        Radio(
+                            value: "clear",
+                            groupValue: tongueCoatingRadio,
+                            activeColor: kPrimaryColor,
+                            onChanged: (value) {
+                              setState(() {
+                                tongueCoatingRadio = value as String;
+                              });
+                            }),
+                        Text(
+                          "Clear",
+                          style: buildTextStyle(),
+                        ),
+                      ],
+                    ),
                   ),
-                  Row(
-                    children: [
-                      Radio(
-                          value: "Coated with white layer",
-                          groupValue: tongueCoatingRadio,
-                          activeColor: kPrimaryColor,
-                          onChanged: (value) {
-                            setState(() {
-                              tongueCoatingRadio = value as String;
-                            });
-                          }),
-                      Text(
-                        "Coated with white layer",
-                        style: buildTextStyle(),
-                      ),
-                    ],
+                  GestureDetector(
+                    onTap: (){
+                      setState(() => tongueCoatingRadio = "Coated with white layer");
+                    },
+                    child: Row(
+                      children: [
+                        Radio(
+                            value: "Coated with white layer",
+                            groupValue: tongueCoatingRadio,
+                            activeColor: kPrimaryColor,
+                            onChanged: (value) {
+                              setState(() {
+                                tongueCoatingRadio = value as String;
+                              });
+                            }),
+                        Text(
+                          "Coated with white layer",
+                          style: buildTextStyle(),
+                        ),
+                      ],
+                    ),
                   ),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Radio(
-                          value: "Coated with yellow layer",
-                          groupValue: tongueCoatingRadio,
-                          activeColor: kPrimaryColor,
-                          onChanged: (value) {
-                            setState(() {
-                              tongueCoatingRadio = value as String;
-                            });
-                          }),
-                      Text(
-                        "Coated with yellow layer",
-                        style: buildTextStyle(),
-                      ),
-                    ],
+                  GestureDetector(
+                    onTap: (){
+                      setState(() => tongueCoatingRadio = "Coated with yellow layer");
+                    },
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Radio(
+                            value: "Coated with yellow layer",
+                            groupValue: tongueCoatingRadio,
+                            activeColor: kPrimaryColor,
+                            onChanged: (value) {
+                              setState(() {
+                                tongueCoatingRadio = value as String;
+                              });
+                            }),
+                        Text(
+                          "Coated with yellow layer",
+                          style: buildTextStyle(),
+                        ),
+                      ],
+                    ),
                   ),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Radio(
-                          value: "Coated with black layer",
-                          groupValue: tongueCoatingRadio,
-                          activeColor: kPrimaryColor,
-                          onChanged: (value) {
-                            setState(() {
-                              tongueCoatingRadio = value as String;
-                            });
-                          }),
-                      Text(
-                        "Coated with black layer",
-                        style: buildTextStyle(),
-                      ),
-                    ],
+                  GestureDetector(
+                    onTap: (){
+                      setState(() => tongueCoatingRadio = "Coated with black layer");
+                    },
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Radio(
+                            value: "Coated with black layer",
+                            groupValue: tongueCoatingRadio,
+                            activeColor: kPrimaryColor,
+                            onChanged: (value) {
+                              setState(() {
+                                tongueCoatingRadio = value as String;
+                              });
+                            }),
+                        Text(
+                          "Coated with black layer",
+                          style: buildTextStyle(),
+                        ),
+                      ],
+                    ),
                   ),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Radio(
-                          value: "other",
-                          groupValue: tongueCoatingRadio,
-                          activeColor: kPrimaryColor,
-                          onChanged: (value) {
-                            setState(() {
-                              tongueCoatingRadio = value as String;
-                            });
-                          }),
-                      Text(
-                        "Other:",
-                        style: buildTextStyle(),
-                      ),
-                    ],
+                  GestureDetector(
+                    onTap: (){
+                      setState(() => tongueCoatingRadio = "other");
+                    },
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Radio(
+                            value: "other",
+                            groupValue: tongueCoatingRadio,
+                            activeColor: kPrimaryColor,
+                            onChanged: (value) {
+                              setState(() {
+                                tongueCoatingRadio = value as String;
+                              });
+                            }),
+                        Text(
+                          "Other:",
+                          style: buildTextStyle(),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
-              TextFormField(
-                controller: tongueCoatingController,
-                cursorColor: kPrimaryColor,
-                validator: (value) {
-                  if (value!.isEmpty &&
-                      tongueCoatingRadio.toLowerCase().contains("other")) {
-                    return 'Please enter the tongue coating details';
-                  } else {
-                    return null;
-                  }
-                },
-                decoration: CommonDecoration.buildTextInputDecoration(
-                    "Your answer", tongueCoatingController),
-                textInputAction: TextInputAction.next,
-                textAlign: TextAlign.start,
-                keyboardType: TextInputType.text,
+              Visibility(
+                visible: tongueCoatingRadio=="other",
+                child: TextFormField(
+                  controller: tongueCoatingController,
+                  cursorColor: kPrimaryColor,
+                  validator: (value) {
+                    if (value!.isEmpty &&
+                        tongueCoatingRadio.toLowerCase().contains("other")) {
+                      AppConfig().showSnackbar(
+                          context, "Please enter the tongue coating details",
+                          isError: true);
+                      return 'Please enter the tongue coating details';
+                    } else {
+                      return null;
+                    }
+                  },
+                  decoration: CommonDecoration.buildTextInputDecoration(
+                      "Your answer", tongueCoatingController),
+                  textInputAction: TextInputAction.next,
+                  textAlign: TextAlign.start,
+                  keyboardType: TextInputType.text,
+                ),
               ),
             ],
           ),
@@ -1262,49 +1354,85 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
           ),
           Row(
             children: [
-              Radio(
-                value: "Increased",
-                activeColor: kPrimaryColor,
-                groupValue: urinationValue,
-                onChanged: (value) {
+              GestureDetector(
+                onTap: (){
                   setState(() {
-                    urinationValue = value as String;
+                    urinationValue = "Increased";
                   });
                 },
-              ),
-              Text('Increased', style: buildTextStyle()),
-              SizedBox(
-                width: 3.w,
-              ),
-              Radio(
-                value: "Decreased",
-                activeColor: kPrimaryColor,
-                groupValue: urinationValue,
-                onChanged: (value) {
-                  setState(() {
-                    urinationValue = value as String;
-                  });
-                },
-              ),
-              Text(
-                'Decreased',
-                style: buildTextStyle(),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Radio(
+                      value: "Increased",
+                      activeColor: kPrimaryColor,
+                      groupValue: urinationValue,
+                      onChanged: (value) {
+                        setState(() {
+                          urinationValue = value as String;
+                        });
+                      },
+                    ),
+                    Text('Increased', style: buildTextStyle()),
+                  ],
+                ),
               ),
               SizedBox(
                 width: 3.w,
               ),
-              Radio(
-                  value: "No Change",
-                  groupValue: urinationValue,
-                  activeColor: kPrimaryColor,
-                  onChanged: (value) {
-                    setState(() {
-                      urinationValue = value as String;
-                    });
-                  }),
-              Text(
-                "No Change",
-                style: buildTextStyle(),
+              GestureDetector(
+                onTap: (){
+                  setState(() {
+                    urinationValue = "Decreased";
+                  });
+                },
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Radio(
+                      value: "Decreased",
+                      activeColor: kPrimaryColor,
+                      groupValue: urinationValue,
+                      onChanged: (value) {
+                        setState(() {
+                          urinationValue = value as String;
+                        });
+                      },
+                    ),
+                    Text(
+                      'Decreased',
+                      style: buildTextStyle(),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(
+                width: 3.w,
+              ),
+              InkWell(
+                onTap: (){
+                  setState(() {
+                    urinationValue = "No Change";
+                  });
+                },
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Radio(
+                        value: "No Change",
+                        groupValue: urinationValue,
+                        activeColor: kPrimaryColor,
+                        onChanged: (value) {
+                          setState(() {
+                            urinationValue = value as String;
+                          });
+                        }),
+                    Text(
+                      "No Change",
+                      style: buildTextStyle(),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
@@ -2004,7 +2132,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
         AppConfig().showSnackbar(context, "Please Select Urine Color");
       } else if (urinSmellList.every((element) => element.value == false) &&
           !urinSmellOtherSelected) {
-        AppConfig().showSnackbar(context, "Please Select Atleast 1 Urin Smell");
+        AppConfig().showSnackbar(context, "Please Select Atleast 1 Urine Smell");
       } else if (urineLookLikeValue.isEmpty) {
         // else if(urinLooksList.every((element) => element.value == false) && !urinLooksLikeOtherSelected){
         AppConfig().showSnackbar(context, "Please Select Urine Looks List");
@@ -2080,7 +2208,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
             .showSnackbar(context, "Please Select Urine Color", isError: true);
       } else if (urinSmellList.every((element) => element.value == false) &&
           !urinSmellOtherSelected) {
-        AppConfig().showSnackbar(context, "Please Select Atleast 1 Urin Smell",
+        AppConfig().showSnackbar(context, "Please Select Atleast 1 Urine Smell",
             isError: true);
       } else if (urineLookLikeValue.isEmpty) {
         // else if(urinLooksList.every((element) => element.value == false) && !urinLooksLikeOtherSelected){
@@ -2095,9 +2223,6 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
           medicalInterventionsOtherSelected == false) {
         AppConfig().showSnackbar(
             context, "Please Select Atleast 1 Medication Intervention",
-            isError: true);
-      } else if (medicalRecords.isEmpty) {
-        AppConfig().showSnackbar(context, "Please Upload Medical Records",
             isError: true);
       }
     }
@@ -4530,49 +4655,79 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
       children: [
         Row(
           children: [
-            Radio(
-              value: "Clear",
-              activeColor: kPrimaryColor,
-              groupValue: urineColorValue,
-              onChanged: (value) {
-                setState(() {
-                  urineColorValue = value as String;
-                });
+            GestureDetector(
+              onTap: (){
+                setState(() => urineColorValue = "Clear" );
               },
-            ),
-            Text('Clear', style: buildTextStyle()),
-            SizedBox(
-              width: 3.w,
-            ),
-            Radio(
-              value: "Pale Yellow",
-              activeColor: kPrimaryColor,
-              groupValue: urineColorValue,
-              onChanged: (value) {
-                setState(() {
-                  urineColorValue = value as String;
-                });
-              },
-            ),
-            Text(
-              'Pale Yellow',
-              style: buildTextStyle(),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Radio(
+                    value: "Clear",
+                    activeColor: kPrimaryColor,
+                    groupValue: urineColorValue,
+                    onChanged: (value) {
+                      setState(() {
+                        urineColorValue = value as String;
+                      });
+                    },
+                  ),
+                  Text('Clear', style: buildTextStyle()),
+                ],
+              ),
             ),
             SizedBox(
               width: 3.w,
             ),
-            Radio(
-                value: "Red",
-                groupValue: urineColorValue,
-                activeColor: kPrimaryColor,
-                onChanged: (value) {
-                  setState(() {
-                    urineColorValue = value as String;
-                  });
-                }),
-            Text(
-              "Red",
-              style: buildTextStyle(),
+            GestureDetector(
+              onTap: (){
+                setState(() => urineColorValue = "Pale Yellow" );
+              },
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Radio(
+                    value: "Pale Yellow",
+                    activeColor: kPrimaryColor,
+                    groupValue: urineColorValue,
+                    onChanged: (value) {
+                      setState(() {
+                        urineColorValue = value as String;
+                      });
+                    },
+                  ),
+                  Text(
+                    'Pale Yellow',
+                    style: buildTextStyle(),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(
+              width: 3.w,
+            ),
+            GestureDetector(
+              onTap: (){
+                setState(() => urineColorValue = "Red" );
+              },
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Radio(
+                      value: "Red",
+                      groupValue: urineColorValue,
+                      activeColor: kPrimaryColor,
+                      onChanged: (value) {
+                        setState(() {
+                          urineColorValue = value as String;
+                        });
+                      }),
+                  Text(
+                    "Red",
+                    style: buildTextStyle(),
+                  ),
+                ],
+              ),
             ),
           ],
         ),

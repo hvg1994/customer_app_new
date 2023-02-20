@@ -4,6 +4,7 @@ import 'package:gwc_customer/screens/prepratory%20plan/prepratory_plan_screen.da
 import 'package:gwc_customer/screens/prepratory%20plan/transition_mealplan_screen.dart';
 import 'package:gwc_customer/screens/program_plans/meal_plan_screen.dart';
 import 'package:gwc_customer/services/program_service/program_service.dart';
+import 'package:gwc_customer/widgets/open_alert_box.dart';
 import 'package:sizer/sizer.dart';
 import 'package:slide_to_confirm/slide_to_confirm.dart';
 import '../../model/program_model/start_program_on_swipe_model.dart';
@@ -28,6 +29,8 @@ class ProgramPlanScreen extends StatefulWidget {
 }
 
 class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
+
+  bool isSlided = false;
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -46,7 +49,7 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
               Expanded(
                 child: buildPlans(),
               ),
-              ConfirmationSlider(
+              (isSlided) ? Center(child: buildThreeBounceIndicator(),) :ConfirmationSlider(
                   width: 95.w,
                   text: "Slide To Start",
                   sliderButtonContent: const Image(
@@ -66,6 +69,9 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
                       color: gTextColor,
                       fontSize: 10.sp),
                   onConfirmation: () {
+                    setState(() {
+                      isSlided = true;
+                    });
                     startProgram();
                   }),
             ],
@@ -106,6 +112,7 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
   );
 
   void startProgram() async{
+
     String? start;
     if(widget.from == ProgramMealType.prepratory.name){
       start = "2";
@@ -126,7 +133,7 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => PrepratoryPlanScreen(dayNumber: "1", totalDays: '',),
+              builder: (context) => PrepratoryPlanScreen(dayNumber: "1", totalDays: '1',),
             ),
           );
         }

@@ -113,7 +113,7 @@ class ChildGetEvaluationDataModel {
     json['any_medical_intervation_done_before_other'];
     anyMedicationConsumeAtMoment = json['any_medication_consume_at_moment'];
     anyTherapiesHaveDoneBefore = json['any_therapies_have_done_before'];
-    medicalReport = json['medical_report'];
+    medicalReport = json['medical_report'] ?? '';
     mentionIfAnyFoodAffectsYourDigesion =
     json['mention_if_any_food_affects_your_digesion'];
     anySpecialDiet = json['any_special_diet'];

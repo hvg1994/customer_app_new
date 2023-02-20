@@ -21,6 +21,7 @@ import 'package:gwc_customer/widgets/open_alert_box.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:readmore/readmore.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:sizer/sizer.dart';
 import 'package:get/get.dart';
 import '../../model/program_model/meal_plan_details_model/child_meal_plan_details_model.dart';
@@ -56,6 +57,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
   Color textColor = gWhiteColor;
   String? planNotePdfLink;
 
+  String btnText = 'Proceed to Symptoms Tracker';
 
 
   bool isLoading = false;
@@ -152,6 +154,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
       //     // curve: Curves.easeIn
       // );
       getMeals();
+
       buildDays(model);
     }
     else{
@@ -258,11 +261,11 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 3.w),
                 child: Text(
-                  "You Have completed the ${listData.length-1} days Meal Plan, Now you can proceed to Post Protocol",
+                  "You Have completed the ${listData.length} days Meal Plan, Now you can proceed",
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     height: 1.5,
-                    fontFamily: "GothamBold",
+                    fontFamily: kFontBold,
                     color: gTextColor,
                     fontSize: 10.sp,
                   ),
@@ -366,6 +369,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
       MealPlanDetailsModel model = result as MealPlanDetailsModel;
       setState(() {
         isLoading = false;
+        showShimmer = false;
         planNotePdfLink = model.note;
       });
       model.data!.keys.forEach((element) {
@@ -408,6 +412,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
       errorMsg = model.message ?? '';
       Future.delayed(Duration(seconds: 0)).whenComplete(() {
         setState(() {
+          showShimmer = false;
           isLoading = false;
         });
         showAlert(context, model.status!,
@@ -493,9 +498,12 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: _onWillPop,
-      child: SafeArea(
-        child: Scaffold(
-          body: videoPlayerView(),
+      child: MediaQuery(
+        data: MediaQuery.of(context).copyWith(textScaleFactor: 0.8),
+        child: SafeArea(
+          child: Scaffold(
+            body: videoPlayerView(),
+          ),
         ),
       ),
     );
@@ -515,12 +523,14 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
     // return false;
   }
 
+  bool showShimmer = false;
   dayItems(int index){
     return GestureDetector(
       onTap: checkOnTapCondition(index, listData)
           ? () {
         print(index);
         setState(() {
+          showShimmer = true;
           selectedDay = int.parse(listData[index].dayNumber!);
           isDayCompleted = listData[index].isCompleted == 1;
         });
@@ -709,14 +719,6 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                     return dayItems(index);
                   },
                 )
-                // child: ListView.builder(
-                //     shrinkWrap: true,
-                //     scrollDirection: Axis.horizontal,
-                //     itemCount: listData.length,
-                //     itemBuilder: (_, index){
-                //       return dayItems(index);
-                //     }
-                // ),
               ),
             ],
           ),
@@ -727,7 +729,145 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
           (mealPlanData1 != null)
               ? SizedBox(
                 child: SingleChildScrollView(
-                  child: Column(
+                  child: (showShimmer)
+                      ?  Shimmer.fromColors(
+                    baseColor: Colors.grey.withOpacity(0.3),
+                    highlightColor: Colors.grey.withOpacity(0.7),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        SizedBox(
+                          height: 8,
+                        ),
+                        // buildNewItemList(),
+                        // buildNewItemList(),
+                        // buildNewItemList(),
+                        // buildNewItemList(),
+                        // buildNewItemList(),
+                        //                buildMealPlan(),
+                        ...groupList(),
+                        Visibility(
+                          visible: (statusList.isNotEmpty && statusList.values.any((element) => element.toString().toLowerCase().contains('unfollowed'))),
+                          child: IgnorePointer(
+                            ignoring: isDayCompleted == true,
+                            child: Container(
+                              height: 15.h,
+                              margin:
+                              EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.h),
+                              padding: EdgeInsets.symmetric(horizontal: 3.w),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(5),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.3),
+                                    blurRadius: 20,
+                                    offset: const Offset(2, 10),
+                                  ),
+                                ],
+                              ),
+                              child: TextFormField(
+                                controller: commentController,
+                                cursorColor: gPrimaryColor,
+                                style: TextStyle(
+                                    fontFamily: "GothamBook",
+                                    color: gTextColor,
+                                    fontSize: 11.sp),
+                                decoration: InputDecoration(
+                                  suffixIcon: commentController.text.isEmpty || isDayCompleted != null
+                                      ? SizedBox()
+                                      : InkWell(
+                                    onTap: () {
+                                      commentController.clear();
+                                    },
+                                    child: const Icon(
+                                      Icons.close,
+                                      color: gTextColor,
+                                    ),
+                                  ),
+                                  hintText: "Comments",
+                                  border: InputBorder.none,
+                                  hintStyle: TextStyle(
+                                    fontFamily: "GothamBook",
+                                    color: gTextColor,
+                                    fontSize: 9.sp,
+                                  ),
+                                ),
+                                textInputAction: TextInputAction.next,
+                                textAlign: TextAlign.start,
+                                keyboardType: TextInputType.emailAddress,
+                              ),
+                            ),
+                          ),
+                        ),
+                        Visibility(
+                          visible: buttonVisibility(),
+                          child: Center(
+                            child: GestureDetector(
+                              onTap:
+                                  (){
+                                print("statusList.length: ${statusList.length}");
+                                print("lst.length ${lst.length}");
+                                print('..............');
+
+                              },
+                              // (statusList.length != lst.length)
+                              //     ? () => AppConfig().showSnackbar(context, "Please complete the Meal Plan Status", isError: true)
+                              //     // : (statusList.values.any((element) => element.toString().toLowerCase() == 'unfollowed') && commentController.text.isEmpty)
+                              //     // ? () => AppConfig().showSnackbar(context, "Please Mention the comments why you unfollowed?", isError: true)
+                              //     : () {
+                              //   print("this one $presentDay");
+                              //   for(int i = 0; i< presentDay!; i++){
+                              //     print(presentDay);
+                              //     if(listData[i].isCompleted == 0
+                              //         && i+1 != selectedDay!
+                              //     ){
+                              //       AppConfig().showSnackbar(context, "Please Complete Day ${listData[i].dayNumber}", isError: true);
+                              //       break;
+                              //     }
+                              //     else if(listData[i].isCompleted == 1) {
+                              //       print("completed already");
+                              //     }
+                              //     else if(i+1 == presentDay || i+1 == selectedDay){
+                              //       print("u can access $presentDay");
+                              //       sendData();
+                              //       break;
+                              //     }
+                              //     else{
+                              //       print("u r trying else");
+                              //     }
+                              //   }
+                              // },
+                              child: Container(
+                                margin: EdgeInsets.symmetric(vertical: 2.h),
+                                width: btnText.length > 22 ? 75.w : 60.w,
+                                height: 5.h,
+                                decoration: BoxDecoration(
+                                  color: (statusList.length == lst.length) ? eUser().buttonColor : tableHeadingBg,
+                                  borderRadius: BorderRadius.circular(eUser().buttonBorderRadius),
+                                  // border: Border.all(color: eUser().buttonBorderColor,
+                                  //     width: eUser().buttonBorderWidth),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    btnText,
+                                    // 'Proceed to Day $proceedToDay',
+                                    style: TextStyle(
+                                      fontFamily: eUser().buttonTextFont,
+                                      color: eUser().buttonTextColor,
+                                      // color: (statusList.length != lst.length) ? gPrimaryColor : gMainColor,
+                                      fontSize: eUser().buttonTextSize,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                      : Column(
             mainAxisSize: MainAxisSize.min,
             children: [
                   SizedBox(
@@ -800,8 +940,8 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                       child: GestureDetector(
                         onTap:
                         // (){
-                        //   print(statusList.length);
-                        //   print(lst.length);
+                        //   print("statusList.length: ${statusList.length}");
+                        //   print("lst.length ${lst.length}");
                         //
                         // },
                         (statusList.length != lst.length)
@@ -812,16 +952,19 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                           print("this one $presentDay");
                           for(int i = 0; i< presentDay!; i++){
                             print(presentDay);
-                            if(listData[i].isCompleted == 0 && i+1 != presentDay!){
+                            if(listData[i].isCompleted == 0
+                                && i+1 != selectedDay!
+                            ){
                               AppConfig().showSnackbar(context, "Please Complete Day ${listData[i].dayNumber}", isError: true);
                               break;
                             }
                             else if(listData[i].isCompleted == 1) {
                               print("completed already");
                             }
-                            else if(i+1 == presentDay){
+                            else if(i+1 == presentDay || i+1 == selectedDay){
                               print("u can access $presentDay");
                               sendData();
+                              break;
                             }
                             else{
                               print("u r trying else");
@@ -830,7 +973,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                         },
                         child: Container(
                           margin: EdgeInsets.symmetric(vertical: 2.h),
-                          width: 60.w,
+                          width: btnText.length > 22 ? 75.w : 60.w,
                           height: 5.h,
                           decoration: BoxDecoration(
                             color: (statusList.length == lst.length) ? eUser().buttonColor : tableHeadingBg,
@@ -840,7 +983,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                           ),
                           child: Center(
                             child: Text(
-                              'Proceed to Symptoms Tracker',
+                              btnText,
                               // 'Proceed to Day $proceedToDay',
                               style: TextStyle(
                                 fontFamily: eUser().buttonTextFont,
@@ -1072,28 +1215,31 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                         Stack(
                           clipBehavior: Clip.none,
                           children: [
-                            Container(
-                              height: 85,
-                              width: 90,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(15),
-                              ),
-                              child: (e.itemImage != null && e.itemImage!.isNotEmpty)
-                                  ? ClipRRect(
-                                borderRadius: BorderRadius.circular(15),
-                                child: Image.network(e.itemImage!,
-                                errorBuilder: (ctx, _,__){
-                                  return Image.asset('assets/images/meal_placeholder.png',
-                                    fit: BoxFit.fill,
-                                  );
-                                },
-                                fit: BoxFit.fill,
-                              ),
-                                  ) :
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(15),
-                                child: Image.asset('assets/images/meal_placeholder.png',
+                            Align(
+                              alignment: Alignment.center,
+                              child: Container(
+                                height: 90,
+                                width: 90,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                child: (e.itemImage != null && e.itemImage!.isNotEmpty)
+                                    ? ClipRRect(
+                                  borderRadius: BorderRadius.circular(15),
+                                  child: Image.network(e.itemImage!,
+                                  errorBuilder: (ctx, _,__){
+                                    return Image.asset('assets/images/meal_placeholder.png',
+                                      fit: BoxFit.fill,
+                                    );
+                                  },
                                   fit: BoxFit.fill,
+                                ),
+                                    ) :
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(15),
+                                  child: Image.asset('assets/images/meal_placeholder.png',
+                                    fit: BoxFit.fill,
+                                  ),
                                 ),
                               ),
                             ),
@@ -1107,16 +1253,17 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                             // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              SizedBox(
-                                height: 3,
-                              ),
-                              Text(
-                                e.subTitle ??
-                                    "* Must Have",
-                                style: TextStyle(
-                                  fontSize: MealPlanConstants().mustHaveFontSize,
-                                  fontFamily: MealPlanConstants().mustHaveFont,
-                                  color: MealPlanConstants().mustHaveTextColor,
+                              Visibility(
+
+                                visible: e.subTitle != null || e.subTitle!.isNotEmpty,
+                                child: Text(
+                                  e.subTitle ??
+                                      "* Must Have",
+                                  style: TextStyle(
+                                    fontSize: MealPlanConstants().mustHaveFontSize,
+                                    fontFamily: MealPlanConstants().mustHaveFont,
+                                    color: MealPlanConstants().mustHaveTextColor,
+                                  ),
                                 ),
                               ),
                               SizedBox(
@@ -1228,7 +1375,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                             ),
                           ),
                               )
-                              :Align(
+                              : Align(
                             alignment: Alignment.bottomCenter,
                             child: Container(
                             padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
@@ -1909,7 +2056,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
       tracking.add(PatientMealTracking(
           day: selectedDay,
           userMealItemId: key,
-          status: (value == list[1]) ? sendList[0] : sendList[1]
+          status: (value == list[1]) ? sendList[1] : sendList[0]
       ));
     });
 
@@ -2114,7 +2261,10 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
         builder: (ctx) {
           return Wrap(
             children: [
-              TrackerUI(proceedProgramDayModel: model, from: ProgramMealType.program.name,)
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TrackerUI(proceedProgramDayModel: model, from: ProgramMealType.program.name,),
+              )
             ],
           );
         });
@@ -2130,3 +2280,59 @@ class MealPlanData {
   int id;
 }
 
+
+
+class FabExample extends StatelessWidget {
+
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('FloatingActionButton Sample'),
+      ),
+      body: Container(
+          color: Colors.red,
+          child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text("abc"),
+                Expanded(
+                    child: customScroll(true)
+                ),
+                Expanded(
+                    child: customScroll(false)
+                )
+              ]
+          )
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Add your onPressed code here!
+        },
+        backgroundColor: Colors.green,
+        child: const Icon(Icons.navigation),
+      ),
+    );
+  }
+
+  customScroll(bool isRow){
+    return ListView.builder(
+        shrinkWrap: true,
+        itemCount: 50,
+        scrollDirection: (isRow) ? Axis.horizontal: Axis.vertical,
+        itemBuilder: (_, index){
+          return (isRow) ? Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10)
+              )
+              ,
+              child: Text(index.toString())
+          ) : ListTile(
+              title: Text(index.toString())
+          );
+        }
+    );
+  }
+}

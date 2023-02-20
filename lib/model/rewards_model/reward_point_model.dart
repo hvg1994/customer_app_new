@@ -81,8 +81,8 @@ class RewardPoints {
   String? name;
   String? type;
   String? point;
-  Null? createdAt;
-  Null? updatedAt;
+  String? createdAt;
+  String? updatedAt;
 
   RewardPoints(
       {this.id,

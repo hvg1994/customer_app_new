@@ -48,7 +48,8 @@ class _SitBackScreenState extends State<SitBackScreen> {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
                     child: Text(
-                      "Congratulations on your initiative towards a healthy gut! Our team will reach out to you soon. . .",
+                      "Congrats on initiating your journey to a healthy gut. Our team will get in touch via whatsApp within 24hours",
+                      // "Congratulations on your initiative towards a healthy gut! Our team will reach out to you soon. . .",
                       style: TextStyle(
                           height: 1.5,
                           fontFamily: "GothamRoundedBook_21018",

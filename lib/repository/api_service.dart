@@ -4,6 +4,7 @@ import 'package:crypto/crypto.dart';
 import 'package:gwc_customer/model/prepratory_meal_model/get_prep_meal_track_model.dart';
 import 'package:gwc_customer/model/prepratory_meal_model/prep_meal_model.dart';
 import 'package:gwc_customer/model/prepratory_meal_model/transition_meal_model.dart';
+import 'package:gwc_customer/model/user_slot_for_schedule_model/user_slot_days_schedule_model.dart';
 import 'package:gwc_customer/repository/in_memory_cache.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/foundation.dart';
@@ -637,7 +638,7 @@ class ApiClient {
     return result;
   }
 
-  Future submitEvaluationFormApi(Map form, List medicalReports) async {
+  Future submitEvaluationFormApi(Map form, List? medicalReports) async {
     final path = submitEvaluationFormUrl;
 
     var result;
@@ -654,10 +655,12 @@ class ApiClient {
         // "Authorization": "Bearer ${AppConfig().bearerToken}",
         "Authorization": getHeaderToken(),
       };
-      medicalReports.forEach((element) async {
-        request.files.add(
-            await http.MultipartFile.fromPath('medical_report[]', element));
-      });
+      if(medicalReports != null){
+        medicalReports.forEach((element) async {
+          request.files.add(
+              await http.MultipartFile.fromPath('medical_report[]', element));
+        });
+      }
       request.headers.addAll(headers);
       request.fields.addAll(m2);
       var response = await http.Response.fromStream(await request.send())
@@ -2203,7 +2206,6 @@ class ApiClient {
   Future sendPrepratoryMealTrackDetailsApi(Map trackDetails) async{
     dynamic result;
 
-
     try{
       final response = await httpClient.post(Uri.parse(submitPrepratoryMealTrackUrl),
           headers: {
@@ -2313,6 +2315,100 @@ class ApiClient {
     } catch (e) {
       print(e);
       result = ErrorModel(status: "", message: e.toString());
+    }
+    return result;
+  }
+
+  Future getSlotsDaysForScheduleApi() async {
+    final path = getUserSlotDaysForScheduleUrl;
+    var startTime = DateTime.now().millisecondsSinceEpoch;
+
+    var result;
+
+    Map<String, String> header = {
+      // "Authorization": "Bearer ${AppConfig().bearerToken}",
+      "Authorization": getHeaderToken(),
+    };
+    try {
+
+      final response = await httpClient
+          .get(
+        Uri.parse(path),
+        headers: header,
+      )
+          .timeout(const Duration(seconds: 45));
+
+      print("getSlotsDaysForScheduleApi response path:" + path);
+
+      print("getSlotsDaysForScheduleApi response code:" +
+          response.statusCode.toString());
+      print("getSlotsDaysForScheduleApi response body:" + response.body);
+      var totalTime = DateTime.now().millisecondsSinceEpoch - startTime;
+      print("response Time:" + (totalTime / 1000).round().toString());
+
+      final res = jsonDecode(response.body);
+      print('${res['status'].runtimeType} ${res['status']}');
+      if (res['status'] == 200) {
+        result = GetUserSlotDaysForScheduleModel.fromJson(res);
+      }
+      else if(response.statusCode == 500){
+        result = ErrorModel(status: "0", message: AppConfig.oopsMessage);
+      }
+      else {
+        result = ErrorModel.fromJson(res);
+        print("res: $result");
+      }
+
+    } catch (e) {
+      print("catch error $e");
+      result = ErrorModel(status: "0", message: e.toString());
+    }
+    return result;
+  }
+
+  Future getFollowUpSlotsApi(String selectedDate) async {
+    final path = getFollowUpSlotUrl + selectedDate;
+    var startTime = DateTime.now().millisecondsSinceEpoch;
+
+    var result;
+
+    // Map<String, dynamic> param = {'appointment_id': appointmentId};
+    Map<String, String> header = {
+      // "Authorization": "Bearer ${AppConfig().bearerToken}",
+      "Authorization": getHeaderToken(),
+    };
+    try {
+
+      final response =  await httpClient
+          .get(
+        Uri.parse(path),
+        headers: header,
+      )
+          .timeout(const Duration(seconds: 45));
+
+      print("getFollowUpSlotsApi response path:" + path);
+
+      print("getFollowUpSlotsApi response code:" +
+          response.statusCode.toString());
+      print("getFollowUpSlotsApi response body:" + response.body);
+      var totalTime = DateTime.now().millisecondsSinceEpoch - startTime;
+      print("response Time:" + (totalTime / 1000).round().toString());
+
+      final res = jsonDecode(response.body);
+      print('${res['status'].runtimeType} ${res['status']}');
+      if (res['status'] == 200) {
+        result = SlotModel.fromJson(res);
+      }
+      else if(response.statusCode == 500){
+        result = ErrorModel(status: "0", message: AppConfig.oopsMessage);
+      }
+      else {
+        result = ErrorModel.fromJson(res);
+      }
+
+    } catch (e) {
+      print("catch error $e");
+      result = ErrorModel(status: "0", message: e.toString());
     }
     return result;
   }

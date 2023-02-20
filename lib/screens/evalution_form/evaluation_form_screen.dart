@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:gwc_customer/utils/app_config.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../widgets/constants.dart';
@@ -16,6 +17,16 @@ class EvaluationFormScreen extends StatefulWidget {
 }
 
 class _EvaluationFormScreenState extends State<EvaluationFormScreen> {
+
+  final _pref = AppConfig().preferences;
+  String? _currentUser;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _currentUser = _pref?.getString(AppConfig.User_Name) ?? '';
+  }
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -54,8 +65,8 @@ class _EvaluationFormScreenState extends State<EvaluationFormScreen> {
                     height: 2.h,
                   ),
                   Text(
-                    "Hello There,",
-                    textAlign: TextAlign.center,
+                    "Hello $_currentUser, \nCongrats on formally starting your Gut Wellness Journey!",
+                    textAlign: TextAlign.start,
                     style: TextStyle(
                         fontFamily: kFontMedium,
                         color: gMainColor,
@@ -65,7 +76,7 @@ class _EvaluationFormScreenState extends State<EvaluationFormScreen> {
                     height: 2.h,
                   ),
                   Text(
-                    "Welcome To The 1st Step Of Your Gut Wellness Journey.",
+                    "Here is an evaluation form that will provide us with information that will play a critical role in evaluating your condition & assist your doctor in creating your program.",
                     textAlign: TextAlign.start,
                     style: TextStyle(
                         fontFamily: kFontBook,
@@ -76,7 +87,7 @@ class _EvaluationFormScreenState extends State<EvaluationFormScreen> {
                     height: 2.h,
                   ),
                   Text(
-                    newText1 + newText2,
+                    "Do fill this to the best of your knowledge.\nAll your data is confidential & is visible to only your doctors & a few team members who assist them.\nTime to fill 3-4 Minutes",
                     textAlign: TextAlign.justify,
                     style: TextStyle(
                         fontFamily: kFontBook,
@@ -84,28 +95,28 @@ class _EvaluationFormScreenState extends State<EvaluationFormScreen> {
                         fontSize: 10.sp
                     ),
                   ),
-                  SizedBox(
-                    height: 2.h,
-                  ),
-                  Text(
-                    newText3,
-                    textAlign: TextAlign.justify,
-                    style: TextStyle(
-                        fontFamily: kFontBook,
-                        color: kTextColor,
-                        fontSize: 10.sp),
-                  ),
-                  SizedBox(
-                    height: 2.h,
-                  ),
-                  Text(
-                    "This Form Will Be Confidential & Only Visible To Your Doctors.",
-                    textAlign: TextAlign.justify,
-                    style: TextStyle(
-                        fontFamily: kFontBook,
-                        color: kTextColor,
-                        fontSize: 10.sp),
-                  ),
+                  // SizedBox(
+                  //   height: 2.h,
+                  // ),
+                  // Text(
+                  //   newText3,
+                  //   textAlign: TextAlign.justify,
+                  //   style: TextStyle(
+                  //       fontFamily: kFontBook,
+                  //       color: kTextColor,
+                  //       fontSize: 10.sp),
+                  // ),
+                  // SizedBox(
+                  //   height: 2.h,
+                  // ),
+                  // Text(
+                  //   "This Form Will Be Confidential & Only Visible To Your Doctors.",
+                  //   textAlign: TextAlign.justify,
+                  //   style: TextStyle(
+                  //       fontFamily: kFontBook,
+                  //       color: kTextColor,
+                  //       fontSize: 10.sp),
+                  // ),
                   SizedBox(
                     height: 4.h,
                   ),
@@ -113,7 +124,7 @@ class _EvaluationFormScreenState extends State<EvaluationFormScreen> {
                     child: GestureDetector(
                       // onTap: (showLoginProgress) ? null : () {
                       onTap: () {
-                        Navigator.of(context).pushReplacement(
+                        Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (context) => const PersonalDetailsScreen(),
                           ),
@@ -263,4 +274,5 @@ class _EvaluationFormScreenState extends State<EvaluationFormScreen> {
   final String newText1 = "This Form Will Be Evaluated By Your Senior Doctors To Preliminarily Evaluate Your Condition & Determine What Sort Of Customization Is Required";
   final String newText2 = "To Heal Your Condition(s) & To Ship Your Customized Ready To Cook Kit.";
   final String newText3 = "Please Fill This To The Best Of Your Knowledge As This Is Critical. Time To Fill 3-4Mins";
+
 }

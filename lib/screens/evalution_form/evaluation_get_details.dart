@@ -806,7 +806,7 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
             "Has Frequency Of Urination Increased Or Decreased In The Recent Past", fontSize: questionFont),
         SizedBox(height: 1.h),
         buildUrination("${model?.anyUrinationIssue}"),
-        buildLabelTextField("Urin Color", fontSize: questionFont),
+        buildLabelTextField("Urine Color", fontSize: questionFont),
         SizedBox(height: 1.h),
         buildUrineColorRadioButton(
             "${model?.urineColor.toString().capitalize()}"),
@@ -1390,26 +1390,33 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
   );
 
   showFiles(String? medicalReport) {
-    List list = jsonDecode(medicalReport ?? '');
-    print("showMedicalReport.runtimeType: ${showMedicalReport.runtimeType}");
-    print(showMedicalReport);
-    showMedicalReport.clear();
-    if (list.isNotEmpty) {
-      list.forEach((element) {
-        print(element);
-        showMedicalReport.add(element.toString());
-      });
+    print("medicalReport got: ${medicalReport}");
+    if(medicalReport!.isNotEmpty){
+      List list = jsonDecode(medicalReport ?? '');
+      print("showMedicalReport.runtimeType: ${showMedicalReport.runtimeType}");
+      print(showMedicalReport);
+      showMedicalReport.clear();
+      if (list.isNotEmpty) {
+        list.forEach((element) {
+          print(element);
+          showMedicalReport.add(element.toString());
+        });
+      }
+      final widgetList = showMedicalReport
+          .map<Widget>((element) => buildRecordList(element))
+          .toList();
+      return SizedBox(
+        width: double.maxFinite,
+        child: ListView(
+          shrinkWrap: true,
+          children: widgetList,
+        ),
+      );
     }
-    final widgetList = showMedicalReport
-        .map<Widget>((element) => buildRecordList(element))
-        .toList();
-    return SizedBox(
-      width: double.maxFinite,
-      child: ListView(
-        shrinkWrap: true,
-        children: widgetList,
-      ),
-    );
+    else{
+      return SizedBox();
+    }
+
   }
 
   buildRecordList(String filename, {int? index}) {
@@ -1528,7 +1535,38 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
     selectedUrinColorList.addAll(List.from(jsonDecode(title ?? '')));
     selectedUrinColorList = List.from(
         (selectedUrinColorList[0].split(',') as List).map((e) => e).toList());
-    urineColorValue = selectedUrinColorList.first.toString().capitalize();
+    urineColorValue = selectedUrinColorList.first.toString().toTitleCase();
+
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: selectedUrinColorList.length,
+      itemBuilder: (context, index) {
+        return ListTile(
+          visualDensity: VisualDensity(vertical: -3), // to compact
+          minVerticalPadding: 0,
+          minLeadingWidth: 30,
+          horizontalTitleGap: 0,
+          dense: true,
+          contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+          leading: const Icon(
+            Icons.radio_button_checked,
+            color: gsecondaryColor,
+          ),
+          title: Text(
+            selectedUrinColorList[index].toString().toTitleCase() ?? "",
+            style: TextStyle(
+              fontSize: 10.sp,
+              height: 1.3,
+              color: gBlackColor,
+              fontFamily: kFontBook,
+            ),
+          ),
+        );
+      },
+    );
+
+
 
     return Column(
       children: [
@@ -1545,7 +1583,7 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
               width: 3.w,
             ),
             Radio(
-              value: "Pale Yellow",
+              value: "Pale yellow",
               activeColor: kPrimaryColor,
               groupValue: urineColorValue,
               onChanged: (value) {},

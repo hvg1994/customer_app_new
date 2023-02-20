@@ -150,7 +150,33 @@ class _PIPStackState extends State<PIPStack> with TickerProviderStateMixin {
                     child: SizedBox(
                       width: currentWindowWidth,
                       height: currentWindowHeight,
-                      child: widget.pipWidget,
+                      child: Stack(children: [
+                        widget.pipWidget,
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: GestureDetector(
+                            child: Align(
+                              child: Icon(
+                                Icons.keyboard_arrow_down_outlined,
+                                color: Colors.white,
+                                size: 30.0,
+                              ),
+                              alignment: Alignment.topRight,
+                            ),
+                            onTap: () {
+                              if(!isInSmallMode && !_checkState!.isChanged){
+                                setState(() {
+                                  isInSmallMode = true;
+                                  alignmentAnimationController?.forward();
+                                  pipWindowSizeController?.forward();
+                                });
+                                print('start --');
+                                _checkState!.updateValue(isInSmallMode);
+                              }
+                            },
+                          ),
+                        ),
+                      ]),
                     ),
                     onVerticalDragEnd: (details) {
                       if (details.velocity.pixelsPerSecond.dy > 0) {

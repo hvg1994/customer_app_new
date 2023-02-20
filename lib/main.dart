@@ -194,7 +194,7 @@ class _MyAppState extends State<MyApp> {
           ListenableProvider<QuickBloxService>.value(value: QuickBloxService()),
           ChangeNotifierProvider(create: (_)=> ConsultationService())
         ],
-        child: const GetMaterialApp(
+        child: GetMaterialApp(
             supportedLocales: [
               const Locale("en"), /// THIS IS FOR COUNTRY CODE PICKER
             ],
@@ -202,6 +202,10 @@ class _MyAppState extends State<MyApp> {
               CountryLocalizations.delegate, /// THIS IS FOR COUNTRY CODE PICKER
             ],
             debugShowCheckedModeBanner: false,
+            builder: (BuildContext context, Widget? child) => MediaQuery(
+              data: MediaQuery.of(context).copyWith(textScaleFactor: 0.9),
+              child: child ?? const SizedBox.shrink(),
+            ),
             home: const SplashScreen()),
       );
     });

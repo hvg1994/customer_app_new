@@ -52,7 +52,7 @@ class GetDashboardDataModel {
     key = json['key'];
     print(json['Consulation']['value'].runtimeType);
     print(json['Shipping']['value'].runtimeType);
-    print(json['Postprogram']['value']);
+    print(json['PostProgram']['value']);
 
 
     if(json['Consulation'] != null){
@@ -100,17 +100,17 @@ class GetDashboardDataModel {
       }
     }
 
-    print('json postProgram: ${json['Postprogram']['value'].runtimeType}');
+    print('json postProgram: ${json['PostProgram']['value'].runtimeType}');
 
-    if(json['Postprogram'] != null && json['Postprogram']['data'] != null){
-      if(json['Postprogram']['value'].runtimeType == String || json['Postprogram']['value'] == null){
-        normal_postprogram = GutDataModel.fromJson(json['Postprogram']);
-        print('json postProgram: ${normal_postprogram!.toJson()}');
+    if(json['PostProgram'] != null && json['PostProgram']['data'] != null){
+      if(json['PostProgram']['value'].runtimeType == String || json['PostProgram']['value'] == null){
+        normal_postprogram = GutDataModel.fromJson(json['PostProgram']);
+        print('json PostProgram: ${normal_postprogram!.toJson()}');
       }
       else{
-        print((json['Postprogram']['value'] as Map).containsKey('zoom_join_url'));
-        if((json['Postprogram']['value'] as Map).containsKey('zoom_join_url')){
-          postprogram_consultation = GetAppointmentDetailsModel.fromJson(json['Postprogram']);
+        print((json['PostProgram']['value'] as Map).containsKey('zoom_join_url'));
+        if((json['PostProgram']['value'] as Map).containsKey('zoom_join_url')){
+          postprogram_consultation = GetAppointmentDetailsModel.fromJson(json['PostProgram']);
           print("postProgram:${postprogram_consultation!.toJson()}");
         }
       }
@@ -135,7 +135,7 @@ class GetDashboardDataModel {
       data['Program'] = this.data_program!.toJson();
     }
     if (this.normal_postprogram != null) {
-      data['Postprogram'] = this.normal_postprogram!.toJson();
+      data['PostProgram'] = this.normal_postprogram!.toJson();
     }
     return data;
   }
@@ -164,11 +164,13 @@ class GetPrePostMealvalue{
   String? prep_days;
   String? trans_days;
   bool? isPrepratoryStarted;
+  bool? isPrepCompleted;
   bool? isTransMealStarted;
+  bool? isTransMealCompleted;
   String? currentDay;
 
 
-  GetPrePostMealvalue({this.prep_days, this.trans_days,this.isPrepratoryStarted, this.isTransMealStarted, this.currentDay});
+  GetPrePostMealvalue({this.prep_days, this.trans_days,this.isPrepratoryStarted, this.isTransMealCompleted,this.isPrepCompleted, this.isTransMealStarted, this.currentDay});
 
   GetPrePostMealvalue.fromJson(Map<String, dynamic> json){
     print("json['days']===> ${json['days']}");
@@ -177,7 +179,10 @@ class GetPrePostMealvalue{
     prep_days = json['days'];
     trans_days = json['days'];
     isPrepratoryStarted = json['is_prep_program_started'].toString().contains("0") ? false : true;
+    isPrepCompleted = json['is_prep_program_completed'].toString().contains("0") ? false : true;
     isTransMealStarted = json['is_trans_program_started'].toString().contains("0") ? false : true;
+    isTransMealCompleted = json['is_trans_completed'].toString().contains("0") ? false : true;
+
     currentDay = json['current_day'];
   }
 

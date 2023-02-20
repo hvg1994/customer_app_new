@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:gwc_customer/model/error_model.dart';
 import 'package:gwc_customer/model/prepratory_meal_model/prep_meal_model.dart';
 import 'package:gwc_customer/repository/api_service.dart';
@@ -33,6 +34,7 @@ class _PrepratoryPlanScreenState extends State<PrepratoryPlanScreen> {
 
   @override
   void initState() {
+
     // TODO: implement initState
     super.initState();
     totalDays = widget.totalDays;
@@ -70,26 +72,6 @@ class _PrepratoryPlanScreenState extends State<PrepratoryPlanScreen> {
                       AppConfig().showSnackbar(context, "Note Link Not available", isError: true);
                     }
                   }),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    child: Text('Day ${widget.dayNumber} Preparatory Meal Plan',
-                      style: TextStyle(
-                        fontFamily: eUser().mainHeadingFont,
-                        color: eUser().mainHeadingColor,
-                        fontSize: eUser().mainHeadingFontSize
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
-                    child: Text('${int.parse(widget.totalDays) - int.parse(widget.dayNumber)} days Remaining',
-                      style: TextStyle(
-                          fontFamily: kFontMedium,
-                          color: gHintTextColor,
-                          fontSize: 10.sp
-                      ),
-                    ),
-                  ),
                   FutureBuilder(
                     future: prepratoryMealFuture,
                       builder: (_, snapshot){
@@ -107,10 +89,10 @@ class _PrepratoryPlanScreenState extends State<PrepratoryPlanScreen> {
                         }
                         else{
                           PrepratoryMealModel res = snapshot.data as PrepratoryMealModel;
-                          if(widget.totalDays.isEmpty) totalDays = res.days;
                           final dataList = res.data!.toJson();
                           planNotePdfLink = res.note;
-
+                          if(res.days != null) totalDays = res.days;
+                          if(res.currentDay != null) dayNumber = res.currentDay;
                           return customMealPlanTile(dataList);
                           // lst.addAll(dataList.values.map((e) => MealSlot.fromJson(e)));
                           // return customMealPlanTile(key, lst);
@@ -155,6 +137,26 @@ class _PrepratoryPlanScreenState extends State<PrepratoryPlanScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 5),
+            child: Text('Day ${dayNumber} Preparatory Meal Plan',
+              style: TextStyle(
+                  fontFamily: eUser().mainHeadingFont,
+                  color: eUser().mainHeadingColor,
+                  fontSize: eUser().mainHeadingFontSize
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 5),
+            child: Text('${int.parse(totalDays!) - int.parse(dayNumber!)} days Remaining',
+              style: TextStyle(
+                  fontFamily: kFontMedium,
+                  color: gHintTextColor,
+                  fontSize: 10.sp
+              ),
+            ),
+          ),
           ...dataList.entries.map((e) {
             print("${e.key}==${e.value}");
             print(e.value.runtimeType);
