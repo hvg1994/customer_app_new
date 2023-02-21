@@ -68,9 +68,11 @@ class _EvaluationFormScreenState extends State<EvaluationFormScreen> {
                     "Hello $_currentUser, \nCongrats on formally starting your Gut Wellness Journey!",
                     textAlign: TextAlign.start,
                     style: TextStyle(
+                      height: 1.3,
                         fontFamily: kFontMedium,
                         color: gMainColor,
-                        fontSize: 11.sp),
+                        fontSize: 11.sp
+                    ),
                   ),
                   SizedBox(
                     height: 2.h,

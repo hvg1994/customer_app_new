@@ -559,7 +559,6 @@ class GutListState extends State<GutList> {
     }
   }
 
-
   showProgramScreen(){
     if(shippingStage == "shipping_delivered" && programOptionStage != null){
       if(_getProgramModel!.value!.startProgram == '0'){

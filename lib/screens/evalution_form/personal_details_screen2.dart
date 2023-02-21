@@ -58,6 +58,7 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
     CheckBoxSettings(title: "Tea"),
     CheckBoxSettings(title: "Soft Drinks/Carbonated Drinks"),
     CheckBoxSettings(title: "Drugs"),
+    CheckBoxSettings(title: "No"),
   ];
   bool habitOtherSelected = false;
   List selectedHabitCheckBoxList = [];
@@ -192,8 +193,24 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
                           child: GestureDetector(
                             onTap: () {
                               if(formKey1.currentState!.validate() && formKey2.currentState!.validate() && formKey3.currentState!.validate()){
-                                print(widget.medicalReportList.runtimeType);
-                                submitFormDetails();
+                                if(glassesOfWater.isEmpty){
+                                  showCustomSnack("Please select How Many glass of water do you drink a day");
+                                }
+                                else if(selectedHabitCheckBoxList.isEmpty && !habitOtherSelected){
+                                  showCustomSnack("Please select Habits or Addiction");
+                                }
+                                else if(mealPreferenceSelected.isEmpty){
+                                  showCustomSnack("Please select What is your meal preference");
+                                }
+                                else if(hungerPatternSelected.isEmpty){
+                                  showCustomSnack("Please select Hunger Pattern");
+                                }
+                                else if(bowelPatternSelected.isEmpty){
+                                  showCustomSnack("Please select Bowel Pattern");
+                                }
+                                else{
+                                  submitFormDetails();
+                                }
                               }
                             },
                             child: Container(
@@ -254,8 +271,8 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
                     textAlign: TextAlign.start,
                     style: TextStyle(
                         fontFamily: kFontBold,
-                        color: kPrimaryColor,
-                        fontSize: 15.sp
+                        color: gBlackColor,
+                        fontSize: headingFont
                     ),
                   ),
                   SizedBox(
@@ -264,30 +281,28 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
                   Expanded(
                     child: Container(
                       height: 1,
-                      color: kPrimaryColor,
+                      color: kLineColor,
                     ),
                   ),
                 ],
               ),
-              Text(
-                "To Make Your Meal Plans As Simple & Easy For You To Follow As Possible",
-                textAlign: TextAlign.start,
-                style: TextStyle(
-                    fontFamily: kFontBook,
-                    color: gTextColor,
-                    fontSize: 9.sp
-                ),
-              ),
+              // Text(
+              //   "To Make Your Meal Plans As Simple & Easy For You To Follow As Possible",
+              //   textAlign: TextAlign.start,
+              //   style: TextStyle(
+              //       fontFamily: kFontBook,
+              //       color: gTextColor,
+              //       fontSize: 9.sp
+              //   ),
+              // ),
             ],
           ),
           SizedBox(
             height: 3.h,
           ),
-          buildLabelTextField("Do Certain Food Affect Your Digestion? If So, Please Provide Details."),
-          SizedBox(
-            height: 1.h,
-          ),
+          buildLabelTextField("Do Certain Food Affect Your Digestion? If So, Please Provide Details.", fontSize: questionFont, ),
           TextFormField(
+            textCapitalization: TextCapitalization.sentences,
             controller: digestionController,
             cursorColor: kPrimaryColor,
             validator: (value) {
@@ -308,11 +323,9 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
           SizedBox(
             height: 2.h,
           ),
-          buildLabelTextField("Do You Follow Any Special Diet(Keto,Etc)? If So, Please Provide Details"),
-          SizedBox(
-            height: 1.h,
-          ),
+          buildLabelTextField("Do You Follow Any Special Diet(Keto,Etc)? If So, Please Provide Details", fontSize: questionFont),
           TextFormField(
+            textCapitalization: TextCapitalization.sentences,
             controller: specialDietController,
             cursorColor: kPrimaryColor,
             validator: (value) {
@@ -333,11 +346,9 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
           SizedBox(
             height: 2.h,
           ),
-          buildLabelTextField("Do You Have Any Known Food Allergy? If So, Please Provide Details."),
-          SizedBox(
-            height: 1.h,
-          ),
+          buildLabelTextField("Do You Have Any Known Food Allergy? If So, Please Provide Details.", fontSize: questionFont),
           TextFormField(
+            textCapitalization: TextCapitalization.sentences,
             controller: foodAllergyController,
             cursorColor: kPrimaryColor,
             validator: (value) {
@@ -358,11 +369,9 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
           SizedBox(
             height: 2.h,
           ),
-          buildLabelTextField("Do You Have Any Known Intolerance? If So, Please Provide Details."),
-          SizedBox(
-            height: 1.h,
-          ),
+          buildLabelTextField("Do You Have Any Known Intolerance? If So, Please Provide Details.", fontSize: questionFont),
           TextFormField(
+            textCapitalization: TextCapitalization.sentences,
             controller: intoleranceController,
             cursorColor: kPrimaryColor,
             validator: (value) {
@@ -383,11 +392,10 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
           SizedBox(
             height: 2.h,
           ),
-          buildLabelTextField("Do You Have Any Severe Food Cravings? If So, Please Provide Details."),
-          SizedBox(
-            height: 1.h,
-          ),
+          buildLabelTextField("Do You Have Any Severe Food Cravings? If So, Please Provide Details.", fontSize: questionFont),
           TextFormField(
+            textCapitalization: TextCapitalization.sentences,
+
             controller: cravingsController,
             cursorColor: kPrimaryColor,
             validator: (value) {
@@ -408,11 +416,9 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
           SizedBox(
             height: 2.h,
           ),
-          buildLabelTextField("Do You Dislike Any Food? Please Mention All Of Them"),
-          SizedBox(
-            height: 1.h,
-          ),
+          buildLabelTextField("Do You Dislike Any Food? Please Mention All Of Them", fontSize: questionFont),
           TextFormField(
+            textCapitalization: TextCapitalization.sentences,
             controller: dislikeFoodController,
             cursorColor: kPrimaryColor,
             validator: (value) {
@@ -433,74 +439,123 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
           SizedBox(
             height: 2.h,
           ),
-          buildLabelTextField("How Many Glasses Of Water Do You Drink A Day?"),
-          SizedBox(
-            height: 1.h,
-          ),
+          buildLabelTextField("How Many Glasses Of Water Do You Drink A Day?", fontSize: questionFont),
           Row(
             children: [
-              Radio(
-                value: "1-2",
-                activeColor: kPrimaryColor,
-                groupValue: glassesOfWater,
-                onChanged: (value) {
+              GestureDetector(
+                onTap: (){
                   setState(() {
-                    glassesOfWater = value as String;
+                    glassesOfWater = "1-2";
                   });
                 },
-              ),
-              Text(
-                '1-2',
-                style: buildTextStyle(),
+                child: Row(
+                  children: [
+                    Radio(
+                      value: "1-2",
+                      activeColor: kPrimaryColor,
+                      groupValue: glassesOfWater,
+                      onChanged: (value) {
+                        setState(() {
+                          glassesOfWater = value as String;
+                        });
+                      },
+                    ),
+                    Text(
+                      '1-2',
+                      style: buildTextStyle(color: glassesOfWater == "1-2" ? kTextColor : gHintTextColor,
+                          fontFamily: glassesOfWater == "1-2" ? kFontMedium : kFontBook
+                      ),
+                    ),
+                  ],
+                ),
               ),
               SizedBox(
                 width: 3.w,
               ),
-              Radio(
-                value: "3-4",
-                activeColor: kPrimaryColor,
-                groupValue: glassesOfWater,
-                onChanged: (value) {
+              GestureDetector(
+                onTap: (){
                   setState(() {
-                    glassesOfWater = value as String;
+                    glassesOfWater = "3-4";
                   });
                 },
-              ),
-              Text(
-                '3-4',
-                style: buildTextStyle(),
+                child: Row(
+                  children: [
+                    Radio(
+                      value: "3-4",
+                      activeColor: kPrimaryColor,
+                      groupValue: glassesOfWater,
+                      onChanged: (value) {
+                        setState(() {
+                          glassesOfWater = value as String;
+                        });
+                      },
+                    ),
+                    Text(
+                      '3-4',
+                      style: buildTextStyle(color: glassesOfWater == "3-4" ? kTextColor : gHintTextColor,
+                          fontFamily: glassesOfWater == "3-4" ? kFontMedium : kFontBook
+                      ),
+                    ),
+                  ],
+                ),
               ),
               SizedBox(
                 width: 3.w,
               ),
-              Radio(
-                  value: "6-8",
-                  groupValue: glassesOfWater,
-                  activeColor: kPrimaryColor,
-                  onChanged: (value) {
-                    setState(() {
-                      glassesOfWater = value as String;
-                    });
-                  }),
-              Text(
-                "6-8",
-                style: buildTextStyle(),
+              GestureDetector(
+                onTap: (){
+                  setState(() {
+                    glassesOfWater = "6-8";
+                  });
+                },
+                child: Row(
+                  children: [
+                    Radio(
+                        value: "6-8",
+                        groupValue: glassesOfWater,
+                        activeColor: kPrimaryColor,
+                        onChanged: (value) {
+                          setState(() {
+                            glassesOfWater = value as String;
+                          });
+                        }),
+                    Text(
+                      "6-8",
+                      style: buildTextStyle(color: glassesOfWater == "6-8" ? kTextColor : gHintTextColor,
+                          fontFamily: glassesOfWater == "6-8" ? kFontMedium : kFontBook
+                      ),
+                    ),
+                  ],
+                ),
               ),
               SizedBox(
                 width: 3.w,
               ),
-              Radio(
-                  value: "9+",
-                  groupValue: glassesOfWater,
-                  activeColor: kPrimaryColor,
-                  onChanged: (value) {
-                    setState(() {
-                      glassesOfWater = value as String;
-                    });
-                  }),
-              Text(
-                "9+",
-                style: buildTextStyle(),
+              GestureDetector(
+                onTap: (){
+                  setState(() {
+                    glassesOfWater = "9+";
+                  });
+                },
+                child: Row(
+                  children: [
+                    Radio(
+                        value: "9+",
+                        groupValue: glassesOfWater,
+                        activeColor: kPrimaryColor,
+                        onChanged: (value) {
+                          setState(() {
+                            glassesOfWater = value as String;
+                          });
+                        }),
+                    Text(
+                      "9+",
+                      style: buildTextStyle(color: glassesOfWater == "9+" ? kTextColor : gHintTextColor,
+                          fontFamily: glassesOfWater == "9+" ? kFontMedium : kFontBook
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
@@ -527,10 +582,11 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
                   Text(
                     "Life Style",
                     textAlign: TextAlign.start,
-                    style: TextStyle(
-                        fontFamily: kFontBold,
-                        color: kPrimaryColor,
-                        fontSize: 15.sp),
+                      style: TextStyle(
+                          fontFamily: kFontBold,
+                          color: gBlackColor,
+                          fontSize: headingFont
+                      ),
                   ),
                   SizedBox(
                     width: 2.w,
@@ -538,26 +594,17 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
                   Expanded(
                     child: Container(
                       height: 1,
-                      color: kPrimaryColor,
+                      color: kLineColor,
                     ),
                   ),
                 ],
-              ),
-              Text(
-                "This Tells Us How Your Gut Is & Has Been Treated",
-                textAlign: TextAlign.start,
-                style: TextStyle(
-                    fontFamily: kFontBook,
-                    color: gTextColor,
-                    fontSize: 9.sp
-                ),
               ),
             ],
           ),
           SizedBox(
             height: 3.h,
           ),
-          buildLabelTextField("Habits Or Addiction"),
+          buildLabelTextField("Habits Or Addiction", fontSize: questionFont),
           SizedBox(
             height: 1.h,
           ),
@@ -579,7 +626,9 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
                     offset: const Offset(-10, 0),
                     child: Text(
                       'Other:',
-                      style: buildTextStyle(),
+                      style: buildTextStyle(color: habitOtherSelected ? kTextColor : gHintTextColor,
+                          fontFamily: habitOtherSelected ? kFontMedium : kFontBook
+                      ),
                     ),
                   ),
                   activeColor: kPrimaryColor,
@@ -604,62 +653,25 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
                   },
                 ),
               ),
-              // Padding(
-              //   padding: const EdgeInsets.symmetric(horizontal: 8),
-              //   child: Row(
-              //     mainAxisSize: MainAxisSize.min,
-              //     children: [
-              //       SizedBox(
-              //         width: 20,
-              //         child: Checkbox(
-              //           activeColor: kPrimaryColor,
-              //           value: habitOtherSelected,
-              //           onChanged: (v) {
-              //             setState(() {
-              //               habitOtherSelected = v!;
-              //               if (habitOtherSelected) {
-              //                 selectedHabitCheckBoxList
-              //                     .add(otherText);
-              //                 selectedHabitCheckBoxList.clear();
-              //                 selectedHabitCheckBoxList
-              //                     .forEach((element) {
-              //                   element.value = false;
-              //                 });
-              //                 selectedHabitCheckBoxList
-              //                     .add(otherText);
-              //               } else {
-              //                 selectedHabitCheckBoxList
-              //                     .remove(otherText);
-              //               }
-              //             });
-              //           },
-              //         ),
-              //       ),
-              //       SizedBox(
-              //         width: 4,
-              //       ),
-              //       Text(
-              //         'Other:',
-              //         style: buildTextStyle(),
-              //       ),
-              //     ],
-              //   ),
-              // ),
-              TextFormField(
-                controller: habitOtherController,
-                cursorColor: kPrimaryColor,
-                validator: (value) {
-                  if (value!.isEmpty && habitOtherSelected) {
-                    return 'Please mention other habits/addiction which not mentioned above';
-                  } else {
-                    return null;
-                  }
-                },
-                decoration: CommonDecoration.buildTextInputDecoration(
-                    "Enter Your answer", habitOtherController),
-                textInputAction: TextInputAction.next,
-                textAlign: TextAlign.start,
-                keyboardType: TextInputType.text,
+              Visibility(
+                visible: habitOtherSelected,
+                child: TextFormField(
+                  textCapitalization: TextCapitalization.sentences,
+                  controller: habitOtherController,
+                  cursorColor: kPrimaryColor,
+                  validator: (value) {
+                    if (value!.isEmpty && habitOtherSelected) {
+                      return 'Please mention other habits/addiction which not mentioned above';
+                    } else {
+                      return null;
+                    }
+                  },
+                  decoration: CommonDecoration.buildTextInputDecoration(
+                      "Enter Your answer", habitOtherController),
+                  textInputAction: TextInputAction.next,
+                  textAlign: TextAlign.start,
+                  keyboardType: TextInputType.text,
+                ),
               ),
             ],
           ),
@@ -688,8 +700,9 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
                     textAlign: TextAlign.start,
                     style: TextStyle(
                         fontFamily: kFontBold,
-                        color: kPrimaryColor,
-                        fontSize: 15.sp),
+                        color: gBlackColor,
+                        fontSize: headingFont
+                    ),
                   ),
                   SizedBox(
                     width: 2.w,
@@ -697,324 +710,417 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
                   Expanded(
                     child: Container(
                       height: 1,
-                      color: kPrimaryColor,
+                      color: kLineColor,
                     ),
                   ),
                 ],
-              ),
-              Text(
-                "Is a Barometer For Your Gut Health",
-                textAlign: TextAlign.start,
-                style: TextStyle(
-                    fontFamily: kFontBook,
-                    color: gTextColor,
-                    fontSize: 9.sp
-                ),
               ),
             ],
           ),
           SizedBox(
             height: 3.h,
           ),
-          buildLabelTextField("What is your after meal preference?"),
-          SizedBox(
-            height: 1.h,
-          ),
+          buildLabelTextField("What is your after meal preference?", fontSize: questionFont),
           ListView(
             shrinkWrap: true,
             physics: const BouncingScrollPhysics(),
             children: [
-              Row(
-                children: [
-                  Radio(
-                    value: mealPreferenceList[0],
-                    activeColor: kPrimaryColor,
-                    groupValue: mealPreferenceSelected,
-                    onChanged: (value) {
-                      setState(() {
-                        mealPreferenceSelected = value as String;
-                      });
-                    },
-                  ),
-                  Expanded(
-                    child: Text(
-                      mealPreferenceList[0],
-                      style: buildTextStyle(),
-                    ),
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  Radio(
-                    value: mealPreferenceList[1],
-                    activeColor: kPrimaryColor,
-                    groupValue: mealPreferenceSelected,
-                    onChanged: (value) {
-                      setState(() {
-                        mealPreferenceSelected = value as String;
-                      });
-                    },
-                  ),
-                  Expanded(
-                    child: Text(
-                      mealPreferenceList[1],
-                      style: buildTextStyle(),
-                    ),
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  Radio(
-                    value: mealPreferenceList[2],
-                    activeColor: kPrimaryColor,
-                    groupValue: mealPreferenceSelected,
-                    onChanged: (value) {
-                      setState(() {
-                        mealPreferenceSelected = value as String;
-                      });
-                    },
-                  ),
-                  Text(
-                    mealPreferenceList[2],
-                    style: buildTextStyle(),
-                  ),
-                ],
-              ),
-              TextFormField(
-                controller: mealPreferenceController,
-                cursorColor: kPrimaryColor,
-                validator: (value) {
-                  if (value!.isEmpty && mealPreferenceSelected.contains(mealPreferenceList[2])) {
-                    return 'Please enter Medical Interventions';
-                  } else {
-                    return null;
-                  }
+              GestureDetector(
+                onTap: (){
+                  setState(() {
+                    mealPreferenceSelected = mealPreferenceList[0];
+                  });
                 },
-                decoration: CommonDecoration.buildTextInputDecoration(
-                    "Enter Your answer", mealPreferenceController),
-                textInputAction: TextInputAction.next,
-                textAlign: TextAlign.start,
-                keyboardType: TextInputType.text,
+                child: Row(
+                  children: [
+                    Radio(
+                      value: mealPreferenceList[0],
+                      activeColor: kPrimaryColor,
+                      groupValue: mealPreferenceSelected,
+                      onChanged: (value) {
+                        setState(() {
+                          mealPreferenceSelected = value as String;
+                        });
+                      },
+                    ),
+                    Expanded(
+                      child: Text(
+                        mealPreferenceList[0],
+                        style: buildTextStyle(color: mealPreferenceSelected == mealPreferenceList[0] ? kTextColor : gHintTextColor,
+                            fontFamily: mealPreferenceSelected == mealPreferenceList[0] ? kFontMedium : kFontBook
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              GestureDetector(
+                onTap: (){
+                  setState(() {
+                    mealPreferenceSelected = mealPreferenceList[1];
+                  });
+                },
+                child: Row(
+                  children: [
+                    Radio(
+                      value: mealPreferenceList[1],
+                      activeColor: kPrimaryColor,
+                      groupValue: mealPreferenceSelected,
+                      onChanged: (value) {
+                        setState(() {
+                          mealPreferenceSelected = value as String;
+                        });
+                      },
+                    ),
+                    Expanded(
+                      child: Text(
+                        mealPreferenceList[1],
+                        style: buildTextStyle(color: mealPreferenceSelected == mealPreferenceList[1] ? kTextColor : gHintTextColor,
+                            fontFamily: mealPreferenceSelected == mealPreferenceList[1] ? kFontMedium : kFontBook
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              GestureDetector(
+                onTap: (){
+                  setState(() {
+                    mealPreferenceSelected = mealPreferenceList[2];
+                  });
+                },
+                child: Row(
+                  children: [
+                    Radio(
+                      value: mealPreferenceList[2],
+                      activeColor: kPrimaryColor,
+                      groupValue: mealPreferenceSelected,
+                      onChanged: (value) {
+                        setState(() {
+                          mealPreferenceSelected = value as String;
+                        });
+                      },
+                    ),
+                    Text(
+                      mealPreferenceList[2],
+                      style: buildTextStyle(color: mealPreferenceSelected == mealPreferenceList[2] ? kTextColor : gHintTextColor,
+                          fontFamily: mealPreferenceSelected == mealPreferenceList[2] ? kFontMedium : kFontBook
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Visibility(
+                visible: mealPreferenceSelected == mealPreferenceList[2],
+                child: TextFormField(
+                  textCapitalization: TextCapitalization.sentences,
+                  controller: mealPreferenceController,
+                  cursorColor: kPrimaryColor,
+                  validator: (value) {
+                    if (value!.isEmpty && mealPreferenceSelected.contains(mealPreferenceList[2])) {
+                      return 'Please enter Medical Interventions';
+                    } else {
+                      return null;
+                    }
+                  },
+                  decoration: CommonDecoration.buildTextInputDecoration(
+                      "Enter Your answer", mealPreferenceController),
+                  textInputAction: TextInputAction.next,
+                  textAlign: TextAlign.start,
+                  keyboardType: TextInputType.text,
+                ),
               ),
             ],
           ),
           SizedBox(
             height: 2.h,
           ),
-          buildLabelTextField("Hunger Pattern"),
-          SizedBox(
-            height: 1.h,
-          ),
+          buildLabelTextField("Hunger Pattern", fontSize: questionFont),
           ListView(
             shrinkWrap: true,
             physics: const BouncingScrollPhysics(),
             children: [
-              Row(
-                children: [
-                  Radio(
-                    value: hungerPatternList[0],
-                    activeColor: kPrimaryColor,
-                    groupValue: hungerPatternSelected,
-                    onChanged: (value) {
-                      setState(() {
-                        hungerPatternSelected = value as String;
-                      });
-                    },
-                  ),
-                  Expanded(
-                    child: Text(
-                      hungerPatternList[0],
-                      style: buildTextStyle(),
-                    ),
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  Radio(
-                    value: hungerPatternList[1],
-                    activeColor: kPrimaryColor,
-                    groupValue: hungerPatternSelected,
-                    onChanged: (value) {
-                      setState(() {
-                        hungerPatternSelected = value as String;
-                      });
-                    },
-                  ),
-                  Expanded(
-                    child: Text(
-                      hungerPatternList[1],
-                      style: buildTextStyle(),
-                    ),
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  Radio(
-                    value: hungerPatternList[2],
-                    activeColor: kPrimaryColor,
-                    groupValue: hungerPatternSelected,
-                    onChanged: (value) {
-                      setState(() {
-                        hungerPatternSelected = value as String;
-                      });
-                    },
-                  ),
-                  Expanded(
-                    child: Text(
-                      hungerPatternList[2],
-                      style: buildTextStyle(),
-                    ),
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  Radio(
-                    value: hungerPatternList[3],
-                    activeColor: kPrimaryColor,
-                    groupValue: hungerPatternSelected,
-                    onChanged: (value) {
-                      setState(() {
-                        hungerPatternSelected = value as String;
-                      });
-                    },
-                  ),
-                  Expanded(
-                    child: Text(
-                      hungerPatternList[3],
-                      style: buildTextStyle(),
-                    ),
-                  ),
-                ],
-              ),
-              TextFormField(
-                controller: hungerPatternController,
-                cursorColor: kPrimaryColor,
-                validator: (value) {
-                  if (value!.isEmpty && hungerPatternSelected.contains(hungerPatternList[3])) {
-                    return 'Please enter Hunger Pattern';
-                  } else {
-                    return null;
-                  }
+              GestureDetector(
+                onTap: (){
+                  setState(() {
+                    hungerPatternSelected = hungerPatternList[0];
+                  });
                 },
-                decoration: CommonDecoration.buildTextInputDecoration(
-                    "Enter Your answer", hungerPatternController),
-                textInputAction: TextInputAction.next,
-                textAlign: TextAlign.start,
-                keyboardType: TextInputType.text,
+                child: Row(
+                  children: [
+                    Radio(
+                      value: hungerPatternList[0],
+                      activeColor: kPrimaryColor,
+                      groupValue: hungerPatternSelected,
+                      onChanged: (value) {
+                        setState(() {
+                          hungerPatternSelected = value as String;
+                        });
+                      },
+                    ),
+                    Expanded(
+                      child: Text(
+                        hungerPatternList[0],
+                        style: buildTextStyle(color: hungerPatternSelected == hungerPatternList[0] ? kTextColor : gHintTextColor,
+                            fontFamily: hungerPatternSelected == hungerPatternList[0] ? kFontMedium : kFontBook
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              GestureDetector(
+                onTap: (){
+                  setState(() {
+                    hungerPatternSelected = hungerPatternList[1];
+                  });
+                },
+                child: Row(
+                  children: [
+                    Radio(
+                      value: hungerPatternList[1],
+                      activeColor: kPrimaryColor,
+                      groupValue: hungerPatternSelected,
+                      onChanged: (value) {
+                        setState(() {
+                          hungerPatternSelected = value as String;
+                        });
+                      },
+                    ),
+                    Expanded(
+                      child: Text(
+                        hungerPatternList[1],
+                        style: buildTextStyle(color: hungerPatternSelected == hungerPatternList[1] ? kTextColor : gHintTextColor,
+                            fontFamily: hungerPatternSelected == hungerPatternList[1] ? kFontMedium : kFontBook
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              GestureDetector(
+                onTap: (){
+                  setState(() {
+                    hungerPatternSelected = hungerPatternList[2];
+                  });
+                },
+                child: Row(
+                  children: [
+                    Radio(
+                      value: hungerPatternList[2],
+                      activeColor: kPrimaryColor,
+                      groupValue: hungerPatternSelected,
+                      onChanged: (value) {
+                        setState(() {
+                          hungerPatternSelected = value as String;
+                        });
+                      },
+                    ),
+                    Expanded(
+                      child: Text(
+                        hungerPatternList[2],
+                        style: buildTextStyle(color: hungerPatternSelected == hungerPatternList[2] ? kTextColor : gHintTextColor,
+                            fontFamily: hungerPatternSelected == hungerPatternList[2] ? kFontMedium : kFontBook
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              GestureDetector(
+                onTap: (){
+                  setState(() {
+                    hungerPatternSelected = hungerPatternList[3];
+                  });
+                },
+                child: Row(
+                  children: [
+                    Radio(
+                      value: hungerPatternList[3],
+                      activeColor: kPrimaryColor,
+                      groupValue: hungerPatternSelected,
+                      onChanged: (value) {
+                        setState(() {
+                          hungerPatternSelected = value as String;
+                        });
+                      },
+                    ),
+                    Expanded(
+                      child: Text(
+                        hungerPatternList[3],
+                        style: buildTextStyle(color: hungerPatternSelected == hungerPatternList[3] ? kTextColor : gHintTextColor,
+                            fontFamily: hungerPatternSelected == hungerPatternList[3] ? kFontMedium : kFontBook
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Visibility(
+                visible: hungerPatternSelected == hungerPatternList[3],
+                child: TextFormField(
+                  textCapitalization: TextCapitalization.sentences,
+                  controller: hungerPatternController,
+                  cursorColor: kPrimaryColor,
+                  validator: (value) {
+                    if (value!.isEmpty && hungerPatternSelected.contains(hungerPatternList[3])) {
+                      return 'Please enter Hunger Pattern';
+                    } else {
+                      return null;
+                    }
+                  },
+                  decoration: CommonDecoration.buildTextInputDecoration(
+                      "Enter Your answer", hungerPatternController),
+                  textInputAction: TextInputAction.next,
+                  textAlign: TextAlign.start,
+                  keyboardType: TextInputType.text,
+                ),
               ),
             ],
           ),
           SizedBox(
             height: 2.h,
           ),
-          buildLabelTextField("Bowel Pattern"),
-          SizedBox(
-            height: 1.h,
-          ),
+          buildLabelTextField("Bowel Pattern", fontSize: questionFont),
           ListView(
             shrinkWrap: true,
             physics: const BouncingScrollPhysics(),
             children: [
-              Row(
-                children: [
-                  Radio(
-                    value: bowelPatternList[0],
-                    activeColor: kPrimaryColor,
-                    groupValue: bowelPatternSelected,
-                    onChanged: (value) {
-                      setState(() {
-                        bowelPatternSelected = value as String;
-                      });
-                    },
-                  ),
-                  Expanded(
-                    child: Text(
-                      bowelPatternList[0],
-                      style: buildTextStyle(),
-                    ),
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  Radio(
-                    value: bowelPatternList[1],
-                    activeColor: kPrimaryColor,
-                    groupValue: bowelPatternSelected,
-                    onChanged: (value) {
-                      setState(() {
-                        bowelPatternSelected = value as String;
-                      });
-                    },
-                  ),
-                  Expanded(
-                    child: Text(
-                      bowelPatternList[1],
-                      style: buildTextStyle(),
-                    ),
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  Radio(
-                    value: bowelPatternList[2],
-                    activeColor: kPrimaryColor,
-                    groupValue: bowelPatternSelected,
-                    onChanged: (value) {
-                      setState(() {
-                        bowelPatternSelected = value as String;
-                      });
-                    },
-                  ),
-                  Expanded(
-                    child: Text(
-                      bowelPatternList[2],
-                      style: buildTextStyle(),
-                    ),
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  Radio(
-                    value: bowelPatternList[3],
-                    activeColor: kPrimaryColor,
-                    groupValue: bowelPatternSelected,
-                    onChanged: (value) {
-                      setState(() {
-                        bowelPatternSelected = value as String;
-                      });
-                    },
-                  ),
-                  Expanded(
-                    child: Text(
-                      bowelPatternList[3],
-                      style: buildTextStyle(),
-                    ),
-                  ),
-                ],
-              ),
-              TextFormField(
-                controller: bowelPatternController,
-                cursorColor: kPrimaryColor,
-                validator: (value) {
-                  if (value!.isEmpty && bowelPatternSelected.contains(bowelPatternList[3])) {
-                    return 'Please enter bowel pattern';
-                  } else {
-                    return null;
-                  }
+              GestureDetector(
+                onTap: (){
+                  setState(() {
+                    bowelPatternSelected = bowelPatternList[0];
+                  });
                 },
-                decoration: CommonDecoration.buildTextInputDecoration(
-                    "Enter Your answer", bowelPatternController),
-                textInputAction: TextInputAction.next,
-                textAlign: TextAlign.start,
-                keyboardType: TextInputType.text,
+                child: Row(
+                  children: [
+                    Radio(
+                      value: bowelPatternList[0],
+                      activeColor: kPrimaryColor,
+                      groupValue: bowelPatternSelected,
+                      onChanged: (value) {
+                        setState(() {
+                          bowelPatternSelected = value as String;
+                        });
+                      },
+                    ),
+                    Expanded(
+                      child: Text(
+                        bowelPatternList[0],
+                        style: buildTextStyle(color: bowelPatternSelected == bowelPatternList[0] ? kTextColor : gHintTextColor,
+                            fontFamily: bowelPatternSelected == bowelPatternList[0] ? kFontMedium : kFontBook
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              GestureDetector(
+                onTap: (){
+                  setState(() {
+                    bowelPatternSelected = bowelPatternList[1];
+                  });
+                },
+                child: Row(
+                  children: [
+                    Radio(
+                      value: bowelPatternList[1],
+                      activeColor: kPrimaryColor,
+                      groupValue: bowelPatternSelected,
+                      onChanged: (value) {
+                        setState(() {
+                          bowelPatternSelected = value as String;
+                        });
+                      },
+                    ),
+                    Expanded(
+                      child: Text(
+                        bowelPatternList[1],
+                        style: buildTextStyle(color: bowelPatternSelected == bowelPatternList[1] ? kTextColor : gHintTextColor,
+                            fontFamily: bowelPatternSelected == bowelPatternList[1] ? kFontMedium : kFontBook
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              GestureDetector(
+                onTap: (){
+                  setState(() {
+                    bowelPatternSelected = bowelPatternList[2];
+                  });
+                },
+                child: Row(
+                  children: [
+                    Radio(
+                      value: bowelPatternList[2],
+                      activeColor: kPrimaryColor,
+                      groupValue: bowelPatternSelected,
+                      onChanged: (value) {
+                        setState(() {
+                          bowelPatternSelected = value as String;
+                        });
+                      },
+                    ),
+                    Expanded(
+                      child: Text(
+                        bowelPatternList[2],
+                        style: buildTextStyle(color: bowelPatternSelected == bowelPatternList[2] ? kTextColor : gHintTextColor,
+                            fontFamily: bowelPatternSelected == bowelPatternList[2] ? kFontMedium : kFontBook
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              GestureDetector(
+                onTap: (){
+                  setState(() {
+                    bowelPatternSelected = bowelPatternList[3];
+                  });
+                },
+                child: Row(
+                  children: [
+                    Radio(
+                      value: bowelPatternList[3],
+                      activeColor: kPrimaryColor,
+                      groupValue: bowelPatternSelected,
+                      onChanged: (value) {
+                        setState(() {
+                          bowelPatternSelected = value as String;
+                        });
+                      },
+                    ),
+                    Expanded(
+                      child: Text(
+                        bowelPatternList[3],
+                        style: buildTextStyle(color: bowelPatternSelected == bowelPatternList[3] ? kTextColor : gHintTextColor,
+                            fontFamily: bowelPatternSelected == bowelPatternList[3] ? kFontMedium : kFontBook
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Visibility(
+                visible: bowelPatternSelected == bowelPatternList[3],
+                child: TextFormField(
+                  textCapitalization: TextCapitalization.sentences,
+                  controller: bowelPatternController,
+                  cursorColor: kPrimaryColor,
+                  validator: (value) {
+                    if (value!.isEmpty && bowelPatternSelected.contains(bowelPatternList[3])) {
+                      return 'Please enter bowel pattern';
+                    } else {
+                      return null;
+                    }
+                  },
+                  decoration: CommonDecoration.buildTextInputDecoration(
+                      "Enter Your answer", bowelPatternController),
+                  textInputAction: TextInputAction.done,
+                  textAlign: TextAlign.start,
+                  keyboardType: TextInputType.text,
+                ),
               ),
             ],
           ),
@@ -1049,7 +1155,7 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
   }
 
   buildWrapingCheckBox(CheckBoxSettings healthCheckBox){
-    return SizedBox(
+    return IntrinsicWidth(
       child: CheckboxListTile(
         contentPadding: EdgeInsets.symmetric(horizontal: 5),
         controlAffinity: ListTileControlAffinity.leading,
@@ -1057,22 +1163,52 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
           offset: const Offset(-10, 0),
           child: Text(
             healthCheckBox.title.toString(),
-            style: buildTextStyle(),
+            style: buildTextStyle(color: healthCheckBox.value == true ? kTextColor : gHintTextColor,
+                fontFamily: healthCheckBox.value == true ? kFontMedium : kFontBook
+            ),
           ),
         ),
         dense: true,
         activeColor: kPrimaryColor,
         value: healthCheckBox.value,
         onChanged: (v) {
+          print("v==> $v  ${healthCheckBox.title}");
           if(habitOtherSelected){
             if(v == true){
-              habitOtherSelected = false;
-              selectedHabitCheckBoxList.clear();
-              selectedHabitCheckBoxList.add(healthCheckBox.title);
-              healthCheckBox.value = v;
+             setState(() {
+               habitOtherSelected = false;
+               selectedHabitCheckBoxList.clear();
+               selectedHabitCheckBoxList.add(healthCheckBox.title);
+               healthCheckBox.value = v;
+             });
             }
           }
+          else if (healthCheckBox.title == habitCheckBox.last.title) {
+            setState(() {
+              selectedHabitCheckBoxList.clear();
+              habitCheckBox.forEach((element) {
+                if (element.title != habitCheckBox.last.title) {
+                  element.value = false;
+                }
+              });
+              if (v == true) {
+                selectedHabitCheckBoxList.add(healthCheckBox.title!);
+                healthCheckBox.value = v;
+              } else {
+                selectedHabitCheckBoxList.remove(healthCheckBox.title!);
+                healthCheckBox.value = v;
+              }
+            });
+          }
           else{
+            print("else");
+            if (selectedHabitCheckBoxList
+                .contains(habitCheckBox.last.title)) {
+              setState(() {
+                selectedHabitCheckBoxList.clear();
+                habitCheckBox.last.value = false;
+              });
+            }
             if (v == true) {
               setState(() {
                 selectedHabitCheckBoxList.add(healthCheckBox.title);
@@ -1269,5 +1405,11 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
       httpClient: http.Client(),
     ),
   );
+
+  showCustomSnack(String msg){
+    AppConfig().showSnackbar(context,
+        msg,
+        isError: true);
+  }
 
 }

@@ -65,16 +65,16 @@ class _EvaluationUploadReportState extends State<EvaluationUploadReport> {
               SizedBox(
                 width: 3.w,
               ),
-              FittedBox(
-                child: Text(
-                  "Gut Wellness Club \nEvaluation Form",
-                  textAlign: TextAlign.start,
-                  style: TextStyle(
-                      fontFamily: "PoppinsMedium",
-                      color: Colors.white,
-                      fontSize: 12.sp),
-                ),
-              ),
+              // FittedBox(
+              //   child: Text(
+              //     "Gut Wellness Club \nEvaluation Form",
+              //     textAlign: TextAlign.start,
+              //     style: TextStyle(
+              //         fontFamily: "PoppinsMedium",
+              //         color: Colors.white,
+              //         fontSize: 12.sp),
+              //   ),
+              // ),
             ],
           ),
         ),
@@ -128,7 +128,7 @@ class _EvaluationUploadReportState extends State<EvaluationUploadReport> {
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 5.w),
             child: Text(
-              "The reports are a reflection of specific parameters, which might be affecting your gut or overall health, so knowing your health history can be of significance. So, this is yet another important step to diagnose and continue towards the program.",
+              "Your prior medical reports help us analyse the root cause & contributing factor. Do upload all possible reports",
               textAlign: TextAlign.center,
               style: TextStyle(
                   height: 1.5,
@@ -226,15 +226,17 @@ class _EvaluationUploadReportState extends State<EvaluationUploadReport> {
                     //
                     // }
                     if(medicalRecords.isNotEmpty){
+                      showUploadReportPopup();
+
                       _videoPlayerController?.stop();
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (ctx) => PersonalDetailsScreen2(
-                                  evaluationModelFormat1: widget.evaluationModelFormat1,
-                                  medicalReportList:
-                                  medicalRecords.map((e) => e.path).toList())
-                          ));
+                      // Navigator.push(
+                      //     context,
+                      //     MaterialPageRoute(
+                      //         builder: (ctx) => PersonalDetailsScreen2(
+                      //             evaluationModelFormat1: widget.evaluationModelFormat1,
+                      //             medicalReportList:
+                      //             medicalRecords.map((e) => e.path).toList())
+                      //     ));
                     }
                   },
                   child: Container(
@@ -255,7 +257,7 @@ class _EvaluationUploadReportState extends State<EvaluationUploadReport> {
                         ? buildThreeBounceIndicator()
                         : Center(
                       child: Text(
-                        'Submit',
+                        'Done',
                         style: TextStyle(
                           fontFamily: eUser().buttonTextFont,
                           color: eUser().buttonTextColor,
@@ -268,45 +270,57 @@ class _EvaluationUploadReportState extends State<EvaluationUploadReport> {
               ),
             ),
           ),
-          MediaQuery(
-            data: MediaQuery.of(context).copyWith(textScaleFactor: 0.8),
-            child: Center(child:  GestureDetector(
-                onTap: (){
-                  _videoPlayerController?.stop();
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (ctx) => PersonalDetailsScreen2(
-                              evaluationModelFormat1: widget.evaluationModelFormat1,
-                              medicalReportList: null)
-                      ));
-                },
-                child: Container(
-                  width: 30.w,
-                  height: 4.h,
-                  margin: EdgeInsets.symmetric(vertical: 4.h),
-                  padding:
-                  EdgeInsets.symmetric(vertical: 1.h, horizontal: 10.w),
-                  decoration: BoxDecoration(
-                    color: eUser().buttonColor,
-                    borderRadius: BorderRadius.circular(eUser().buttonBorderRadius),
-                    // border: Border.all(
-                    //     color: eUser().buttonBorderColor,
-                    //     width: eUser().buttonBorderWidth
-                    // ),
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Center(
+                child: Text("Don't have any reports?",
+                  style: TextStyle(
+                    fontFamily: kFontBook,
+                    color: gHintTextColor,
                   ),
-                  child: Center(
-                    child: Text(
-                      'Skip',
-                      style: TextStyle(
-                        fontFamily: eUser().buttonTextFont,
-                        color: eUser().buttonTextColor,
-                        fontSize: eUser().buttonTextSize,
+                ),
+              ),
+              MediaQuery(
+                data: MediaQuery.of(context).copyWith(textScaleFactor: 0.8),
+                child: Center(child:  GestureDetector(
+                    onTap: (){
+                      _videoPlayerController?.stop();
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (ctx) => PersonalDetailsScreen2(
+                                  evaluationModelFormat1: widget.evaluationModelFormat1,
+                                  medicalReportList: null)
+                          ));
+                    },
+                    child: Container(
+                      width: 30.w,
+                      height: 4.h,
+                      margin: EdgeInsets.symmetric(vertical: 2.h),
+                      padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 10.w),
+                      decoration: BoxDecoration(
+                        color: eUser().buttonColor,
+                        borderRadius: BorderRadius.circular(eUser().buttonBorderRadius),
+                        // border: Border.all(
+                        //     color: eUser().buttonBorderColor,
+                        //     width: eUser().buttonBorderWidth
+                        // ),
                       ),
-                    ),
-                  ),
-                )
-            ),),
+                      child: Center(
+                        child: Text(
+                          'Skip',
+                          style: TextStyle(
+                            fontFamily: eUser().buttonTextFont,
+                            color: eUser().buttonTextColor,
+                            fontSize: eUser().buttonTextSize,
+                          ),
+                        ),
+                      ),
+                    )
+                ),),
+              ),
+            ],
           ),
         ],
       ),
@@ -691,6 +705,123 @@ class _EvaluationUploadReportState extends State<EvaluationUploadReport> {
     else{
       return false;
     }
+  }
+
+  showUploadReportPopup() {
+    return showDialog(
+        context: context,
+        builder: (_){
+          return StatefulBuilder(
+              builder: (_, setState){
+                return Dialog(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20.0),
+                  ),
+                  child: showReportUploadStatus(setState),
+                );
+              }
+          );
+        }
+    );
+  }
+
+  showReportUploadStatus(Function setState){
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          showRadioList("Uploaded all report.", setState),
+          showRadioList("Not all reports uploaded.", setState),
+          SizedBox(
+            height: 2.h,
+          ),
+          MediaQuery(
+            data: MediaQuery.of(context).copyWith(textScaleFactor: 0.75),
+            child: Center(child:  GestureDetector(
+                onTap: (){
+                  EvaluationModelFormat1 model = widget.evaluationModelFormat1;
+                  model.allReportsUploaded = selectedUploadRadio;
+                  // 28 items if other is null
+                  print(model.toMap());
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (ctx) => PersonalDetailsScreen2(
+                              evaluationModelFormat1: model,
+                              medicalReportList:
+                              medicalRecords.map((e) => e.path).toList())
+                      ));
+                },
+                child: Container(
+                  width: 35.w,
+                  height: 4.h,
+                  margin: EdgeInsets.symmetric(vertical: 2.h),
+                  padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 10.w),
+                  decoration: BoxDecoration(
+                    color: eUser().buttonColor,
+                    borderRadius: BorderRadius.circular(eUser().buttonBorderRadius),
+                    // border: Border.all(
+                    //     color: eUser().buttonBorderColor,
+                    //     width: eUser().buttonBorderWidth
+                    // ),
+                  ),
+                  child: Center(
+                    child: Text(
+                      'SUBMIT',
+                      style: TextStyle(
+                        fontFamily: eUser().buttonTextFont,
+                        color: eUser().buttonTextColor,
+                        fontSize: eUser().buttonTextSize,
+                      ),
+                    ),
+                  ),
+                )
+            ),),
+          )
+        ],
+      ),
+    );
+  }
+
+  String selectedUploadRadio = "";
+
+  showRadioList(String name, Function setstate){
+    return GestureDetector(
+      onTap: (){
+        setstate((){
+          selectedUploadRadio = name;
+        });
+      },
+      child: Row(
+        children: [
+          SizedBox(
+            width: 10,
+            child: Radio(
+              value: name,
+              activeColor: kPrimaryColor,
+              groupValue: selectedUploadRadio,
+              onChanged: (value){
+                setState(() {
+                  selectedUploadRadio = name;
+                });
+              },
+            ),
+          ),
+          SizedBox(
+            width: 10,
+          ),
+          Expanded(
+            child: Text(
+              name,
+              style: buildTextStyle(color: name == selectedUploadRadio ? kTextColor : gHintTextColor,
+                  fontFamily: name == selectedUploadRadio ? kFontMedium : kFontBook
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
 }

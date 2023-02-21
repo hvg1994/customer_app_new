@@ -123,43 +123,9 @@ class _ChooseYourProblemScreenState extends State<ChooseYourProblemScreen> {
                 height: 2.5.h,
               ),
               Expanded(
+                flex: 4,
                 child: buildChooseProblem(),
               ),
-              Center(
-                      child: GestureDetector(
-                        onTap: selectedProblems.isEmpty && otherController.text.isEmpty ? (){
-                          print(otherController.text.isEmpty);
-                          AppConfig().showSnackbar(context, "Please Select/Mention your Problem");
-                        } : () {
-                          submitProblems();
-                        },
-                        child: Container(
-                          width: 40.w,
-                          height: 5.h,
-                          // padding: EdgeInsets.symmetric(
-                          //     vertical: 1.h, horizontal: 15.w),
-                          decoration: BoxDecoration(
-                            color: selectedProblems.isEmpty ? eUser().buttonColor : eUser().buttonColor,
-                            borderRadius: BorderRadius.circular(eUser().buttonBorderRadius),
-                            border: Border.all(
-                                color: eUser().buttonBorderColor,
-                                width: eUser().buttonBorderWidth
-                            ),
-                          ),
-                          child: (isLoading) ? buildThreeBounceIndicator(color: eUser().threeBounceIndicatorColor)
-                              : Center(
-                                child: Text(
-                            'Next',
-                            style: TextStyle(
-                                fontFamily: eUser().buttonTextFont,
-                                color: selectedProblems.isEmpty ? eUser().buttonTextColor : eUser().buttonTextColor,
-                                fontSize: eUser().buttonTextSize,
-                            ),
-                          ),
-                              ),
-                        ),
-                      ),
-                    ),
             ],
           ),
         ),
@@ -177,7 +143,7 @@ class _ChooseYourProblemScreenState extends State<ChooseYourProblemScreen> {
               List<ChildChooseProblemModel>? problemList = model.data;
               return Column(
                 children: [
-                  Expanded(
+                  Flexible(
                     child: GridView.builder(
                         scrollDirection: Axis.vertical,
                         physics: const ScrollPhysics(),
@@ -268,16 +234,7 @@ class _ChooseYourProblemScreenState extends State<ChooseYourProblemScreen> {
                           );
                         })
                   ),
-                  SizedBox(height: 1.h),
-                  // Text(
-                  //   "Mention Other Problems",
-                  //   style: TextStyle(
-                  //       fontFamily: eUser().userFieldLabelFont,
-                  //       fontSize: eUser().userFieldLabelFontSize,
-                  //       color: eUser().userFieldLabelColor
-                  //   ),
-                  // ),
-                  // SizedBox(height: 1.h),
+                  SizedBox(height: 5.h),
                   Container(
                     height: 15.h,
                     margin: EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.h),
@@ -315,7 +272,8 @@ class _ChooseYourProblemScreenState extends State<ChooseYourProblemScreen> {
                         //   ),
                         // ),
                         hintMaxLines: 2,
-                        hintText: "Pick one or more from the list above, or write to us about the underlying issue that brought you here.",
+                        hintText: "Additional comments",
+                        // hintText: "Pick one or more from the list above, or write to us about the underlying issue that brought you here.",
                         border: InputBorder.none,
                         hintStyle: TextStyle(
                           fontFamily: eUser().userTextFieldHintFont,
@@ -328,7 +286,42 @@ class _ChooseYourProblemScreenState extends State<ChooseYourProblemScreen> {
                       keyboardType: TextInputType.emailAddress,
                     ),
                   ),
-                  SizedBox(height: 1.h),
+                  SizedBox(height: 4.h),
+                  Center(
+                    child: GestureDetector(
+                      onTap: selectedProblems.isEmpty && otherController.text.isEmpty ? (){
+                        print(otherController.text.isEmpty);
+                        AppConfig().showSnackbar(context, "Please Select/Mention your Problem");
+                      } : () {
+                        submitProblems();
+                      },
+                      child: Container(
+                        width: 40.w,
+                        height: 5.h,
+                        // padding: EdgeInsets.symmetric(
+                        //     vertical: 1.h, horizontal: 15.w),
+                        decoration: BoxDecoration(
+                          color: selectedProblems.isEmpty ? eUser().buttonColor : eUser().buttonColor,
+                          borderRadius: BorderRadius.circular(eUser().buttonBorderRadius),
+                          border: Border.all(
+                              color: eUser().buttonBorderColor,
+                              width: eUser().buttonBorderWidth
+                          ),
+                        ),
+                        child: (isLoading) ? buildThreeBounceIndicator(color: eUser().threeBounceIndicatorColor)
+                            : Center(
+                          child: Text(
+                            'Next',
+                            style: TextStyle(
+                              fontFamily: eUser().buttonTextFont,
+                              color: selectedProblems.isEmpty ? eUser().buttonTextColor : eUser().buttonTextColor,
+                              fontSize: eUser().buttonTextSize,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
 
                 ],
               );
