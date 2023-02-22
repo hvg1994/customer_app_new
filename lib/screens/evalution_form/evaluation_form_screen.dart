@@ -62,37 +62,52 @@ class _EvaluationFormScreenState extends State<EvaluationFormScreen> {
                         fontSize: 12.sp),
                   ),
                   SizedBox(
-                    height: 2.h,
+                    height: 2.h
                   ),
                   Text(
-                    "Hello $_currentUser, \nCongrats on formally starting your Gut Wellness Journey!",
+                    "Hello $_currentUser,",
                     textAlign: TextAlign.start,
                     style: TextStyle(
                         fontFamily: kFontMedium,
-                        color: gMainColor,
-                        fontSize: 11.sp),
+                        height: 1.4,
+                        color: gHintTextColor,
+                        fontSize: 12.sp),
+                  ),
+                  Text(
+                    "Congrats on formally starting your Gut Wellness Journey!",
+                    textAlign: TextAlign.start,
+                    style: TextStyle(
+                        fontFamily: kFontMedium,
+                        height: 1.4,
+                        color: kLineColor,
+                        fontSize: 10.sp),
                   ),
                   SizedBox(
-                    height: 2.h,
+                    height: 2.h
                   ),
                   Text(
                     "Here is an evaluation form that will provide us with information that will play a critical role in evaluating your condition & assist your doctor in creating your program.",
                     textAlign: TextAlign.start,
                     style: TextStyle(
                         fontFamily: kFontBook,
+                        height: 1.4,
                         color: kTextColor,
                         fontSize: 10.sp),
                   ),
                   SizedBox(
                     height: 2.h,
                   ),
-                  Text(
-                    "Do fill this to the best of your knowledge.\nAll your data is confidential & is visible to only your doctors & a few team members who assist them.\nTime to fill 3-4 Minutes",
-                    textAlign: TextAlign.justify,
-                    style: TextStyle(
-                        fontFamily: kFontBook,
-                        color: kTextColor,
-                        fontSize: 10.sp
+                  Padding(
+                    padding: const EdgeInsets.only(right: 25.0),
+                    child: Text(
+                      "Do fill this to the best of your knowledge.\nAll your data is confidential & is visible to only your doctors & a few team members who assist them.\nTime to fill 3-4 Minutes",
+                      textAlign: TextAlign.justify,
+                      style: TextStyle(
+                          fontFamily: kFontBook,
+                          color: kTextColor,
+                          height: 1.4,
+                          fontSize: 10.sp
+                      ),
                     ),
                   ),
                   // SizedBox(

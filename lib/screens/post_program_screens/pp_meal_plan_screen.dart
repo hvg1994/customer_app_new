@@ -1,11 +1,9 @@
 import 'dart:convert';
-import 'package:easy_scroll_to_index/easy_scroll_to_index.dart';
+import 'package:flutter_advanced_switch/flutter_advanced_switch.dart';
 import 'package:auto_orientation/auto_orientation.dart';
 import 'package:dropdown_button2/custom_dropdown_button2.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_vlc_player/flutter_vlc_player.dart';
-import 'package:grouped_list/grouped_list.dart';
 import 'package:gwc_customer/model/error_model.dart';
 import 'package:gwc_customer/model/program_model/proceed_model/send_proceed_program_model.dart';
 import 'package:gwc_customer/model/program_model/program_days_model/child_program_day.dart';
@@ -15,53 +13,42 @@ import 'package:gwc_customer/repository/post_program_repo/post_program_repositor
 import 'package:gwc_customer/repository/program_repository/program_repository.dart';
 import 'package:gwc_customer/screens/dashboard_screen.dart';
 import 'package:gwc_customer/screens/program_plans/day_tracker_ui/day_tracker.dart';
-import 'package:gwc_customer/screens/program_plans/program_start_screen.dart';
 import 'package:gwc_customer/services/post_program_service/post_program_service.dart';
 import 'package:gwc_customer/widgets/open_alert_box.dart';
-import 'package:just_the_tooltip/just_the_tooltip.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
-import 'package:readmore/readmore.dart';
-import 'package:shimmer/shimmer.dart';
 import 'package:sizer/sizer.dart';
 import 'package:get/get.dart';
 import '../../model/program_model/meal_plan_details_model/child_meal_plan_details_model.dart';
 import '../../model/program_model/meal_plan_details_model/meal_plan_details_model.dart';
-import '../../model/program_model/proceed_model/get_proceed_model.dart';
 import '../../repository/api_service.dart';
 import '../../services/program_service/program_service.dart';
 import '../../services/vlc_service/check_state.dart';
 import '../../utils/app_config.dart';
 import '../../widgets/constants.dart';
 import '../../widgets/pip_package.dart';
-import '../../widgets/vlc_player/vlc_player_with_controls.dart';
 import '../../widgets/widgets.dart';
-import 'day_program_plans.dart';
-import 'meal_pdf.dart';
-import 'meal_plan_data.dart';
 import 'package:http/http.dart' as http;
-import 'package:simple_tooltip/simple_tooltip.dart';
 
-class MealPlanScreen extends StatefulWidget {
+import '../program_plans/meal_plan_data.dart';
+
+class PPMealPlanScreen extends StatefulWidget {
   final String? postProgramStage;
-  const MealPlanScreen({Key? key, this.postProgramStage}) : super(key: key);
+  const PPMealPlanScreen({Key? key, this.postProgramStage}) : super(key: key);
 
   @override
-  State<MealPlanScreen> createState() => _MealPlanScreenState();
+  State<PPMealPlanScreen> createState() => _PPMealPlanScreenState();
 }
 
-class _MealPlanScreenState extends State<MealPlanScreen> {
+class _PPMealPlanScreenState extends State<PPMealPlanScreen> {
   final _pref = AppConfig().preferences;
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   TextEditingController commentController = TextEditingController();
-
   int planStatus = 0;
   String headerText = "";
   Color textColor = gWhiteColor;
-  String? planNotePdfLink;
-  bool showToolTip = true;
 
-  String btnText = 'Proceed to Symptoms Tracker';
+  final _scrollController = ScrollController();
 
   bool isLoading = false;
 
@@ -71,7 +58,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
 
   Map<String, List<ChildMealPlanDetailsModel>> mealPlanData1 = {};
 
-  final tableHeadingBg = gHintTextColor.withOpacity(0.4);
+  final tableHeadingBg = gGreyColor.withOpacity(0.4);
 
   List<String> list = [
     "Followed",
@@ -86,8 +73,8 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
   //****************  video player variables  *************
 
   // for video player
-  VlcPlayerController? _controller;
-  final _key = GlobalKey<VlcPlayerWithControlsState>();
+  // VlcPlayerController? _controller;
+  // final _key = GlobalKey<VlcPlayerWithControlsState>();
 
   var checkState;
 
@@ -96,8 +83,6 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
 
   String videoName = '';
   String mealTime = '';
-
-  final _scrollController = ScrollToIndexController();
 
   // *******************************************************
 
@@ -134,22 +119,10 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
       //   print('${element.dayNumber} -- ${element.color}');
       // });
       _pref!.setInt(AppConfig.STORE_LENGTH, model.data!.length);
-      presentDay = int.tryParse(model.presentDay!);
-      nextDay = int.tryParse(model.presentDay!)! + 1;
-      selectedDay = int.tryParse(model.presentDay!);
-      model.data!.forEach((element) {
-        if (element.dayNumber == presentDay.toString()) {
-          isDayCompleted = element.isCompleted == 1;
-        }
-      });
+      presentDay = model.presentDay as int?;
+      nextDay = (model.presentDay! ) as int?;
+      selectedDay = model.presentDay as int?;
       print("next day: $nextDay");
-      print(isDayCompleted);
-      Future.delayed(Duration(seconds: 1)).then((value) {
-        _scrollController.easyScrollToIndex(
-            index: model.data!.indexWhere(
-                    (element) => element.dayNumber == presentDay.toString()) +
-                1);
-      });
       print(
           "index==> ${model.data!.indexWhere((element) => element.dayNumber == presentDay.toString()).toDouble()}");
       // _scrollController.jumpTo(
@@ -158,7 +131,6 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
       //     // curve: Curves.easeIn
       // );
       getMeals();
-
       buildDays(model);
     } else {
       ErrorModel model = res as ErrorModel;
@@ -183,6 +155,13 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
   }
 
   buildDays(ProgramDayModel model) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      double _position = model.data!
+          .indexWhere((element) => element.dayNumber == presentDay.toString())
+          .toDouble();
+      _scrollController.animateTo(_scrollController.position.maxScrollExtent,
+          duration: Duration(milliseconds: 1000), curve: Curves.ease);
+    });
     listData = model.data!;
     // this is for bottomsheet
     if (listData.last.isCompleted == 1) {
@@ -260,11 +239,11 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 3.w),
                 child: Text(
-                  "You Have completed the ${listData.length} days Meal Plan, Now you can proceed",
+                  "You Have completed the 15 days Meal Plan, Now you can proceed to Post Protocol",
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     height: 1.5,
-                    fontFamily: kFontBold,
+                    fontFamily: "GothamBold",
                     color: gTextColor,
                     fontSize: 10.sp,
                   ),
@@ -343,6 +322,13 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
   @override
   void initState() {
     super.initState();
+    _scrollController.addListener(() {
+      if (_scrollController.position.maxScrollExtent ==
+          _scrollController.position.pixels) {
+        print('firing');
+      }
+    });
+
     _switchController.addListener(() {
       setState(() {
         if (_switchController.value) {
@@ -361,8 +347,6 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
   }
 
   getMeals() async {
-    statusList.clear();
-    lst.clear();
     final result = await ProgramService(repository: repository)
         .getMealPlanDetailsService(selectedDay.toString());
     print("result: $result");
@@ -372,8 +356,6 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
       MealPlanDetailsModel model = result as MealPlanDetailsModel;
       setState(() {
         isLoading = false;
-        showShimmer = false;
-        planNotePdfLink = model.note;
       });
       model.data!.keys.forEach((element) {
         print("before element $element");
@@ -391,7 +373,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
       });
       print('meal list: ${mealPlanData1}');
       // when day completed
-      if (isDayCompleted != null && isDayCompleted == true) {
+      if (isDayCompleted != null) {
         mealPlanData1.forEach((key, value) {
           (value).forEach((element) {
             statusList.putIfAbsent(
@@ -416,7 +398,6 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
       errorMsg = model.message ?? '';
       Future.delayed(Duration(seconds: 0)).whenComplete(() {
         setState(() {
-          showShimmer = false;
           isLoading = false;
         });
         showAlert(context, model.status!,
@@ -459,38 +440,35 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
 
   initVideoView(String? url) {
     print("init url: $url");
-    _controller = VlcPlayerController.network(
-      // url ??
-      Uri.parse(
-              'https://gwc.disol.in/storage/uploads/users/recipes/Calm Module - Functional (AR).mp4')
-          .toString(),
-      hwAcc: HwAcc.full,
-      options: VlcPlayerOptions(
-        advanced: VlcAdvancedOptions([
-          VlcAdvancedOptions.networkCaching(2000),
-        ]),
-        subtitle: VlcSubtitleOptions([
-          VlcSubtitleOptions.boldStyle(true),
-          VlcSubtitleOptions.fontSize(30),
-          VlcSubtitleOptions.outlineColor(VlcSubtitleColor.yellow),
-          VlcSubtitleOptions.outlineThickness(VlcSubtitleThickness.normal),
-          // works only on externally added subtitles
-          VlcSubtitleOptions.color(VlcSubtitleColor.navy),
-        ]),
-        http: VlcHttpOptions([
-          VlcHttpOptions.httpReconnect(true),
-        ]),
-        rtp: VlcRtpOptions([
-          VlcRtpOptions.rtpOverRtsp(true),
-        ]),
-      ),
-    );
+    // _controller = VlcPlayerController.network(
+    //   // url ??
+    //   'https://media.w3.org/2010/05/sintel/trailer.mp4',
+    //   hwAcc: HwAcc.full,
+    //   options: VlcPlayerOptions(
+    //     advanced: VlcAdvancedOptions([
+    //       VlcAdvancedOptions.networkCaching(2000),
+    //     ]),
+    //     subtitle: VlcSubtitleOptions([
+    //       VlcSubtitleOptions.boldStyle(true),
+    //       VlcSubtitleOptions.fontSize(30),
+    //       VlcSubtitleOptions.outlineColor(VlcSubtitleColor.yellow),
+    //       VlcSubtitleOptions.outlineThickness(VlcSubtitleThickness.normal),
+    //       // works only on externally added subtitles
+    //       VlcSubtitleOptions.color(VlcSubtitleColor.navy),
+    //     ]),
+    //     http: VlcHttpOptions([
+    //       VlcHttpOptions.httpReconnect(true),
+    //     ]),
+    //     rtp: VlcRtpOptions([
+    //       VlcRtpOptions.rtpOverRtsp(true),
+    //     ]),
+    //   ),
+    //  );
 
-    print(
-        "_controller.isReadyToInitialize: ${_controller!.isReadyToInitialize}");
-    _controller!.addOnInitListener(() async {
-      await _controller!.startRendererScanning();
-    });
+    // print("_controller.isReadyToInitialize: ${_controller!.isReadyToInitialize}");
+    // _controller!.addOnInitListener(() async {
+    //   await _controller!.startRendererScanning();
+    // });
   }
 
   @override
@@ -498,20 +476,17 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
     super.dispose();
     _switchController.dispose();
     commentController.dispose();
-    await _controller?.dispose();
-    await _controller?.stopRendererScanning();
+    // await _controller?.dispose();
+    // await _controller?.stopRendererScanning();
   }
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: _onWillPop,
-      child: MediaQuery(
-        data: MediaQuery.of(context).copyWith(textScaleFactor: 0.8),
-        child: SafeArea(
-          child: Scaffold(
-            body: videoPlayerView(),
-          ),
+      child: SafeArea(
+        child: Scaffold(
+          body: videoPlayerView(),
         ),
       ),
     );
@@ -531,18 +506,15 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
     // return false;
   }
 
-  bool showShimmer = false;
   dayItems(int index) {
     return GestureDetector(
       onTap: checkOnTapCondition(index, listData)
           ? () {
               print(index);
               setState(() {
-                showShimmer = true;
                 selectedDay = int.parse(listData[index].dayNumber!);
                 isDayCompleted = listData[index].isCompleted == 1;
               });
-              print("isDayCompleted: $isDayCompleted");
               getMeals();
               // Navigator.push(
               //   context,
@@ -612,9 +584,6 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
       return true;
     } else if (int.parse(listData[index].dayNumber!) == nextDay) {
       return true;
-    } else if (int.parse(listData[index].dayNumber!) < presentDay! &&
-        listData[index].isCompleted == 0) {
-      return true;
     } else {
       return false;
     }
@@ -633,9 +602,6 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
         index == listData.length - 1) {
       return 1.0;
     } else if (int.parse(listData[index].dayNumber!) == nextDay) {
-      return 1.0;
-    } else if (int.parse(listData[index].dayNumber!) < presentDay! &&
-        listData[index].isCompleted == 0) {
       return 1.0;
     } else {
       return 0.4;
@@ -689,33 +655,13 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              buildAppBar(
-                  () {
-                    Navigator.pop(context);
-                  },
-                  showHelpIcon: true,
-                  helpOnTap: () {
-                    if (planNotePdfLink != null ||
-                        planNotePdfLink!.isNotEmpty) {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (ctx) => MealPdf(
-                                    pdfLink: planNotePdfLink!,
-                                    heading: "Note",
-                                  )));
-                    } else {
-                      AppConfig().showSnackbar(
-                          context, "Note Link Not available",
-                          isError: true);
-                    }
-                  }),
+              buildAppBar(() {
+                Navigator.pop(context);
+              }),
               SizedBox(height: 1.h),
               Text(
                 // "Day ${widget.day} Meal Plan",
-                (selectedDay == null)
-                    ? "Day Meal & Yoga Plan"
-                    : "Day ${selectedDay} Meal & Yoga Plan",
+                "Day Meal & Yoga Plan",
                 style: TextStyle(
                     fontFamily: eUser().mainHeadingFont,
                     color: eUser().mainHeadingColor,
@@ -725,17 +671,25 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                 height: 1.h,
               ),
               SizedBox(
-                  height: 4.h,
-                  child: EasyScrollToIndex(
-                    controller: _scrollController, // ScrollToIndexController
-                    itemCount: listData.length,
-                    itemWidth: 50,
-                    itemHeight: 4.h,
+                height: 4.h,
+                child: ListView.builder(
+                    controller: _scrollController,
+                    shrinkWrap: true,
                     scrollDirection: Axis.horizontal,
-                    itemBuilder: (BuildContext context, int index) {
+                    itemCount: listData.length,
+                    itemBuilder: (_, index) {
                       return dayItems(index);
-                    },
-                  )),
+                    }),
+              ),
+              SizedBox(height: 1.h),
+              Text(
+                // "Day ${widget.day} Meal Plan",
+                "Day ${selectedDay} Meal & Yoga Plan",
+                style: TextStyle(
+                    fontFamily: MealPlanConstants().dayTextFontFamily,
+                    color: MealPlanConstants().dayTextColor,
+                    fontSize: MealPlanConstants().presentDayTextSize),
+              ),
             ],
           ),
         ),
@@ -748,334 +702,132 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
               : (mealPlanData1 != null)
                   ? SizedBox(
                       child: SingleChildScrollView(
-                        child: (showShimmer)
-                            ? Shimmer.fromColors(
-                                baseColor: Colors.grey.withOpacity(0.3),
-                                highlightColor: Colors.grey.withOpacity(0.7),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    SizedBox(
-                                      height: 8,
-                                    ),
-                                    // buildNewItemList(),
-                                    // buildNewItemList(),
-                                    // buildNewItemList(),
-                                    // buildNewItemList(),
-                                    // buildNewItemList(),
-                                    //                buildMealPlan(),
-                                    ...groupList(),
-                                    Visibility(
-                                      visible: (statusList.isNotEmpty &&
-                                          statusList.values.any((element) =>
-                                              element
-                                                  .toString()
-                                                  .toLowerCase()
-                                                  .contains('unfollowed'))),
-                                      child: IgnorePointer(
-                                        ignoring: isDayCompleted == true,
-                                        child: Container(
-                                          height: 15.h,
-                                          margin: EdgeInsets.symmetric(
-                                              horizontal: 4.w, vertical: 1.h),
-                                          padding: EdgeInsets.symmetric(
-                                              horizontal: 3.w),
-                                          decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            borderRadius:
-                                                BorderRadius.circular(5),
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: Colors.grey
-                                                    .withOpacity(0.3),
-                                                blurRadius: 20,
-                                                offset: const Offset(2, 10),
-                                              ),
-                                            ],
-                                          ),
-                                          child: TextFormField(
-                                            controller: commentController,
-                                            cursorColor: gPrimaryColor,
-                                            style: TextStyle(
-                                                fontFamily: "GothamBook",
-                                                color: gTextColor,
-                                                fontSize: 11.sp),
-                                            decoration: InputDecoration(
-                                              suffixIcon: commentController
-                                                          .text.isEmpty ||
-                                                      isDayCompleted != null
-                                                  ? SizedBox()
-                                                  : InkWell(
-                                                      onTap: () {
-                                                        commentController
-                                                            .clear();
-                                                      },
-                                                      child: const Icon(
-                                                        Icons.close,
-                                                        color: gTextColor,
-                                                      ),
-                                                    ),
-                                              hintText: "Comments",
-                                              border: InputBorder.none,
-                                              hintStyle: TextStyle(
-                                                fontFamily: "GothamBook",
-                                                color: gTextColor,
-                                                fontSize: 9.sp,
-                                              ),
-                                            ),
-                                            textInputAction:
-                                                TextInputAction.next,
-                                            textAlign: TextAlign.start,
-                                            keyboardType:
-                                                TextInputType.emailAddress,
-                                          ),
-                                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            SizedBox(
+                              height: 8,
+                            ),
+                            // buildNewItemList(),
+                            // buildNewItemList(),
+                            // buildNewItemList(),
+                            // buildNewItemList(),
+                            // buildNewItemList(),
+                            //                buildMealPlan(),
+                            ...groupList(),
+                            Visibility(
+                              visible: (statusList.isNotEmpty &&
+                                      statusList.values.any((element) => element
+                                          .toString()
+                                          .contains('Unfollowed'))) ||
+                                  isDayCompleted != null,
+                              child: IgnorePointer(
+                                ignoring: isDayCompleted != null,
+                                child: Container(
+                                  height: 15.h,
+                                  margin: EdgeInsets.symmetric(
+                                      horizontal: 4.w, vertical: 1.h),
+                                  padding:
+                                      EdgeInsets.symmetric(horizontal: 3.w),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(5),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey.withOpacity(0.3),
+                                        blurRadius: 20,
+                                        offset: const Offset(2, 10),
                                       ),
-                                    ),
-                                    Visibility(
-                                      visible: buttonVisibility(),
-                                      child: Center(
-                                        child: GestureDetector(
-                                          onTap: () {
-                                            print(
-                                                "statusList.length: ${statusList.length}");
-                                            print("lst.length ${lst.length}");
-                                            print('..............');
-                                          },
-                                          // (statusList.length != lst.length)
-                                          //     ? () => AppConfig().showSnackbar(context, "Please complete the Meal Plan Status", isError: true)
-                                          //     // : (statusList.values.any((element) => element.toString().toLowerCase() == 'unfollowed') && commentController.text.isEmpty)
-                                          //     // ? () => AppConfig().showSnackbar(context, "Please Mention the comments why you unfollowed?", isError: true)
-                                          //     : () {
-                                          //   print("this one $presentDay");
-                                          //   for(int i = 0; i< presentDay!; i++){
-                                          //     print(presentDay);
-                                          //     if(listData[i].isCompleted == 0
-                                          //         && i+1 != selectedDay!
-                                          //     ){
-                                          //       AppConfig().showSnackbar(context, "Please Complete Day ${listData[i].dayNumber}", isError: true);
-                                          //       break;
-                                          //     }
-                                          //     else if(listData[i].isCompleted == 1) {
-                                          //       print("completed already");
-                                          //     }
-                                          //     else if(i+1 == presentDay || i+1 == selectedDay){
-                                          //       print("u can access $presentDay");
-                                          //       sendData();
-                                          //       break;
-                                          //     }
-                                          //     else{
-                                          //       print("u r trying else");
-                                          //     }
-                                          //   }
-                                          // },
-                                          child: Container(
-                                            margin: EdgeInsets.symmetric(
-                                                vertical: 2.h),
-                                            width: btnText.length > 22
-                                                ? 75.w
-                                                : 60.w,
-                                            height: 5.h,
-                                            decoration: BoxDecoration(
-                                              color: (statusList.length ==
-                                                      lst.length)
-                                                  ? eUser().buttonColor
-                                                  : tableHeadingBg,
-                                              borderRadius:
-                                                  BorderRadius.circular(eUser()
-                                                      .buttonBorderRadius),
-                                              // border: Border.all(color: eUser().buttonBorderColor,
-                                              //     width: eUser().buttonBorderWidth),
-                                            ),
-                                            child: Center(
-                                              child: Text(
-                                                btnText,
-                                                // 'Proceed to Day $proceedToDay',
-                                                style: TextStyle(
-                                                  fontFamily:
-                                                      eUser().buttonTextFont,
-                                                  color:
-                                                      eUser().buttonTextColor,
-                                                  // color: (statusList.length != lst.length) ? gPrimaryColor : gMainColor,
-                                                  fontSize:
-                                                      eUser().buttonTextSize,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              )
-                            : Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  SizedBox(
-                                    height: 8,
+                                    ],
                                   ),
-                                  // buildNewItemList(),
-                                  // buildNewItemList(),
-                                  // buildNewItemList(),
-                                  // buildNewItemList(),
-                                  // buildNewItemList(),
-                                  //                buildMealPlan(),
-                                  ...groupList(),
-                                  Visibility(
-                                    visible: (statusList.isNotEmpty &&
-                                        statusList.values.any((element) =>
-                                            element
-                                                .toString()
-                                                .toLowerCase()
-                                                .contains('unfollowed'))),
-                                    child: IgnorePointer(
-                                      ignoring: isDayCompleted == true,
-                                      child: Container(
-                                        height: 15.h,
-                                        margin: EdgeInsets.symmetric(
-                                            horizontal: 4.w, vertical: 1.h),
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 3.w),
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius:
-                                              BorderRadius.circular(5),
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color:
-                                                  Colors.grey.withOpacity(0.3),
-                                              blurRadius: 20,
-                                              offset: const Offset(2, 10),
-                                            ),
-                                          ],
-                                        ),
-                                        child: TextFormField(
-                                          controller: commentController,
-                                          cursorColor: gPrimaryColor,
-                                          style: TextStyle(
-                                              fontFamily: "GothamBook",
-                                              color: gTextColor,
-                                              fontSize: 11.sp),
-                                          decoration: InputDecoration(
-                                            suffixIcon: commentController
-                                                        .text.isEmpty ||
-                                                    isDayCompleted != null
-                                                ? SizedBox()
-                                                : InkWell(
-                                                    onTap: () {
-                                                      commentController.clear();
-                                                    },
-                                                    child: const Icon(
-                                                      Icons.close,
-                                                      color: gTextColor,
-                                                    ),
-                                                  ),
-                                            hintText: "Comments",
-                                            border: InputBorder.none,
-                                            hintStyle: TextStyle(
-                                              fontFamily: "GothamBook",
-                                              color: gTextColor,
-                                              fontSize: 9.sp,
-                                            ),
-                                          ),
-                                          textInputAction: TextInputAction.next,
-                                          textAlign: TextAlign.start,
-                                          keyboardType:
-                                              TextInputType.emailAddress,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  Visibility(
-                                    visible: buttonVisibility(),
-                                    child: Center(
-                                      child: GestureDetector(
-                                        onTap:
-                                            // (){
-                                            //   print("statusList.length: ${statusList.length}");
-                                            //   print("lst.length ${lst.length}");
-                                            //
-                                            // },
-                                            (statusList.length != lst.length)
-                                                ? () => AppConfig().showSnackbar(
-                                                    context,
-                                                    "Please complete the Meal Plan Status",
-                                                    isError: true)
-                                                // : (statusList.values.any((element) => element.toString().toLowerCase() == 'unfollowed') && commentController.text.isEmpty)
-                                                // ? () => AppConfig().showSnackbar(context, "Please Mention the comments why you unfollowed?", isError: true)
-                                                : () {
-                                                    print(
-                                                        "this one $presentDay");
-                                                    for (int i = 0;
-                                                        i < presentDay!;
-                                                        i++) {
-                                                      print(presentDay);
-                                                      if (listData[i]
-                                                                  .isCompleted ==
-                                                              0 &&
-                                                          i + 1 !=
-                                                              selectedDay!) {
-                                                        AppConfig().showSnackbar(
-                                                            context,
-                                                            "Please Complete Day ${listData[i].dayNumber}",
-                                                            isError: true);
-                                                        break;
-                                                      } else if (listData[i]
-                                                              .isCompleted ==
-                                                          1) {
-                                                        print(
-                                                            "completed already");
-                                                      } else if (i + 1 ==
-                                                              presentDay ||
-                                                          i + 1 ==
-                                                              selectedDay) {
-                                                        print(
-                                                            "u can access $presentDay");
-                                                        sendData();
-                                                        break;
-                                                      } else {
-                                                        print(
-                                                            "u r trying else");
-                                                      }
-                                                    }
+                                  child: TextFormField(
+                                    controller: commentController,
+                                    cursorColor: gPrimaryColor,
+                                    style: TextStyle(
+                                        fontFamily: "GothamBook",
+                                        color: gTextColor,
+                                        fontSize: 11.sp),
+                                    decoration: InputDecoration(
+                                      suffixIcon:
+                                          commentController.text.isEmpty ||
+                                                  isDayCompleted != null
+                                              ? SizedBox()
+                                              : InkWell(
+                                                  onTap: () {
+                                                    commentController.clear();
                                                   },
-                                        child: Container(
-                                          margin: EdgeInsets.symmetric(
-                                              vertical: 2.h),
-                                          width:
-                                              btnText.length > 22 ? 75.w : 60.w,
-                                          height: 5.h,
-                                          decoration: BoxDecoration(
-                                            color: (statusList.length ==
-                                                    lst.length)
-                                                ? eUser().buttonColor
-                                                : tableHeadingBg,
-                                            borderRadius: BorderRadius.circular(
-                                                eUser().buttonBorderRadius),
-                                            // border: Border.all(color: eUser().buttonBorderColor,
-                                            //     width: eUser().buttonBorderWidth),
-                                          ),
-                                          child: Center(
-                                            child: Text(
-                                              btnText,
-                                              // 'Proceed to Day $proceedToDay',
-                                              style: TextStyle(
-                                                fontFamily:
-                                                    eUser().buttonTextFont,
-                                                color: eUser().buttonTextColor,
-                                                // color: (statusList.length != lst.length) ? gPrimaryColor : gMainColor,
-                                                fontSize:
-                                                    eUser().buttonTextSize,
-                                              ),
-                                            ),
-                                          ),
+                                                  child: const Icon(
+                                                    Icons.close,
+                                                    color: gTextColor,
+                                                  ),
+                                                ),
+                                      hintText: "Comments",
+                                      border: InputBorder.none,
+                                      hintStyle: TextStyle(
+                                        fontFamily: "GothamBook",
+                                        color: gTextColor,
+                                        fontSize: 9.sp,
+                                      ),
+                                    ),
+                                    textInputAction: TextInputAction.next,
+                                    textAlign: TextAlign.start,
+                                    keyboardType: TextInputType.emailAddress,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Visibility(
+                              visible: buttonVisibility(),
+                              child: Center(
+                                child: GestureDetector(
+                                  onTap: (statusList.length != lst.length)
+                                      ? () => AppConfig().showSnackbar(context,
+                                          "Please complete the Meal Plan Status",
+                                          isError: true)
+                                      : (statusList.values.any((element) =>
+                                                  element
+                                                      .toString()
+                                                      .toLowerCase() ==
+                                                  'unfollowed') &&
+                                              commentController.text.isEmpty)
+                                          ? () => AppConfig().showSnackbar(
+                                              context,
+                                              "Please Mention the comments why you unfollowed?",
+                                              isError: true)
+                                          : () {
+                                              sendData();
+                                            },
+                                  child: Container(
+                                    margin: EdgeInsets.symmetric(vertical: 2.h),
+                                    width: 60.w,
+                                    height: 5.h,
+                                    decoration: BoxDecoration(
+                                      color: (statusList.length == lst.length)
+                                          ? eUser().buttonColor
+                                          : tableHeadingBg,
+                                      borderRadius: BorderRadius.circular(
+                                          eUser().buttonBorderRadius),
+                                      // border: Border.all(color: eUser().buttonBorderColor,
+                                      //     width: eUser().buttonBorderWidth),
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        'Proceed to Symptoms Tracker',
+                                        // 'Proceed to Day $proceedToDay',
+                                        style: TextStyle(
+                                          fontFamily: eUser().buttonTextFont,
+                                          color: eUser().buttonTextColor,
+                                          // color: (statusList.length != lst.length) ? gPrimaryColor : gMainColor,
+                                          fontSize: eUser().buttonTextSize,
                                         ),
                                       ),
                                     ),
                                   ),
-                                ],
+                                ),
                               ),
+                            ),
+                          ],
+                        ),
                       ),
                     )
                   : SizedBox.shrink(),
@@ -1092,16 +844,17 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
           ? Consumer<CheckState>(
               builder: (_, model, __) {
                 print("model.isChanged: ${model.isChanged} $isEnabled");
-                return VlcPlayerWithControls(
-                  key: _key,
-                  controller: _controller!,
-                  showVolume: false,
-                  showVideoProgress: !model.isChanged,
-                  seekButtonIconSize: 10.sp,
-                  playButtonIconSize: 14.sp,
-                  replayButtonSize: 14.sp,
-                  showFullscreenBtn: true,
-                );
+                return Container();
+                // return VlcPlayerWithControls(
+                //   key: _key,
+                //   controller: _controller!,
+                //   showVolume: false,
+                //   showVideoProgress: !model.isChanged,
+                //   seekButtonIconSize: 10.sp,
+                //   playButtonIconSize: 14.sp,
+                //   replayButtonSize: 14.sp,
+                //   showFullscreenBtn: true,
+                // );
               },
             )
           //     ? FutureBuilder(
@@ -1274,9 +1027,9 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
               dayTime,
               style: TextStyle(
                 height: 1.5,
-                color: MealPlanConstants().mealNameTextColor,
+                color: gGreyColor,
                 fontSize: 12.sp,
-                fontFamily: MealPlanConstants().mealNameFont,
+                fontFamily: kFontMedium,
               ),
             ),
           ),
@@ -1295,233 +1048,46 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                               Stack(
                                 clipBehavior: Clip.none,
                                 children: [
-                                  // Tooltip(
-                                  //   onTriggered: e.url == null
-                                  //       ? null
-                                  //       : e.type == 'item'
-                                  //           ? () => showPdf(e.url!, e.name)
-                                  //           : () => showVideo(e),
-                                  //   message: 'Tap here for Recipe',
-                                  //   decoration: BoxDecoration(
-                                  //     borderRadius: BorderRadius.circular(6),
-                                  //     color: gsecondaryColor,
-                                  //   ),
-                                  //   textStyle: const TextStyle(
-                                  //       fontSize: 24, color: Colors.white),
-                                  //   height: 100,
-                                  //   padding: const EdgeInsets.all(50.0),
-                                  //   preferBelow: false,
-                                  //   key: GlobalKey<TooltipState>(),
-                                  //   showDuration: const Duration(seconds: 1),
-                                  //   waitDuration: const Duration(seconds: 2),
-                                  //   child: Align(
-                                  //     alignment: Alignment.center,
-                                  //     child: GestureDetector(
-                                  //       onTap: () {
-                                  //         GlobalKey<TooltipState>().currentState
-                                  //             ?.ensureTooltipVisible();
-                                  //       },
-                                  //       child: Container(
-                                  //         height: 90,
-                                  //         width: 90,
-                                  //         decoration: BoxDecoration(
-                                  //           borderRadius:
-                                  //               BorderRadius.circular(15),
-                                  //         ),
-                                  //         child: (e.itemImage != null &&
-                                  //                 e.itemImage!.isNotEmpty)
-                                  //             ? ClipRRect(
-                                  //                 borderRadius:
-                                  //                     BorderRadius.circular(15),
-                                  //                 child: Image.network(
-                                  //                   e.itemImage!,
-                                  //                   errorBuilder: (ctx, _, __) {
-                                  //                     return Image.asset(
-                                  //                       'assets/images/meal_placeholder.png',
-                                  //                       fit: BoxFit.fill,
-                                  //                     );
-                                  //                   },
-                                  //                   fit: BoxFit.fill,
-                                  //                 ),
-                                  //               )
-                                  //             : ClipRRect(
-                                  //                 borderRadius:
-                                  //                     BorderRadius.circular(15),
-                                  //                 child: Image.asset(
-                                  //                   'assets/images/meal_placeholder.png',
-                                  //                   fit: BoxFit.fill,
-                                  //                 ),
-                                  //               ),
-                                  //       ),
-                                  //     ),
-                                  //   ),
-                                  // ),
-                                  (value.indexOf(e) == 0) &&
-                                          mealPlanData1.values
-                                                  .toList()
-                                                  .indexWhere((element) =>
-                                                      element == value) ==
-                                              1
-                                      ? SimpleTooltip(
-                                          borderColor: gWhiteColor,
-                                          maxWidth: 50.w,
-                                          ballonPadding: EdgeInsets.symmetric(
-                                              horizontal: 1.w, vertical: 0.5.h),
-                                          arrowTipDistance: -10,
-                                          arrowLength: 10,
-                                          arrowBaseWidth: 10,
-                                          // targetCenter: const Offset(3,4),
-                                          tooltipTap: () {
-                                            setState(() {
-                                              showToolTip = false;
-                                            });
-                                          },
-                                          animationDuration:
-                                              const Duration(seconds: 3),
-                                          show: showToolTip,
-                                          tooltipDirection: TooltipDirection.up,
-                                          child: Align(
-                                            alignment: Alignment.center,
-                                            child: GestureDetector(
-                                              onTap: e.url == null
-                                                  ? null
-                                                  : e.type == 'item'
-                                                      ? () {
-                                                          setState(() {
-                                                            showToolTip = false;
-                                                          });
-                                                          showPdf(
-                                                              e.url!, e.name);
-                                                        }
-                                                      : () => showVideo(e),
-                                              child: Container(
-                                                height: 90,
-                                                width: 90,
-                                                decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(15),
-                                                ),
-                                                child: (e.itemImage != null &&
-                                                        e.itemImage!.isNotEmpty)
-                                                    ? ClipRRect(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(15),
-                                                        child: Image.network(
-                                                          e.itemImage!,
-                                                          errorBuilder:
-                                                              (ctx, _, __) {
-                                                            return Image.asset(
-                                                              'assets/images/meal_placeholder.png',
-                                                              fit: BoxFit.fill,
-                                                            );
-                                                          },
-                                                          fit: BoxFit.fill,
-                                                        ),
-                                                      )
-                                                    : ClipRRect(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(15),
-                                                        child: Image.asset(
-                                                          'assets/images/meal_placeholder.png',
-                                                          fit: BoxFit.fill,
-                                                        ),
-                                                      ),
-                                              ),
-                                            ),
-                                          ),
-                                          content: Text(
-                                            "Tap here for Recipe",
-                                            style: TextStyle(
-                                                fontSize: PPConstants()
-                                                    .topViewSubFontSize,
-                                                fontFamily: MealPlanConstants()
-                                                    .mealNameFont,
-                                                color: gHintTextColor),
-                                          ),
-                                        )
-                                      : Align(
-                                          alignment: Alignment.center,
-                                          child: GestureDetector(
-                                            onTap: e.url == null
-                                                ? null
-                                                : e.type == 'item'
-                                                    ? () {
-                                                        showPdf(e.url!, e.name);
-                                                      }
-                                                    : () => showVideo(e),
-                                            child: Container(
-                                              height: 90,
-                                              width: 90,
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(15),
-                                              ),
-                                              child: (e.itemImage != null &&
-                                                      e.itemImage!.isNotEmpty)
-                                                  ? ClipRRect(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              15),
-                                                      child: Image.network(
-                                                        e.itemImage!,
-                                                        errorBuilder:
-                                                            (ctx, _, __) {
-                                                          return Image.asset(
-                                                            'assets/images/meal_placeholder.png',
-                                                            fit: BoxFit.fill,
-                                                          );
-                                                        },
-                                                        fit: BoxFit.fill,
-                                                      ),
-                                                    )
-                                                  : ClipRRect(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              15),
-                                                      child: Image.asset(
-                                                        'assets/images/meal_placeholder.png',
-                                                        fit: BoxFit.fill,
-                                                      ),
-                                                    ),
-                                            ),
-                                          ),
-                                        ),
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(15),
+                                    child: Image(
+                                      image: const AssetImage(
+                                        'assets/images/Mask Group 2171.png',
+                                      ),
+                                      height: 10.h,
+                                    ),
+                                  ),
                                 ],
                               ),
-                              const SizedBox(width: 8),
+                              SizedBox(width: 2.w),
                               Expanded(
                                 child: Column(
                                   // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Visibility(
-                                      visible: e.subTitle != null ||
-                                          e.subTitle!.isNotEmpty,
-                                      child: Text(
-                                        e.subTitle ?? "* Must Have",
-                                        style: TextStyle(
-                                          fontSize: MealPlanConstants()
-                                              .mustHaveFontSize,
-                                          fontFamily:
-                                              MealPlanConstants().mustHaveFont,
-                                          color: MealPlanConstants()
-                                              .mustHaveTextColor,
-                                        ),
+                                    Text(
+                                      // e.subTitle ??
+                                      "* Must Have",
+                                      style: TextStyle(
+                                        fontSize: MealPlanConstants()
+                                            .mustHaveFontSize,
+                                        fontFamily:
+                                            MealPlanConstants().mustHaveFont,
+                                        color: MealPlanConstants()
+                                            .mustHaveTextColor,
                                       ),
                                     ),
-                                    SizedBox(
-                                      height: 5,
-                                    ),
+                                    SizedBox(height: 5),
                                     Text(
                                       e.name ?? 'Morning Yoga',
                                       style: TextStyle(
                                           fontSize: MealPlanConstants()
                                               .mealNameFontSize,
                                           fontFamily:
-                                              MealPlanConstants().mealNameFont,
-                                          color: gHintTextColor),
+                                              MealPlanConstants().mealNameFont),
+                                    ),
+                                    SizedBox(
+                                      height: 8,
                                     ),
                                     // Text(e.mealTime ?? "B/W 6-8am",
                                     //   style: TextStyle(
@@ -1534,15 +1100,12 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                                     // ),
                                     Expanded(
                                       child: Text(
-                                        e.benefits!.replaceAll("- ", '\n') ??
-                                            '',
-                                        // "- Good for Health and super food\n\n- Good for Health and super food\n\n- Good for Health and super food\n\n- Very Effective and quick recipe,\n\n- Ready To Cook",
+                                        "- Good for Health and super food\n\n- Very Effective and quick recipe,\n\n- Ready To Cook",
                                         style: TextStyle(
                                             fontSize: MealPlanConstants()
                                                 .benifitsFontSize,
                                             fontFamily: MealPlanConstants()
                                                 .benifitsFont),
-                                        overflow: TextOverflow.visible,
                                       ),
                                     ),
                                     SizedBox(
@@ -1551,117 +1114,21 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                                   ],
                                 ),
                               ),
-                              GestureDetector(
-                                onTap: () {
-                                  print(
-                                    value.indexWhere((element) {
-                                      print(element.name);
-                                      print(e.name);
-                                      return element.name == e.name;
-                                    }),
-                                  );
-                                  // openAlertBox(
-                                  //     title: 'Did you Follow this?',
-                                  //     titleNeeded: true,
-                                  //     context: context,
-                                  //     isContentNeeded: false,
-                                  //     positiveButtonName: 'Followed',
-                                  //     positiveButton: () {
-                                  //       onChangedTab(0,
-                                  //           id: e.itemId, title: list[0]);
-                                  //       Navigator.pop(context);
-                                  //     },
-                                  //     negativeButtonName: 'Missed It',
-                                  //     negativeButton: () {
-                                  //       onChangedTab(0,
-                                  //           id: e.itemId, title: list[1]);
-                                  //       Navigator.pop(context);
-                                  //     });
-                                },
-                                child: (statusList.isNotEmpty &&
-                                        statusList.containsKey(e.itemId) &&
-                                        statusList[e.itemId] == list[0])
-                                    ? Align(
-                                        alignment: Alignment.topCenter,
-                                        child: Container(
-                                          padding: EdgeInsets.symmetric(
-                                              horizontal: 6, vertical: 4),
-                                          decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(eUser()
-                                                      .buttonBorderRadius),
-                                              color: gPrimaryColor),
-                                          child: Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              Text(
-                                                'Followed',
-                                                style: TextStyle(
-                                                    fontSize: 8.sp,
-                                                    fontFamily: kFontMedium,
-                                                    color: gWhiteColor),
-                                              ),
-                                              Image.asset(
-                                                'assets/images/followed2.png',
-                                                width: 20,
-                                                height: 20,
-                                              )
-                                            ],
-                                          ),
-                                        ),
-                                      )
-                                    : (statusList.isNotEmpty &&
-                                            statusList.containsKey(e.itemId) &&
-                                            statusList[e.itemId] == list[1])
-                                        ? Align(
-                                            alignment: Alignment.topCenter,
-                                            child: Container(
-                                              padding: EdgeInsets.symmetric(
-                                                  horizontal: 6, vertical: 4),
-                                              decoration: BoxDecoration(
-                                                  borderRadius: BorderRadius
-                                                      .circular(eUser()
-                                                          .buttonBorderRadius),
-                                                  color: gsecondaryColor),
-                                              child: Row(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  Text(
-                                                    'Missed It',
-                                                    style: TextStyle(
-                                                        fontSize: 8.sp,
-                                                        fontFamily: kFontMedium,
-                                                        color: gWhiteColor),
-                                                  ),
-                                                  Image.asset(
-                                                    'assets/images/unfollowed.png',
-                                                    width: 20,
-                                                    height: 20,
-                                                  )
-                                                ],
-                                              ),
-                                            ),
-                                          )
-                                        : Align(
-                                            alignment: Alignment.bottomCenter,
-                                            child: Container(
-                                              padding: EdgeInsets.symmetric(
-                                                  horizontal: 10, vertical: 8),
-                                              decoration: BoxDecoration(
-                                                  borderRadius: BorderRadius
-                                                      .circular(eUser()
-                                                          .buttonBorderRadius),
-                                                  color: Colors.grey),
-                                              child: Text(
-                                                'Status',
-                                                style: TextStyle(
-                                                    fontSize: 8.sp,
-                                                    fontFamily: kFontMedium,
-                                                    color: gWhiteColor),
-                                              ),
-                                            ),
-                                          ),
-                              ),
+                              Visibility(
+                                visible: true,
+                                child: Align(
+                                  alignment: Alignment.bottomCenter,
+                                  // child: Container(
+                                  //   width: 80,
+                                  //   height: 80,
+                                  //   child: Image.asset('assets/images/follow.png',
+                                  //     // fit: BoxFit.none,
+                                  //     alignment: Alignment.bottomCenter,
+                                  //   ),
+                                  // ),
+                                  child: buildToggleSwitch(),
+                                ),
+                              )
                             ],
                           ),
                         ),
@@ -1674,6 +1141,230 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
       ));
     });
     return _data;
+  }
+
+  buildToggleSwitch() {
+    return AdvancedSwitch(
+      controller: _switchController,
+      activeColor: gPrimaryColor,
+      inactiveColor: gsecondaryColor,
+      thumb: ValueListenableBuilder(
+        valueListenable: _switchController,
+        builder: (_, bool value, __) {
+          return (value
+                  ? Image.asset(
+                      'assets/images/followed.png',
+                    )
+                  : Image.asset('assets/images/unfollowed.png')
+              //   color: gWhiteColor,
+              );
+        },
+      ),
+      activeChild: Text(
+        'Followed',
+        style: TextStyle(fontSize: 8.sp, fontFamily: kFontMedium),
+      ),
+      inactiveChild: FittedBox(
+        child: Text(
+          'Unfollowed',
+          style: TextStyle(fontSize: 8.sp, fontFamily: "gothamMedium"),
+        ),
+      ),
+      // activeImage: AssetImage('assets/images/Union 4.png'),
+      // inactiveImage: AssetImage('assets/images/progress_logo.png'),
+      borderRadius: BorderRadius.all(const Radius.circular(15)),
+      width: 90.0,
+      height: 30.0,
+      enabled: true,
+      disabledOpacity: 0.5,
+    );
+  }
+
+  buildNewItemList() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      child: Column(
+        children: [
+          Container(
+            height: 120,
+            padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    Container(
+                      height: 100,
+                      width: 110,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        color: Colors.red,
+                      ),
+                      child: Image.asset(
+                        'assets/images/Mask Group 2171.png',
+                        fit: BoxFit.fill,
+                      ),
+                    ),
+                    // Positioned(
+                    //   bottom: -15,
+                    //     left: 10,
+                    //     right: 10,
+                    //     child: Container(
+                    //       margin: EdgeInsets.only(bottom: 4),
+                    //       child: PopupMenuButton(
+                    //         offset: const Offset(0, 30),
+                    //         shape: RoundedRectangleBorder(
+                    //             borderRadius: BorderRadius.circular(5)),
+                    //         itemBuilder: (context) => [
+                    //           // PopupMenuItem(
+                    //           //   child: Column(
+                    //           //     crossAxisAlignment: CrossAxisAlignment.start,
+                    //           //     children: [
+                    //           //       SizedBox(height: 0.6.h),
+                    //           //       buildTabView(
+                    //           //           index: 1,
+                    //           //           title: list[0],
+                    //           //           color: gPrimaryColor,
+                    //           //           itemId: e.itemId!
+                    //           //       ),
+                    //           //       SizedBox(height: 0.6.h),
+                    //           //       Container(
+                    //           //         margin: EdgeInsets.symmetric(vertical: 1.h),
+                    //           //         height: 1,
+                    //           //         color: gGreyColor.withOpacity(0.3),
+                    //           //       ),
+                    //           //       SizedBox(height: 0.6.h),
+                    //           //       buildTabView(
+                    //           //           index: 2,
+                    //           //           title: list[1],
+                    //           //           color: gsecondaryColor,
+                    //           //           itemId: e.itemId!
+                    //           //       ),
+                    //           //       SizedBox(height: 0.6.h),
+                    //           //     ],
+                    //           //   ),
+                    //           //   onTap: null,
+                    //           // ),
+                    //         ],
+                    //         child: GestureDetector(
+                    //           onTap: (){
+                    //             print("tap");
+                    //             openAlertBox(
+                    //               title: 'Did you Follow this item ?',
+                    //                 titleNeeded: true,
+                    //                 context: context,
+                    //                 content: 'Please select any of the following to submit your status',
+                    //                 positiveButtonName: 'Followed',
+                    //                 positiveButton: (){
+                    //                   Navigator.pop(context);
+                    //                 },
+                    //                 negativeButtonName: 'UnFollowed',
+                    //                 negativeButton: (){
+                    //                   Navigator.pop(context);
+                    //                 }
+                    //             );
+                    //           },
+                    //           child: Container(
+                    //             height: 30,
+                    //             padding: EdgeInsets.symmetric(
+                    //                 horizontal: 2.w, vertical: 0.2.h),
+                    //             decoration: BoxDecoration(
+                    //               color: gWhiteColor,
+                    //               borderRadius: BorderRadius.circular(5),
+                    //               border: Border.all(color: gMainColor, width: 1),
+                    //             ),
+                    //             child: Center(
+                    //               child: Text(
+                    //                 'UnFollowed',
+                    //                 textAlign: TextAlign.start,
+                    //                 overflow: TextOverflow.ellipsis,
+                    //                 style: TextStyle(
+                    //                     fontFamily: "GothamMedium",
+                    //                     color: gBlackColor,
+                    //                     fontSize: 8.sp),
+                    //               ),
+                    //             ),
+                    //           ),
+                    //         ),
+                    //       ),
+                    //     )
+                    // )
+                  ],
+                ),
+                SizedBox(
+                  width: 8,
+                ),
+                Expanded(
+                  child: Column(
+                    // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "* Must Have",
+                        style: TextStyle(
+                          fontSize: MealPlanConstants().mustHaveFontSize,
+                          fontFamily: MealPlanConstants().mustHaveFont,
+                          color: MealPlanConstants().mustHaveTextColor,
+                        ),
+                      ),
+                      SizedBox(
+                        height: 5,
+                      ),
+                      Text(
+                        'Morning Yoga',
+                        style: TextStyle(
+                            fontSize: MealPlanConstants().mealNameFontSize,
+                            fontFamily: MealPlanConstants().mealNameFont),
+                      ),
+                      SizedBox(
+                        height: 8,
+                      ),
+                      Text(
+                        "B/W 6-8am",
+                        style:
+                            TextStyle(fontSize: 9.sp, fontFamily: kFontMedium),
+                      ),
+                      SizedBox(
+                        height: 8,
+                      ),
+                      Text(
+                        "- Good for Health and super food\n\n- Very Effective and quick recipe,\n\n- Ready To Cook",
+                        style: TextStyle(
+                            fontSize: MealPlanConstants().benifitsFontSize,
+                            fontFamily: MealPlanConstants().benifitsFont),
+                      ),
+                      SizedBox(
+                        height: 4,
+                      ),
+                    ],
+                  ),
+                ),
+                IconButton(
+                    onPressed: () {
+                      openAlertBox(
+                          title: 'Did you Follow this item ?',
+                          titleNeeded: true,
+                          context: context,
+                          content:
+                              'Please select any of the following to submit your status',
+                          positiveButtonName: 'Followed',
+                          positiveButton: () {
+                            Navigator.pop(context);
+                          },
+                          negativeButtonName: 'UnFollowed',
+                          negativeButton: () {
+                            Navigator.pop(context);
+                          });
+                    },
+                    icon: Icon(Icons.edit))
+              ],
+            ),
+          ),
+          Divider()
+        ],
+      ),
+    );
   }
 
   showDataRow() {
@@ -1842,7 +1533,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                     onTap: e.url == null
                         ? null
                         : e.type == 'item'
-                            ? () => showPdf(e.url!, e.name)
+                            ? () => showPdf(e.url!)
                             : () => showVideo(e),
                     child: Row(
                       children: [
@@ -1925,7 +1616,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                         onTap: e.url == null
                             ? null
                             : e.type == 'item'
-                                ? () => showPdf(e.url!, e.name)
+                                ? () => showPdf(e.url!)
                                 : () => showVideo(e),
                         child: Row(
                           children: [
@@ -2014,7 +1705,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                     onTap: e.url == null
                         ? null
                         : e.type == 'item'
-                            ? () => showPdf(e.url!, e.name)
+                            ? () => showPdf(e.url!)
                             : () => showVideo(e),
                     child: Row(
                       children: [
@@ -2140,14 +1831,14 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                           Container(
                             margin: EdgeInsets.symmetric(vertical: 1.h),
                             height: 1,
-                            color: gHintTextColor.withOpacity(0.3),
+                            color: gGreyColor.withOpacity(0.3),
                           ),
                           buildDummyTabView(
                               index: 2, title: list[1], color: gsecondaryColor),
                           Container(
                             margin: EdgeInsets.symmetric(vertical: 1.h),
                             height: 1,
-                            color: gHintTextColor.withOpacity(0.3),
+                            color: gGreyColor.withOpacity(0.3),
                           ),
                           SizedBox(height: 0.6.h),
                         ],
@@ -2171,14 +1862,14 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                             textAlign: TextAlign.start,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
-                                fontFamily: kFontBook,
+                                fontFamily: "GothamBook",
                                 color: buildDummyTextColor(),
                                 fontSize: 8.sp),
                           ),
                         ),
                         Icon(
                           Icons.expand_more,
-                          color: gHintTextColor,
+                          color: gGreyColor,
                           size: 2.h,
                         ),
                       ],
@@ -2327,7 +2018,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
       tracking.add(PatientMealTracking(
           day: selectedDay,
           userMealItemId: key,
-          status: (value == list[1]) ? sendList[1] : sendList[0]));
+          status: (value == list[0]) ? sendList[0] : sendList[1]));
     });
 
     print(tracking);
@@ -2362,7 +2053,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
     // }
   }
 
-  showPdf(String itemUrl, String? receipeName) {
+  showPdf(String itemUrl) {
     print(itemUrl);
     String? url;
     if (itemUrl.contains('drive.google.com')) {
@@ -2375,13 +2066,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
       url = itemUrl;
     }
     print(url);
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (ctx) => MealPdf(
-                  pdfLink: url!,
-                  heading: receipeName,
-                )));
+    //Navigator.push(context, MaterialPageRoute(builder: (ctx)=> MealPdf(pdfLink: url! ,)));
   }
 
   showVideo(ChildMealPlanDetailsModel e) {
@@ -2417,7 +2102,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                   Container(
                     margin: EdgeInsets.symmetric(vertical: 1.h),
                     height: 1,
-                    color: gHintTextColor.withOpacity(0.3),
+                    color: gGreyColor.withOpacity(0.3),
                   ),
                   SizedBox(height: 0.6.h),
                   buildTabView(
@@ -2456,7 +2141,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                 ),
                 Icon(
                   Icons.expand_more,
-                  color: gHintTextColor,
+                  color: gGreyColor,
                   size: 2.h,
                 ),
               ],
@@ -2531,12 +2216,8 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
         builder: (ctx) {
           return Wrap(
             children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TrackerUI(
-                  proceedProgramDayModel: model,
-                  from: ProgramMealType.program.name,
-                ),
+              TrackerUI(
+                proceedProgramDayModel: model, from: '',
               )
             ],
           );
@@ -2550,47 +2231,4 @@ class MealPlanData {
   String time;
   String title;
   int id;
-}
-
-class FabExample extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('FloatingActionButton Sample'),
-      ),
-      body: Container(
-          color: Colors.red,
-          child:
-              Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-            Text("abc"),
-            Expanded(child: customScroll(true)),
-            Expanded(child: customScroll(false))
-          ])),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Add your onPressed code here!
-        },
-        backgroundColor: Colors.green,
-        child: const Icon(Icons.navigation),
-      ),
-    );
-  }
-
-  customScroll(bool isRow) {
-    return ListView.builder(
-        shrinkWrap: true,
-        itemCount: 50,
-        scrollDirection: (isRow) ? Axis.horizontal : Axis.vertical,
-        itemBuilder: (_, index) {
-          return (isRow)
-              ? Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-                  decoration:
-                      BoxDecoration(borderRadius: BorderRadius.circular(10)),
-                  child: Text(index.toString()))
-              : ListTile(title: Text(index.toString()));
-        });
-  }
 }

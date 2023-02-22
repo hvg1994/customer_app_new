@@ -17,7 +17,7 @@ import 'package:gwc_customer/repository/api_service.dart';
 import '../../repository/profile_repository/get_user_profile_repo.dart';
 import '../../utils/app_config.dart';
 import 'new_user/choose_your_problem_screen.dart';
-import 'package:country_code_picker/country_code_picker.dart';
+import 'package:country_code_picker_mp/country_code_picker.dart';
 
 class ResendOtpScreen extends StatefulWidget {
   const ResendOtpScreen({Key? key}) : super(key: key);

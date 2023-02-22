@@ -43,6 +43,16 @@ class _SitBackScreenState extends State<SitBackScreen> {
                           color: gTextColor,
                           fontSize: 14.sp),
                     ),
+                  ),SizedBox(height: 1.h),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Text("We have received your enquiry",
+                      style: TextStyle(
+                          height: 1.5,
+                          fontFamily: "GothamRoundedBook_21018",
+                          color: gTextColor,
+                          fontSize: 12.sp),
+                    ),
                   ),
                   SizedBox(height: 1.h),
                   Padding(

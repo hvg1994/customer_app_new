@@ -1,4 +1,4 @@
-import 'package:country_code_picker/country_code_picker.dart';
+import 'package:country_code_picker_mp/country_code_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -128,7 +128,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Name',
+                        'Full Name',
                         style: TextStyle(
                             fontFamily: eUser().userFieldLabelFont,
                             fontSize: eUser().userFieldLabelFontSize,
@@ -602,7 +602,43 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 )
               ],
             ),
-          )
+          ),
+          SizedBox(width: 20,),
+          GestureDetector(
+            onTap: (){
+              setState(() {
+                _selectedGender = 2;
+              });
+            },
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(
+                  width: 10,
+                  // height: 10,
+                  child: Radio(
+                    value: 2,
+                    groupValue: _selectedGender,
+                    onChanged: (int? value) {
+                      setState(() {
+                        _selectedGender = value!;
+                      });
+                    },
+                    activeColor: eUser().kRadioButtonColor,
+                  ),
+                ),
+                SizedBox(width: 10),
+                Text(
+                  'Other',
+                  style: TextStyle(
+                    fontFamily: eUser().userTextFieldFont,
+                    fontSize: eUser().userTextFieldFontSize,
+                    color: (_selectedGender == 2) ? eUser().kRadioButtonColor : eUser().userTextFieldColor,
+                  ),
+                )
+              ],
+            ),
+          ),
         ],
       ),
     );

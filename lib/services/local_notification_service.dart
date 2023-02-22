@@ -13,25 +13,25 @@ class LocalNotificationService {
   static void initialize() {
     final initializationSettings = InitializationSettings(
       android: AndroidInitializationSettings("@mipmap/ic_launcher"),
-      iOS: IOSInitializationSettings(),
+      // iOS: IOSInitializationSettings(),
     );
     _notificationsPlugin.initialize(
       initializationSettings,
-      onSelectNotification: (payload) async {
-        print('payload: $payload');
-        onNotifications.add(payload);
-        // Get.to(() => const NotificationsList());
-        // print("onSelectNotification");
-        // if (id!.isNotEmpty) {
-        //   print("Router Value1234 $id");
-
-        //   // Navigator.of(context).push(
-        //   //   MaterialPageRoute(
-        //   //     builder: (context) => const NotificationsList(),
-        //   //   ),
-        //   // );
-        // }
-      },
+      // onSelectNotification: (payload) async {
+      //   print('payload: $payload');
+      //   onNotifications.add(payload);
+      //   // Get.to(() => const NotificationsList());
+      //   // print("onSelectNotification");
+      //   // if (id!.isNotEmpty) {
+      //   //   print("Router Value1234 $id");
+      //
+      //   //   // Navigator.of(context).push(
+      //   //   //   MaterialPageRoute(
+      //   //   //     builder: (context) => const NotificationsList(),
+      //   //   //   ),
+      //   //   // );
+      //   // }
+      // },
     );
 
   }
@@ -51,13 +51,13 @@ class LocalNotificationService {
           colorized: true
           //   sound: RawResourceAndroidNotificationSound('yourmp3files.mp3'),
         ),
-        iOS: IOSNotificationDetails(
-          //  sound: 'azan1.mp3',
-          presentSound: true,
-        ),
-        macOS: MacOSNotificationDetails(
-          presentSound: true,
-        ),
+        // iOS: IOSNotificationDetails(
+        //   //  sound: 'azan1.mp3',
+        //   presentSound: true,
+        // ),
+        // macOS: MacOSNotificationDetails(
+        //   presentSound: true,
+        // ),
       );
 
       await _notificationsPlugin.show(

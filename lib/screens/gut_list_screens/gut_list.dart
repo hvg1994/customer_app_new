@@ -516,7 +516,7 @@ class GutListState extends State<GutList> {
 
   showPrepratoryMealScreen(){
     if(_prepratoryModel != null){
-      if(_prepratoryModel!.value!.isPrepratoryStarted == false){
+      if(_prepratoryModel!.value!.isPrepratoryStarted == true){
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) => ProgramPlanScreen(from: ProgramMealType.prepratory.name,),

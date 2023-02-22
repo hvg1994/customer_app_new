@@ -315,7 +315,8 @@ class _ChooseYourProblemScreenState extends State<ChooseYourProblemScreen> {
                         //   ),
                         // ),
                         hintMaxLines: 2,
-                        hintText: "Pick one or more from the list above, or write to us about the underlying issue that brought you here.",
+                        hintText: "Additional comments",
+                        // "Pick one or more from the list above, or write to us about the underlying issue that brought you here.",
                         border: InputBorder.none,
                         hintStyle: TextStyle(
                           fontFamily: eUser().userTextFieldHintFont,
