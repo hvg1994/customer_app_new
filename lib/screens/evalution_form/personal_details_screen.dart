@@ -11,6 +11,7 @@ import 'package:gwc_customer/model/evaluation_from_models/get_evaluation_model/c
 import 'package:gwc_customer/repository/evaluation_form_repository/evanluation_form_repo.dart';
 import 'package:gwc_customer/screens/evalution_form/evaluation_upload_report.dart';
 import 'package:gwc_customer/services/evaluation_fome_service/evaluation_form_service.dart';
+import 'package:gwc_customer/widgets/unfocus_widget.dart';
 import 'package:sizer/sizer.dart';
 import 'package:http/http.dart' as http;
 import '../../../utils/app_config.dart';
@@ -295,6 +296,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
     CheckBoxSettings(title: "Surgery"),
     CheckBoxSettings(title: "Stents"),
     CheckBoxSettings(title: "Implants"),
+    CheckBoxSettings(title: "None"),
   ];
   bool medicalInterventionsOtherSelected = false;
   List selectedmedicalInterventionsDoneBeforeList = [];
@@ -342,10 +344,12 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
             fit: BoxFit.fitWidth,
             colorFilter: ColorFilter.mode(kPrimaryColor, BlendMode.lighten)),
       ),
-      child: SafeArea(
-        child: Scaffold(
-          backgroundColor: Colors.transparent,
-          body: showUI(context),
+      child: UnfocusWidget(
+        child: SafeArea(
+          child: Scaffold(
+            backgroundColor: Colors.transparent,
+            body: showUI(context),
+          ),
         ),
       ),
     );
@@ -459,7 +463,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                     "Personal Details",
                     textAlign: TextAlign.start,
                     style: TextStyle(
-                        fontFamily: kFontMedium,
+                        fontFamily: kFontBold,
                         color: gBlackColor,
                         fontSize: headingFont
                     ),
@@ -489,10 +493,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
           SizedBox(
             height: 3.h,
           ),
-          buildLabelTextField("First Name:"),
-          SizedBox(
-            height: 1.h,
-          ),
+          buildLabelTextField("First Name:", fontSize: questionFont),
           TextFormField(
             textCapitalization: TextCapitalization.words,
             controller: fnameController,
@@ -516,10 +517,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
           SizedBox(
             height: 2.h,
           ),
-          buildLabelTextField("Last Name:"),
-          SizedBox(
-            height: 1.h,
-          ),
+          buildLabelTextField("Last Name:", fontSize: questionFont),
           TextFormField(
             textCapitalization: TextCapitalization.words,
             controller: lnameController,
@@ -540,7 +538,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
           SizedBox(
             height: 2.h,
           ),
-          buildLabelTextField('Marital Status:'),
+          buildLabelTextField('Marital Status:', fontSize: questionFont),
           // Text(
           //   'Marital Status:*',
           //   style: TextStyle(
@@ -549,9 +547,6 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
           //     fontFamily: "PoppinsSemiBold",
           //   ),
           // ),
-          SizedBox(
-            height: 1.h,
-          ),
           Row(
             children: [
               GestureDetector(
@@ -573,7 +568,9 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                     ),
                     Text(
                       'Single',
-                      style: buildTextStyle(),
+                      style: buildTextStyle(color: maritalStatus == "Single" ? kTextColor : gHintTextColor,
+                          fontFamily: maritalStatus == "Single" ? kFontMedium : kFontBook
+                      ),
                     ),
                   ],
                 ),
@@ -600,7 +597,9 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                     ),
                     Text(
                       'Married',
-                      style: buildTextStyle(),
+                      style: buildTextStyle(color: maritalStatus == "Married" ? kTextColor : gHintTextColor,
+                          fontFamily: maritalStatus == "Married" ? kFontMedium : kFontBook
+                      ),
                     ),
                   ],
                 ),
@@ -625,7 +624,9 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                         }),
                     Text(
                       "Separated",
-                      style: buildTextStyle(),
+                      style: buildTextStyle(color: maritalStatus == "Separated" ? kTextColor : gHintTextColor,
+                          fontFamily: maritalStatus == "Separated" ? kFontMedium : kFontBook
+                      ),
                     ),
                   ],
                 ),
@@ -635,7 +636,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
           SizedBox(
             height: 2.h,
           ),
-          buildLabelTextField('Phone Number'),
+          buildLabelTextField('Phone Number', fontSize: questionFont),
           // Text(
           //   'Phone Number*',
           //   style: TextStyle(
@@ -644,9 +645,6 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
           //     fontFamily: "PoppinsSemiBold",
           //   ),
           // ),
-          SizedBox(
-            height: 1.h,
-          ),
           TextFormField(
             controller: mobileController,
             cursorColor: kPrimaryColor,
@@ -668,10 +666,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
           SizedBox(
             height: 2.h,
           ),
-          buildLabelTextField('Email ID -'),
-          SizedBox(
-            height: 1.h,
-          ),
+          buildLabelTextField('Email ID -', fontSize: questionFont),
           TextFormField(
             controller: emailController,
             cursorColor: kPrimaryColor,
@@ -693,7 +688,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
           SizedBox(
             height: 2.h,
           ),
-          buildLabelTextField('Age'),
+          buildLabelTextField('Age', fontSize: questionFont),
           // Text(
           //   'Age*',
           //   style: TextStyle(
@@ -702,9 +697,6 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
           //     fontFamily: "PoppinsSemiBold",
           //   ),
           // ),
-          SizedBox(
-            height: 1.h,
-          ),
           TextFormField(
             controller: ageController,
             cursorColor: kPrimaryColor,
@@ -734,18 +726,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
           SizedBox(
             height: 2.h,
           ),
-          buildLabelTextField('Gender:'),
-          // Text(
-          //   'Gender:*',
-          //   style: TextStyle(
-          //     fontSize: 9.sp,
-          //     color: kTextColor,
-          //     fontFamily: "PoppinsSemiBold",
-          //   ),
-          // ),
-          SizedBox(
-            height: 1.h,
-          ),
+          buildLabelTextField('Gender:', fontSize: questionFont),
           Row(
             children: [
               GestureDetector(
@@ -764,7 +745,11 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                       });
                     },
                   ),
-                  Text('Male', style: buildTextStyle()),
+                  Text('Male',
+                    style: buildTextStyle(color: gender == "Male" ? kTextColor : gHintTextColor,
+                        fontFamily: gender == "Male" ? kFontMedium : kFontBook
+                    ),
+                  ),
                 ],
               )),
               SizedBox(
@@ -788,7 +773,9 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                     ),
                     Text(
                       'Female',
-                      style: buildTextStyle(),
+                      style: buildTextStyle(color: gender == "Female" ? kTextColor : gHintTextColor,
+                          fontFamily: gender == "Female" ? kFontMedium : kFontBook
+                      ),
                     ),
                   ],
                 ),
@@ -823,11 +810,9 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
           SizedBox(
             height: 2.h,
           ),
-          buildLabelTextField('Flat/House Number'),
-          SizedBox(
-            height: 1.h,
-          ),
+          buildLabelTextField('Flat/House Number', fontSize: questionFont),
           TextFormField(
+            textCapitalization: TextCapitalization.sentences,
             controller: address1Controller,
             cursorColor: kPrimaryColor,
             validator: (value) {
@@ -848,13 +833,12 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
             height: 2.h,
           ),
           buildLabelTextField(
-              'Full Postal Address To Deliver Your Ready To Cook Kit'),
-          SizedBox(
-            height: 1.h,
-          ),
+              'Full Postal Address To Deliver Your Ready To Cook Kit', fontSize: questionFont),
           TextFormField(
+            textCapitalization: TextCapitalization.sentences,
             controller: address2Controller,
             cursorColor: kPrimaryColor,
+            // autovalidateMode: AutovalidateMode.onUserInteraction,
             validator: (value) {
               if (value!.isEmpty) {
                 return 'Please enter your Address';
@@ -874,10 +858,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
           SizedBox(
             height: 2.h,
           ),
-          buildLabelTextField('Pin Code'),
-          SizedBox(
-            height: 1.h,
-          ),
+          buildLabelTextField('Pin Code', fontSize: questionFont),
           FocusScope(
             onFocusChange: (value) {
               print(value);
@@ -887,7 +868,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                   String code = _pref?.getString(AppConfig.countryCode) ?? '';
                   if (pinCodeController.text.length < 6) {
                     AppConfig()
-                        .showSnackbar(context, 'Pincode should br 6 digits');
+                        .showSnackbar(context, 'Pincode should be 6 digits');
                   } else {
                     fetchCountry(pinCodeController.text, 'IN');
                   }
@@ -942,6 +923,9 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                       ),
               ),
               textInputAction: TextInputAction.next,
+              inputFormatters: [
+                FilteringTextInputFormatter.digitsOnly,FilteringTextInputFormatter.allow(RegExp(r'^[1-9][0-9]*'))
+              ],
               textAlign: TextAlign.start,
               keyboardType: TextInputType.number,
               maxLength: 6,
@@ -950,11 +934,9 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
           SizedBox(
             height: 2.h,
           ),
-          buildLabelTextField('City'),
-          SizedBox(
-            height: 1.h,
-          ),
+          buildLabelTextField('City', fontSize: questionFont),
           TextFormField(
+            textCapitalization: TextCapitalization.sentences,
             controller: cityController,
             cursorColor: kPrimaryColor,
             validator: (value) {
@@ -976,11 +958,9 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
           SizedBox(
             height: 2.h,
           ),
-          buildLabelTextField('State'),
-          SizedBox(
-            height: 1.h,
-          ),
+          buildLabelTextField('State', fontSize: questionFont),
           TextFormField(
+            textCapitalization: TextCapitalization.sentences,
             controller: stateController,
             cursorColor: kPrimaryColor,
             validator: (value) {
@@ -1002,11 +982,9 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
           SizedBox(
             height: 2.h,
           ),
-          buildLabelTextField('Country'),
-          SizedBox(
-            height: 1.h,
-          ),
+          buildLabelTextField('Country', fontSize: questionFont),
           TextFormField(
+            textCapitalization: TextCapitalization.sentences,
             controller: countryController,
             cursorColor: kPrimaryColor,
             validator: (value) {
@@ -1049,9 +1027,10 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                     "Health",
                     textAlign: TextAlign.start,
                     style: TextStyle(
-                        fontFamily: "PoppinsBold",
-                        color: kPrimaryColor,
-                        fontSize: 15.sp),
+                        fontFamily: kFontBold,
+                        color: gBlackColor,
+                        fontSize: headingFont
+                    ),
                   ),
                   SizedBox(
                     width: 2.w,
@@ -1059,36 +1038,17 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                   Expanded(
                     child: Container(
                       height: 1,
-                      color: kPrimaryColor,
+                      color: kLineColor,
                     ),
                   ),
                 ],
-              ),
-              Text(
-                "Important For Your Doctors To Know What You Have Been Through Or Are Going Through At The Moment",
-                textAlign: TextAlign.start,
-                style: TextStyle(
-                    fontFamily: "PoppinsRegular",
-                    color: gMainColor,
-                    fontSize: 9.sp),
               ),
             ],
           ),
           SizedBox(
             height: 3.h,
           ),
-          buildLabelTextField('Weight In Kgs'),
-          // Text(
-          //   'Weight*',
-          //   style: TextStyle(
-          //     fontSize: 9.sp,
-          //     color: kTextColor,
-          //     fontFamily: "PoppinsSemiBold",
-          //   ),
-          // ),
-          SizedBox(
-            height: 1.h,
-          ),
+          buildLabelTextField('Weight In Kgs', fontSize: questionFont),
           TextFormField(
             controller: weightController,
             cursorColor: kPrimaryColor,
@@ -1112,20 +1072,15 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
           SizedBox(
             height: 2.h,
           ),
-          buildLabelTextField('Height In Feet & Inches'),
-          SizedBox(
-            height: 1.h,
-          ),
+          buildLabelTextField('Height In Feet & Inches', fontSize: questionFont),
           showDropdown(),
           SizedBox(
             height: 2.h,
           ),
           buildLabelTextField(
-              'Brief Paragraph About Your Current Complaints & What You Are Looking To Heal Here'),
-          SizedBox(
-            height: 1.h,
-          ),
+              'Brief Paragraph About Your Current Complaints & What You Are Looking To Heal Here', fontSize: questionFont),
           TextFormField(
+            textCapitalization: TextCapitalization.sentences,
             controller: healController,
             cursorColor: kPrimaryColor,
             validator: (value) {
@@ -1146,10 +1101,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
           SizedBox(
             height: 2.h,
           ),
-          buildLabelTextField('Please check all that apply to you.'),
-          SizedBox(
-            height: 1.h,
-          ),
+          buildLabelTextField('Please check all that apply to you.', fontSize: questionFont),
           ListView(
             shrinkWrap: true,
             physics: const BouncingScrollPhysics(),
@@ -1160,6 +1112,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
               Visibility(
                 visible: selectedHealthCheckBox1.any((element) => element.contains("Other:")),
                 child: TextFormField(
+                  textCapitalization: TextCapitalization.sentences,
                   controller: checkbox1OtherController,
                   cursorColor: kPrimaryColor,
                   validator: (value) {
@@ -1184,10 +1137,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
             height: 2.h,
           ),
           // health checkbox2
-          buildLabelTextField('Please check all of the boxes that apply to you.'),
-          SizedBox(
-            height: 1.h,
-          ),
+          buildLabelTextField('Please check all of the boxes that apply to you.', fontSize: questionFont),
           ListView(
             shrinkWrap: true,
             physics: const BouncingScrollPhysics(),
@@ -1221,7 +1171,10 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                             }),
                         Text(
                           "Clear",
-                          style: buildTextStyle(),
+                          style: buildTextStyle(
+                              color: tongueCoatingRadio == "clear" ? kTextColor : gHintTextColor,
+                              fontFamily: tongueCoatingRadio == "clear" ? kFontMedium : kFontBook
+                          ),
                         ),
                       ],
                     ),
@@ -1243,7 +1196,10 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                             }),
                         Text(
                           "Coated with white layer",
-                          style: buildTextStyle(),
+                          style: buildTextStyle(
+                              color: tongueCoatingRadio == "Coated with white layer" ? kTextColor : gHintTextColor,
+                              fontFamily: tongueCoatingRadio == "Coated with white layer" ? kFontMedium : kFontBook
+                          ),
                         ),
                       ],
                     ),
@@ -1266,7 +1222,10 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                             }),
                         Text(
                           "Coated with yellow layer",
-                          style: buildTextStyle(),
+                          style: buildTextStyle(
+                              color: tongueCoatingRadio == "Coated with yellow layer" ? kTextColor : gHintTextColor,
+                              fontFamily: tongueCoatingRadio == "Coated with yellow layer" ? kFontMedium : kFontBook
+                          ),
                         ),
                       ],
                     ),
@@ -1289,7 +1248,10 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                             }),
                         Text(
                           "Coated with black layer",
-                          style: buildTextStyle(),
+                          style: buildTextStyle(
+                              color: tongueCoatingRadio == "Coated with black layer" ? kTextColor : gHintTextColor,
+                              fontFamily: tongueCoatingRadio == "Coated with black layer" ? kFontMedium : kFontBook
+                          ),
                         ),
                       ],
                     ),
@@ -1312,7 +1274,10 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                             }),
                         Text(
                           "Other:",
-                          style: buildTextStyle(),
+                          style: buildTextStyle(
+                              color: tongueCoatingRadio == "other" ? kTextColor : gHintTextColor,
+                              fontFamily: tongueCoatingRadio == "other" ? kFontMedium : kFontBook
+                          ),
                         ),
                       ],
                     ),
@@ -1322,6 +1287,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
               Visibility(
                 visible: tongueCoatingRadio=="other",
                 child: TextFormField(
+                  textCapitalization: TextCapitalization.sentences,
                   controller: tongueCoatingController,
                   cursorColor: kPrimaryColor,
                   validator: (value) {
@@ -1348,10 +1314,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
             height: 2.h,
           ),
           buildLabelTextField(
-              "Has Frequency Of Urination Increased Or Decreased In The Recent Past?"),
-          SizedBox(
-            height: 1.h,
-          ),
+              "Has Frequency Of Urination Increased Or Decreased In The Recent Past?", fontSize: questionFont),
           Row(
             children: [
               GestureDetector(
@@ -1373,7 +1336,12 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                         });
                       },
                     ),
-                    Text('Increased', style: buildTextStyle()),
+                    Text('Increased',
+                        style: buildTextStyle(
+                            color: urinationValue == "Increased" ? kTextColor : gHintTextColor,
+                            fontFamily: urinationValue == "Increased" ? kFontMedium : kFontBook
+                        )
+                    ),
                   ],
                 ),
               ),
@@ -1401,7 +1369,10 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                     ),
                     Text(
                       'Decreased',
-                      style: buildTextStyle(),
+                      style: buildTextStyle(
+                          color: urinationValue == "Decreased" ? kTextColor : gHintTextColor,
+                          fontFamily: urinationValue == "Decreased" ? kFontMedium : kFontBook
+                      ),
                     ),
                   ],
                 ),
@@ -1429,7 +1400,10 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                         }),
                     Text(
                       "No Change",
-                      style: buildTextStyle(),
+                      style: buildTextStyle(
+                          color: urinationValue == "No Change" ? kTextColor : gHintTextColor,
+                          fontFamily: urinationValue == "No Change" ? kFontMedium : kFontBook
+                      ),
                     ),
                   ],
                 ),
@@ -1442,10 +1416,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
           //     ...urinFrequencyList.map(buildWrapingCheckBox).toList()
           //   ],
           // ),
-          buildLabelTextField("Urine Color"),
-          SizedBox(
-            height: 1.h,
-          ),
+          buildLabelTextField("Urine Color", fontSize: questionFont),
           buildUrineColorRadioButton(),
           // ListView(
           //   shrinkWrap: true,
@@ -1510,33 +1481,37 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
           //     ),
           //   ],
           // ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: TextFormField(
-              controller: urinColorController,
-              cursorColor: kPrimaryColor,
-              validator: (value) {
-                if (value!.isEmpty &&
-                    urineColorValue.toLowerCase().contains('other')) {
-                  AppConfig().showSnackbar(
-                      context, "Please enter the details about Urine Color",
-                      isError: true);
-                  return 'Please enter the details about Urine Color';
-                } else {
-                  return null;
-                }
-              },
-              decoration: CommonDecoration.buildTextInputDecoration(
-                  "Your answer", urinColorController),
-              textInputAction: TextInputAction.next,
-              textAlign: TextAlign.start,
-              keyboardType: TextInputType.text,
+          Visibility(
+            visible: urineColorValue == "Other",
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: TextFormField(
+                textCapitalization: TextCapitalization.sentences,
+                controller: urinColorController,
+                cursorColor: kPrimaryColor,
+                validator: (value) {
+                  if (value!.isEmpty &&
+                      urineColorValue.toLowerCase().contains('other')) {
+                    AppConfig().showSnackbar(
+                        context, "Please enter the details about Urine Color",
+                        isError: true);
+                    return 'Please enter the details about Urine Color';
+                  } else {
+                    return null;
+                  }
+                },
+                decoration: CommonDecoration.buildTextInputDecoration(
+                    "Your answer", urinColorController),
+                textInputAction: TextInputAction.next,
+                textAlign: TextAlign.start,
+                keyboardType: TextInputType.text,
+              ),
             ),
           ),
           SizedBox(
             height: 2.h,
           ),
-          buildLabelTextField("Urine Smell"),
+          buildLabelTextField("Urine Smell", fontSize: questionFont),
           SizedBox(
             height: 1.h,
           ),
@@ -1560,7 +1535,10 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                     offset: const Offset(-10, 0),
                     child: Text(
                       'Other:',
-                      style: buildTextStyle(),
+                      style: buildTextStyle(
+                          color: urinSmellOtherSelected ? kTextColor : gHintTextColor,
+                          fontFamily: urinSmellOtherSelected ? kFontMedium : kFontBook
+                      ),
                     ),
                   ),
                   activeColor: kPrimaryColor,
@@ -1582,52 +1560,27 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                   },
                 ),
               ),
-              // ListTile(
-              //   minLeadingWidth: 0,
-              //   leading: SizedBox(
-              //     width: 20,
-              //     child: Checkbox(
-              //       activeColor: kPrimaryColor,
-              //       value: urinSmellOtherSelected,
-              //       onChanged: (v) {
-              //         setState(() {
-              //           urinSmellOtherSelected = v!;
-              //           if (urinSmellOtherSelected) {
-              //             selectedUrinSmellList.clear();
-              //             urinSmellList.forEach((element) {
-              //               element.value = false;
-              //             });
-              //             selectedUrinSmellList.add(otherText);
-              //           } else {
-              //             selectedUrinSmellList.remove(otherText);
-              //           }
-              //           print(selectedUrinSmellList);
-              //         });
-              //       },
-              //     ),
-              //   ),
-              //   title: Text(
-              //     'Other:',
-              //     style: buildTextStyle(),
-              //   ),
-              // ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: TextFormField(
-                  controller: urinSmellController,
-                  cursorColor: kPrimaryColor,
-                  validator: (value) {
-                    if (value!.isEmpty && urinSmellOtherSelected) {
-                      return 'Please select the details about urine smell';
-                    } else {
-                      return null;
-                    }
-                  },
-                  decoration: CommonDecoration.buildTextInputDecoration(
-                      "Your answer", urinSmellController),
-                  textInputAction: TextInputAction.next,
-                  textAlign: TextAlign.start,
-                  keyboardType: TextInputType.text,
+              Visibility(
+                visible: urinSmellOtherSelected,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: TextFormField(
+                    textCapitalization: TextCapitalization.sentences,
+                    controller: urinSmellController,
+                    cursorColor: kPrimaryColor,
+                    validator: (value) {
+                      if (value!.isEmpty && urinSmellOtherSelected) {
+                        return 'Please select the details about urine smell';
+                      } else {
+                        return null;
+                      }
+                    },
+                    decoration: CommonDecoration.buildTextInputDecoration(
+                        "Your answer", urinSmellController),
+                    textInputAction: TextInputAction.next,
+                    textAlign: TextAlign.start,
+                    keyboardType: TextInputType.text,
+                  ),
                 ),
               ),
             ],
@@ -1635,10 +1588,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
           SizedBox(
             height: 2.h,
           ),
-          buildLabelTextField("What Does Your Urine Look Like?"),
-          SizedBox(
-            height: 1.h,
-          ),
+          buildLabelTextField("What Does Your Urine Look Like?", fontSize: questionFont),
           buildUrineLookRadioButton(),
           // ListView(
           //   shrinkWrap: true,
@@ -1695,36 +1645,37 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
           //     ),
           //   ],
           // ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: TextFormField(
-              controller: urinLooksLikeController,
-              cursorColor: kPrimaryColor,
-              validator: (value) {
-                if (value!.isEmpty &&
-                    urineLookLikeValue.toLowerCase().contains('other')) {
-                  AppConfig().showSnackbar(
-                      context, "Please enter how Urine Looks",
-                      isError: true);
-                  return 'Please enter how Urine Looks';
-                } else {
-                  return null;
-                }
-              },
-              decoration: CommonDecoration.buildTextInputDecoration(
-                  "Your answer", urinLooksLikeController),
-              textInputAction: TextInputAction.next,
-              textAlign: TextAlign.start,
-              keyboardType: TextInputType.text,
+          Visibility(
+            visible: urineLookLikeValue == "Other",
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: TextFormField(
+                textCapitalization: TextCapitalization.sentences,
+                controller: urinLooksLikeController,
+                cursorColor: kPrimaryColor,
+                validator: (value) {
+                  if (value!.isEmpty &&
+                      urineLookLikeValue.toLowerCase().contains('other')) {
+                    AppConfig().showSnackbar(
+                        context, "Please enter how Urine Looks",
+                        isError: true);
+                    return 'Please enter how Urine Looks';
+                  } else {
+                    return null;
+                  }
+                },
+                decoration: CommonDecoration.buildTextInputDecoration(
+                    "Your answer", urinLooksLikeController),
+                textInputAction: TextInputAction.next,
+                textAlign: TextAlign.start,
+                keyboardType: TextInputType.text,
+              ),
             ),
           ),
           SizedBox(
             height: 2.h,
           ),
-          buildLabelTextField("Which one is the closest match to your stool?"),
-          SizedBox(
-            height: 1.h,
-          ),
+          buildLabelTextField("Which one is the closest match to your stool?", fontSize: questionFont),
           ListView(
             shrinkWrap: true,
             physics: const BouncingScrollPhysics(),
@@ -1741,107 +1692,161 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
               ),
               Column(
                 children: [
-                  Row(
-                    children: [
-                      Radio(
-                          value: "Seperate hard lumps",
-                          groupValue: selectedStoolMatch,
-                          activeColor: kPrimaryColor,
-                          onChanged: (value) {
-                            setState(() {
-                              selectedStoolMatch = value as String;
-                            });
-                          }),
-                      Text(
-                        "Seperate hard lumps",
-                        style: buildTextStyle(),
-                      ),
-                    ],
+                  GestureDetector(
+                    onTap: (){
+                      setState(() {
+                        selectedStoolMatch = "Seperate hard lumps";
+                      });
+                    },
+                    child: Row(
+                      children: [
+                        Radio(
+                            value: "Seperate hard lumps",
+                            groupValue: selectedStoolMatch,
+                            activeColor: kPrimaryColor,
+                            onChanged: (value) {
+                              setState(() {
+                                selectedStoolMatch = value as String;
+                              });
+                            }),
+                        Text(
+                          "Seperate hard lumps",
+                          style: buildTextStyle(color: selectedStoolMatch == "Seperate hard lumps" ? kTextColor : gHintTextColor,
+                              fontFamily: selectedStoolMatch == "Seperate hard lumps" ? kFontMedium : kFontBook
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  Row(
-                    children: [
-                      Radio(
-                          value: "Lumpy & sausage like",
-                          groupValue: selectedStoolMatch,
-                          activeColor: kPrimaryColor,
-                          onChanged: (value) {
-                            setState(() {
-                              selectedStoolMatch = value as String;
-                            });
-                          }),
-                      Text(
-                        "Lumpy & sausage like",
-                        style: buildTextStyle(),
-                      ),
-                    ],
+                  GestureDetector(
+                    onTap: (){
+                      setState(() {
+                        selectedStoolMatch = "Lumpy & sausage like";
+                      });
+                    },
+                    child: Row(
+                      children: [
+                        Radio(
+                            value: "Lumpy & sausage like",
+                            groupValue: selectedStoolMatch,
+                            activeColor: kPrimaryColor,
+                            onChanged: (value) {
+                              setState(() {
+                                selectedStoolMatch = value as String;
+                              });
+                            }),
+                        Text(
+                          "Lumpy & sausage like",
+                          style: buildTextStyle(color: selectedStoolMatch == "Lumpy & sausage like" ? kTextColor : gHintTextColor,
+                              fontFamily: selectedStoolMatch == "Lumpy & sausage like" ? kFontMedium : kFontBook
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  Row(
-                    children: [
-                      Radio(
-                          value: "Sausage shape with cracks on the surface",
-                          groupValue: selectedStoolMatch,
-                          activeColor: kPrimaryColor,
-                          onChanged: (value) {
-                            setState(() {
-                              selectedStoolMatch = value as String;
-                            });
-                          }),
-                      Text(
-                        "Sausage shape with cracks on the surface",
-                        style: buildTextStyle(),
-                      ),
-                    ],
+                  GestureDetector(
+                    onTap: (){
+                      setState(() {
+                        selectedStoolMatch = "Sausage shape with cracks on the surface";
+                      });
+                    },
+                    child: Row(
+                      children: [
+                        Radio(
+                            value: "Sausage shape with cracks on the surface",
+                            groupValue: selectedStoolMatch,
+                            activeColor: kPrimaryColor,
+                            onChanged: (value) {
+                              setState(() {
+                                selectedStoolMatch = value as String;
+                              });
+                            }),
+                        Text(
+                          "Sausage shape with cracks on the surface",
+                          style: buildTextStyle(color: selectedStoolMatch == "Sausage shape with cracks on the surface" ? kTextColor : gHintTextColor,
+                              fontFamily: selectedStoolMatch == "Sausage shape with cracks on the surface" ? kFontMedium : kFontBook
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  Row(
-                    children: [
-                      Radio(
-                          value: "Smooth, soft sausage or snake",
-                          groupValue: selectedStoolMatch,
-                          activeColor: kPrimaryColor,
-                          onChanged: (value) {
-                            setState(() {
-                              selectedStoolMatch = value as String;
-                            });
-                          }),
-                      Text(
-                        "Smooth, soft sausage or snake",
-                        style: buildTextStyle(),
-                      ),
-                    ],
+                  GestureDetector(
+                    onTap: (){
+                      setState(() {
+                        selectedStoolMatch = "Smooth, soft sausage or snake";
+                      });
+                    },
+                    child: Row(
+                      children: [
+                        Radio(
+                            value: "Smooth, soft sausage or snake",
+                            groupValue: selectedStoolMatch,
+                            activeColor: kPrimaryColor,
+                            onChanged: (value) {
+                              setState(() {
+                                selectedStoolMatch = value as String;
+                              });
+                            }),
+                        Text(
+                          "Smooth, soft sausage or snake",
+                          style: buildTextStyle(color: selectedStoolMatch == "Smooth, soft sausage or snake" ? kTextColor : gHintTextColor,
+                              fontFamily: selectedStoolMatch == "Smooth, soft sausage or snake" ? kFontMedium : kFontBook
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  Row(
-                    children: [
-                      Radio(
-                          value: "Soft blobs with clear cut edges",
-                          groupValue: selectedStoolMatch,
-                          activeColor: kPrimaryColor,
-                          onChanged: (value) {
-                            setState(() {
-                              selectedStoolMatch = value as String;
-                            });
-                          }),
-                      Text(
-                        "Soft blobs with clear cut edges",
-                        style: buildTextStyle(),
-                      ),
-                    ],
+                  GestureDetector(
+                    onTap: (){
+                      setState(() {
+                        selectedStoolMatch = "Soft blobs with clear cut edges";
+                      });
+                    },
+                    child: Row(
+                      children: [
+                        Radio(
+                            value: "Soft blobs with clear cut edges",
+                            groupValue: selectedStoolMatch,
+                            activeColor: kPrimaryColor,
+                            onChanged: (value) {
+                              setState(() {
+                                selectedStoolMatch = value as String;
+                              });
+                            }),
+                        Text(
+                          "Soft blobs with clear cut edges",
+                          style: buildTextStyle(color: selectedStoolMatch == "Soft blobs with clear cut edges" ? kTextColor : gHintTextColor,
+                              fontFamily: selectedStoolMatch == "Soft blobs with clear cut edges" ? kFontMedium : kFontBook
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  Row(
-                    children: [
-                      Radio(
-                          value: "Liquid consistency with no solid pieces",
-                          groupValue: selectedStoolMatch,
-                          activeColor: kPrimaryColor,
-                          onChanged: (value) {
-                            setState(() {
-                              selectedStoolMatch = value as String;
-                            });
-                          }),
-                      Text(
-                        "liquid consistency with no solid pieces",
-                        style: buildTextStyle(),
-                      ),
-                    ],
+                  GestureDetector(
+                    onTap: (){
+                      setState(() {
+                        selectedStoolMatch = "Liquid consistency with no solid pieces";
+                      });
+                    },
+                    child: Row(
+                      children: [
+                        Radio(
+                            value: "Liquid consistency with no solid pieces",
+                            groupValue: selectedStoolMatch,
+                            activeColor: kPrimaryColor,
+                            onChanged: (value) {
+                              setState(() {
+                                selectedStoolMatch = value as String;
+                              });
+                            }),
+                        Text(
+                          "liquid consistency with no solid pieces",
+                          style: buildTextStyle(color: selectedStoolMatch == "liquid consistency with no solid pieces" ? kTextColor : gHintTextColor,
+                              fontFamily: selectedStoolMatch == "liquid consistency with no solid pieces" ? kFontMedium : kFontBook
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -1850,10 +1855,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
           SizedBox(
             height: 2.h,
           ),
-          buildLabelTextField("Medical Interventions Done Before"),
-          SizedBox(
-            height: 1.h,
-          ),
+          buildLabelTextField("Medical Interventions Done Before", fontSize: questionFont),
           ListView(
             shrinkWrap: true,
             physics: const BouncingScrollPhysics(),
@@ -1874,7 +1876,9 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                       offset: const Offset(-10, 0),
                       child: Text(
                         'Other:',
-                        style: buildTextStyle(),
+                        style: buildTextStyle(color: medicalInterventionsOtherSelected ? kTextColor : gHintTextColor,
+                            fontFamily: medicalInterventionsOtherSelected ? kFontMedium : kFontBook
+                        ),
                       ),
                     ),
                     activeColor: kPrimaryColor,
@@ -1892,7 +1896,8 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                         });
                         selectedmedicalInterventionsDoneBeforeList
                             .add(otherText);
-                      } else {
+                      }
+                      else {
                         selectedmedicalInterventionsDoneBeforeList
                             .remove(otherText);
                       }
@@ -1900,56 +1905,27 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                   },
                 ),
               ),
-              // ListTile(
-              //   minLeadingWidth: 0,
-              //   leading: SizedBox(
-              //     width: 20,
-              //     child: Checkbox(
-              //       activeColor: kPrimaryColor,
-              //       value: medicalInterventionsOtherSelected,
-              //       onChanged: (v) {
-              //         setState(() {
-              //           medicalInterventionsOtherSelected = v!;
-              //           if (medicalInterventionsOtherSelected) {
-              //             selectedmedicalInterventionsDoneBeforeList
-              //                 .add(otherText);
-              //             selectedmedicalInterventionsDoneBeforeList.clear();
-              //             medicalInterventionsDoneBeforeList
-              //                 .forEach((element) {
-              //               element.value = false;
-              //             });
-              //             selectedmedicalInterventionsDoneBeforeList
-              //                 .add(otherText);
-              //           } else {
-              //             selectedmedicalInterventionsDoneBeforeList
-              //                 .remove(otherText);
-              //           }
-              //         });
-              //       },
-              //     ),
-              //   ),
-              //   title: Text(
-              //     'Other:',
-              //     style: buildTextStyle(),
-              //   ),
-              // ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: TextFormField(
-                  controller: medicalInterventionsDoneController,
-                  cursorColor: kPrimaryColor,
-                  validator: (value) {
-                    if (value!.isEmpty && medicalInterventionsOtherSelected) {
-                      return 'Please enter Medical Interventions';
-                    } else {
-                      return null;
-                    }
-                  },
-                  decoration: CommonDecoration.buildTextInputDecoration(
-                      "Your answer", medicalInterventionsDoneController),
-                  textInputAction: TextInputAction.next,
-                  textAlign: TextAlign.start,
-                  keyboardType: TextInputType.text,
+              Visibility(
+                visible: medicalInterventionsOtherSelected,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: TextFormField(
+                    textCapitalization: TextCapitalization.sentences,
+                    controller: medicalInterventionsDoneController,
+                    cursorColor: kPrimaryColor,
+                    validator: (value) {
+                      if (value!.isEmpty && medicalInterventionsOtherSelected) {
+                        return 'Please enter Medical Interventions';
+                      } else {
+                        return null;
+                      }
+                    },
+                    decoration: CommonDecoration.buildTextInputDecoration(
+                        "Your answer", medicalInterventionsDoneController),
+                    textInputAction: TextInputAction.next,
+                    textAlign: TextAlign.start,
+                    keyboardType: TextInputType.text,
+                  ),
                 ),
               ),
             ],
@@ -1958,8 +1934,9 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
             height: 2.h,
           ),
           buildLabelTextField(
-              'Any Medications/Supplements/Inhalers/Contraceptives You Consume At The Moment'),
+              'Any Medications/Supplements/Inhalers/Contraceptives You Consume At The Moment', fontSize: questionFont),
           TextFormField(
+            textCapitalization: TextCapitalization.sentences,
             controller: medicationsController,
             cursorColor: kPrimaryColor,
             validator: (value) {
@@ -1981,11 +1958,9 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
             height: 2.h,
           ),
           buildLabelTextField(
-              'Holistic/Alternative Therapies You Have Been Through & When (Ayurveda, Homeopathy) '),
-          SizedBox(
-            height: 1.h,
-          ),
+              'Holistic/Alternative Therapies You Have Been Through & When (Ayurveda, Homeopathy) ', fontSize: questionFont),
           TextFormField(
+            textCapitalization: TextCapitalization.sentences,
             controller: holisticController,
             cursorColor: kPrimaryColor,
             validator: (value) {
@@ -2106,12 +2081,15 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
     print(formKey1.currentState!.validate());
     if (formKey1.currentState!.validate() &&
         formKey2.currentState!.validate()) {
-      if (address1Controller.text.isEmpty) {
+      if(maritalStatus == ""){
+        AppConfig().showSnackbar(context, "Please Select Marital Status");
+      }
+      else if (address1Controller.text.isEmpty) {
         AppConfig().showSnackbar(context, "Please Mention Flat Details");
       } else if (address2Controller.text.isEmpty) {
-        AppConfig().showSnackbar(context, "Please Postal Address");
+        AppConfig().showSnackbar(context, "Please Mention Postal Address");
       } else if (pinCodeController.text.isEmpty) {
-        AppConfig().showSnackbar(context, "Please Mention Pincode");
+        AppConfig().showSnackbar(context, "Please Mention Pin code");
       } else if (ft == -1 || inches == -1) {
         AppConfig().showSnackbar(context, "Please Select Height");
       } else if (healthCheckBox1.every((element) => element.value == false)) {
@@ -2153,6 +2131,9 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
           heightText = '$ft.$inches';
           print(heightText);
         }
+        formKey1.currentState!.save();
+        formKey2.currentState!.save();
+
         addSelectedValuesToList();
         var eval1 = createFormMap();
         print((eval1 as EvaluationModelFormat1).toMap());
@@ -2169,8 +2150,12 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                 //         medicalRecords.map((e) => e.path).toList())
             ));
       }
-    } else {
-      if (address1Controller.text.isEmpty) {
+    }
+    else {
+      if(maritalStatus == ""){
+        AppConfig().showSnackbar(context, "Please Select Marital Status", isError: true);
+      }
+      else if (address1Controller.text.isEmpty) {
         AppConfig().showSnackbar(context, "Please Mention Flat Details",
             isError: true);
       } else if (address2Controller.text.isEmpty) {
@@ -2334,1364 +2319,9 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
     );
   }
 
-  buildFoodHabitsDetails() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              "Food Habits",
-              textAlign: TextAlign.start,
-              style: TextStyle(
-                  fontFamily: "PoppinsBold",
-                  color: kPrimaryColor,
-                  fontSize: 15.sp),
-            ),
-            SizedBox(
-              width: 2.w,
-            ),
-            Expanded(
-              child: Container(
-                height: 1,
-                color: kPrimaryColor,
-              ),
-            ),
-          ],
-        ),
-        SizedBox(
-          height: 3.h,
-        ),
-        Text(
-          'Food Preferences*',
-          style: TextStyle(
-            fontSize: 9.sp,
-            color: kTextColor,
-            fontFamily: "PoppinsSemiBold",
-          ),
-        ),
-        SizedBox(
-          height: 1.h,
-        ),
-        Column(
-          children: [
-            Row(
-              children: [
-                Radio(
-                  value: "Veg",
-                  activeColor: kPrimaryColor,
-                  groupValue: foodPreference,
-                  onChanged: (value) {
-                    setState(() {
-                      foodPreference = value as String;
-                    });
-                  },
-                ),
-                Text(
-                  'Veg',
-                  style: buildTextStyle(),
-                ),
-                SizedBox(
-                  width: 3.w,
-                ),
-                Radio(
-                  value: "Non-Veg",
-                  activeColor: kPrimaryColor,
-                  groupValue: foodPreference,
-                  onChanged: (value) {
-                    setState(() {
-                      foodPreference = value as String;
-                    });
-                  },
-                ),
-                Text(
-                  'Non-Veg',
-                  style: buildTextStyle(),
-                ),
-                SizedBox(
-                  width: 3.w,
-                ),
-                Radio(
-                    value: "Mixed",
-                    groupValue: foodPreference,
-                    activeColor: kPrimaryColor,
-                    onChanged: (value) {
-                      setState(() {
-                        foodPreference = value as String;
-                      });
-                    }),
-                Text(
-                  "Mixed",
-                  style: buildTextStyle(),
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                Radio(
-                    value: "Lacto Veg",
-                    groupValue: foodPreference,
-                    activeColor: kPrimaryColor,
-                    onChanged: (value) {
-                      setState(() {
-                        foodPreference = value as String;
-                      });
-                    }),
-                Text(
-                  "Lacto Veg",
-                  style: buildTextStyle(),
-                ),
-                SizedBox(
-                  width: 3.w,
-                ),
-                Radio(
-                    value: "Ova Veg",
-                    groupValue: foodPreference,
-                    activeColor: kPrimaryColor,
-                    onChanged: (value) {
-                      setState(() {
-                        foodPreference = value as String;
-                      });
-                    }),
-                Text(
-                  "Ova Veg",
-                  style: buildTextStyle(),
-                ),
-              ],
-            ),
-          ],
-        ),
-        SizedBox(
-          height: 2.h,
-        ),
-        Text(
-          'What Kind Of Food Do You Like?*',
-          style: TextStyle(
-            fontSize: 9.sp,
-            color: kTextColor,
-            fontFamily: "PoppinsSemiBold",
-          ),
-        ),
-        SizedBox(
-          height: 1.h,
-        ),
-        ListView(
-          shrinkWrap: true,
-          physics: const BouncingScrollPhysics(),
-          children: [
-            ...foodCheckBox.map(buildFoodCheckBox).toList(),
-          ],
-        ),
-        SizedBox(
-          height: 2.h,
-        ),
-        Text(
-          'The Taste You Enjoy*',
-          style: TextStyle(
-            fontSize: 9.sp,
-            color: kTextColor,
-            fontFamily: "PoppinsSemiBold",
-          ),
-        ),
-        SizedBox(
-          height: 1.h,
-        ),
-        Column(
-          children: [
-            Row(
-              children: [
-                Radio(
-                  value: "Sweet",
-                  activeColor: kPrimaryColor,
-                  groupValue: tasteYouEnjoy,
-                  onChanged: (value) {
-                    setState(() {
-                      tasteYouEnjoy = value as String;
-                    });
-                  },
-                ),
-                Text(
-                  'Sweet',
-                  style: buildTextStyle(),
-                ),
-                SizedBox(
-                  width: 3.w,
-                ),
-                Radio(
-                  value: "Sour",
-                  activeColor: kPrimaryColor,
-                  groupValue: tasteYouEnjoy,
-                  onChanged: (value) {
-                    setState(() {
-                      tasteYouEnjoy = value as String;
-                    });
-                  },
-                ),
-                Text(
-                  'Sour',
-                  style: buildTextStyle(),
-                ),
-                SizedBox(
-                  width: 3.w,
-                ),
-                Radio(
-                    value: "Bitter",
-                    groupValue: tasteYouEnjoy,
-                    activeColor: kPrimaryColor,
-                    onChanged: (value) {
-                      setState(() {
-                        tasteYouEnjoy = value as String;
-                      });
-                    }),
-                Text(
-                  "Bitter",
-                  style: buildTextStyle(),
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                Radio(
-                    value: "Spicy",
-                    groupValue: tasteYouEnjoy,
-                    activeColor: kPrimaryColor,
-                    onChanged: (value) {
-                      setState(() {
-                        tasteYouEnjoy = value as String;
-                      });
-                    }),
-                Text(
-                  "Spicy",
-                  style: buildTextStyle(),
-                ),
-                SizedBox(
-                  width: 3.w,
-                ),
-                Radio(
-                    value: "Salty",
-                    groupValue: tasteYouEnjoy,
-                    activeColor: kPrimaryColor,
-                    onChanged: (value) {
-                      setState(() {
-                        tasteYouEnjoy = value as String;
-                      });
-                    }),
-                Text(
-                  "Salty",
-                  style: buildTextStyle(),
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                Radio(
-                    value: "Astringent",
-                    groupValue: tasteYouEnjoy,
-                    activeColor: kPrimaryColor,
-                    onChanged: (value) {
-                      setState(() {
-                        tasteYouEnjoy = value as String;
-                      });
-                    }),
-                const Text(
-                  "Astringent ",
-                  style: TextStyle(
-                    color: kTextColor,
-                    fontFamily: "PoppinsRegular",
-                  ),
-                ),
-                const Text(
-                  "( Taste of Dark Chocolate,Supari..)",
-                  style: TextStyle(
-                    color: kTextColor,
-                    fontSize: 12,
-                    fontFamily: "PoppinsRegular",
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-        SizedBox(
-          height: 2.h,
-        ),
-        Text(
-          'Number Of Meals You Have A Day*',
-          style: TextStyle(
-            fontSize: 9.sp,
-            color: kTextColor,
-            fontFamily: "PoppinsSemiBold",
-          ),
-        ),
-        SizedBox(
-          height: 1.h,
-        ),
-        Column(
-          children: [
-            Row(
-              children: [
-                Radio(
-                  value: "<2",
-                  activeColor: kPrimaryColor,
-                  groupValue: mealsYouHaveADay,
-                  onChanged: (value) {
-                    setState(() {
-                      mealsYouHaveADay = value as String;
-                    });
-                  },
-                ),
-                Text(
-                  '<2',
-                  style: buildTextStyle(),
-                ),
-                SizedBox(
-                  width: 3.w,
-                ),
-                Radio(
-                  value: "3-4",
-                  activeColor: kPrimaryColor,
-                  groupValue: mealsYouHaveADay,
-                  onChanged: (value) {
-                    setState(() {
-                      mealsYouHaveADay = value as String;
-                    });
-                  },
-                ),
-                Text(
-                  '3-4',
-                  style: buildTextStyle(),
-                ),
-                SizedBox(
-                  width: 3.w,
-                ),
-                Radio(
-                    value: "5-6",
-                    groupValue: mealsYouHaveADay,
-                    activeColor: kPrimaryColor,
-                    onChanged: (value) {
-                      setState(() {
-                        mealsYouHaveADay = value as String;
-                      });
-                    }),
-                Text(
-                  "5-6",
-                  style: buildTextStyle(),
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                Radio(
-                  value: "More Than 6",
-                  activeColor: kPrimaryColor,
-                  groupValue: mealsYouHaveADay,
-                  onChanged: (value) {
-                    setState(() {
-                      mealsYouHaveADay = value as String;
-                    });
-                  },
-                ),
-                Text(
-                  'More Than 6',
-                  style: buildTextStyle(),
-                ),
-              ],
-            )
-          ],
-        ),
-        SizedBox(
-          height: 2.h,
-        ),
-        Text(
-          'Do Certain Food Affect Your Digestion? If So Please Provide Details.*',
-          style: TextStyle(
-            fontSize: 9.sp,
-            color: kTextColor,
-            fontFamily: "PoppinsSemiBold",
-          ),
-        ),
-        SizedBox(
-          height: 1.h,
-        ),
-        TextFormField(
-          controller: digestionController,
-          cursorColor: kPrimaryColor,
-          validator: (value) {
-            if (value!.isEmpty || !RegExp(r"^[a-z A-Z]").hasMatch(value)) {
-              return 'Please enter your Changed';
-            } else if (!RegExp(r"^[a-z A-Z]").hasMatch(value)) {
-              return 'Please enter your valid Changed';
-            } else {
-              return null;
-            }
-          },
-          decoration: CommonDecoration.buildTextInputDecoration(
-              "Your answer", digestionController),
-          textInputAction: TextInputAction.next,
-          textAlign: TextAlign.start,
-          keyboardType: TextInputType.number,
-        ),
-        SizedBox(
-          height: 2.h,
-        ),
-        Text(
-          'Do You Follow Any Special Diet(Keto,Etc)? If So Please Provide Details*',
-          style: TextStyle(
-            fontSize: 9.sp,
-            color: kTextColor,
-            fontFamily: "PoppinsSemiBold",
-          ),
-        ),
-        SizedBox(
-          height: 1.h,
-        ),
-        TextFormField(
-          controller: specialDietController,
-          cursorColor: kPrimaryColor,
-          validator: (value) {
-            if (value!.isEmpty || !RegExp(r"^[a-z A-Z]").hasMatch(value)) {
-              return 'Please enter your Changed';
-            } else if (!RegExp(r"^[a-z A-Z]").hasMatch(value)) {
-              return 'Please enter your valid Changed';
-            } else {
-              return null;
-            }
-          },
-          decoration: CommonDecoration.buildTextInputDecoration(
-              "Your answer", specialDietController),
-          textInputAction: TextInputAction.next,
-          textAlign: TextAlign.start,
-          keyboardType: TextInputType.number,
-        ),
-        SizedBox(
-          height: 2.h,
-        ),
-        Text(
-          'Do You Have Any Known Food Allergy? If So Please Provide Details.*',
-          style: TextStyle(
-            fontSize: 9.sp,
-            color: kTextColor,
-            fontFamily: "PoppinsSemiBold",
-          ),
-        ),
-        SizedBox(
-          height: 1.h,
-        ),
-        TextFormField(
-          controller: foodAllergyController,
-          cursorColor: kPrimaryColor,
-          validator: (value) {
-            if (value!.isEmpty || !RegExp(r"^[a-z A-Z]").hasMatch(value)) {
-              return 'Please enter your Changed';
-            } else if (!RegExp(r"^[a-z A-Z]").hasMatch(value)) {
-              return 'Please enter your valid Changed';
-            } else {
-              return null;
-            }
-          },
-          decoration: CommonDecoration.buildTextInputDecoration(
-              "Your answer", foodAllergyController),
-          textInputAction: TextInputAction.next,
-          textAlign: TextAlign.start,
-          keyboardType: TextInputType.number,
-        ),
-        SizedBox(
-          height: 2.h,
-        ),
-        Text(
-          'Do You Have Any Known Intolerance? If So Please Provide Details.*',
-          style: TextStyle(
-            fontSize: 9.sp,
-            color: kTextColor,
-            fontFamily: "PoppinsSemiBold",
-          ),
-        ),
-        SizedBox(
-          height: 1.h,
-        ),
-        TextFormField(
-          controller: intoleranceController,
-          cursorColor: kPrimaryColor,
-          validator: (value) {
-            if (value!.isEmpty || !RegExp(r"^[a-z A-Z]").hasMatch(value)) {
-              return 'Please enter your Changed';
-            } else if (!RegExp(r"^[a-z A-Z]").hasMatch(value)) {
-              return 'Please enter your valid Changed';
-            } else {
-              return null;
-            }
-          },
-          decoration: CommonDecoration.buildTextInputDecoration(
-              "Your answer", intoleranceController),
-          textInputAction: TextInputAction.next,
-          textAlign: TextAlign.start,
-          keyboardType: TextInputType.number,
-        ),
-        SizedBox(
-          height: 2.h,
-        ),
-        Text(
-          'Do You Have Any Severe Food Cravings? If So Please Provide Details.*',
-          style: TextStyle(
-            fontSize: 9.sp,
-            color: kTextColor,
-            fontFamily: "PoppinsSemiBold",
-          ),
-        ),
-        SizedBox(
-          height: 1.h,
-        ),
-        TextFormField(
-          controller: cravingsController,
-          cursorColor: kPrimaryColor,
-          validator: (value) {
-            if (value!.isEmpty || !RegExp(r"^[a-z A-Z]").hasMatch(value)) {
-              return 'Please enter your Changed';
-            } else if (!RegExp(r"^[a-z A-Z]").hasMatch(value)) {
-              return 'Please enter your valid Changed';
-            } else {
-              return null;
-            }
-          },
-          decoration: CommonDecoration.buildTextInputDecoration(
-              "Your answer", cravingsController),
-          textInputAction: TextInputAction.next,
-          textAlign: TextAlign.start,
-          keyboardType: TextInputType.number,
-        ),
-        SizedBox(
-          height: 2.h,
-        ),
-        Text(
-          'Do You Dislike Any Food?Please Mention All Of Them*',
-          style: TextStyle(
-            fontSize: 9.sp,
-            color: kTextColor,
-            fontFamily: "PoppinsSemiBold",
-          ),
-        ),
-        SizedBox(
-          height: 1.h,
-        ),
-        TextFormField(
-          controller: dislikeFoodController,
-          cursorColor: kPrimaryColor,
-          validator: (value) {
-            if (value!.isEmpty || !RegExp(r"^[a-z A-Z]").hasMatch(value)) {
-              return 'Please enter your Changed';
-            } else if (!RegExp(r"^[a-z A-Z]").hasMatch(value)) {
-              return 'Please enter your valid Changed';
-            } else {
-              return null;
-            }
-          },
-          decoration: CommonDecoration.buildTextInputDecoration(
-              "Your answer", dislikeFoodController),
-          textInputAction: TextInputAction.next,
-          textAlign: TextAlign.start,
-          keyboardType: TextInputType.number,
-        ),
-        SizedBox(
-          height: 2.h,
-        ),
-        Text(
-          'How Many Glasses Of Water Do You Have A Day?*',
-          style: TextStyle(
-            fontSize: 9.sp,
-            color: kTextColor,
-            fontFamily: "PoppinsSemiBold",
-          ),
-        ),
-        SizedBox(
-          height: 1.h,
-        ),
-        Row(
-          children: [
-            Radio(
-              value: "1-2",
-              activeColor: kPrimaryColor,
-              groupValue: selectedValue5,
-              onChanged: (value) {
-                setState(() {
-                  selectedValue5 = value as String;
-                });
-              },
-            ),
-            Text(
-              '1-2',
-              style: buildTextStyle(),
-            ),
-            SizedBox(
-              width: 3.w,
-            ),
-            Radio(
-              value: "3-4",
-              activeColor: kPrimaryColor,
-              groupValue: selectedValue5,
-              onChanged: (value) {
-                setState(() {
-                  selectedValue5 = value as String;
-                });
-              },
-            ),
-            Text(
-              '3-4',
-              style: buildTextStyle(),
-            ),
-            SizedBox(
-              width: 3.w,
-            ),
-            Radio(
-                value: "6-8",
-                groupValue: selectedValue5,
-                activeColor: kPrimaryColor,
-                onChanged: (value) {
-                  setState(() {
-                    selectedValue5 = value as String;
-                  });
-                }),
-            Text(
-              "6-8",
-              style: buildTextStyle(),
-            ),
-            SizedBox(
-              width: 3.w,
-            ),
-            Radio(
-                value: "9+",
-                groupValue: selectedValue5,
-                activeColor: kPrimaryColor,
-                onChanged: (value) {
-                  setState(() {
-                    selectedValue5 = value as String;
-                  });
-                }),
-            Text(
-              "9+",
-              style: buildTextStyle(),
-            ),
-          ],
-        ),
-        SizedBox(
-          height: 2.h,
-        ),
-        Text(
-          'Your Water Habit*',
-          style: TextStyle(
-            fontSize: 9.sp,
-            color: kTextColor,
-            fontFamily: "PoppinsSemiBold",
-          ),
-        ),
-        SizedBox(
-          height: 1.h,
-        ),
-        Column(
-          children: [
-            Row(
-              children: [
-                Radio(
-                    value: "I Drink Water Before Meals",
-                    groupValue: selectedValue6,
-                    activeColor: kPrimaryColor,
-                    onChanged: (value) {
-                      setState(() {
-                        selectedValue6 = value as String;
-                      });
-                    }),
-                Text(
-                  "I Drink Water Before Meals",
-                  style: buildTextStyle(),
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                Radio(
-                    value: "I Usually Drink Water During Meals",
-                    groupValue: selectedValue6,
-                    activeColor: kPrimaryColor,
-                    onChanged: (value) {
-                      setState(() {
-                        selectedValue6 = value as String;
-                      });
-                    }),
-                Text(
-                  "I Usually Drink Water During Meals",
-                  style: buildTextStyle(),
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                Radio(
-                    value: "I Usually Drink Water After Meals",
-                    groupValue: selectedValue6,
-                    activeColor: kPrimaryColor,
-                    onChanged: (value) {
-                      setState(() {
-                        selectedValue6 = value as String;
-                      });
-                    }),
-                Text(
-                  "I Usually Drink Water After Meals",
-                  style: buildTextStyle(),
-                ),
-              ],
-            ),
-          ],
-        ),
-        SizedBox(
-          height: 2.h,
-        ),
-        Text(
-          'Do You Regularly Consume Meat/Poultry/Sea Food Cooked With Curd/Yoghurt/Milk (Ex.Butter Chicken)*',
-          style: TextStyle(
-            fontSize: 9.sp,
-            color: kTextColor,
-            fontFamily: "PoppinsSemiBold",
-          ),
-        ),
-        SizedBox(
-          height: 1.h,
-        ),
-        Row(
-          children: [
-            Radio(
-              value: "Yes",
-              activeColor: kPrimaryColor,
-              groupValue: selectedValue7,
-              onChanged: (value) {
-                setState(() {
-                  selectedValue7 = value as String;
-                });
-              },
-            ),
-            Text(
-              'Yes',
-              style: buildTextStyle(),
-            ),
-            SizedBox(
-              width: 2.w,
-            ),
-            Radio(
-              value: "No",
-              activeColor: kPrimaryColor,
-              groupValue: selectedValue7,
-              onChanged: (value) {
-                setState(() {
-                  selectedValue7 = value as String;
-                });
-              },
-            ),
-            Text(
-              'No',
-              style: buildTextStyle(),
-            ),
-            SizedBox(
-              width: 2.w,
-            ),
-            Radio(
-                value: "Sometimes",
-                groupValue: selectedValue7,
-                activeColor: kPrimaryColor,
-                onChanged: (value) {
-                  setState(() {
-                    selectedValue7 = value as String;
-                  });
-                }),
-            Text(
-              "Sometimes",
-              style: buildTextStyle(),
-            ),
-          ],
-        ),
-        SizedBox(
-          height: 2.h,
-        ),
-        Text(
-          'You Tend To Have Cold Water Or Cold Beverages After Non-Veg Fat Meals/Heavy Snacks Like Samosa*',
-          style: TextStyle(
-            fontSize: 9.sp,
-            color: kTextColor,
-            fontFamily: "PoppinsSemiBold",
-          ),
-        ),
-        SizedBox(
-          height: 1.h,
-        ),
-        Row(
-          children: [
-            Radio(
-              value: "Yes",
-              activeColor: kPrimaryColor,
-              groupValue: selectedValue8,
-              onChanged: (value) {
-                setState(() {
-                  selectedValue8 = value as String;
-                });
-              },
-            ),
-            Text(
-              'Yes',
-              style: buildTextStyle(),
-            ),
-            SizedBox(
-              width: 2.w,
-            ),
-            Radio(
-              value: "No",
-              activeColor: kPrimaryColor,
-              groupValue: selectedValue8,
-              onChanged: (value) {
-                setState(() {
-                  selectedValue8 = value as String;
-                });
-              },
-            ),
-            Text(
-              'No',
-              style: buildTextStyle(),
-            ),
-            SizedBox(
-              width: 2.w,
-            ),
-            Radio(
-                value: "Sometimes",
-                groupValue: selectedValue8,
-                activeColor: kPrimaryColor,
-                onChanged: (value) {
-                  setState(() {
-                    selectedValue8 = value as String;
-                  });
-                }),
-            Text(
-              "Sometimes",
-              style: buildTextStyle(),
-            ),
-          ],
-        ),
-        SizedBox(
-          height: 2.h,
-        ),
-        Text(
-          'Do You Eat Fruits With/Right After/Right Before Your main Course?*',
-          style: TextStyle(
-            fontSize: 9.sp,
-            color: kTextColor,
-            fontFamily: "PoppinsSemiBold",
-          ),
-        ),
-        SizedBox(
-          height: 1.h,
-        ),
-        Row(
-          children: [
-            Radio(
-              value: "Yes",
-              activeColor: kPrimaryColor,
-              groupValue: selectedValue9,
-              onChanged: (value) {
-                setState(() {
-                  selectedValue9 = value as String;
-                });
-              },
-            ),
-            Text(
-              'Yes',
-              style: buildTextStyle(),
-            ),
-            SizedBox(
-              width: 2.w,
-            ),
-            Radio(
-              value: "No",
-              activeColor: kPrimaryColor,
-              groupValue: selectedValue9,
-              onChanged: (value) {
-                setState(() {
-                  selectedValue9 = value as String;
-                });
-              },
-            ),
-            Text(
-              'No',
-              style: buildTextStyle(),
-            ),
-          ],
-        ),
-        SizedBox(
-          height: 2.h,
-        ),
-        Text(
-          'Do You Have Fruits With Milk?*',
-          style: TextStyle(
-            fontSize: 9.sp,
-            color: kTextColor,
-            fontFamily: "PoppinsSemiBold",
-          ),
-        ),
-        SizedBox(
-          height: 1.h,
-        ),
-        Row(
-          children: [
-            Radio(
-              value: "Yes",
-              activeColor: kPrimaryColor,
-              groupValue: selectedValue10,
-              onChanged: (value) {
-                setState(() {
-                  selectedValue10 = value as String;
-                });
-              },
-            ),
-            Text(
-              'Yes',
-              style: buildTextStyle(),
-            ),
-            SizedBox(
-              width: 2.w,
-            ),
-            Radio(
-              value: "No",
-              activeColor: kPrimaryColor,
-              groupValue: selectedValue10,
-              onChanged: (value) {
-                setState(() {
-                  selectedValue10 = value as String;
-                });
-              },
-            ),
-            Text(
-              'No',
-              style: buildTextStyle(),
-            ),
-          ],
-        ),
-        SizedBox(
-          height: 2.h,
-        ),
-        Text(
-          'Which One Is More Apt*',
-          style: TextStyle(
-            fontSize: 9.sp,
-            color: kTextColor,
-            fontFamily: "PoppinsSemiBold",
-          ),
-        ),
-        SizedBox(
-          height: 1.h,
-        ),
-        Column(
-          children: [
-            Row(
-              children: [
-                Radio(
-                    value: "I Chew My Food Properly",
-                    groupValue: selectedValue11,
-                    activeColor: kPrimaryColor,
-                    onChanged: (value) {
-                      setState(() {
-                        selectedValue11 = value as String;
-                      });
-                    }),
-                Text(
-                  "I Chew My Food Properly",
-                  style: buildTextStyle(),
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                Radio(
-                    value: "I Swallow My Food Quickly",
-                    groupValue: selectedValue11,
-                    activeColor: kPrimaryColor,
-                    onChanged: (value) {
-                      setState(() {
-                        selectedValue11 = value as String;
-                      });
-                    }),
-                Text(
-                  "I Swallow My Food Quickly",
-                  style: buildTextStyle(),
-                ),
-              ],
-            ),
-          ],
-        ),
-        SizedBox(
-          height: 2.h,
-        ),
-        Text(
-          'Do You Eat Food Even When You Are Not Hungry(Ex. Stress Eating)*',
-          style: TextStyle(
-            fontSize: 9.sp,
-            color: kTextColor,
-            fontFamily: "PoppinsSemiBold",
-          ),
-        ),
-        SizedBox(
-          height: 1.h,
-        ),
-        Row(
-          children: [
-            Radio(
-              value: "Yes",
-              activeColor: kPrimaryColor,
-              groupValue: selectedValue12,
-              onChanged: (value) {
-                setState(() {
-                  selectedValue12 = value as String;
-                });
-              },
-            ),
-            Text(
-              'Yes',
-              style: buildTextStyle(),
-            ),
-            SizedBox(
-              width: 2.w,
-            ),
-            Radio(
-              value: "No",
-              activeColor: kPrimaryColor,
-              groupValue: selectedValue12,
-              onChanged: (value) {
-                setState(() {
-                  selectedValue12 = value as String;
-                });
-              },
-            ),
-            Text(
-              'No',
-              style: buildTextStyle(),
-            ),
-          ],
-        ),
-        SizedBox(
-          height: 2.h,
-        ),
-        Text(
-          'Do You Have Processed Food More Than 3 Times A Week.(Ex. Chips,Biscuits,Cakes,etc)*',
-          style: TextStyle(
-            fontSize: 9.sp,
-            color: kTextColor,
-            fontFamily: "PoppinsSemiBold",
-          ),
-        ),
-        SizedBox(
-          height: 1.h,
-        ),
-        Row(
-          children: [
-            Radio(
-              value: "Yes",
-              activeColor: kPrimaryColor,
-              groupValue: selectedValue13,
-              onChanged: (value) {
-                setState(() {
-                  selectedValue13 = value as String;
-                });
-              },
-            ),
-            Text(
-              'Yes',
-              style: buildTextStyle(),
-            ),
-            SizedBox(
-              width: 2.w,
-            ),
-            Radio(
-              value: "No",
-              activeColor: kPrimaryColor,
-              groupValue: selectedValue13,
-              onChanged: (value) {
-                setState(() {
-                  selectedValue13 = value as String;
-                });
-              },
-            ),
-            Text(
-              'No',
-              style: buildTextStyle(),
-            ),
-          ],
-        ),
-        SizedBox(
-          height: 2.h,
-        ),
-        Text(
-          'Do You Have Take Out Or Eat Outside Food More Than 3 Times A Week?*',
-          style: TextStyle(
-            fontSize: 9.sp,
-            color: kTextColor,
-            fontFamily: "PoppinsSemiBold",
-          ),
-        ),
-        SizedBox(
-          height: 1.h,
-        ),
-        Row(
-          children: [
-            Radio(
-              value: "Yes",
-              activeColor: kPrimaryColor,
-              groupValue: selectedValue14,
-              onChanged: (value) {
-                setState(() {
-                  selectedValue14 = value as String;
-                });
-              },
-            ),
-            Text(
-              'Yes',
-              style: buildTextStyle(),
-            ),
-            SizedBox(
-              width: 2.w,
-            ),
-            Radio(
-              value: "No",
-              activeColor: kPrimaryColor,
-              groupValue: selectedValue14,
-              onChanged: (value) {
-                setState(() {
-                  selectedValue14 = value as String;
-                });
-              },
-            ),
-            Text(
-              'No',
-              style: buildTextStyle(),
-            ),
-          ],
-        ),
-        SizedBox(
-          height: 5.h,
-        ),
-      ],
-    );
-  }
-
-  buildSleepDetails() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              "Sleep",
-              textAlign: TextAlign.start,
-              style: TextStyle(
-                  fontFamily: "PoppinsBold",
-                  color: kPrimaryColor,
-                  fontSize: 15.sp),
-            ),
-            SizedBox(
-              width: 2.w,
-            ),
-            Expanded(
-              child: Container(
-                height: 1,
-                color: kPrimaryColor,
-              ),
-            ),
-          ],
-        ),
-        SizedBox(
-          height: 3.h,
-        ),
-        Text(
-          'What Time Do You Usually Go To Bed?*',
-          style: TextStyle(
-            fontSize: 9.sp,
-            color: kTextColor,
-            fontFamily: "PoppinsSemiBold",
-          ),
-        ),
-        SizedBox(
-          height: 1.h,
-        ),
-        TextFormField(
-          controller: goToBedController,
-          cursorColor: kPrimaryColor,
-          validator: (value) {
-            if (value!.isEmpty) {
-              return 'Please enter your Weight';
-            } else {
-              return null;
-            }
-          },
-          decoration: CommonDecoration.buildTextInputDecoration(
-              "Time - 00:00", goToBedController),
-          textInputAction: TextInputAction.next,
-          textAlign: TextAlign.start,
-          keyboardType: TextInputType.name,
-        ),
-        SizedBox(
-          height: 2.h,
-        ),
-        Text(
-          'What Time Do You Usuallu Wake Up?*',
-          style: TextStyle(
-            fontSize: 9.sp,
-            color: kTextColor,
-            fontFamily: "PoppinsSemiBold",
-          ),
-        ),
-        SizedBox(
-          height: 1.h,
-        ),
-        TextFormField(
-          controller: wakeUpController,
-          cursorColor: kPrimaryColor,
-          validator: (value) {
-            if (value!.isEmpty || !RegExp(r"^[a-z A-Z]").hasMatch(value)) {
-              return 'Please enter Heal';
-            } else if (!RegExp(r"^[a-z A-Z]").hasMatch(value)) {
-              return 'Please enter your valid Heal';
-            } else {
-              return null;
-            }
-          },
-          decoration: CommonDecoration.buildTextInputDecoration(
-              "Time - 00:00", wakeUpController),
-          textInputAction: TextInputAction.next,
-          textAlign: TextAlign.start,
-          keyboardType: TextInputType.number,
-        ),
-        SizedBox(
-          height: 2.h,
-        ),
-        Text(
-          'What Does Your Sleep Look Like?*',
-          style: TextStyle(
-            fontSize: 9.sp,
-            color: kTextColor,
-            fontFamily: "PoppinsSemiBold",
-          ),
-        ),
-        SizedBox(
-          height: 1.h,
-        ),
-        ListView(
-          shrinkWrap: true,
-          physics: const BouncingScrollPhysics(),
-          children: [
-            ...sleepCheckBox.map(buildSleepCheckBox).toList(),
-          ],
-        ),
-        SizedBox(
-          height: 2.h,
-        ),
-        Text(
-          'Your Sleep Cycle Is*',
-          style: TextStyle(
-            fontSize: 9.sp,
-            color: kTextColor,
-            fontFamily: "PoppinsSemiBold",
-          ),
-        ),
-        SizedBox(
-          height: 1.h,
-        ),
-        Row(
-          children: [
-            Radio(
-              value: "Regular",
-              activeColor: kPrimaryColor,
-              groupValue: selectedValue15,
-              onChanged: (value) {
-                setState(() {
-                  selectedValue15 = value as String;
-                });
-              },
-            ),
-            Text(
-              'Regular',
-              style: buildTextStyle(),
-            ),
-            SizedBox(
-              width: 2.w,
-            ),
-            Radio(
-              value: "Irregular",
-              activeColor: kPrimaryColor,
-              groupValue: selectedValue15,
-              onChanged: (value) {
-                setState(() {
-                  selectedValue15 = value as String;
-                });
-              },
-            ),
-            Text(
-              'Irregular',
-              style: buildTextStyle(),
-            ),
-          ],
-        ),
-        SizedBox(
-          height: 2.h,
-        ),
-        Text(
-          'How Many Hours Of Sleep Do You Get In A Day (Average Over A Week)*',
-          style: TextStyle(
-            fontSize: 9.sp,
-            color: kTextColor,
-            fontFamily: "PoppinsSemiBold",
-          ),
-        ),
-        SizedBox(
-          height: 1.h,
-        ),
-        Row(
-          children: [
-            Radio(
-              value: "5 Or Less",
-              activeColor: kPrimaryColor,
-              groupValue: selectedValue16,
-              onChanged: (value) {
-                setState(() {
-                  selectedValue16 = value as String;
-                });
-              },
-            ),
-            Text(
-              '5 Or Less',
-              style: buildTextStyle(),
-            ),
-            SizedBox(
-              width: 2.w,
-            ),
-            Radio(
-              value: "6-8",
-              activeColor: kPrimaryColor,
-              groupValue: selectedValue16,
-              onChanged: (value) {
-                setState(() {
-                  selectedValue16 = value as String;
-                });
-              },
-            ),
-            Text(
-              '6-8',
-              style: buildTextStyle(),
-            ),
-          ],
-        ),
-        SizedBox(
-          height: 5.h,
-        ),
-      ],
-    );
-  }
 
   buildHealthCheckBox(CheckBoxSettings healthCheckBox, String from) {
-    return SizedBox(
+    return IntrinsicWidth(
       child: CheckboxListTile(
           contentPadding: EdgeInsets.symmetric(horizontal: 5),
           controlAffinity: ListTileControlAffinity.leading,
@@ -3699,7 +2329,9 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
             offset: const Offset(-10, 0),
             child: Text(
               healthCheckBox.title.toString(),
-              style: buildTextStyle(),
+              style: buildTextStyle(color: healthCheckBox.value == true ? kTextColor : gHintTextColor,
+                  fontFamily: healthCheckBox.value == true ? kFontMedium : kFontBook
+              ),
             ),
           ),
           dense: true,
@@ -3799,7 +2431,8 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                   selectedHealthCheckBox2.add(healthCheckBox.title!);
                   healthCheckBox.value = v;
                 });
-              } else {
+              }
+              else {
                 setState(() {
                   selectedHealthCheckBox2.remove(healthCheckBox.title!);
                   healthCheckBox.value = v;
@@ -3846,14 +2479,44 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                   healthCheckBox.value = v;
                 });
               }
-            } else {
+            }
+            else if (healthCheckBox.title == medicalInterventionsDoneBeforeList.last.title) {
+              print("if");
+              setState(() {
+                selectedmedicalInterventionsDoneBeforeList.clear();
+                medicalInterventionsDoneBeforeList.forEach((element) {
+                  if (element.title != medicalInterventionsDoneBeforeList.last.title) {
+                    element.value = false;
+                  }
+                });
+                if (v == true) {
+                  selectedmedicalInterventionsDoneBeforeList.add(healthCheckBox.title!);
+                  healthCheckBox.value = v;
+                } else {
+                  selectedmedicalInterventionsDoneBeforeList.remove(healthCheckBox.title!);
+                  healthCheckBox.value = v;
+                }
+              });
+            }
+            else {
+              if (selectedmedicalInterventionsDoneBeforeList
+                  .contains(medicalInterventionsDoneBeforeList.last.title)) {
+                print("else if");
+
+                setState(() {
+                  selectedmedicalInterventionsDoneBeforeList.clear();
+                  medicalInterventionsDoneBeforeList.last.value = false;
+                });
+              }
               if (v == true) {
                 setState(() {
                   selectedmedicalInterventionsDoneBeforeList
                       .add(healthCheckBox.title);
                   healthCheckBox.value = v;
                 });
-              } else {
+              }
+
+              else {
                 setState(() {
                   selectedmedicalInterventionsDoneBeforeList
                       .remove(healthCheckBox.title);
@@ -4148,35 +2811,6 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
       title: Text(
         gutTypeCheckBox.title.toString(),
         style: buildTextStyle(),
-      ),
-    );
-  }
-
-  buildLabelTextField(String name) {
-    return RichText(
-        text: TextSpan(
-            text: name,
-            style: TextStyle(
-              fontSize: 9.sp,
-              color: gPrimaryColor,
-              fontFamily: "PoppinsSemiBold",
-            ),
-            children: [
-          TextSpan(
-            text: ' *',
-            style: TextStyle(
-              fontSize: 9.sp,
-              color: kPrimaryColor,
-              fontFamily: "PoppinsSemiBold",
-            ),
-          )
-        ]));
-    return Text(
-      'Full Name:*',
-      style: TextStyle(
-        fontSize: 9.sp,
-        color: kTextColor,
-        fontFamily: "PoppinsSemiBold",
       ),
     );
   }
@@ -4672,7 +3306,12 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                       });
                     },
                   ),
-                  Text('Clear', style: buildTextStyle()),
+                  Text('Clear',
+                      style: buildTextStyle(
+                          color: urineColorValue == "Clear" ? kTextColor : gHintTextColor,
+                          fontFamily: urineColorValue == "Clear" ? kFontMedium : kFontBook
+                      )
+                  ),
                 ],
               ),
             ),
@@ -4698,7 +3337,10 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                   ),
                   Text(
                     'Pale Yellow',
-                    style: buildTextStyle(),
+                    style: buildTextStyle(
+                        color: urineColorValue == "Pale Yellow" ? kTextColor : gHintTextColor,
+                        fontFamily: urineColorValue == "Pale Yellow" ? kFontMedium : kFontBook
+                    ),
                   ),
                 ],
               ),
@@ -4724,7 +3366,10 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                       }),
                   Text(
                     "Red",
-                    style: buildTextStyle(),
+                    style: buildTextStyle(
+                        color: urineColorValue == "Red" ? kTextColor : gHintTextColor,
+                        fontFamily: urineColorValue == "Red" ? kFontMedium : kFontBook
+                    ),
                   ),
                 ],
               ),
@@ -4743,7 +3388,12 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                 });
               },
             ),
-            Text('Black', style: buildTextStyle()),
+            Text('Black',
+              style: buildTextStyle(
+                  color: urineColorValue == "Black" ? kTextColor : gHintTextColor,
+                  fontFamily: urineColorValue == "Black" ? kFontMedium : kFontBook
+              ),
+            ),
             SizedBox(
               width: 3.w,
             ),
@@ -4759,7 +3409,10 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
             ),
             Text(
               'Yellow',
-              style: buildTextStyle(),
+              style: buildTextStyle(
+                  color: urineColorValue == "Yellow" ? kTextColor : gHintTextColor,
+                  fontFamily: urineColorValue == "Yellow" ? kFontMedium : kFontBook
+              ),
             ),
             SizedBox(
               width: 3.w,
@@ -4775,7 +3428,10 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                 }),
             Text(
               "Other",
-              style: buildTextStyle(),
+              style: buildTextStyle(
+                  color: urineColorValue == "Other" ? kTextColor : gHintTextColor,
+                  fontFamily: urineColorValue == "Other" ? kFontMedium : kFontBook
+              ),
             ),
           ],
         ),
@@ -4786,56 +3442,86 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
   buildUrineLookRadioButton() {
     return Column(
       children: [
-        Row(
-          children: [
-            Radio(
-                value: "Clear/Transparent",
-                groupValue: urineLookLikeValue,
-                activeColor: kPrimaryColor,
-                onChanged: (value) {
-                  setState(() {
-                    urineLookLikeValue = value as String;
-                  });
-                }),
-            Text(
-              "Clear/Transparent",
-              style: buildTextStyle(),
-            ),
-          ],
+        GestureDetector(
+          onTap: (){
+            setState(() {
+              urineLookLikeValue = "Clear/Transparent";
+            });
+          },
+          child: Row(
+            children: [
+              Radio(
+                  value: "Clear/Transparent",
+                  groupValue: urineLookLikeValue,
+                  activeColor: kPrimaryColor,
+                  onChanged: (value) {
+                    setState(() {
+                      urineLookLikeValue = value as String;
+                    });
+                  }),
+              Text(
+                "Clear/Transparent",
+                style: buildTextStyle(
+                    color: urineLookLikeValue == "Clear/Transparent" ? kTextColor : gHintTextColor,
+                    fontFamily: urineLookLikeValue == "Clear/Transparent" ? kFontMedium : kFontBook
+                ),
+              ),
+            ],
+          ),
         ),
-        Row(
-          children: [
-            Radio(
-                value: "Foggy/cloudy",
-                groupValue: urineLookLikeValue,
-                activeColor: kPrimaryColor,
-                onChanged: (value) {
-                  setState(() {
-                    urineLookLikeValue = value as String;
-                  });
-                }),
-            Text(
-              "Foggy/cloudy",
-              style: buildTextStyle(),
-            ),
-          ],
+        GestureDetector(
+          onTap: (){
+            setState(() {
+              urineLookLikeValue = "Foggy/cloudy";
+            });
+          },
+          child: Row(
+            children: [
+              Radio(
+                  value: "Foggy/cloudy",
+                  groupValue: urineLookLikeValue,
+                  activeColor: kPrimaryColor,
+                  onChanged: (value) {
+                    setState(() {
+                      urineLookLikeValue = value as String;
+                    });
+                  }),
+              Text(
+                "Foggy/cloudy",
+                style: buildTextStyle(
+                    color: urineLookLikeValue == "Foggy/cloudy" ? kTextColor : gHintTextColor,
+                    fontFamily: urineLookLikeValue == "Foggy/cloudy" ? kFontMedium : kFontBook
+                ),
+              ),
+            ],
+          ),
         ),
-        Row(
-          children: [
-            Radio(
-                value: "Other",
-                groupValue: urineLookLikeValue,
-                activeColor: kPrimaryColor,
-                onChanged: (value) {
-                  setState(() {
-                    urineLookLikeValue = value as String;
-                  });
-                }),
-            Text(
-              "Other",
-              style: buildTextStyle(),
-            ),
-          ],
+        GestureDetector(
+          onTap: (){
+            setState(() {
+              urineLookLikeValue = "Other";
+            });
+          },
+          child: Row(
+            children: [
+              Radio(
+                  value: "Other",
+                  groupValue: urineLookLikeValue,
+                  activeColor: kPrimaryColor,
+                  onChanged: (value) {
+                    setState(() {
+                      urineLookLikeValue = value as String;
+                    });
+                  }),
+              Text(
+                "Other",
+                style: buildTextStyle(
+                    color: urineLookLikeValue == "Other" ? kTextColor : gHintTextColor,
+                    fontFamily: urineLookLikeValue == "Other" ? kFontMedium : kFontBook
+                ),
+              ),
+            ],
+          ),
         ),
       ],
     );

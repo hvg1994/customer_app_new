@@ -643,12 +643,14 @@ class ApiClient {
 
     var result;
     var startTime = DateTime.now().millisecondsSinceEpoch;
+    // print("form: $form");
 
-    print(getHeaderToken());
+    form.forEach((key, value) {
+      print("$key---$value");
+    });
 
     Map<String, String> m2 = Map.from(form);
     print(m2);
-    // print("form: $form");
     try {
       var request = http.MultipartRequest('POST', Uri.parse(path));
       var headers = {

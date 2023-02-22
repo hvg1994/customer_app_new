@@ -558,10 +558,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 Text(
                   'Male',
                   style: TextStyle(
-                      fontFamily: eUser().userTextFieldFont,
-                      fontSize: eUser().userTextFieldFontSize,
-                      color: (_selectedGender == 0) ? eUser().kRadioButtonColor : eUser().userTextFieldColor,
-
+                    color: (_selectedGender == 0) ? kTextColor : gHintTextColor,
+                    fontFamily: (_selectedGender == 0) ? kFontMedium : kFontBook,
                   ),
                 )
               ],
@@ -595,9 +593,43 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 Text(
                   'Female',
                   style: TextStyle(
-                    fontFamily: eUser().userTextFieldFont,
-                    fontSize: eUser().userTextFieldFontSize,
-                    color: (_selectedGender == 1) ? eUser().kRadioButtonColor : eUser().userTextFieldColor,
+                    color: (_selectedGender == 1) ? kTextColor : gHintTextColor,
+                    fontFamily: (_selectedGender == 1) ? kFontMedium : kFontBook,
+                  ),
+                )
+              ],
+            ),
+          ),
+          SizedBox(width: 20,),
+          GestureDetector(
+            onTap: (){
+              setState(() {
+                _selectedGender = 2;
+              });
+            },
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(
+                  width: 10,
+                  // height: 10,
+                  child: Radio(
+                    value: 2,
+                    groupValue: _selectedGender,
+                    onChanged: (int? value) {
+                      setState(() {
+                        _selectedGender = value!;
+                      });
+                    },
+                    activeColor: eUser().kRadioButtonColor,
+                  ),
+                ),
+                SizedBox(width: 10,),
+                Text(
+                  'Other',
+                  style: TextStyle(
+                  color: (_selectedGender == 2) ? kTextColor : gHintTextColor,
+                    fontFamily: (_selectedGender == 2) ? kFontMedium : kFontBook,
                   ),
                 )
               ],

@@ -32,6 +32,7 @@ class EvaluationModelFormat1{
   String? medical_interventions_other;
   String medication;
   String holistic;
+  String? allReportsUploaded;
 
   EvaluationModelFormat1(
       {
@@ -68,6 +69,7 @@ class EvaluationModelFormat1{
       this.medical_interventions_other,
       required this.medication,
       required this.holistic,
+        this.allReportsUploaded
       }) ;
 
   Map<String, dynamic> toMap() {
@@ -105,7 +107,7 @@ class EvaluationModelFormat1{
     if(medical_interventions_other!.isNotEmpty) data['any_medical_intervation_done_before_other'] = this.medical_interventions_other;
     data['any_medication_consume_at_moment'] = this.medication;
     data['any_therapies_have_done_before'] = this.holistic;
-    data['marital_status'] = this.maritalStatus;
+    if(allReportsUploaded != null) data['all_report_uploaded'] = this.allReportsUploaded;
     return data;
   }
 

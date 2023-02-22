@@ -47,18 +47,7 @@ class CommonDecoration {
       ),
       suffixIcon: suffixIcon,
       enabledBorder: enabledBorder,
-      focusedBorder: focusBoder
-      // controller.text.isEmpty
-      //     ? const SizedBox()
-      //     : IconButton(
-      //         onPressed: () {
-      //           controller.clear();
-      //         },
-      //         icon: const Icon(
-      //           Icons.close,
-      //           color: kPrimaryColor,
-      //         ),
-      //       ),
+      focusedBorder: focusBoder,
     );
   }
 }
@@ -240,8 +229,9 @@ buildAppBar(VoidCallback func, {bool isBackEnable = true, bool showNotificationI
   );
 }
 
-buildLabelTextField(String name, {double? fontSize}){
+buildLabelTextField(String name, {double? fontSize, double textScleFactor = 0.9}){
   return RichText(
+    textScaleFactor: textScleFactor,
       text: TextSpan(
           text: name,
           style: TextStyle(
