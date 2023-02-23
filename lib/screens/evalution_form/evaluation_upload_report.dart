@@ -802,7 +802,7 @@ class _EvaluationUploadReportState extends State<EvaluationUploadReport> {
               activeColor: kPrimaryColor,
               groupValue: selectedUploadRadio,
               onChanged: (value){
-                setState(() {
+                setstate(() {
                   selectedUploadRadio = name;
                 });
               },

@@ -97,14 +97,14 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
     ChildAppointmentDetails? model;
     if(widget.isFromDashboard || widget.isPostProgram){
       model = ChildAppointmentDetails.fromJson(Map.from(widget.dashboardValueMap!));
-      print("moddd: ${model.teamPatients!.team!.toJson()}");
+      // print("moddd: ${model.teamPatients!.team!.toJson()}");
       model.teamMember?.forEach((element) {
         print('from appoi: ${element.toJson()}');
         if(element.user!.roleId == "2"){
           doctorNames.add('Dr. ${element.user!.name}' ?? '');
         }
       });
-      if(model.teamPatients!.patient!.user!.kaleyraId != null){
+      if(model.teamPatients?.patient?.user?.kaleyraId != null){
         String kaleyraUID = model.teamPatients!.patient!.user!.kaleyraId ?? '';
         getAccessToken(kaleyraUID);
       }
@@ -141,7 +141,7 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
           children: [
             Padding(
               padding:
-                  EdgeInsets.only(left: 4.w, right: 4.w, top: 1.h, bottom: 2.h),
+              EdgeInsets.only(left: 4.w, right: 4.w, top: 1.h, bottom: 2.h),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -247,7 +247,7 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
                               children: [
                                 Padding(
                                   padding:
-                                      EdgeInsets.symmetric(horizontal: 13.w),
+                                  EdgeInsets.symmetric(horizontal: 13.w),
                                   child: RichText(
                                     textAlign: TextAlign.center,
                                     text: TextSpan(
@@ -342,25 +342,39 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
                                 // kaleyra join
                                 GestureDetector(
                                   onTap: () {
-                                    ChildAppointmentDetails? model;
-                                    if(widget.isFromDashboard || widget.isPostProgram){
-                                      model = ChildAppointmentDetails.fromJson(Map.from(widget.dashboardValueMap!));
-                                    }
-                                    // String zoomUrl = model.;
+                                    var curTime = DateTime.now();
+                                    print(DateTime.now());
+                                    print(widget.bookingDate + widget.bookingTime);
+                                    var res = DateFormat("yyyy-MM-dd HH:mm:ss").parse("${widget.bookingDate} ${widget.bookingTime}");
 
-                                    String? kaleyraurl = (widget.isFromDashboard || widget.isPostProgram) ? model?.kaleyraJoinurl : widget.data?.kaleyraJoinurl;
+                                    print(curTime.difference(res));
+                                    print(res.difference(curTime));
 
-                                    print(_pref!.getString(AppConfig.KALEYRA_USER_ID));
-                                    kaleyraUID = _pref!.getString(AppConfig.KALEYRA_USER_ID) ?? '';
-                                    print("kaleyraurl:=>$kaleyraurl");
-                                    print('token: $accessToken');
-                                    print("kaleyraID: $kaleyraUID");
-                                    // send kaleyra id to native
-                                    if(kaleyraUID.isNotEmpty || kaleyraurl != null || accessToken.isNotEmpty){
-                                      Provider.of<ConsultationService>(context, listen: false).joinWithKaleyra(kaleyraUID, kaleyraurl!, accessToken);
+                                    if(res.difference(curTime).inMinutes > 5){
+                                      showJoinPopup();
                                     }
                                     else{
-                                      AppConfig().showSnackbar(context, "Uid/accessToken/join url not found");
+
+                                      ChildAppointmentDetails? model;
+                                      if(widget.isFromDashboard || widget.isPostProgram){
+                                        model = ChildAppointmentDetails.fromJson(Map.from(widget.dashboardValueMap!));
+                                      }
+                                      // String zoomUrl = model.;
+
+                                      String? kaleyraurl = (widget.isFromDashboard || widget.isPostProgram) ? model?.kaleyraJoinurl : widget.data?.kaleyraJoinurl;
+
+                                      print(_pref!.getString(AppConfig.KALEYRA_USER_ID));
+                                      kaleyraUID = _pref!.getString(AppConfig.KALEYRA_USER_ID) ?? '';
+                                      print("kaleyraurl:=>$kaleyraurl");
+                                      print('token: $accessToken');
+                                      print("kaleyraID: $kaleyraUID");
+                                      // send kaleyra id to native
+                                      if(kaleyraUID.isNotEmpty || kaleyraurl != null || accessToken.isNotEmpty){
+                                        Provider.of<ConsultationService>(context, listen: false).joinWithKaleyra(kaleyraUID, kaleyraurl!, accessToken);
+                                      }
+                                      else{
+                                        AppConfig().showSnackbar(context, "Uid/accessToken/join url not found");
+                                      }
                                     }
                                   },
                                   child: Container(
@@ -393,7 +407,7 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
                                   child: GestureDetector(
                                     onTap: () {
                                       Navigator.of(context).push(
-                                          MaterialPageRoute(
+                                        MaterialPageRoute(
                                             builder: (context) =>
                                                 DoctorCalenderTimeScreen(
                                                   isReschedule: true,
@@ -474,6 +488,72 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  showJoinPopup(){
+    return showDialog(
+        context: context,
+        builder: (_){
+          return  Dialog(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20)
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text("You're early to the appointment! \nPlease join 5 minutes before the scheduled time for a successful admission.",
+                    style: TextStyle(
+                        fontFamily: kFontMedium,
+                        fontSize: 10.5.sp,
+                        height: 1.3,
+                        color: gTextColor
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(
+                    height: 1.h,
+                  ),
+                  MediaQuery(
+                    data: MediaQuery.of(context).copyWith(textScaleFactor: 0.75),
+                    child: GestureDetector(
+                      onTap: (){
+                        Navigator.pop(context);
+                      },
+                      child: Container(
+                        width: 40.w,
+                        height: 4.h,
+                        margin: EdgeInsets.symmetric(vertical: 4.h),
+                        padding:
+                        EdgeInsets.symmetric(vertical: 1.h, horizontal: 10.w),
+                        decoration: BoxDecoration(
+                          color: eUser().buttonColor,
+                          borderRadius: BorderRadius.circular(eUser().buttonBorderRadius),
+                          // border: Border.all(
+                          //     color: eUser().buttonBorderColor,
+                          //     width: eUser().buttonBorderWidth
+                          // ),
+                        ),
+                        child:Center(
+                          child: Text(
+                            'Go Back',
+                            style: TextStyle(
+                              fontFamily: eUser().buttonTextFont,
+                              color: eUser().buttonTextColor,
+                              fontSize: eUser().buttonTextSize,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
     );
   }
 

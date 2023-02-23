@@ -222,6 +222,7 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
                               decoration: BoxDecoration(
                                 color: eUser().buttonColor,
                                 borderRadius: BorderRadius.circular(eUser().buttonBorderRadius),
+
                                 // border: Border.all(
                                 //     color: eUser().buttonBorderColor,
                                 //     width: eUser().buttonBorderWidth

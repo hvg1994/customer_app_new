@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:gwc_customer/model/error_model.dart';
 import 'package:gwc_customer/model/program_model/proceed_model/get_proceed_model.dart';
 import 'package:gwc_customer/model/program_model/proceed_model/send_proceed_program_model.dart';
@@ -14,6 +15,7 @@ import 'package:gwc_customer/services/prepratory_service/prepratory_service.dart
 import 'package:gwc_customer/services/program_service/program_service.dart';
 import 'package:gwc_customer/utils/app_config.dart';
 import 'package:gwc_customer/widgets/constants.dart';
+import 'package:gwc_customer/widgets/unfocus_widget.dart';
 import 'package:gwc_customer/widgets/widgets.dart';
 import 'package:sizer/sizer.dart';
 import 'package:http/http.dart' as http;
@@ -814,12 +816,11 @@ class _TrackerUIState extends State<TrackerUI> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
+    return UnfocusWidget(
       child: Container(
         width: double.maxFinite,
         height: 85.h,
-        padding: EdgeInsets.symmetric(vertical: 12, horizontal: 6),
+        padding: EdgeInsets.fromLTRB(12,15, 12,  MediaQuery.of(context).viewInsets.bottom),
         // padding: EdgeInsets.only(
         //     bottom: MediaQuery.of(context).viewInsets.bottom),
         decoration: BoxDecoration(
@@ -910,7 +911,7 @@ class _TrackerUIState extends State<TrackerUI> {
             ],
           ),
         ),
-      ),
+      )
     );
   }
 
@@ -1099,55 +1100,69 @@ class _TrackerUIState extends State<TrackerUI> {
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SizedBox(
-                    width: 25,
-                    child: Radio(
-                      value: "Yes",
-                      activeColor: kPrimaryColor,
-                      groupValue: selectedCalmModule,
-                      onChanged: (value) {
-                        setState(() {
-                          selectedCalmModule = value as String;
-                        });
-                      },
+              GestureDetector(
+                onTap: (){
+                  setState(() {
+                    selectedCalmModule = "Yes";
+                  });
+                },
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SizedBox(
+                      width: 25,
+                      child: Radio(
+                        value: "Yes",
+                        activeColor: kPrimaryColor,
+                        groupValue: selectedCalmModule,
+                        onChanged: (value) {
+                          setState(() {
+                            selectedCalmModule = value as String;
+                          });
+                        },
+                      ),
                     ),
-                  ),
-                  Text(
-                    'Yes',
-                    style: buildTextStyle(
-                        color: selectedCalmModule == 'Yes' ? kTextColor : gHintTextColor,
-                        fontFamily: selectedCalmModule == 'Yes' ? kFontMedium : kFontBook),
-                  ),
-                ],
+                    Text(
+                      'Yes',
+                      style: buildTextStyle(
+                          color: selectedCalmModule == 'Yes' ? kTextColor : gHintTextColor,
+                          fontFamily: selectedCalmModule == 'Yes' ? kFontMedium : kFontBook),
+                    ),
+                  ],
+                ),
               ),
               SizedBox(
                 width: 10.w,
               ),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SizedBox(
-                    width: 25,
-                    child: Radio(
-                      value: "No",
-                      activeColor: kPrimaryColor,
-                      groupValue: selectedCalmModule,
-                      onChanged: (value) {
-                        setState(() {
-                          selectedCalmModule = value as String;
-                        });
-                      },
+              GestureDetector(
+                onTap: (){
+                  setState(() {
+                    selectedCalmModule = "No";
+                  });
+                },
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SizedBox(
+                      width: 25,
+                      child: Radio(
+                        value: "No",
+                        activeColor: kPrimaryColor,
+                        groupValue: selectedCalmModule,
+                        onChanged: (value) {
+                          setState(() {
+                            selectedCalmModule = value as String;
+                          });
+                        },
+                      ),
                     ),
-                  ),
-                  Text(
-                    'No',
-                    style: buildTextStyle(color: selectedCalmModule == 'No' ? kTextColor : gHintTextColor,
-                        fontFamily: selectedCalmModule == 'No' ? kFontMedium : kFontBook),
-                  ),
-                ],
+                    Text(
+                      'No',
+                      style: buildTextStyle(color: selectedCalmModule == 'No' ? kTextColor : gHintTextColor,
+                          fontFamily: selectedCalmModule == 'No' ? kFontMedium : kFontBook),
+                    ),
+                  ],
+                ),
               )
             ],
           ),
@@ -1194,15 +1209,39 @@ class _TrackerUIState extends State<TrackerUI> {
                           proceed();
                         }
                         else{
-                          AppConfig().showSnackbar(context, "Please select Detoxification/healing signs", isError: true);
+                          Get.snackbar(
+                            "",
+                            'Please select Detoxification/healing signs',
+                            titleText: SizedBox.shrink(),
+                            colorText: gWhiteColor,
+                            snackPosition: SnackPosition.BOTTOM,
+                            backgroundColor: gsecondaryColor.withOpacity(0.55),
+                          );
+                          // AppConfig().showSnackbar(context, "Please select Detoxification/healing signs", isError: true);
                         }
                       }
                       else{
-                        AppConfig().showSnackbar(context, "Please select withdrawal symptoms", isError: true);
+                        Get.snackbar(
+                          "",
+                          'Please select withdrawal symptoms',
+                          titleText: SizedBox.shrink(),
+                          colorText: gWhiteColor,
+                          snackPosition: SnackPosition.BOTTOM,
+                          backgroundColor: gsecondaryColor.withOpacity(0.55),
+                        );
+                        // AppConfig().showSnackbar(context, "Please select withdrawal symptoms", isError: true);
                       }
                     }
                     else{
-                      AppConfig().showSnackbar(context, "Please select Calm & Move Modules", isError: true);
+                      Get.snackbar(
+                        "",
+                        'Please select Calm & Move Modules',
+                        titleText: SizedBox.shrink(),
+                        colorText: gWhiteColor,
+                        snackPosition: SnackPosition.BOTTOM,
+                        backgroundColor: gsecondaryColor.withOpacity(0.55),
+                      );
+                      // Get.showSnackbar(context, "Please select Calm & Move Modules", isError: true);
                     }
                   }
                 },
@@ -1223,9 +1262,110 @@ class _TrackerUIState extends State<TrackerUI> {
   }
 
   buildHealthCheckBox(CheckBoxSettings healthCheckBox, String from) {
+    return IntrinsicWidth(
+      child: CheckboxListTile(
+        visualDensity: VisualDensity(vertical: -3), // to compact
+        contentPadding: EdgeInsets.symmetric(horizontal: 5),
+        controlAffinity: ListTileControlAffinity.leading,
+        title: Transform.translate(
+          offset: const Offset(-10, 0),
+          child: Text(
+            healthCheckBox.title.toString(),
+            style: buildTextStyle(color: healthCheckBox.value == true ? kTextColor : gHintTextColor,
+                fontFamily: healthCheckBox.value == true ? kFontMedium : kFontBook
+            ),
+          ),
+        ),
+        dense: true,
+        activeColor: kPrimaryColor,
+        value: healthCheckBox.value,
+        onChanged: (v) {
+          if(from == '1'){
+            if(healthCheckBox.title == symptomsCheckBox1.last.title){
+              print("if");
+              setState(() {
+                selectedSymptoms1.clear();
+                symptomsCheckBox1.forEach((element) {
+                  element.value = false;
+                });
+                selectedSymptoms1.add(healthCheckBox.title!);
+                healthCheckBox.value = v;
+              });
+            }
+            else{
+              print("else");
+              if(selectedSymptoms1.contains(symptomsCheckBox1.last.title)){
+                print("if");
+                setState(() {
+                  selectedSymptoms1.clear();
+                  symptomsCheckBox1.last.value = false;
+                });
+              }
+              if(v == true){
+                setState(() {
+                  selectedSymptoms1.add(healthCheckBox.title!);
+                  healthCheckBox.value = v;
+                });
+              }
+              else{
+                setState(() {
+                  selectedSymptoms1.remove(healthCheckBox.title!);
+                  healthCheckBox.value = v;
+                });
+              }
+            }
+            print(selectedSymptoms1);
+          }
+          else if(from == '2'){
+            if(healthCheckBox.title == symptomsCheckBox2.last.title){
+              print("if");
+              setState(() {
+                selectedSymptoms2.clear();
+                symptomsCheckBox2.forEach((element) {
+                  element.value = false;
+                  // if(element.title != symptomsCheckBox2.last.title){
+                  // }
+                });
+                if(v == true){
+                  selectedSymptoms2.add(healthCheckBox.title);
+                  healthCheckBox.value = v;
+                }
+                else{
+                  selectedSymptoms2.remove(healthCheckBox.title!);
+                  healthCheckBox.value = v;
+                }
+              });
+            }
+            else{
+              // print("else");
+              if(v == true){
+                // print("if");
+                setState(() {
+                  if(selectedSymptoms2.contains(symptomsCheckBox2.last.title)){
+                    // print("if");
+                    selectedSymptoms2.removeWhere((element) => element == symptomsCheckBox2.last.title);
+                    symptomsCheckBox2.forEach((element) {
+                      element.value = false;
+                    });
+                  }
+                  selectedSymptoms2.add(healthCheckBox.title!);
+                  healthCheckBox.value = v;
+                });
+              }
+              else{
+                setState(() {
+                  selectedSymptoms2.remove(healthCheckBox.title!);
+                  healthCheckBox.value = v;
+                });
+              }
+            }
+            print(selectedSymptoms2);
+          }
+        },
+      ),
+    );
     return ListTile(
       visualDensity: VisualDensity(vertical: -3), // to compact
-
       minVerticalPadding: 0,
       minLeadingWidth: 30,
       horizontalTitleGap: 0,

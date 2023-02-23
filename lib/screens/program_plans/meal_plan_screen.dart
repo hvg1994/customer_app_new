@@ -57,7 +57,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
   Color textColor = gWhiteColor;
   String? planNotePdfLink;
 
-  String btnText = 'Proceed to Symptoms Tracker';
+  String btnText = 'NEXT';
 
 
   bool isLoading = false;
@@ -2261,10 +2261,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
         builder: (ctx) {
           return Wrap(
             children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TrackerUI(proceedProgramDayModel: model, from: ProgramMealType.program.name,),
-              )
+              TrackerUI(proceedProgramDayModel: model, from: ProgramMealType.program.name,)
             ],
           );
         });

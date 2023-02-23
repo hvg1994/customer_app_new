@@ -21,6 +21,8 @@ import '../../utils/app_config.dart';
 import '../../widgets/constants.dart';
 import 'package:gwc_customer/screens/gut_list_screens/gut_list.dart' as gut;
 
+import '../prepratory plan/prepratory_plan_screen.dart';
+
 class CookKitTracking extends StatefulWidget {
   final String currentStage;
   final String? awb_number;
@@ -45,7 +47,7 @@ class _CookKitTrackingState extends State<CookKitTracking>{
   String estimatedDay = '';
   String shipAddress = '';
 
-  int tabSize = 2;
+  int tabSize = 3;
 
   bool showShoppingLoading = false;
 
@@ -91,7 +93,20 @@ class _CookKitTrackingState extends State<CookKitTracking>{
               children: [
                 buildAppBar((){
                   Navigator.pop(context);
-                }),
+                },
+                    showHelpIcon: true,
+                    helpOnTap: (){
+                      // if(planNotePdfLink != null || planNotePdfLink!.isNotEmpty){
+                      //   Navigator.push(context, MaterialPageRoute(builder: (ctx)=>
+                      //       MealPdf(pdfLink: planNotePdfLink! ,
+                      //         heading: "Note",
+                      //       )));
+                      // }
+                      // else{
+                      //   AppConfig().showSnackbar(context, "Note Link Not available", isError: true);
+                      // }
+                    }
+                    ),
                 Expanded(child: tabView())
               ],
             ),
@@ -120,7 +135,8 @@ class _CookKitTrackingState extends State<CookKitTracking>{
               labelColor: gMainColor,
               unselectedLabelColor: gPrimaryColor,
               tabs: const  [
-                Tab(text: 'Track Shipping',),
+                Tab(text: 'Prep Meal',),
+                Tab(text: 'Shipping',),
                 Tab(text: 'Shopping',),
               ],
             ),
@@ -128,6 +144,7 @@ class _CookKitTrackingState extends State<CookKitTracking>{
           Flexible(
               child: TabBarView(
                 children:  [
+                  PrepratoryPlanScreen(dayNumber: "1", totalDays: '1'),
                   (showTrackingProgress) ? buildCircularIndicator() : shipRocketUI(context),
                   (showShoppingLoading) ? buildCircularIndicator() : shoppingUi(),
                 ],

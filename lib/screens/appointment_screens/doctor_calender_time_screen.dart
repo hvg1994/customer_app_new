@@ -124,7 +124,8 @@ class _DoctorCalenderTimeScreenState extends State<DoctorCalenderTimeScreen> {
                 }),
                 SizedBox(height: 2.h),
                 buildDoctor(),
-                // SizedBox(height: 1.h),
+                SizedBox(height: 1.h),
+                buildDoctorExpList(),
                 // Row(
                 //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 //   children: [
@@ -294,6 +295,14 @@ class _DoctorCalenderTimeScreenState extends State<DoctorCalenderTimeScreen> {
     );
   }
 
+  buildDoctorExpList() {
+    return SizedBox(
+      height: 18.h,
+      child: buildDoctorList(),
+    );
+  }
+
+
   buildFeedbackList(String assetName) {
     return Container(
       width: double.maxFinite,
@@ -313,8 +322,8 @@ class _DoctorCalenderTimeScreenState extends State<DoctorCalenderTimeScreen> {
 
   Widget buildRating() {
     return SmoothStarRating(
-      color: Colors.amber,
-      borderColor: Colors.amber,
+      color: Colors.white,
+      borderColor: Colors.white,
       rating: rating,
       size: 1.5.h,
       filledIconData: Icons.star_sharp,
@@ -323,6 +332,73 @@ class _DoctorCalenderTimeScreenState extends State<DoctorCalenderTimeScreen> {
       starCount: 5,
       allowHalfRating: true,
       spacing: 2.0,
+    );
+  }
+
+  buildDoctorList() {
+    return Container(
+      width: double.maxFinite,
+      margin: EdgeInsets.symmetric(vertical: 1.h,horizontal: 1.w),
+      padding: EdgeInsets.symmetric(vertical: 1.5.h, horizontal: 3.w),
+      decoration: BoxDecoration(
+        color: gsecondaryColor,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 16.h,
+            height: 16.h,
+            decoration: BoxDecoration(
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.3),
+                  blurRadius: 20,
+                  offset: const Offset(2, 10),
+                ),
+              ],
+              borderRadius: BorderRadius.circular(6),
+              image: const DecorationImage(
+                image: AssetImage("assets/images/doctor_placeholder.png")
+              )
+            ),
+          ),
+          SizedBox(width: 1.5.w),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Dr. Lakshmi Deviappan",
+                style: TextStyle(
+                    fontFamily: kFontBold,
+                    color: gWhiteColor,
+                    fontSize: 11.sp
+                ),
+              ),
+              SizedBox(height: 1.5.h),
+              Text(
+                "12Yr Experience",
+                style: TextStyle(
+                    fontFamily: kFontMedium,
+                    color: gWhiteColor,
+                    fontSize: 10.sp
+                ),
+              ),
+              SizedBox(height: 1.5.h),
+              Text(
+                "Gynecologist",
+                style: TextStyle(
+                    fontFamily: kFontMedium,
+                    color: gWhiteColor,
+                    fontSize: 9.sp
+                ),
+              ),
+              SizedBox(height: 1.5.h),
+              buildRating(),
+            ],
+          ),
+        ],
+      ),
     );
   }
 
@@ -523,3 +599,36 @@ class _DoctorCalenderTimeScreenState extends State<DoctorCalenderTimeScreen> {
 
 
 }
+
+
+/*
+  buildDoctorExpList() {
+    return Column(
+      children: [
+        SizedBox(
+          height: 18.h,
+          child: PageView(
+            controller: pageController,
+            children: [
+              buildDoctorList(),
+              buildDoctorList(),
+            ],
+          ),
+        ),
+        SmoothPageIndicator(
+          controller: pageController,
+          count: 2,
+          axisDirection: Axis.horizontal,
+          effect: JumpingDotEffect(
+            dotColor: Colors.amberAccent,
+            activeDotColor: gsecondaryColor,
+            dotHeight: 0.8.h,
+            dotWidth: 1.7.w,
+            jumpScale: 2,
+          ),
+        ),
+      ],
+    );
+  }
+
+ */
