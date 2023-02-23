@@ -30,7 +30,7 @@ class ConsultationSuccess extends StatelessWidget {
                 children: [
                   Image(
                     image: const AssetImage("assets/images/consultation_completed.png"),
-                    height: 15.h,
+                    height: 40.h,
                   ),
                   SizedBox(height: 4.h),
                   Text(
@@ -38,9 +38,10 @@ class ConsultationSuccess extends StatelessWidget {
                     textAlign: TextAlign.center,
                     style: TextStyle(
                         height: 1.5,
-                        fontFamily: kFontMedium,
+                        fontFamily: kFontBold,
                         color: gPrimaryColor,
-                        fontSize: 10.sp),
+                        fontSize: 12.sp
+                    ),
                   ),
                   SizedBox(height: 1.h),
                   Text(
@@ -50,7 +51,7 @@ class ConsultationSuccess extends StatelessWidget {
                         height: 1.5,
                         fontFamily: kFontMedium,
                         color: gPrimaryColor,
-                        fontSize: 8.sp
+                        fontSize: 10.sp
                     ),
                   ),
                 ],

@@ -7,7 +7,6 @@ AppConfig() will be Singleton class so than we can use this as local storage
 import 'dart:io';
 
 import 'package:catcher/catcher.dart';
-import 'package:country_code_picker_mp/country_localizations.dart';
 import 'package:device_preview/device_preview.dart' hide DeviceType;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';

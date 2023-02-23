@@ -75,7 +75,7 @@ class ApiClient {
       // .substring(2, AppConstant().tokenUser.length - 1);
       return "Bearer $token";
     } else {
-      return "Bearer ${AppConfig().bearer}";
+      return "Bearer not got";
     }
   }
 
@@ -801,6 +801,7 @@ class ApiClient {
     final path = getUserProfileUrl;
     var result;
 
+    print("token: ${getHeaderToken()}");
     try {
       final response = await httpClient.get(
         Uri.parse(path),

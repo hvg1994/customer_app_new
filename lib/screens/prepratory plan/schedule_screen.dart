@@ -55,8 +55,7 @@ class _NewScheduleScreenState extends State<NewScheduleScreen> {
     var outputFormat = DateFormat('yyyy-MM-dd');
     var date2 = outputFormat.format(date1);
     print(date2);
-    final res = await GetUserScheduleSlotsForService(repository: repository).getFollowUpSlotsScheduleService(date2);
-
+    final res = await GetUserScheduleSlotsForService(repository: repository).getFollowUpSlotsScheduleService('2023-02-24');
     print("res: $res");
 
     if(res.runtimeType == ErrorModel){
@@ -255,31 +254,42 @@ class _NewScheduleScreenState extends State<NewScheduleScreen> {
           borderRadius: BorderRadius.all(Radius.circular(8.0))),
       // contentPadding: EdgeInsets.only(top: 10.0, bottom: 8),
       child: SingleChildScrollView(
-        child: SizedBox(
-          height: 50.h,
+        child: Container(
+          padding: EdgeInsets.symmetric(vertical: 12),
+          // height: 50.h,
           child: (isLoading) ? Center(child: buildCircularIndicator(),)
               : (errorMsg.isNotEmpty) ? Center(
         child: Text(errorMsg),
     ) :
           Column(
             mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               SizedBox(
                 height: 6,
               ),
+              Text(
+                'Please Select Slot',
+                style: TextStyle(
+                  fontFamily: kFontMedium,
+                  fontSize: 12.sp
+                ),
+              ),
+              Divider(),
               Center(
                 child: Wrap(
-                  runAlignment: WrapAlignment.spaceEvenly,
+                  alignment: WrapAlignment.start,
+                  runAlignment: WrapAlignment.start,
                   children: [
                     ...followUpSlots!.values.map((e) => slotChip(e.slot!, '',isSelected: selectedSlot.contains(e.slot!), setstate: setState))
                   ],
                 ),
               ),
-              // SizedBox(
-              //   height: 10,
-              // ),
-              Spacer(),
+              SizedBox(
+                height: 10,
+              ),
+              // Spacer(),
               Center(
                 child: Container(
                   width: 30.w,

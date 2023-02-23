@@ -18,7 +18,6 @@ import 'package:gwc_customer/screens/program_plans/day_tracker_ui/day_tracker.da
 import 'package:gwc_customer/screens/program_plans/program_start_screen.dart';
 import 'package:gwc_customer/services/post_program_service/post_program_service.dart';
 import 'package:gwc_customer/widgets/open_alert_box.dart';
-import 'package:just_the_tooltip/just_the_tooltip.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:readmore/readmore.dart';
@@ -27,7 +26,6 @@ import 'package:sizer/sizer.dart';
 import 'package:get/get.dart';
 import '../../model/program_model/meal_plan_details_model/child_meal_plan_details_model.dart';
 import '../../model/program_model/meal_plan_details_model/meal_plan_details_model.dart';
-import '../../model/program_model/proceed_model/get_proceed_model.dart';
 import '../../repository/api_service.dart';
 import '../../services/program_service/program_service.dart';
 import '../../services/vlc_service/check_state.dart';
@@ -2629,47 +2627,4 @@ class MealPlanData {
   String time;
   String title;
   int id;
-}
-
-class FabExample extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('FloatingActionButton Sample'),
-      ),
-      body: Container(
-          color: Colors.red,
-          child:
-              Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-            Text("abc"),
-            Expanded(child: customScroll(true)),
-            Expanded(child: customScroll(false))
-          ])),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Add your onPressed code here!
-        },
-        backgroundColor: Colors.green,
-        child: const Icon(Icons.navigation),
-      ),
-    );
-  }
-
-  customScroll(bool isRow) {
-    return ListView.builder(
-        shrinkWrap: true,
-        itemCount: 50,
-        scrollDirection: (isRow) ? Axis.horizontal : Axis.vertical,
-        itemBuilder: (_, index) {
-          return (isRow)
-              ? Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-                  decoration:
-                      BoxDecoration(borderRadius: BorderRadius.circular(10)),
-                  child: Text(index.toString()))
-              : ListTile(title: Text(index.toString()));
-        });
-  }
 }

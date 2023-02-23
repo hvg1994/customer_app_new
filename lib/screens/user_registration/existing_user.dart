@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -30,7 +31,6 @@ import '../../services/profile_screen_service/user_profile_service.dart';
 import '../../utils/app_config.dart';
 import '../dashboard_screen.dart';
 import 'new_user/choose_your_problem_screen.dart';
-import 'package:country_code_picker_mp/country_code_picker.dart';
 import 'package:gwc_customer/widgets/dart_extensions.dart';
 import 'package:pinput/pinput.dart';
 
@@ -72,19 +72,19 @@ class _ExistingUserState extends State<ExistingUser> {
 
   bool enableResendOtp = false;
 
-  void startTimer() {
+  void startTimer(Function bottomsheetSetState) {
     _resendTimer = 60;
     const oneSec = const Duration(seconds: 1);
     _timer = new Timer.periodic(
       oneSec,
       (Timer timer) {
         if (_resendTimer == 0) {
-          setState(() {
+          bottomsheetSetState(() {
             timer.cancel();
             enableResendOtp = true;
           });
         } else {
-          setState(() {
+          bottomsheetSetState(() {
             _resendTimer--;
           });
         }
@@ -197,7 +197,7 @@ class _ExistingUserState extends State<ExistingUser> {
                 Expanded(
                   child: Container(
                     height: 1.0,
-                    color: gMainColor,
+                    color: kLineColor,
                     margin: EdgeInsets.symmetric(
                       horizontal: 1.5.w,
                     ),
@@ -270,7 +270,7 @@ class _ExistingUserState extends State<ExistingUser> {
                         print("isPhone(value): ${isPhone(value)}");
                         print("!_phoneFocus.hasFocus: ${_phoneFocus.hasFocus}");
                         if (isPhone(value) && _phoneFocus.hasFocus) {
-                          getOtp(value);
+                          // getOtp(value);
                           _phoneFocus.unfocus();
                         }
                       },
@@ -382,17 +382,14 @@ class _ExistingUserState extends State<ExistingUser> {
             Center(
               child: GestureDetector(
                 // onTap: (showLoginProgress) ? null : () {
-                onTap: (otpMessage.toLowerCase().contains('otp sent'))
-                    ? null
-                    : () {
-                        if (mobileFormKey.currentState!.validate() &&
-                            phoneController.text.isNotEmpty) {
-                          if (isPhone(phoneController.text) &&
-                              _phoneFocus.hasFocus) {
+                onTap: () {
+                  if (mobileFormKey.currentState!.validate()) {
+                          if (isPhone(phoneController.text)) {
+                            print("ifff");
                             getOtp(phoneController.text);
                           }
-                          buildGetOTP(context);
-                        } else {
+                        }
+                        else {
                           AppConfig().showSnackbar(
                               context, 'Enter your Mobile Number',
                               isError: true);
@@ -540,8 +537,11 @@ class _ExistingUserState extends State<ExistingUser> {
         ),
       ),
       builder: (BuildContext context) => StatefulBuilder(
-          builder: (BuildContext context, StateSetter setState) {
-        return SizedBox(
+          builder: (BuildContext context, StateSetter bottomsheetSetState) {
+            Future.delayed(Duration.zero).whenComplete(() {
+              startTimer(bottomsheetSetState);
+            });
+            return SizedBox(
           height: bottomSheetHeight(),
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 1.h),
@@ -567,6 +567,7 @@ class _ExistingUserState extends State<ExistingUser> {
                       ),
                       GestureDetector(
                         onTap: () {
+                          if(_timer != null) _timer!.cancel();
                           Navigator.pop(context);
                         },
                         child: Container(
@@ -797,7 +798,6 @@ class _ExistingUserState extends State<ExistingUser> {
     setState(() {
       otpSent = true;
     });
-    startTimer();
     print("get otp");
     final result = await _loginWithOtpService.getOtpService(phoneNumber);
 
@@ -807,19 +807,20 @@ class _ExistingUserState extends State<ExistingUser> {
         otpMessage = "OTP Sent";
         if (kDebugMode) otpController.text = result.otp!;
       });
+      buildGetOTP(context);
       Future.delayed(Duration(seconds: 2)).whenComplete(() {
         setState(() {
           otpSent = false;
           if (kDebugMode) _resendTimer = 0;
         });
       });
-      if (kDebugMode) _timer!.cancel();
+      // if (kDebugMode) _timer!.cancel();
     } else {
       setState(() {
         otpSent = false;
       });
       ErrorModel response = result as ErrorModel;
-      _timer!.cancel();
+      if(_timer != null) _timer!.cancel();
       _resendTimer = 0;
       AppConfig().showSnackbar(context, response.message!, isError: true);
     }
@@ -837,13 +838,13 @@ class _ExistingUserState extends State<ExistingUser> {
       setState(() {
         showLoginProgress = false;
       });
-      storeUserProfile();
       print("model.userEvaluationStatus: ${model.userEvaluationStatus}");
 
       _pref.setString(AppConfig.EVAL_STATUS, model.userEvaluationStatus!);
       storeBearerToken(model.accessToken ?? '');
       _pref.setString(AppConfig.KALEYRA_USER_ID, model.kaleyraUserId!);
       _pref.setString(AppConfig.KALEYRA_SUCCESS_ID, model.kaleyraSuccessId!);
+      storeUserProfile();
 
       _loginWithOtpService.getAccessToken(model.kaleyraUserId!);
 

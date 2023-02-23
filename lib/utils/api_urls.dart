@@ -110,7 +110,9 @@ var prepratoryMealUrl = "${AppConfig().BASE_URL}/api/getDataList/user_prep_meal_
 
 var transitionMealUrl = "${AppConfig().BASE_URL}/api/getDataList/user_trans_meal_plan";
 
-var submitPrepratoryMealTrackUrl = "${AppConfig().BASE_URL}/api/getData/prep_meal_submit";
+
+var submitPrepratoryMealTrackUrl = "${AppConfig().BASE_URL}/api/submitForm/prep_meal_submit";
+//var submitPrepratoryMealTrackUrl = "${AppConfig().BASE_URL}/api/getData/prep_meal_submit";
 
 var getPrepratoryMealTrackUrl = "${AppConfig().BASE_URL}/api/getDataList/tracking_prep_meal";
 

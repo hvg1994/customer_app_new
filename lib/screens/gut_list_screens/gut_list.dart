@@ -362,14 +362,14 @@ class GutListState extends State<GutList> {
                   ),
                   Row(
                     children: [
-                      // TextButton(
-                      //     onPressed: (){
-                      //       Navigator.push(context, MaterialPageRoute(builder: (_)=> const NewScheduleScreen()));
-                      //     },
-                      //     child: Text("New Schedule UI",
-                      //     style: TextStyle(
-                      //       fontSize: 10.sp
-                      //     ),)),
+                      TextButton(
+                          onPressed: (){
+                            Navigator.push(context, MaterialPageRoute(builder: (_)=> const NewScheduleScreen()));
+                          },
+                          child: Text("New Schedule UI",
+                          style: TextStyle(
+                            fontSize: 10.sp
+                          ),)),
                       GestureDetector(
                         onTap: (){
                           openAlertBox(
@@ -871,12 +871,12 @@ class GutListState extends State<GutList> {
       case 'report_upload':
         print(_gutDataModel!.toJson());
         print(_gutDataModel!.value);
-        goToScreen(ConsultationSuccess());
+        // goToScreen(ConsultationSuccess());
 
         // goToScreen(DoctorSlotsDetailsScreen(bookingDate: "2023-02-21", bookingTime: "11:34:00", dashboardValueMap: {},isFromDashboard: true,));
 
         // goToScreen(DoctorCalenderTimeScreen(isReschedule: true,prevBookingTime: '23-09-2022', prevBookingDate: '10AM',));
-        // goToScreen(MedicalReportScreen(pdfLink: _gutDataModel!.value!,));
+        goToScreen(MedicalReportScreen(pdfLink: _gutDataModel!.value!,));
         break;
 
     }

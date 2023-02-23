@@ -21,22 +21,19 @@ import '../../utils/app_config.dart';
 import '../../widgets/constants.dart';
 import 'package:gwc_customer/screens/gut_list_screens/gut_list.dart' as gut;
 
+import '../prepratory plan/prepratory_plan_screen.dart';
+
 class CookKitTracking extends StatefulWidget {
   final String currentStage;
   final String? awb_number;
   final int initialIndex;
-  const CookKitTracking(
-      {Key? key,
-      this.awb_number,
-      required this.currentStage,
-      this.initialIndex = 0})
-      : super(key: key);
+  const CookKitTracking({Key? key, this.awb_number, required this.currentStage, this.initialIndex = 0}) : super(key: key);
 
   @override
   State<CookKitTracking> createState() => _CookKitTrackingState();
 }
 
-class _CookKitTrackingState extends State<CookKitTracking> {
+class _CookKitTrackingState extends State<CookKitTracking>{
   double gap = 23.0;
   int activeStep = -1;
 
@@ -50,7 +47,7 @@ class _CookKitTrackingState extends State<CookKitTracking> {
   String estimatedDay = '';
   String shipAddress = '';
 
-  int tabSize = 2;
+  int tabSize = 3;
 
   bool showShoppingLoading = false;
 
@@ -60,19 +57,18 @@ class _CookKitTrackingState extends State<CookKitTracking> {
   //
   // Map<String, List<ChildGetShoppingModel>> sortedData = {};
 
+
   List dayList = [];
   List<ChildGetShoppingModel> shoppingList = [];
+
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    if (widget.currentStage.isNotEmpty) {
+    if(widget.currentStage.isNotEmpty){
       getShoppingList();
-      if ((widget.currentStage == 'shipping_approved' ||
-              widget.currentStage == 'shipping_delivered' ||
-              widget.currentStage == 'shipping_packed') &&
-          widget.awb_number != null) {
+      if((widget.currentStage == 'shipping_approved' || widget.currentStage == 'shipping_delivered' || widget.currentStage == 'shipping_packed') && widget.awb_number != null){
         shippingTracker();
       }
     }
@@ -84,7 +80,6 @@ class _CookKitTrackingState extends State<CookKitTracking> {
     super.dispose();
     timer?.cancel();
   }
-
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -93,13 +88,25 @@ class _CookKitTrackingState extends State<CookKitTracking> {
       child: SafeArea(
         child: Scaffold(
           body: Padding(
-            padding:
-                EdgeInsets.only(top: 1.h, left: 4.w, right: 4.w, bottom: 1.w),
+            padding: EdgeInsets.only(top: 1.h, left: 4.w, right: 4.w, bottom: 1.w),
             child: Column(
               children: [
-                buildAppBar(() {
+                buildAppBar((){
                   Navigator.pop(context);
-                }),
+                },
+                    showHelpIcon: true,
+                    helpOnTap: (){
+                      // if(planNotePdfLink != null || planNotePdfLink!.isNotEmpty){
+                      //   Navigator.push(context, MaterialPageRoute(builder: (ctx)=>
+                      //       MealPdf(pdfLink: planNotePdfLink! ,
+                      //         heading: "Note",
+                      //       )));
+                      // }
+                      // else{
+                      //   AppConfig().showSnackbar(context, "Note Link Not available", isError: true);
+                      // }
+                    }
+                ),
                 Expanded(child: tabView())
               ],
             ),
@@ -109,7 +116,7 @@ class _CookKitTrackingState extends State<CookKitTracking> {
     );
   }
 
-  tabView() {
+  tabView(){
     return Padding(
       padding: const EdgeInsets.all(4.0),
       child: Column(
@@ -118,46 +125,46 @@ class _CookKitTrackingState extends State<CookKitTracking> {
             height: 35,
             decoration: BoxDecoration(
                 color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(15.0)),
-            child: TabBar(
+                borderRadius: BorderRadius.circular(15.0)
+            ),
+            child:  TabBar(
               indicator: BoxDecoration(
                   color: gPrimaryColor,
-                  borderRadius: BorderRadius.circular(15.0)),
+                  borderRadius:  BorderRadius.circular(15.0)
+              ) ,
               labelColor: gMainColor,
               unselectedLabelColor: gPrimaryColor,
-              tabs: const [
-                Tab(
-                  text: 'Track Shipping',
-                ),
-                Tab(
-                  text: 'Shopping',
-                ),
+              tabs: const  [
+                Tab(text: 'Prep Meal',),
+                Tab(text: 'Shipping',),
+                Tab(text: 'Shopping',),
               ],
             ),
           ),
           Flexible(
               child: TabBarView(
-            children: [
-              (showTrackingProgress)
-                  ? buildCircularIndicator()
-                  : shipRocketUI(context),
-              (showShoppingLoading) ? buildCircularIndicator() : shoppingUi(),
-            ],
-          ))
+                children:  [
+                  PrepratoryPlanScreen(dayNumber: "1", totalDays: '1'),
+                  (showTrackingProgress) ? buildCircularIndicator() : shipRocketUI(context),
+                  (showShoppingLoading) ? buildCircularIndicator() : shoppingUi(),
+                ],
+              )
+          )
         ],
       ),
     );
   }
 
-  shoppingUi() {
-    if (shoppingList.isNotEmpty) {
+  shoppingUi(){
+    if(shoppingList.isNotEmpty){
       return tableView();
-    } else {
+    }
+    else{
       return noData();
     }
   }
 
-  tableView() {
+  tableView(){
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: DataTable(
@@ -177,10 +184,9 @@ class _CookKitTrackingState extends State<CookKitTracking> {
           columnSpacing: 40.w,
           dataRowHeight: 7.h,
           // headingRowColor: MaterialStateProperty.all(const Color(0xffE06666)),
-          columns: <DataColumn>[
+          columns:  <DataColumn>[
             DataColumn(
-              label: Text(
-                'Item Name',
+              label: Text('Item Name',
                 style: TextStyle(
                   height: 1.5,
                   color: eUser().userFieldLabelColor,
@@ -195,8 +201,7 @@ class _CookKitTrackingState extends State<CookKitTracking> {
                   maxWidth: 80,
                   minWidth: 20,
                 ),
-                child: Text(
-                  'Category',
+                child: Text('Category',
                   textAlign: TextAlign.right,
                   style: TextStyle(
                     height: 1.5,
@@ -209,41 +214,42 @@ class _CookKitTrackingState extends State<CookKitTracking> {
             ),
           ],
           rows: [
-            ...shoppingList
-                .map((e) => DataRow(
-                      cells: [
-                        DataCell(Text(
-                          e.ingredients?.name ?? '',
-                          // sortedData.entries.elementAt(index).value[ind].mealItemWeight?.mealItem?.name?.trimLeft() ?? '',
-                          textAlign: TextAlign.left,
-                          style: TextStyle(
-                            height: 1.5,
-                            color: gTextColor,
-                            fontSize: 8.sp,
-                            fontFamily: kFontBold,
-                          ),
-                        )),
-                        DataCell(
-                          Text(
-                            e.ingredients?.childIngredientCategory?.name ?? '',
-                            // sortedData.entries.elementAt(index).value[ind].itemWeight?.trim() ?? '',
-                            // " ${value[ind].itemWeight}" ?? '',
-                            // maxLines: 3,
-                            textAlign: TextAlign.center,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              height: 1.5,
-                              color: gTextColor,
-                              fontSize: 8.sp,
-                              fontFamily: kFontBook,
-                            ),
-                          ),
-                          placeholder: true,
-                        ),
-                      ],
-                    ))
-                .toList()
-          ]),
+            ...shoppingList.map((e) => DataRow(
+              cells: [
+                DataCell(
+                    Text(
+                      e.ingredients?.name ?? '',
+                      // sortedData.entries.elementAt(index).value[ind].mealItemWeight?.mealItem?.name?.trimLeft() ?? '',
+                      textAlign: TextAlign.left,
+                      style: TextStyle(
+                        height: 1.5,
+                        color: gTextColor,
+                        fontSize: 8.sp,
+                        fontFamily: kFontBold,
+                      ),
+                    )
+                ),
+                DataCell(
+                  Text(
+                    e.ingredients?.childIngredientCategory?.name ?? '',
+                    // sortedData.entries.elementAt(index).value[ind].itemWeight?.trim() ?? '',
+                    // " ${value[ind].itemWeight}" ?? '',
+                    // maxLines: 3,
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      height: 1.5,
+                      color: gTextColor,
+                      fontSize: 8.sp,
+                      fontFamily: kFontBook,
+                    ),
+                  ),
+                  placeholder: true,
+                ),
+              ],
+            )).toList()
+          ]
+      ),
     );
   }
 
@@ -400,164 +406,141 @@ class _CookKitTrackingState extends State<CookKitTracking> {
   //   });
   // }
 
-  shipRocketUI(BuildContext context) {
-    if ((widget.currentStage == "shipping_approved" ||
-            widget.currentStage == "shipping_delivered" ||
-            widget.currentStage == "shipping_packed") &&
-        widget.awb_number != null) {
+  shipRocketUI(BuildContext context){
+    if((widget.currentStage == "shipping_approved" || widget.currentStage == "shipping_delivered" || widget.currentStage == "shipping_packed") && widget.awb_number != null){
       return (!showErrorText)
           ? SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Container(
-                    width: double.infinity,
-                    height: 45.h,
-                    decoration: const BoxDecoration(
-                      image: DecorationImage(
-                          image: AssetImage(
-                            "assets/images/Group 2541.png",
-                          ),
-                          fit: BoxFit.fill),
+        physics: const BouncingScrollPhysics(),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Container(
+              width: double.infinity,
+              height: 45.h,
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                    image: AssetImage("assets/images/Group 2541.png",
                     ),
-                    child: Stack(
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.only(top: 3.h, left: 1.5.w),
-                          child: Text(
-                            "Ready to cook Kit Shipping",
-                            style: TextStyle(
-                              fontFamily: "GothamRoundedBold_21016",
-                              fontSize: 12.sp,
-                              color: gPrimaryColor,
-                            ),
-                          ),
-                        ),
-                        Center(
-                          child: SizedBox(
-                            height: 25.h,
-                            child: const Image(
-                              image: AssetImage("assets/images/G.png"),
-                            ),
-                          ),
-                        ),
-                      ],
+                    fit: BoxFit.fill
+                ),
+              ),
+              child: Stack(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(top: 3.h, left: 1.5.w),
+                    child: Text(
+                      "Ready to cook Kit Shipping",
+                      style: TextStyle(
+                        fontFamily: "GothamRoundedBold_21016",
+                        fontSize: 12.sp,
+                        color: gPrimaryColor,
+                      ),
                     ),
                   ),
-                  Column(
-                    // shrinkWrap: true,
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  Center(
+                    child: SizedBox(
+                      height: 25.h,
+                      child: const Image(
+                        image: AssetImage("assets/images/G.png"),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Column(
+              // shrinkWrap: true,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                estimatedDateView(),
+                Visibility(
+                  visible: trackerList.isNotEmpty,
+                  child: Row(
+                    // mainAxisSize: MainAxisSize.min,
                     children: [
-                      estimatedDateView(),
-                      Visibility(
-                        visible: trackerList.isNotEmpty,
-                        child: Row(
-                          // mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Expanded(
-                              child: AnotherStepper(
-                                stepperList: getStepper(),
-                                gap: gap,
-                                isInitialText: true,
-                                initialText: getStepperInitialValue(),
-                                scrollPhysics:
-                                    const NeverScrollableScrollPhysics(),
-                                stepperDirection: Axis.vertical,
-                                horizontalStepperHeight: 5,
-                                dotWidget: getIcons(),
-                                activeBarColor: gPrimaryColor,
-                                inActiveBarColor: Colors.grey.shade200,
-                                activeIndex: activeStep,
-                                barThickness: 5,
-                                titleTextStyle: TextStyle(
-                                  fontSize: 10.sp,
-                                  fontFamily: "GothamMedium",
-                                ),
-                                subtitleTextStyle: TextStyle(
-                                  fontSize: 8.sp,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      // trackingField(),
-                      SizedBox(height: 5.h),
-                      Text(
-                        "Delivery Address",
-                        style: TextStyle(
-                          fontFamily: kFontBold,
-                          fontSize: 12.sp,
-                          color: gPrimaryColor,
-                        ),
-                      ),
-                      SizedBox(height: 1.h),
-                      ListTile(
-                        leading: Container(
-                          height: 5.h,
-                          width: 12.w,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(5),
-                            border: Border.all(color: gMainColor, width: 1),
-                          ),
-                          child: const Icon(
-                            Icons.location_on,
-                            color: gPrimaryColor,
-                          ),
-                        ),
-                        title: Text(
-                          shipAddress,
-                          // _pref?.getString(AppConfig.SHIPPING_ADDRESS) ??  "",
-                          style: TextStyle(
-                            height: 1.5,
-                            fontFamily: kFontBook,
-                            fontSize: 11.sp,
-                            color: gTextColor,
-                          ),
+                      Expanded(
+                        child: AnotherStepper(
+                          stepperList: getStepper(),
+                          gap:gap,
+                          isInitialText: true,
+                          initialText: getStepperInitialValue(),
+                          scrollPhysics: const NeverScrollableScrollPhysics(),
+                          stepperDirection: Axis.vertical,
+                          horizontalStepperHeight: 5,
+                          dotWidget: getIcons(),
+                          activeBarColor: gPrimaryColor,
+                          inActiveBarColor: Colors.grey.shade200,
+                          activeIndex: activeStep,
+                          barThickness: 5,
+                          titleTextStyle: TextStyle(fontSize: 10.sp,fontFamily: "GothamMedium",),
+                          subtitleTextStyle: TextStyle(fontSize: 8.sp,),
                         ),
                       ),
                     ],
                   ),
-                ],
-              ),
-            )
-          : Center(
-              child: Text(
-                errorTextResponse,
-                style: TextStyle(
-                  height: 1.5,
-                  color: gTextColor,
-                  fontSize: 11.sp,
-                  fontFamily: "GothamBold",
                 ),
-              ),
-            );
-    } else {
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Image(
-            image: AssetImage("assets/images/meal_plan_getting_ready.png"),
-            fit: BoxFit.scaleDown,
-          ),
-          SizedBox(height: 5.h),
-          Text(
-            "Your Meal plan is getting Ready !!",
-            style: TextStyle(
-              height: 1.5,
-              color: gTextColor,
-              fontSize: 11.sp,
-              fontFamily: "GothamBold",
+                // trackingField(),
+                SizedBox(height: 5.h),
+                Text(
+                  "Delivery Address",
+                  style: TextStyle(
+                    fontFamily: kFontBold,
+                    fontSize: 12.sp,
+                    color: gPrimaryColor,
+                  ),
+                ),
+                SizedBox(height: 1.h),
+                ListTile(
+                  leading: Container(
+                    height: 5.h,
+                    width: 12.w,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(5),
+                      border: Border.all(color: gMainColor, width: 1),
+                    ),
+                    child: const Icon(
+                      Icons.location_on,
+                      color: gPrimaryColor,
+                    ),
+                  ),
+                  title: Text(
+                    shipAddress,
+                    // _pref?.getString(AppConfig.SHIPPING_ADDRESS) ??  "",
+                    style: TextStyle(
+                      height: 1.5,
+                      fontFamily: kFontBook,
+                      fontSize: 11.sp,
+                      color: gTextColor,
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ),
-        ],
+          ],
+        ),
+      )
+          : Center(child: Text(
+        errorTextResponse,
+        style: TextStyle(
+          height: 1.5,
+          color: gTextColor,
+          fontSize: 11.sp,
+          fontFamily: "GothamBold",
+        ),
+      ),);
+    }
+    else{
+      return const Center(
+        child: Image(
+          image: AssetImage("assets/images/no_data_found.png"),
+          fit: BoxFit.scaleDown,
+        ),
       );
     }
   }
 
-  noData() {
+  noData(){
     return const Center(
       child: Image(
         image: AssetImage("assets/images/no_data_found.png"),
@@ -672,6 +655,7 @@ class _CookKitTrackingState extends State<CookKitTracking> {
   //     );
   // }
 
+
   // showDataRow(){
   //   return shoppingData1!.map(
   //           (s) => DataRow(
@@ -731,6 +715,7 @@ class _CookKitTrackingState extends State<CookKitTracking> {
     );
   }
 
+
   final ShipTrackRepository repository = ShipTrackRepository(
     apiClient: ApiClient(
       httpClient: http.Client(),
@@ -752,22 +737,22 @@ class _CookKitTrackingState extends State<CookKitTracking> {
     setState(() {
       showTrackingProgress = true;
     });
-    final result = await ShipTrackService(repository: repository)
-        .getUserProfileService(widget.awb_number ?? '');
+    final result = await ShipTrackService(repository: repository).getUserProfileService(widget.awb_number ?? '');
     print("shippingTracker: $result");
     //print(result.runtimeType);
-    if (result.runtimeType == ShippingTrackModel) {
+    if(result.runtimeType == ShippingTrackModel){
       ShippingTrackModel data = result;
-      if (data.trackingData!.error != null) {
+      if(data.trackingData!.error != null){
         setState(() {
           showErrorText = true;
           errorTextResponse = data.trackingData?.error ?? '';
         });
-      } else {
+      }
+      else{
         print(data.trackingData!.shipmentTrackActivities);
         data.trackingData!.shipmentTrackActivities!.forEach((element) {
           trackerList.add(element);
-          if (element.srStatusLabel!.toLowerCase() == 'delivered') {
+          if(element.srStatusLabel!.toLowerCase() == 'delivered'){
             setState(() {
               isDelivered = true;
             });
@@ -782,6 +767,7 @@ class _CookKitTrackingState extends State<CookKitTracking> {
           activeStep = 0;
         });
 
+
         timer = Timer.periodic(const Duration(milliseconds: 500), (timer1) {
           //print(timer1.tick);
           //print('activeStep: $activeStep');
@@ -790,15 +776,17 @@ class _CookKitTrackingState extends State<CookKitTracking> {
             setState(() {
               activeStep++;
             });
-          } else {
+          }
+          else{
             timer1.cancel();
           }
         });
       }
-    } else {
+    }
+    else{
       ErrorModel error = result as ErrorModel;
 
-      if (error.message!.contains("Token has expired")) {
+      if(error.message!.contains("Token has expired")){
         print("called shiprocket token from cook kit tracking");
         GutList().myAppState.getShipRocketToken();
       }
@@ -812,11 +800,10 @@ class _CookKitTrackingState extends State<CookKitTracking> {
     setState(() {
       showShoppingLoading = true;
     });
-    final result = await ShipTrackService(repository: repository)
-        .getShoppingDetailsListService();
+    final result = await ShipTrackService(repository: repository).getShoppingDetailsListService();
     print("getShoppingList: $result");
     print(result.runtimeType);
-    if (result.runtimeType == GetShoppingListModel) {
+    if(result.runtimeType == GetShoppingListModel){
       print("meal plan");
       GetShoppingListModel model = result as GetShoppingListModel;
 
@@ -829,7 +816,7 @@ class _CookKitTrackingState extends State<CookKitTracking> {
     }
   }
 
-  getStepper() {
+  getStepper(){
     List<StepperData> stepper = [];
     trackerList.map((e) {
       String txt = 'Location: ${e.location}';
@@ -841,13 +828,12 @@ class _CookKitTrackingState extends State<CookKitTracking> {
       ));
     }).toList();
     setState(() {
-      gap =
-          trackerList.any((element) => element.location!.length > 60) ? 33 : 23;
+      gap = trackerList.any((element) => element.location!.length > 60) ? 33 : 23;
     });
     return stepper;
   }
 
-  getStepperInitialValue() {
+  getStepperInitialValue(){
     List<StepperData> stepper = [];
     trackerList.map((e) {
       stepper.add(StepperData(
@@ -859,7 +845,7 @@ class _CookKitTrackingState extends State<CookKitTracking> {
   }
 
   estimatedDateView() {
-    if (!isDelivered) {
+    if(!isDelivered){
       return Padding(
         padding: const EdgeInsets.all(8.0),
         child: RichText(
@@ -877,10 +863,12 @@ class _CookKitTrackingState extends State<CookKitTracking> {
                       color: gPrimaryColor,
                       fontSize: 10.5.sp),
                 )
-              ]),
+              ]
+          ),
         ),
       );
-    } else {
+    }
+    else{
       return Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
@@ -901,10 +889,10 @@ class _CookKitTrackingState extends State<CookKitTracking> {
                           color: gMainColor,
                           fontSize: 10.5.sp),
                     )
-                  ]),
+                  ]
+              ),
             ),
-            Text(
-              estimatedDate,
+            Text(estimatedDate,
               style: TextStyle(
                   fontFamily: "GothamBook",
                   color: gPrimaryColor,
@@ -916,43 +904,40 @@ class _CookKitTrackingState extends State<CookKitTracking> {
     }
   }
 
-  getIcons() {
+  getIcons(){
     // print("activeStep==> $activeStep  trackerList.length => ${trackerList.length}");
     List<Widget> widgets = [];
-    for (var i = 0; i < trackerList.length; i++) {
+    for(var i = 0; i < trackerList.length; i++){
       // print('-i----$i');
       // print(trackerList[i].srStatus != '7');
-      if (i == 0 && trackerList[i].srStatus != '7') {
+      if(i == 0 && trackerList[i].srStatus != '7'){
+
         widgets.add(Container(
             padding: const EdgeInsets.all(2),
             decoration: const BoxDecoration(
                 color: gPrimaryColor,
-                borderRadius: BorderRadius.all(Radius.circular(20))),
-            child: Icon(
-              Icons.radio_button_checked_sharp,
-              color: Colors.white,
-              size: 15.sp,
-            )
-            // (!trackerList.every((element) => element.srStatus!.contains('7')) && trackerList.length-1) ? Icon(Icons.radio_button_checked_sharp, color: Colors.white, size: 15.sp,) : Icon(Icons.check, color: Colors.white, size: 15.sp,),
-            ));
-      } else {
+                borderRadius: BorderRadius.all(Radius.circular(20))
+            ),
+            child: Icon(Icons.radio_button_checked_sharp, color: Colors.white, size: 15.sp,)
+          // (!trackerList.every((element) => element.srStatus!.contains('7')) && trackerList.length-1) ? Icon(Icons.radio_button_checked_sharp, color: Colors.white, size: 15.sp,) : Icon(Icons.check, color: Colors.white, size: 15.sp,),
+        ));
+      }
+      else {
         widgets.add(Container(
             padding: const EdgeInsets.all(2),
             decoration: const BoxDecoration(
                 color: gPrimaryColor,
-                borderRadius: BorderRadius.all(Radius.circular(20))),
-            child: Icon(
-              Icons.check,
-              color: Colors.white,
-              size: 15.sp,
-            )
-            // (!trackerList.every((element) => element.srStatus!.contains('7')) && trackerList.length-1) ? Icon(Icons.radio_button_checked_sharp, color: Colors.white, size: 15.sp,) : Icon(Icons.check, color: Colors.white, size: 15.sp,),
-            ));
+                borderRadius: BorderRadius.all(Radius.circular(20))
+            ),
+            child: Icon(Icons.check, color: Colors.white, size: 15.sp,)
+          // (!trackerList.every((element) => element.srStatus!.contains('7')) && trackerList.length-1) ? Icon(Icons.radio_button_checked_sharp, color: Colors.white, size: 15.sp,) : Icon(Icons.check, color: Colors.white, size: 15.sp,),
+        ));
       }
     }
     return widgets;
   }
 }
+
 
 const shoppingData = [
   {
@@ -966,6 +951,7 @@ const shoppingData = [
   {
     "title": "Idli/dhokla with chutney green gram porridge*",
     "weight": '10gm',
+
   },
   {
     "title": "Cucumber Juice",
