@@ -19,7 +19,7 @@ import 'package:gwc_customer/widgets/dart_extensions.dart';
 
 class EvaluationGetDetails extends StatefulWidget {
   final bool isFromProfile;
-  const EvaluationGetDetails({Key? key,this.isFromProfile = false})
+  const EvaluationGetDetails({Key? key, this.isFromProfile = false})
       : super(key: key);
 
   @override
@@ -61,6 +61,42 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
   String urinationValue = "";
   String urineColorValue = "";
   String urineLookLikeValue = "";
+
+  final maritalStatusList = [
+    CheckBoxSettings(title: "single"),
+    CheckBoxSettings(title: "married"),
+    CheckBoxSettings(title: "separated"),
+  ];
+  List<String> selectedMaritalStatus = [];
+
+  final genderList = [
+    CheckBoxSettings(title: "Male"),
+    CheckBoxSettings(title: "Female"),
+    CheckBoxSettings(title: "Other"),
+  ];
+  List selectedGender = [];
+
+  final urinationList = [
+    CheckBoxSettings(title: "Increased"),
+    CheckBoxSettings(title: "Decreased"),
+    CheckBoxSettings(title: "No Change"),
+  ];
+  List selectedUrinationList = [];
+  List selectedStoolTypeList = [];
+  List selectedGlassesDayList = [];
+  List selectedMealPreferenceList = [];
+  List selectedHungerPatternList = [];
+  List selectedBowelPatternList = [];
+
+
+  final tongueCoatingList = [
+    CheckBoxSettings(title: "Clear"),
+    CheckBoxSettings(title: "Coated with white layer"),
+    CheckBoxSettings(title: "Coated with yellow layer"),
+    CheckBoxSettings(title: "Coated with black layer"),
+    CheckBoxSettings(title: "Other"),
+  ];
+  List selectedTongueCoatingList = [];
 
   final healthCheckBox1 = <CheckBoxSettings>[
     CheckBoxSettings(title: "Autoimmune Diseases"),
@@ -312,8 +348,7 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
                   image: AssetImage("assets/images/eval_bg.png"),
                   fit: BoxFit.fitWidth,
                   colorFilter:
-                      ColorFilter.mode(
-                          kPrimaryColor, BlendMode.lighten)),
+                      ColorFilter.mode(kPrimaryColor, BlendMode.lighten)),
             ),
       child: SafeArea(
         child: SafeArea(
@@ -418,22 +453,23 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
     return SingleChildScrollView(
       physics: const AlwaysScrollableScrollPhysics(),
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: (widget.isFromProfile) ? 0 : 8),
+        padding:
+            EdgeInsets.symmetric(horizontal: (widget.isFromProfile) ? 0 : 3.w,vertical:(widget.isFromProfile) ? 2.h : 0 ),
         child: Column(
           children: [
-            if(!widget.isFromProfile)
-            buildAppBar(() {
-              Navigator.pop(context);
-            }),
-              SizedBox(height: 2.h),
+            if (!widget.isFromProfile)
+              buildAppBar(() {
+                Navigator.pop(context);
+              }),
+            // SizedBox(height: 1.h),
             buildPersonalDetails(model),
-            SizedBox(height: 1.h),
+            SizedBox(height: 2.h),
             buildHealthDetails(model),
-            SizedBox(height: 1.h),
+            SizedBox(height: 2.h),
             buildFoodHabitsDetails(model),
-            SizedBox(height: 1.h),
+            SizedBox(height: 2.h),
             buildLifeStyleDetails(model),
-            SizedBox(height: 1.h),
+            SizedBox(height: 2.h),
             buildBowelDetails(model),
           ],
         ),
@@ -457,10 +493,7 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
         title,
         textAlign: TextAlign.start,
         style: TextStyle(
-            fontFamily: kFontBook,
-            color: gBlackColor,
-            fontSize: 9.sp
-        ),
+            fontFamily: kFontBook, color: gBlackColor, fontSize: 9.sp),
       ),
     );
   }
@@ -473,7 +506,7 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
                   "Personal Details",
@@ -481,8 +514,7 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
                   style: TextStyle(
                       fontFamily: kFontMedium,
                       color: gBlackColor,
-                      fontSize: headingFont
-                  ),
+                      fontSize: headingFont),
                 ),
                 SizedBox(width: 2.w),
                 Expanded(
@@ -493,18 +525,15 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
                 ),
               ],
             ),
-            SizedBox(
-              height: 10,
-            ),
-            Text(
-              "Let Us Know You Better",
-              textAlign: TextAlign.start,
-              style: TextStyle(
-                  fontFamily: kFontMedium,
-                  color: gHintTextColor,
-                  fontSize: subHeadingFont
-              ),
-            ),
+            // SizedBox(height: 0.5.h),
+            // Text(
+            //   "Let Us Know You Better",
+            //   textAlign: TextAlign.start,
+            //   style: TextStyle(
+            //       fontFamily: kFontMedium,
+            //       color: gHintTextColor,
+            //       fontSize: subHeadingFont),
+            // ),
           ],
         ),
         SizedBox(height: 2.h),
@@ -516,10 +545,7 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
               model?.patient?.user?.fname ?? '',
               textAlign: TextAlign.start,
               style: TextStyle(
-                  fontFamily: kFontBook,
-                  color: gBlackColor,
-                  fontSize: 9.sp
-              ),
+                  fontFamily: kFontBook, color: gBlackColor, fontSize: 9.sp),
             ),
             // buildContainer(model?.patient?.user?.fname ?? ''),
             SizedBox(width: 2.w),
@@ -534,49 +560,53 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
         ),
         SizedBox(height: 2.h),
         buildLabelTextField('Marital Status:', fontSize: questionFont),
-        Row(
-          children: [
-            Radio(
-              value: "Single",
-              activeColor: kPrimaryColor,
-              groupValue: model?.patient?.maritalStatus.toString().capitalize(),
-              onChanged: (value) {},
-            ),
-            Text(
-              'Single',
-              style: buildTextStyle(),
-            ),
-            SizedBox(
-              width: 3.w,
-            ),
-            Radio(
-              value: "Married",
-              activeColor: kPrimaryColor,
-              groupValue: model?.patient?.maritalStatus.toString().capitalize(),
-              onChanged: (value) {},
-            ),
-            Text(
-              'Married',
-              style: buildTextStyle(
-                color: getFontColor(model?.patient?.maritalStatus.toString() ?? ''),
-                fontFamily: getFontFamily(model?.patient?.maritalStatus.toString() ?? '')
-              ),
-            ),
-            SizedBox(
-              width: 3.w,
-            ),
-            Radio(
-                value: "Separated",
-                groupValue:
-                    model?.patient?.maritalStatus.toString().capitalize(),
-                activeColor: kPrimaryColor,
-                onChanged: (value) {}),
-            Text(
-              "Separated",
-              style: buildTextStyle(),
-            ),
-          ],
-        ),
+        SizedBox(height: 1.h),
+        buildMaritalStatusButton(
+            "${model?.patient?.maritalStatus.toString().capitalize()}"),
+        // Row(
+        //   children: [
+        //     Radio(
+        //       value: "Single",
+        //       activeColor: kPrimaryColor,
+        //       groupValue: model?.patient?.maritalStatus.toString().capitalize(),
+        //       onChanged: (value) {},
+        //     ),
+        //     Text(
+        //       'Single',
+        //       style: buildTextStyle(),
+        //     ),
+        //     SizedBox(
+        //       width: 3.w,
+        //     ),
+        //     Radio(
+        //       value: "Married",
+        //       activeColor: kPrimaryColor,
+        //       groupValue: model?.patient?.maritalStatus.toString().capitalize(),
+        //       onChanged: (value) {},
+        //     ),
+        //     Text(
+        //       'Married',
+        //       style: buildTextStyle(
+        //           color: getFontColor(
+        //               model?.patient?.maritalStatus.toString() ?? ''),
+        //           fontFamily: getFontFamily(
+        //               model?.patient?.maritalStatus.toString() ?? '')),
+        //     ),
+        //     SizedBox(
+        //       width: 3.w,
+        //     ),
+        //     Radio(
+        //         value: "Separated",
+        //         groupValue:
+        //             model?.patient?.maritalStatus.toString().capitalize(),
+        //         activeColor: kPrimaryColor,
+        //         onChanged: (value) {}),
+        //     Text(
+        //       "Separated",
+        //       style: buildTextStyle(),
+        //     ),
+        //   ],
+        // ),
         SizedBox(height: 1.h),
         buildLabelTextField('Phone Number', fontSize: questionFont),
         SizedBox(height: 1.h),
@@ -591,43 +621,46 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
         buildContainer(model?.patient?.user?.age ?? ''),
         SizedBox(height: 1.h),
         buildLabelTextField('Gender', fontSize: questionFont),
-        Row(
-          children: [
-            Radio(
-              value: "Male",
-              activeColor: kPrimaryColor,
-              groupValue: model?.patient?.user?.gender.toString().capitalize(),
-              onChanged: (value) {},
-            ),
-            Text('Male', style: buildTextStyle()),
-            SizedBox(
-              width: 3.w,
-            ),
-            Radio(
-              value: "Female",
-              activeColor: kPrimaryColor,
-              groupValue: model?.patient?.user?.gender.toString().capitalize(),
-              onChanged: (value) {},
-            ),
-            Text(
-              'Female',
-              style: buildTextStyle(),
-            ),
-            SizedBox(
-              width: 3.w,
-            ),
-            Radio(
-                value: "Other",
-                groupValue:
-                    model?.patient?.user?.gender.toString().capitalize(),
-                activeColor: kPrimaryColor,
-                onChanged: (value) {}),
-            Text(
-              "Other",
-              style: buildTextStyle(),
-            ),
-          ],
-        ),
+        SizedBox(height: 1.h),
+        buildGenderButton(
+            "${model?.patient?.user?.gender.toString().capitalize()}"),
+        // Row(
+        //   children: [
+        //     Radio(
+        //       value: "Male",
+        //       activeColor: kPrimaryColor,
+        //       groupValue: model?.patient?.user?.gender.toString().capitalize(),
+        //       onChanged: (value) {},
+        //     ),
+        //     Text('Male', style: buildTextStyle()),
+        //     SizedBox(
+        //       width: 3.w,
+        //     ),
+        //     Radio(
+        //       value: "Female",
+        //       activeColor: kPrimaryColor,
+        //       groupValue: model?.patient?.user?.gender.toString().capitalize(),
+        //       onChanged: (value) {},
+        //     ),
+        //     Text(
+        //       'Female',
+        //       style: buildTextStyle(),
+        //     ),
+        //     SizedBox(
+        //       width: 3.w,
+        //     ),
+        //     Radio(
+        //         value: "Other",
+        //         groupValue:
+        //             model?.patient?.user?.gender.toString().capitalize(),
+        //         activeColor: kPrimaryColor,
+        //         onChanged: (value) {}),
+        //     Text(
+        //       "Other",
+        //       style: buildTextStyle(),
+        //     ),
+        //   ],
+        // ),
         SizedBox(height: 1.h),
         buildLabelTextField('Address', fontSize: questionFont),
         SizedBox(height: 1.h),
@@ -644,15 +677,15 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
         buildContainer(model?.patient?.user?.pincode ?? ""),
         SizedBox(height: 1.h),
         buildLabelTextField('City', fontSize: questionFont),
-                SizedBox(height: 1.h),
+        SizedBox(height: 1.h),
         buildContainer(model?.patient?.city ?? ''),
         SizedBox(height: 1.h),
         buildLabelTextField('State', fontSize: questionFont),
-                SizedBox(height: 1.h),
+        SizedBox(height: 1.h),
         buildContainer(model?.patient?.state ?? ''),
         SizedBox(height: 1.h),
         buildLabelTextField('Country', fontSize: questionFont),
-                SizedBox(height: 1.h),
+        SizedBox(height: 1.h),
         buildContainer(model?.patient?.country ?? ''),
         // SizedBox(height: 3.h),
       ],
@@ -675,8 +708,7 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
                   style: TextStyle(
                       fontFamily: kFontMedium,
                       color: gBlackColor,
-                      fontSize: headingFont
-                  ),
+                      fontSize: headingFont),
                 ),
                 SizedBox(
                   width: 2.w,
@@ -689,18 +721,16 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
                 ),
               ],
             ),
-            SizedBox(
-              height: 10,
-            ),
-            Text(
-              "Important For Your Doctors To Know What You Have Been Through Or Are Going Through At The Moment",
-              textAlign: TextAlign.start,
-              style: TextStyle(
-                  fontFamily: kFontMedium,
-                  color: gHintTextColor,
-                  fontSize: subHeadingFont
-              ),
-            ),
+            // SizedBox(height: 0.5.h),
+            // Text(
+            //   "Important For Your Doctors To Know What You Have Been Through Or Are Going Through At The Moment",
+            //   textAlign: TextAlign.start,
+            //   style: TextStyle(
+            //       height: 1.2,
+            //       fontFamily: kFontMedium,
+            //       color: gHintTextColor,
+            //       fontSize: subHeadingFont),
+            // ),
           ],
         ),
         SizedBox(height: 2.h),
@@ -713,99 +743,105 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
         buildContainer(model?.height ?? ""),
         SizedBox(height: 1.h),
         buildLabelTextField(
-            'Brief Paragraph About Your Current Complaints Are & What You Are Looking To Heal Here', fontSize: questionFont),
+            'Brief Paragraph About Your Current Complaints Are & What You Are Looking To Heal Here',
+            fontSize: questionFont),
         SizedBox(height: 1.h),
         buildContainer(model?.healthProblem ?? ""),
         SizedBox(height: 1.h),
-        buildLabelTextField('Please Check All That Apply To You', fontSize: questionFont),
+        buildLabelTextField('Please Check All That Apply To You',
+            fontSize: questionFont),
         SizedBox(height: 1.h),
         showSelectedHealthBox(),
         buildContainer(model?.listProblemsOther ?? ""),
         SizedBox(height: 1.h),
-        buildLabelTextField('Please Check All That Apply To You', fontSize: questionFont),
+        buildLabelTextField('Please Check All That Apply To You',
+            fontSize: questionFont),
         SizedBox(height: 1.h),
         showSelectedHealthBox2(),
         SizedBox(height: 1.h),
         buildLabelTextField('Tongue Coating', fontSize: questionFont),
         SizedBox(height: 1.h),
-        Column(
-          children: [
-            Row(
-              children: [
-                Radio(
-                    value: "clear",
-                    groupValue: model?.tongueCoating,
-                    activeColor: kPrimaryColor,
-                    onChanged: (value) {}),
-                Text(
-                  "Clear",
-                  style: buildTextStyle(),
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                Radio(
-                    value: "Coated with white layer",
-                    groupValue: model?.tongueCoating,
-                    activeColor: kPrimaryColor,
-                    onChanged: (value) {}),
-                Text(
-                  "Coated with white layer",
-                  style: buildTextStyle(),
-                ),
-              ],
-            ),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Radio(
-                    value: "Coated with yellow layer",
-                    groupValue: model?.tongueCoating,
-                    activeColor: kPrimaryColor,
-                    onChanged: (value) {}),
-                Text(
-                  "Coated with yellow layer",
-                  style: buildTextStyle(),
-                ),
-              ],
-            ),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Radio(
-                    value: "Coated with black layer",
-                    groupValue: model?.tongueCoating,
-                    activeColor: kPrimaryColor,
-                    onChanged: (value) {}),
-                Text(
-                  "Coated with black layer",
-                  style: buildTextStyle(),
-                ),
-              ],
-            ),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Radio(
-                    value: "other",
-                    groupValue: model?.tongueCoating,
-                    activeColor: kPrimaryColor,
-                    onChanged: (value) {}),
-                Text(
-                  "Other:",
-                  style: buildTextStyle(),
-                ),
-              ],
-            ),
-          ],
-        ),
+        buildTongueCoatingButton("${model?.tongueCoating}"),
+        // Column(
+        //   children: [
+        //     Row(
+        //       children: [
+        //         Radio(
+        //             value: "clear",
+        //             groupValue: model?.tongueCoating,
+        //             activeColor: kPrimaryColor,
+        //             onChanged: (value) {}),
+        //         Text(
+        //           "Clear",
+        //           style: buildTextStyle(),
+        //         ),
+        //       ],
+        //     ),
+        //     Row(
+        //       children: [
+        //         Radio(
+        //             value: "Coated with white layer",
+        //             groupValue: model?.tongueCoating,
+        //             activeColor: kPrimaryColor,
+        //             onChanged: (value) {}),
+        //         Text(
+        //           "Coated with white layer",
+        //           style: buildTextStyle(),
+        //         ),
+        //       ],
+        //     ),
+        //     Row(
+        //       crossAxisAlignment: CrossAxisAlignment.center,
+        //       children: [
+        //         Radio(
+        //             value: "Coated with yellow layer",
+        //             groupValue: model?.tongueCoating,
+        //             activeColor: kPrimaryColor,
+        //             onChanged: (value) {}),
+        //         Text(
+        //           "Coated with yellow layer",
+        //           style: buildTextStyle(),
+        //         ),
+        //       ],
+        //     ),
+        //     Row(
+        //       crossAxisAlignment: CrossAxisAlignment.center,
+        //       children: [
+        //         Radio(
+        //             value: "Coated with black layer",
+        //             groupValue: model?.tongueCoating,
+        //             activeColor: kPrimaryColor,
+        //             onChanged: (value) {}),
+        //         Text(
+        //           "Coated with black layer",
+        //           style: buildTextStyle(),
+        //         ),
+        //       ],
+        //     ),
+        //     Row(
+        //       crossAxisAlignment: CrossAxisAlignment.center,
+        //       children: [
+        //         Radio(
+        //             value: "other",
+        //             groupValue: model?.tongueCoating,
+        //             activeColor: kPrimaryColor,
+        //             onChanged: (value) {}),
+        //         Text(
+        //           "Other:",
+        //           style: buildTextStyle(),
+        //         ),
+        //       ],
+        //     ),
+        //   ],
+        // ),
         buildContainer(model?.tongueCoatingOther ?? ""),
         SizedBox(height: 1.h),
         buildLabelTextField(
-            "Has Frequency Of Urination Increased Or Decreased In The Recent Past", fontSize: questionFont),
+            "Has Frequency Of Urination Increased Or Decreased In The Recent Past",
+            fontSize: questionFont),
         SizedBox(height: 1.h),
         buildUrination("${model?.anyUrinationIssue}"),
+        SizedBox(height: 1.h),
         buildLabelTextField("Urine Color", fontSize: questionFont),
         SizedBox(height: 1.h),
         buildUrineColorRadioButton(
@@ -818,14 +854,17 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
         SizedBox(height: 1.h),
         buildContainer(model?.urineSmellOther ?? ""),
         SizedBox(height: 1.h),
-        buildLabelTextField("What Does Your Urine Look Like", fontSize: questionFont),
+        buildLabelTextField("What Does Your Urine Look Like",
+            fontSize: questionFont),
         SizedBox(height: 1.h),
         buildUrineLookRadioButton("${model?.urineLookLike}"),
         SizedBox(height: 1.h),
         buildContainer(model?.urineSmellOther ?? ""),
         SizedBox(height: 1.h),
-        buildLabelTextField("Which one is the closest match to your stool", fontSize: questionFont),
+        buildLabelTextField("Which one is the closest match to your stool",
+            fontSize: questionFont),
         SizedBox(height: 1.h),
+
         ListView(
           shrinkWrap: true,
           physics: const BouncingScrollPhysics(),
@@ -838,104 +877,108 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
               ),
             ),
             SizedBox(height: 1.h),
-            Column(
-              children: [
-                Row(
-                  children: [
-                    Radio(
-                        value: "Seperate hard lumps",
-                        groupValue: model?.closestStoolType,
-                        activeColor: kPrimaryColor,
-                        onChanged: (value) {}),
-                    Text(
-                      "Seperate hard lumps",
-                      style: buildTextStyle(),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    Radio(
-                        value: "Lumpy & sausage like",
-                        groupValue: model?.closestStoolType,
-                        activeColor: kPrimaryColor,
-                        onChanged: (value) {}),
-                    Text(
-                      "Lumpy & sausage like",
-                      style: buildTextStyle(),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    Radio(
-                        value: "Sausage shape with cracks on the surface",
-                        groupValue: model?.closestStoolType,
-                        activeColor: kPrimaryColor,
-                        onChanged: (value) {}),
-                    Text(
-                      "Sausage shape with cracks on the surface",
-                      style: buildTextStyle(),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    Radio(
-                        value: "Smooth, soft sausage or snake",
-                        groupValue: model?.closestStoolType,
-                        activeColor: kPrimaryColor,
-                        onChanged: (value) {}),
-                    Text(
-                      "Smooth, soft sausage or snake",
-                      style: buildTextStyle(),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    Radio(
-                        value: "Soft blobs with clear cut edges",
-                        groupValue: model?.closestStoolType,
-                        activeColor: kPrimaryColor,
-                        onChanged: (value) {}),
-                    Text(
-                      "Soft blobs with clear cut edges",
-                      style: buildTextStyle(),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    Radio(
-                        value: "liquid consistency with no solid pieces",
-                        groupValue: model?.closestStoolType,
-                        activeColor: kPrimaryColor,
-                        onChanged: (value) {}),
-                    Text(
-                      "liquid consistency with no solid pieces",
-                      style: buildTextStyle(),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+            buildStoolButton("${model?.closestStoolType}"),
+            // Column(
+            //   children: [
+            //     Row(
+            //       children: [
+            //         Radio(
+            //             value: "Seperate hard lumps",
+            //             groupValue: model?.closestStoolType,
+            //             activeColor: kPrimaryColor,
+            //             onChanged: (value) {}),
+            //         Text(
+            //           "Seperate hard lumps",
+            //           style: buildTextStyle(),
+            //         ),
+            //       ],
+            //     ),
+            //     Row(
+            //       children: [
+            //         Radio(
+            //             value: "Lumpy & sausage like",
+            //             groupValue: model?.closestStoolType,
+            //             activeColor: kPrimaryColor,
+            //             onChanged: (value) {}),
+            //         Text(
+            //           "Lumpy & sausage like",
+            //           style: buildTextStyle(),
+            //         ),
+            //       ],
+            //     ),
+            //     Row(
+            //       children: [
+            //         Radio(
+            //             value: "Sausage shape with cracks on the surface",
+            //             groupValue: model?.closestStoolType,
+            //             activeColor: kPrimaryColor,
+            //             onChanged: (value) {}),
+            //         Text(
+            //           "Sausage shape with cracks on the surface",
+            //           style: buildTextStyle(),
+            //         ),
+            //       ],
+            //     ),
+            //     Row(
+            //       children: [
+            //         Radio(
+            //             value: "Smooth, soft sausage or snake",
+            //             groupValue: model?.closestStoolType,
+            //             activeColor: kPrimaryColor,
+            //             onChanged: (value) {}),
+            //         Text(
+            //           "Smooth, soft sausage or snake",
+            //           style: buildTextStyle(),
+            //         ),
+            //       ],
+            //     ),
+            //     Row(
+            //       children: [
+            //         Radio(
+            //             value: "Soft blobs with clear cut edges",
+            //             groupValue: model?.closestStoolType,
+            //             activeColor: kPrimaryColor,
+            //             onChanged: (value) {}),
+            //         Text(
+            //           "Soft blobs with clear cut edges",
+            //           style: buildTextStyle(),
+            //         ),
+            //       ],
+            //     ),
+            //     Row(
+            //       children: [
+            //         Radio(
+            //             value: "liquid consistency with no solid pieces",
+            //             groupValue: model?.closestStoolType,
+            //             activeColor: kPrimaryColor,
+            //             onChanged: (value) {}),
+            //         Text(
+            //           "liquid consistency with no solid pieces",
+            //           style: buildTextStyle(),
+            //         ),
+            //       ],
+            //     ),
+            //   ],
+            // ),
           ],
         ),
         SizedBox(height: 1.h),
-        buildLabelTextField("Medical Interventions Done Before", fontSize: questionFont),
+        buildLabelTextField("Medical Interventions Done Before",
+            fontSize: questionFont),
         SizedBox(height: 1.h),
         showSelectedMedicalInterventionsList(),
         SizedBox(height: 1.h),
         buildContainer(model?.anyMedicalIntervationDoneBeforeOther ?? ""),
         SizedBox(height: 1.h),
         buildLabelTextField(
-            'Any Medications/Supplements/Inhalers/Contraceptives You Consume At The Moment', fontSize: questionFont),
+            'Any Medications/Supplements/Inhalers/Contraceptives You Consume At The Moment',
+            fontSize: questionFont),
         SizedBox(height: 1.h),
         buildContainer(model?.anyMedicationConsumeAtMoment ?? ""),
         SizedBox(height: 1.h),
         buildLabelTextField(
-            'Holistic/Alternative Therapies You Have Been Through & When (Ayurveda, Homeopathy) ', fontSize: questionFont),
+            'Holistic/Alternative Therapies You Have Been Through & When (Ayurveda, Homeopathy) ',
+            fontSize: questionFont),
         SizedBox(height: 1.h),
         buildContainer(model?.anyTherapiesHaveDoneBefore ?? ""),
         SizedBox(height: 1.h),
@@ -963,8 +1006,7 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
                   style: TextStyle(
                       fontFamily: kFontMedium,
                       color: gBlackColor,
-                      fontSize: headingFont
-                  ),
+                      fontSize: headingFont),
                 ),
                 SizedBox(
                   width: 2.w,
@@ -977,98 +1019,106 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
                 ),
               ],
             ),
-            SizedBox(
-              height: 10,
-            ),
-            Text(
-              "To Make Your Meal Plans As Simple & Easy For You To Follow As Possible",
-              textAlign: TextAlign.start,
-              style: TextStyle(
-                  fontFamily: kFontMedium,
-                  color: gHintTextColor,
-                  fontSize: subHeadingFont
-              ),
-            ),
+            // SizedBox(
+            //   height: 0.5.h
+            // ),
+            // Text(
+            //   "To Make Your Meal Plans As Simple & Easy For You To Follow As Possible",
+            //   textAlign: TextAlign.start,
+            //   style: TextStyle(
+            //     height: 1.2,
+            //       fontFamily: kFontMedium,
+            //       color: gHintTextColor,
+            //       fontSize: subHeadingFont),
+            // ),
           ],
         ),
         SizedBox(height: 2.h),
         buildLabelTextField(
-            "Do Certain Food Affect Your Digestion? If So Please Provide Details.", fontSize: questionFont),
+            "Do Certain Food Affect Your Digestion? If So Please Provide Details.",
+            fontSize: questionFont),
         SizedBox(height: 1.h),
         buildContainer(model?.mentionIfAnyFoodAffectsYourDigesion ?? ""),
         SizedBox(height: 1.h),
         buildLabelTextField(
-            "Do You Follow Any Special Diet(Keto,Etc)? If So Please Provide Details", fontSize: questionFont),
+            "Do You Follow Any Special Diet(Keto,Etc)? If So Please Provide Details",
+            fontSize: questionFont),
         SizedBox(height: 1.h),
         buildContainer(model?.anySpecialDiet ?? ""),
         SizedBox(height: 1.h),
         buildLabelTextField(
-            "Do You Have Any Known Food Allergy? If So Please Provide Details.", fontSize: questionFont),
+            "Do You Have Any Known Food Allergy? If So Please Provide Details.",
+            fontSize: questionFont),
         SizedBox(height: 1.h),
         buildContainer(model?.anyFoodAllergy ?? ""),
         SizedBox(height: 1.h),
         buildLabelTextField(
-            "Do You Have Any Known Intolerance? If So Please Provide Details.", fontSize: questionFont),
+            "Do You Have Any Known Intolerance? If So Please Provide Details.",
+            fontSize: questionFont),
         SizedBox(height: 1.h),
         buildContainer(model?.anyIntolerance ?? ""),
         SizedBox(height: 1.h),
         buildLabelTextField(
-            "Do You Have Any Severe Food Cravings? If So Please Provide Details.", fontSize: questionFont),
+            "Do You Have Any Severe Food Cravings? If So Please Provide Details.",
+            fontSize: questionFont),
         SizedBox(height: 1.h),
         buildContainer(model?.anySevereFoodCravings ?? ""),
         SizedBox(height: 1.h),
         buildLabelTextField(
-            "Do You Dislike Any Food?Please Mention All Of Them", fontSize: questionFont),
+            "Do You Dislike Any Food?Please Mention All Of Them",
+            fontSize: questionFont),
         SizedBox(height: 1.h),
         buildContainer(model?.anyDislikeFood ?? ""),
         SizedBox(height: 1.h),
-        buildLabelTextField("How Many Glasses Of Water Do You Have A Day?", fontSize: questionFont),
+        buildLabelTextField("How Many Glasses Of Water Do You Have A Day?",
+            fontSize: questionFont),
         SizedBox(height: 1.h),
-        Row(
-          children: [
-            Radio(
-              value: "1-2",
-              activeColor: kPrimaryColor,
-              groupValue: model?.noGalssesDay,
-              onChanged: (value) {},
-            ),
-            Text(
-              '1-2',
-              style: buildTextStyle(),
-            ),
-            SizedBox(width: 3.w),
-            Radio(
-              value: "3-4",
-              activeColor: kPrimaryColor,
-              groupValue: model?.noGalssesDay,
-              onChanged: (value) {},
-            ),
-            Text(
-              '3-4',
-              style: buildTextStyle(),
-            ),
-            SizedBox(width: 3.w),
-            Radio(
-                value: "6-8",
-                groupValue: model?.noGalssesDay,
-                activeColor: kPrimaryColor,
-                onChanged: (value) {}),
-            Text(
-              "6-8",
-              style: buildTextStyle(),
-            ),
-            SizedBox(width: 3.w),
-            Radio(
-                value: "9+",
-                groupValue: model?.noGalssesDay,
-                activeColor: kPrimaryColor,
-                onChanged: (value) {}),
-            Text(
-              "9+",
-              style: buildTextStyle(),
-            ),
-          ],
-        ),
+        buildGlassesDayButton("${model?.noGalssesDay}"),
+        // Row(
+        //   children: [
+        //     Radio(
+        //       value: "1-2",
+        //       activeColor: kPrimaryColor,
+        //       groupValue: model?.noGalssesDay,
+        //       onChanged: (value) {},
+        //     ),
+        //     Text(
+        //       '1-2',
+        //       style: buildTextStyle(),
+        //     ),
+        //     SizedBox(width: 3.w),
+        //     Radio(
+        //       value: "3-4",
+        //       activeColor: kPrimaryColor,
+        //       groupValue: model?.noGalssesDay,
+        //       onChanged: (value) {},
+        //     ),
+        //     Text(
+        //       '3-4',
+        //       style: buildTextStyle(),
+        //     ),
+        //     SizedBox(width: 3.w),
+        //     Radio(
+        //         value: "6-8",
+        //         groupValue: model?.noGalssesDay,
+        //         activeColor: kPrimaryColor,
+        //         onChanged: (value) {}),
+        //     Text(
+        //       "6-8",
+        //       style: buildTextStyle(),
+        //     ),
+        //     SizedBox(width: 3.w),
+        //     Radio(
+        //         value: "9+",
+        //         groupValue: model?.noGalssesDay,
+        //         activeColor: kPrimaryColor,
+        //         onChanged: (value) {}),
+        //     Text(
+        //       "9+",
+        //       style: buildTextStyle(),
+        //     ),
+        //   ],
+        // ),
         SizedBox(height: 2.h),
       ],
     );
@@ -1090,8 +1140,7 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
                   style: TextStyle(
                       fontFamily: kFontMedium,
                       color: gBlackColor,
-                      fontSize: headingFont
-                  ),
+                      fontSize: headingFont),
                 ),
                 SizedBox(
                   width: 2.w,
@@ -1104,22 +1153,20 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
                 ),
               ],
             ),
-            SizedBox(
-              height: 10,
-            ),
-            Text(
-              "This Tells Us How Your Gut Is & Has Been Treated",
-              textAlign: TextAlign.start,
-              style: TextStyle(
-                  fontFamily: kFontMedium,
-                  color: gHintTextColor,
-                  fontSize: subHeadingFont
-              ),
-            ),
+            // SizedBox(
+            //   height: 10,
+            // ),
+            // Text(
+            //   "This Tells Us How Your Gut Is & Has Been Treated",
+            //   textAlign: TextAlign.start,
+            //   style: TextStyle(
+            //       fontFamily: kFontMedium,
+            //       color: gHintTextColor,
+            //       fontSize: subHeadingFont),
+            // ),
           ],
         ),
         SizedBox(height: 2.h),
-
         buildLabelTextField("Habits Or Addiction", fontSize: questionFont),
         SizedBox(height: 1.h),
         showSelectedHabitsList(),
@@ -1145,8 +1192,7 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
                   style: TextStyle(
                       fontFamily: kFontMedium,
                       color: gBlackColor,
-                      fontSize: headingFont
-                  ),
+                      fontSize: headingFont),
                 ),
                 SizedBox(
                   width: 2.w,
@@ -1159,229 +1205,231 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
                 ),
               ],
             ),
-            SizedBox(
-              height: 10,
-            ),
-            Text(
-              "Is a Barometer For Your Gut Health",
-              textAlign: TextAlign.start,
-              style: TextStyle(
-                  fontFamily: kFontMedium,
-                  color: gHintTextColor,
-                  fontSize: subHeadingFont
-              ),
-            ),
+            // SizedBox(
+            //   height: 10,
+            // ),
+            // Text(
+            //   "Is a Barometer For Your Gut Health",
+            //   textAlign: TextAlign.start,
+            //   style: TextStyle(
+            //       fontFamily: kFontMedium,
+            //       color: gHintTextColor,
+            //       fontSize: subHeadingFont),
+            // ),
           ],
         ),
         SizedBox(height: 1.h),
-        buildLabelTextField("What is your after meal preference?", fontSize: questionFont),
+        buildLabelTextField("What is your after meal preference?",
+            fontSize: questionFont),
         SizedBox(height: 1.h),
-        ListView(
-          shrinkWrap: true,
-          physics: const BouncingScrollPhysics(),
-          children: [
-            Row(
-              children: [
-                Radio(
-                  value: mealPreferenceList[0],
-                  activeColor: kPrimaryColor,
-                  groupValue: model?.afterMealPreference,
-                  onChanged: (value) {},
-                ),
-                Expanded(
-                  child: Text(
-                    mealPreferenceList[0],
-                    style: buildTextStyle(),
-                  ),
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                Radio(
-                  value: mealPreferenceList[1],
-                  activeColor: kPrimaryColor,
-                  groupValue: model?.afterMealPreference,
-                  onChanged: (value) {},
-                ),
-                Expanded(
-                  child: Text(
-                    mealPreferenceList[1],
-                    style: buildTextStyle(),
-                  ),
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                Radio(
-                  value: mealPreferenceList[2],
-                  activeColor: kPrimaryColor,
-                  groupValue: model?.afterMealPreference,
-                  onChanged: (value) {},
-                ),
-                Text(
-                  mealPreferenceList[2],
-                  style: buildTextStyle(),
-                ),
-              ],
-            ),
-            buildContainer(model?.afterMealPreferenceOther ?? ""),
-          ],
-        ),
+        buildMealPreferenceButton("${model?.afterMealPreference}"),
+        // ListView(
+        //   shrinkWrap: true,
+        //   physics: const BouncingScrollPhysics(),
+        //   children: [
+        //     Row(
+        //       children: [
+        //         Radio(
+        //           value: mealPreferenceList[0],
+        //           activeColor: kPrimaryColor,
+        //           groupValue: model?.afterMealPreference,
+        //           onChanged: (value) {},
+        //         ),
+        //         Expanded(
+        //           child: Text(
+        //             mealPreferenceList[0],
+        //             style: buildTextStyle(),
+        //           ),
+        //         ),
+        //       ],
+        //     ),
+        //     Row(
+        //       children: [
+        //         Radio(
+        //           value: mealPreferenceList[1],
+        //           activeColor: kPrimaryColor,
+        //           groupValue: model?.afterMealPreference,
+        //           onChanged: (value) {},
+        //         ),
+        //         Expanded(
+        //           child: Text(
+        //             mealPreferenceList[1],
+        //             style: buildTextStyle(),
+        //           ),
+        //         ),
+        //       ],
+        //     ),
+        //     Row(
+        //       children: [
+        //         Radio(
+        //           value: mealPreferenceList[2],
+        //           activeColor: kPrimaryColor,
+        //           groupValue: model?.afterMealPreference,
+        //           onChanged: (value) {},
+        //         ),
+        //         Text(
+        //           mealPreferenceList[2],
+        //           style: buildTextStyle(),
+        //         ),
+        //       ],
+        //     ),
+        //     buildContainer(model?.afterMealPreferenceOther ?? ""),
+        //   ],
+        // ),
         SizedBox(height: 1.h),
         buildLabelTextField("Hunger Pattern", fontSize: questionFont),
         SizedBox(height: 1.h),
-        ListView(
-          shrinkWrap: true,
-          physics: const BouncingScrollPhysics(),
-          children: [
-            Row(
-              children: [
-                Radio(
-                  value: hungerPatternList[0],
-                  activeColor: kPrimaryColor,
-                  groupValue: model?.hungerPattern,
-                  onChanged: (value) {},
-                ),
-                Expanded(
-                  child: Text(
-                    hungerPatternList[0],
-                    style: buildTextStyle(),
-                  ),
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                Radio(
-                  value: hungerPatternList[1],
-                  activeColor: kPrimaryColor,
-                  groupValue: model?.hungerPattern,
-                  onChanged: (value) {},
-                ),
-                Expanded(
-                  child: Text(
-                    hungerPatternList[1],
-                    style: buildTextStyle(),
-                  ),
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                Radio(
-                  value: hungerPatternList[2],
-                  activeColor: kPrimaryColor,
-                  groupValue: model?.hungerPattern,
-                  onChanged: (value) {},
-                ),
-                Expanded(
-                  child: Text(
-                    hungerPatternList[2],
-                    style: buildTextStyle(),
-                  ),
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                Radio(
-                  value: hungerPatternList[3],
-                  activeColor: kPrimaryColor,
-                  groupValue: model?.hungerPattern,
-                  onChanged: (value) {},
-                ),
-                Expanded(
-                  child: Text(
-                    hungerPatternList[3],
-                    style: buildTextStyle(),
-                  ),
-                ),
-              ],
-            ),
-            buildContainer(model?.hungerPatternOther ?? ""),
-          ],
-        ),
+        buildHungerPatternButton("${model?.hungerPattern}"),
+        // ListView(
+        //   shrinkWrap: true,
+        //   physics: const BouncingScrollPhysics(),
+        //   children: [
+        //     Row(
+        //       children: [
+        //         Radio(
+        //           value: hungerPatternList[0],
+        //           activeColor: kPrimaryColor,
+        //           groupValue: model?.hungerPattern,
+        //           onChanged: (value) {},
+        //         ),
+        //         Expanded(
+        //           child: Text(
+        //             hungerPatternList[0],
+        //             style: buildTextStyle(),
+        //           ),
+        //         ),
+        //       ],
+        //     ),
+        //     Row(
+        //       children: [
+        //         Radio(
+        //           value: hungerPatternList[1],
+        //           activeColor: kPrimaryColor,
+        //           groupValue: model?.hungerPattern,
+        //           onChanged: (value) {},
+        //         ),
+        //         Expanded(
+        //           child: Text(
+        //             hungerPatternList[1],
+        //             style: buildTextStyle(),
+        //           ),
+        //         ),
+        //       ],
+        //     ),
+        //     Row(
+        //       children: [
+        //         Radio(
+        //           value: hungerPatternList[2],
+        //           activeColor: kPrimaryColor,
+        //           groupValue: model?.hungerPattern,
+        //           onChanged: (value) {},
+        //         ),
+        //         Expanded(
+        //           child: Text(
+        //             hungerPatternList[2],
+        //             style: buildTextStyle(),
+        //           ),
+        //         ),
+        //       ],
+        //     ),
+        //     Row(
+        //       children: [
+        //         Radio(
+        //           value: hungerPatternList[3],
+        //           activeColor: kPrimaryColor,
+        //           groupValue: model?.hungerPattern,
+        //           onChanged: (value) {},
+        //         ),
+        //         Expanded(
+        //           child: Text(
+        //             hungerPatternList[3],
+        //             style: buildTextStyle(),
+        //           ),
+        //         ),
+        //       ],
+        //     ),
+        //     buildContainer(model?.hungerPatternOther ?? ""),
+        //   ],
+        // ),
         SizedBox(height: 1.h),
         buildLabelTextField("Bowel Pattern", fontSize: questionFont),
         SizedBox(height: 1.h),
-        ListView(
-          shrinkWrap: true,
-          physics: const BouncingScrollPhysics(),
-          children: [
-            Row(
-              children: [
-                Radio(
-                  value: bowelPatternList[0],
-                  activeColor: kPrimaryColor,
-                  groupValue: model?.bowelPattern,
-                  onChanged: (value) {},
-                ),
-                Expanded(
-                  child: Text(
-                    bowelPatternList[0],
-                    style: buildTextStyle(),
-                  ),
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                Radio(
-                  value: bowelPatternList[1],
-                  activeColor: kPrimaryColor,
-                  groupValue: model?.bowelPattern,
-                  onChanged: (value) {},
-                ),
-                Expanded(
-                  child: Text(
-                    bowelPatternList[1],
-                    style: buildTextStyle(),
-                  ),
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                Radio(
-                  value: bowelPatternList[2],
-                  activeColor: kPrimaryColor,
-                  groupValue: model?.bowelPattern,
-                  onChanged: (value) {},
-                ),
-                Expanded(
-                  child: Text(
-                    bowelPatternList[2],
-                    style: buildTextStyle(),
-                  ),
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                Radio(
-                  value: bowelPatternList[3],
-                  activeColor: kPrimaryColor,
-                  groupValue: model?.bowelPattern,
-                  onChanged: (value) {},
-                ),
-                Expanded(
-                  child: Text(
-                    bowelPatternList[3],
-                    style: buildTextStyle(),
-                  ),
-                ),
-              ],
-            ),
-            buildContainer(model?.bowelPatternOther ?? ""),
-          ],
-        ),
+        buildBowelPatternButton("${model?.bowelPattern}"),
+        // ListView(
+        //   shrinkWrap: true,
+        //   physics: const BouncingScrollPhysics(),
+        //   children: [
+        //     Row(
+        //       children: [
+        //         Radio(
+        //           value: bowelPatternList[0],
+        //           activeColor: kPrimaryColor,
+        //           groupValue: model?.bowelPattern,
+        //           onChanged: (value) {},
+        //         ),
+        //         Expanded(
+        //           child: Text(
+        //             bowelPatternList[0],
+        //             style: buildTextStyle(),
+        //           ),
+        //         ),
+        //       ],
+        //     ),
+        //     Row(
+        //       children: [
+        //         Radio(
+        //           value: bowelPatternList[1],
+        //           activeColor: kPrimaryColor,
+        //           groupValue: model?.bowelPattern,
+        //           onChanged: (value) {},
+        //         ),
+        //         Expanded(
+        //           child: Text(
+        //             bowelPatternList[1],
+        //             style: buildTextStyle(),
+        //           ),
+        //         ),
+        //       ],
+        //     ),
+        //     Row(
+        //       children: [
+        //         Radio(
+        //           value: bowelPatternList[2],
+        //           activeColor: kPrimaryColor,
+        //           groupValue: model?.bowelPattern,
+        //           onChanged: (value) {},
+        //         ),
+        //         Expanded(
+        //           child: Text(
+        //             bowelPatternList[2],
+        //             style: buildTextStyle(),
+        //           ),
+        //         ),
+        //       ],
+        //     ),
+        //     Row(
+        //       children: [
+        //         Radio(
+        //           value: bowelPatternList[3],
+        //           activeColor: kPrimaryColor,
+        //           groupValue: model?.bowelPattern,
+        //           onChanged: (value) {},
+        //         ),
+        //         Expanded(
+        //           child: Text(
+        //             bowelPatternList[3],
+        //             style: buildTextStyle(),
+        //           ),
+        //         ),
+        //       ],
+        //     ),
+        //     buildContainer(model?.bowelPatternOther ?? ""),
+        //   ],
+        // ),
         SizedBox(height: 1.h),
       ],
     );
   }
-
 
   final EvaluationFormRepository repository = EvaluationFormRepository(
     apiClient: ApiClient(
@@ -1391,7 +1439,7 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
 
   showFiles(String? medicalReport) {
     print("medicalReport got: ${medicalReport}");
-    if(medicalReport!.isNotEmpty){
+    if (medicalReport!.isNotEmpty) {
       List list = jsonDecode(medicalReport ?? '');
       print("showMedicalReport.runtimeType: ${showMedicalReport.runtimeType}");
       print(showMedicalReport);
@@ -1412,41 +1460,45 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
           children: widgetList,
         ),
       );
-    }
-    else{
+    } else {
       return SizedBox();
     }
-
   }
 
   buildRecordList(String filename, {int? index}) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 1.5.h),
+      padding: EdgeInsets.symmetric(vertical: 1.h),
       child: OutlinedButton(
         onPressed: () {},
         style: ButtonStyle(
           overlayColor: getColor(Colors.white, const Color(0xffCBFE86)),
           backgroundColor: getColor(Colors.white, const Color(0xffCBFE86)),
         ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Text(
-                filename.split("/").last,
-                textAlign: TextAlign.start,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontFamily: "PoppinsBold",
-                  fontSize: 11.sp,
+        child: Padding(
+          padding:  EdgeInsets.symmetric(vertical: 1.h),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  filename.split("/").last,
+                  textAlign: TextAlign.start,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontFamily: "PoppinsBold",
+                    color: gBlackColor,
+                    fontSize: 11.sp,
+                  ),
                 ),
               ),
-            ),
-            SvgPicture.asset(
-              'assets/images/attach_icon.svg',
-              fit: BoxFit.cover,
-            )
-          ],
+              SizedBox(width: 3.w),
+              SvgPicture.asset(
+                'assets/images/attach_icon.svg',
+                fit: BoxFit.cover,
+                height: 3.h,
+              )
+            ],
+          ),
         ),
       ),
     );
@@ -1471,60 +1523,1032 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
   );
 
   buildUrination(String anyUrinationIssue) {
-    print("Urination: $anyUrinationIssue");
-    selectedUrinFrequencyList
+    print("selectedUrinationList: $anyUrinationIssue");
+    selectedUrinationList
         .addAll(List.from(jsonDecode(anyUrinationIssue ?? '')));
-    selectedUrinFrequencyList = List.from(
-        (selectedUrinFrequencyList[0].split(',') as List)
-            .map((e) => e)
-            .toList());
-    urinationValue = selectedUrinFrequencyList.first;
+    selectedUrinationList = List.from(
+        (selectedUrinationList[0].split(',') as List).map((e) => e).toList());
+    urineColorValue = selectedUrinationList.first.toString().toTitleCase();
 
-    return Row(
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: selectedUrinationList.length,
+      itemBuilder: (context, index) {
+        return ListTile(
+          visualDensity: VisualDensity(vertical: -3), // to compact
+          minVerticalPadding: 0,
+          minLeadingWidth: 30,
+          horizontalTitleGap: 0,
+          dense: true,
+          contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+          leading: const Icon(
+            Icons.radio_button_checked,
+            color: gsecondaryColor,
+          ),
+          title: Text(
+            selectedUrinationList[index].toString().toTitleCase() ?? "",
+            style: TextStyle(
+              fontSize: 10.sp,
+              height: 1.3,
+              color: gBlackColor,
+              fontFamily: kFontBook,
+            ),
+          ),
+        );
+      },
+    );
+
+    // return Column(
+    //   children: [
+    //     Row(
+    //       children: [
+    //         Radio(
+    //           value: "Clear",
+    //           activeColor: kPrimaryColor,
+    //           groupValue: urineColorValue,
+    //           onChanged: (value) {},
+    //         ),
+    //         Text('Clear', style: buildTextStyle()),
+    //         SizedBox(
+    //           width: 3.w,
+    //         ),
+    //         Radio(
+    //           value: "Pale yellow",
+    //           activeColor: kPrimaryColor,
+    //           groupValue: urineColorValue,
+    //           onChanged: (value) {},
+    //         ),
+    //         Text(
+    //           'Pale Yellow',
+    //           style: buildTextStyle(),
+    //         ),
+    //         SizedBox(
+    //           width: 3.w,
+    //         ),
+    //         Radio(
+    //             value: "Red",
+    //             groupValue: urineColorValue,
+    //             activeColor: kPrimaryColor,
+    //             onChanged: (value) {}),
+    //         Text(
+    //           "Red",
+    //           style: buildTextStyle(),
+    //         ),
+    //       ],
+    //     ),
+    //     Row(
+    //       children: [
+    //         Radio(
+    //           value: "Black",
+    //           activeColor: kPrimaryColor,
+    //           groupValue: urineColorValue,
+    //           onChanged: (value) {},
+    //         ),
+    //         Text('Black', style: buildTextStyle()),
+    //         SizedBox(
+    //           width: 3.w,
+    //         ),
+    //         Radio(
+    //           value: "Yellow",
+    //           activeColor: kPrimaryColor,
+    //           groupValue: urineColorValue,
+    //           onChanged: (value) {},
+    //         ),
+    //         Text(
+    //           'Yellow',
+    //           style: buildTextStyle(),
+    //         ),
+    //         SizedBox(
+    //           width: 3.w,
+    //         ),
+    //         Radio(
+    //             value: "Other",
+    //             groupValue: urineColorValue,
+    //             activeColor: kPrimaryColor,
+    //             onChanged: (value) {}),
+    //         Text(
+    //           "Other",
+    //           style: buildTextStyle(),
+    //         ),
+    //       ],
+    //     ),
+    //   ],
+    // );
+    //
+    // print("Urination: $anyUrinationIssue");
+    // selectedUrinFrequencyList
+    //     .addAll(List.from(jsonDecode(anyUrinationIssue ?? '')));
+    // selectedUrinFrequencyList = List.from(
+    //     (selectedUrinFrequencyList[0].split(',') as List)
+    //         .map((e) => e)
+    //         .toList());
+    // urinationValue = selectedUrinFrequencyList.first;
+    //
+    // return Row(
+    //   children: [
+    //     Radio(
+    //       value: "Increased",
+    //       activeColor: kPrimaryColor,
+    //       groupValue: urinationValue,
+    //       onChanged: (value) {
+    //         setState(() {
+    //           urinationValue = value as String;
+    //         });
+    //       },
+    //     ),
+    //     Text('Increased', style: buildTextStyle()),
+    //     SizedBox(
+    //       width: 3.w,
+    //     ),
+    //     Radio(
+    //       value: "Decreased",
+    //       activeColor: kPrimaryColor,
+    //       groupValue: urinationValue,
+    //       onChanged: (value) {
+    //         setState(() {
+    //           urinationValue = value as String;
+    //         });
+    //       },
+    //     ),
+    //     Text(
+    //       'Decreased',
+    //       style: buildTextStyle(),
+    //     ),
+    //     SizedBox(
+    //       width: 3.w,
+    //     ),
+    //     Radio(
+    //         value: "No Change",
+    //         groupValue: urinationValue,
+    //         activeColor: kPrimaryColor,
+    //         onChanged: (value) {
+    //           setState(() {
+    //             urinationValue = value as String;
+    //           });
+    //         }),
+    //     Text(
+    //       "No Change",
+    //       style: buildTextStyle(),
+    //     ),
+    //   ],
+    // );
+  }
+
+  buildMaritalStatusButton(String title) {
+    print("maritalStatus: $title");
+    selectedMaritalStatus = title.split(",");
+    // selectedMaritalStatus.add(List.from(jsonDecode(title ?? '')));
+    // selectedMaritalStatus = List.from(
+    //     (selectedMaritalStatus[0].split(',') as List).map((e) => e).toList());
+    // maritalStatus = selectedMaritalStatus.first.toString().toTitleCase();
+    print(selectedMaritalStatus);
+    print("maritalStatus1: $maritalStatus");
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: selectedMaritalStatus.length,
+      itemBuilder: (context, index) {
+        return ListTile(
+          visualDensity: const VisualDensity(vertical: -3), // to compact
+          minVerticalPadding: 0,
+          minLeadingWidth: 30,
+          horizontalTitleGap: 0,
+          dense: true,
+          contentPadding:
+              const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+          leading: const Icon(
+            Icons.radio_button_checked,
+            color: gsecondaryColor,
+          ),
+          title: Text(
+            selectedMaritalStatus[index].toString().toTitleCase() ?? "",
+            style: TextStyle(
+              fontSize: 10.sp,
+              height: 1.3,
+              color: gBlackColor,
+              fontFamily: kFontBook,
+            ),
+          ),
+        );
+      },
+    );
+
+    return Column(
       children: [
-        Radio(
-          value: "Increased",
-          activeColor: kPrimaryColor,
-          groupValue: urinationValue,
-          onChanged: (value) {
-            setState(() {
-              urinationValue = value as String;
-            });
-          },
+        Row(
+          children: [
+            Radio(
+              value: "Clear",
+              activeColor: kPrimaryColor,
+              groupValue: urineColorValue,
+              onChanged: (value) {},
+            ),
+            Text('Clear', style: buildTextStyle()),
+            SizedBox(
+              width: 3.w,
+            ),
+            Radio(
+              value: "Pale yellow",
+              activeColor: kPrimaryColor,
+              groupValue: urineColorValue,
+              onChanged: (value) {},
+            ),
+            Text(
+              'Pale Yellow',
+              style: buildTextStyle(),
+            ),
+            SizedBox(
+              width: 3.w,
+            ),
+            Radio(
+                value: "Red",
+                groupValue: urineColorValue,
+                activeColor: kPrimaryColor,
+                onChanged: (value) {}),
+            Text(
+              "Red",
+              style: buildTextStyle(),
+            ),
+          ],
         ),
-        Text('Increased', style: buildTextStyle()),
-        SizedBox(
-          width: 3.w,
+        Row(
+          children: [
+            Radio(
+              value: "Black",
+              activeColor: kPrimaryColor,
+              groupValue: urineColorValue,
+              onChanged: (value) {},
+            ),
+            Text('Black', style: buildTextStyle()),
+            SizedBox(
+              width: 3.w,
+            ),
+            Radio(
+              value: "Yellow",
+              activeColor: kPrimaryColor,
+              groupValue: urineColorValue,
+              onChanged: (value) {},
+            ),
+            Text(
+              'Yellow',
+              style: buildTextStyle(),
+            ),
+            SizedBox(
+              width: 3.w,
+            ),
+            Radio(
+                value: "Other",
+                groupValue: urineColorValue,
+                activeColor: kPrimaryColor,
+                onChanged: (value) {}),
+            Text(
+              "Other",
+              style: buildTextStyle(),
+            ),
+          ],
         ),
-        Radio(
-          value: "Decreased",
-          activeColor: kPrimaryColor,
-          groupValue: urinationValue,
-          onChanged: (value) {
-            setState(() {
-              urinationValue = value as String;
-            });
-          },
+      ],
+    );
+  }
+
+  buildGenderButton(String title) {
+    print("Gender: $title");
+    selectedGender = title.split(",");
+    // selectedMaritalStatus.add(List.from(jsonDecode(title ?? '')));
+    // selectedMaritalStatus = List.from(
+    //     (selectedMaritalStatus[0].split(',') as List).map((e) => e).toList());
+    // maritalStatus = selectedMaritalStatus.first.toString().toTitleCase();
+    print(selectedGender);
+    print("selectedGender: $selectedGender");
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: selectedGender.length,
+      itemBuilder: (context, index) {
+        return ListTile(
+          visualDensity: const VisualDensity(vertical: -3), // to compact
+          minVerticalPadding: 0,
+          minLeadingWidth: 30,
+          horizontalTitleGap: 0,
+          dense: true,
+          contentPadding:
+              const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+          leading: const Icon(
+            Icons.radio_button_checked,
+            color: gsecondaryColor,
+          ),
+          title: Text(
+            selectedGender[index].toString().toTitleCase() ?? "",
+            style: TextStyle(
+              fontSize: 10.sp,
+              height: 1.3,
+              color: gBlackColor,
+              fontFamily: kFontBook,
+            ),
+          ),
+        );
+      },
+    );
+
+    return Column(
+      children: [
+        Row(
+          children: [
+            Radio(
+              value: "Clear",
+              activeColor: kPrimaryColor,
+              groupValue: urineColorValue,
+              onChanged: (value) {},
+            ),
+            Text('Clear', style: buildTextStyle()),
+            SizedBox(
+              width: 3.w,
+            ),
+            Radio(
+              value: "Pale yellow",
+              activeColor: kPrimaryColor,
+              groupValue: urineColorValue,
+              onChanged: (value) {},
+            ),
+            Text(
+              'Pale Yellow',
+              style: buildTextStyle(),
+            ),
+            SizedBox(
+              width: 3.w,
+            ),
+            Radio(
+                value: "Red",
+                groupValue: urineColorValue,
+                activeColor: kPrimaryColor,
+                onChanged: (value) {}),
+            Text(
+              "Red",
+              style: buildTextStyle(),
+            ),
+          ],
         ),
-        Text(
-          'Decreased',
-          style: buildTextStyle(),
+        Row(
+          children: [
+            Radio(
+              value: "Black",
+              activeColor: kPrimaryColor,
+              groupValue: urineColorValue,
+              onChanged: (value) {},
+            ),
+            Text('Black', style: buildTextStyle()),
+            SizedBox(
+              width: 3.w,
+            ),
+            Radio(
+              value: "Yellow",
+              activeColor: kPrimaryColor,
+              groupValue: urineColorValue,
+              onChanged: (value) {},
+            ),
+            Text(
+              'Yellow',
+              style: buildTextStyle(),
+            ),
+            SizedBox(
+              width: 3.w,
+            ),
+            Radio(
+                value: "Other",
+                groupValue: urineColorValue,
+                activeColor: kPrimaryColor,
+                onChanged: (value) {}),
+            Text(
+              "Other",
+              style: buildTextStyle(),
+            ),
+          ],
         ),
-        SizedBox(
-          width: 3.w,
+      ],
+    );
+  }
+
+  buildTongueCoatingButton(String title) {
+    print("selectedTongueCoatingList: $title");
+    selectedTongueCoatingList = title.split(",");
+    // selectedMaritalStatus.add(List.from(jsonDecode(title ?? '')));
+    // selectedMaritalStatus = List.from(
+    //     (selectedMaritalStatus[0].split(',') as List).map((e) => e).toList());
+    // maritalStatus = selectedMaritalStatus.first.toString().toTitleCase();
+    print(selectedTongueCoatingList);
+    print("selectedTongueCoatingList: $selectedTongueCoatingList");
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: selectedTongueCoatingList.length,
+      itemBuilder: (context, index) {
+        return ListTile(
+          visualDensity: const VisualDensity(vertical: -3), // to compact
+          minVerticalPadding: 0,
+          minLeadingWidth: 30,
+          horizontalTitleGap: 0,
+          dense: true,
+          contentPadding:
+          const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+          leading: const Icon(
+            Icons.radio_button_checked,
+            color: gsecondaryColor,
+          ),
+          title: Text(
+            selectedTongueCoatingList[index].toString().toTitleCase() ?? "",
+            style: TextStyle(
+              fontSize: 10.sp,
+              height: 1.3,
+              color: gBlackColor,
+              fontFamily: kFontBook,
+            ),
+          ),
+        );
+      },
+    );
+
+    return Column(
+      children: [
+        Row(
+          children: [
+            Radio(
+              value: "Clear",
+              activeColor: kPrimaryColor,
+              groupValue: urineColorValue,
+              onChanged: (value) {},
+            ),
+            Text('Clear', style: buildTextStyle()),
+            SizedBox(
+              width: 3.w,
+            ),
+            Radio(
+              value: "Pale yellow",
+              activeColor: kPrimaryColor,
+              groupValue: urineColorValue,
+              onChanged: (value) {},
+            ),
+            Text(
+              'Pale Yellow',
+              style: buildTextStyle(),
+            ),
+            SizedBox(
+              width: 3.w,
+            ),
+            Radio(
+                value: "Red",
+                groupValue: urineColorValue,
+                activeColor: kPrimaryColor,
+                onChanged: (value) {}),
+            Text(
+              "Red",
+              style: buildTextStyle(),
+            ),
+          ],
         ),
-        Radio(
-            value: "No Change",
-            groupValue: urinationValue,
-            activeColor: kPrimaryColor,
-            onChanged: (value) {
-              setState(() {
-                urinationValue = value as String;
-              });
-            }),
-        Text(
-          "No Change",
-          style: buildTextStyle(),
+        Row(
+          children: [
+            Radio(
+              value: "Black",
+              activeColor: kPrimaryColor,
+              groupValue: urineColorValue,
+              onChanged: (value) {},
+            ),
+            Text('Black', style: buildTextStyle()),
+            SizedBox(
+              width: 3.w,
+            ),
+            Radio(
+              value: "Yellow",
+              activeColor: kPrimaryColor,
+              groupValue: urineColorValue,
+              onChanged: (value) {},
+            ),
+            Text(
+              'Yellow',
+              style: buildTextStyle(),
+            ),
+            SizedBox(
+              width: 3.w,
+            ),
+            Radio(
+                value: "Other",
+                groupValue: urineColorValue,
+                activeColor: kPrimaryColor,
+                onChanged: (value) {}),
+            Text(
+              "Other",
+              style: buildTextStyle(),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  buildStoolButton(String title) {
+    print("selectedStoolTypeList: $title");
+    selectedStoolTypeList = title.split(",");
+    // selectedMaritalStatus.add(List.from(jsonDecode(title ?? '')));
+    // selectedMaritalStatus = List.from(
+    //     (selectedMaritalStatus[0].split(',') as List).map((e) => e).toList());
+    // maritalStatus = selectedMaritalStatus.first.toString().toTitleCase();
+    print(selectedStoolTypeList);
+    print("selectedStoolTypeList: $selectedStoolTypeList");
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: selectedStoolTypeList.length,
+      itemBuilder: (context, index) {
+        return ListTile(
+          visualDensity: const VisualDensity(vertical: -3), // to compact
+          minVerticalPadding: 0,
+          minLeadingWidth: 30,
+          horizontalTitleGap: 0,
+          dense: true,
+          contentPadding:
+          const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+          leading: const Icon(
+            Icons.radio_button_checked,
+            color: gsecondaryColor,
+          ),
+          title: Text(
+            selectedStoolTypeList[index].toString().toTitleCase() ?? "",
+            style: TextStyle(
+              fontSize: 10.sp,
+              height: 1.3,
+              color: gBlackColor,
+              fontFamily: kFontBook,
+            ),
+          ),
+        );
+      },
+    );
+
+    return Column(
+      children: [
+        Row(
+          children: [
+            Radio(
+              value: "Clear",
+              activeColor: kPrimaryColor,
+              groupValue: urineColorValue,
+              onChanged: (value) {},
+            ),
+            Text('Clear', style: buildTextStyle()),
+            SizedBox(
+              width: 3.w,
+            ),
+            Radio(
+              value: "Pale yellow",
+              activeColor: kPrimaryColor,
+              groupValue: urineColorValue,
+              onChanged: (value) {},
+            ),
+            Text(
+              'Pale Yellow',
+              style: buildTextStyle(),
+            ),
+            SizedBox(
+              width: 3.w,
+            ),
+            Radio(
+                value: "Red",
+                groupValue: urineColorValue,
+                activeColor: kPrimaryColor,
+                onChanged: (value) {}),
+            Text(
+              "Red",
+              style: buildTextStyle(),
+            ),
+          ],
+        ),
+        Row(
+          children: [
+            Radio(
+              value: "Black",
+              activeColor: kPrimaryColor,
+              groupValue: urineColorValue,
+              onChanged: (value) {},
+            ),
+            Text('Black', style: buildTextStyle()),
+            SizedBox(
+              width: 3.w,
+            ),
+            Radio(
+              value: "Yellow",
+              activeColor: kPrimaryColor,
+              groupValue: urineColorValue,
+              onChanged: (value) {},
+            ),
+            Text(
+              'Yellow',
+              style: buildTextStyle(),
+            ),
+            SizedBox(
+              width: 3.w,
+            ),
+            Radio(
+                value: "Other",
+                groupValue: urineColorValue,
+                activeColor: kPrimaryColor,
+                onChanged: (value) {}),
+            Text(
+              "Other",
+              style: buildTextStyle(),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  buildGlassesDayButton(String title) {
+    print("selectedGlassesDayList: $title");
+    selectedGlassesDayList = title.split(",");
+    // selectedMaritalStatus.add(List.from(jsonDecode(title ?? '')));
+    // selectedMaritalStatus = List.from(
+    //     (selectedMaritalStatus[0].split(',') as List).map((e) => e).toList());
+    // maritalStatus = selectedMaritalStatus.first.toString().toTitleCase();
+    print(selectedGlassesDayList);
+    print("selectedGlassesDayList: $selectedGlassesDayList");
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: selectedGlassesDayList.length,
+      itemBuilder: (context, index) {
+        return ListTile(
+          visualDensity: const VisualDensity(vertical: -3), // to compact
+          minVerticalPadding: 0,
+          minLeadingWidth: 30,
+          horizontalTitleGap: 0,
+          dense: true,
+          contentPadding:
+          const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+          leading: const Icon(
+            Icons.radio_button_checked,
+            color: gsecondaryColor,
+          ),
+          title: Text(
+            selectedGlassesDayList[index].toString().toTitleCase() ?? "",
+            style: TextStyle(
+              fontSize: 10.sp,
+              height: 1.3,
+              color: gBlackColor,
+              fontFamily: kFontBook,
+            ),
+          ),
+        );
+      },
+    );
+
+    return Column(
+      children: [
+        Row(
+          children: [
+            Radio(
+              value: "Clear",
+              activeColor: kPrimaryColor,
+              groupValue: urineColorValue,
+              onChanged: (value) {},
+            ),
+            Text('Clear', style: buildTextStyle()),
+            SizedBox(
+              width: 3.w,
+            ),
+            Radio(
+              value: "Pale yellow",
+              activeColor: kPrimaryColor,
+              groupValue: urineColorValue,
+              onChanged: (value) {},
+            ),
+            Text(
+              'Pale Yellow',
+              style: buildTextStyle(),
+            ),
+            SizedBox(
+              width: 3.w,
+            ),
+            Radio(
+                value: "Red",
+                groupValue: urineColorValue,
+                activeColor: kPrimaryColor,
+                onChanged: (value) {}),
+            Text(
+              "Red",
+              style: buildTextStyle(),
+            ),
+          ],
+        ),
+        Row(
+          children: [
+            Radio(
+              value: "Black",
+              activeColor: kPrimaryColor,
+              groupValue: urineColorValue,
+              onChanged: (value) {},
+            ),
+            Text('Black', style: buildTextStyle()),
+            SizedBox(
+              width: 3.w,
+            ),
+            Radio(
+              value: "Yellow",
+              activeColor: kPrimaryColor,
+              groupValue: urineColorValue,
+              onChanged: (value) {},
+            ),
+            Text(
+              'Yellow',
+              style: buildTextStyle(),
+            ),
+            SizedBox(
+              width: 3.w,
+            ),
+            Radio(
+                value: "Other",
+                groupValue: urineColorValue,
+                activeColor: kPrimaryColor,
+                onChanged: (value) {}),
+            Text(
+              "Other",
+              style: buildTextStyle(),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  buildMealPreferenceButton(String title) {
+    print("selectedMealPreferenceList: $title");
+    selectedMealPreferenceList = title.split(",");
+    // selectedMaritalStatus.add(List.from(jsonDecode(title ?? '')));
+    // selectedMaritalStatus = List.from(
+    //     (selectedMaritalStatus[0].split(',') as List).map((e) => e).toList());
+    // maritalStatus = selectedMaritalStatus.first.toString().toTitleCase();
+    print(selectedMealPreferenceList);
+    print("selectedMealPreferenceList: $selectedMealPreferenceList");
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: selectedMealPreferenceList.length,
+      itemBuilder: (context, index) {
+        return ListTile(
+          visualDensity: const VisualDensity(vertical: -3), // to compact
+          minVerticalPadding: 0,
+          minLeadingWidth: 30,
+          horizontalTitleGap: 0,
+          dense: true,
+          contentPadding:
+          const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+          leading: const Icon(
+            Icons.radio_button_checked,
+            color: gsecondaryColor,
+          ),
+          title: Text(
+            selectedMealPreferenceList[index].toString().toTitleCase() ?? "",
+            style: TextStyle(
+              fontSize: 10.sp,
+              height: 1.3,
+              color: gBlackColor,
+              fontFamily: kFontBook,
+            ),
+          ),
+        );
+      },
+    );
+
+    return Column(
+      children: [
+        Row(
+          children: [
+            Radio(
+              value: "Clear",
+              activeColor: kPrimaryColor,
+              groupValue: urineColorValue,
+              onChanged: (value) {},
+            ),
+            Text('Clear', style: buildTextStyle()),
+            SizedBox(
+              width: 3.w,
+            ),
+            Radio(
+              value: "Pale yellow",
+              activeColor: kPrimaryColor,
+              groupValue: urineColorValue,
+              onChanged: (value) {},
+            ),
+            Text(
+              'Pale Yellow',
+              style: buildTextStyle(),
+            ),
+            SizedBox(
+              width: 3.w,
+            ),
+            Radio(
+                value: "Red",
+                groupValue: urineColorValue,
+                activeColor: kPrimaryColor,
+                onChanged: (value) {}),
+            Text(
+              "Red",
+              style: buildTextStyle(),
+            ),
+          ],
+        ),
+        Row(
+          children: [
+            Radio(
+              value: "Black",
+              activeColor: kPrimaryColor,
+              groupValue: urineColorValue,
+              onChanged: (value) {},
+            ),
+            Text('Black', style: buildTextStyle()),
+            SizedBox(
+              width: 3.w,
+            ),
+            Radio(
+              value: "Yellow",
+              activeColor: kPrimaryColor,
+              groupValue: urineColorValue,
+              onChanged: (value) {},
+            ),
+            Text(
+              'Yellow',
+              style: buildTextStyle(),
+            ),
+            SizedBox(
+              width: 3.w,
+            ),
+            Radio(
+                value: "Other",
+                groupValue: urineColorValue,
+                activeColor: kPrimaryColor,
+                onChanged: (value) {}),
+            Text(
+              "Other",
+              style: buildTextStyle(),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  buildHungerPatternButton(String title) {
+    print("selectedHungerPatternList: $title");
+    selectedHungerPatternList = title.split("...");
+    // selectedMaritalStatus.add(List.from(jsonDecode(title ?? '')));
+    // selectedMaritalStatus = List.from(
+    //     (selectedMaritalStatus[0].split(',') as List).map((e) => e).toList());
+    // maritalStatus = selectedMaritalStatus.first.toString().toTitleCase();
+    print(selectedHungerPatternList);
+    print("selectedHungerPatternList: $selectedHungerPatternList");
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: selectedHungerPatternList.length,
+      itemBuilder: (context, index) {
+        return ListTile(
+          visualDensity: const VisualDensity(vertical: -3), // to compact
+          minVerticalPadding: 0,
+          minLeadingWidth: 30,
+          horizontalTitleGap: 0,
+          dense: true,
+          contentPadding:
+          const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+          leading: const Icon(
+            Icons.radio_button_checked,
+            color: gsecondaryColor,
+          ),
+          title: Text(
+            selectedHungerPatternList[index].toString().toTitleCase() ?? "",
+            style: TextStyle(
+              fontSize: 10.sp,
+              height: 1.3,
+              color: gBlackColor,
+              fontFamily: kFontBook,
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  buildBowelPatternButton(String title) {
+    print("selectedBowelPatternList: $title");
+    selectedBowelPatternList = title.split(",");
+    // selectedMaritalStatus.add(List.from(jsonDecode(title ?? '')));
+    // selectedMaritalStatus = List.from(
+    //     (selectedMaritalStatus[0].split(',') as List).map((e) => e).toList());
+    // maritalStatus = selectedMaritalStatus.first.toString().toTitleCase();
+    print(selectedBowelPatternList);
+    print("selectedBowelPatternList: $selectedBowelPatternList");
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: selectedBowelPatternList.length,
+      itemBuilder: (context, index) {
+        return ListTile(
+          visualDensity: const VisualDensity(vertical: -3), // to compact
+          minVerticalPadding: 0,
+          minLeadingWidth: 30,
+          horizontalTitleGap: 0,
+          dense: true,
+          contentPadding:
+          const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+          leading: const Icon(
+            Icons.radio_button_checked,
+            color: gsecondaryColor,
+          ),
+          title: Text(
+            selectedBowelPatternList[index].toString().toTitleCase() ?? "",
+            style: TextStyle(
+              fontSize: 10.sp,
+              height: 1.3,
+              color: gBlackColor,
+              fontFamily: kFontBook,
+            ),
+          ),
+        );
+      },
+    );
+
+    return Column(
+      children: [
+        Row(
+          children: [
+            Radio(
+              value: "Clear",
+              activeColor: kPrimaryColor,
+              groupValue: urineColorValue,
+              onChanged: (value) {},
+            ),
+            Text('Clear', style: buildTextStyle()),
+            SizedBox(
+              width: 3.w,
+            ),
+            Radio(
+              value: "Pale yellow",
+              activeColor: kPrimaryColor,
+              groupValue: urineColorValue,
+              onChanged: (value) {},
+            ),
+            Text(
+              'Pale Yellow',
+              style: buildTextStyle(),
+            ),
+            SizedBox(
+              width: 3.w,
+            ),
+            Radio(
+                value: "Red",
+                groupValue: urineColorValue,
+                activeColor: kPrimaryColor,
+                onChanged: (value) {}),
+            Text(
+              "Red",
+              style: buildTextStyle(),
+            ),
+          ],
+        ),
+        Row(
+          children: [
+            Radio(
+              value: "Black",
+              activeColor: kPrimaryColor,
+              groupValue: urineColorValue,
+              onChanged: (value) {},
+            ),
+            Text('Black', style: buildTextStyle()),
+            SizedBox(
+              width: 3.w,
+            ),
+            Radio(
+              value: "Yellow",
+              activeColor: kPrimaryColor,
+              groupValue: urineColorValue,
+              onChanged: (value) {},
+            ),
+            Text(
+              'Yellow',
+              style: buildTextStyle(),
+            ),
+            SizedBox(
+              width: 3.w,
+            ),
+            Radio(
+                value: "Other",
+                groupValue: urineColorValue,
+                activeColor: kPrimaryColor,
+                onChanged: (value) {}),
+            Text(
+              "Other",
+              style: buildTextStyle(),
+            ),
+          ],
         ),
       ],
     );
@@ -1565,8 +2589,6 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
         );
       },
     );
-
-
 
     return Column(
       children: [
@@ -1653,60 +2675,33 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
         (selectedUrinLooksList[0].split(',') as List).map((e) => e).toList());
     urineLookLikeValue = selectedUrinLooksList.first;
     print("value: $urineLookLikeValue");
-    return Column(
-      children: [
-        Row(
-          children: [
-            Radio(
-                value: "Clear/Transparent",
-                groupValue: urineLookLikeValue,
-                activeColor: kPrimaryColor,
-                onChanged: (value) {
-                  setState(() {
-                    urineLookLikeValue = value as String;
-                  });
-                }),
-            Text(
-              "Clear/Transparent",
-              style: buildTextStyle(),
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: selectedUrinLooksList.length,
+      itemBuilder: (context, index) {
+        return ListTile(
+          visualDensity: VisualDensity(vertical: -3), // to compact
+          minVerticalPadding: 0,
+          minLeadingWidth: 30,
+          horizontalTitleGap: 0,
+          dense: true,
+          contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+          leading: const Icon(
+            Icons.radio_button_checked,
+            color: gsecondaryColor,
+          ),
+          title: Text(
+            selectedUrinLooksList[index].toString().toTitleCase() ?? "",
+            style: TextStyle(
+              fontSize: 10.sp,
+              height: 1.3,
+              color: gBlackColor,
+              fontFamily: kFontBook,
             ),
-          ],
-        ),
-        Row(
-          children: [
-            Radio(
-                value: "Foggy/cloudy",
-                groupValue: urineLookLikeValue,
-                activeColor: kPrimaryColor,
-                onChanged: (value) {
-                  setState(() {
-                    urineLookLikeValue = value as String;
-                  });
-                }),
-            Text(
-              "Foggy/cloudy",
-              style: buildTextStyle(),
-            ),
-          ],
-        ),
-        Row(
-          children: [
-            Radio(
-                value: "Other",
-                groupValue: urineLookLikeValue,
-                activeColor: kPrimaryColor,
-                onChanged: (value) {
-                  setState(() {
-                    urineLookLikeValue = value as String;
-                  });
-                }),
-            Text(
-              "Other",
-              style: buildTextStyle(),
-            ),
-          ],
-        ),
-      ],
+          ),
+        );
+      },
     );
   }
 
@@ -1929,36 +2924,30 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
     print("selectedHabitCheckBoxList: $selectedHabitCheckBoxList");
   }
 
-  getFontColor(String name){
+  getFontColor(String name) {
     print("name====> $name");
     Color? color;
-    if(name == "married"){
+    if (name == "married") {
       color = kTextColor;
-    }
-    else if(name == 'single'){
+    } else if (name == 'single') {
       color = kTextColor;
-    }
-    else if(name == "separated"){
+    } else if (name == "separated") {
       color = kTextColor;
-    }
-    else{
+    } else {
       color = gHintTextColor;
     }
     return color;
   }
 
-  getFontFamily(String name){
+  getFontFamily(String name) {
     String? font;
-    if(name == "married"){
+    if (name == "married") {
       font = kFontMedium;
-    }
-    else if(name == 'single'){
+    } else if (name == 'single') {
       font = kFontMedium;
-    }
-    else if(name == "separated"){
+    } else if (name == "separated") {
       font = kFontMedium;
-    }
-    else{
+    } else {
       font = kFontBook;
     }
     return font;

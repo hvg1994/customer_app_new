@@ -7,11 +7,11 @@ AppConfig() will be Singleton class so than we can use this as local storage
 import 'dart:io';
 
 import 'package:catcher/catcher.dart';
-import 'package:country_code_picker/country_localizations.dart';
+import 'package:country_code_picker_mp/country_localizations.dart';
 import 'package:device_preview/device_preview.dart' hide DeviceType;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide ModalBottomSheetRoute;
 import 'package:flutter/services.dart';
 import 'package:flutter_sim_country_code/flutter_sim_country_code.dart';
 import 'package:gwc_customer/services/local_notification_service.dart';
@@ -178,11 +178,6 @@ class _MyAppState extends State<MyApp> {
 
   }
 
-
-
-
-
-
   @override
   Widget build(BuildContext context) {
 
@@ -198,9 +193,9 @@ class _MyAppState extends State<MyApp> {
             supportedLocales: [
               const Locale("en"), /// THIS IS FOR COUNTRY CODE PICKER
             ],
-            localizationsDelegates: [
-              CountryLocalizations.delegate, /// THIS IS FOR COUNTRY CODE PICKER
-            ],
+            // localizationsDelegates: [
+            //   CountryLocalizations.delegate, /// THIS IS FOR COUNTRY CODE PICKER
+            // ],
             debugShowCheckedModeBanner: false,
             builder: (BuildContext context, Widget? child) => MediaQuery(
               data: MediaQuery.of(context).copyWith(textScaleFactor: 0.9),

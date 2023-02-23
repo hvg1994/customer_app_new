@@ -67,7 +67,7 @@ class MealPdf extends StatelessWidget {
                                 Expanded(
                                   child: Center(
                                     child: Text(
-                                      heading ?? 'Meal',
+                                      heading ?? 'Meal Item',
                                       style: TextStyle(
                                           fontFamily: "GothamRoundedBold_21016",
                                           color: gTextColor,

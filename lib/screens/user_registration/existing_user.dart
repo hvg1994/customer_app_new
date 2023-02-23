@@ -30,14 +30,11 @@ import '../../services/profile_screen_service/user_profile_service.dart';
 import '../../utils/app_config.dart';
 import '../dashboard_screen.dart';
 import 'new_user/choose_your_problem_screen.dart';
-import 'package:country_code_picker/country_code_picker.dart';
+import 'package:country_code_picker_mp/country_code_picker.dart';
 import 'package:gwc_customer/widgets/dart_extensions.dart';
+import 'package:pinput/pinput.dart';
 
-enum EvaluationStatus {
-  evaluation_done,
-  no_evaluation
-}
-
+enum EvaluationStatus { evaluation_done, no_evaluation }
 
 class ExistingUser extends StatefulWidget {
   const ExistingUser({Key? key}) : super(key: key);
@@ -53,6 +50,8 @@ class _ExistingUserState extends State<ExistingUser> {
 
   TextEditingController phoneController = TextEditingController();
   TextEditingController otpController = TextEditingController();
+  final focusNode = FocusNode();
+
   late bool otpVisibility;
 
   String countryCode = '+91';
@@ -78,7 +77,7 @@ class _ExistingUserState extends State<ExistingUser> {
     const oneSec = const Duration(seconds: 1);
     _timer = new Timer.periodic(
       oneSec,
-          (Timer timer) {
+      (Timer timer) {
         if (_resendTimer == 0) {
           setState(() {
             timer.cancel();
@@ -107,7 +106,7 @@ class _ExistingUserState extends State<ExistingUser> {
       setState(() {});
     });
     _phoneFocus.addListener(() {
-      if(!_phoneFocus.hasFocus){
+      if (!_phoneFocus.hasFocus) {
         mobileFormKey.currentState!.validate();
       }
       // print("!_phoneFocus.hasFocus: ${_phoneFocus.hasFocus}");
@@ -122,13 +121,21 @@ class _ExistingUserState extends State<ExistingUser> {
   @override
   void dispose() {
     super.dispose();
-    if(_timer != null){
+    if (_timer != null) {
       _timer!.cancel();
     }
-    _phoneFocus.removeListener(() { });
+    _phoneFocus.removeListener(() {});
     phoneController.dispose();
     otpController.dispose();
-    otpController.removeListener(() { });
+    otpController.removeListener(() {});
+  }
+
+  bottomSheetHeight() {
+    if (WidgetsBinding.instance.window.viewInsets.bottom > 0.0) {
+      return 70.h;
+    } else {
+      return 50.h;
+    }
   }
 
   @override
@@ -141,20 +148,20 @@ class _ExistingUserState extends State<ExistingUser> {
           child: Column(
             children: [
               Container(
-                height: 30.h,
+                height: 50.h,
                 width: double.maxFinite,
                 decoration: BoxDecoration(
-                  // image: DecorationImage(
-                  //     image: AssetImage("assets/images/Mask Group 2.png"),
-                  //     fit: BoxFit.fill),
-                ),
+                    // image: DecorationImage(
+                    //     image: AssetImage("assets/images/Mask Group 2.png"),
+                    //     fit: BoxFit.fill),
+                    ),
                 child: Center(
                   child: Image(
                     fit: BoxFit.fitWidth,
                     height: 15.h,
                     width: 80.w,
-                    image: const AssetImage("assets/images/Gut welness logo.png",
-
+                    image: const AssetImage(
+                      "assets/images/Gut welness logo.png",
                     ),
                   ),
                 ),
@@ -185,8 +192,7 @@ class _ExistingUserState extends State<ExistingUser> {
                   style: TextStyle(
                       fontFamily: eUser().mainHeadingFont,
                       fontSize: eUser().mainHeadingFontSize,
-                      color: eUser().mainHeadingColor
-                  ),
+                      color: eUser().mainHeadingColor),
                 ),
                 Expanded(
                   child: Container(
@@ -205,8 +211,7 @@ class _ExistingUserState extends State<ExistingUser> {
               style: TextStyle(
                   fontFamily: eUser().userFieldLabelFont,
                   fontSize: eUser().userFieldLabelFontSize,
-                  color: eUser().userFieldLabelColor
-              ),
+                  color: eUser().userFieldLabelColor),
             ),
             SizedBox(height: 1.h),
             Row(
@@ -229,9 +234,9 @@ class _ExistingUserState extends State<ExistingUser> {
                         color: gMainColor,
                         fontSize: 11.sp),
                     padding: EdgeInsets.zero,
-                    favorite: ['+91','IN'],
+                    favorite: ['+91', 'IN'],
                     initialSelection: countryCode,
-                    onChanged: (val){
+                    onChanged: (val) {
                       print(val.code);
                       setState(() {
                         countryCode = val.dialCode.toString();
@@ -251,90 +256,112 @@ class _ExistingUserState extends State<ExistingUser> {
                       style: TextStyle(
                           fontFamily: eUser().userTextFieldFont,
                           fontSize: eUser().userTextFieldFontSize,
-                          color: eUser().userTextFieldColor
-                      ),
+                          color: eUser().userTextFieldColor),
                       validator: (value) {
                         if (value!.isEmpty) {
                           return 'Please enter your Mobile Number';
                         } else if (!isPhone(value)) {
                           return 'Please enter valid Mobile Number';
-                        }
-                        else {
+                        } else {
                           return null;
                         }
                       },
-                      onFieldSubmitted: (value){
+                      onFieldSubmitted: (value) {
                         print("isPhone(value): ${isPhone(value)}");
                         print("!_phoneFocus.hasFocus: ${_phoneFocus.hasFocus}");
-                         if(isPhone(value) && _phoneFocus.hasFocus){
-                           getOtp(value);
-                           _phoneFocus.unfocus();
-                         }
+                        if (isPhone(value) && _phoneFocus.hasFocus) {
+                          getOtp(value);
+                          _phoneFocus.unfocus();
+                        }
                       },
                       focusNode: _phoneFocus,
                       decoration: InputDecoration(
-                        focusedBorder:UnderlineInputBorder(
-                          borderSide: BorderSide(
-                              color: eUser().focusedBorderColor,
-                              width: eUser().focusedBorderWidth
-                          )
-                          // borderRadius: BorderRadius.circular(25.0),
-                        ),
-                        enabledBorder: (phoneController.text.isEmpty) ? null : UnderlineInputBorder(
+                        focusedBorder: UnderlineInputBorder(
                             borderSide: BorderSide(
                                 color: eUser().focusedBorderColor,
-                                width: eUser().focusedBorderWidth
-                            )
-                        ),
+                                width: eUser().focusedBorderWidth)
+                            // borderRadius: BorderRadius.circular(25.0),
+                            ),
+                        enabledBorder: (phoneController.text.isEmpty)
+                            ? null
+                            : UnderlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: eUser().focusedBorderColor,
+                                    width: eUser().focusedBorderWidth)),
                         isDense: true,
                         counterText: '',
                         contentPadding: EdgeInsets.symmetric(horizontal: 2),
-                        suffixIcon: (phoneController.text.length != 10 && phoneController.text.length > 0)
-                        ? InkWell(
-                          onTap: () {
-                            phoneController.clear();
-                          },
-                          child: const Icon(
-                            Icons.cancel_outlined,
-                            color: gMainColor,
-                          ),
-                        )
-                            : (phoneController.text.length == 10 && isPhone(phoneController.text))
-                          ? GestureDetector(
-                          onTap:(otpMessage.toLowerCase().contains('otp sent')) ? null : (){
-                            if(isPhone(phoneController.text) && _phoneFocus.hasFocus){
-                              getOtp(phoneController.text);
-                            }
-                          },
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Visibility(
-                                visible: !(otpMessage.toLowerCase().contains('otp sent')),
-                                child: Text('Get OTP',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontFamily: eUser().fieldSuffixTextFont,
-                                    color: eUser().fieldSuffixTextColor,
-                                    fontSize: eUser().fieldSuffixTextFontSize,
-                                  ),
+                        suffixIcon: (phoneController.text.length != 10 &&
+                                phoneController.text.length > 0)
+                            ? InkWell(
+                                onTap: () {
+                                  phoneController.clear();
+                                },
+                                child: const Icon(
+                                  Icons.cancel_outlined,
+                                  color: gMainColor,
                                 ),
-                              ),
-                              Icon(
-                                (otpMessage.toLowerCase().contains('otp sent')) ? Icons.check_circle_outline : Icons.keyboard_arrow_right,
-                                color: gPrimaryColor,
-                                size: 22,
-                              ),
-                            ],
-                          ),
-                          // child: Icon(
-                          //   (otpMessage.toLowerCase().contains('otp sent')) ? Icons.check_circle_outline : Icons.keyboard_arrow_right,
-                          //   color: gPrimaryColor,
-                          //   size: 22,
-                          // ),
-                        )
-                            : SizedBox(),
+                              )
+                            : (phoneController.text.length == 10)
+                                ? Icon(
+                                    Icons.check_circle_outline,
+                                    color: gPrimaryColor,
+                                    size: 2.h,
+                                  )
+                                : const SizedBox(),
+                        // (phoneController.text.length == 10 &&
+                        //             isPhone(phoneController.text))
+                        //         ? GestureDetector(
+                        //             onTap: (otpMessage
+                        //                     .toLowerCase()
+                        //                     .contains('otp sent'))
+                        //                 ? null
+                        //                 : () {
+                        //                     if (isPhone(phoneController.text) &&
+                        //                         _phoneFocus.hasFocus) {
+                        //                       getOtp(phoneController.text);
+                        //                     }
+                        //                   },
+                        //             child: Row(
+                        //               mainAxisSize: MainAxisSize.min,
+                        //               mainAxisAlignment:
+                        //                   MainAxisAlignment.center,
+                        //               children: [
+                        //                 Visibility(
+                        //                   visible: !(otpMessage
+                        //                       .toLowerCase()
+                        //                       .contains('otp sent')),
+                        //                   child: Text(
+                        //                     'Get OTP',
+                        //                     textAlign: TextAlign.center,
+                        //                     style: TextStyle(
+                        //                       fontFamily:
+                        //                           eUser().fieldSuffixTextFont,
+                        //                       color:
+                        //                           eUser().fieldSuffixTextColor,
+                        //                       fontSize: eUser()
+                        //                           .fieldSuffixTextFontSize,
+                        //                     ),
+                        //                   ),
+                        //                 ),
+                        //                 Icon(
+                        //                   (otpMessage
+                        //                           .toLowerCase()
+                        //                           .contains('otp sent'))
+                        //                       ? Icons.check_circle_outline
+                        //                       : Icons.keyboard_arrow_right,
+                        //                   color: gPrimaryColor,
+                        //                   size: 22,
+                        //                 ),
+                        //               ],
+                        //             ),
+                        //             // child: Icon(
+                        //             //   (otpMessage.toLowerCase().contains('otp sent')) ? Icons.check_circle_outline : Icons.keyboard_arrow_right,
+                        //             //   color: gPrimaryColor,
+                        //             //   size: 22,
+                        //             // ),
+                        //           )
+                        //         : SizedBox(),
                         hintText: "Mobile Number",
                         hintStyle: TextStyle(
                           fontFamily: eUser().userTextFieldHintFont,
@@ -351,148 +378,26 @@ class _ExistingUserState extends State<ExistingUser> {
                 ),
               ],
             ),
-            Visibility(
-                visible: otpSent,
-                child: SizedBox(height: 1.h)),
-            Visibility(
-              visible: otpSent,
-              child: Text(
-                otpMessage,
-                style: TextStyle(
-                    fontFamily: "GothamMedium",
-                    color: gPrimaryColor,
-                    fontSize: 8.5.sp
-                ),
-              ),
-            ),
-            SizedBox(height: 3.h),
-            Text(
-              "Enter your OTP",
-              style: TextStyle(
-                  fontFamily: eUser().userFieldLabelFont,
-                  fontSize: eUser().userFieldLabelFontSize,
-                  color: eUser().userFieldLabelColor
-              ),
-            ),
-            SizedBox(height: 1.h),
-            Form(
-              autovalidateMode: AutovalidateMode.disabled,
-              child: TextFormField(
-                maxLength: 6,
-                textAlignVertical: TextAlignVertical.center,
-                keyboardType: TextInputType.number,
-                cursorColor: gPrimaryColor,
-                controller: otpController,
-                // obscureText: !otpVisibility,
-                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                style: TextStyle(
-                    fontFamily: eUser().userTextFieldFont,
-                    fontSize: eUser().userTextFieldFontSize,
-                    color: eUser().userTextFieldColor
-                ),
-                decoration: InputDecoration(
-                  focusedBorder:UnderlineInputBorder(
-                      borderSide: BorderSide(
-                          color: eUser().focusedBorderColor,
-                          width: eUser().focusedBorderWidth
-                      )
-                    // borderRadius: BorderRadius.circular(25.0),
-                  ),
-                  enabledBorder: (otpController.text.isEmpty) ? null :UnderlineInputBorder(
-                      borderSide: BorderSide(
-                          color: eUser().focusedBorderColor,
-                          width: eUser().focusedBorderWidth
-                      )
-                  ),
-                  isDense: true,
-                  counterText: '',
-                  // fillColor: MainTheme.fillColor,
-                  contentPadding: EdgeInsets.symmetric(horizontal: 2),
-                  // prefixIcon: const Icon(
-                  //   Icons.lock_outline_sharp,
-                  //   color: gPrimaryColor,
-                  // ),
-                  hintText: "OTP",
-                  hintStyle: TextStyle(
-                    fontFamily: eUser().userTextFieldHintFont,
-                    color: eUser().userTextFieldHintColor,
-                    fontSize: eUser().userTextFieldHintFontSize,
-                  ),
-                  suffixIcon: Visibility(
-                    visible: false,
-                    child: InkWell(
-                      onTap: () {
-                        setState(() {
-                          otpVisibility = !otpVisibility;
-                        });
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Icon(
-                          otpVisibility
-                              ? Icons.visibility_outlined
-                              : Icons.visibility_off_outlined,
-                          color: gPrimaryColor,
-                          size: 22,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(height: 3.h),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                GestureDetector(
-                  onTap: (_resendTimer != 0 || !enableResendOtp) ? null : (){
-                    getOtp(phoneController.text);
-                    // Navigator.push(context, MaterialPageRoute(builder: (_) => ResendOtpScreen()));
-                  },
-                  child: Text(
-                    "Resend OTP",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        decorationThickness: 3,
-                        // decoration: TextDecoration.underline,
-                      fontFamily: eUser().resendOtpFont,
-                      color: (_resendTimer != 0 || !enableResendOtp) ? eUser().userTextFieldHintColor : eUser().resendOtpFontColor,
-                      fontSize: eUser().resendOtpFontSize,
-                    ),
-                  ),
-                ),
-                Visibility(
-                  visible: _resendTimer != 0,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.timelapse_rounded,
-                        size: 12,
-                      ),
-                      SizedBox(
-                        width: 5,
-                      ),
-                      Text(_resendTimer.toString(),
-                        style: TextStyle(
-                          fontFamily: eUser().resendOtpFont,
-                          color: eUser().resendOtpFontColor,
-                          fontSize: eUser().resendOtpFontSize,
-                        )
-                      ),
-                    ],
-                  ),
-                )
-              ],
-            ),
+            SizedBox(height: 5.h),
             Center(
               child: GestureDetector(
                 // onTap: (showLoginProgress) ? null : () {
-                onTap: () {
-                  if(mobileFormKey.currentState!.validate() && phoneController.text.isNotEmpty && otpController.text.isNotEmpty){
-                    login(phoneController.text, otpController.text);
-                  }
-                },
+                onTap: (otpMessage.toLowerCase().contains('otp sent'))
+                    ? null
+                    : () {
+                        if (mobileFormKey.currentState!.validate() &&
+                            phoneController.text.isNotEmpty) {
+                          if (isPhone(phoneController.text) &&
+                              _phoneFocus.hasFocus) {
+                            getOtp(phoneController.text);
+                          }
+                          buildGetOTP(context);
+                        } else {
+                          AppConfig().showSnackbar(
+                              context, 'Enter your Mobile Number',
+                              isError: true);
+                        }
+                      },
                 child: Container(
                   width: 40.w,
                   height: 5.h,
@@ -500,29 +405,33 @@ class _ExistingUserState extends State<ExistingUser> {
                   padding:
                       EdgeInsets.symmetric(vertical: 1.h, horizontal: 10.w),
                   decoration: BoxDecoration(
-                    color: (phoneController.text.isEmpty || otpController.text.isEmpty)
+                    color: (phoneController.text.isEmpty ||
+                            otpController.text.isEmpty)
                         ? eUser().buttonColor
                         : eUser().buttonColor,
-                    borderRadius: BorderRadius.circular(eUser().buttonBorderRadius),
+                    borderRadius:
+                        BorderRadius.circular(eUser().buttonBorderRadius),
                     // border: Border.all(
                     //     color: eUser().buttonBorderColor,
                     //     width: eUser().buttonBorderWidth
                     // ),
                   ),
                   child: (showLoginProgress)
-                      ? buildThreeBounceIndicator(color: eUser().threeBounceIndicatorColor)
+                      ? buildThreeBounceIndicator(
+                          color: eUser().threeBounceIndicatorColor)
                       : Center(
-                        child: Text(
-                    'LOGIN',
-                    style: TextStyle(
-                        fontFamily: eUser().buttonTextFont,
-                        color: (phoneController.text.isEmpty || otpController.text.isEmpty)
-                            ? eUser().buttonTextColor
-                            : eUser().buttonTextColor,
-                        fontSize: eUser().buttonTextSize,
-                    ),
-                  ),
-                      ),
+                          child: Text(
+                            'GET OTP',
+                            style: TextStyle(
+                              fontFamily: eUser().buttonTextFont,
+                              color: (phoneController.text.isEmpty ||
+                                      otpController.text.isEmpty)
+                                  ? eUser().buttonTextColor
+                                  : eUser().buttonTextColor,
+                              fontSize: eUser().buttonTextSize,
+                            ),
+                          ),
+                        ),
                 ),
               ),
             ),
@@ -533,7 +442,7 @@ class _ExistingUserState extends State<ExistingUser> {
                   "",
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                      height: 1.5,
+                    height: 1.5,
                     fontFamily: eUser().loginDummyTextFont,
                     color: eUser().loginDummyTextColor,
                     fontSize: eUser().loginDummyTextFontSize,
@@ -569,43 +478,309 @@ class _ExistingUserState extends State<ExistingUser> {
             //     ),
             //   ),
             // ),,
-            SizedBox(
-              height: 8.h,
-            ),
+            SizedBox(height: 8.h),
             Center(
               child: RichText(
                   text: TextSpan(
-                    text: "Don't have an Account? ",
+                      text: "Don't have an Account? ",
                       style: TextStyle(
-                          height: 1.5,
+                        height: 1.5,
                         fontFamily: eUser().anAccountTextFont,
                         color: eUser().anAccountTextColor,
                         fontSize: eUser().anAccountTextFontSize,
                       ),
-                    children: [
-                      TextSpan(
+                      children: [
+                    TextSpan(
                         text: 'Signup',
                         style: TextStyle(
-                            height: 1.5,
+                          height: 1.5,
                           fontFamily: eUser().loginSignupTextFont,
                           color: eUser().loginSignupTextColor,
                           fontSize: eUser().loginSignupTextFontSize,
                         ),
-                        recognizer: TapGestureRecognizer()..onTap = () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => const ChooseYourProblemScreen(),
-                            ),
-                          );
-                        }
-                      )
-                    ]
-                  )
-              ),
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    const ChooseYourProblemScreen(),
+                              ),
+                            );
+                          })
+                  ])),
             )
           ],
         ),
       ),
+    );
+  }
+
+  buildGetOTP(BuildContext context) {
+    final defaultPinTheme = PinTheme(
+      width: 45,
+      height: 50,
+      textStyle: TextStyle(
+        fontFamily: eUser().anAccountTextFont,
+        color: eUser().loginDummyTextColor,
+        fontSize: eUser().loginSignupTextFontSize,
+      ),
+      decoration: BoxDecoration(
+        color: gGreyColor.withOpacity(0.3),
+        borderRadius: BorderRadius.circular(5),
+      ),
+    );
+    return showModalBottomSheet(
+      isScrollControlled: false,
+      isDismissible: false,
+      enableDrag: false,
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(30),
+        ),
+      ),
+      builder: (BuildContext context) => StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+        return SizedBox(
+          height: bottomSheetHeight(),
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 1.h),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(height: 1.h),
+                Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Expanded(
+                        child: Center(
+                          child: Text(
+                            'Enter your OTP',
+                            style: TextStyle(
+                                fontFamily: eUser().mainHeadingFont,
+                                fontSize: eUser().mainHeadingFontSize,
+                                color: eUser().mainHeadingColor),
+                          ),
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(1),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(30),
+                            border: Border.all(
+                                color: eUser().mainHeadingColor, width: 1),
+                          ),
+                          child: Icon(
+                            Icons.clear,
+                            color: eUser().mainHeadingColor,
+                            size: 1.6.h,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 5)
+                    ],
+                  ),
+                ),
+                Container(
+                  margin: EdgeInsets.symmetric(vertical: 1.h, horizontal: 10.w),
+                  height: 1,
+                  color: eUser().mainHeadingColor.withOpacity(0.3),
+                ),
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Visibility(
+                            visible: otpSent, child: SizedBox(height: 1.h)),
+                        Visibility(
+                          visible: otpSent,
+                          child: Text(
+                            otpMessage,
+                            style: TextStyle(
+                                fontFamily: "GothamMedium",
+                                color: gPrimaryColor,
+                                fontSize: 8.5.sp),
+                          ),
+                        ),
+                        SizedBox(height: 5.h),
+                        Center(
+                          child: Pinput(
+                            controller: otpController,
+                            length: 6,
+                            focusNode: focusNode,
+                            androidSmsAutofillMethod:
+                                AndroidSmsAutofillMethod.smsUserConsentApi,
+                            listenForMultipleSmsOnAndroid: true,
+                            defaultPinTheme: defaultPinTheme,
+                            validator: (value) {
+                              return value == otpController.text
+                                  ? null
+                                  : 'Pin is incorrect';
+                            },
+                            // onClipboardFound: (value) {
+                            //   debugPrint('onClipboardFound: $value');
+                            //   pinController.setText(value);
+                            // },
+                            hapticFeedbackType: HapticFeedbackType.lightImpact,
+                            onCompleted: (pin) {
+                              debugPrint('onCompleted: $pin');
+                            },
+                            onChanged: (value) {
+                              debugPrint('onChanged: $value');
+                            },
+                            cursor: Column(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Container(
+                                  margin: const EdgeInsets.only(bottom: 9),
+                                  width: 22,
+                                  height: 1,
+                                  color: eUser().loginDummyTextColor,
+                                ),
+                              ],
+                            ),
+                            // focusedPinTheme: defaultPinTheme.copyWith(
+                            //   decoration: defaultPinTheme.decoration!.copyWith(
+                            //     borderRadius: BorderRadius.circular(8),
+                            //     border: Border.all(color: gPrimaryColor),
+                            //   ),
+                            // ),
+                            // submittedPinTheme: defaultPinTheme.copyWith(
+                            //   decoration: defaultPinTheme.decoration!.copyWith(
+                            //     color: gGreyColor,
+                            //     borderRadius: BorderRadius.circular(19),
+                            //     border: Border.all(color: gPrimaryColor),
+                            //   ),
+                            // ),
+                            // errorPinTheme: defaultPinTheme.copyBorderWith(
+                            //   border: Border.all(color: Colors.redAccent),
+                            // ),
+                          ),
+                        ),
+                        SizedBox(height: 3.h),
+                        Visibility(
+                          visible: _resendTimer != 0,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(
+                                Icons.timelapse_rounded,
+                                size: 12,
+                              ),
+                              SizedBox(width: 1.w),
+                              Text(_resendTimer.toString(),
+                                  style: TextStyle(
+                                    fontFamily: eUser().resendOtpFont,
+                                    color: eUser().resendOtpFontColor,
+                                    fontSize: eUser().resendOtpFontSize,
+                                  )),
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: 3.h),
+                        Center(
+                          child: Text(
+                            "Didn't receive an OTP?",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              decorationThickness: 3,
+                              // decoration: TextDecoration.underline,
+                              fontFamily: eUser().resendOtpFont,
+                              color: (_resendTimer != 0 || !enableResendOtp)
+                                  ? eUser().userTextFieldHintColor
+                                  : eUser().resendOtpFontColor,
+                              fontSize: eUser().userTextFieldFontSize,
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 2.h),
+                        Center(
+                          child: GestureDetector(
+                            onTap: (_resendTimer != 0 || !enableResendOtp)
+                                ? null
+                                : () {
+                                    getOtp(phoneController.text);
+                                    // Navigator.push(context, MaterialPageRoute(builder: (_) => ResendOtpScreen()));
+                                  },
+                            child: Text(
+                              "Resend OTP",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                decorationThickness: 3,
+                                decoration: TextDecoration.underline,
+                                fontFamily: eUser().userFieldLabelFont,
+                                color: (_resendTimer != 0 || !enableResendOtp)
+                                    ? eUser().userTextFieldHintColor
+                                    : eUser().resendOtpFontColor,
+                                fontSize: eUser().userTextFieldFontSize,
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 3.h),
+                        Center(
+                          child: GestureDetector(
+                            // onTap: (showLoginProgress) ? null : () {
+                            onTap: () {
+                              if (mobileFormKey.currentState!.validate() &&
+                                  phoneController.text.isNotEmpty &&
+                                  otpController.text.isNotEmpty) {
+                                login(phoneController.text, otpController.text);
+                              }
+                            },
+                            child: Container(
+                              width: 60.w,
+                              height: 5.h,
+                              margin: EdgeInsets.symmetric(vertical: 4.h),
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 1.h, horizontal: 10.w),
+                              decoration: BoxDecoration(
+                                color: (phoneController.text.isEmpty ||
+                                        otpController.text.isEmpty)
+                                    ? eUser().buttonColor
+                                    : eUser().buttonColor,
+                                borderRadius: BorderRadius.circular(10),
+                                // border: Border.all(
+                                //     color: eUser().buttonBorderColor,
+                                //     width: eUser().buttonBorderWidth
+                                // ),
+                              ),
+                              child: (showLoginProgress)
+                                  ? buildThreeBounceIndicator(
+                                      color: eUser().threeBounceIndicatorColor)
+                                  : Center(
+                                      child: Text(
+                                        'LOGIN',
+                                        style: TextStyle(
+                                          fontFamily: eUser().buttonTextFont,
+                                          color: (phoneController
+                                                      .text.isEmpty ||
+                                                  otpController.text.isEmpty)
+                                              ? eUser().buttonTextColor
+                                              : eUser().buttonTextColor,
+                                          fontSize: eUser().buttonTextSize,
+                                        ),
+                                      ),
+                                    ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      }),
     );
   }
 
@@ -626,21 +801,20 @@ class _ExistingUserState extends State<ExistingUser> {
     print("get otp");
     final result = await _loginWithOtpService.getOtpService(phoneNumber);
 
-    if(result.runtimeType == GetOtpResponse){
+    if (result.runtimeType == GetOtpResponse) {
       GetOtpResponse model = result as GetOtpResponse;
       setState(() {
         otpMessage = "OTP Sent";
-        if(kDebugMode) otpController.text = result.otp!;
+        if (kDebugMode) otpController.text = result.otp!;
       });
       Future.delayed(Duration(seconds: 2)).whenComplete(() {
         setState(() {
           otpSent = false;
-          if(kDebugMode)  _resendTimer = 0;
+          if (kDebugMode) _resendTimer = 0;
         });
       });
-      if(kDebugMode) _timer!.cancel();
-    }
-    else{
+      if (kDebugMode) _timer!.cancel();
+    } else {
       setState(() {
         otpSent = false;
       });
@@ -651,14 +825,14 @@ class _ExistingUserState extends State<ExistingUser> {
     }
   }
 
-  login(String phone, String otp) async{
+  login(String phone, String otp) async {
     setState(() {
       showLoginProgress = true;
     });
     print("---------Login---------");
     final result = await _loginWithOtpService.loginWithOtpService(phone, otp);
 
-    if(result.runtimeType == LoginOtpModel){
+    if (result.runtimeType == LoginOtpModel) {
       LoginOtpModel model = result as LoginOtpModel;
       setState(() {
         showLoginProgress = false;
@@ -673,26 +847,26 @@ class _ExistingUserState extends State<ExistingUser> {
 
       _loginWithOtpService.getAccessToken(model.kaleyraUserId!);
 
-      if(model.userEvaluationStatus!.contains("no_evaluation") || model.userEvaluationStatus!.contains("pending"))
-        {
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(
-              builder: (context) => const EvaluationFormScreen(),
-            ),
-          );
-        }
-      else{
+      if (model.userEvaluationStatus!.contains("no_evaluation") ||
+          model.userEvaluationStatus!.contains("pending")) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => const EvaluationFormScreen(),
+          ),
+        );
+      } else {
         bool? firstTime = _pref.getBool(AppConfig.isFirstTime);
 
-        if(firstTime == null){
+        if (firstTime == null) {
           _pref.setBool(AppConfig.isFirstTime, false);
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(
-              builder: (context) => HelpScreen(isFromLogin: true,),
+              builder: (context) => HelpScreen(
+                isFromLogin: true,
+              ),
             ),
           );
-        }
-        else{
+        } else {
           _pref.setBool(AppConfig.isFirstTime, false);
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(
@@ -700,18 +874,18 @@ class _ExistingUserState extends State<ExistingUser> {
             ),
           );
         }
-
       }
-      final shipAddress = await EvaluationFormService(repository: evalrepository).getEvaluationDataService();
-      if(shipAddress.runtimeType == GetEvaluationDataModel){
+      final shipAddress =
+          await EvaluationFormService(repository: evalrepository)
+              .getEvaluationDataService();
+      if (shipAddress.runtimeType == GetEvaluationDataModel) {
         GetEvaluationDataModel model = shipAddress as GetEvaluationDataModel;
         ChildGetEvaluationDataModel? model1 = model.data;
         final address1 = model1?.patient?.user?.address ?? '';
         final address2 = model1?.patient?.address2 ?? '';
-        _pref.setString(AppConfig.SHIPPING_ADDRESS, address1+address2);
+        _pref.setString(AppConfig.SHIPPING_ADDRESS, address1 + address2);
       }
-    }
-    else{
+    } else {
       setState(() {
         showLoginProgress = false;
       });
@@ -745,20 +919,21 @@ class _ExistingUserState extends State<ExistingUser> {
     ),
   );
 
-  void storeUserProfile() async{
-    final profile = await UserProfileService(repository: userRepository).getUserProfileService();
-    if(profile.runtimeType == UserProfileModel){
+  void storeUserProfile() async {
+    final profile = await UserProfileService(repository: userRepository)
+        .getUserProfileService();
+    if (profile.runtimeType == UserProfileModel) {
       UserProfileModel model1 = profile as UserProfileModel;
       print("model1.datqbUserIda!.: ${model1.data!.qbUserId}");
 
-      _pref.setString(AppConfig.User_Name, model1.data?.name ?? model1.data?.fname ?? '');
+      _pref.setString(
+          AppConfig.User_Name, model1.data?.name ?? model1.data?.fname ?? '');
       _pref.setInt(AppConfig.USER_ID, model1.data?.id ?? -1);
       _pref.setString(AppConfig.QB_USERNAME, model1.data!.qbUsername!);
       _pref.setString(AppConfig.QB_CURRENT_USERID, model1.data!.qbUserId!);
       _pref.setString(AppConfig.KALEYRA_USER_ID, model1.data!.kaleyraUID!);
       print("pref id: ${_pref.getInt(AppConfig.USER_ID)}");
       print("model1. after: ${_pref.getString(AppConfig.QB_CURRENT_USERID)}");
-
     }
   }
 }

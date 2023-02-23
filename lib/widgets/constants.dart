@@ -5,7 +5,7 @@ const gPrimaryColor = Color(0xff4E7215);
 // const gsecondaryColor = Color(0xffC10B02);
 const gsecondaryColor = Color(0xffD10034);
 const gMainColor = Color(0xffC7A102);
-
+const gGreyColor = Color(0xff707070);
 
 const gBlackColor = Color(0xff000000);
 const gWhiteColor = Color(0xffFFFFFF);

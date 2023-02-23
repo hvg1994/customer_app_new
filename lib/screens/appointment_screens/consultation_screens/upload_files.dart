@@ -79,7 +79,7 @@ class _UploadFilesState extends State<UploadFiles> {
         : Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
-                  colors: [Color(0xffFFE889), Color(0xffFFF3C2)],
+                  colors: [gWhiteColor, gWhiteColor],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter),
             ),
@@ -105,6 +105,7 @@ class _UploadFilesState extends State<UploadFiles> {
                       child: Image(
                         image: const AssetImage("assets/images/Group 3306.png"),
                         height: 15.h,
+                        color: gsecondaryColor,
                       ),
                     ),
                     SizedBox(height: 2.h),
@@ -254,8 +255,9 @@ class _UploadFilesState extends State<UploadFiles> {
                                   // padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 10.w),
                                   decoration: BoxDecoration(
                                     color: eUser().buttonColor,
-                                    borderRadius: BorderRadius.circular(eUser().buttonBorderRadius),
-                                    border: Border.all(color: gMainColor, width: 1),
+                                    borderRadius: BorderRadius.circular(8),
+                                    // border:
+                                    //     Border.all(color: gMainColor, width: 1),
                                   ),
                                   child: (showUploadProgress)
                                       ? buildThreeBounceIndicator()
@@ -295,6 +297,13 @@ class _UploadFilesState extends State<UploadFiles> {
               image: const AssetImage("assets/images/Group 2722.png"),
               height: 4.h,
             ),
+            //   (file.extension == 'jpg' || file.extension == 'png')
+            //     ? Image.file(
+            //   File(file.path.toString()),
+            //   width: 5.w,
+            //   height: 5.h,
+            // )
+            //     : Container(),
             SizedBox(width: 3.w),
             Expanded(
               child: Column(
@@ -664,7 +673,7 @@ class _UploadFilesState extends State<UploadFiles> {
                       children: [
                         TextButton(
                             onPressed: () {
-                              getImageFromCamera(type: type);
+                              getImageFromCamera();
                               Navigator.pop(context);
                             },
                             child: Row(
@@ -726,7 +735,7 @@ class _UploadFilesState extends State<UploadFiles> {
     if (result.files.first.extension!.contains("pdf") ||
         result.files.first.extension!.contains("png") ||
         result.files.first.extension!.contains("jpg")) {
-      if (getFileSize(File(result.paths.first!)) <= 10) {
+      if (getFileSize(File(result.paths.first!)) <= 2) {
         print("filesize: ${getFileSize(File(result.paths.first!))}Mb");
         files.add(result.files.first);
         addFilesToList(File(result.paths.first!));
@@ -741,7 +750,7 @@ class _UploadFilesState extends State<UploadFiles> {
         }
       } else {
         AppConfig()
-            .showSnackbar(context, "File size must be <10Mb", isError: true);
+            .showSnackbar(context, "File size must be <2Mb", isError: true);
       }
     } else {
       AppConfig().showSnackbar(context, "Please select png/jpg/Pdf files",
@@ -757,10 +766,10 @@ class _UploadFilesState extends State<UploadFiles> {
     });
 
     for (int i = 0; i < fileFormatList.length; i++) {
-      var stream = http.ByteStream(DelegatingStream.typed(fileFormatList[i].openRead()));
+      var stream =
+          http.ByteStream(DelegatingStream.typed(fileFormatList[i].openRead()));
       var length = await fileFormatList[i].length();
-      var multipartFile = http.MultipartFile("files[]",
-          stream, length,
+      var multipartFile = http.MultipartFile("files[]", stream, length,
           filename: fileFormatList[i].path);
       newList.add(multipartFile);
     }
@@ -768,31 +777,22 @@ class _UploadFilesState extends State<UploadFiles> {
     setState(() {});
   }
 
-  Future getImageFromCamera({String? type}) async {
+  Future getImageFromCamera() async {
     var image = await ImagePicker.platform.pickImage(
       source: ImageSource.camera,
-      imageQuality: 40,
-      preferredCameraDevice: CameraDevice.rear
+      imageQuality: 40
     );
 
     setState(() {
       _image = File(image!.path);
-      if (getFileSize(_image!) <= 10) {
+      if (getFileSize(_image!) <= 2) {
         print("filesize: ${getFileSize(_image!)}Mb");
         addFilesToList(_image!);
-        if (type != null) {
-          if (reportsObject.isNotEmpty) {
-            reportsObject.forEach((element) {
-              if (element.id.toString().contains(type)) {
-                element.path = _image?.path ?? '';
-              }
-            });
-          }
-        }
       } else {
         print("filesize: ${getFileSize(_image!)}Mb");
 
-        AppConfig().showSnackbar(context, "File size must be <10Mb", isError: true);
+        AppConfig()
+            .showSnackbar(context, "File size must be <2Mb", isError: true);
       }
     });
     print("captured image: ${_image}");
@@ -816,7 +816,7 @@ class _UploadFilesState extends State<UploadFiles> {
             style: TextStyle(
                 fontSize: 10.sp,
                 fontFamily: kFontBold,
-                color: gPrimaryColor),
+                color: eUser().mainHeadingColor),
           ),
           trailing: (isDoneIcon)
               ? Icon(
@@ -959,7 +959,8 @@ class _UploadFilesState extends State<UploadFiles> {
                               else{
                                 reportsObject.forEach((element) {
                                   print(element.id);
-                                  print('${element.id} ${doctorRequestedReports[index].id}');
+                                  print(
+                                      '${element.id} ${doctorRequestedReports[index].id}');
                                   print(element.id.toString() ==
                                       doctorRequestedReports[index].id.toString());
                                   if (element.id.toString() ==
@@ -1004,6 +1005,7 @@ class _UploadFilesState extends State<UploadFiles> {
             }),
           ),
         ),
+
       ],
     );
   }
