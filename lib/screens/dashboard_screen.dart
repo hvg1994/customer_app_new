@@ -14,7 +14,6 @@ import 'package:sizer/sizer.dart';
 import 'package:gwc_customer/screens/home_screens/level_status.dart';
 import 'package:gwc_customer/screens/profile_screens/reward/levels_screen.dart';
 import '../../widgets/constants.dart';
-import '../dummy_file.dart';
 import 'clap_screens/clap_screen.dart';
 import 'feed_screens/feeds_list.dart';
 import 'gut_list_screens/gut_list.dart';
@@ -71,9 +70,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
     switch (index) {
       case 0:
         {
-          return DummyFile();
           // return PPLevelsDemo();
-          //return LevelStatus();
+          return LevelStatus();
           // return DayMealTracerUI(proceedProgramDayModel: ProceedProgramDayModel(),);
         }
       case 1:

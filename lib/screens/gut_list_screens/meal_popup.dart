@@ -26,13 +26,13 @@ class MealPopup extends StatelessWidget {
                   filterQuality: FilterQuality.high,
                 ),
               ),
-              Text('Your Meal Plan is Ready.\n Are you ready to receive the shipment?',
+              Text('Your Meal Plan is Ready.\nThis usually takes 3 - 5 days for delivery.\nAre you ready to receive the shipment?',
               textAlign: TextAlign.center,
               style: TextStyle(
-                // height: 0.5,
+                 height: 1.2,
                 fontFamily: kFontBold,
                 color: gBlackColor,
-                fontSize: 13.5.sp,
+                fontSize: 13.sp,
               ),),
               SizedBox(height: 5.h,),
               Row(

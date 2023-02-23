@@ -13,8 +13,8 @@ import 'package:http/http.dart' as http;
 import 'package:sizer/sizer.dart';
 
 class PrepratoryPlanScreen extends StatefulWidget {
-  String totalDays;
-  String dayNumber;
+  String? totalDays;
+  String? dayNumber;
   PrepratoryPlanScreen({Key? key, required this.dayNumber, required this.totalDays}) : super(key: key);
 
   @override

@@ -79,7 +79,7 @@ class _UploadFilesState extends State<UploadFiles> {
         : Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
-                  colors: [Color(0xffFFE889), Color(0xffFFF3C2)],
+                  colors: [gWhiteColor, gWhiteColor],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter),
             ),
@@ -105,6 +105,7 @@ class _UploadFilesState extends State<UploadFiles> {
                       child: Image(
                         image: const AssetImage("assets/images/Group 3306.png"),
                         height: 15.h,
+                        color: gsecondaryColor,
                       ),
                     ),
                     SizedBox(height: 2.h),
@@ -253,10 +254,10 @@ class _UploadFilesState extends State<UploadFiles> {
                                   height: 5.h,
                                   // padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 10.w),
                                   decoration: BoxDecoration(
-                                    color: gPrimaryColor,
+                                    color: eUser().buttonColor,
                                     borderRadius: BorderRadius.circular(8),
-                                    border:
-                                        Border.all(color: gMainColor, width: 1),
+                                    // border:
+                                    //     Border.all(color: gMainColor, width: 1),
                                   ),
                                   child: (showUploadProgress)
                                       ? buildThreeBounceIndicator()
@@ -815,7 +816,7 @@ class _UploadFilesState extends State<UploadFiles> {
             style: TextStyle(
                 fontSize: 10.sp,
                 fontFamily: kFontBold,
-                color: gPrimaryColor),
+                color: eUser().mainHeadingColor),
           ),
           trailing: (isDoneIcon)
               ? Icon(
@@ -1004,6 +1005,7 @@ class _UploadFilesState extends State<UploadFiles> {
             }),
           ),
         ),
+
       ],
     );
   }

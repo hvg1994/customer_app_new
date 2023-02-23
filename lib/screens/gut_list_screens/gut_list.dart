@@ -300,7 +300,7 @@ class GutListState extends State<GutList> {
         }
         else{
           _postConsultationAppointment = _getDashboardDataModel.postprogram_consultation;
-          print(_getDashboardDataModel.postprogram_consultation?.data);
+          print("RESCHEDULE : ${_getDashboardDataModel.postprogram_consultation?.data}");
           postProgramStage = _postConsultationAppointment?.data ?? '';
           updateNewStage(postProgramStage);
         }
@@ -516,7 +516,9 @@ class GutListState extends State<GutList> {
 
   showPrepratoryMealScreen(){
     if(_prepratoryModel != null){
-      if(_prepratoryModel!.value!.isPrepratoryStarted == true){
+      print("BOOL : ${_prepratoryModel!.value!.isPrepratoryStarted}");
+
+      if(_prepratoryModel!.value!.isPrepratoryStarted == false){
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) => ProgramPlanScreen(from: ProgramMealType.prepratory.name,),

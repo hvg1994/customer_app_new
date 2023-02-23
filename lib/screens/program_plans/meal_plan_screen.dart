@@ -60,6 +60,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
   Color textColor = gWhiteColor;
   String? planNotePdfLink;
   bool showToolTip = true;
+  bool shoppingToolTip = true;
 
   String btnText = 'Proceed to Symptoms Tracker';
 
@@ -689,27 +690,102 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              buildAppBar(
-                  () {
-                    Navigator.pop(context);
-                  },
-                  showHelpIcon: true,
-                  helpOnTap: () {
-                    if (planNotePdfLink != null ||
-                        planNotePdfLink!.isNotEmpty) {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (ctx) => MealPdf(
-                                    pdfLink: planNotePdfLink!,
-                                    heading: "Note",
-                                  )));
-                    } else {
-                      AppConfig().showSnackbar(
-                          context, "Note Link Not available",
-                          isError: true);
-                    }
-                  }),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      SizedBox(
+                        height: 2.h,
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: const Image(
+                            image: AssetImage(
+                                "assets/images/Icon ionic-ios-arrow-back.png"),
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 7.h,
+                        child: const Image(
+                          image:
+                              AssetImage("assets/images/Gut welness logo.png"),
+                        ),
+                        //SvgPicture.asset("assets/images/splash_screen/Inside Logo.svg"),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SimpleTooltip(
+                        borderColor: gWhiteColor,
+                        maxWidth: 50.w,
+                        ballonPadding: EdgeInsets.symmetric(
+                            horizontal: 0.w, vertical: 0.h),
+                        arrowTipDistance: 2,
+                        arrowLength: 10,
+                        arrowBaseWidth: 10,
+                        hideOnTooltipTap: true,
+                        // targetCenter: const Offset(3,4),
+                        tooltipTap: () {
+                          setState(() {
+                            shoppingToolTip = false;
+                          });
+                        },
+                        animationDuration: const Duration(seconds: 3),
+                        show: shoppingToolTip,
+                        tooltipDirection: TooltipDirection.down,
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                shoppingToolTip = false;
+                              });
+                            },
+                            child: Image(
+                              height: 3.h,
+                              image: AssetImage("assets/images/list.png"),
+                            ),
+                          ),
+                        ),
+                        content: Text(
+                          "Tap here for Shopping List",
+                          style: TextStyle(
+                              fontSize: PPConstants().topViewSubFontSize,
+                              fontFamily: MealPlanConstants().mealNameFont,
+                              color: gHintTextColor),
+                        ),
+                      ),
+                      IconButton(
+                        icon: Icon(
+                          Icons.help_outline_rounded,
+                          color: gMainColor,
+                        ),
+                        onPressed: () {
+                          if (planNotePdfLink != null ||
+                              planNotePdfLink!.isNotEmpty) {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (ctx) => MealPdf(
+                                          pdfLink: planNotePdfLink!,
+                                          heading: "Note",
+                                        )));
+                          } else {
+                            AppConfig().showSnackbar(
+                                context, "Note Link Not available",
+                                isError: true);
+                          }
+                        },
+                      ),
+                    ],
+                  )
+                ],
+              ),
               SizedBox(height: 1.h),
               Text(
                 // "Day ${widget.day} Meal Plan",
@@ -1448,6 +1524,9 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                                                 ? null
                                                 : e.type == 'item'
                                                     ? () {
+                                                        setState(() {
+                                                          showToolTip = false;
+                                                        });
                                                         showPdf(e.url!, e.name);
                                                       }
                                                     : () => showVideo(e),
@@ -1560,23 +1639,23 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                                       return element.name == e.name;
                                     }),
                                   );
-                                  // openAlertBox(
-                                  //     title: 'Did you Follow this?',
-                                  //     titleNeeded: true,
-                                  //     context: context,
-                                  //     isContentNeeded: false,
-                                  //     positiveButtonName: 'Followed',
-                                  //     positiveButton: () {
-                                  //       onChangedTab(0,
-                                  //           id: e.itemId, title: list[0]);
-                                  //       Navigator.pop(context);
-                                  //     },
-                                  //     negativeButtonName: 'Missed It',
-                                  //     negativeButton: () {
-                                  //       onChangedTab(0,
-                                  //           id: e.itemId, title: list[1]);
-                                  //       Navigator.pop(context);
-                                  //     });
+                                  openAlertBox(
+                                      title: 'Did you Follow this?',
+                                      titleNeeded: true,
+                                      context: context,
+                                      isContentNeeded: false,
+                                      positiveButtonName: 'Followed',
+                                      positiveButton: () {
+                                        onChangedTab(0,
+                                            id: e.itemId, title: list[0]);
+                                        Navigator.pop(context);
+                                      },
+                                      negativeButtonName: 'Missed It',
+                                      negativeButton: () {
+                                        onChangedTab(0,
+                                            id: e.itemId, title: list[1]);
+                                        Navigator.pop(context);
+                                      });
                                 },
                                 child: (statusList.isNotEmpty &&
                                         statusList.containsKey(e.itemId) &&

@@ -105,6 +105,14 @@ class _DoctorCalenderTimeScreenState extends State<DoctorCalenderTimeScreen> {
     }
   }
 
+  getTime(){
+    var splited = widget.prevBookingTime?.split(':');
+    print("splited:$splited");
+    String hour = splited![0];
+    String minute = splited[1];
+    int second = int.parse(splited[2]);
+    return '$hour:$minute';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -137,33 +145,33 @@ class _DoctorCalenderTimeScreenState extends State<DoctorCalenderTimeScreen> {
                 //   ],
                 // ),
                 SizedBox(
-                  height: 3.h,
+                  height: 2.h,
                 ),
                 Visibility(
                   visible: widget.isReschedule,
                   child: Padding(
                     padding:
-                    EdgeInsets.symmetric(horizontal: 13.w),
+                    EdgeInsets.symmetric(horizontal: 12.w),
                     child: RichText(
                       textAlign: TextAlign.center,
                       text: TextSpan(
                         children: <TextSpan>[
                           TextSpan(
-                            text: 'Your Previous Appointment was Booked @ ',
+                            text: 'Your Previous Appointment was Booked ',
                             style: TextStyle(
                               height: 1.5,
-                              fontSize: 12.sp,
+                              fontSize: 10.sp,
                               fontFamily: kFontBook,
                               color: gBlackColor,
                             ),
                           ),
                           TextSpan(
-                            text: '${widget.prevBookingTime} ${widget.prevBookingDate}',
+                            text: '@ ${getTime()}  ${DateFormat('dd MMM yyyy').format(DateTime.parse((widget.prevBookingDate.toString()))).toString()}',
                             style: TextStyle(
                               height: 1.5,
-                              fontSize: 12.sp,
+                              fontSize: 11.sp,
                               fontFamily: kFontMedium,
-                              color: gMainColor,
+                              color: gsecondaryColor,
                             ),
                           ),
                         ],
@@ -174,14 +182,14 @@ class _DoctorCalenderTimeScreenState extends State<DoctorCalenderTimeScreen> {
                 Visibility(
                   visible: widget.isReschedule,
                   child: SizedBox(
-                    height: 5,
+                    height: 3.h,
                   ),
                 ),
                 Text(
                   "Choose Your Preferred Day",
                   style: TextStyle(
                       fontFamily: kFontBold,
-                      color: gPrimaryColor,
+                      color: eUser().mainHeadingColor,
                       fontSize: 11.sp),
                 ),
                 buildChooseDay(),
@@ -192,7 +200,7 @@ class _DoctorCalenderTimeScreenState extends State<DoctorCalenderTimeScreen> {
                   "Choose Your Preferred Time",
                   style: TextStyle(
                       fontFamily: kFontBold,
-                      color: gPrimaryColor,
+                      color: eUser().mainHeadingColor,
                       fontSize: 11.sp),
                 ),
                 SizedBox(height: 2.h),
@@ -370,7 +378,7 @@ class _DoctorCalenderTimeScreenState extends State<DoctorCalenderTimeScreen> {
       decoration: BoxDecoration(
         color: kWhiteColor,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: gMainColor, width: 1),
+        border: Border.all(color: eUser().buttonBorderColor, width: 1),
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(0.5),
@@ -387,13 +395,13 @@ class _DoctorCalenderTimeScreenState extends State<DoctorCalenderTimeScreen> {
         dateTextStyle: TextStyle(
             fontFamily: kFontBold,
             fontSize: 13.sp,
-            color: gPrimaryColor),
+            color: eUser().mainHeadingColor),
         dayTextStyle: TextStyle(
             fontFamily: kFontBook,
-            fontSize: 8.sp, color: gPrimaryColor),
+            fontSize: 8.sp, color: eUser().mainHeadingColor),
         initialSelectedDate: DateTime.now(),
-        selectionColor: gPrimaryColor,
-        selectedTextColor: gMainColor,
+        selectionColor: gsecondaryColor,
+        selectedTextColor: gWhiteColor,
         onDateChange: (date) {
           setState(() {
             selectedDate = date;
@@ -419,9 +427,9 @@ class _DoctorCalenderTimeScreenState extends State<DoctorCalenderTimeScreen> {
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 1.h),
         decoration: BoxDecoration(
-          border: Border.all(color: gMainColor, width: 1),
+          border: Border.all(color: eUser().buttonBorderColor, width: 1),
           borderRadius: BorderRadius.circular(8),
-          color: (model.isBooked == '0' && isSelected != slotName) ? gWhiteColor : model.isBooked == '1' ? gHintTextColor : gPrimaryColor,
+          color: (model.isBooked == '0' && isSelected != slotName) ? gWhiteColor : model.isBooked == '1' ? gsecondaryColor : gPrimaryColor,
           boxShadow: (model.isBooked == '0' && isSelected != slotName)
               ? [
             BoxShadow(
@@ -442,7 +450,7 @@ class _DoctorCalenderTimeScreenState extends State<DoctorCalenderTimeScreen> {
           style: TextStyle(
             fontSize: 10.sp,
             fontFamily: kFontBook,
-            color: (model.isBooked != '0' || isSelected == slotName) ? gMainColor : gTextColor,
+            color: (model.isBooked != '0' || isSelected == slotName) ? gWhiteColor : gTextColor,
           ),
         ),
       ),
