@@ -17,6 +17,7 @@ import '../../widgets/constants.dart';
 import 'clap_screens/clap_screen.dart';
 import 'feed_screens/feeds_list.dart';
 import 'gut_list_screens/gut_list.dart';
+import 'gut_list_screens/new_dashboard_stages.dart';
 import 'home_screens/home_screen.dart';
 import 'post_program_screens/new_post_program/day_breakfast.dart';
 import 'post_program_screens/new_post_program/pp_dashboard.dart';
@@ -70,8 +71,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
     switch (index) {
       case 0:
         {
-          // return PPLevelsDemo();
-          return LevelStatus();
+          return NewDashboardScreen();
+          // this one
+          // return LevelStatus();
+
           // return DayMealTracerUI(proceedProgramDayModel: ProceedProgramDayModel(),);
         }
       case 1:

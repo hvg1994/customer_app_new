@@ -559,6 +559,7 @@ class ApiClient {
       final res = jsonDecode(response.body);
       print('${res['status'].runtimeType} ${res['status']}');
       if (res['status'].toString() == '200') {
+        print(res);
         result = AppointmentBookingModel.fromJson(res);
       }
       else if(response.statusCode == 500){
@@ -2417,6 +2418,61 @@ class ApiClient {
   }
 
 
+  Future submitSlotSelectedApi(String selectedDate, String start, String endTime) async {
+    final path = submitSlotSelectedUrl;
+    var startTime = DateTime.now().millisecondsSinceEpoch;
+
+    var result;
+
+    Map m = {
+      'date': selectedDate,
+      'slot_start_time': start,
+      'slot_end_time': endTime
+    };
+
+    print("map: $m");
+
+    // Map<String, dynamic> param = {'appointment_id': appointmentId};
+    Map<String, String> header = {
+      // "Authorization": "Bearer ${AppConfig().bearerToken}",
+      "Authorization": getHeaderToken(),
+    };
+    try {
+
+      final response =  await httpClient
+          .post(
+        Uri.parse(path),
+        headers: header,
+        body: Map.from(m)
+      )
+          .timeout(const Duration(seconds: 45));
+
+      print("submitSlotSelectedApi response path:" + path);
+
+      print("submitSlotSelectedApi response code:" +
+          response.statusCode.toString());
+      print("submitSlotSelectedApi response body:" + response.body);
+      var totalTime = DateTime.now().millisecondsSinceEpoch - startTime;
+      print("response Time:" + (totalTime / 1000).round().toString());
+
+      final res = jsonDecode(response.body);
+      print('${res['status'].runtimeType} ${res['status']}');
+      if (res['status'] == 200) {
+        result = SuccessMessageModel.fromJson(res);
+      }
+      else if(response.statusCode == 500){
+        result = ErrorModel(status: "0", message: AppConfig.oopsMessage);
+      }
+      else {
+        result = ErrorModel.fromJson(res);
+      }
+
+    } catch (e) {
+      print("catch error $e");
+      result = ErrorModel(status: "0", message: e.toString());
+    }
+    return result;
+  }
 
 
 

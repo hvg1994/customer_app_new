@@ -192,7 +192,10 @@ buildAppBar(VoidCallback func, {bool isBackEnable = true, bool showNotificationI
               ),
             ),
             SizedBox(
-              height: 7.h,
+              width: 10,
+            ),
+            SizedBox(
+              height: 6.h,
               child: const Image(
                 image: AssetImage(
                     "assets/images/Gut welness logo.png"),

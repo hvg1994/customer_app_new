@@ -108,11 +108,11 @@ class GetDashboardDataModel {
         print('json PostProgram: ${normal_postprogram!.toJson()}');
       }
       else{
-        print((json['PostProgram']['value'] as Map).containsKey('zoom_join_url'));
-        if((json['PostProgram']['value'] as Map).containsKey('zoom_join_url')){
-          postprogram_consultation = GetAppointmentDetailsModel.fromJson(json['PostProgram']);
-          print("postProgram:${postprogram_consultation!.toJson()}");
-        }
+        postprogram_consultation = GetAppointmentDetailsModel.fromJson(json['PostProgram']);
+        // if((json['PostProgram']['value'] as Map).containsKey('zoom_join_url')){
+        //   postprogram_consultation = GetAppointmentDetailsModel.fromJson(json['PostProgram']);
+        //   print("postProgram:${postprogram_consultation!.toJson()}");
+        // }
       }
     }
   }

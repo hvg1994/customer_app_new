@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:platform_device_id/platform_device_id.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sizer/sizer.dart';
 
 import '../model/ship_track_model/ship_track_activity_model.dart';
 import '../widgets/constants.dart';
@@ -131,6 +132,83 @@ class AppConfig{
     );
   }
 
+  showSheet(BuildContext context, Widget widget,
+      {double? bottomSheetHeight, String? circleIcon, Color? topColor}){
+    return showModalBottomSheet(
+        isScrollControlled: true,
+        isDismissible: false,
+        enableDrag: false,
+        context: context,
+        backgroundColor: Colors.transparent,
+        builder: (_) {
+          return Container(
+            decoration: const BoxDecoration(
+              color: gBackgroundColor,
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(22),
+                  topRight: Radius.circular(22)
+              ),
+            ),
+            height: bottomSheetHeight ?? 50.h,
+            child: Stack(
+              children: [
+                Column(
+                  children: [
+                    Container(
+                      height: 15.h,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(22),
+                        color: topColor ?? kBottomSheetHeadYellow,
+                      ),
+                      child: Center(
+                        child: Image.asset(bsHeadStarsIcon,
+                          alignment: Alignment.topRight,
+                          fit: BoxFit.scaleDown,
+                          width: 30.w,
+                          height: 10.h,
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 7.h,
+                    ),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: widget,
+                      ),
+                    )
+
+                  ],
+                ),
+                Positioned(
+                    top: 8.h,
+                    left: 5,
+                    right: 5,
+                    child: Container(
+                        decoration: BoxDecoration(
+                          // color: Colors.white,
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(blurRadius: 5, color: gHintTextColor.withOpacity(0.8))
+                          ],
+                        ),
+                        child: CircleAvatar(
+                          maxRadius: 40.sp,
+                          backgroundColor: kBottomSheetHeadCircleColor,
+                          child: Image.asset(circleIcon ?? bsHeadBellIcon,
+                            fit: BoxFit.scaleDown,
+                            width: 45,
+                            height: 45,
+                          ),
+                        )
+                    )
+                )
+              ],
+            ),
+          );
+        }
+    );
+  }
 
   // List<ShipmentTrackActivities> trackingList = [
   //   ...trackJson.map((e) => ShipmentTrackActivities.fromJson(e))

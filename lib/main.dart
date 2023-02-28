@@ -108,21 +108,21 @@ void main() async {
 //   //***** firebase notification ******
 //   await Firebase.initializeApp();
 //
-//   await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
-//     alert: true,
-//     badge: true,
-//     sound: true,
-//   );
+//   // await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+//   //   alert: true,
+//   //   badge: true,
+//   //   sound: true,
+//   // );
+//   //
+//   // await FirebaseMessaging.instance.getToken();
+//   //
+//   // FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+//   // final fcmToken = await FirebaseMessaging.instance.getToken();
 //
-//   await FirebaseMessaging.instance.getToken();
-//
-//   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-//   final fcmToken = await FirebaseMessaging.instance.getToken();
-//
-//   LocalNotificationService.initialize();
+//   // LocalNotificationService.initialize();
 //
 //
-//   print("fcmToken: $fcmToken");
+//   // print("fcmToken: $fcmToken");
 //   runApp(
 //     DevicePreview(
 //       enabled: !kReleaseMode,

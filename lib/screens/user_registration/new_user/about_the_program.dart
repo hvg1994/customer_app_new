@@ -27,6 +27,8 @@ class AboutTheProgram extends StatefulWidget {
 
 class _AboutTheProgramState extends State<AboutTheProgram> {
   final _key = GlobalKey<VlcPlayerWithControlsState>();
+  final _abtProgramVideoKey = GlobalKey<VlcPlayerWithControlsState>();
+
 
   double rating = 4.5;
   final pageController = PageController();
@@ -35,7 +37,7 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
 
   late Future _aboutProgramFuture;
 
-  VlcPlayerController? _videoPlayerController;
+  VlcPlayerController? _videoPlayerController, _abtProgramPlayerController;
 
 
   @override
@@ -57,6 +59,33 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
       // 'http://samples.mplayerhq.hu/MPEG-4/embedded_subs/1Video_2Audio_2SUBs_timed_text_streams_.mp4',
       'https://media.w3.org/2010/05/sintel/trailer.mp4',
       hwAcc: HwAcc.auto,
+      autoPlay: false,
+      options: VlcPlayerOptions(
+        advanced: VlcAdvancedOptions([
+          VlcAdvancedOptions.networkCaching(2000),
+        ]),
+        subtitle: VlcSubtitleOptions([
+          VlcSubtitleOptions.boldStyle(true),
+          VlcSubtitleOptions.fontSize(30),
+          VlcSubtitleOptions.outlineColor(VlcSubtitleColor.yellow),
+          VlcSubtitleOptions.outlineThickness(VlcSubtitleThickness.normal),
+          // works only on externally added subtitles
+          VlcSubtitleOptions.color(VlcSubtitleColor.navy),
+        ]),
+        http: VlcHttpOptions([
+          VlcHttpOptions.httpReconnect(true),
+        ]),
+        rtp: VlcRtpOptions([
+          VlcRtpOptions.rtpOverRtsp(true),
+        ]),
+      ),
+    );
+    _abtProgramPlayerController = VlcPlayerController.network(
+      // url,
+      // 'http://samples.mplayerhq.hu/MPEG-4/embedded_subs/1Video_2Audio_2SUBs_timed_text_streams_.mp4',
+      'https://media.w3.org/2010/05/sintel/trailer.mp4',
+      hwAcc: HwAcc.auto,
+      autoPlay: false,
       options: VlcPlayerOptions(
         advanced: VlcAdvancedOptions([
           VlcAdvancedOptions.networkCaching(2000),
@@ -86,6 +115,9 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
     await _videoPlayerController!.stop();
     await _videoPlayerController!.stopRendererScanning();
     await _videoPlayerController!.dispose();
+    await _abtProgramPlayerController!.stop();
+    await _abtProgramPlayerController!.stopRendererScanning();
+    await _abtProgramPlayerController!.dispose();
   }
 
   @override
@@ -128,20 +160,6 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // Text(
-                              //   "Testimonial",
-                              //   textAlign: TextAlign.center,
-                              //   style: TextStyle(
-                              //       fontFamily: eUser().mainHeadingFont,
-                              //       color: eUser().mainHeadingColor,
-                              //       fontSize: eUser().mainHeadingFontSize
-                              //   ),
-                              // ),
-                              // SizedBox(
-                              //   height: 2.h,
-                              // ),
-                              //buildTestimonial(),
-                              SizedBox(height: 2.h),
                               Text(
                                 "About The Program",
                                 textAlign: TextAlign.center,
@@ -154,6 +172,8 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
                               SizedBox(
                                 height: 2.h,
                               ),
+                              buildAboutProgramVideo(),
+                              SizedBox(height: 2.h),
                               Card(
                                 elevation: 7,
                                 child: SizedBox(
@@ -195,7 +215,7 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
                               ),
                               SizedBox(height: 2.h),
                               Text(
-                                "Feedback",
+                                "Testimonial",
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                     fontFamily: eUser().mainHeadingFont,
@@ -203,7 +223,13 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
                                     fontSize: eUser().mainHeadingFontSize
                                 ),
                               ),
-                              SizedBox(height: 2.h),
+                              SizedBox(
+                                height: 2.h,
+                              ),
+                              buildTestimonial(),
+                              SizedBox(
+                                height: 2.h,
+                              ),
                               buildFeedback(feedbackList),
                               SizedBox(height: 2.h),
                               Center(
@@ -292,6 +318,65 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
     );
   }
 
+  buildAboutProgramVideo() {
+    if(_abtProgramPlayerController != null){
+      return AspectRatio(
+        aspectRatio: 16/9,
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(5),
+            border: Border.all(color: gPrimaryColor, width: 1),
+            // boxShadow: [
+            //   BoxShadow(
+            //     color: Colors.grey.withOpacity(0.3),
+            //     blurRadius: 20,
+            //     offset: const Offset(2, 10),
+            //   ),
+            // ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(5),
+            child: Center(
+              child: VlcPlayerWithControls(
+                key: _abtProgramVideoKey,
+                controller: _abtProgramPlayerController!,
+                showVolume: false,
+                showVideoProgress: false,
+                seekButtonIconSize: 10.sp,
+                playButtonIconSize: 14.sp,
+                replayButtonSize: 10.sp,
+              ),
+              // child: VlcPlayer(
+              //   controller: _videoPlayerController!,
+              //   aspectRatio: 16 / 9,
+              //   virtualDisplay: false,
+              //   placeholder: Center(child: CircularProgressIndicator()),
+              // ),
+            ),
+          ),
+          // child: Stack(
+          //   children: <Widget>[
+          //     ClipRRect(
+          //       borderRadius: BorderRadius.circular(5),
+          //       child: Center(
+          //         child: VlcPlayer(
+          //           controller: _videoPlayerController!,
+          //           aspectRatio: 16 / 9,
+          //           virtualDisplay: false,
+          //           placeholder: Center(child: CircularProgressIndicator()),
+          //         ),
+          //       ),
+          //     ),
+          //     ControlsOverlay(controller: _videoPlayerController,)
+          //   ],
+          // ),
+        ),
+      );
+    }
+    else {
+      return SizedBox.shrink();
+    }
+  }
 
   buildTestimonial() {
     if(_videoPlayerController != null){
@@ -462,12 +547,19 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
                 Text(
                   feedback.addedBy?.name ?? '',
                   style: TextStyle(
-                      fontFamily: kFontMedium,
+                      fontFamily: kFontBold,
                       color: gTextColor,
                       fontSize: 10.sp),
                 ),
                 SizedBox(height: 0.6.h),
-                buildRating(feedback.rating ?? ''),
+                Text(
+                  feedback.addedBy?.address ?? '',
+                  style: TextStyle(
+                      fontFamily: kFontBook,
+                      color: gHintTextColor,
+                      fontSize: 9.sp),
+                ),
+                // buildRating(feedback.rating ?? ''),
               ],
             ),
           ],

@@ -1,3 +1,4 @@
+import 'package:gwc_customer/model/consultation_model/appointment_booking/child_doctor_model.dart';
 import 'package:gwc_customer/model/consultation_model/appointment_booking/child_team_member.dart';
 
 import 'child_team_patients_appointment.dart';
@@ -21,6 +22,7 @@ class ChildAppointmentDetails {
   String? kaleyraSuccessTeamId;
   String? appointmentStartTime;
   List<TeamMember>? teamMember;
+  ChildDoctorModel? doctor;
   ChildTeamPatientsAppointment? teamPatients;
 
   ChildAppointmentDetails(
@@ -42,6 +44,7 @@ class ChildAppointmentDetails {
         this.kaleyraJoinurl,
         this.kaleyraSuccessTeamId,
         this.teamMember,
+        this.doctor,
         this.teamPatients});
 
   ChildAppointmentDetails.fromJson(Map<String, dynamic> json) {
@@ -71,6 +74,8 @@ class ChildAppointmentDetails {
         teamMember!.add(new TeamMember.fromJson(v));
       });
     }
+    doctor = json['doctor_details'] != null ? new ChildDoctorModel.fromJson(json['doctor_details']) : null;
+
   }
 
   Map<String, dynamic> toJson() {
@@ -97,6 +102,9 @@ class ChildAppointmentDetails {
     }
     if (this.teamMember != null) {
       data['team'] = this.teamMember!.map((v) => v.toJson()).toList();
+    }
+    if (this.doctor != null) {
+      data['doctor_details'] = this.doctor!.toJson();
     }
     return data;
   }

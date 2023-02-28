@@ -12,5 +12,8 @@ class ScheduleSlotsRepository{
   Future getFollowUpSlotsScheduleRepo(String selectedDate) async{
     return await apiClient.getFollowUpSlotsApi(selectedDate);
   }
+  Future submitSlotSelectedRepo(String selectedDate, String startTime, String endTime) async {
+    return await apiClient.submitSlotSelectedApi(selectedDate, startTime, endTime);
+  }
 
-}
+  }

@@ -122,6 +122,9 @@ var getUserSlotDaysForScheduleUrl = "${AppConfig().BASE_URL}/api/getData/user_sl
 
 var getFollowUpSlotUrl = "${AppConfig().BASE_URL}/api/getData/followup_slots/";
 
+var submitSlotSelectedUrl = "${AppConfig().BASE_URL}/api/submitForm/follow_up_book";
+
+
 
 
 

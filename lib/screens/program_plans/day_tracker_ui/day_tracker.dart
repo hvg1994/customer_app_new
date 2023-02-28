@@ -819,97 +819,95 @@ class _TrackerUIState extends State<TrackerUI> {
     return UnfocusWidget(
       child: Container(
         width: double.maxFinite,
-        height: 85.h,
+        // height: 85.h,
+        // padding: EdgeInsets.fromLTRB(12,15, 12, 0),
         padding: EdgeInsets.fromLTRB(12,15, 12,  MediaQuery.of(context).viewInsets.bottom),
         // padding: EdgeInsets.only(
         //     bottom: MediaQuery.of(context).viewInsets.bottom),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-                blurRadius: 2, color: Colors.grey.withOpacity(0.5))
-          ],
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(30),
-            topRight: Radius.circular(30),
-          ),
-        ),
-        child: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text(
-                        "Gut Detox Program Status Tracker",
-                        textAlign: TextAlign.start,
-                        style: TextStyle(
-                            fontFamily: kFontMedium,
-                            color: gBlackColor,
-                            fontSize: headingFont
-                        ),
+        // decoration: BoxDecoration(
+        //   color: Colors.white,
+        //   boxShadow: [
+        //     BoxShadow(
+        //         blurRadius: 2, color: Colors.grey.withOpacity(0.5))
+        //   ],
+        //   borderRadius: const BorderRadius.only(
+        //     topLeft: Radius.circular(30),
+        //     topRight: Radius.circular(30),
+        //   ),
+        // ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Gut Detox Program Status Tracker",
+                      textAlign: TextAlign.start,
+                      style: TextStyle(
+                          fontFamily: kFontMedium,
+                          color: gBlackColor,
+                          fontSize: headingFont
                       ),
-                      SizedBox(
-                        width: 2.w,
-                      ),
-                      Expanded(
-                        child: Container(
-                          height: 1,
-                          color: kLineColor,
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Text(
-                    "Your detox & healing program tracker that takes less than 1 minute to fill but essential for your doctors to track, manage & intervene effectively.",
-                    textAlign: TextAlign.start,
-                    style: TextStyle(
-                        fontFamily: kFontMedium,
-                        height: 1.4,
-                        color: gHintTextColor,
-                        fontSize: subHeadingFont
                     ),
+                    SizedBox(
+                      width: 2.w,
+                    ),
+                    Expanded(
+                      child: Container(
+                        height: 1,
+                        color: kLineColor,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Text(
+                  "Your detox & healing program tracker that takes less than 1 minute to fill but essential for your doctors to track, manage & intervene effectively.",
+                  textAlign: TextAlign.start,
+                  style: TextStyle(
+                      fontFamily: kFontMedium,
+                      height: 1.4,
+                      color: gHintTextColor,
+                      fontSize: subHeadingFont
                   ),
-                ],
-              ),
-              SizedBox(
-                height: 2.5.h,
-              ),
-              // buildLabelTextField("Have You Missed Anything In Your Meal Or Yoga Plan Today?"),
-              // SizedBox(
-              //   height: 1.h,
-              // ),
-              // ...missedAnything.map((e) => Row(
-              //   children: [
-              //     Radio<String>(
-              //       value: e,
-              //       activeColor: kPrimaryColor,
-              //       groupValue: selectedMissedAnything,
-              //       onChanged: (value) {
-              //         setState(() {
-              //           selectedMissedAnything = value as String;
-              //         });
-              //       },
-              //     ),
-              //     Text(
-              //       e,
-              //       style: buildTextStyle(),
-              //     ),
-              //   ],
-              // )),
-              // showRespectiveWidget()
-              symptomsTracker()
-            ],
-          ),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 2.5.h,
+            ),
+            // buildLabelTextField("Have You Missed Anything In Your Meal Or Yoga Plan Today?"),
+            // SizedBox(
+            //   height: 1.h,
+            // ),
+            // ...missedAnything.map((e) => Row(
+            //   children: [
+            //     Radio<String>(
+            //       value: e,
+            //       activeColor: kPrimaryColor,
+            //       groupValue: selectedMissedAnything,
+            //       onChanged: (value) {
+            //         setState(() {
+            //           selectedMissedAnything = value as String;
+            //         });
+            //       },
+            //     ),
+            //     Text(
+            //       e,
+            //       style: buildTextStyle(),
+            //     ),
+            //   ],
+            // )),
+            // showRespectiveWidget()
+            symptomsTracker()
+          ],
         ),
       )
     );
@@ -1256,6 +1254,9 @@ class _TrackerUIState extends State<TrackerUI> {
                 ),
               ),
             ],),
+          SizedBox(
+            height: 5.h,
+          )
         ],
       ),
     );

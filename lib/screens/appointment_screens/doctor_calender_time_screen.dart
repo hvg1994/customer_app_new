@@ -1,6 +1,7 @@
 import 'package:date_picker_timeline/date_picker_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:gwc_customer/model/consultation_model/appointment_booking/child_doctor_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
 import 'package:intl/intl.dart';
@@ -24,6 +25,8 @@ class DoctorCalenderTimeScreen extends StatefulWidget {
   final bool isReschedule;
   final String? prevBookingDate;
   final String? prevBookingTime;
+  final ChildDoctorModel? doctorDetails;
+  final String? doctorName;
   /// this is for post program
   /// when this all other parameters will null
   final bool isPostProgram;
@@ -31,6 +34,8 @@ class DoctorCalenderTimeScreen extends StatefulWidget {
     this.isReschedule = false,
     this.prevBookingDate,
     this.prevBookingTime,
+    this.doctorDetails,
+    this.doctorName,
     this.isPostProgram = false
   }) : super(key: key);
 
@@ -106,12 +111,15 @@ class _DoctorCalenderTimeScreenState extends State<DoctorCalenderTimeScreen> {
   }
 
   getTime(){
-    var splited = widget.prevBookingTime?.split(':');
-    print("splited:$splited");
-    String hour = splited![0];
-    String minute = splited[1];
-    int second = int.parse(splited[2]);
-    return '$hour:$minute';
+    print("isReschedule" + widget.isReschedule.toString());
+    if(widget.prevBookingTime != null){
+      var splited = widget.prevBookingTime?.split(':');
+      print("splited:$splited");
+      String hour = splited![0];
+      String minute = splited[1];
+      int second = int.parse(splited[2]);
+      return '$hour:$minute';
+    }
   }
 
   @override
@@ -119,7 +127,7 @@ class _DoctorCalenderTimeScreenState extends State<DoctorCalenderTimeScreen> {
     return SafeArea(
       child: Scaffold(
         body: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
+          physics: const AlwaysScrollableScrollPhysics(),
           child: Padding(
             padding:
                 EdgeInsets.only(left: 4.w, right: 4.w, top: 1.h, bottom: 5.h),
@@ -131,9 +139,8 @@ class _DoctorCalenderTimeScreenState extends State<DoctorCalenderTimeScreen> {
                   Navigator.pop(context);
                 }),
                 SizedBox(height: 2.h),
-                buildDoctor(),
+                (!widget.isReschedule) ? buildDoctor() : buildDoctorExpList(),
                 SizedBox(height: 1.h),
-                buildDoctorExpList(),
                 // Row(
                 //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 //   children: [
@@ -167,7 +174,7 @@ class _DoctorCalenderTimeScreenState extends State<DoctorCalenderTimeScreen> {
                             ),
                           ),
                           TextSpan(
-                            text: '@ ${getTime()}  ${DateFormat('dd MMM yyyy').format(DateTime.parse((widget.prevBookingDate.toString()))).toString()}',
+                            text: (widget.prevBookingDate != null) ? '@ ${getTime()}  ${DateFormat('dd MMM yyyy').format(DateTime.parse((widget.prevBookingDate.toString()))).toString()}' : '',
                             style: TextStyle(
                               height: 1.5,
                               fontSize: 11.sp,
@@ -376,7 +383,7 @@ class _DoctorCalenderTimeScreenState extends State<DoctorCalenderTimeScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Dr. Lakshmi Deviappan",
+                widget.doctorName ?? '',
                 style: TextStyle(
                     fontFamily: kFontBold,
                     color: gWhiteColor,
@@ -385,7 +392,7 @@ class _DoctorCalenderTimeScreenState extends State<DoctorCalenderTimeScreen> {
               ),
               SizedBox(height: 1.5.h),
               Text(
-                "12Yr Experience",
+                "${widget.doctorDetails!.experience}Yr Experience" ?? '',
                 style: TextStyle(
                     fontFamily: kFontMedium,
                     color: gWhiteColor,
@@ -394,7 +401,7 @@ class _DoctorCalenderTimeScreenState extends State<DoctorCalenderTimeScreen> {
               ),
               SizedBox(height: 1.5.h),
               Text(
-                "Gynecologist",
+                widget.doctorDetails?.specialization?.name ?? '',
                 style: TextStyle(
                     fontFamily: kFontMedium,
                     color: gWhiteColor,

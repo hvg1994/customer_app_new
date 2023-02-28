@@ -74,6 +74,7 @@ class ChatRepository {
   Future<QBDialog?> createDialog(List<int> occupantsIds, String dialogName, int dialogType) async {
     return await QB.chat
         .createDialog(
+      // dialogType,
       occupantsIds,
       // dialogName: dialogType,
         dialogName: dialogName,

@@ -85,14 +85,14 @@ class GutListState extends State<GutList> {
     ),
     NewStageLevels(
         "assets/images/dashboard_stages/noun-appointment-4042317.png",
-        "Preparatory &\nTracker",
+        "Preparatory",
         'assets/images/dashboard_stages/lock.png'
     ),
-    // NewStageLevels(
-    //     "assets/images/dashboard_stages/noun-shipping-5332930.png",
-    //     "Tracker",
-    //     'assets/images/dashboard_stages/lock.png'
-    // ),
+    NewStageLevels(
+        "assets/images/dashboard_stages/noun-shipping-5332930.png",
+        "Tracker",
+        'assets/images/dashboard_stages/lock.png'
+    ),
     NewStageLevels(
         "assets/images/dashboard_stages/noun-appointment-4042317.png",
         "Program",
@@ -362,14 +362,14 @@ class GutListState extends State<GutList> {
                   ),
                   Row(
                     children: [
-                      TextButton(
-                          onPressed: (){
-                            Navigator.push(context, MaterialPageRoute(builder: (_)=> const NewScheduleScreen()));
-                          },
-                          child: Text("New Schedule UI",
-                          style: TextStyle(
-                            fontSize: 10.sp
-                          ),)),
+                      // TextButton(
+                      //     onPressed: (){
+                      //       Navigator.push(context, MaterialPageRoute(builder: (_)=> const NewScheduleScreen()));
+                      //     },
+                      //     child: Text("New Schedule UI",
+                      //     style: TextStyle(
+                      //       fontSize: 10.sp
+                      //     ),)),
                       GestureDetector(
                         onTap: (){
                           openAlertBox(
@@ -455,39 +455,145 @@ class GutListState extends State<GutList> {
             isShown = true;
           });
         }
-        showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              isProgressOpened = true;
-              return Dialog(
-                shape: RoundedRectangleBorder(
-                    borderRadius:
-                    BorderRadius.circular(20.0)), //this right here
-                child: MealPopup(
-                  yesButton:(isPressed) ? (){} : () {
-                    Navigator.pop(context);
-                    sendApproveStatus('yes');
-                    setState(() {
-                      isShown = false;
-                    });
-                    if(isProgressOpened){
-                      Navigator.pop(context);
-                    }
-                  },
-                  noButton:(isPressed) ? (){} : () {
-                    sendApproveStatus('no');
-                    setState(() {
-                      isShown = false;
-                    });
-                    if(isProgressOpened){
-                      Navigator.pop(context);
-                    }
-                  },
-                ),
-              );
-            });
+        mealReadySheet();
       }
     });
+  }
+
+  abcDialog(){
+    return  showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          isProgressOpened = true;
+          return Dialog(
+            shape: RoundedRectangleBorder(
+                borderRadius:
+                BorderRadius.circular(20.0)), //this right here
+            child: MealPopup(
+              yesButton:(isPressed) ? (){} : () {
+                Navigator.pop(context);
+                sendApproveStatus('yes');
+                setState(() {
+                  isShown = false;
+                });
+                if(isProgressOpened){
+                  Navigator.pop(context);
+                }
+              },
+              noButton:(isPressed) ? (){} : () {
+                sendApproveStatus('no');
+                setState(() {
+                  isShown = false;
+                });
+                if(isProgressOpened){
+                  Navigator.pop(context);
+                }
+              },
+            ),
+          );
+        });
+  }
+
+  mealReadySheet(){
+    return AppConfig().showSheet(context, Column(
+      children: [
+        Text('Hooray!\nYour food prescription is ready',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            height: 1.4,
+            fontSize: bottomSheetSubHeadingXLFontSize,
+            fontFamily: bottomSheetSubHeadingBoldFont,
+            color: gTextColor
+          ),),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Image.asset('assets/images/meal_popup.png',
+            fit: BoxFit.scaleDown,
+            width: 60.w,
+            filterQuality: FilterQuality.high,
+          ),
+        ),
+        Text("You've Unlocked The Next Step!",
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            height: 1.2,
+            fontSize: bottomSheetSubHeadingXLFontSize,
+            fontFamily: bottomSheetSubHeadingMediumFont,
+              color: gTextColor
+          ),),
+        Text("The Product Kit Is Ready. Shall We Ship It For You?",
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            height: 1.2,
+            fontSize: bottomSheetSubHeadingXLFontSize,
+            fontFamily: bottomSheetSubHeadingBookFont,
+              color: gTextColor
+          ),),
+        SizedBox(height: 5.h,),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            GestureDetector(
+              onTap: (isPressed) ? (){} : () {
+                Navigator.pop(context);
+                sendApproveStatus('yes');
+                setState(() {
+                  isShown = false;
+                });
+                if(isProgressOpened){
+                  Navigator.pop(context);
+                }
+              },
+              child: Container(
+                padding: EdgeInsets.symmetric(
+                    vertical: 1.5.h, horizontal: 12.w),
+                decoration: BoxDecoration(
+                    color: gsecondaryColor,
+                    border: Border.all(color: kLineColor, width: 0.5),
+                    borderRadius: BorderRadius.circular(5)),
+                child: Text(
+                  "YES",
+                  style: TextStyle(
+                    fontFamily: kFontMedium,
+                    color: gWhiteColor,
+                    fontSize: 11.sp,
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(width: 5.w),
+            GestureDetector(
+              onTap: (isPressed) ? (){} : () {
+                sendApproveStatus('no');
+                setState(() {
+                  isShown = false;
+                });
+                if(isProgressOpened){
+                  Navigator.pop(context);
+                }
+              },
+              child: Container(
+                padding: EdgeInsets.symmetric(
+                    vertical: 1.5.h, horizontal: 12.w),
+                decoration: BoxDecoration(
+                    color: gWhiteColor,
+                    border: Border.all(color: kLineColor, width: 0.5),
+                    borderRadius: BorderRadius.circular(5)),
+                child: Text(
+                  "NO",
+                  style: TextStyle(
+                    fontFamily: kFontMedium,
+                    color: gsecondaryColor,
+                    fontSize: 11.sp,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 5.h,),
+      ],
+    ), bottomSheetHeight: 75.h);
   }
 
   void changedIndex(String index) {
@@ -866,17 +972,19 @@ class GutListState extends State<GutList> {
         goToScreen(CheckUserReportsScreen());
         break;
       case 'consultation_rejected':
-        goToScreen(ConsultationRejected());
+        goToScreen(ConsultationRejected(reason: _gutDataModel?.value ?? '',));
         break;
       case 'report_upload':
         print(_gutDataModel!.toJson());
         print(_gutDataModel!.value);
+        goToScreen(ConsultationRejected(reason: '',));
+
         // goToScreen(ConsultationSuccess());
 
         // goToScreen(DoctorSlotsDetailsScreen(bookingDate: "2023-02-21", bookingTime: "11:34:00", dashboardValueMap: {},isFromDashboard: true,));
 
         // goToScreen(DoctorCalenderTimeScreen(isReschedule: true,prevBookingTime: '23-09-2022', prevBookingDate: '10AM',));
-        goToScreen(MedicalReportScreen(pdfLink: _gutDataModel!.value!,));
+        // goToScreen(MedicalReportScreen(pdfLink: _gutDataModel!.value!,));
         break;
 
     }
@@ -941,8 +1049,8 @@ class GutListState extends State<GutList> {
         UserProfileModel model1 = profile as UserProfileModel;
         _pref!.setString(AppConfig.User_Name, model1.data?.name ?? model1.data?.fname ?? '');
         _pref!.setInt(AppConfig.USER_ID, model1.data?.id ?? -1);
-        _pref!.setString(AppConfig.QB_USERNAME, model1.data!.qbUsername!);
-        _pref!.setString(AppConfig.QB_CURRENT_USERID, model1.data!.qbUserId!);
+        _pref!.setString(AppConfig.QB_USERNAME, model1.data!.qbUsername ?? '');
+        _pref!.setString(AppConfig.QB_CURRENT_USERID, model1.data!.qbUserId ?? '');
         _pref!.setString(AppConfig.KALEYRA_USER_ID, model1.data!.kaleyraUID!);
 
         if(_pref!.getString(AppConfig.KALEYRA_ACCESS_TOKEN) == null){
@@ -1024,22 +1132,22 @@ class GutListState extends State<GutList> {
                               else if(index == 1){
                                 showConsultationScreenFromStages(consultationStage);
                               }
-                              // else if(index == 2){
-                              //   showPrepratoryMealScreen();
-                              // }
                               else if(index == 2){
-                                showShippingScreen();
+                                showPrepratoryMealScreen();
                               }
                               else if(index == 3){
-                                showProgramScreen();
+                                showShippingScreen();
                               }
                               else if(index == 4){
-                                showTransitionMealScreen();
+                                showProgramScreen();
                               }
                               else if(index == 5){
-                                showPostProgramScreen();
+                                showTransitionMealScreen();
                               }
                               else if(index == 6){
+                                showPostProgramScreen();
+                              }
+                              else if(index == 7){
                                 goToScreen(PPLevelsScreen());
                               }
 
@@ -1089,22 +1197,22 @@ class GutListState extends State<GutList> {
                               else if(index == 1){
                                 showConsultationScreenFromStages(consultationStage);
                               }
-                              // else if(index == 2){
-                              //   showPrepratoryMealScreen();
-                              // }
                               else if(index == 2){
-                                showShippingScreen();
+                                showPrepratoryMealScreen();
                               }
                               else if(index == 3){
-                                showProgramScreen();
+                                showShippingScreen();
                               }
                               else if(index == 4){
-                                showTransitionMealScreen();
+                                showProgramScreen();
                               }
                               else if(index == 5){
-                                showPostProgramScreen();
+                                showTransitionMealScreen();
                               }
                               else if(index == 6){
+                                showPostProgramScreen();
+                              }
+                              else if(index == 7){
                                 goToScreen(PPLevelsScreen());
                               }
                             }
@@ -1240,7 +1348,7 @@ class GutListState extends State<GutList> {
         else{
           levels[2].stage = openedStage;
         }
-        levels[2].stage = currentStage;
+        levels[3].stage = currentStage;
         break;
       case 'shipping_delivered':
         levels[0].stage = openedStage;
@@ -1251,7 +1359,7 @@ class GutListState extends State<GutList> {
         else{
           levels[2].stage = openedStage;
         }
-        levels[2].stage = currentStage;
+        levels[3].stage = currentStage;
         break;
       case 'shipping_approved':
         levels[0].stage = openedStage;
@@ -1262,7 +1370,7 @@ class GutListState extends State<GutList> {
         else{
           levels[2].stage = openedStage;
         }
-        levels[2].stage = currentStage;
+        levels[3].stage = currentStage;
         break;
       case 'start_program':
         levels[0].stage = openedStage;
@@ -1275,9 +1383,9 @@ class GutListState extends State<GutList> {
         // }
         levels[2].stage = openedStage;
 
-        // levels[3].stage = openedStage;
-        levels[3].stage = currentStage;
-        levels[4].stage = lockedStage;
+        levels[3].stage = openedStage;
+        levels[4].stage = currentStage;
+        levels[5].stage = lockedStage;
         break;
       case 'trans_program':
         levels[0].stage = openedStage;
@@ -1285,16 +1393,16 @@ class GutListState extends State<GutList> {
         levels[2].stage = openedStage;
         // levels[3].stage = openedStage;
         levels[3].stage = openedStage;
-        // levels[5].stage = currentStage;
+        levels[4].stage = openedStage;
 
         print("_prepratoryModel!.value!.isPrepCompleted != null: ${_transModel!.value!.isTransMealCompleted != null}");
         print("_prepratoryModel!.value!.isPrepCompleted! == true: ${_transModel!.value!.isTransMealCompleted == true} ${_transModel!.value!.isTransMealCompleted}");
 
         if((_transModel!.value!.isTransMealCompleted != null) && _transModel!.value!.isTransMealCompleted == true){
-          levels[4].stage = openedStage;
+          levels[5].stage = openedStage;
         }
         else{
-          levels[4].stage = currentStage;
+          levels[5].stage = currentStage;
         }
         break;
       case 'post_program':
@@ -1302,13 +1410,16 @@ class GutListState extends State<GutList> {
         levels[1].stage = openedStage;
         levels[2].stage = openedStage;
         levels[3].stage = openedStage;
+        levels[4].stage = openedStage;
+
+
         if((_transModel!.value!.isTransMealCompleted != null) && _transModel!.value!.isTransMealCompleted == true){
-          levels[4].stage = openedStage;
+          levels[5].stage = openedStage;
         }
         else{
-          levels[4].stage = currentStage;
+          levels[5].stage = currentStage;
         }
-        levels[5].stage = currentStage;
+        levels[6].stage = currentStage;
         break;
       case 'post_appointment_booked':
         levels[0].stage = openedStage;
@@ -1316,7 +1427,9 @@ class GutListState extends State<GutList> {
         levels[2].stage = openedStage;
         levels[3].stage = openedStage;
         levels[4].stage = openedStage;
-        levels[5].stage = currentStage;
+        levels[5].stage = openedStage;
+        levels[6].stage = currentStage;
+
         break;
       case 'protocol_guide':
         levels[0].stage = openedStage;
@@ -1325,7 +1438,8 @@ class GutListState extends State<GutList> {
         levels[3].stage = openedStage;
         levels[4].stage = openedStage;
         levels[5].stage = openedStage;
-        levels[6].stage = currentStage;
+        levels[6].stage = openedStage;
+        levels[7].stage = currentStage;
         break;
     }
   }

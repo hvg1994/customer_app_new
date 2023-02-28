@@ -1,905 +1,1117 @@
-// import 'package:flutter/cupertino.dart';
-// import 'package:flutter/material.dart';
-// import 'package:gwc_customer/model/dashboard_model/get_appointment/get_appointment_after_appointed.dart';
-// import 'package:gwc_customer/model/dashboard_model/get_dashboard_data_model.dart';
-// import 'package:gwc_customer/model/dashboard_model/get_program_model.dart';
-// import 'package:gwc_customer/model/dashboard_model/gut_model/gut_data_model.dart';
-// import 'package:gwc_customer/model/error_model.dart';
-// import 'package:gwc_customer/repository/dashboard_repo/gut_repository/dashboard_repository.dart';
-// import 'package:gwc_customer/screens/appointment_screens/consultation_screens/consultation_rejected.dart';
-// import 'package:gwc_customer/screens/appointment_screens/consultation_screens/upload_files.dart';
-// import 'package:gwc_customer/screens/gut_list_screens/meal_popup.dart';
-// import 'package:gwc_customer/screens/notification_screen.dart';
-// import 'package:gwc_customer/screens/post_program_screens/post_program_screen.dart';
-// import 'package:gwc_customer/screens/profile_screens/call_support_method.dart';
-// import 'package:gwc_customer/screens/program_plans/program_start_screen.dart';
-// import 'package:gwc_customer/services/dashboard_service/gut_service/dashboard_data_service.dart';
-// import 'package:gwc_customer/services/quick_blox_service/quick_blox_service.dart';
-// import 'package:gwc_customer/services/shipping_service/ship_track_service.dart';
-// import 'package:gwc_customer/utils/program_stages_enum.dart';
-// import 'package:gwc_customer/widgets/constants.dart';
-// import 'package:gwc_customer/widgets/widgets.dart';
-// import 'package:jwt_decode/jwt_decode.dart';
-// import 'package:provider/provider.dart';
-// import 'package:sizer/sizer.dart';
-// import '../../model/dashboard_model/shipping_approved/ship_approved_model.dart';
-// import '../../model/profile_model/user_profile/user_profile_model.dart';
-// import '../../model/ship_track_model/sipping_approve_model.dart';
-// import '../../repository/api_service.dart';
-// import '../../repository/profile_repository/get_user_profile_repo.dart';
-// import '../../repository/shipping_repository/ship_track_repo.dart';
-// import '../../services/profile_screen_service/user_profile_service.dart';
-// import '../../utils/app_config.dart';
-// import '../../widgets/open_alert_box.dart';
-// import '../appointment_screens/consultation_screens/consultation_success.dart';
-// import '../appointment_screens/consultation_screens/medical_report_screen.dart';
-// import '../appointment_screens/doctor_slots_details_screen.dart';
-// import '../cook_kit_shipping_screens/cook_kit_tracking.dart';
-// import '../program_plans/day_program_plans.dart';
-// import 'List/list_view_effect.dart';
-// import 'package:gwc_customer/screens/appointment_screens/doctor_calender_time_screen.dart';
-// import 'package:http/http.dart' as http;
-// import 'List/program_stages_data.dart';
-//
-// class GutList extends StatefulWidget {
-//   GutList({Key? key}) : super(key: key);
-//
-//   final GutListState myAppState=  GutListState();
-//   @override
-//   State<GutList> createState() => GutListState();
-//
-// }
-//
-// class GutListState extends State<GutList> {
-//
-//   List levels = [
-//     {
-//       "images": "assets/images/dashboard_stages/noun-appointment-3615898.png",
-//       "title": "Evaluation Done"
-//     },
-//     {
-//       "images": "assets/images/dashboard_stages/noun-appointment-4042317.png",
-//       "title": "Consultation Booked"
-//     },
-//     {
-//       "images": "assets/images/dashboard_stages/noun-information-book-1677218.png",
-//       "title": "Consultation Done"
-//     },
-//     {
-//       "images": "assets/images/dashboard_stages/noun-shipping-5332930.png",
-//       "title": "Tracker",
-//     },
-//     {
-//       "images": "assets/images/dashboard_stages/noun-appointment-4042317.png",
-//       "title": "Programs"
-//     },
-//     {
-//       "images": "assets/images/dashboard_stages/noun-information-book-1677218.png",
-//       "title": "Post Program\nConsultation Booked"
-//     },
-//     {
-//       "images": "assets/images/dashboard_stages/noun-shipping-5332930.png",
-//       "title": "Maintenance Guide\nUpdated",
-//     },
-//   ];
-//
-//   final _pref = AppConfig().preferences;
-//   String isSelected = "Consultation";
-//
-//   bool isShown = false;
-//
-//   final Duration _duration = const Duration(milliseconds: 500);
-//
-//   late GutDataService _gutDataService;
-//
-//   late final Future myFuture;
-//
-//   String? consultationStage, shippingStage, programOptionStage, postProgramStage;
-//
-//   /// this is used when data=appointment_booked status
-//   GetAppointmentDetailsModel? _getAppointmentDetailsModel, _postConsultationAppointment;
-//
-//   /// ths is used when data = shipping_approved status
-//   ShippingApprovedModel? _shippingApprovedModel;
-//
-//   GetProgramModel? _getProgramModel;
-//
-//   /// for other status we use this one(except shipping_approved & appointment_booked)
-//   GutDataModel? _gutDataModel, _gutShipDataModel, _gutProgramModel, _gutPostProgramModel;
-//
-//   @override
-//   void initState() {
-//     // TODO: implement initState
-//     super.initState();
-//     // isConsultationCompleted = _pref?.getBool(AppConfig.consultationComplete) ?? false;
-//
-//     myFuture = getData();
-//
-//
-//     getUserProfile();
-//
-//     if(_pref!.getString(AppConfig().shipRocketBearer) == null || _pref!.getString(AppConfig().shipRocketBearer)!.isEmpty){
-//       getShipRocketToken();
-//     }
-//     else{
-//       String token = _pref!.getString(AppConfig().shipRocketBearer)!;
-//       Map<String, dynamic> payload = Jwt.parseJwt(token);
-//       print('shiprocketToken : $payload');
-//       var date = DateTime.fromMillisecondsSinceEpoch(payload['exp'] * 1000);
-//       if(!DateTime.now().difference(date).isNegative){
-//         getShipRocketToken();
-//       }
-//     }
-//
-//     getData();
-//
-//   }
-//
-//   // _showSingleAnimationDialog(BuildContext context) {
-//   //   BrandLogoLoading.balance(
-//   //     context: context,
-//   //     animationType: ,
-//   //     logo: "assets/images/Gut welness logo (1).png",
-//   //     logoBackdropColor: Colors.transparent,
-//   //     durationInMilliSeconds: 900,
-//   //   );
-//   // }
-//   // _hideLoading(BuildContext context) {
-//   //   BrandLogoLoading.dismissLoading(context: context);
-//   // }
-//   bool isProgressOpened = false;
-//
-//   getData() async{
-//     Future.delayed(Duration(seconds: 0)).whenComplete(() {
-//       isProgressOpened = true;
-//       openProgressDialog(context);
-//     });
-//     _gutDataService = GutDataService(repository: repository);
-//     final _getData = await _gutDataService.getGutDataService();
-//     print("_getData: $_getData");
-//     if(_getData.runtimeType == ErrorModel){
-//       ErrorModel model = _getData;
-//       print(model.message);
-//       Navigator.pop(context);
-//       Future.delayed(Duration(seconds: 0)).whenComplete(() =>
-//           AppConfig().showSnackbar(context, model.message ?? '', isError: true,
-//               duration: 50000,
-//               action: SnackBarAction(
-//                 label: 'Retry',
-//                 onPressed: (){
-//                   ScaffoldMessenger.of(context).hideCurrentSnackBar();
-//                   getData();
-//                 },
-//               )
-//           )
-//       );
-//     }
-//     else{
-//       GetDashboardDataModel _getDashboardDataModel = _getData as GetDashboardDataModel;
-//
-//       print("_getDashboardDataModel.app_consulation: ${_getDashboardDataModel.app_consulation}");
-//       // checking for the consultation data if data = appointment_booked
-//       setState(() {
-//         if(_getDashboardDataModel.app_consulation != null){
-//           _getAppointmentDetailsModel = _getDashboardDataModel.app_consulation;
-//           consultationStage = _getAppointmentDetailsModel?.data ?? '';
-//         }
-//         else{
-//           _gutDataModel = _getDashboardDataModel.normal_consultation;
-//           consultationStage = _gutDataModel?.data ?? '';
-//         }
-//         if(consultationStage != null && (shippingStage != null && shippingStage!.isNotEmpty)){
-//           isSelected = "Shipping";
-//         }
-//
-//         if(_getDashboardDataModel.approved_shipping != null){
-//           _shippingApprovedModel = _getDashboardDataModel.approved_shipping;
-//           shippingStage = _shippingApprovedModel?.data ?? '';
-//         }
-//         else{
-//           _gutShipDataModel = _getDashboardDataModel.normal_shipping;
-//           shippingStage = _gutShipDataModel?.data ?? '';
-//           // abc();
-//         }
-//         if(shippingStage != null && shippingStage == "shipping_delivered"){
-//           isSelected = "Programs";
-//         }
-//         if(_getDashboardDataModel.data_program != null){
-//           _getProgramModel = _getDashboardDataModel.data_program;
-//           programOptionStage = _getProgramModel?.data ?? '';
-//         }
-//         else{
-//           _gutProgramModel = _getDashboardDataModel.normal_program;
-//           programOptionStage = _getProgramModel?.data ?? '';
-//           abc();
-//         }
-//         // this is for other postprogram model
-//         if(_getDashboardDataModel.normal_postprogram != null){
-//           _gutPostProgramModel = _getDashboardDataModel.normal_postprogram;
-//           postProgramStage = _gutPostProgramModel?.data ?? '';
-//         }
-//         else{
-//           _postConsultationAppointment = _getDashboardDataModel.postprogram_consultation;
-//           print(_getDashboardDataModel.postprogram_consultation?.data);
-//           postProgramStage = _postConsultationAppointment?.data ?? '';
-//         }
-//         print("postProgramStage: ${postProgramStage}");
-//         if(postProgramStage != null && postProgramStage!.isNotEmpty){
-//           isSelected = "Post Program";
-//         }
-//
-//         Navigator.pop(context);
-//
-//       });
-//     }
-//   }
-//
-//
-//   @override
-//   void setState(VoidCallback fn) {
-//     // TODO: implement setState
-//     if(mounted){
-//       super.setState(fn);
-//     }
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return SafeArea(
-//       child: Scaffold(
-//         body: Padding(
-//           padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 5.w),
-//           child: Column(
-//             crossAxisAlignment: CrossAxisAlignment.start,
-//             children: [
-//               buildAppBar(() {
-//                 Navigator.pop(context);
-//               }, isBackEnable: false,
-//                   showNotificationIcon: true,
-//                   notificationOnTap: (){
-//                     Navigator.push(context, MaterialPageRoute(builder: (_) => NotificationScreen()));
-//                   }
-//               ),
-//               SizedBox(height: 3.h),
-//               Row(
-//                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                 children: [
-//                   Text(
-//                     "Program Stages",
-//                     textAlign: TextAlign.center,
-//                     style: TextStyle(
-//                         fontFamily: "GothamRoundedBold_21016",
-//                         color: gPrimaryColor,
-//                         fontSize: 12.sp),
-//                   ),
-//                   GestureDetector(
-//                     onTap: (){
-//                       callSupport();
-//                     },
-//                     child: Row(
-//                       mainAxisSize: MainAxisSize.min,
-//                       mainAxisAlignment: MainAxisAlignment.center,
-//                       children: [
-//                         Image.asset('assets/images/call.png',
-//                           width: 12,
-//                           height: 12,
-//                         ),
-//                         SizedBox(
-//                           width: 4,
-//                         ),
-//                         Text("Support",
-//                           style: TextStyle(
-//                             color: kTextColor,
-//                             fontFamily: 'GothamBook',
-//                             fontSize: 10.sp,
-//                           ),
-//                         )
-//                       ],
-//                     ),
-//                   )
-//                 ],
-//               ),
-//               SizedBox(height: 1.h),
-//               Expanded(
-//                 child: ListViewEffect(
-//                   duration: _duration,
-//                   children: programStage.map((s) => _buildWidgetExample(
-//                       ProgramsData(s['title']!, s['image']!,
-//                           isCompleted: getIsCompleted(s['title']!)
-//                       ),
-//                       programStage.indexWhere((element) => element.containsValue(s['title']!)))).toList(),
-//                 ),
-//               ),
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-//
-//   abc(){
-//     WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
-//       //shipping_approved  meal_plan_completed
-//       print("isShown: $isShown $shippingStage");
-//       if(shippingStage == 'meal_plan_completed'){
-//         if(!isShown){
-//           setState(() {
-//             isShown = true;
-//           });
-//           Navigator.of(context).push(
-//             PageRouteBuilder(
-//               opaque: false, // set to false
-//               pageBuilder: (_, __, ___) => MealPopup(
-//                 yesButton:(isPressed) ? (){} : () {
-//                   sendApproveStatus('yes');
-//                   setState(() {
-//                     isShown = false;
-//                   });
-//                   if(isProgressOpened){
-//                     Navigator.pop(context);
-//                   }
-//                 },
-//                 noButton:(isPressed) ? (){} : () {
-//                   sendApproveStatus('no');
-//                   setState(() {
-//                     isShown = false;
-//                   });
-//                   if(isProgressOpened){
-//                     Navigator.pop(context);
-//                   }
-//                 },
-//               ),
-//             ),
-//           ).then((value) {
-//             if(value == null){
-//               setState(() {
-//                 isShown = false;
-//               });
-//               // sendApproveStatus('no', fromNull: true);
-//               print("pop: $value");
-//             }
-//           });
-//         }
-//       }
-//     });
-//   }
-//
-//   void changedIndex(String index) {
-//     setState(() {
-//       isSelected = index;
-//     });
-//   }
-//
-//   Widget _buildWidgetExample(ProgramsData programsData, int index) {
-//     return GestureDetector(
-//       onTap: () {
-//         // changedIndex(programsData.title);
-//         if(index == 0){
-//           changedIndex(programsData.title);
-//         }
-//         if(index == 1 && shippingStage != null && shippingStage!.isNotEmpty){
-//           changedIndex(programsData.title);
-//         }
-//         else if(index == 2 && shippingStage == 'shipping_delivered'){
-//           changedIndex(programsData.title);
-//         }
-//         else if((postProgramStage != null && postProgramStage!.isNotEmpty)){
-//           changedIndex(programsData.title);
-//         }
-//       },
-//       child: Container(
-//           padding:
-//           EdgeInsets.only(left: 2.w, top: 0.5.h, bottom: 0.5.h, right: 5.w),
-//           margin: EdgeInsets.symmetric(vertical: 1.5.h),
-//           decoration: BoxDecoration(
-//             // color: kWhiteColor,
-//             color: index == 0 ? kWhiteColor : (index == 1 && shippingStage != null && shippingStage!.isNotEmpty) ? kWhiteColor : (index == 2 && shippingStage == 'shipping_delivered') ? kWhiteColor : (index == 3 && postProgramStage != null && postProgramStage!.isNotEmpty) ? kWhiteColor : gHintTextColor.withOpacity(0.05),
-//             borderRadius: BorderRadius.circular(20),
-//             border: Border.all(color: gMainColor.withOpacity(0.3), width: 1),
-//             boxShadow: (isSelected != programsData.title)
-//                 ? [
-//               BoxShadow(
-//                 color: Colors.grey.withOpacity(0.5),
-//                 blurRadius: 1,
-//               ),
-//             ]
-//                 : [
-//               BoxShadow(
-//                 color: Colors.grey.withOpacity(0.5),
-//                 blurRadius: 20,
-//                 offset: const Offset(2, 10),
-//               ),
-//             ],
-//           ),
-//           child: Row(
-//             children: [
-//               (isSelected == programsData.title)
-//                   ? Container(
-//                 margin:
-//                 EdgeInsets.symmetric(horizontal: 2.w, vertical: 1.h),
-//                 decoration: BoxDecoration(
-//                   borderRadius: BorderRadius.circular(10),
-//                   border: Border.all(color: gMainColor),
-//                 ),
-//                 child: Image(
-//                   height: 9.h,
-//                   image: AssetImage(programsData.image),
-//                 ),
-//               )
-//                   : ClipRRect(
-//                 borderRadius: BorderRadius.circular(10),
-//                 child: ColorFiltered(
-//                   colorFilter: ColorFilter.mode(
-//                       (programsData.isCompleted) ? Colors.transparent : Colors.grey,
-//                       BlendMode.darken),
-//                   child: Image(
-//                     height: 9.h,
-//                     image: AssetImage(programsData.image),
-//                   ),
-//                 ),
-//               ),
-//               SizedBox(width: 3.w),
-//               Expanded(
-//                 child: Text(
-//                   programsData.title,
-//                   style: TextStyle(
-//                     fontFamily: "GothamMedium",
-//                     color: (isSelected == programsData.title)
-//                         ? gMainColor
-//                         : (programsData.isCompleted) ? gPrimaryColor : gsecondaryColor,
-//                     fontSize: 10.sp,
-//                   ),
-//                 ),
-//               ),
-//               (isSelected == programsData.title)
-//                   ? InkWell(
-//                   onTap: () {
-//                     if (programsData.title == "Consultation") {
-//                       if(consultationStage != null){
-//                         showConsultationScreenFromStages(consultationStage!);
-//                       }
-//                       else{
-//                         //  show dialog or snackbar
-//                       }
-//                     }
-//                     else if (programsData.title == "Shipping") {
-//                       print(shippingStage!.isNotEmpty);
-//                       // Navigator.of(context).push(
-//                       //   PageRouteBuilder(
-//                       //     opaque: false, // set to false
-//                       //     pageBuilder: (_, __, ___) => MealPopup(yesButton: () {
-//                       //       Navigator.pop(context);
-//                       //     }),
-//                       //   ),
-//                       // );
-//                       if(shippingStage != null && shippingStage!.isNotEmpty){
-//                         if(_shippingApprovedModel != null){
-//                           Navigator.of(context).push(
-//                             MaterialPageRoute(
-//                               builder: (context) => CookKitTracking(awb_number: _shippingApprovedModel?.value?.awbCode ?? '',currentStage: shippingStage!,),
-//                             ),
-//                           ).then((value) => reloadUI());
-//                         }
-//                         else{
-//                           Navigator.of(context).push(
-//                             MaterialPageRoute(
-//                               builder: (context) => CookKitTracking(currentStage: shippingStage ?? ''),
-//                             ),
-//                           ).then((value) => reloadUI());
-//                         }
-//                       }
-//                     }
-//                     else if (programsData.title == "Programs") {
-//                       if(shippingStage == "shipping_delivered" && programOptionStage != null){
-//                         if(_getProgramModel!.value!.startProgram == '0'){
-//                           Navigator.of(context).push(
-//                             MaterialPageRoute(
-//                               builder: (context) => const ProgramPlanScreen(),
-//                             ),
-//                           ).then((value) => reloadUI());
-//                         }
-//                         else{
-//                           Navigator.push(
-//                             context,
-//                             MaterialPageRoute(
-//                               builder: (context) => DaysProgramPlan(postProgramStage: postProgramStage,),
-//                             ),
-//                           ).then((value) => reloadUI());
-//                         }
-//                       }
-//                       else{
-//                         AppConfig().showSnackbar(context, "program stage not getting", isError:  true);
-//                       }
-//                     }
-//                     else if (programsData.title == "Post Program") {
-//                       if(postProgramStage != null && _postConsultationAppointment != null){
-//                         Navigator.of(context).push(
-//                           MaterialPageRoute(
-//                             builder: (context) => PostProgramScreen(postProgramStage: postProgramStage,consultationData: _postConsultationAppointment,),
-//                           ),
-//                         ).then((value) => reloadUI());
-//                       }
-//                       else{
-//                         Navigator.of(context).push(
-//                           MaterialPageRoute(
-//                             builder: (context) => PostProgramScreen(postProgramStage: postProgramStage,),
-//                           ),
-//                         ).then((value) => reloadUI());
-//                       }
-//                     }
-//                   },
-//                   child: (programsData.isCompleted) ? Icon(Icons.check_circle_outline) :
-//                   Image(
-//                     height: 3.h,
-//                     image: const AssetImage(
-//                         "assets/images/noun-arrow-1018952.png"),
-//                   )
-//               )
-//                   : Container(
-//                 margin: EdgeInsets.only(right: 6),
-//                 width: 2.w,
-//                 child: (programsData.isCompleted) ? Icon(Icons.check_circle_outline, color: gPrimaryColor,) : SizedBox(),
-//               ),
-//             ],
-//           )
-//       ),
-//     );
-//   }
-//
-//   bool isSendApproveStatus = false;
-//   bool isPressed = false;
-//   sendApproveStatus(String status, {bool fromNull = false}) async{
-//     if(!isSendApproveStatus){
-//       setState(() {
-//         isSendApproveStatus = true;
-//         isPressed = true;
-//       });
-//       Navigator.pop(context);
-//       print("isPressed: $isPressed");
-//       final res = await ShipTrackService(repository: shipTrackRepository).sendSippingApproveStatusService(status);
-//
-//       if(res.runtimeType == ShippingApproveModel){
-//         ShippingApproveModel model = res as ShippingApproveModel;
-//         print('success: ${model.message}');
-//         AppConfig().showSnackbar(context, model.message!);
-//       }
-//       else{
-//         ErrorModel model = res as ErrorModel;
-//         print('error: ${model.message}');
-//         AppConfig().showSnackbar(context, model.message!);
-//       }
-//       setState(() {
-//         isPressed = false;
-//       });
-//     }
-//   }
-//
-//   final GutDataRepository repository = GutDataRepository(
-//     apiClient: ApiClient(
-//       httpClient: http.Client(),
-//     ),
-//   );
-//
-//   final ShipTrackRepository shipTrackRepository = ShipTrackRepository(
-//     apiClient: ApiClient(
-//       httpClient: http.Client(),
-//     ),
-//   );
-//
-//   void showConsultationScreenFromStages(status) {
-//     print(status);
-//     switch(status) {
-//       case 'evaluation_done'  :
-//         goToScreen(DoctorCalenderTimeScreen());
-//         break;
-//       case 'pending' :
-//         goToScreen(DoctorCalenderTimeScreen());
-//         break;
-//       case 'consultation_reschedule' :
-//         final model = _getAppointmentDetailsModel;
-//
-//         // add this before calling calendertimescreen for reschedule
-//         // _pref!.setString(AppConfig.appointmentId , '');
-//         goToScreen(DoctorCalenderTimeScreen(
-//           isReschedule: true,
-//           prevBookingDate: model!.value!.appointmentDate,
-//           prevBookingTime: model.value!.appointmentStartTime,
-//
-//         ));
-//         break;
-//       case 'appointment_booked':
-//         final model = _getAppointmentDetailsModel;
-//         _pref!.setString(AppConfig.appointmentId, model?.value?.id.toString() ?? '');
-//         goToScreen(DoctorSlotsDetailsScreen(bookingDate: model!.value!.date!, bookingTime: model.value!.slotStartTime!, dashboardValueMap: model.value!.toJson(),isFromDashboard: true,));
-//         break;
-//       case 'consultation_done':
-//         goToScreen(const ConsultationSuccess());
-//         break;
-//       case 'consultation_accepted':
-//         goToScreen(const ConsultationSuccess());
-//         break;
-//       case 'consultation_waiting':
-//         goToScreen(UploadFiles());
-//         break;
-//       case 'consultation_rejected':
-//         goToScreen(ConsultationRejected());
-//         break;
-//       case 'report_upload':
-//         print(_gutDataModel!.toJson());
-//         print(_gutDataModel!.value);
-//         // goToScreen(DoctorCalenderTimeScreen(isReschedule: true,prevBookingTime: '23-09-2022', prevBookingDate: '10AM',));
-//         goToScreen(MedicalReportScreen(pdfLink: _gutDataModel!.value!,));
-//         break;
-//     // case 'check_user_reports':
-//     //   print(_gutDataModel!.value);
-//     //   goToScreen(MedicalReportScreen(pdfLink: _gutDataModel!.value!,));
-//     //   break;
-//     }
-//   }
-//
-//   goToScreen(screenName){
-//     print(screenName);
-//     Navigator.of(context).push(
-//       MaterialPageRoute(
-//         builder: (context) => screenName,
-//         // builder: (context) => isConsultationCompleted ? ConsultationSuccess() : const DoctorCalenderTimeScreen(),
-//       ),
-//     ).then((value) {
-//       print(value);
-//       setState(() {
-//         getData();
-//       });
-//     });
-//   }
-//
-//   @override
-//   void didChangeDependencies() {
-//     // TODO: implement didChangeDependencies
-//     super.didChangeDependencies();
-//     print("didChangeDependencies");
-//   }
-//
-//   void getShipRocketToken() async{
-//     print("getShipRocketToken called");
-//     ShipTrackService _shipTrackService = ShipTrackService(repository: shipTrackRepository);
-//     final getToken = await _shipTrackService.getShipRocketTokenService(AppConfig().shipRocketEmail, AppConfig().shipRocketPassword);
-//     print(getToken);
-//   }
-//
-//   bool getIsCompleted(String name) {
-//     bool status = false;
-//
-//     if(name == 'Consultation'){
-//       status = consultationStage == 'report_upload';
-//       // if(consultationStage == 'report_upload') isSelected = 'Shipping';
-//       // print("status of cons $status  ${shippingStage?.isNotEmpty}");
-//     }
-//     if(name == 'Shipping'){
-//       status = shippingStage == 'shipping_delivered';
-//       // if(shippingStage == 'shipping_approved') {isSelected = 'Programs';}
-//     }
-//     if(name == 'Programs'){
-//       status = postProgramStage?.isNotEmpty ?? false;
-//     }
-//     // if(name == 'Shipping'){
-//     //   status = programOptionStage?.isNotEmpty ?? false;
-//     // }
-//     return status;
-//   }
-//
-//   getUserProfile() async{
-//     print("user profile: ${_pref!.getInt(AppConfig.QB_CURRENT_USERID)}");
-//     if(_pref!.getString(AppConfig.User_Name) != null || _pref!.getString(AppConfig.User_Name)!.isNotEmpty){
-//       final profile = await UserProfileService(repository: userRepository).getUserProfileService();
-//       if(profile.runtimeType == UserProfileModel){
-//         UserProfileModel model1 = profile as UserProfileModel;
-//         _pref!.setString(AppConfig.User_Name, model1.data?.name ?? model1.data?.fname ?? '');
-//         _pref!.setInt(AppConfig.USER_ID, model1.data?.id ?? -1);
-//         _pref!.setString(AppConfig.QB_USERNAME, model1.data!.qbUsername!);
-//         _pref!.setInt(AppConfig.QB_CURRENT_USERID, int.tryParse(model1.data!.qbUserId!)!);
-//       }
-//     }
-//     // if(_pref!.getInt(AppConfig.QB_CURRENT_USERID) != null && !await _qbService!.getSession() || _pref!.getBool(AppConfig.IS_QB_LOGIN) == null){
-//     //   String _uName = _pref!.getString(AppConfig.QB_USERNAME)!;
-//     //   _qbService!.login(_uName);
-//     // }
-//   }
-//
-//   Future<void> reloadUI() async{
-//     await getData();
-//     setState(() { });
-//   }
-//
-//   final UserProfileRepository userRepository = UserProfileRepository(
-//     apiClient: ApiClient(
-//       httpClient: http.Client(),
-//     ),
-//   );
-//
-//   showLevels() {
-//     return ListView.builder(
-//         padding: EdgeInsets.symmetric(horizontal: 3.w),
-//         shrinkWrap: true,
-//         reverse: true,
-//         itemCount: 4,
-//         itemBuilder: (_, index) {
-//           if (index.isEven) {
-//             return Align(
-//               alignment: Alignment.center,
-//               child: Padding(
-//                 padding:
-//                 const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
-//                 child: Column(
-//                   crossAxisAlignment: CrossAxisAlignment.end,
-//                   children: [
-//                     GestureDetector(
-//                       onTap: () {},
-//                       child: Image(
-//                           image: AssetImage("assets/images/current_stage.png"),
-//                           height: 60),
-//                     ),
-//                     Padding(
-//                       padding: const EdgeInsets.only(right: 20.0),
-//                       child: Image(
-//                         image: AssetImage("assets/images/Mask Group 20.png"),
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//               ),
-//             );
-//           } else {
-//             return Align(
-//               alignment: Alignment.center,
-//               child: Padding(
-//                 padding: const EdgeInsets.only(
-//                   left: 00,
-//                 ),
-//                 child: Column(
-//                   crossAxisAlignment: CrossAxisAlignment.start,
-//                   children: [
-//                     GestureDetector(
-//                       onTap: () {},
-//                       child: Image(
-//                           image: AssetImage("assets/images/lock.png"),
-//                           height: 60),
-//                     ),
-//                     Padding(
-//                       padding: EdgeInsets.only(left: 25.0, right: 30),
-//                       child: Image(
-//                         image: AssetImage("assets/images/Group 10334.png"),
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//               ),
-//             );
-//           }
-//         });
-//   }
-//
-//   showImage() {
-//     return ListView.builder(
-//         padding: EdgeInsets.symmetric(horizontal: 3.w),
-//         shrinkWrap: true,
-//         reverse: true,
-//         itemCount: levels.length,
-//         itemBuilder: (_, index) {
-//           if (index.isEven) {
-//             return Align(
-//               alignment: Alignment.centerRight,
-//               child: Padding(
-//                 padding:
-//                 const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
-//                 child: Column(
-//                   crossAxisAlignment: CrossAxisAlignment.end,
-//                   children: [
-//                     Row(
-//                       mainAxisAlignment: MainAxisAlignment.end,
-//                       children: [
-//                         Column(
-//                           // crossAxisAlignment: CrossAxisAlignment.start,
-//                           children: [
-//                             GestureDetector(
-//                               onTap: () {},
-//                               child: Image(
-//                                   image: AssetImage(levels[index]["images"]),
-//                                   height: 60),
-//                             ),
-//                             SizedBox(height: 1.h),
-//                             Text(
-//                               levels[index]["title"],
-//                               textAlign: TextAlign.center,
-//                               style: TextStyle(
-//                                   fontFamily: "GothamBook",
-//                                   height: 1.3,
-//                                   color: gsecondaryColor,
-//                                   fontSize: 10.sp),
-//                             )
-//                           ],
-//                         ),
-//                         SizedBox(width: 80),
-//                         GestureDetector(
-//                           onTap: () {},
-//                           child: Image(
-//                               image:
-//                               AssetImage("assets/images/dashboard_stages/current_stage.png"),
-//                               height: 60),
-//                         ),
-//                       ],
-//                     ),
-//                     Padding(
-//                       padding: const EdgeInsets.only(right: 20.0),
-//                       child: Image(
-//                         image: AssetImage("assets/images/dashboard_stages/Mask Group 8.png"),
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//               ),
-//             );
-//           } else {
-//             return Align(
-//               alignment: Alignment.centerLeft,
-//               child: Padding(
-//                 padding: const EdgeInsets.only(
-//                   left: 00,
-//                 ),
-//                 child: Column(
-//                   crossAxisAlignment: CrossAxisAlignment.start,
-//                   children: [
-//                     Row(
-//                       mainAxisAlignment: MainAxisAlignment.start,
-//                       children: [
-//                         GestureDetector(
-//                           onTap: () {},
-//                           child: Image(
-//                               image: AssetImage("assets/images/lock.png"),
-//                               height: 60),
-//                         ),
-//                         SizedBox(width: 80),
-//                         Column(
-//                           // crossAxisAlignment: CrossAxisAlignment.start,
-//                           children: [
-//                             GestureDetector(
-//                               onTap: () {},
-//                               child: Image(
-//                                   image: AssetImage(levels[index]["images"]),
-//                                   height: 60),
-//                             ),
-//                             SizedBox(height: 1.h),
-//                             Text(
-//                               levels[index]["title"],
-//                               textAlign: TextAlign.center,
-//                               style: TextStyle(
-//                                   fontFamily: "GothamBook",
-//                                   height: 1.3,
-//                                   color: gsecondaryColor,
-//                                   fontSize: 10.sp),
-//                             )
-//                           ],
-//                         ),
-//                       ],
-//                     ),
-//                     Padding(
-//                       padding: EdgeInsets.only(left: 25.0, right: 30),
-//                       child: Image(
-//                         image: AssetImage("assets/images/Mask Group 9.png"),
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//               ),
-//             );
-//           }
-//         });
-//   }
-// }
-//
-// class ProgramsData {
-//   String title;
-//   String image;
-//   bool isCompleted;
-//
-//   ProgramsData(this.title, this.image, {this.isCompleted = false});
-// }
+import 'package:flutter/material.dart';
+import 'package:gwc_customer/model/dashboard_model/get_appointment/get_appointment_after_appointed.dart';
+import 'package:gwc_customer/model/dashboard_model/get_dashboard_data_model.dart';
+import 'package:gwc_customer/model/dashboard_model/get_program_model.dart';
+import 'package:gwc_customer/model/dashboard_model/gut_model/gut_data_model.dart';
+import 'package:gwc_customer/model/dashboard_model/shipping_approved/ship_approved_model.dart';
+import 'package:gwc_customer/model/error_model.dart';
+import 'package:gwc_customer/model/profile_model/user_profile/user_profile_model.dart';
+import 'package:gwc_customer/model/ship_track_model/sipping_approve_model.dart';
+import 'package:gwc_customer/repository/api_service.dart';
+import 'package:gwc_customer/repository/dashboard_repo/gut_repository/dashboard_repository.dart';
+import 'package:gwc_customer/repository/profile_repository/get_user_profile_repo.dart';
+import 'package:gwc_customer/repository/shipping_repository/ship_track_repo.dart';
+import 'package:gwc_customer/screens/appointment_screens/consultation_screens/consultation_rejected.dart';
+import 'package:gwc_customer/screens/appointment_screens/consultation_screens/medical_report_screen.dart';
+import 'package:gwc_customer/screens/appointment_screens/doctor_calender_time_screen.dart';
+import 'package:gwc_customer/screens/cook_kit_shipping_screens/cook_kit_tracking.dart';
+import 'package:gwc_customer/screens/evalution_form/evaluation_get_details.dart';
+import 'package:gwc_customer/screens/help_screens/help_screen.dart';
+import 'package:gwc_customer/screens/notification_screen.dart';
+import 'package:gwc_customer/screens/prepratory%20plan/prepratory_plan_screen.dart';
+import 'package:gwc_customer/screens/prepratory%20plan/transition_mealplan_screen.dart';
+import 'package:gwc_customer/screens/program_plans/meal_plan_screen.dart';
+import 'package:gwc_customer/services/profile_screen_service/user_profile_service.dart';
+import 'package:gwc_customer/services/shipping_service/ship_track_service.dart';
+import 'package:gwc_customer/widgets/constants.dart';
+import 'package:gwc_customer/widgets/widgets.dart';
+import 'package:jwt_decode/jwt_decode.dart';
+import 'package:shimmer/shimmer.dart';
+import 'package:sizer/sizer.dart';
+import 'package:http/http.dart' as http;
+import '../../repository/login_otp_repository.dart';
+import '../../services/dashboard_service/gut_service/dashboard_data_service.dart';
+import '../../services/login_otp_service.dart';
+import '../../utils/app_config.dart';
+import '../appointment_screens/consultation_screens/check_user_report_screen.dart';
+import '../appointment_screens/consultation_screens/consultation_success.dart';
+import '../appointment_screens/consultation_screens/upload_files.dart';
+import '../appointment_screens/doctor_slots_details_screen.dart';
+import '../prepratory plan/prepratory_meal_completed_screen.dart';
+import '../program_plans/program_start_screen.dart';
+
+enum DirectionAngle{
+  topLeft, topRight, bottomLeft, bottomRight
+}
+class NewDashboardScreen extends StatefulWidget {
+  const NewDashboardScreen({Key? key}) : super(key: key);
+
+  @override
+  State<NewDashboardScreen> createState() => _NewDashboardScreenState();
+}
+
+class _NewDashboardScreenState extends State<NewDashboardScreen> {
+  final _pref = AppConfig().preferences;
+
+  late GutDataService _gutDataService;
+
+  /// THIS IS FOR ABC DIALOG MEAL PLAN
+  bool isMealProgressOpened = false;
+
+  bool isProgressDialogOpened = true;
+  BuildContext? _progressContext;
+
+  String? consultationStage, shippingStage, prepratoryMealStage ,programOptionStage,transStage, postProgramStage;
+
+  /// this is used when data=appointment_booked status
+  GetAppointmentDetailsModel? _getAppointmentDetailsModel, _postConsultationAppointment;
+
+  /// ths is used when data = shipping_approved status
+  ShippingApprovedModel? _shippingApprovedModel;
+
+  GetProgramModel? _gutProgramModel;
+
+  GetPrePostMealModel? _prepratoryModel, _transModel;
+
+  /// for other status we use this one(except shipping_approved & appointment_booked)
+  GutDataModel? _gutDataModel, _gutShipDataModel, _gutNormalProgramModel, _gutPostProgramModel, _prepProgramModel, _transMealModel;
+
+
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    getUserProfile();
+
+    if(_pref!.getString(AppConfig().shipRocketBearer) == null || _pref!.getString(AppConfig().shipRocketBearer)!.isEmpty){
+      getShipRocketToken();
+    }
+    else{
+      String token = _pref!.getString(AppConfig().shipRocketBearer)!;
+      Map<String, dynamic> payload = Jwt.parseJwt(token);
+      print('shiprocketToken : $payload');
+      var date = DateTime.fromMillisecondsSinceEpoch(payload['exp'] * 1000);
+      if(!DateTime.now().difference(date).isNegative){
+        getShipRocketToken();
+      }
+    }
+
+
+
+    getData();
+
+  }
+  void getShipRocketToken() async{
+    print("getShipRocketToken called");
+    ShipTrackService _shipTrackService = ShipTrackService(repository: shipTrackRepository);
+    final getToken = await _shipTrackService.getShipRocketTokenService(AppConfig().shipRocketEmail, AppConfig().shipRocketPassword);
+    print(getToken);
+  }
+
+  getData() async{
+    isProgressDialogOpened = true;
+    print("isProgressDialogOpened: $isProgressDialogOpened");
+    Future.delayed(Duration(seconds: 0)).whenComplete(() {
+      if(mounted) {
+        _progressContext = context;
+        //openProgressDialog(_progressContext!, willPop: true);
+      }
+    });
+    _gutDataService = GutDataService(repository: repository);
+    print("isProgressDialogOpened: $isProgressDialogOpened");
+
+    final _getData = await _gutDataService.getGutDataService();
+    print("_getData: $_getData");
+    if(_getData.runtimeType == ErrorModel){
+      ErrorModel model = _getData;
+      print(model.message);
+      isProgressDialogOpened = false;
+      Future.delayed(Duration(seconds: 0)).whenComplete(() =>
+          AppConfig().showSnackbar(context, model.message ?? '', isError: true,
+              duration: 50000,
+              action: SnackBarAction(
+                label: 'Retry',
+                onPressed: (){
+                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                  getData();
+                },
+              )
+          )
+      );
+    }
+    else{
+      isProgressDialogOpened = false;
+      print("isProgressDialogOpened: $isProgressDialogOpened");
+      GetDashboardDataModel _getDashboardDataModel = _getData as GetDashboardDataModel;
+      print("_getDashboardDataModel.app_consulation: ${_getDashboardDataModel.app_consulation}");
+
+
+      // checking for the consultation data if data = appointment_booked
+      setState(() {
+        if(_getDashboardDataModel.app_consulation != null){
+          _getAppointmentDetailsModel = _getDashboardDataModel.app_consulation;
+          consultationStage = _getAppointmentDetailsModel?.data ?? '';
+        }
+        else{
+          _gutDataModel = _getDashboardDataModel.normal_consultation;
+          consultationStage = _gutDataModel?.data ?? '';
+        }
+
+        if(_getDashboardDataModel.prepratory_normal_program != null){
+          _prepProgramModel = _getDashboardDataModel.prepratory_normal_program;
+          prepratoryMealStage = _prepProgramModel?.data ?? '';
+        }
+        else if(_getDashboardDataModel.prepratory_program != null){
+          _prepratoryModel = _getDashboardDataModel.prepratory_program;
+          print("_prepratoryModel: $_prepratoryModel");
+          prepratoryMealStage = _prepratoryModel?.data ?? '';
+        }
+
+        if(_getDashboardDataModel.approved_shipping != null){
+          _shippingApprovedModel = _getDashboardDataModel.approved_shipping;
+          shippingStage = _shippingApprovedModel?.data ?? '';
+        }
+        else{
+          _gutShipDataModel = _getDashboardDataModel.normal_shipping;
+          shippingStage = _gutShipDataModel?.data ?? '';
+          // abc();
+        }
+        if(_getDashboardDataModel.data_program != null){
+          _gutProgramModel = _getDashboardDataModel.data_program;
+          programOptionStage = _gutProgramModel?.data ?? '';
+        }
+        else{
+          _gutNormalProgramModel = _getDashboardDataModel.normal_program;
+          programOptionStage = _gutNormalProgramModel?.data ?? '';
+          abc();
+        }
+
+        if(_getDashboardDataModel.transition_meal_program != null){
+          _transMealModel = _getDashboardDataModel.transition_meal_program;
+          transStage = _transMealModel?.data ?? '';
+        }
+        else if(_getDashboardDataModel.trans_program != null){
+          _transModel = _getDashboardDataModel.trans_program;
+          transStage = _transModel?.data ?? '';
+        }
+
+        // post program will open once transition meal plan is completed
+        // this is for other postprogram model
+        if(_getDashboardDataModel.normal_postprogram != null){
+          _gutPostProgramModel = _getDashboardDataModel.normal_postprogram;
+          postProgramStage = _gutPostProgramModel?.data ?? '';
+        }
+        else{
+          _postConsultationAppointment = _getDashboardDataModel.postprogram_consultation;
+          print("RESCHEDULE : ${_getDashboardDataModel.postprogram_consultation?.data}");
+          postProgramStage = _postConsultationAppointment?.data ?? '';
+        }
+      });
+    }
+  }
+
+
+  getUserProfile() async{
+    // print("user id: ${_pref!.getInt(AppConfig.KALEYRA_USER_ID)}");
+
+    if(_pref!.getString(AppConfig.User_Name) != null || _pref!.getString(AppConfig.User_Name)!.isNotEmpty){
+      final profile = await UserProfileService(repository: userRepository).getUserProfileService();
+      if(profile.runtimeType == UserProfileModel){
+        UserProfileModel model1 = profile as UserProfileModel;
+        _pref!.setString(AppConfig.User_Name, model1.data?.name ?? model1.data?.fname ?? '');
+        _pref!.setInt(AppConfig.USER_ID, model1.data?.id ?? -1);
+        _pref!.setString(AppConfig.QB_USERNAME, model1.data!.qbUsername ?? '');
+        _pref!.setString(AppConfig.QB_CURRENT_USERID, model1.data!.qbUserId ?? '');
+        _pref!.setString(AppConfig.KALEYRA_USER_ID, model1.data!.kaleyraUID!);
+
+        if(_pref!.getString(AppConfig.KALEYRA_ACCESS_TOKEN) == null){
+          await LoginWithOtpService(repository: loginOtpRepository).getAccessToken(model1.data!.kaleyraUID!);
+        }
+        print("user profile: ${_pref!.getString(AppConfig.QB_CURRENT_USERID)}");
+
+      }
+    }
+    // if(_pref!.getInt(AppConfig.QB_CURRENT_USERID) != null && !await _qbService!.getSession() || _pref!.getBool(AppConfig.IS_QB_LOGIN) == null){
+    //   String _uName = _pref!.getString(AppConfig.QB_USERNAME)!;
+    //   _qbService!.login(_uName);
+    // }
+  }
+
+  Future<void> reloadUI() async{
+    await getData();
+    setState(() { });
+  }
+
+  final UserProfileRepository userRepository = UserProfileRepository(
+    apiClient: ApiClient(
+      httpClient: http.Client(),
+    ),
+  );
+
+  final GutDataRepository repository = GutDataRepository(
+    apiClient: ApiClient(
+      httpClient: http.Client(),
+    ),
+  );
+  final LoginOtpRepository loginOtpRepository = LoginOtpRepository(
+    apiClient: ApiClient(
+      httpClient: http.Client(),
+    ),
+  );
+
+
+  @override
+  Widget build(BuildContext context) {
+    return MediaQuery(
+        data: MediaQuery.of(context).copyWith(textScaleFactor: 0.8),
+        child: SafeArea(
+          child: Scaffold(
+            body: Padding(
+              padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 5.w),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  buildAppBar(
+                          () {
+                        Navigator.pop(context);
+                      },
+                      isBackEnable: false,
+                      showNotificationIcon: true,
+                      notificationOnTap: (){
+                        Navigator.push(context, MaterialPageRoute(builder: (_) => const NotificationScreen()));
+                      },
+                      showHelpIcon: true,
+                      helpOnTap: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (_) => HelpScreen()));
+                      }
+
+                  ),
+                  Expanded(child: Center(
+                    child: (isProgressDialogOpened) ?
+                    Shimmer.fromColors(
+                      baseColor: Colors.grey.withOpacity(0.3),
+                      highlightColor: Colors.grey.withOpacity(0.7),
+                      child: view(),
+                    ) : view(),
+                  ))
+                ],
+              ),
+            ),
+          ),
+        )
+    );
+  }
+
+  view(){
+    return SingleChildScrollView(
+      child: IntrinsicHeight(
+        child: Column(
+          children: [
+            Flexible(
+                child: Center(
+                  child: GestureDetector(
+                    onTap: (){
+                      if(shippingStage != null && shippingStage!.isNotEmpty){
+                        if(_shippingApprovedModel != null){
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => CookKitTracking(awb_number: _shippingApprovedModel?.value?.awbCode ?? '',currentStage: shippingStage!,),
+                            ),
+                          ).then((value) => reloadUI());
+                        }
+                        else{
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => CookKitTracking(currentStage: shippingStage ?? ''),
+                            ),
+                          ).then((value) => reloadUI());
+                        }
+                      }
+                      else{
+                        AppConfig().showSnackbar(context, "Can't access Locked Stage", isError: true);
+                      }
+                    },
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Image.asset(newDashboardTrackingIcon,
+                          width: 25,
+                          height: 25,
+                        ),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        Text('Tracker &\nShopping',
+                          style: TextStyle(
+                            fontSize: headingFont,
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                )
+            ),
+            IntrinsicHeight(
+              child: Column(
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Expanded(child: customCircle(DirectionAngle.topLeft.name, "03",
+                              iconName: ((prepratoryMealStage == null || prepratoryMealStage!.isEmpty) && _prepratoryModel == null) ? null : (_prepratoryModel?.value?.isPrepCompleted == true) ? newDashboardOpenIcon : newDashboardUnLockIcon,
+                            headingText: "BEGIN GUT\nPREPARATION",subText: "While you wait for your customised Product Kit arrive to be used during the Reset phase of the program, "
+                                  "You will be give a preparatory meal protocol based on your food type",
+                              borderColor: ((prepratoryMealStage == null || prepratoryMealStage!.isEmpty) && _prepratoryModel == null) ? null : (_prepratoryModel?.value?.isPrepCompleted == true) ? kBigCircleBorderGreen : kBigCircleBorderYellow,
+                              onTap: (){
+                            print("$prepratoryMealStage ");
+                            print(((prepratoryMealStage == null || prepratoryMealStage!.isEmpty) && _prepratoryModel == null));
+                                // showPrepratoryMealScreen();
+                              }
+                          ),),
+                          SizedBox(
+                            width: 8,
+                          ),
+                          Expanded(child: customCircle(DirectionAngle.topRight.name, "04",
+                              iconName: getProgramTransBorderColor("icon"),
+                            headingText: "GUT RESET\nPROGRAM START",
+                            subText: "You are now ready to detoxify and repair your Gut disorder. First few "
+                                "day swill be challenging due to bland diet, but as you start experiencing "
+                                "the benefit, you will enjoy this phase.",
+                              borderColor: getProgramTransBorderColor("color"),
+                              onTap: (){
+                            if(transStage != null){
+                              showTransitionMealScreen();
+                            }
+                            else if(programOptionStage != null){
+                              showProgramScreen();
+                            }
+                            else{
+                              AppConfig().showSnackbar(context, "Can't access Locked Stage", isError: true);
+                            }
+                              }
+                          ),),
+                        ],
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 14,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        GestureDetector(
+                          onTap: (){
+                            if(consultationStage == "report_upload"){
+                              goToScreen(MedicalReportScreen(pdfLink: _gutDataModel!.value!,));
+                            }
+                            else{
+                              AppConfig().showSnackbar(context, "Can't access Locked Stage", isError: true);
+                            }
+                          },
+                          child: Row(
+                            children: [
+                              Image.asset(newDashboardMRIcon,
+                                height: 15,
+                              ),
+                              SizedBox(width: 5,),
+                              Text("Medical Report",
+                                style: TextStyle(
+                                  fontSize: headingFont,
+                                    fontFamily: kFontBook,
+                                  color: gTextColor
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: (){},
+                          child: Row(
+                            children: [
+                              Text("GMG",
+                                style: TextStyle(
+                                  fontSize: headingFont,
+                                    fontFamily: kFontBook,
+                                    color: gTextColor
+                                ),
+                              ),
+                              SizedBox(width: 5,),
+                              Image.asset(newDashboardGMGIcon,
+                                scale: 1.2,
+                                fit: BoxFit.cover,
+                              ),
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Expanded(child: customCircle(DirectionAngle.bottomLeft.name, "02",
+                              iconName: (consultationStage == null) ? null : consultationStage == "report_upload" ? newDashboardOpenIcon : newDashboardUnLockIcon,
+                            headingText: "MEDICAL\nCONSULTAION",
+                            subText: "Basis your Evaluation details, a video consultation is the next step for our "
+                                "doctors to diagnose the root cause of you Gut Issues.",
+                            borderColor:(consultationStage == null) ? null : consultationStage == "report_upload" ? kBigCircleBorderGreen : kBigCircleBorderYellow,
+                            onTap: (){
+                              showConsultationScreenFromStages(consultationStage);
+                            }
+                          ),),
+                          SizedBox(
+                            width: 8,
+                          ),
+                          Expanded(child: customCircle(DirectionAngle.bottomRight.name, "01",
+                              iconName: newDashboardOpenIcon,
+                            headingText: "DISORDER\nEVALUATION",
+                            subText:"A Critical information needed by our doctors to understand your Medical "
+                                "history, Symptoms, Sleep, Diet & Lifestyle for proper diagnosis!",
+                            borderColor: kBigCircleBorderGreen,
+                              onTap: () {
+                              goToScreen(EvaluationGetDetails());
+                            }
+                          ),),
+                        ],
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ),
+            Flexible(
+                child: Center(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Image.asset("assets/images/noun-chat-5153452.png",
+                        width: 25,
+                        height: 25,
+                      ),
+                      SizedBox(
+                        width: 5,
+                      ),
+                      Text('Chat Support',
+                        style: TextStyle(
+                          fontSize: headingFont,
+                          decoration: TextDecoration.underline,
+                        ),
+                      )
+                    ],
+                  ),
+                )
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  expandedView(){
+    return IntrinsicHeight(
+      child: Column(
+        children: [
+          Flexible(
+              child: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Image.asset(newDashboardTrackingIcon,
+                      width: 25,
+                      height: 25,
+                    ),
+                    SizedBox(
+                      height: 5,
+                    ),
+                    Text('Tracker &\nShopping',
+                      style: TextStyle(
+                        fontSize: headingFont,
+                      ),
+                    )
+                  ],
+                ),
+              )
+          ),
+          Expanded(
+            flex: 5,
+            child: Column(
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Expanded(child: customCircle(DirectionAngle.topLeft.name, "03", iconName: newDashboardLockIcon),),
+                        SizedBox(
+                          width: 8,
+                        ),
+                        Expanded(child: customCircle(DirectionAngle.topRight.name, "04", iconName: newDashboardLockIcon),),
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 14,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Image.asset(newDashboardMRIcon,
+                            height: 15,
+                          ),
+                          SizedBox(width: 5,),
+                          Text("Medical Report",
+                            style: TextStyle(
+                                fontSize: headingFont,
+                                fontFamily: kFontBook,
+                                color: gTextColor
+                            ),
+                          )
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Text("GMG",
+                            style: TextStyle(
+                                fontSize: headingFont,
+                                fontFamily: kFontBook,
+                                color: gTextColor
+                            ),
+                          ),
+                          SizedBox(width: 5,),
+                          Image.asset(newDashboardGMGIcon,
+                            height: 25,
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Expanded(child: customCircle(DirectionAngle.bottomLeft.name, "02", iconName:  newDashboardLockIcon),),
+                        SizedBox(
+                          width: 8,
+                        ),
+                        Expanded(child: customCircle(DirectionAngle.bottomRight.name, "01", iconName: newDashboardLockIcon),),
+                      ],
+                    ),
+                  ),
+                )
+              ],
+            ),
+          ),
+          Flexible(
+              child: Center(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Image.asset("assets/images/noun-chat-5153452.png",
+                      width: 25,
+                      height: 25,
+                    ),
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Text('Chat Support',
+                      style: TextStyle(
+                        fontSize: headingFont,
+                        decoration: TextDecoration.underline,
+                      ),
+                    )
+                  ],
+                ),
+              )
+          )
+        ],
+      ),
+    );
+  }
+
+
+  customCircle(String angle, String stageNo, {String? iconName,String? headingText, String? subText, Color? borderColor, VoidCallback? onTap}){
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        GestureDetector(
+          onTap: onTap,
+          child: Container(
+            height: 180,
+            decoration: BoxDecoration(
+              color: kBigCircleBg,
+              borderRadius:BorderRadius.only(
+                topRight: (angle == DirectionAngle.bottomLeft.name) ? const Radius.circular(0) : const Radius.circular(80),
+                topLeft: (angle == DirectionAngle.bottomRight.name) ? const Radius.circular(0) : const Radius.circular(80),
+                bottomLeft: (angle == DirectionAngle.topRight.name) ? const Radius.circular(0) : const Radius.circular(80),
+                bottomRight: (angle == DirectionAngle.topLeft.name) ? const Radius.circular(0) : const Radius.circular(80),
+              ),
+              border: Border.all(
+                  color: borderColor ?? gsecondaryColor,
+                  width: 1
+              ),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                SizedBox(
+                  height: 3.h,
+                ),
+                Center(
+                  child: Text(headingText ?? '',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        fontFamily: eUser().mainHeadingFont,
+                        color: eUser().mainHeadingColor,
+                        fontSize: eUser().mainHeadingFontSize
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(subText ?? '',
+                      // "While you wait for your customised Product Kit arrive to be used during the Reset phase of the program, "
+                      //   "You will be give a preparatory meal protocol based on your food type",
+                        // " While you wait for your  customised Product Kit arrive to be used during the Reset phase of the program,",
+                      style: TextStyle(
+                          fontFamily: kFontBook,
+                          color: eUser().mainHeadingColor,
+                          fontSize: bottomSheetSubHeadingSFontSize
+                      ),
+                      textAlign: TextAlign.justify,
+                    ),
+                  ),
+                )
+              ],
+            ),
+          ),
+        ),
+        Positioned(
+          left: (angle == DirectionAngle.bottomRight.name || angle == DirectionAngle.topRight.name ) ? -8 : null,
+            top: (angle == DirectionAngle.bottomRight.name || angle == DirectionAngle.bottomLeft.name) ? -16 : null,
+            right: (angle == DirectionAngle.bottomLeft.name || angle == DirectionAngle.topLeft.name) ? -8 : null,
+            bottom: (angle == DirectionAngle.topRight.name || angle == DirectionAngle.topLeft.name) ? -16 : null,
+            child: Container(
+              width: 40,
+              height: 40,
+              padding: EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: (angle == DirectionAngle.bottomRight.name) ? kNumberCircleGreen :
+                (angle == DirectionAngle.bottomLeft.name) ? kNumberCircleAmber :
+                (angle == DirectionAngle.topLeft.name) ? kNumberCircleRed :
+                kNumberCirclePurple,
+              ),
+              child: Center(child: Text(stageNo,
+                style: TextStyle(
+                  fontFamily: kFontMedium,
+                  fontSize: headingFont,
+                  color: Colors.white
+                ),
+              )),
+            )
+        ),
+        Positioned(
+            left: (angle == DirectionAngle.topLeft.name || angle == DirectionAngle.bottomLeft.name) ? 10 : null,
+            // top: (angle == DirectionAngle.bottomRight.name || angle == DirectionAngle.bottomLeft.name) ?  : null,
+            right: (angle == DirectionAngle.topRight.name || angle == DirectionAngle.bottomRight.name) ? 10 : null,
+            bottom: (angle == DirectionAngle.bottomRight.name || angle == DirectionAngle.bottomLeft.name) ? 6 : null,
+            child: Image.asset(
+                (angle == DirectionAngle.topLeft.name) ? iconName ?? newDashboardLockIcon
+                    : (angle == DirectionAngle.topRight.name) ? iconName ?? newDashboardLockIcon :
+                (angle == DirectionAngle.bottomLeft.name) ? iconName ?? newDashboardLockIcon : iconName ?? newDashboardLockIcon,
+              width: 30,
+              height: 30,
+            )
+        ),
+      ],
+    );
+  }
+
+  bool isShown = false;
+
+  abc(){
+    Future.delayed(Duration(seconds: 0)).whenComplete(() {
+      if(shippingStage == 'meal_plan_completed'){
+        if(!isShown){
+          setState(() {
+            isShown = true;
+          });
+        }
+        mealReadySheet();
+      }
+    });
+  }
+  bool isSendApproveStatus = false;
+  bool isPressed = false;
+  sendApproveStatus(String status, {bool fromNull = false}) async{
+    if(!isSendApproveStatus){
+      setState(() {
+        isSendApproveStatus = true;
+        isPressed = true;
+      });
+      print("isPressed: $isPressed");
+      final res = await ShipTrackService(repository: shipTrackRepository).sendSippingApproveStatusService(status);
+
+      if(res.runtimeType == ShippingApproveModel){
+        ShippingApproveModel model = res as ShippingApproveModel;
+        print('success: ${model.message}');
+        AppConfig().showSnackbar(context, model.message!);
+        getData();
+      }
+      else{
+        ErrorModel model = res as ErrorModel;
+        print('error: ${model.message}');
+        AppConfig().showSnackbar(context, model.message!);
+      }
+      setState(() {
+        isPressed = false;
+      });
+    }
+  }
+
+  mealReadySheet(){
+    return AppConfig().showSheet(context, Column(
+      children: [
+        Text('Hooray!\nYour food prescription is ready',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+              height: 1.4,
+              fontSize: bottomSheetSubHeadingXLFontSize,
+              fontFamily: bottomSheetSubHeadingBoldFont,
+              color: gTextColor
+          ),),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Image.asset('assets/images/meal_popup.png',
+            fit: BoxFit.scaleDown,
+            width: 60.w,
+            filterQuality: FilterQuality.high,
+          ),
+        ),
+        Text("You've Unlocked The Next Step!",
+          textAlign: TextAlign.center,
+          style: TextStyle(
+              height: 1.2,
+              fontSize: bottomSheetSubHeadingXLFontSize,
+              fontFamily: bottomSheetSubHeadingMediumFont,
+              color: gTextColor
+          ),),
+        Text("The Product Kit Is Ready. Shall We Ship It For You?",
+          textAlign: TextAlign.center,
+          style: TextStyle(
+              height: 1.2,
+              fontSize: bottomSheetSubHeadingXLFontSize,
+              fontFamily: bottomSheetSubHeadingBookFont,
+              color: gTextColor
+          ),),
+        SizedBox(height: 5.h,),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            GestureDetector(
+              onTap: (isPressed) ? (){} : () {
+                Navigator.pop(context);
+                sendApproveStatus('yes');
+                setState(() {
+                  isShown = false;
+                });
+                if(isMealProgressOpened){
+                  Navigator.pop(context);
+                }
+              },
+              child: Container(
+                padding: EdgeInsets.symmetric(
+                    vertical: 1.5.h, horizontal: 12.w),
+                decoration: BoxDecoration(
+                    color: gsecondaryColor,
+                    border: Border.all(color: kLineColor, width: 0.5),
+                    borderRadius: BorderRadius.circular(5)),
+                child: Text(
+                  "YES",
+                  style: TextStyle(
+                    fontFamily: kFontMedium,
+                    color: gWhiteColor,
+                    fontSize: 11.sp,
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(width: 5.w),
+            GestureDetector(
+              onTap: (isPressed) ? (){} : () {
+                sendApproveStatus('no');
+                setState(() {
+                  isShown = false;
+                });
+                if(isMealProgressOpened){
+                  Navigator.pop(context);
+                }
+              },
+              child: Container(
+                padding: EdgeInsets.symmetric(
+                    vertical: 1.5.h, horizontal: 12.w),
+                decoration: BoxDecoration(
+                    color: gWhiteColor,
+                    border: Border.all(color: kLineColor, width: 0.5),
+                    borderRadius: BorderRadius.circular(5)),
+                child: Text(
+                  "NO",
+                  style: TextStyle(
+                    fontFamily: kFontMedium,
+                    color: gsecondaryColor,
+                    fontSize: 11.sp,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 5.h,),
+      ],
+    ), bottomSheetHeight: 75.h);
+  }
+
+  final ShipTrackRepository shipTrackRepository = ShipTrackRepository(
+    apiClient: ApiClient(
+      httpClient: http.Client(),
+    ),
+  );
+
+  void showConsultationScreenFromStages(status) {
+    print(status);
+    switch(status) {
+      case 'evaluation_done'  :
+        goToScreen(DoctorCalenderTimeScreen());
+        break;
+      case 'pending' :
+        goToScreen(DoctorCalenderTimeScreen());
+        break;
+      case 'consultation_reschedule' :
+        final model = _getAppointmentDetailsModel;
+        String? _doctorName;
+        model!.value!.teamMember!.forEach((element) {
+          if(element.user!.roleId == "2"){
+            _doctorName = 'Dr. ${element.user!.name}' ?? '';
+          }
+        });
+
+        // add this before calling calendertimescreen for reschedule
+        // _pref!.setString(AppConfig.appointmentId , '');
+        goToScreen(DoctorCalenderTimeScreen(
+          isReschedule: true,
+          prevBookingDate: model!.value!.appointmentDate,
+          prevBookingTime: model.value!.appointmentStartTime,
+          doctorDetails: model.value!.doctor,
+          doctorName: _doctorName
+
+        ));
+        break;
+      case 'appointment_booked':
+        final model = _getAppointmentDetailsModel;
+        _pref!.setString(AppConfig.appointmentId, model?.value?.id.toString() ?? '');
+        goToScreen(DoctorSlotsDetailsScreen(bookingDate: model!.value!.date!,
+          bookingTime: model.value!.slotStartTime!,
+          dashboardValueMap: model.value!.toJson(),isFromDashboard: true,));
+        break;
+      case 'consultation_done':
+        goToScreen(const ConsultationSuccess());
+        break;
+      case 'consultation_accepted':
+        goToScreen(const ConsultationSuccess());
+        break;
+      case 'consultation_waiting':
+        goToScreen(UploadFiles());
+        break;
+      case 'check_user_reports':
+      // print(_gutDataModel!.value);
+        goToScreen(CheckUserReportsScreen());
+        break;
+      case 'consultation_rejected':
+        goToScreen(ConsultationRejected(reason: _gutDataModel?.value ?? '',));
+        break;
+      case 'report_upload':
+        // need to show consultation completed screen, "You can now View Your Medical Report !!"
+        print(_gutDataModel!.toJson());
+        print(_gutDataModel!.value);
+        goToScreen(ConsultationRejected(reason: '',));
+
+        // goToScreen(ConsultationSuccess());
+
+        // goToScreen(DoctorSlotsDetailsScreen(bookingDate: "2023-02-21", bookingTime: "11:34:00", dashboardValueMap: {},isFromDashboard: true,));
+
+        // goToScreen(DoctorCalenderTimeScreen(isReschedule: true,prevBookingTime: '23-09-2022', prevBookingDate: '10AM',));
+        // goToScreen(MedicalReportScreen(pdfLink: _gutDataModel!.value!,));
+        break;
+
+    }
+  }
+
+  showPrepratoryMealScreen(){
+    if(_prepratoryModel != null){
+      print("BOOL : ${_prepratoryModel!.value!.isPrepratoryStarted}");
+
+      // slide to program  if not started
+      if(_prepratoryModel!.value!.isPrepratoryStarted == false){
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => ProgramPlanScreen(from: ProgramMealType.prepratory.name,),
+          ),
+        ).then((value) => reloadUI());
+      }
+      else{
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) =>
+            (_prepratoryModel!.value!.isPrepCompleted!) ?
+            PrepratoryMealCompletedScreen()
+                : PrepratoryPlanScreen(dayNumber: _prepratoryModel!.value!.currentDay!, totalDays: _prepratoryModel!.value!.prep_days ?? ''),
+            // ProgramPlanScreen(from: ProgramMealType.prepratory.name,)
+          ),
+        ).then((value) => reloadUI());
+      }
+    }
+  }
+
+  showTransitionMealScreen(){
+    if(_transModel != null){
+      if(_transModel!.value!.isTransMealStarted == false){
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => ProgramPlanScreen(from: ProgramMealType.transition.name,),
+          ),
+        ).then((value) => reloadUI());
+      }
+      else{
+        print(_transModel!.value!.toJson());
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => TransitionMealPlanScreen(totalDays: _transModel!.value!.trans_days ?? '', dayNumber: _transModel?.value?.currentDay ??'',),
+          ),
+        ).then((value) => reloadUI());
+      }
+    }
+  }
+
+  showProgramScreen(){
+    if(shippingStage == "shipping_delivered" && programOptionStage != null){
+      // to slide to start the program
+      if(_gutProgramModel!.value!.startProgram == '0'){
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => ProgramPlanScreen(from: ProgramMealType.program.name,),
+          ),
+        ).then((value) => reloadUI());
+      }
+      else{
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => MealPlanScreen(postProgramStage: postProgramStage,),
+          ),
+        ).then((value) => reloadUI());
+      }
+    }
+    else{
+      AppConfig().showSnackbar(context, "program stage not getting", isError:  true);
+    }
+  }
+  showPostProgramScreen(){
+    if(postProgramStage != null && _postConsultationAppointment != null){
+      Navigator.of(context).push(
+        MaterialPageRoute(
+            builder: (context) =>
+                DoctorSlotsDetailsScreen(
+                  bookingDate: _postConsultationAppointment!.value!.date!,
+                  bookingTime: _postConsultationAppointment!.value!.slotStartTime!,
+                  isPostProgram: true,
+                  dashboardValueMap: _postConsultationAppointment!.value!.toJson() ,)
+          // PostProgramScreen(postProgramStage: postProgramStage,
+          //   consultationData: _postConsultationAppointment,),
+        ),
+      ).then((value) => reloadUI());
+    }
+    else{
+      Navigator.of(context).push(
+        MaterialPageRoute(
+            builder: (context) =>
+                DoctorCalenderTimeScreen(isPostProgram: true,)
+          // PostProgramScreen(postProgramStage: postProgramStage,),
+        ),
+      ).then((value) => reloadUI());
+    }
+  }
+
+  goToScreen(screenName){
+    print(screenName);
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => screenName,
+        // builder: (context) => isConsultationCompleted ? ConsultationSuccess() : const DoctorCalenderTimeScreen(),
+      ),
+    ).then((value) {
+      print(value);
+      setState(() {
+        getData();
+      });
+    });
+  }
+
+  getProgramTransBorderColor(String type) {
+    if(type == "color"){
+      if(transStage != null ){
+        if(_transModel != null && _transMealModel != null){
+          return kBigCircleBorderYellow;
+        }
+        else if(_transModel?.value != null && _transModel?.value?.isTransMealCompleted == true){
+          return kBigCircleBorderGreen;
+        }
+      }
+      else if(programOptionStage != null){
+        if(_gutNormalProgramModel != null && _gutProgramModel != null){
+          return kBigCircleBorderYellow;
+        }
+      }
+      else{
+        return kBigCircleBorderRed;
+      }
+    }
+    else{
+      if(transStage != null ){
+        if(_transModel != null && _transMealModel != null){
+          return newDashboardUnLockIcon;
+        }
+        else if(_transModel?.value != null && _transModel?.value?.isTransMealCompleted == true){
+          return newDashboardOpenIcon;
+        }
+      }
+      else if(programOptionStage != null){
+        if(_gutNormalProgramModel != null && _gutProgramModel != null){
+          return newDashboardUnLockIcon;
+        }
+      }
+      else{
+        return newDashboardLockIcon;
+      }
+    }
+
+  }
+
+
+}

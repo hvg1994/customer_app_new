@@ -12,6 +12,7 @@ import 'package:gwc_customer/screens/evalution_form/evaluation_form_screen.dart'
 import 'package:gwc_customer/screens/help_screens/help_screen.dart';
 import 'package:gwc_customer/screens/user_registration/resend_otp_screen.dart';
 import 'package:gwc_customer/services/login_otp_service.dart';
+import 'package:gwc_customer/utils/app_config.dart';
 import 'package:gwc_customer/widgets/constants.dart';
 import 'package:gwc_customer/widgets/unfocus_widget.dart';
 import 'package:gwc_customer/widgets/widgets.dart';
@@ -28,7 +29,6 @@ import '../../repository/evaluation_form_repository/evanluation_form_repo.dart';
 import '../../repository/profile_repository/get_user_profile_repo.dart';
 import '../../services/evaluation_fome_service/evaluation_form_service.dart';
 import '../../services/profile_screen_service/user_profile_service.dart';
-import '../../utils/app_config.dart';
 import '../dashboard_screen.dart';
 import 'new_user/choose_your_problem_screen.dart';
 import 'package:gwc_customer/widgets/dart_extensions.dart';
@@ -157,7 +157,7 @@ class _ExistingUserState extends State<ExistingUser> {
                     ),
                 child: Center(
                   child: Image(
-                    fit: BoxFit.fitWidth,
+                    fit: BoxFit.fill,
                     height: 15.h,
                     width: 80.w,
                     image: const AssetImage(
@@ -526,264 +526,207 @@ class _ExistingUserState extends State<ExistingUser> {
         borderRadius: BorderRadius.circular(5),
       ),
     );
-    return showModalBottomSheet(
-      isScrollControlled: false,
-      isDismissible: false,
-      enableDrag: false,
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(30),
+
+    return AppConfig().showSheet(context, Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Center(
+          child: Text("SECURE WITH PIN OR\nVERIFY YOUR PHONE NUMBER",
+            style: TextStyle(
+                fontSize: bottomSheetHeadingFontSize,
+                fontFamily: bottomSheetHeadingFontFamily,
+                height: 1.4
+            ),
+            textAlign: TextAlign.center,
+          ),
         ),
-      ),
-      builder: (BuildContext context) => StatefulBuilder(
-          builder: (BuildContext context, StateSetter bottomsheetSetState) {
-            Future.delayed(Duration.zero).whenComplete(() {
-              startTimer(bottomsheetSetState);
-            });
-            return SizedBox(
-          height: bottomSheetHeight(),
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 1.h),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 15),
+          child: Divider(
+            color: kLineColor,
+            thickness: 1.2,
+          ),
+        ),
+        Visibility(
+            visible: otpSent, child: SizedBox(height: 1.h)),
+        Visibility(
+          visible: otpSent,
+          child: Text(
+            otpMessage,
+            style: TextStyle(
+                fontFamily: kFontMedium,
+                color: gPrimaryColor,
+                fontSize: 8.5.sp),
+          ),
+        ),
+        SizedBox(height: 5.h),
+        Center(
+          child: Pinput(
+            controller: otpController,
+            length: 6,
+            focusNode: focusNode,
+            androidSmsAutofillMethod:
+            AndroidSmsAutofillMethod.smsUserConsentApi,
+            listenForMultipleSmsOnAndroid: true,
+            defaultPinTheme: defaultPinTheme,
+            validator: (value) {
+              return value == otpController.text
+                  ? null
+                  : 'Pin is incorrect';
+            },
+            // onClipboardFound: (value) {
+            //   debugPrint('onClipboardFound: $value');
+            //   pinController.setText(value);
+            // },
+            hapticFeedbackType: HapticFeedbackType.lightImpact,
+            onCompleted: (pin) {
+              debugPrint('onCompleted: $pin');
+            },
+            onChanged: (value) {
+              debugPrint('onChanged: $value');
+            },
+            cursor: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                SizedBox(height: 1.h),
-                Center(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Expanded(
-                        child: Center(
-                          child: Text(
-                            'Enter your OTP',
-                            style: TextStyle(
-                                fontFamily: eUser().mainHeadingFont,
-                                fontSize: eUser().mainHeadingFontSize,
-                                color: eUser().mainHeadingColor),
-                          ),
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          if(_timer != null) _timer!.cancel();
-                          Navigator.pop(context);
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(1),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(30),
-                            border: Border.all(
-                                color: eUser().mainHeadingColor, width: 1),
-                          ),
-                          child: Icon(
-                            Icons.clear,
-                            color: eUser().mainHeadingColor,
-                            size: 1.6.h,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 5)
-                    ],
-                  ),
-                ),
                 Container(
-                  margin: EdgeInsets.symmetric(vertical: 1.h, horizontal: 10.w),
+                  margin: const EdgeInsets.only(bottom: 9),
+                  width: 22,
                   height: 1,
-                  color: eUser().mainHeadingColor.withOpacity(0.3),
-                ),
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Visibility(
-                            visible: otpSent, child: SizedBox(height: 1.h)),
-                        Visibility(
-                          visible: otpSent,
-                          child: Text(
-                            otpMessage,
-                            style: TextStyle(
-                                fontFamily: "GothamMedium",
-                                color: gPrimaryColor,
-                                fontSize: 8.5.sp),
-                          ),
-                        ),
-                        SizedBox(height: 5.h),
-                        Center(
-                          child: Pinput(
-                            controller: otpController,
-                            length: 6,
-                            focusNode: focusNode,
-                            androidSmsAutofillMethod:
-                                AndroidSmsAutofillMethod.smsUserConsentApi,
-                            listenForMultipleSmsOnAndroid: true,
-                            defaultPinTheme: defaultPinTheme,
-                            validator: (value) {
-                              return value == otpController.text
-                                  ? null
-                                  : 'Pin is incorrect';
-                            },
-                            // onClipboardFound: (value) {
-                            //   debugPrint('onClipboardFound: $value');
-                            //   pinController.setText(value);
-                            // },
-                            hapticFeedbackType: HapticFeedbackType.lightImpact,
-                            onCompleted: (pin) {
-                              debugPrint('onCompleted: $pin');
-                            },
-                            onChanged: (value) {
-                              debugPrint('onChanged: $value');
-                            },
-                            cursor: Column(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                Container(
-                                  margin: const EdgeInsets.only(bottom: 9),
-                                  width: 22,
-                                  height: 1,
-                                  color: eUser().loginDummyTextColor,
-                                ),
-                              ],
-                            ),
-                            // focusedPinTheme: defaultPinTheme.copyWith(
-                            //   decoration: defaultPinTheme.decoration!.copyWith(
-                            //     borderRadius: BorderRadius.circular(8),
-                            //     border: Border.all(color: gPrimaryColor),
-                            //   ),
-                            // ),
-                            // submittedPinTheme: defaultPinTheme.copyWith(
-                            //   decoration: defaultPinTheme.decoration!.copyWith(
-                            //     color: gGreyColor,
-                            //     borderRadius: BorderRadius.circular(19),
-                            //     border: Border.all(color: gPrimaryColor),
-                            //   ),
-                            // ),
-                            // errorPinTheme: defaultPinTheme.copyBorderWith(
-                            //   border: Border.all(color: Colors.redAccent),
-                            // ),
-                          ),
-                        ),
-                        SizedBox(height: 3.h),
-                        Visibility(
-                          visible: _resendTimer != 0,
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(
-                                Icons.timelapse_rounded,
-                                size: 12,
-                              ),
-                              SizedBox(width: 1.w),
-                              Text(_resendTimer.toString(),
-                                  style: TextStyle(
-                                    fontFamily: eUser().resendOtpFont,
-                                    color: eUser().resendOtpFontColor,
-                                    fontSize: eUser().resendOtpFontSize,
-                                  )),
-                            ],
-                          ),
-                        ),
-                        SizedBox(height: 3.h),
-                        Center(
-                          child: Text(
-                            "Didn't receive an OTP?",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              decorationThickness: 3,
-                              // decoration: TextDecoration.underline,
-                              fontFamily: eUser().resendOtpFont,
-                              color: (_resendTimer != 0 || !enableResendOtp)
-                                  ? eUser().userTextFieldHintColor
-                                  : eUser().resendOtpFontColor,
-                              fontSize: eUser().userTextFieldFontSize,
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 2.h),
-                        Center(
-                          child: GestureDetector(
-                            onTap: (_resendTimer != 0 || !enableResendOtp)
-                                ? null
-                                : () {
-                                    getOtp(phoneController.text);
-                                    // Navigator.push(context, MaterialPageRoute(builder: (_) => ResendOtpScreen()));
-                                  },
-                            child: Text(
-                              "Resend OTP",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                decorationThickness: 3,
-                                decoration: TextDecoration.underline,
-                                fontFamily: eUser().userFieldLabelFont,
-                                color: (_resendTimer != 0 || !enableResendOtp)
-                                    ? eUser().userTextFieldHintColor
-                                    : eUser().resendOtpFontColor,
-                                fontSize: eUser().userTextFieldFontSize,
-                              ),
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 3.h),
-                        Center(
-                          child: GestureDetector(
-                            // onTap: (showLoginProgress) ? null : () {
-                            onTap: () {
-                              if (mobileFormKey.currentState!.validate() &&
-                                  phoneController.text.isNotEmpty &&
-                                  otpController.text.isNotEmpty) {
-                                login(phoneController.text, otpController.text);
-                              }
-                            },
-                            child: Container(
-                              width: 60.w,
-                              height: 5.h,
-                              margin: EdgeInsets.symmetric(vertical: 4.h),
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 1.h, horizontal: 10.w),
-                              decoration: BoxDecoration(
-                                color: (phoneController.text.isEmpty ||
-                                        otpController.text.isEmpty)
-                                    ? eUser().buttonColor
-                                    : eUser().buttonColor,
-                                borderRadius: BorderRadius.circular(10),
-                                // border: Border.all(
-                                //     color: eUser().buttonBorderColor,
-                                //     width: eUser().buttonBorderWidth
-                                // ),
-                              ),
-                              child: (showLoginProgress)
-                                  ? buildThreeBounceIndicator(
-                                      color: eUser().threeBounceIndicatorColor)
-                                  : Center(
-                                      child: Text(
-                                        'LOGIN',
-                                        style: TextStyle(
-                                          fontFamily: eUser().buttonTextFont,
-                                          color: (phoneController
-                                                      .text.isEmpty ||
-                                                  otpController.text.isEmpty)
-                                              ? eUser().buttonTextColor
-                                              : eUser().buttonTextColor,
-                                          fontSize: eUser().buttonTextSize,
-                                        ),
-                                      ),
-                                    ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  color: eUser().loginDummyTextColor,
                 ),
               ],
             ),
+            // focusedPinTheme: defaultPinTheme.copyWith(
+            //   decoration: defaultPinTheme.decoration!.copyWith(
+            //     borderRadius: BorderRadius.circular(8),
+            //     border: Border.all(color: gPrimaryColor),
+            //   ),
+            // ),
+            // submittedPinTheme: defaultPinTheme.copyWith(
+            //   decoration: defaultPinTheme.decoration!.copyWith(
+            //     color: gGreyColor,
+            //     borderRadius: BorderRadius.circular(19),
+            //     border: Border.all(color: gPrimaryColor),
+            //   ),
+            // ),
+            // errorPinTheme: defaultPinTheme.copyBorderWith(
+            //   border: Border.all(color: Colors.redAccent),
+            // ),
           ),
-        );
-      }),
-    );
+        ),
+        SizedBox(height: 3.h),
+        Visibility(
+          visible: _resendTimer != 0,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.timelapse_rounded,
+                size: 12,
+              ),
+              SizedBox(width: 1.w),
+              Text(_resendTimer.toString(),
+                  style: TextStyle(
+                    fontFamily: eUser().resendOtpFont,
+                    color: eUser().resendOtpFontColor,
+                    fontSize: eUser().resendOtpFontSize,
+                  )),
+            ],
+          ),
+        ),
+        SizedBox(height: 3.h),
+        Center(
+          child: Text(
+            "Didn't receive an OTP?",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              decorationThickness: 3,
+              // decoration: TextDecoration.underline,
+              fontFamily: eUser().resendOtpFont,
+              color: (_resendTimer != 0 || !enableResendOtp)
+                  ? eUser().userTextFieldHintColor
+                  : eUser().resendOtpFontColor,
+              fontSize: eUser().userTextFieldFontSize,
+            ),
+          ),
+        ),
+        SizedBox(height: 2.h),
+        Center(
+          child: GestureDetector(
+            onTap: (_resendTimer != 0 || !enableResendOtp)
+                ? null
+                : () {
+              getOtp(phoneController.text);
+              // Navigator.push(context, MaterialPageRoute(builder: (_) => ResendOtpScreen()));
+            },
+            child: Text(
+              "Resend OTP",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                decorationThickness: 3,
+                decoration: TextDecoration.underline,
+                fontFamily: eUser().userFieldLabelFont,
+                color: (_resendTimer != 0 || !enableResendOtp)
+                    ? eUser().userTextFieldHintColor
+                    : eUser().resendOtpFontColor,
+                fontSize: eUser().userTextFieldFontSize,
+              ),
+            ),
+          ),
+        ),
+        SizedBox(height: 3.h),
+        Center(
+          child: GestureDetector(
+            // onTap: (showLoginProgress) ? null : () {
+            onTap: () {
+              if (mobileFormKey.currentState!.validate() &&
+                  phoneController.text.isNotEmpty &&
+                  otpController.text.isNotEmpty) {
+                login(phoneController.text, otpController.text);
+              }
+            },
+            child: Container(
+              width: 60.w,
+              height: 5.h,
+              margin: EdgeInsets.symmetric(vertical: 4.h),
+              padding: EdgeInsets.symmetric(
+                  vertical: 1.h, horizontal: 10.w),
+              decoration: BoxDecoration(
+                color: (phoneController.text.isEmpty ||
+                    otpController.text.isEmpty)
+                    ? eUser().buttonColor
+                    : eUser().buttonColor,
+                borderRadius: BorderRadius.circular(10),
+                // border: Border.all(
+                //     color: eUser().buttonBorderColor,
+                //     width: eUser().buttonBorderWidth
+                // ),
+              ),
+              child: (showLoginProgress)
+                  ? buildThreeBounceIndicator(
+                  color: eUser().threeBounceIndicatorColor)
+                  : Center(
+                child: Text(
+                  'LOGIN',
+                  style: TextStyle(
+                    fontFamily: eUser().buttonTextFont,
+                    color: (phoneController
+                        .text.isEmpty ||
+                        otpController.text.isEmpty)
+                        ? eUser().buttonTextColor
+                        : eUser().buttonTextColor,
+                    fontSize: eUser().buttonTextSize,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    ), bottomSheetHeight: 65.h);
   }
+
 
   final LoginOtpRepository repository = LoginOtpRepository(
     apiClient: ApiClient(
@@ -937,4 +880,5 @@ class _ExistingUserState extends State<ExistingUser> {
       print("model1. after: ${_pref.getString(AppConfig.QB_CURRENT_USERID)}");
     }
   }
+
 }

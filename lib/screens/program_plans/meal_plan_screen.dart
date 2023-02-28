@@ -24,6 +24,7 @@ import 'package:readmore/readmore.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:sizer/sizer.dart';
 import 'package:get/get.dart';
+import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import '../../model/program_model/meal_plan_details_model/child_meal_plan_details_model.dart';
 import '../../model/program_model/meal_plan_details_model/meal_plan_details_model.dart';
 import '../../repository/api_service.dart';
@@ -191,7 +192,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
             setState(() {
               isOpened = true;
             });
-            buildDayCompleted();
+            buildDayCompletedClap();
           }
         });
       }
@@ -303,6 +304,70 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
         );
       },
     );
+  }
+
+  buildDayCompletedClap() {
+    return AppConfig().showSheet(
+        context,
+        Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(5),
+                border: Border.all(color: gMainColor),
+              ),
+              child: Lottie.asset(
+                "assets/lottie/clap.json",
+                height: 20.h,
+              ),
+            ),
+            SizedBox(height: 1.5.h),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 3.w),
+              child: Text(
+                "You Have completed the ${listData.length} days Meal Plan, Now you can proceed",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  height: 1.2,
+                  color: gTextColor,
+                  fontSize: bottomSheetSubHeadingXLFontSize,
+                  fontFamily: bottomSheetSubHeadingMediumFont,
+                ),
+              ),
+            ),
+            SizedBox(height: 5.h),
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  isOpened = true;
+                });
+                Future.delayed(Duration(seconds: 0)).whenComplete(() {
+                  openProgressDialog(context);
+                });
+                startPostProgram();
+              },
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 10.w),
+                decoration: BoxDecoration(
+                  color: gsecondaryColor,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: gMainColor, width: 1),
+                ),
+                child: Text(
+                  'Next',
+                  style: TextStyle(
+                    fontFamily: kFontMedium,
+                    color: gWhiteColor,
+                    fontSize: 11.sp,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+        circleIcon: bsHeadPinIcon,
+        bottomSheetHeight: 60.h);
   }
 
   startPostProgram() async {
@@ -706,7 +771,10 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                         ),
                       ),
                       SizedBox(
-                        height: 7.h,
+                        width: 10,
+                      ),
+                      SizedBox(
+                        height: 6.h,
                         child: const Image(
                           image:
                               AssetImage("assets/images/Gut welness logo.png"),
@@ -766,13 +834,44 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                         onPressed: () {
                           if (planNotePdfLink != null ||
                               planNotePdfLink!.isNotEmpty) {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (ctx) => MealPdf(
-                                          pdfLink: planNotePdfLink!,
-                                          heading: "Note",
-                                        )));
+                            AppConfig().showSheet(context, Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Center(
+                                  child: Text("Want to know more about the program? Please read",
+                                    style: TextStyle(
+                                        fontSize: bottomSheetHeadingFontSize,
+                                        fontFamily: bottomSheetHeadingFontFamily,
+                                        height: 1.4
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                                const Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 15),
+                                  child: Divider(
+                                    color: kLineColor,
+                                    thickness: 1.2,
+                                  ),
+                                ),
+                                Expanded(child: SfPdfViewer.network(
+                                    planNotePdfLink!
+                                ),),
+                                SizedBox(
+                                  height: 3.h,
+                                )
+                              ],
+                            ),
+                                bottomSheetHeight: 85.h, circleIcon: bsHeadBulbIcon, topColor: kBottomSheetHeadGreen);
+                            // Navigator.push(
+                            //     context,
+                            //     MaterialPageRoute(
+                            //         builder: (ctx) => MealPdf(
+                            //               pdfLink: planNotePdfLink!,
+                            //               heading: "Note",
+                            //             )));
                           } else {
                             AppConfig().showSnackbar(
                                 context, "Note Link Not available",
@@ -1369,67 +1468,6 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                               Stack(
                                 clipBehavior: Clip.none,
                                 children: [
-                                  // Tooltip(
-                                  //   onTriggered: e.url == null
-                                  //       ? null
-                                  //       : e.type == 'item'
-                                  //           ? () => showPdf(e.url!, e.name)
-                                  //           : () => showVideo(e),
-                                  //   message: 'Tap here for Recipe',
-                                  //   decoration: BoxDecoration(
-                                  //     borderRadius: BorderRadius.circular(6),
-                                  //     color: gsecondaryColor,
-                                  //   ),
-                                  //   textStyle: const TextStyle(
-                                  //       fontSize: 24, color: Colors.white),
-                                  //   height: 100,
-                                  //   padding: const EdgeInsets.all(50.0),
-                                  //   preferBelow: false,
-                                  //   key: GlobalKey<TooltipState>(),
-                                  //   showDuration: const Duration(seconds: 1),
-                                  //   waitDuration: const Duration(seconds: 2),
-                                  //   child: Align(
-                                  //     alignment: Alignment.center,
-                                  //     child: GestureDetector(
-                                  //       onTap: () {
-                                  //         GlobalKey<TooltipState>().currentState
-                                  //             ?.ensureTooltipVisible();
-                                  //       },
-                                  //       child: Container(
-                                  //         height: 90,
-                                  //         width: 90,
-                                  //         decoration: BoxDecoration(
-                                  //           borderRadius:
-                                  //               BorderRadius.circular(15),
-                                  //         ),
-                                  //         child: (e.itemImage != null &&
-                                  //                 e.itemImage!.isNotEmpty)
-                                  //             ? ClipRRect(
-                                  //                 borderRadius:
-                                  //                     BorderRadius.circular(15),
-                                  //                 child: Image.network(
-                                  //                   e.itemImage!,
-                                  //                   errorBuilder: (ctx, _, __) {
-                                  //                     return Image.asset(
-                                  //                       'assets/images/meal_placeholder.png',
-                                  //                       fit: BoxFit.fill,
-                                  //                     );
-                                  //                   },
-                                  //                   fit: BoxFit.fill,
-                                  //                 ),
-                                  //               )
-                                  //             : ClipRRect(
-                                  //                 borderRadius:
-                                  //                     BorderRadius.circular(15),
-                                  //                 child: Image.asset(
-                                  //                   'assets/images/meal_placeholder.png',
-                                  //                   fit: BoxFit.fill,
-                                  //                 ),
-                                  //               ),
-                                  //       ),
-                                  //     ),
-                                  //   ),
-                                  // ),
                                   (value.indexOf(e) == 0) &&
                                           mealPlanData1.values
                                                   .toList()
@@ -1637,23 +1675,24 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                                       return element.name == e.name;
                                     }),
                                   );
-                                  openAlertBox(
-                                      title: 'Did you Follow this?',
-                                      titleNeeded: true,
-                                      context: context,
-                                      isContentNeeded: false,
-                                      positiveButtonName: 'Followed',
-                                      positiveButton: () {
-                                        onChangedTab(0,
-                                            id: e.itemId, title: list[0]);
-                                        Navigator.pop(context);
-                                      },
-                                      negativeButtonName: 'Missed It',
-                                      negativeButton: () {
-                                        onChangedTab(0,
-                                            id: e.itemId, title: list[1]);
-                                        Navigator.pop(context);
-                                      });
+                                  showFollowSheet(e);
+                                  // openAlertBox(
+                                  //     title: 'Did you Follow this?',
+                                  //     titleNeeded: true,
+                                  //     context: context,
+                                  //     isContentNeeded: false,
+                                  //     positiveButtonName: 'Followed',
+                                  //     positiveButton: () {
+                                  //       onChangedTab(0,
+                                  //           id: e.itemId, title: list[0]);
+                                  //       Navigator.pop(context);
+                                  //     },
+                                  //     negativeButtonName: 'Missed It',
+                                  //     negativeButton: () {
+                                  //       onChangedTab(0,
+                                  //           id: e.itemId, title: list[1]);
+                                  //       Navigator.pop(context);
+                                  //     });
                                 },
                                 child: (statusList.isNotEmpty &&
                                         statusList.containsKey(e.itemId) &&
@@ -1751,6 +1790,104 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
       ));
     });
     return _data;
+  }
+
+  showFollowSheet(ChildMealPlanDetailsModel e) {
+    print("eeeee:$e");
+    return AppConfig().showSheet(context, showFollowWidget(e),
+        bottomSheetHeight: 45.h, circleIcon: bsHeadPinIcon);
+  }
+
+  showFollowWidget(ChildMealPlanDetailsModel e) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Center(
+          child: Text(
+            "Observe. Let's go!",
+            style: TextStyle(
+                fontSize: bottomSheetHeadingFontSize,
+                fontFamily: bottomSheetHeadingFontFamily,
+                color: gsecondaryColor,
+                height: 1.4),
+            textAlign: TextAlign.center,
+          ),
+        ),
+        SizedBox(height: 1.5.h),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 15),
+          child: Divider(
+            color: kLineColor,
+            thickness: 1.2,
+          ),
+        ),
+        SizedBox(height: 1.5.h),
+        Center(
+          child: Text(
+            "You ate it or you didn't. Tell us about it.",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: gTextColor,
+              fontSize: bottomSheetSubHeadingXFontSize,
+              fontFamily: bottomSheetSubHeadingMediumFont,
+            ),
+          ),
+        ),
+        SizedBox(height: 4.5.h),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            GestureDetector(
+              onTap: () {
+                onChangedTab(0, id: e.itemId, title: list[1]);
+                Navigator.pop(context);
+              },
+              child: Container(
+                padding:
+                    EdgeInsets.symmetric(vertical: 1.2.h, horizontal: 10.w),
+                decoration: BoxDecoration(
+                    color: gsecondaryColor,
+                    border: Border.all(color: kLineColor, width: 0.5),
+                    borderRadius: BorderRadius.circular(5)),
+                child: Text(
+                  "Missed",
+                  style: TextStyle(
+                    fontFamily: kFontMedium,
+                    color: gWhiteColor,
+                    fontSize: 11.sp,
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(width: 5.w),
+            GestureDetector(
+              onTap: () {
+                onChangedTab(0, id: e.itemId, title: list[0]);
+                Navigator.pop(context);
+              },
+              child: Container(
+                padding:
+                    EdgeInsets.symmetric(vertical: 1.2.h, horizontal: 10.w),
+                decoration: BoxDecoration(
+                    color: gPrimaryColor,
+                    border: Border.all(color: kLineColor, width: 0.5),
+                    borderRadius: BorderRadius.circular(5)),
+                child: Text(
+                  "Followed",
+                  style: TextStyle(
+                    fontFamily: kFontMedium,
+                    color: gWhiteColor,
+                    fontSize: 11.sp,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 1.h)
+      ],
+    );
   }
 
   showDataRow() {
@@ -2599,6 +2736,15 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
   }
 
   showSymptomsTrackerSheet(BuildContext context, ProceedProgramDayModel model) {
+    return AppConfig().showSheet(
+        context,
+        TrackerUI(
+          proceedProgramDayModel: model,
+          from: ProgramMealType.program.name,
+        ),
+        circleIcon: bsHeadPinIcon,
+        bottomSheetHeight: 90.h);
+
     return showModalBottomSheet(
         isDismissible: false,
         isScrollControlled: true,

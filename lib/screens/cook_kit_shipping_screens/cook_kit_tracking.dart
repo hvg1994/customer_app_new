@@ -47,7 +47,7 @@ class _CookKitTrackingState extends State<CookKitTracking>{
   String estimatedDay = '';
   String shipAddress = '';
 
-  int tabSize = 3;
+  int tabSize = 2;
 
   bool showShoppingLoading = false;
 
@@ -135,7 +135,6 @@ class _CookKitTrackingState extends State<CookKitTracking>{
               labelColor: gMainColor,
               unselectedLabelColor: gPrimaryColor,
               tabs: const  [
-                Tab(text: 'Prep Meal',),
                 Tab(text: 'Shipping',),
                 Tab(text: 'Shopping',),
               ],
@@ -144,7 +143,6 @@ class _CookKitTrackingState extends State<CookKitTracking>{
           Flexible(
               child: TabBarView(
                 children:  [
-                  PrepratoryPlanScreen(dayNumber: "1", totalDays: '1'),
                   (showTrackingProgress) ? buildCircularIndicator() : shipRocketUI(context),
                   (showShoppingLoading) ? buildCircularIndicator() : shoppingUi(),
                 ],

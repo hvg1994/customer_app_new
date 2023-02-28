@@ -177,29 +177,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   height: 1,
                   color: Colors.grey,
                 ),
-                profileTile("assets/images/Group 2744.png", "Logout", () {
-                  openAlertBox(
-                    context: context,
-                    titleNeeded: false,
-                    content: "Are you sure to Logout?",
-                    positiveButton: (){
-                      logOut();
-                    },
-                    positiveButtonName: "Logout",
-                    negativeButton: (){
-                      Navigator.pop(context);
-                    },
-                    negativeButtonName: "Cancel"
-                  );
-
-
-                  // _pref.setBool(AppConfig.isLogin, false);
-                  // _pref.remove(AppConfig().BEARER_TOKEN);
-                  // Navigator.of(context).pushReplacement(
-                  //     MaterialPageRoute(
-                  //       builder: (context) => const ExistingUser(),
-                  //     ));
-                }),
+                profileTile("assets/images/Group 2744.png", "Logout", ()=> AppConfig().showSheet(context, logoutWidget(), bottomSheetHeight: 45.h)),
                 Container(
                   height: 1,
                   color: Colors.grey,
@@ -303,5 +281,89 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
 
   }
+
+  logoutWidget(){
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Center(
+          child: Text("We will miss you.",
+            style: TextStyle(
+                fontSize: bottomSheetHeadingFontSize,
+                fontFamily: bottomSheetHeadingFontFamily,
+                height: 1.4
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 15),
+          child: Divider(
+            color: kLineColor,
+            thickness: 1.2,
+          ),
+        ),
+        Center(
+          child: Text(
+            'Do you really want to logout?',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: gTextColor,
+              fontSize: bottomSheetSubHeadingXFontSize,
+              fontFamily: bottomSheetSubHeadingMediumFont,
+            ),
+          ),
+        ),
+        SizedBox(height: 3.h),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            GestureDetector(
+              onTap: () => logOut(),
+              child: Container(
+                padding: EdgeInsets.symmetric(
+                    vertical: 1.h, horizontal: 12.w),
+                decoration: BoxDecoration(
+                    color: gsecondaryColor,
+                    border: Border.all(color: kLineColor, width: 0.5),
+                    borderRadius: BorderRadius.circular(5)),
+                child: Text(
+                  "YES",
+                  style: TextStyle(
+                    fontFamily: kFontMedium,
+                    color: gWhiteColor,
+                    fontSize: 11.sp,
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(width: 5.w),
+            GestureDetector(
+              onTap: () => Navigator.pop(context),
+              child: Container(
+                padding: EdgeInsets.symmetric(
+                    vertical: 1.h, horizontal: 12.w),
+                decoration: BoxDecoration(
+                    color: gWhiteColor,
+                    border: Border.all(color: kLineColor, width: 0.5),
+                    borderRadius: BorderRadius.circular(5)),
+                child: Text(
+                  "NO",
+                  style: TextStyle(
+                    fontFamily: kFontMedium,
+                    color: gsecondaryColor,
+                    fontSize: 11.sp,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 1.h)
+      ],
+    );
+  }
+
 
 }

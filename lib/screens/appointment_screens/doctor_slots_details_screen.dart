@@ -1,4 +1,5 @@
 // ignore_for_file: deprecated_member_use
+import 'package:gwc_customer/model/consultation_model/appointment_booking/child_doctor_model.dart';
 import 'package:intl/intl.dart';
 import 'dart:async';
 import 'dart:io';
@@ -32,6 +33,7 @@ class DoctorSlotsDetailsScreen extends StatefulWidget {
   final AppointmentBookingModel? data;
   final String bookingDate;
   final String bookingTime;
+
   /// this parameter will be called from gutlist screen
   final bool isFromDashboard;
   /// this parameter will be called from gutlist screen
@@ -65,6 +67,11 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
   String accessToken = '';
   String kaleyraUID = "";
 
+  /// this is used when we come from dashboard
+  ChildDoctorModel? _childDoctorModel;
+  String? doctorName;
+
+
   @override
   void initState() {
     // TODO: implement initState
@@ -80,6 +87,8 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
       widget.data?.team?.teamMember?.forEach((element) {
         if(element.user!.roleId == "2"){
           doctorNames.add('Dr. ${element.user!.name}' ?? '');
+          doctorName = 'Dr. ${element.user!.name}';
+
         }
       });
       if(widget.data?.kaleyraSuccessId != null){
@@ -96,17 +105,41 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
     }
     ChildAppointmentDetails? model;
     if(widget.isFromDashboard || widget.isPostProgram){
-      model = ChildAppointmentDetails.fromJson(Map.from(widget.dashboardValueMap!));
-      // print("moddd: ${model.teamPatients!.team!.toJson()}");
-      model.teamMember?.forEach((element) {
-        print('from appoi: ${element.toJson()}');
-        if(element.user!.roleId == "2"){
-          doctorNames.add('Dr. ${element.user!.name}' ?? '');
+      if(widget.isPostProgram){
+        widget.data?.team?.teamMember?.forEach((element) {
+          if(element.user!.roleId == "2"){
+            doctorNames.add('Dr. ${element.user!.name}' ?? '');
+            doctorName = 'Dr. ${element.user!.name}';
+
+          }
+        });
+        if(widget.data?.kaleyraSuccessId != null){
+
         }
-      });
-      if(model.teamPatients?.patient?.user?.kaleyraId != null){
-        String kaleyraUID = model.teamPatients!.patient!.user!.kaleyraId ?? '';
-        getAccessToken(kaleyraUID);
+        if(widget.data?.kaleyraUserId != null){
+          kaleyraUID = widget.data?.kaleyraUserId ?? '';
+          getAccessToken(kaleyraUID);
+        }
+        else if(_pref!.getString(AppConfig.KALEYRA_USER_ID) != null){
+          kaleyraUID = _pref?.getString(AppConfig.KALEYRA_USER_ID) ?? '';
+          getAccessToken(kaleyraUID);
+        }
+      }
+      else{
+        model = ChildAppointmentDetails.fromJson(Map.from(widget.dashboardValueMap!));
+        _childDoctorModel = model.doctor;
+        // print("moddd: ${model.teamPatients!.team!.toJson()}");
+        model.teamMember?.forEach((element) {
+          print('from appoi: ${element.toJson()}');
+          if(element.user!.roleId == "2"){
+            doctorNames.add('Dr. ${element.user!.name}' ?? '');
+            doctorName = 'Dr. ${element.user!.name}';
+          }
+        });
+        if(model.teamPatients?.patient?.user?.kaleyraId != null){
+          String kaleyraUID = model.teamPatients!.patient!.user!.kaleyraId ?? '';
+          getAccessToken(kaleyraUID);
+        }
       }
     }
   }
@@ -350,10 +383,10 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
                                     print(curTime.difference(res));
                                     print(res.difference(curTime));
 
-                                    if(res.difference(curTime).inMinutes > 5){
-                                      showJoinPopup();
-                                    }
-                                    else{
+                                    // if(res.difference(curTime).inMinutes > 5){
+                                    //   showJoinPopup();
+                                    // }
+                                    // else{
 
                                       ChildAppointmentDetails? model;
                                       if(widget.isFromDashboard || widget.isPostProgram){
@@ -375,7 +408,7 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
                                       else{
                                         AppConfig().showSnackbar(context, "Uid/accessToken/join url not found");
                                       }
-                                    }
+                                   // }
                                   },
                                   child: Container(
                                     width: 60.w,
@@ -413,6 +446,8 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
                                                   isReschedule: true,
                                                   prevBookingDate: widget.bookingDate,
                                                   prevBookingTime: widget.bookingTime,
+                                                  doctorName: doctorName,
+                                                  doctorDetails: (widget.isFromDashboard) ? _childDoctorModel : widget.data!.doctor,
                                                 )),
                                       );
                                     },

@@ -13,5 +13,10 @@ class GetUserScheduleSlotsForService{
     return await repository.getFollowUpSlotsScheduleRepo(selectedDate);
   }
 
+  Future submitSlotSelectedService(String selectedDate, String startTime, String endTime) async{
+    print("start: $startTime");
+    return await repository.submitSlotSelectedRepo(selectedDate, startTime, endTime);
+  }
+
 
 }

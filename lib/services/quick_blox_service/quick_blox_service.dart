@@ -85,7 +85,8 @@ class QuickBloxService extends ChangeNotifier{
   }
   getInstance(){
     if(_pref!.getString(AppConfig.QB_CURRENT_USERID) != null){
-      _localUserId = int.parse(_pref!.getString(AppConfig.QB_CURRENT_USERID)!);
+      print("_pref!.getString(AppConfig.QB_CURRENT_USERID): ${_pref!.getString(AppConfig.QB_CURRENT_USERID)}");
+      _localUserId = int.tryParse(_pref!.getString(AppConfig.QB_CURRENT_USERID)!);
     }
   }
 
@@ -139,6 +140,8 @@ class QuickBloxService extends ChangeNotifier{
 
       QBSession? _qbSession = result.qbSession;
       qbSession = _qbSession;
+      // QBSession? session = await QB.auth.startSessionWithToken(_qbSession!.token!);
+
       isLogin = true;
       _pref!.setBool(AppConfig.IS_QB_LOGIN, true);
       _pref!.setInt(AppConfig.GET_QB_SESSION, DateTime.parse(_qbSession!.expirationDate!).millisecondsSinceEpoch);
@@ -193,6 +196,13 @@ class QuickBloxService extends ChangeNotifier{
       // DialogUtils.showError(_scaffoldKey!.currentContext!, e);
     }
   }
+
+  // expired() async{
+  //   await QB.auth.subscribeAuthEvent(QBAuthEvents.SESSION_EXPIRED, (data) {
+  //     // handle session expired event
+  //     // login(userName)
+  //   });
+  // }
 
   isConnected() async {
     bool? connected;

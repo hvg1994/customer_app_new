@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 
 const gPrimaryColor = Color(0xff4E7215);
+
 // const gsecondaryColor = Color(0xffC10B02);
-const gsecondaryColor = Color(0xffD10034);
+// const gsecondaryColor = Color(0xffD10034);
+const gsecondaryColor = Color(0xffEE1004);
+
 const gMainColor = Color(0xffC7A102);
 const gGreyColor = Color(0xff707070);
 
@@ -32,12 +35,65 @@ const String kFontBook = 'GothamBook';
 const String kFontBold = 'GothamBold';
 
 
-const kButtonColor = Color(0xffD10034);
+// new dashboard colors
+const kNumberCircleRed = Color(0xffEF8484);
+const kNumberCirclePurple = Color(0xff9C7ADF);
+const kNumberCircleAmber = Color(0xffFFBD59);
+const kNumberCircleGreen = Color(0xffA7CB52);
+
+/// kBigCircleBorderYellow = F1F2F2
+const kBigCircleBg = Color(0xffF1F2F2);
+
+/// kBigCircleBorderRed : #EE1004
+const kBigCircleBorderRed = Color(0xffEE1004);
+/// kBigCircleBorderYellow : #FFD859
+const kBigCircleBorderYellow = Color(0xffFFD859);
+/// kBigCircleBorderGreen :  #4E7215
+const kBigCircleBorderGreen = Color(0xff4E7215);
+
+const newDashboardTrackingIcon = "assets/images/new_ds/track.png";
+const newDashboardMRIcon = "assets/images/new_ds/mr.png";
+const newDashboardLockIcon = "assets/images/new_ds/lock.png";
+const newDashboardUnLockIcon = "assets/images/new_ds/unlock.png";
+const newDashboardOpenIcon = "assets/images/new_ds/open.png";
+const newDashboardGMGIcon = "assets/images/new_ds/gmg.png";
+const newDashboardChatIcon = "assets/images/new_ds/chat.png";
+const newDashboardAppointmentIcon = "assets/images/new_ds/calender.png";
+
+
+// const kButtonColor = Color(0xffD10034);
+const kButtonColor = gsecondaryColor;
+
 
 /// tracker ui fonts
 double headingFont = 12.sp;
 double subHeadingFont = 10.sp;
 double questionFont = 10.sp;
+
+
+
+const kBottomSheetHeadYellow = Color(0xffFFE281);
+const kBottomSheetHeadGreen = Color(0xffA7C652);
+const kBottomSheetHeadCircleColor = Color(0xffFFF9F8);
+
+double bottomSheetHeadingFontSize = 12.sp;
+String bottomSheetHeadingFontFamily = kFontBold;
+
+double bottomSheetSubHeadingXLFontSize = 12.sp;
+double bottomSheetSubHeadingXFontSize = 11.sp;
+double bottomSheetSubHeadingSFontSize = 10.sp;
+String bottomSheetSubHeadingBoldFont = kFontBold;
+String bottomSheetSubHeadingMediumFont = kFontMedium;
+String bottomSheetSubHeadingBookFont = kFontBook;
+
+
+
+
+
+const bsHeadPinIcon = "assets/images/bs-head-pin.png";
+const bsHeadBellIcon = "assets/images/bs-head-bell.png";
+const bsHeadBulbIcon = "assets/images/bs-head-bulb.png";
+const bsHeadStarsIcon = "assets/images/bs-head-stars.png";
 
 
 // existing user
