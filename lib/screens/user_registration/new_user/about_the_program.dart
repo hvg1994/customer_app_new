@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_vlc_player/flutter_vlc_player.dart';
 import 'package:gwc_customer/model/error_model.dart';
@@ -32,6 +33,8 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
 
   double rating = 4.5;
   final pageController = PageController();
+  final reviewPageController = PageController();
+
 
   late AboutProgramService _aboutProgramService;
 
@@ -55,9 +58,10 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
   addUrlToVideoPlayer(String url){
     print("url"+ url);
     _videoPlayerController = VlcPlayerController.network(
+      Uri.parse(url).toString(),
       // url,
       // 'http://samples.mplayerhq.hu/MPEG-4/embedded_subs/1Video_2Audio_2SUBs_timed_text_streams_.mp4',
-      'https://media.w3.org/2010/05/sintel/trailer.mp4',
+      // 'https://media.w3.org/2010/05/sintel/trailer.mp4',
       hwAcc: HwAcc.auto,
       autoPlay: false,
       options: VlcPlayerOptions(
@@ -146,7 +150,7 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
                         AboutProgramModel _programModel = snapshot.data as AboutProgramModel;
                         ChildAboutProgramModel? _aboutProgramText = _programModel.data;
                         // #1
-                        String _programText = _aboutProgramText?.aboutProgram?.first ?? '';
+                        String aboutProgramPdf = _aboutProgramText?.aboutProgram?.aboutPdf ?? '';
                         // #2 video player
                         if(_aboutProgramText!.testimonial !=null){
                           String videoLink = _aboutProgramText.testimonial?.video ?? '';
@@ -154,9 +158,11 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
                         }
                         // #3 feedback List
                         List<FeedbackList> feedbackList = _aboutProgramText.feedbackList ?? [];
+                        List<String> reviewList = _aboutProgramText.reviewsList ?? [];
+
                         print("feedbackList: $feedbackList");
                         return SingleChildScrollView(
-                          physics: const BouncingScrollPhysics(),
+                          physics: const ClampingScrollPhysics(),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -172,14 +178,14 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
                               SizedBox(
                                 height: 2.h,
                               ),
-                              buildAboutProgramVideo(),
-                              SizedBox(height: 2.h),
+                              // buildAboutProgramVideo(),
+                              // SizedBox(height: 2.h),
                               Card(
                                 elevation: 7,
                                 child: SizedBox(
                                   height: 30.h,
-                                  child: SfPdfViewer.asset(
-                                      'assets/GWC Program Details.pdf',
+                                  child: SfPdfViewer.network(aboutProgramPdf,
+                                  // asset('assets/GWC Program Details.pdf',
                                     scrollDirection: PdfScrollDirection.horizontal,
                                   ),
                                 ),
@@ -230,7 +236,8 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
                               SizedBox(
                                 height: 2.h,
                               ),
-                              buildFeedback(feedbackList),
+                              // buildFeedback(feedbackList),
+                              buildReviews(reviewList),
                               SizedBox(height: 2.h),
                               Center(
                                 child: GestureDetector(
@@ -503,6 +510,60 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
     }
   }
 
+  buildReviews(List<String> reviewList) {
+    if(reviewList.isNotEmpty){
+      return Container(
+        padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 3.w),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(5),
+          border: Border.all(color: kLineColor, width: 1),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.3),
+              blurRadius: 20,
+              offset: const Offset(2, 10),
+            ),
+          ],
+        ),
+        child: Column(
+          children: [
+            SizedBox(
+              height: 20.h,
+              child: PageView(
+                  controller: reviewPageController,
+                  children: [
+                    ...reviewList.map((e) => buildReviewsList(e)).toList()
+                  ]
+                // [
+                //   buildFeedbackList(),
+                //   buildFeedbackList(),
+                //   buildFeedbackList(),
+                // ],
+              ),
+            ),
+            SmoothPageIndicator(
+              controller: reviewPageController,
+              count: reviewList.length,
+              axisDirection: Axis.horizontal,
+              effect: JumpingDotEffect(
+                dotColor: Colors.amberAccent,
+                activeDotColor: gsecondaryColor,
+                dotHeight: 1.h,
+                dotWidth: 2.w,
+                jumpScale: 2,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+    else{
+      return SizedBox.shrink();
+    }
+  }
+
+
   Widget buildRating(String starRating) {
     return SmoothStarRating(
       color: Colors.amber,
@@ -568,8 +629,7 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
           height: 10,
         ),
         Text(
-          feedback.feedback ??
-              'Lorem lpsum is simply dummy text of the printing and typesetting industry. Lorem lpsum has been the industry\'s standard dummy text ever since the 1500s,when an unknown printer took a gallery of type and scrambled it to make a type specimen book.',
+          feedback.feedback ?? '',
           style: TextStyle(
             height: 1.5,
             fontFamily: kFontBook,
@@ -581,6 +641,17 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
       ],
     );
   }
+
+  buildReviewsList(String  image) {
+    return Container(
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: CachedNetworkImageProvider(image,)
+        )
+      ),
+    );
+  }
+
 
   final AboutProgramRepository repository = AboutProgramRepository(
     apiClient: ApiClient(

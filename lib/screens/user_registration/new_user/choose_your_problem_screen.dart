@@ -99,7 +99,7 @@ class _ChooseYourProblemScreenState extends State<ChooseYourProblemScreen> {
         backgroundColor: gBackgroundColor,
         body: Padding(
           padding:
-              EdgeInsets.only(left: 4.w, right: 4.w, top: 2.h, bottom: 1.h),
+          EdgeInsets.only(left: 4.w, right: 4.w, top: 2.h, bottom: 1.h),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -123,43 +123,9 @@ class _ChooseYourProblemScreenState extends State<ChooseYourProblemScreen> {
                 height: 2.5.h,
               ),
               Expanded(
+                flex: 4,
                 child: buildChooseProblem(),
               ),
-              Center(
-                      child: GestureDetector(
-                        onTap: selectedProblems.isEmpty && otherController.text.isEmpty ? (){
-                          print(otherController.text.isEmpty);
-                          AppConfig().showSnackbar(context, "Please Select/Mention your Problem");
-                        } : () {
-                          submitProblems();
-                        },
-                        child: Container(
-                          width: 40.w,
-                          height: 5.h,
-                          // padding: EdgeInsets.symmetric(
-                          //     vertical: 1.h, horizontal: 15.w),
-                          decoration: BoxDecoration(
-                            color: selectedProblems.isEmpty ? eUser().buttonColor : eUser().buttonColor,
-                            borderRadius: BorderRadius.circular(eUser().buttonBorderRadius),
-                            border: Border.all(
-                                color: eUser().buttonBorderColor,
-                                width: eUser().buttonBorderWidth
-                            ),
-                          ),
-                          child: (isLoading) ? buildThreeBounceIndicator(color: eUser().threeBounceIndicatorColor)
-                              : Center(
-                                child: Text(
-                            'Next',
-                            style: TextStyle(
-                                fontFamily: eUser().buttonTextFont,
-                                color: selectedProblems.isEmpty ? eUser().buttonTextColor : eUser().buttonTextColor,
-                                fontSize: eUser().buttonTextSize,
-                            ),
-                          ),
-                              ),
-                        ),
-                      ),
-                    ),
             ],
           ),
         ),
@@ -177,107 +143,98 @@ class _ChooseYourProblemScreenState extends State<ChooseYourProblemScreen> {
               List<ChildChooseProblemModel>? problemList = model.data;
               return Column(
                 children: [
-                  Expanded(
-                    child: GridView.builder(
-                        scrollDirection: Axis.vertical,
-                        physics: const ScrollPhysics(),
-                        shrinkWrap: true,
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 4,
-                          crossAxisSpacing: 5.0,
-                          mainAxisSpacing: 6.8,
-                          // childAspectRatio: MediaQuery.of(context).size.width /
-                          //     (MediaQuery.of(context).size.height / 1.4),
-                        ),
-                        // gridDelegate:SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4),
-                        itemCount: problemList?.length ?? 0,
-                        itemBuilder: (context, index) {
-                          return InkWell(
-                            onTap: () {
-                              print("Problem: ${problemList?[index].name}");
-                              buildChooseProblemOnClick(problemList![index]);
-                            },
-                            child: Container(
-                              // margin: EdgeInsets.symmetric(horizontal: 2, vertical: 2),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(5),
-                                border: Border.all(
-                                    color: eUser().buttonBorderColor,
-                                    width: eUser().buttonBorderWidth
-                                ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.withOpacity(0.3),
-                                    blurRadius: 5,
-                                    offset: const Offset(2, 5),
+                  Flexible(
+                      child: GridView.builder(
+                          scrollDirection: Axis.vertical,
+                          physics: const ScrollPhysics(),
+                          shrinkWrap: true,
+                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 4,
+                            crossAxisSpacing: 5.0,
+                            mainAxisSpacing: 6.8,
+                            // childAspectRatio: MediaQuery.of(context).size.width /
+                            //     (MediaQuery.of(context).size.height / 1.4),
+                          ),
+                          // gridDelegate:SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4),
+                          itemCount: problemList?.length ?? 0,
+                          itemBuilder: (context, index) {
+                            return InkWell(
+                              onTap: () {
+                                print("Problem: ${problemList?[index].name}");
+                                buildChooseProblemOnClick(problemList![index]);
+                              },
+                              child: Container(
+                                // margin: EdgeInsets.symmetric(horizontal: 2, vertical: 2),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(5),
+                                  border: Border.all(
+                                      color: eUser().buttonBorderColor,
+                                      width: eUser().buttonBorderWidth
                                   ),
-                                ],
-                                image: DecorationImage(
-                                    image: AssetImage("assets/images/Group 4855.png"),
-                                    fit: BoxFit.cover
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.withOpacity(0.3),
+                                      blurRadius: 5,
+                                      offset: const Offset(2, 5),
+                                    ),
+                                  ],
+                                  image: DecorationImage(
+                                      image: AssetImage("assets/images/Group 4855.png"),
+                                      fit: BoxFit.cover
+                                  ),
                                 ),
-                              ),
-                              child: Stack(
-                                children: [
-                                  Center(
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 5),
-                                      child: Column(
-                                        children: [
-                                          // SizedBox(height: 1.h),
-                                          Image(
-                                            height: 40,
-                                            width: 40,
-                                            image: NetworkImage(problemList?[index].image ?? ''),
-                                          ),
-                                          SizedBox(height: 1.5.h),
-                                          Expanded(
-                                            child: Text(
-                                              // 'Constipation Constipationdsd',
-                                              problemList?[index].name.toString() ?? '',
-                                              style: TextStyle(
-                                                fontFamily: kFontBold,
-                                                color: gTextColor,
-                                                fontSize: (problemList![index].name.toString().length > 10) ? 8.sp : 9.sp,
+                                child: Stack(
+                                  children: [
+                                    Center(
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 5),
+                                        child: Column(
+                                          children: [
+                                            // SizedBox(height: 1.h),
+                                            Image(
+                                              height: 40,
+                                              width: 40,
+                                              image: NetworkImage(problemList?[index].image ?? ''),
+                                            ),
+                                            SizedBox(height: 1.5.h),
+                                            Expanded(
+                                              child: Text(
+                                                // 'Constipation Constipationdsd',
+                                                problemList?[index].name.toString() ?? '',
+                                                style: TextStyle(
+                                                  fontFamily: kFontBold,
+                                                  color: gTextColor,
+                                                  fontSize: (problemList![index].name.toString().length > 10) ? 8.sp : 9.sp,
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                          SizedBox(height: 1.h),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  Positioned(
-                                    top: 10,
-                                    left: 10,
-                                    child: Visibility(
-                                      visible: selectedProblems.contains(problemList?[index].id),
-                                      child:  Align(
-                                        alignment: Alignment.topLeft,
-                                        child: Icon(
-                                          Icons.check_circle,
-                                          color: gMainColor,
-                                          size: 20,
+                                            SizedBox(height: 1.h),
+                                          ],
                                         ),
                                       ),
                                     ),
-                                  )
-                                ],
+                                    Positioned(
+                                      top: 10,
+                                      left: 10,
+                                      child: Visibility(
+                                        visible: selectedProblems.contains(problemList?[index].id),
+                                        child:  Align(
+                                          alignment: Alignment.topLeft,
+                                          child: Icon(
+                                            Icons.check_circle,
+                                            color: gMainColor,
+                                            size: 20,
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                ),
                               ),
-                            ),
-                          );
-                        })
+                            );
+                          })
                   ),
-                  SizedBox(height: 1.h),
-                  // Text(
-                  //   "Mention Other Problems",
-                  //   style: TextStyle(
-                  //       fontFamily: eUser().userFieldLabelFont,
-                  //       fontSize: eUser().userFieldLabelFontSize,
-                  //       color: eUser().userFieldLabelColor
-                  //   ),
-                  // ),
-                  // SizedBox(height: 1.h),
+                  SizedBox(height: 5.h),
                   Container(
                     height: 15.h,
                     margin: EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.h),
@@ -316,7 +273,7 @@ class _ChooseYourProblemScreenState extends State<ChooseYourProblemScreen> {
                         // ),
                         hintMaxLines: 2,
                         hintText: "Additional comments",
-                        // "Pick one or more from the list above, or write to us about the underlying issue that brought you here.",
+                        // hintText: "Pick one or more from the list above, or write to us about the underlying issue that brought you here.",
                         border: InputBorder.none,
                         hintStyle: TextStyle(
                           fontFamily: eUser().userTextFieldHintFont,
@@ -329,7 +286,42 @@ class _ChooseYourProblemScreenState extends State<ChooseYourProblemScreen> {
                       keyboardType: TextInputType.emailAddress,
                     ),
                   ),
-                  SizedBox(height: 1.h),
+                  SizedBox(height: 4.h),
+                  Center(
+                    child: GestureDetector(
+                      onTap: selectedProblems.isEmpty && otherController.text.isEmpty ? (){
+                        print(otherController.text.isEmpty);
+                        AppConfig().showSnackbar(context, "Please Select/Mention your Problem");
+                      } : () {
+                        submitProblems();
+                      },
+                      child: Container(
+                        width: 40.w,
+                        height: 5.h,
+                        // padding: EdgeInsets.symmetric(
+                        //     vertical: 1.h, horizontal: 15.w),
+                        decoration: BoxDecoration(
+                          color: selectedProblems.isEmpty ? eUser().buttonColor : eUser().buttonColor,
+                          borderRadius: BorderRadius.circular(eUser().buttonBorderRadius),
+                          border: Border.all(
+                              color: eUser().buttonBorderColor,
+                              width: eUser().buttonBorderWidth
+                          ),
+                        ),
+                        child: (isLoading) ? buildThreeBounceIndicator(color: eUser().threeBounceIndicatorColor)
+                            : Center(
+                          child: Text(
+                            'Next',
+                            style: TextStyle(
+                              fontFamily: eUser().buttonTextFont,
+                              color: selectedProblems.isEmpty ? eUser().buttonTextColor : eUser().buttonTextColor,
+                              fontSize: eUser().buttonTextSize,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
 
                 ],
               );

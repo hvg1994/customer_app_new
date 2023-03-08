@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gwc_customer/utils/app_config.dart';
+import 'package:gwc_customer/widgets/exit_widget.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../widgets/constants.dart';
@@ -37,7 +38,7 @@ class _EvaluationFormScreenState extends State<EvaluationFormScreen> {
             physics: const BouncingScrollPhysics(),
             child: Padding(
               padding:
-                  EdgeInsets.only(left: 4.w, right: 4.w, top: 3.h, bottom: 5.h),
+              EdgeInsets.only(left: 4.w, right: 4.w, top: 3.h, bottom: 5.h),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -45,7 +46,7 @@ class _EvaluationFormScreenState extends State<EvaluationFormScreen> {
                   buildAppBar((widget.isFromSplashScreen) ? (){} : () {
                     Navigator.pop(context);
                   },
-                  isBackEnable: false),
+                      isBackEnable: false),
                   const Center(
                     child: Image(
                       image: AssetImage("assets/images/Evalutation.png"),
@@ -62,37 +63,52 @@ class _EvaluationFormScreenState extends State<EvaluationFormScreen> {
                         fontSize: 12.sp),
                   ),
                   SizedBox(
-                    height: 2.h,
+                      height: 2.h
                   ),
                   Text(
-                    "Hello $_currentUser, \nCongrats on formally starting your Gut Wellness Journey!",
+                    "Hello $_currentUser,",
                     textAlign: TextAlign.start,
                     style: TextStyle(
                         fontFamily: kFontMedium,
-                        color: gMainColor,
-                        fontSize: 11.sp),
+                        height: 1.4,
+                        color: gHintTextColor,
+                        fontSize: 12.sp),
+                  ),
+                  Text(
+                    "Congrats on formally starting your Gut Wellness Journey!",
+                    textAlign: TextAlign.start,
+                    style: TextStyle(
+                        fontFamily: kFontMedium,
+                        height: 1.4,
+                        color: kLineColor,
+                        fontSize: 10.sp),
                   ),
                   SizedBox(
-                    height: 2.h,
+                      height: 2.h
                   ),
                   Text(
                     "Here is an evaluation form that will provide us with information that will play a critical role in evaluating your condition & assist your doctor in creating your program.",
                     textAlign: TextAlign.start,
                     style: TextStyle(
                         fontFamily: kFontBook,
+                        height: 1.4,
                         color: kTextColor,
                         fontSize: 10.sp),
                   ),
                   SizedBox(
                     height: 2.h,
                   ),
-                  Text(
-                    "Do fill this to the best of your knowledge.\nAll your data is confidential & is visible to only your doctors & a few team members who assist them.\nTime to fill 3-4 Minutes",
-                    textAlign: TextAlign.justify,
-                    style: TextStyle(
-                        fontFamily: kFontBook,
-                        color: kTextColor,
-                        fontSize: 10.sp
+                  Padding(
+                    padding: const EdgeInsets.only(right: 25.0),
+                    child: Text(
+                      "Do fill this to the best of your knowledge.\nAll your data is confidential & is visible to only your doctors & a few team members who assist them.\nTime to fill 3-4 Minutes",
+                      textAlign: TextAlign.justify,
+                      style: TextStyle(
+                          fontFamily: kFontBook,
+                          color: kTextColor,
+                          height: 1.4,
+                          fontSize: 10.sp
+                      ),
                     ),
                   ),
                   // SizedBox(
@@ -177,94 +193,92 @@ class _EvaluationFormScreenState extends State<EvaluationFormScreen> {
   Future<bool> _onWillPop() async {
     // ignore: avoid_print
     print('back pressed eval');
-    return (widget.isFromSplashScreen) ? await showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          backgroundColor: kPrimaryColor,
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(15.0.sp))),
-          contentPadding: EdgeInsets.only(top: 1.h),
-          content: Container(
-            padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 2.h),
-            decoration: BoxDecoration(
-                color: gWhiteColor, borderRadius: BorderRadius.circular(8)),
-            width: 50.h,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Text(
-                  'Are you sure?',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      fontFamily: "GothamRoundedBold_21016",
-                      color: gPrimaryColor,
-                      fontSize: 13.sp),
-                ),
-                Container(
-                  margin: EdgeInsets.symmetric(vertical: 2.h),
-                  height: 1,
-                  color: Colors.grey.withOpacity(0.3),
-                ),
-                Text(
-                  'Do you want to exit an App?',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      fontFamily: "GothamMedium",
-                      color: gsecondaryColor,
-                      fontSize: 11.sp),
-                ),
-                SizedBox(height: 3.h),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    GestureDetector(
-                      onTap: () => Navigator.of(context).pop(false),
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                            vertical: 1.h, horizontal: 5.w),
-                        decoration: BoxDecoration(
-                            color: gMainColor,
-                            borderRadius: BorderRadius.circular(5)),
-                        child: Text(
-                          "NO",
-                          style: TextStyle(
-                            fontFamily: "GothamRoundedBold_21016",
-                            color: gPrimaryColor,
-                            fontSize: 11.sp,
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 5.w),
-                    GestureDetector(
-                      onTap: () => SystemNavigator.pop(),
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                            vertical: 1.h, horizontal: 5.w),
-                        decoration: BoxDecoration(
-                            color: gPrimaryColor,
-                            borderRadius: BorderRadius.circular(5)),
-                        child: Text(
-                          "YES",
-                          style: TextStyle(
-                            fontFamily: "GothamRoundedBold_21016",
-                            color: gMainColor,
-                            fontSize: 11.sp,
-                          ),
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-                SizedBox(height: 1.h)
-              ],
+    return (widget.isFromSplashScreen) ? AppConfig().showSheet(context, ExitWidget(), bottomSheetHeight: 45.h) : true;
+  }
+
+  exitWidget(){
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Center(
+          child: Text("Hold On!",
+            style: TextStyle(
+                fontSize: bottomSheetHeadingFontSize,
+                fontFamily: bottomSheetHeadingFontFamily,
+                height: 1.4
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 15),
+          child: Divider(
+            color: kLineColor,
+            thickness: 1.2,
+          ),
+        ),
+        Center(
+          child: Text(
+            'Do you want to exit an App?',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: gTextColor,
+              fontSize: bottomSheetSubHeadingXFontSize,
+              fontFamily: bottomSheetSubHeadingMediumFont,
             ),
           ),
-        )) ??
-        false : true;
+        ),
+        SizedBox(height: 3.h),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            GestureDetector(
+              onTap: () => SystemNavigator.pop(),
+              child: Container(
+                padding: EdgeInsets.symmetric(
+                    vertical: 1.h, horizontal: 12.w),
+                decoration: BoxDecoration(
+                    color: gsecondaryColor,
+                    border: Border.all(color: kLineColor, width: 0.5),
+                    borderRadius: BorderRadius.circular(5)),
+                child: Text(
+                  "YES",
+                  style: TextStyle(
+                    fontFamily: kFontMedium,
+                    color: gWhiteColor,
+                    fontSize: 11.sp,
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(width: 5.w),
+            GestureDetector(
+              onTap: () => Navigator.of(context).pop(false),
+              child: Container(
+                padding: EdgeInsets.symmetric(
+                    vertical: 1.h, horizontal: 12.w),
+                decoration: BoxDecoration(
+                    color: gWhiteColor,
+                    border: Border.all(color: kLineColor, width: 0.5),
+                    borderRadius: BorderRadius.circular(5)),
+                child: Text(
+                  "NO",
+                  style: TextStyle(
+                    fontFamily: kFontMedium,
+                    color: gsecondaryColor,
+                    fontSize: 11.sp,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 1.h)
+      ],
+    );
   }
+
 
 
   final String oldText1 = "1) Determine If This Program Can Heal You & Therefore Determine If We Can Proceed With Your Case Or Not.";

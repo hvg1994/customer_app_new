@@ -30,12 +30,16 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        String apiKey = "ak_live_c1ef0ed161003e0a2b419d20";
-        String appId = "mAppId_002b0de9c8982a72afd4524b1b539313a7f044871c2e6225d691015cb8d9";
+        /// sample
+//        String apiKey = "ak_live_c1ef0ed161003e0a2b419d20";
+//        String appId = "mAppId_002b0de9c8982a72afd4524b1b539313a7f044871c2e6225d691015cb8d9";
+        /// production
+        String apiKey = "ak_live_d2ad6702fe931fbeb2fa9cb4";
+        String appId = "mAppId_a4908f3e2fa60c828daff5e875b0af422545696fa0bffa76d614489aae8d";
 
-        Environment environment = Environment.Sandbox.INSTANCE; // or Environment.Sandbox.INSTANCE
+        Environment environment = Environment.Production.INSTANCE; // or Environment.Sandbox.INSTANCE
 
-        Region region = Region.Eu.INSTANCE; // or Region.In.INSTANCE
+        Region region = Region.In.INSTANCE; // or Region.EU.INSTANCE
         Configuration appConfiguration = getAppConfiguration();
 
 

@@ -5,7 +5,8 @@ import '../../../widgets/constants.dart';
 import '../../../widgets/widgets.dart';
 
 class ConsultationSuccess extends StatelessWidget {
-  const ConsultationSuccess({Key? key}) : super(key: key);
+  final bool isPostProgramSuccess;
+  const ConsultationSuccess({Key? key, this.isPostProgramSuccess = false}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +35,9 @@ class ConsultationSuccess extends StatelessWidget {
                   ),
                   SizedBox(height: 4.h),
                   Text(
-                    "You Have Successfully Completed Your Consultation",
+                    !isPostProgramSuccess
+                        ? "You Have Successfully Completed Your Consultation"
+                        : "Post Program Consultation Done.",
                     textAlign: TextAlign.center,
                     style: TextStyle(
                         height: 1.5,
@@ -45,7 +48,9 @@ class ConsultationSuccess extends StatelessWidget {
                   ),
                   SizedBox(height: 1.h),
                   Text(
-                    "Your Medical Report is getting ready and will be uploaded within 24 hours",
+                    !isPostProgramSuccess
+                        ? "Your Medical Report is getting ready and will be uploaded within 24 hours"
+                        : "Gut Maintenance Guide and Meal Plans will be Uploaded soon.",
                     textAlign: TextAlign.center,
                     style: TextStyle(
                         height: 1.5,

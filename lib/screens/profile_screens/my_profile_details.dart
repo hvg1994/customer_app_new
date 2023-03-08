@@ -192,11 +192,15 @@ class _MyProfileDetailsState extends State<MyProfileDetails> {
                                                       width: 10,
                                                     ),
                                                     GestureDetector(
-                                                        onTap: (){
+                                                        onTap: () async {
                                                           if(int.parse(ageController.text) < 10 || int.parse(ageController.text) > 100 ){
                                                             AppConfig().showSnackbar(context, "Age Should be Greater than 10 and less than 100", isError: true);
                                                           }
                                                           else{
+                                                            var file;
+                                                            if(_image != null) {
+                                                              file = await http.MultipartFile.fromPath("photo", _image!.path);
+                                                            }
                                                             SendUserModel user = SendUserModel(
                                                                 fname: fnameController.text,
                                                                 lname: lnameController.text,
@@ -204,7 +208,7 @@ class _MyProfileDetailsState extends State<MyProfileDetails> {
                                                                 gender: genderController.text,
                                                                 email: subData!.email,
                                                                 phone: subData.phone,
-                                                                profile: (_image != null) ? _image!.path.split('/').last : null
+                                                                profile: (_image != null && file != null) ? file : null
                                                             );
                                                             updateProfileData(user.toJson());
                                                           }
@@ -263,10 +267,11 @@ class _MyProfileDetailsState extends State<MyProfileDetails> {
                                       child: CircleAvatar(
                                         radius: 6.h,
                                         backgroundColor: Colors.black26,
-                                        backgroundImage: (subData!.profile == null || photoError) ? ExactAssetImage(
-                                            "assets/images/cheerful.png") :
+                                        backgroundImage:
+                                        // (subData!.profile == null || photoError) ? ExactAssetImage(
+                                        //     "assets/images/cheerful.png") :
                               (_image != null) ? FileImage(_image!) : CachedNetworkImageProvider(
-                                            subData.profile!,
+                                            subData!.profile!,
                                           errorListener: (){
                                               print("image error");
                                               setState(() => photoError = true);
@@ -277,7 +282,7 @@ class _MyProfileDetailsState extends State<MyProfileDetails> {
                                             clipBehavior: Clip.none,
                                             children: [
                                               Visibility(
-                                                visible: false,
+                                                visible: isEdit,
                                                 child: GestureDetector(
                                                   onTap: showChooserSheet,
                                                   child: Align(
@@ -288,7 +293,7 @@ class _MyProfileDetailsState extends State<MyProfileDetails> {
                                                       child: Padding(
                                                         padding: const EdgeInsets.all(4.0),
                                                         child: Icon(CupertinoIcons.camera,
-                                                          color: gMainColor,
+                                                          color: gWhiteColor,
                                                           size: 14,
                                                         ),
                                                       ),

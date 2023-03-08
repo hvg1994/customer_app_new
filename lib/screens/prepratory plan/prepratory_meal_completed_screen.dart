@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gwc_customer/model/error_model.dart';
 import 'package:gwc_customer/repository/api_service.dart';
 import 'package:gwc_customer/repository/prepratory_repository/prep_repository.dart';
+import 'package:gwc_customer/screens/dashboard_screen.dart';
 import 'package:gwc_customer/services/prepratory_service/prepratory_service.dart';
 import 'package:gwc_customer/utils/app_config.dart';
 import 'package:sizer/sizer.dart';
@@ -291,7 +292,12 @@ class _PrepratoryMealCompletedScreenState extends State<PrepratoryMealCompletedS
       });
       final result = res as SuccessMessageModel;
       AppConfig().showSnackbar(context, result.errorMsg ?? '');
-      Navigator.pop(context);
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const DashboardScreen(),
+        ), (route)=> route.isFirst
+      );
       print("submit success");
     }
 

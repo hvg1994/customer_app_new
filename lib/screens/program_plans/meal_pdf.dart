@@ -1,16 +1,31 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_vlc_player/flutter_vlc_player.dart';
+import 'package:gwc_customer/widgets/vlc_player/vlc_player_with_controls.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../widgets/constants.dart';
 import '../../../widgets/widgets.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
-class MealPdf extends StatelessWidget {
+class MealPdf extends StatefulWidget {
   final String? heading;
   final String pdfLink;
-  const MealPdf({Key? key, required this.pdfLink, this.heading}) : super(key: key);
+  final String? mealVideoLink;
+  final String? videoName;
+  final Color? topHeadColor;
+  final String? headCircleIcon;
+  final bool isVideoWidgetVisible;
+  MealPdf({Key? key, required this.pdfLink, this.heading, this.mealVideoLink,
+    this.topHeadColor, this.headCircleIcon, this.isVideoWidgetVisible = true,
+    this.videoName
+  }) : super(key: key);
 
+  @override
+  State<MealPdf> createState() => _MealPdfState();
+}
+
+class _MealPdfState extends State<MealPdf> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,94 +46,253 @@ class MealPdf extends StatelessWidget {
                 ),
               ),
               Container(
-                width: double.maxFinite,
                 color: Colors.black.withOpacity(0.5),
                 child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     SizedBox(height: 10.h),
                     Expanded(
                       child: Container(
                         width: double.maxFinite,
-                        padding: EdgeInsets.symmetric(
-                            vertical: 1.h, horizontal: 3.w),
-                        decoration: BoxDecoration(
-                          color: kWhiteColor,
-                          boxShadow: [
-                            BoxShadow(
-                                blurRadius: 2,
-                                color: Colors.grey.withOpacity(0.5))
-                          ],
-                          borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(50),
-                            topRight: Radius.circular(50),
+                        // padding: EdgeInsets.symmetric(
+                        //     vertical: 1.h, horizontal: 3.w),
+                        decoration: const BoxDecoration(
+                          color: gBackgroundColor,
+                          borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(22),
+                              topRight: Radius.circular(22)
                           ),
                         ),
-                        child: Column(
-                          // shrinkWrap: true,
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            SizedBox(height: 1.5.h),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
+                        child: Stack(
+                          children: [
+                            Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                // SizedBox(width: 26.w),
-                                Expanded(
+                                Container(
+                                  height: 15.h,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(22),
+                                    color: this.widget.topHeadColor ?? kBottomSheetHeadYellow,
+                                  ),
                                   child: Center(
-                                    child: Text(
-                                      heading ?? 'Meal Item',
-                                      style: TextStyle(
-                                          fontFamily: "GothamRoundedBold_21016",
-                                          color: gTextColor,
-                                          fontSize: 12.sp),
+                                    child: Image.asset(bsHeadStarsIcon,
+                                      alignment: Alignment.topRight,
+                                      fit: BoxFit.scaleDown,
+                                      width: 30.w,
+                                      height: 10.h,
                                     ),
                                   ),
                                 ),
-                                // SizedBox(width: 26.w),
-                                InkWell(
-                                  onTap: () {
-                                    Navigator.pop(context);
-                                  },
-                                  child: Container(
-                                    padding: const EdgeInsets.all(1),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(30),
-                                      border: Border.all(
-                                          color: gMainColor, width: 1),
-                                    ),
-                                    child: Icon(
-                                      Icons.clear,
-                                      color: gMainColor,
-                                      size: 1.6.h,
+                                SizedBox(
+                                  height: 7.h,
+                                ),
+                                Expanded(
+                                  child: SizedBox(
+                                    height: 70.h,
+                                    child: SingleChildScrollView(
+                                      child:  Column(
+                                        // shrinkWrap: true,
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: <Widget>[
+                                          SizedBox(height: 1.5.h),
+                                          // Row(
+                                          //   mainAxisAlignment: MainAxisAlignment.center,
+                                          //   mainAxisSize: MainAxisSize.min,
+                                          //   children: [
+                                          //     // SizedBox(width: 26.w),
+                                          //     Expanded(
+                                          //       child: Center(
+                                          //         child: Text(
+                                          //           heading ?? 'Meal Item',
+                                          //           style: TextStyle(
+                                          //               fontFamily: "GothamRoundedBold_21016",
+                                          //               color: gTextColor,
+                                          //               fontSize: 12.sp),
+                                          //         ),
+                                          //       ),
+                                          //     ),
+                                          //     // SizedBox(width: 26.w),
+                                          //     InkWell(
+                                          //       onTap: () {
+                                          //         Navigator.pop(context);
+                                          //       },
+                                          //       child: Container(
+                                          //         padding: const EdgeInsets.all(1),
+                                          //         decoration: BoxDecoration(
+                                          //           borderRadius: BorderRadius.circular(30),
+                                          //           border: Border.all(
+                                          //               color: gMainColor, width: 1),
+                                          //         ),
+                                          //         child: Icon(
+                                          //           Icons.clear,
+                                          //           color: gMainColor,
+                                          //           size: 1.6.h,
+                                          //         ),
+                                          //       ),
+                                          //     ),
+                                          //     SizedBox(width: 5,)
+                                          //   ],
+                                          // ),
+                                          // Container(
+                                          //   margin: EdgeInsets.symmetric(vertical: 1.h, horizontal: 5.w),
+                                          //   height: 1,
+                                          //   color: gMainColor,
+                                          // ),
+                                          // SizedBox(height: 1.h),
+                                          Visibility(
+                                              visible: widget.isVideoWidgetVisible,
+                                              child: videoMp4Widget(
+                                              onTap: (){
+                                                addUrlToVideoPlayer("");
+                                                setState(() {
+                                                  showMealVideo = true;
+                                                });
+                                              })),
+                                          Flexible(
+                                            child: Stack(
+                                              children: [
+                                                IntrinsicHeight(
+                                                  child: SfPdfViewer.network(
+                                                      widget.pdfLink
+                                                  ),
+                                                ),
+                                                Visibility(
+                                                  visible: showMealVideo,
+                                                  child: Positioned(
+                                                      child: Center(
+                                                          child: buildMealVideo(
+                                                              onTap: () async{
+                                                                setState(() {
+                                                                  showMealVideo = false;
+                                                                });
+                                                                _mealPlayerController!.stop();
+                                                                // await _mealPlayerController!.stopRendererScanning();
+                                                                // await _mealPlayerController!.dispose();
+                                                              }
+                                                          )
+                                                      )
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ),
-                                ),
-                                SizedBox(width: 5,)
+                                )
+
                               ],
                             ),
-                            Container(
-                              margin: EdgeInsets.symmetric(vertical: 1.h, horizontal: 5.w),
-                              height: 1,
-                              color: gMainColor,
-                            ),
-                            // SizedBox(height: 1.h),
-                            Expanded(
-                              child: SfPdfViewer.network(
-                                  pdfLink
-                              ),
-                            ),
-                            // Text(
-                            //   'Lorem lpsum is simply dummy text of the printing and typesetting industry.Lorem lpsum has been the industry\'s standard dummy text ever since the 1500s,when an unknown printer took a gallery of type and scrambled it to make a type specimen book.It has survived not only five centuries,but also the leap into electronic typesetting,remaining essentially unchanged.It was popularised in the 1960s with the release of Letraset sheets containing Lorem lpsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem lpsum. long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem lpsum is that it has amore_or_less normal distribution of letters, as opposed to using \'Content here,content here\',making it look like readable english. Many desktop publishing packages and web page editors now use Lorem lpsum as their default model text,and asearch for \'lorem lpsum\' will uncover many web sites still in their infancy.Various versions have evolved over the years,sometimes by accident, sometimes on purpose(injected humour and the like).',
-                            //   style: TextStyle(
-                            //       height: 1.5,
-                            //       fontFamily: "GothamMedium",
-                            //       color: gTextColor,
-                            //       fontSize: 10.sp),
-                            // ),
+                            Positioned(
+                                top: 8.h,
+                                left: 5,
+                                right: 5,
+                                child: Container(
+                                    decoration: BoxDecoration(
+                                      // color: Colors.white,
+                                      shape: BoxShape.circle,
+                                      boxShadow: [
+                                        BoxShadow(blurRadius: 5, color: gHintTextColor.withOpacity(0.8))
+                                      ],
+                                    ),
+                                    child: CircleAvatar(
+                                      maxRadius: 40.sp,
+                                      backgroundColor: kBottomSheetHeadCircleColor,
+                                      child: Image.asset(this.widget.headCircleIcon ?? bsHeadBellIcon,
+                                        fit: BoxFit.scaleDown,
+                                        width: 45,
+                                        height: 45,
+                                      ),
+                                    )
+                                )
+                            )
                           ],
                         ),
+
                       ),
+                      // child: Container(
+                      //   width: double.maxFinite,
+                      //   padding: EdgeInsets.symmetric(
+                      //       vertical: 1.h, horizontal: 3.w),
+                      //   decoration: BoxDecoration(
+                      //     color: kWhiteColor,
+                      //     boxShadow: [
+                      //       BoxShadow(
+                      //           blurRadius: 2,
+                      //           color: Colors.grey.withOpacity(0.5))
+                      //     ],
+                      //     borderRadius: const BorderRadius.only(
+                      //       topLeft: Radius.circular(50),
+                      //       topRight: Radius.circular(50),
+                      //     ),
+                      //   ),
+                      //   child: Column(
+                      //     // shrinkWrap: true,
+                      //     mainAxisSize: MainAxisSize.min,
+                      //     children: <Widget>[
+                      //       SizedBox(height: 1.5.h),
+                      //       Row(
+                      //         mainAxisAlignment: MainAxisAlignment.center,
+                      //         mainAxisSize: MainAxisSize.min,
+                      //         children: [
+                      //           // SizedBox(width: 26.w),
+                      //           Expanded(
+                      //             child: Center(
+                      //               child: Text(
+                      //                 heading ?? 'Meal Item',
+                      //                 style: TextStyle(
+                      //                     fontFamily: "GothamRoundedBold_21016",
+                      //                     color: gTextColor,
+                      //                     fontSize: 12.sp),
+                      //               ),
+                      //             ),
+                      //           ),
+                      //           // SizedBox(width: 26.w),
+                      //           InkWell(
+                      //             onTap: () {
+                      //               Navigator.pop(context);
+                      //             },
+                      //             child: Container(
+                      //               padding: const EdgeInsets.all(1),
+                      //               decoration: BoxDecoration(
+                      //                 borderRadius: BorderRadius.circular(30),
+                      //                 border: Border.all(
+                      //                     color: gMainColor, width: 1),
+                      //               ),
+                      //               child: Icon(
+                      //                 Icons.clear,
+                      //                 color: gMainColor,
+                      //                 size: 1.6.h,
+                      //               ),
+                      //             ),
+                      //           ),
+                      //           SizedBox(width: 5,)
+                      //         ],
+                      //       ),
+                      //       Container(
+                      //         margin: EdgeInsets.symmetric(vertical: 1.h, horizontal: 5.w),
+                      //         height: 1,
+                      //         color: gMainColor,
+                      //       ),
+                      //       // SizedBox(height: 1.h),
+                      //       Expanded(
+                      //         child: SfPdfViewer.network(
+                      //             pdfLink
+                      //         ),
+                      //       ),
+                      //       // Text(
+                      //       //   'Lorem lpsum is simply dummy text of the printing and typesetting industry.Lorem lpsum has been the industry\'s standard dummy text ever since the 1500s,when an unknown printer took a gallery of type and scrambled it to make a type specimen book.It has survived not only five centuries,but also the leap into electronic typesetting,remaining essentially unchanged.It was popularised in the 1960s with the release of Letraset sheets containing Lorem lpsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem lpsum. long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem lpsum is that it has amore_or_less normal distribution of letters, as opposed to using \'Content here,content here\',making it look like readable english. Many desktop publishing packages and web page editors now use Lorem lpsum as their default model text,and asearch for \'lorem lpsum\' will uncover many web sites still in their infancy.Various versions have evolved over the years,sometimes by accident, sometimes on purpose(injected humour and the like).',
+                      //       //   style: TextStyle(
+                      //       //       height: 1.5,
+                      //       //       fontFamily: "GothamMedium",
+                      //       //       color: gTextColor,
+                      //       //       fontSize: 10.sp),
+                      //       // ),
+                      //     ],
+                      //   ),
+                      // ),
                     ),
                   ],
                 ),
@@ -128,5 +302,126 @@ class MealPdf extends StatelessWidget {
         },
       ),
     );
+  }
+
+  videoMp4Widget({required VoidCallback onTap}){
+    print("widget.mealVideoLink?.split('/').last: ${widget.mealVideoLink}");
+    return InkWell(
+      onTap: onTap,
+      child: Card(
+          child: Row(
+              children:[
+                Image.asset("assets/images/meal_placeholder.png",
+                  height: 35,
+                  width: 40,
+                ),
+                Expanded(child: Text(widget.videoName ?? "Symptom Tracker.mp4",
+                  style: TextStyle(
+                      fontFamily: kFontBook
+                  ),
+                )),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Image.asset("assets/images/arrow_for_video.png",
+                    height: 35,
+                  ),
+                )
+              ]
+          )
+      ),
+    );
+  }
+
+  VlcPlayerController? _mealPlayerController;
+
+  final _mealKey = GlobalKey<VlcPlayerWithControlsState>();
+
+  bool showMealVideo = false;
+
+  addUrlToVideoPlayer(String url){
+    print("url"+ url);
+    _mealPlayerController = VlcPlayerController.asset(
+      "assets/images/new_ds/popup_video.mp4",
+      // url,
+      // 'http://samples.mplayerhq.hu/MPEG-4/embedded_subs/1Video_2Audio_2SUBs_timed_text_streams_.mp4',
+      // 'https://media.w3.org/2010/05/sintel/trailer.mp4',
+      hwAcc: HwAcc.auto,
+      autoPlay: true,
+      options: VlcPlayerOptions(
+        advanced: VlcAdvancedOptions([
+          VlcAdvancedOptions.networkCaching(2000),
+        ]),
+        subtitle: VlcSubtitleOptions([
+          VlcSubtitleOptions.boldStyle(true),
+          VlcSubtitleOptions.fontSize(30),
+          VlcSubtitleOptions.outlineColor(VlcSubtitleColor.yellow),
+          VlcSubtitleOptions.outlineThickness(VlcSubtitleThickness.normal),
+          // works only on externally added subtitles
+          VlcSubtitleOptions.color(VlcSubtitleColor.navy),
+        ]),
+        http: VlcHttpOptions([
+          VlcHttpOptions.httpReconnect(true),
+        ]),
+        rtp: VlcRtpOptions([
+          VlcRtpOptions.rtpOverRtsp(true),
+        ]),
+      ),
+    );
+  }
+
+  buildMealVideo({required VoidCallback onTap}) {
+    if(_mealPlayerController != null){
+      return Column(
+        children: [
+          AspectRatio(
+            aspectRatio: 16/9,
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(5),
+                border: Border.all(color: gPrimaryColor, width: 1),
+                // boxShadow: [
+                //   BoxShadow(
+                //     color: Colors.grey.withOpacity(0.3),
+                //     blurRadius: 20,
+                //     offset: const Offset(2, 10),
+                //   ),
+                // ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(5),
+                child: Center(
+                  child: VlcPlayerWithControls(
+                    key: _mealKey,
+                    controller: _mealPlayerController!,
+                    showVolume: false,
+                    showVideoProgress: false,
+                    seekButtonIconSize: 10.sp,
+                    playButtonIconSize: 14.sp,
+                    replayButtonSize: 10.sp,
+                  ),
+                  // child: VlcPlayer(
+                  //   controller: _videoPlayerController!,
+                  //   aspectRatio: 16 / 9,
+                  //   virtualDisplay: false,
+                  //   placeholder: Center(child: CircularProgressIndicator()),
+                  // ),
+                ),
+              ),
+            ),
+          ),
+          Center(
+              child: IconButton(
+                icon: Icon(Icons.cancel_outlined,
+                  color: gsecondaryColor,
+                ),
+                onPressed: onTap,
+              )
+          )
+        ],
+      );
+    }
+    else {
+      return SizedBox.shrink();
+    }
   }
 }

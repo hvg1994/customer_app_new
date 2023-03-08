@@ -130,7 +130,7 @@ class _ProtocolGuideScreenState extends State<ProtocolGuideScreen> {
                                   Text(
                                     "Score : ${model.score}",
                                     style: TextStyle(
-                                        fontFamily: "GothamBook",
+                                        fontFamily: kFontBook,
                                         color: gBlackColor,
                                         fontSize: 9.sp),
                                   ),

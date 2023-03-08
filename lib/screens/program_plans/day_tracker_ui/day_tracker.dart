@@ -8,6 +8,7 @@ import 'package:gwc_customer/model/program_model/proceed_model/send_proceed_prog
 import 'package:gwc_customer/repository/api_service.dart';
 import 'package:gwc_customer/repository/program_repository/program_repository.dart';
 import 'package:gwc_customer/screens/evalution_form/check_box_settings.dart';
+import 'package:gwc_customer/screens/prepratory%20plan/transition_mealplan_screen.dart';
 import 'package:gwc_customer/screens/program_plans/day_program_plans.dart';
 import 'package:gwc_customer/screens/program_plans/meal_plan_screen.dart';
 import 'package:gwc_customer/screens/program_plans/program_start_screen.dart';
@@ -1514,9 +1515,19 @@ class _TrackerUIState extends State<TrackerUI> {
     print("result: $result");
 
     if(result.runtimeType == GetProceedModel){
+      final _pref = AppConfig().preferences;
+      final trackerUrl = _pref!.getString(AppConfig().trackerVideoUrl);
+
       (ProgramMealType.program.name == widget.from)
           ? Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => MealPlanScreen()), (route) => route.isFirst)
-          : Navigator.pop(context);
+          : Navigator.pushAndRemoveUntil(context,
+          MaterialPageRoute(
+            builder: (context) => TransitionMealPlanScreen(
+                totalDays: '',
+                dayNumber:'',
+                trackerVideoLink: trackerUrl
+            ),
+          ), (route) => route.isFirst);
     }
     else{
       ErrorModel model = result as ErrorModel;

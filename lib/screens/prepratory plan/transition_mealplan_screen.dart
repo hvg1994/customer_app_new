@@ -1,32 +1,41 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_vlc_player/flutter_vlc_player.dart';
 import 'package:gwc_customer/model/error_model.dart';
 import 'package:gwc_customer/model/prepratory_meal_model/prep_meal_model.dart';
 import 'package:gwc_customer/model/prepratory_meal_model/transition_meal_model.dart';
 import 'package:gwc_customer/repository/api_service.dart';
+import 'package:gwc_customer/repository/post_program_repo/post_program_repository.dart';
 import 'package:gwc_customer/repository/prepratory_repository/prep_repository.dart';
+import 'package:gwc_customer/screens/dashboard_screen.dart';
 import 'package:gwc_customer/screens/program_plans/meal_pdf.dart';
 import 'package:gwc_customer/screens/program_plans/program_start_screen.dart';
+import 'package:gwc_customer/services/post_program_service/post_program_service.dart';
 import 'package:gwc_customer/services/prepratory_service/prepratory_service.dart';
 import 'package:gwc_customer/utils/app_config.dart';
 import 'package:gwc_customer/widgets/constants.dart';
+import 'package:gwc_customer/widgets/open_alert_box.dart';
+import 'package:gwc_customer/widgets/vlc_player/vlc_player_with_controls.dart';
 import 'package:gwc_customer/widgets/widgets.dart';
 import 'package:http/http.dart' as http;
+import 'package:lottie/lottie.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../model/program_model/proceed_model/send_proceed_program_model.dart';
+import '../../model/program_model/start_post_program_model.dart';
 import '../program_plans/day_tracker_ui/day_tracker.dart';
 
 class TransitionMealPlanScreen extends StatefulWidget {
   String totalDays;
   String dayNumber;
-  TransitionMealPlanScreen({Key? key, required this.dayNumber, required this.totalDays}) : super(key: key);
+  final String? trackerVideoLink;
+  final String? postProgramStage;
+  TransitionMealPlanScreen({Key? key, required this.dayNumber, required this.totalDays, this.trackerVideoLink, this.postProgramStage}) : super(key: key);
 
   @override
   State<TransitionMealPlanScreen> createState() => _TransitionMealPlanScreenState();
 }
 
 class _TransitionMealPlanScreenState extends State<TransitionMealPlanScreen> {
-
   String? planNotePdfLink;
   Future? transitionMealFuture;
   getTransitionMeals() {
@@ -56,6 +65,7 @@ class _TransitionMealPlanScreenState extends State<TransitionMealPlanScreen> {
       data: MediaQuery.of(context).copyWith(textScaleFactor: 0.8),
       child: SafeArea(
           child: Scaffold(
+            resizeToAvoidBottomInset: true,
             body: SingleChildScrollView(
               child: Container(
                 padding: EdgeInsets.all(8),
@@ -73,6 +83,9 @@ class _TransitionMealPlanScreenState extends State<TransitionMealPlanScreen> {
                         Navigator.push(context, MaterialPageRoute(builder: (ctx)=>
                             MealPdf(pdfLink: planNotePdfLink! ,
                               heading: planNotePdfLink?.split('/').last ?? '',
+                              isVideoWidgetVisible: false,
+                              headCircleIcon: bsHeadPinIcon,
+                              topHeadColor: kBottomSheetHeadGreen,
                             )));
                       }
                       else{
@@ -99,20 +112,25 @@ class _TransitionMealPlanScreenState extends State<TransitionMealPlanScreen> {
                           else{
                             TransitionMealModel res = snapshot.data as TransitionMealModel;
                             final String currentDayStatus = res.currentDayStatus.toString();
+                            print("currentDayStatus top: ${currentDayStatus}");
                             final dataList = res.data!.toJson();
                             if(res.currentDay != null) currentDay = res.currentDay;
                             if(res.totalDays != null) totalDays = res.totalDays;
                             planNotePdfLink = res.note;
-                            if(res.previousDayStatus == 0){
+                            if(res.previousDayStatus == "0"){
                               Future.delayed(Duration(seconds: 0)).then((value) {
                                 return showSymptomsTrackerSheet(context, (int.parse(widget.dayNumber)-1).toString()).then((value) {
                                   getTransitionMeals();
                                 });
                               });
                             }
-                            else{
-                              return customMealPlanTile(dataList, currentDayStatus);
+                            if(res.isTransMealCompleted == "1" && (widget.postProgramStage == null || widget.postProgramStage!.isEmpty)){
+                              Future.delayed(Duration(seconds: 0)).then((value) {
+                                return buildDayCompletedClap();
+                              });
                             }
+                              return customMealPlanTile(dataList, currentDayStatus);
+
                           }
                         }
                         else if(snapshot.hasError){
@@ -138,6 +156,7 @@ class _TransitionMealPlanScreenState extends State<TransitionMealPlanScreen> {
   }
 
   customMealPlanTile(Map<String, dynamic> dataList, String currentDayStatus){
+    print("currentDayStatus: ${currentDayStatus}");
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 5),
       child: ListView(
@@ -386,9 +405,166 @@ class _TransitionMealPlanScreenState extends State<TransitionMealPlanScreen> {
       ),
     );
   }
+  bool showMealVideo = false;
+  VlcPlayerController? _mealPlayerController;
+  final _mealKey = GlobalKey<VlcPlayerWithControlsState>();
+  videoMp4Widget({required VoidCallback onTap, String? videoName}){
+    return InkWell(
+      onTap: onTap,
+      child: Card(
+          child: Row(
+              children:[
+                Image.asset("assets/images/meal_placeholder.png",
+                  height: 35,
+                  width: 40,
+                ),
+                Expanded(child: Text(videoName ?? "Symptom Tracker.mp4",
+                  style: TextStyle(
+                      fontFamily: kFontBook
+                  ),
+                )),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Image.asset("assets/images/arrow_for_video.png",
+                    height: 35,
+                  ),
+                )
+              ]
+          )
+      ),
+    );
+  }
+  addUrlToVideoPlayer(String url){
+    print("url"+ url);
+    _mealPlayerController = VlcPlayerController.asset(
+      "assets/images/new_ds/popup_video.mp4",
+      // url,
+      // 'http://samples.mplayerhq.hu/MPEG-4/embedded_subs/1Video_2Audio_2SUBs_timed_text_streams_.mp4',
+      // 'https://media.w3.org/2010/05/sintel/trailer.mp4',
+      hwAcc: HwAcc.auto,
+      autoPlay: true,
+      options: VlcPlayerOptions(
+        advanced: VlcAdvancedOptions([
+          VlcAdvancedOptions.networkCaching(2000),
+        ]),
+        subtitle: VlcSubtitleOptions([
+          VlcSubtitleOptions.boldStyle(true),
+          VlcSubtitleOptions.fontSize(30),
+          VlcSubtitleOptions.outlineColor(VlcSubtitleColor.yellow),
+          VlcSubtitleOptions.outlineThickness(VlcSubtitleThickness.normal),
+          // works only on externally added subtitles
+          VlcSubtitleOptions.color(VlcSubtitleColor.navy),
+        ]),
+        http: VlcHttpOptions([
+          VlcHttpOptions.httpReconnect(true),
+        ]),
+        rtp: VlcRtpOptions([
+          VlcRtpOptions.rtpOverRtsp(true),
+        ]),
+      ),
+    );
+  }
 
-  Future showSymptomsTrackerSheet(BuildContext context, String day) async{
-    return await showModalBottomSheet(
+  buildMealVideo({required VoidCallback onTap}) {
+    if(_mealPlayerController != null){
+      return Column(
+        children: [
+          AspectRatio(
+            aspectRatio: 16/9,
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(5),
+                border: Border.all(color: gPrimaryColor, width: 1),
+                // boxShadow: [
+                //   BoxShadow(
+                //     color: Colors.grey.withOpacity(0.3),
+                //     blurRadius: 20,
+                //     offset: const Offset(2, 10),
+                //   ),
+                // ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(5),
+                child: Center(
+                  child: VlcPlayerWithControls(
+                    key: _mealKey,
+                    controller: _mealPlayerController!,
+                    showVolume: false,
+                    showVideoProgress: false,
+                    seekButtonIconSize: 10.sp,
+                    playButtonIconSize: 14.sp,
+                    replayButtonSize: 10.sp,
+                  ),
+                  // child: VlcPlayer(
+                  //   controller: _videoPlayerController!,
+                  //   aspectRatio: 16 / 9,
+                  //   virtualDisplay: false,
+                  //   placeholder: Center(child: CircularProgressIndicator()),
+                  // ),
+                ),
+              ),
+            ),
+          ),
+          Center(
+              child: IconButton(
+                icon: Icon(Icons.cancel_outlined,
+                  color: gsecondaryColor,
+                ),
+                onPressed: onTap,
+              )
+          )
+        ],
+      );
+    }
+    else {
+      return SizedBox.shrink();
+    }
+  }
+  Future showSymptomsTrackerSheet(BuildContext context, String day) {
+    return AppConfig().showSheet(
+        context,
+        StatefulBuilder(
+            builder: (_, setState){
+              return Column(
+                children:[
+                  videoMp4Widget(
+                      videoName: "Know more about Symptoms Tracker",
+                      onTap: (){
+                        addUrlToVideoPlayer("");
+                        setState(() {
+                          showMealVideo = true;
+                        });
+                      }),
+                  Stack(
+                    children: [
+                      TrackerUI(from: ProgramMealType.transition.name,
+                        proceedProgramDayModel: ProceedProgramDayModel(day: day),),
+                      Visibility(
+                        visible: showMealVideo,
+                        child: Positioned(
+                            child: Center(
+                                child: buildMealVideo(
+                                    onTap: () async{
+                                      setState(() {
+                                        showMealVideo = false;
+                                      });
+                                      _mealPlayerController!.stop();
+                                      // await _mealPlayerController!.stopRendererScanning();
+                                      // await _mealPlayerController!.dispose();
+                                    }
+                                )
+                            )
+                        ),
+                      )
+                    ],
+                  )
+                ],
+              );
+            }
+        ),
+        circleIcon: bsHeadPinIcon,
+        bottomSheetHeight: 90.h);
+    return  showModalBottomSheet(
         isDismissible: false,
         isScrollControlled: true,
         backgroundColor: Colors.transparent,
@@ -407,5 +583,103 @@ class _TransitionMealPlanScreenState extends State<TransitionMealPlanScreen> {
           getTransitionMeals();
     });
   }
+  bool isOpened = false;
+
+  buildDayCompletedClap() {
+    return AppConfig().showSheet(
+        context,
+        WillPopScope(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(5),
+                    border: Border.all(color: gMainColor),
+                  ),
+                  child: Lottie.asset(
+                    "assets/lottie/clap.json",
+                    height: 20.h,
+                  ),
+                ),
+                SizedBox(height: 1.5.h),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 3.w),
+                  child: Text(
+                    "You Have completed the Transition Plan, Now you can proceed to Post Program",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      height: 1.2,
+                      color: gTextColor,
+                      fontSize: bottomSheetSubHeadingXLFontSize,
+                      fontFamily: bottomSheetSubHeadingMediumFont,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 5.h),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      isOpened = true;
+                    });
+                    Future.delayed(Duration(seconds: 0)).whenComplete(() {
+                      openProgressDialog(context);
+                    });
+                    startPostProgram();
+                  },
+                  child: Container(
+                    padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 10.w),
+                    decoration: BoxDecoration(
+                      color: gsecondaryColor,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: gMainColor, width: 1),
+                    ),
+                    child: Text(
+                      'Next',
+                      style: TextStyle(
+                        fontFamily: kFontMedium,
+                        color: gWhiteColor,
+                        fontSize: 11.sp,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            onWillPop: ()=>Future.value(false)
+        ),
+        circleIcon: bsHeadPinIcon,
+        bottomSheetHeight: 60.h);
+  }
+
+  startPostProgram() async {
+    final res = await PostProgramService(repository: _postProgramRepository)
+        .startPostProgramService();
+
+    if (res.runtimeType == ErrorModel) {
+      ErrorModel model = res as ErrorModel;
+      Navigator.pop(context);
+      AppConfig().showSnackbar(context, model.message ?? '', isError: true);
+    } else {
+      Navigator.pop(context);
+      if (res.runtimeType == StartPostProgramModel) {
+        StartPostProgramModel model = res as StartPostProgramModel;
+        print("start program: ${model.response}");
+        AppConfig().showSnackbar(context, "Post Program started" ?? '');
+        Future.delayed(Duration(seconds: 2)).then((value) {
+          Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (_) => DashboardScreen()),
+                  (route) => true);
+        });
+      }
+    }
+  }
+
+  final PostProgramRepository _postProgramRepository = PostProgramRepository(
+    apiClient: ApiClient(
+      httpClient: http.Client(),
+    ),
+  );
 
 }

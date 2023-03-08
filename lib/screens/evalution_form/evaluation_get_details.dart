@@ -454,7 +454,7 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
       physics: const AlwaysScrollableScrollPhysics(),
       child: Padding(
         padding:
-            EdgeInsets.symmetric(horizontal: (widget.isFromProfile) ? 0 : 3.w,vertical:(widget.isFromProfile) ? 2.h : 0 ),
+            EdgeInsets.symmetric(horizontal: (widget.isFromProfile) ? 2 : 3.w,vertical:(widget.isFromProfile) ? 2.h : 0 ),
         child: Column(
           children: [
             if (!widget.isFromProfile)

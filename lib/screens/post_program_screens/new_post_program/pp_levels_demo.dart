@@ -178,7 +178,7 @@ class _PPLevelsDemoState extends State<PPLevelsDemo> {
                   "Gut Maintenance  Indicator",
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                      fontFamily: 'GothamBold',
+                      fontFamily: kFontBold,
                       color: gPrimaryColor,
                       fontSize: 10.sp),
                 ),
@@ -270,7 +270,7 @@ class _PPLevelsDemoState extends State<PPLevelsDemo> {
             children: [
               Text(currentDay ?? '',
                 style: TextStyle(
-                    fontFamily: 'GothamBold',
+                    fontFamily: kFontBold,
                     color: gsecondaryColor,
                     fontSize: 22.sp),
               ),
@@ -279,7 +279,7 @@ class _PPLevelsDemoState extends State<PPLevelsDemo> {
               ),
               Text("Present Day",
                   style: TextStyle(
-                      fontFamily: 'GothamBook',
+                      fontFamily: kFontBook,
                       color: gsecondaryColor,
                       fontSize: 10.sp
                   )

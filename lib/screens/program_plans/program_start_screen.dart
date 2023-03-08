@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gwc_customer/model/error_model.dart';
+import 'package:gwc_customer/screens/prepratory%20plan/prepratory_meal_completed_screen.dart';
 import 'package:gwc_customer/screens/prepratory%20plan/prepratory_plan_screen.dart';
 import 'package:gwc_customer/screens/prepratory%20plan/transition_mealplan_screen.dart';
 import 'package:gwc_customer/screens/program_plans/meal_plan_screen.dart';
@@ -22,7 +23,8 @@ enum ProgramMealType {
 
 class ProgramPlanScreen extends StatefulWidget {
   final String from;
-  const ProgramPlanScreen({Key? key, required this.from}) : super(key: key);
+  final bool? isPrepCompleted;
+  const ProgramPlanScreen({Key? key, required this.from, this.isPrepCompleted}) : super(key: key);
 
   @override
   State<ProgramPlanScreen> createState() => _ProgramPlanScreenState();
@@ -30,6 +32,7 @@ class ProgramPlanScreen extends StatefulWidget {
 
 class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
 
+  final _pref = AppConfig().preferences;
   bool isSlided = false;
   @override
   Widget build(BuildContext context) {
@@ -93,7 +96,7 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
               ? "The preparatory phase aids in the optimal preparation of the gastrointestinal tract for detoxification and repair. Gut acid and enzyme optimization can be achieved by adapting typical diets to your gut type and condition, as well as avoiding certain addictions/habits such as smoking, drinking, and so on."
               : widget.from == ProgramMealType.program.name
               ? "Our approach on healing the condition: To cleanse and heal your stomach, we employ integrated Calm, Move, and Nourish modules that are tailored to your gut type. \n\nEvery meal is scheduled based on the Metabolic nature of your gut and its relationship to your biological clock. This implies that each food item at each meal time has a distinct role in resetting your gut's functionality by adjusting to your biological clock. "
-              : "Lorem ipsum is simply dummy text of the printing and typesetting industry.Lorem ipsum has been the industry's standard dummy text ever since the 1500s,when an unknown printer took a gallery of type and scrambled it to make a type specimen book.",
+              : "Congratulations on completing your detox and healing program. Now, let us begin your transition days to enter a normal routine, for optimal healthy gut.",
           textAlign: TextAlign.justify,
           style: TextStyle(
               height: 1.5,
@@ -138,18 +141,35 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
           );
         }
         else if(widget.from == ProgramMealType.program.name){
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const MealPlanScreen(),
-            ),
-          );
+          if(widget.isPrepCompleted != null && widget.isPrepCompleted == false){
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const PrepratoryMealCompletedScreen(),
+              ),
+            );
+          }
+          else{
+            final mealUrl = _pref!.getString(AppConfig().receipeVideoUrl);
+            final trackerUrl = _pref!.getString(AppConfig().trackerVideoUrl);
+
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => MealPlanScreen(
+                  receipeVideoLink: mealUrl,
+                  trackerVideoLink: trackerUrl,
+                ),
+              ),
+            );
+          }
         }
         else if(widget.from == ProgramMealType.transition.name){
+          final trackerUrl = _pref!.getString(AppConfig().trackerVideoUrl);
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => TransitionMealPlanScreen(dayNumber: "1",totalDays: "1",),
+              builder: (context) => TransitionMealPlanScreen(dayNumber: "1",totalDays: "1",trackerVideoLink: trackerUrl,),
             ),
           );
         }

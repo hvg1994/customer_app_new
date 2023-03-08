@@ -5,8 +5,8 @@ class TransitionMealModel {
   String? note;
   String? totalDays;
   String? currentDay;
-  int? currentDayStatus;
-  int? previousDayStatus;
+  String? currentDayStatus;
+  String? previousDayStatus;
   String? isTransMealCompleted;
   Data? data;
 
@@ -19,8 +19,8 @@ class TransitionMealModel {
     note = json['note'];
     totalDays = json['days'];
     currentDay = json['current_day'];
-    currentDayStatus =json['current_day_status'];
-    previousDayStatus = json['previous_day_status'];
+    currentDayStatus =json['current_day_status'].toString();
+    previousDayStatus = json['previous_day_status'].toString();
     isTransMealCompleted = json['is_trans_completed'];
     data = json['data'] != null ? Data.fromJson(json['data']) : null;
   }

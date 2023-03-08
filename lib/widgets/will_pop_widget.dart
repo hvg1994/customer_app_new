@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gwc_customer/utils/app_config.dart';
 import 'package:gwc_customer/widgets/constants.dart';
+import 'package:gwc_customer/widgets/exit_widget.dart';
 import 'package:sizer/sizer.dart';
 
 class WillPopWidget extends StatefulWidget {
@@ -28,7 +29,7 @@ class _WillPopWidgetState extends State<WillPopWidget> {
   Future<bool> _onWillPop() async {
     // ignore: avoid_print
     print('back pressed splash');
-    return AppConfig().showSheet(context, exitWidget(), bottomSheetHeight: 45.h) ??
+    return AppConfig().showSheet(context, ExitWidget(), bottomSheetHeight: 45.h) ??
     // return await showDialog(
     //         context: context,
     //         builder: (context) => AlertDialog(

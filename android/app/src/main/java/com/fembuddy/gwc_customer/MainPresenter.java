@@ -56,14 +56,20 @@ public class MainPresenter extends AppCompatActivity implements BandyerModuleObs
     protected Activity mContext;
 
     EventChannel.EventSink events;
+// producation
+    String apiKey = "ak_live_d2ad6702fe931fbeb2fa9cb4";
+    String appId = "mAppId_a4908f3e2fa60c828daff5e875b0af422545696fa0bffa76d614489aae8d";
 
+//    String apiKey = "ak_live_c1ef0ed161003e0a2b419d20";
+//    String appId = "mAppId_002b0de9c8982a72afd4524b1b539313a7f044871c2e6225d691015cb8d9";
 
-    String apiKey = "ak_live_c1ef0ed161003e0a2b419d20";
-    String appId = "mAppId_002b0de9c8982a72afd4524b1b539313a7f044871c2e6225d691015cb8d9";
+//    Environment environment = Environment.Sandbox.INSTANCE; // or Environment.Sandbox.INSTANCE
+//
+//    Region region = Region.Eu.INSTANCE;
 
-    Environment environment = Environment.Sandbox.INSTANCE; // or Environment.Sandbox.INSTANCE
+    Environment environment = Environment.Production.INSTANCE; // or Environment.Sandbox.INSTANCE
 
-    Region region = Region.Eu.INSTANCE;
+    Region region = Region.In.INSTANCE;
 
     String resultValue = "";
     HashMap resultMap = new HashMap();

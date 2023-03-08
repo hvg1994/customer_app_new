@@ -74,7 +74,7 @@ class _PPLevelsScreenState extends State<PPLevelsScreen> {
     // TODO: implement initState
     super.initState();
     getPPCalendar();
-    getPPGuidePdfLink();
+    // getPPGuidePdfLink();
   }
 
   getPPGuidePdfLink() async{
@@ -224,7 +224,7 @@ class _PPLevelsScreenState extends State<PPLevelsScreen> {
                               levels[index].title,
                               textAlign: TextAlign.center,
                               style: TextStyle(
-                                  fontFamily: "GothamBook",
+                                  fontFamily: kFontBook,
                                   height: 1.3,
                                   color: gsecondaryColor,
                                   fontSize: 10.sp),
@@ -371,7 +371,7 @@ class _PPLevelsScreenState extends State<PPLevelsScreen> {
                                 "Day\n${levels[index].stage}",
                                 textAlign: TextAlign.center,
                                 style: TextStyle(height: 1.3,
-                                    fontFamily: 'GothamBook',
+                                    fontFamily: kFontBook,
                                     color: gWhiteColor,
                                     fontSize: 10.sp),
                               ),

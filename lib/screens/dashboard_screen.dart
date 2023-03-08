@@ -10,10 +10,12 @@ import 'package:gwc_customer/screens/profile_screens/reward/reward_screen.dart';
 import 'package:gwc_customer/screens/profile_screens/settings_screen.dart';
 import 'package:gwc_customer/screens/program_plans/day_tracker_ui/day_tracker.dart';
 import 'package:gwc_customer/screens/testimonial_list_screen/testimonial_list_screen.dart';
+import 'package:gwc_customer/widgets/exit_widget.dart';
 import 'package:sizer/sizer.dart';
 import 'package:gwc_customer/screens/home_screens/level_status.dart';
 import 'package:gwc_customer/screens/profile_screens/reward/levels_screen.dart';
 import '../../widgets/constants.dart';
+import '../utils/app_config.dart';
 import 'clap_screens/clap_screen.dart';
 import 'feed_screens/feeds_list.dart';
 import 'gut_list_screens/gut_list.dart';
@@ -71,9 +73,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
     switch (index) {
       case 0:
         {
-          return NewDashboardScreen();
+          // return GutListOld();
           // this one
-          // return LevelStatus();
+          return LevelStatus();
 
           // return DayMealTracerUI(proceedProgramDayModel: ProceedProgramDayModel(),);
         }
@@ -183,92 +185,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           });
         }
       } else{
-        showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-              backgroundColor: kPrimaryColor,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(15.0.sp))),
-              contentPadding: EdgeInsets.only(top: 1.h),
-              content: Container(
-                padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 2.h),
-                decoration: BoxDecoration(
-                    color: gWhiteColor, borderRadius: BorderRadius.circular(8)),
-                width: 50.h,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Text(
-                      'Are you sure?',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          fontFamily: "GothamRoundedBold_21016",
-                          color: gPrimaryColor,
-                          fontSize: 13.sp),
-                    ),
-                    Container(
-                      margin: EdgeInsets.symmetric(vertical: 2.h),
-                      height: 1,
-                      color: Colors.grey.withOpacity(0.3),
-                    ),
-                    Text(
-                      'Do you want to exit an App?',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          fontFamily: "GothamMedium",
-                          color: gsecondaryColor,
-                          fontSize: 11.sp),
-                    ),
-                    SizedBox(height: 3.h),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        GestureDetector(
-                          onTap: () => Navigator.of(context).pop(false),
-                          child: Container(
-                            padding: EdgeInsets.symmetric(
-                                vertical: 1.h, horizontal: 5.w),
-                            decoration: BoxDecoration(
-                                color: gMainColor,
-                                borderRadius: BorderRadius.circular(5)),
-                            child: Text(
-                              "NO",
-                              style: TextStyle(
-                                fontFamily: "GothamRoundedBold_21016",
-                                color: gPrimaryColor,
-                                fontSize: 11.sp,
-                              ),
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: 5.w),
-                        GestureDetector(
-                          onTap: () => SystemNavigator.pop(),
-                          child: Container(
-                            padding: EdgeInsets.symmetric(
-                                vertical: 1.h, horizontal: 5.w),
-                            decoration: BoxDecoration(
-                                color: gPrimaryColor,
-                                borderRadius: BorderRadius.circular(5)),
-                            child: Text(
-                              "YES",
-                              style: TextStyle(
-                                fontFamily: "GothamRoundedBold_21016",
-                                color: gMainColor,
-                                fontSize: 11.sp,
-                              ),
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                    SizedBox(height: 1.h)
-                  ],
-                ),
-              ),
-            ));
+        AppConfig().showSheet(context, ExitWidget(), bottomSheetHeight: 45.h);
       }
     });
     return Future.value(false);

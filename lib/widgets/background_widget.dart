@@ -14,7 +14,7 @@ class BackgroundWidget extends StatelessWidget {
       decoration: BoxDecoration(
         image: DecorationImage(
           image: AssetImage(assetName.toString()),
-         fit: BoxFit.fill,
+         fit: BoxFit.cover,
           colorFilter: const ColorFilter.mode(gsecondaryColor, BlendMode.darken)
         ),
         // gradient: LinearGradient(

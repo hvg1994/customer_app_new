@@ -43,9 +43,9 @@ class ConsultationRejected extends StatelessWidget {
                         ),
                       ),
                       SizedBox(height: 2.h),
-                      Expanded(
+                      Flexible(
                         child: Text(
-                          "Your consultation has been rejected our success Team will get back to you soon ",
+                          "Your consultation has been rejected\nOur success Team will get back to you soon ",
                               // "Your Medical Report is getting ready and will be uploaded within 24 hours",
                           textAlign: TextAlign.center,
                           style: TextStyle(
@@ -55,7 +55,7 @@ class ConsultationRejected extends StatelessWidget {
                               fontSize: 12.sp),
                         ),
                       ),
-                      SizedBox(height: 1.h),
+                      SizedBox(height: 5.h),
                       Text(
                         this.reason ?? "hkkbft",
                         textAlign: TextAlign.center,
@@ -66,6 +66,7 @@ class ConsultationRejected extends StatelessWidget {
                             fontSize: 10.sp),
                       ),
                       SizedBox(height: 2.h),
+
                     ],
                   )
               ),

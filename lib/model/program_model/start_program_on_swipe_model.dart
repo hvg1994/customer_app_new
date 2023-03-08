@@ -36,9 +36,9 @@ class Response {
   String? spCurrentDay;
   String? prepDays;
   String? prepExtended;
-  int? prepProgram;
+  String? prepProgram;
   String? ppDate;
-  int? ppCurrentDay;
+  String? ppCurrentDay;
   bool? isPrepCompleted;
   String? transDays;
   String? transProgram;
@@ -71,21 +71,21 @@ class Response {
 
   Response.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    userId = json['user_id'];
-    programId = json['program_id'];
-    isActive = json['is_active'];
-    startProgram = json['start_program'];
-    spDate = json['sp_date'];
+    userId = json['user_id'].toString();
+    programId = json['program_id'].toString();
+    isActive = json['is_active'].toString();
+    startProgram = json['start_program'].toString();
+    spDate = json['sp_date'].toString();
     spCurrentDay = json['sp_current_day'].toString();
-    prepDays = json['prep_days'];
-    prepExtended = json['prep_extended'];
-    prepProgram = json['prep_program'];
-    ppDate = json['pp_date'];
-    ppCurrentDay = json['pp_current_day'];
+    prepDays = json['prep_days'].toString();
+    prepExtended = json['prep_extended'].toString();
+    prepProgram = json['prep_program'].toString();
+    ppDate = json['pp_date'].toString();
+    ppCurrentDay = json['pp_current_day'].toString();
     isPrepCompleted = json['is_prep_completed'] == "0" ? false : true;
-    transDays = json['trans_days'];
-    transProgram = json['trans_program'];
-    tpDate = json['tp_date'];
+    transDays = json['trans_days'].toString();
+    transProgram = json['trans_program'].toString();
+    tpDate = json['tp_date'].toString();
     tpCurrentDay = json['tp_current_day'].toString();
     isTransCompleted = json['is_trans_completed'] == "0"? false : true;
     createdAt = json['created_at'];

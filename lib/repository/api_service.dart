@@ -854,14 +854,43 @@ class ApiClient {
     print(user);
     var result;
     try {
-      final response = await httpClient
-          .post(Uri.parse(path),
-              headers: {
-                // "Authorization": "Bearer ${AppConfig().bearerToken}",
-                "Authorization": getHeaderToken(),
-              },
-              body: user)
-          .timeout(const Duration(seconds: 45));
+      var request = http.MultipartRequest('POST', Uri.parse(path));
+      var headers = {
+        // "Authorization": "Bearer ${AppConfig().bearerToken}",
+        "Authorization": getHeaderToken(),
+      };
+      Map bodyParam = {};
+      user.forEach((key, value) {
+        if(key != 'photo'){
+          bodyParam.putIfAbsent(key, () => value);
+        }
+      });
+
+      request.fields.addAll(Map.from(bodyParam));
+
+
+      print("bodyParam: ${bodyParam}");
+      if(user['photo'] != null) request.files.add(user['photo']);
+
+      print(request.files);
+
+
+      // reportList.forEach((element) async {
+      //   request.files.add(await http.MultipartFile.fromPath('files[]', element));
+      // });
+      request.headers.addAll(headers);
+
+      var response = await http.Response.fromStream(await request.send())
+          .timeout(Duration(seconds: 50));
+
+      // final response = await httpClient
+      //     .post(Uri.parse(path),
+      //         headers: {
+      //           // "Authorization": "Bearer ${AppConfig().bearerToken}",
+      //           "Authorization": getHeaderToken(),
+      //         },
+      //         body: user)
+      //     .timeout(const Duration(seconds: 45));
 
       print("updateUserProfileApi response code:" +
           response.statusCode.toString());
@@ -1387,10 +1416,10 @@ class ApiClient {
       var response = await http.Response.fromStream(await request.send())
           .timeout(Duration(seconds: 45));
 
-      print("enquiryStatusApi response code:" + response.statusCode.toString());
-      print("enquiryStatusApi response body:" + response.body);
+      print("startProgramOnSwipeApi response code:" + response.statusCode.toString());
+      print("startProgramOnSwipeApi response body:" + response.body);
 
-      print("getAppointmentSlotListApi response body:" + response.body);
+      print("startProgramOnSwipeApi response body:" + response.body);
       var totalTime = DateTime.now().millisecondsSinceEpoch - startTime;
 
       print("response: $totalTime");
@@ -1774,9 +1803,14 @@ class ApiClient {
       };
       request.headers.addAll(headers);
 
-      request.fields.addAll({
-        'report_id': reportId
-      });
+      print(reportId);
+      print(reportId != "others");
+
+      if(reportId != "others"){
+        request.fields.addAll({
+          'report_id': reportId
+        });
+      }
       request.files.add(multipartFile);
 
       request.persistentConnection = false;
@@ -1999,6 +2033,7 @@ class ApiClient {
     String url = getHomeDetailsUrl;
     dynamic result;
 
+    print("getHomeDetailsApi: $url");
     try{
       final response = await httpClient.get(Uri.parse(url),
         headers: {
@@ -2008,9 +2043,12 @@ class ApiClient {
 
       if(response.statusCode == 200){
         final json = jsonDecode(response.body);
+        print("getHomeDetailsApi result: $json");
+
 
         if(json['status'].toString() == '200'){
           result = HomeScreenModel.fromJson(json);
+          print("getHomeDetailsApi serialize result: ${result}");
         }
         else{
           result = ErrorModel.fromJson(json);
@@ -2095,12 +2133,16 @@ class ApiClient {
           headers: {
             'Authorization': getHeaderToken(),
           });
-      //  print("PPCalendar response: ${response.body}");
-      final res = jsonDecode(response.body);
+       print("PPCalendar response: ${response.body}");
+       print(response.statusCode);
       if (response.statusCode == 200) {
+        final res = jsonDecode(response.body);
         result = ProtocolCalendarModel.fromJson(res);
         // print("PPCalendar: ${calendarEvents[0].date?.year}, ${calendarEvents[0].date?.month}, ${calendarEvents[0].date?.day}");
+      } else if(response.statusCode == 500){
+        result = ErrorModel(status: "0", message: AppConfig.oopsMessage);
       } else {
+        final res = jsonDecode(response.body);
         result = ErrorModel.fromJson(res);
       }
     }
@@ -2113,17 +2155,18 @@ class ApiClient {
   Future getKaleyraAccessTokenApi(String kaleyraUID) async{
     dynamic result;
     // production or sandbox
-    final environment = "sandbox"; 
+    final environment = "sandbox";
     final region = "eu";
-    
-    final endPoint = "https://cs.${environment}.${region}.bandyer.com";
+    // testing api key: ak_live_c1ef0ed161003e0a2b419d20
+    // final endPoint = "https://cs.${environment}.${region}.bandyer.com";
+    final endPoint = "https://api.in.bandyer.com";
     
     final String url = "$endPoint/rest/sdk/credentials";
     try{
-      
+
       final response = await httpClient.post(Uri.parse(url),
         headers: {
-        'apikey': 'ak_live_c1ef0ed161003e0a2b419d20'
+        'apikey': 'ak_live_d2ad6702fe931fbeb2fa9cb4'
         },
         body: {
         "user_id": kaleyraUID

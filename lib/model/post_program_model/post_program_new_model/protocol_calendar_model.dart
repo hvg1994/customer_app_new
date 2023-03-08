@@ -30,7 +30,7 @@ class ProtocolCalendarModel {
         status: json["status"],
         errorCode: json["errorCode"],
         key: json["key"],
-        presentDay: json['current_day'] < 10 ? '0${json['current_day']}' : json['current_day'].toString(),
+        presentDay: json['present_day'] < 10 ? '0${json['present_day']}' : json['present_day'].toString(),
         protocolCalendar: List<ProtocolCalendar>.from(
             json["protocol_calendar"].map((x) => ProtocolCalendar.fromJson(x))),
       );

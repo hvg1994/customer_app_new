@@ -39,6 +39,8 @@ import 'package:flutter_sim_country_code/flutter_sim_country_code.dart';
 import 'package:gwc_customer/repository/quick_blox_repository/quick_blox_repository.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
+import 'screens/notification_screen.dart';
+
 
 
 
@@ -72,12 +74,30 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   void initState() {
-    deviceId = _pref.getString(AppConfig().deviceId);
-    getEnquiryStatus(deviceId!);
+    getDeviceId();
     super.initState();
     runAllAsync();
     listenMessages();
   }
+  Future getDeviceId() async{
+    final _pref = AppConfig().preferences;
+    await AppConfig().getDeviceId().then((id) {
+      print("deviceId: $id");
+      if(id != null){
+        _pref!.setString(AppConfig().deviceId, id);
+        getEnquiryStatus(id!);
+      }
+    });
+
+    // this is for getting the state and city name
+    // this was not using currently
+    String? n = await FlutterSimCountryCode.simCountryCode;
+    print("country: $n");
+    if(n!= null) _pref!.setString(AppConfig.countryCode, n);
+    // print("country_code:${n}");
+
+  }
+
   runAllAsync() async{
     await Future.wait([
       getPermission(),
@@ -89,6 +109,8 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future getSession() async{
     await notificationFunction();
+    LocalNotificationService.initialize(onClickedNotifications);
+
 
     final _qbService = Provider.of<QuickBloxService>(context, listen: false);
     final res = await _qbService.getSession();
@@ -101,15 +123,16 @@ class _SplashScreenState extends State<SplashScreen> {
 
   void onClickedNotifications(String? payload)
   {
-    print("on notification click: $payload");
-    // Navigator.of(context).push(
-    //   MaterialPageRoute(
-    //     builder: (context) => const NotificationsList(),
-    //   ),
-    // );
+    // print("on notification click: $payload");
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const NotificationScreen(),
+      ),
+    );
   }
 
   listenMessages(){
+    print("listenMessages");
     FirebaseMessaging.instance.getInitialMessage().then(
           (message) {
         print("FirebaseMessaging.instance.getInitialMessage");
@@ -134,6 +157,12 @@ class _SplashScreenState extends State<SplashScreen> {
           print(message.notification!.title);
           print(message.notification!.body);
           print("message.data11 ${message.data}");
+          //message.data11 {notification_type: shopping, tag_id: ,
+          // body: Your shopping list has been uploaded. Enjoy!, title: Shopping List, user: user}
+          // W/dy.gwc_custome(31771): Reducing the number of considered missed Gc histogram windows from 150 to 100
+          // I/flutter (31771): message recieved: {senderId: null, category: null, collapseKey: com.fembuddy.gwc_customer, contentAvailable: false, data: {notification_type: shopping, tag_id: , body: Your shopping list has been uploaded. Enjoy!, title: Shopping List, user: user}, from: 223001521272, messageId: 0:1677744200702793%021842b3021842b3, messageType: null, mutableContent: false, notification: {title: Shopping List, titleLocArgs: [], titleLocKey: null, body: Your shopping list has been uploaded. Enjoy!, bodyLocArgs: [], bodyLocKey: null, android: {channelId: null, clickAction: null, color: null, count: null, imageUrl: null, link: null, priority: 0, smallIcon: null, sound: default, ticker: null, tag: null, visibility: 0}, apple: null, web: null}, sentTime: 1677744200683, threadId: null, ttl: 2419200}
+          // I/flutter (31771): Notification Message: {senderId: null, category: null, collapseKey: com.fembuddy.gwc_customer, contentAvailable: false, data: {notification_type: shopping, tag_id: , body: Your shopping list has been uploaded. Enjoy!, title: Shopping List, user: user}, from: 223001521272, messageId: 0:1677744200702793%021842b3021842b3, messageType: null, mutableContent: false, notification: {title: Shopping List, titleLocArgs: [], titleLocKey: null, body: Your shopping list has been uploaded. Enjoy!, bodyLocArgs: [], bodyLocKey: null, android: {channelId: null, clickAction: null, color: null, count: null, imageUrl: null, link: null, priority: 0, smallIcon: null, sound: default, ticker: null, tag: null, visibility: 0}, apple: null, web: null}, sentTime: 1677744200683, threadId: null, ttl: 2419200}
+
           LocalNotificationService.createanddisplaynotification(message);
         }
       },

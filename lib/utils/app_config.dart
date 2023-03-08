@@ -35,7 +35,6 @@ class AppConfig{
   static const String QB_CURRENT_USERID = 'curr_userId';
   static const String GET_QB_SESSION = 'qb_session';
   static const String IS_QB_LOGIN = 'is_qb_login';
-  static const String KALEYRA_USER_ID = 'kaleyra_uid';
 
 
   static const String QB_USERNAME = 'qb_username';
@@ -49,6 +48,10 @@ class AppConfig{
   final String shipRocketPassword = "adithya7224";
 
 
+  final String trackerVideoUrl = "tracker_meal_video";
+  final String receipeVideoUrl = "reciepe_meal_video";
+
+
 
   static const String isFirstTime = "isFirstTime";
 
@@ -59,8 +62,11 @@ class AppConfig{
   static const String SHIPPING_ADDRESS = "ship_address";
   static const String User_Name = "userName";
   static const String USER_ID = "userId";
+  /// this is for making direct voice call to success team
   static const String KALEYRA_SUCCESS_ID = "kaleyra_success_id";
   static const String KALEYRA_ACCESS_TOKEN = "kaleyra_access_token";
+  static const String KALEYRA_USER_ID = 'kaleyra_uid';
+
 
 
   static const String countryCode = "COUNTRY_CODE";
@@ -133,80 +139,95 @@ class AppConfig{
   }
 
   showSheet(BuildContext context, Widget widget,
-      {double? bottomSheetHeight, String? circleIcon, Color? topColor}){
+      {bool sheetForLogin = false,double? bottomSheetHeight, String? circleIcon, Color? topColor}){
     return showModalBottomSheet(
         isScrollControlled: true,
         isDismissible: false,
         enableDrag: false,
         context: context,
         backgroundColor: Colors.transparent,
-        builder: (_) {
-          return Container(
-            decoration: const BoxDecoration(
-              color: gBackgroundColor,
-              borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(22),
-                  topRight: Radius.circular(22)
-              ),
-            ),
-            height: bottomSheetHeight ?? 50.h,
-            child: Stack(
-              children: [
-                Column(
-                  children: [
-                    Container(
-                      height: 15.h,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(22),
-                        color: topColor ?? kBottomSheetHeadYellow,
-                      ),
-                      child: Center(
-                        child: Image.asset(bsHeadStarsIcon,
-                          alignment: Alignment.topRight,
-                          fit: BoxFit.scaleDown,
-                          width: 30.w,
-                          height: 10.h,
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 7.h,
-                    ),
-                    Expanded(
-                      child: SingleChildScrollView(
-                        child: widget,
-                      ),
-                    )
-
-                  ],
-                ),
-                Positioned(
-                    top: 8.h,
-                    left: 5,
-                    right: 5,
-                    child: Container(
-                        decoration: BoxDecoration(
-                          // color: Colors.white,
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(blurRadius: 5, color: gHintTextColor.withOpacity(0.8))
-                          ],
-                        ),
-                        child: CircleAvatar(
-                          maxRadius: 40.sp,
-                          backgroundColor: kBottomSheetHeadCircleColor,
-                          child: Image.asset(circleIcon ?? bsHeadBellIcon,
-                            fit: BoxFit.scaleDown,
-                            width: 45,
-                            height: 45,
-                          ),
-                        )
-                    )
-                )
-              ],
-            ),
+        builder: (ctx) {
+          return (sheetForLogin)
+              ? AnimatedPadding(
+              padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+          duration: const Duration(milliseconds: 100),
+            child: commonBottomSheetView(context, widget,
+              bottomSheetHeight: bottomSheetHeight, circleIcon: circleIcon, topColor: topColor, sheetForLogin: true),
+          )
+              : commonBottomSheetView(context, widget,
+            bottomSheetHeight: bottomSheetHeight, circleIcon: circleIcon, topColor: topColor
           );
         }
+    );
+  }
+
+  commonBottomSheetView(BuildContext context, Widget widget,
+      {bool sheetForLogin = false,double? bottomSheetHeight, String? circleIcon, Color? topColor}){
+    return Container(
+      decoration: const BoxDecoration(
+        color: gBackgroundColor,
+        borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(22),
+            topRight: Radius.circular(22)
+        ),
+      ),
+      padding: (sheetForLogin) ? null : EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      height: bottomSheetHeight ?? 50.h,
+      child: Stack(
+        children: [
+          Column(
+            children: [
+              Container(
+                height: 15.h,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(22),
+                  color: topColor ?? kBottomSheetHeadYellow,
+                ),
+                child: Center(
+                  child: Image.asset(bsHeadStarsIcon,
+                    alignment: Alignment.topRight,
+                    fit: BoxFit.scaleDown,
+                    width: 30.w,
+                    height: 10.h,
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 7.h,
+              ),
+              Flexible(
+                child: SingleChildScrollView(
+                  child: widget,
+                ),
+              )
+
+            ],
+          ),
+          Positioned(
+              top: 8.h,
+              left: 5,
+              right: 5,
+              child: Container(
+                  decoration: BoxDecoration(
+                    // color: Colors.white,
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(blurRadius: 5, color: gHintTextColor.withOpacity(0.8))
+                    ],
+                  ),
+                  child: CircleAvatar(
+                    maxRadius: 40.sp,
+                    backgroundColor: kBottomSheetHeadCircleColor,
+                    child: Image.asset(circleIcon ?? bsHeadBellIcon,
+                      fit: BoxFit.scaleDown,
+                      width: 45,
+                      height: 45,
+                    ),
+                  )
+              )
+          )
+        ],
+      ),
     );
   }
 

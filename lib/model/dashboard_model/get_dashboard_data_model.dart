@@ -56,7 +56,7 @@ class GetDashboardDataModel {
 
 
     if(json['Consulation'] != null){
-      if(json['Consulation']['value'].runtimeType == String){
+      if(json['Consulation']['value'].runtimeType == String || json['Consulation']['data'] == 'consultation_rejected'){
         normal_consultation = GutDataModel.fromJson(json['Consulation']);
       }
       else{

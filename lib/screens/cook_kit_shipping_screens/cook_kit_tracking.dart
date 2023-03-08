@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:gwc_customer/model/error_model.dart';
 import 'package:gwc_customer/model/ship_track_model/shopping_model/get_shopping_model.dart';
 import 'package:gwc_customer/screens/gut_list_screens/gut_list.dart';
+import 'package:gwc_customer/screens/gut_list_screens/new_dashboard_stages.dart';
 import 'package:intl/intl.dart';
 import 'package:sizer/sizer.dart';
 import 'package:http/http.dart' as http;
@@ -163,90 +164,99 @@ class _CookKitTrackingState extends State<CookKitTracking>{
   }
 
   tableView(){
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: DataTable(
-          headingTextStyle: TextStyle(
-            color: gWhiteColor,
-            fontSize: 5.sp,
-            fontFamily: kFontMedium,
-          ),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(8), topRight: Radius.circular(8)),
-            // color: tableHeadingBg,
-          ),
-          headingRowHeight: 5.h,
-          headingRowColor: MaterialStateProperty.all(tableHeadingBg),
-          horizontalMargin: 2.w,
-          columnSpacing: 40.w,
-          dataRowHeight: 7.h,
-          // headingRowColor: MaterialStateProperty.all(const Color(0xffE06666)),
-          columns:  <DataColumn>[
-            DataColumn(
-              label: Text('Item Name',
-                style: TextStyle(
-                  height: 1.5,
-                  color: eUser().userFieldLabelColor,
-                  fontSize: 11.sp,
-                  fontFamily: kFontBold,
-                ),
-              ),
+    return MediaQuery(
+      data: MediaQuery.of(context).copyWith(textScaleFactor: 0.8),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: DataTable(
+            headingTextStyle: TextStyle(
+              color: gWhiteColor,
+              fontSize: 5.sp,
+              fontFamily: kFontMedium,
             ),
-            DataColumn(
-              label: ConstrainedBox(
-                constraints: const BoxConstraints(
-                  maxWidth: 80,
-                  minWidth: 20,
-                ),
-                child: Text('Category',
-                  textAlign: TextAlign.right,
-                  style: TextStyle(
-                    height: 1.5,
-                    color: eUser().userFieldLabelColor,
-                    fontSize: 11.sp,
-                    fontFamily: kFontBold,
-                  ),
-                ),
-              ),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(8), topRight: Radius.circular(8)),
+              // color: tableHeadingBg,
             ),
-          ],
-          rows: [
-            ...shoppingList.map((e) => DataRow(
-              cells: [
-                DataCell(
-                    Text(
-                      e.ingredients?.name ?? '',
-                      // sortedData.entries.elementAt(index).value[ind].mealItemWeight?.mealItem?.name?.trimLeft() ?? '',
-                      textAlign: TextAlign.left,
-                      style: TextStyle(
-                        height: 1.5,
-                        color: gTextColor,
-                        fontSize: 8.sp,
-                        fontFamily: kFontBold,
-                      ),
-                    )
-                ),
-                DataCell(
-                  Text(
-                    e.ingredients?.childIngredientCategory?.name ?? '',
-                    // sortedData.entries.elementAt(index).value[ind].itemWeight?.trim() ?? '',
-                    // " ${value[ind].itemWeight}" ?? '',
-                    // maxLines: 3,
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
+            headingRowHeight: 5.h,
+            headingRowColor: MaterialStateProperty.all(tableHeadingBg),
+            horizontalMargin: 2.w,
+            columnSpacing: 20.w,
+            dataRowHeight: 7.h,
+            // headingRowColor: MaterialStateProperty.all(const Color(0xffE06666)),
+            columns:  <DataColumn>[
+              DataColumn(
+                label: IntrinsicWidth(
+                  child: Text('Item Name',
                     style: TextStyle(
                       height: 1.5,
-                      color: gTextColor,
-                      fontSize: 8.sp,
-                      fontFamily: kFontBook,
+                      color: eUser().userFieldLabelColor,
+                      fontSize: 11.sp,
+                      fontFamily: kFontBold,
                     ),
                   ),
-                  placeholder: true,
                 ),
-              ],
-            )).toList()
-          ]
+              ),
+              DataColumn(
+                label: ConstrainedBox(
+                  constraints: const BoxConstraints(
+                    maxWidth: 80,
+                    minWidth: 20,
+                  ),
+                  child: Text('Category',
+                    textAlign: TextAlign.right,
+                    style: TextStyle(
+                      height: 1.5,
+                      color: eUser().userFieldLabelColor,
+                      fontSize: 11.sp,
+                      fontFamily: kFontBold,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+            rows: [
+              ...shoppingList.map((e) => DataRow(
+                cells: [
+                  DataCell(
+                      IntrinsicWidth(
+                        child: Text(
+                          e.ingredients?.name ?? '',
+                          // sortedData.entries.elementAt(index).value[ind].mealItemWeight?.mealItem?.name?.trimLeft() ?? '',
+                          textAlign: TextAlign.left,
+                          style: TextStyle(
+                            height: 1.5,
+                            color: gTextColor,
+                            fontSize: 8.sp,
+                            fontFamily: kFontBold,
+                          ),
+                        ),
+                      )
+                  ),
+                  DataCell(
+                    IntrinsicWidth(
+                      child: Text(
+                        e.ingredients?.childIngredientCategory?.name ?? '',
+                        // sortedData.entries.elementAt(index).value[ind].itemWeight?.trim() ?? '',
+                        // " ${value[ind].itemWeight}" ?? '',
+                        // maxLines: 3,
+                        textAlign: TextAlign.center,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          height: 1.5,
+                          color: gTextColor,
+                          fontSize: 8.sp,
+                          fontFamily: kFontBook,
+                        ),
+                      ),
+                    ),
+                    placeholder: true,
+                  ),
+                ],
+              )).toList()
+            ]
+        ),
       ),
     );
   }

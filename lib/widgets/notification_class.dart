@@ -11,7 +11,6 @@ notificationFunction() async{
 
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
-  LocalNotificationService.initialize();
 }
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {

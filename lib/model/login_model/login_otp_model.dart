@@ -7,8 +7,19 @@ class LoginOtpModel {
   String? kaleyraUserId;
   String? kaleyraSuccessId;
   String? userEvaluationStatus;
+  String? chatId;
+  String? loginUsername;
 
-  LoginOtpModel({this.status, this.accessToken, this.tokenType, this.userEvaluationStatus, this.kaleyraUserId, this.kaleyraSuccessId});
+  LoginOtpModel({
+    this.status,
+    this.accessToken,
+    this.tokenType,
+    this.userEvaluationStatus,
+    this.kaleyraUserId,
+    this.kaleyraSuccessId,
+    this.chatId,
+    this.loginUsername,
+  });
 
   LoginOtpModel.fromJson(Map<String, dynamic> json) {
     status = json['status'].toString();
@@ -17,6 +28,8 @@ class LoginOtpModel {
     kaleyraUserId = json['user_kaleyra_id'].toString();
     kaleyraSuccessId = json['success_team_kaleyra_id'].toString();
     userEvaluationStatus = json['user_status'].toString();
+    chatId = json['chat_id'].toString();
+    loginUsername = json['login_username'].toString();
   }
 
   Map<String, dynamic> toJson() {
@@ -27,10 +40,13 @@ class LoginOtpModel {
     data['user_kaleyra_id'] = this.kaleyraUserId;
     data['success_team_kaleyra_id'] = this.kaleyraSuccessId;
     data['user_status'] = this.userEvaluationStatus;
+    data['chat_id'] = this.chatId;
+    data['login_username'] = this.loginUsername;
     return data;
   }
 }
 
-LoginOtpModel loginOtpFromJson(String str) => LoginOtpModel.fromJson(json.decode(str));
+LoginOtpModel loginOtpFromJson(String str) =>
+    LoginOtpModel.fromJson(json.decode(str));
 
 String loginOtpToJson(LoginOtpModel data) => json.encode(data.toJson());

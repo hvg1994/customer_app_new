@@ -4,14 +4,16 @@ class GetReportListModel {
   String? status;
   int? errorCode;
   String? key;
+  String? errorMsg;
   List<ChildReportListModel>? data;
 
-  GetReportListModel({this.status, this.errorCode, this.key, this.data});
+  GetReportListModel({this.status, this.errorCode, this.key, this.errorMsg, this.data});
 
   GetReportListModel.fromJson(Map<String, dynamic> json) {
     status = json['status'].toString();
     errorCode = json['errorCode'];
     key = json['key'];
+    errorMsg = json['errorMsg'];
     if (json['data'] != null) {
       data = <ChildReportListModel>[];
       json['data'].forEach((v) {
@@ -25,6 +27,7 @@ class GetReportListModel {
     data['status'] = this.status;
     data['errorCode'] = this.errorCode;
     data['key'] = this.key;
+    data['errorMsg'] = this.errorMsg;
     if (this.data != null) {
       data['data'] = this.data!.map((v) => v.toJson()).toList();
     }

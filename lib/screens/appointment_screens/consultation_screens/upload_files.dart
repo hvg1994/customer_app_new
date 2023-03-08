@@ -1,4 +1,5 @@
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gwc_customer/screens/program_plans/meal_pdf.dart';
@@ -23,6 +24,7 @@ import '../../../widgets/constants.dart';
 import '../../../widgets/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:async/async.dart';
+import 'dart:isolate';
 
 class UploadFiles extends StatefulWidget {
   bool isFromSettings;
@@ -283,7 +285,9 @@ class _UploadFilesState extends State<UploadFiles> {
           );
   }
 
-  Widget buildFile(File file, int index) {
+  /// type is to determine fuction called from others
+  /// to delete the item
+  Widget buildFile(File file, int index, {String? type}) {
     // final kb = file.size / 1024;
     // final mb = kb / 1024;
     // final size = (mb >= 1)
@@ -329,7 +333,7 @@ class _UploadFilesState extends State<UploadFiles> {
             ),
             InkWell(
               onTap: () {
-                _delete(index);
+                _delete(index, type: type);
                 setState(() {});
               },
               child: SvgPicture.asset(
@@ -348,19 +352,26 @@ class _UploadFilesState extends State<UploadFiles> {
     );
   }
 
-  void _delete(int index) {
+  void _delete(int index , {String? type}) {
     if (widget.isFromSettings) {
       files.removeAt(index);
       fileFormatList.removeAt(index);
     } else {
-      reportsObject[index].path = '';
+      if(type != null && type == "others"){
+        otherFilesObject.removeAt(index);
+      }
+      else{
+        reportsObject[index].path = '';
+      }
     }
     setState(() {});
+    print(otherFilesObject);
   }
 
   bool showUploadProgress = false;
 
   getDoctorRequestedReportList() async {
+    print("getDoctorRequestedReportList()");
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       openProgressDialog(context);
     });
@@ -410,18 +421,27 @@ class _UploadFilesState extends State<UploadFiles> {
   }
 
   getUserReportList() async {
-
+    print("getUserReportList");
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       openProgressDialog(context);
     });
     final res = await ReportService(repository: repository)
         .getUploadedReportListListService();
+    print(res.runtimeType);
     if (res.runtimeType == GetReportListModel) {
       GetReportListModel result = res;
-      setState(() {
-        showUploadProgress = false;
-        doctorRequestedReports.addAll(result.data!);
-      });
+      if(result.data != null){
+        setState(() {
+          showUploadProgress = false;
+          doctorRequestedReports.addAll(result.data!);
+        });
+      }
+      else{
+        if(result.errorMsg != null){
+          doctorRequestedReports = [];
+        }
+      }
+
       print("uSER rEPORTS: $doctorRequestedReports");
 
       Map reportObj = {};
@@ -466,6 +486,14 @@ class _UploadFilesState extends State<UploadFiles> {
               color: Colors.grey.withOpacity(0.3),
             ),
             SizedBox(height: 2.h),
+            (doctorRequestedReports.isEmpty) ? Padding(
+              padding:  EdgeInsets.symmetric(vertical: 15.h),
+              child: const Center(
+                child: Image(
+                  image: AssetImage("assets/images/no_data_found.png"),
+                ),
+              ),
+            ) :
             ListView.builder(
               scrollDirection: Axis.vertical,
               physics: const BouncingScrollPhysics(),
@@ -673,7 +701,7 @@ class _UploadFilesState extends State<UploadFiles> {
                       children: [
                         TextButton(
                             onPressed: () {
-                              getImageFromCamera();
+                              getImageFromCamera(type: type);
                               Navigator.pop(context);
                             },
                             child: Row(
@@ -735,10 +763,10 @@ class _UploadFilesState extends State<UploadFiles> {
     if (result.files.first.extension!.contains("pdf") ||
         result.files.first.extension!.contains("png") ||
         result.files.first.extension!.contains("jpg")) {
-      if (getFileSize(File(result.paths.first!)) <= 2) {
+      if (getFileSize(File(result.paths.first!)) <= 10) {
         print("filesize: ${getFileSize(File(result.paths.first!))}Mb");
         files.add(result.files.first);
-        addFilesToList(File(result.paths.first!));
+        // addFilesToList(File(result.paths.first!));
         if (type != null) {
           if (reportsObject.isNotEmpty) {
             reportsObject.forEach((element) {
@@ -747,10 +775,14 @@ class _UploadFilesState extends State<UploadFiles> {
               }
             });
           }
+          if(type == "others"){
+            otherFilesObject.add(result.paths.first ?? '');
+          }
+          print("otherFilesObject: $otherFilesObject");
         }
       } else {
         AppConfig()
-            .showSnackbar(context, "File size must be <2Mb", isError: true);
+            .showSnackbar(context, "File size must be <10Mb", isError: true);
       }
     } else {
       AppConfig().showSnackbar(context, "Please select png/jpg/Pdf files",
@@ -777,7 +809,7 @@ class _UploadFilesState extends State<UploadFiles> {
     setState(() {});
   }
 
-  Future getImageFromCamera() async {
+  Future getImageFromCamera({String? type}) async {
     var image = await ImagePicker.platform.pickImage(
       source: ImageSource.camera,
       imageQuality: 40
@@ -785,17 +817,31 @@ class _UploadFilesState extends State<UploadFiles> {
 
     setState(() {
       _image = File(image!.path);
-      if (getFileSize(_image!) <= 2) {
+      if (getFileSize(_image!) <= 10) {
         print("filesize: ${getFileSize(_image!)}Mb");
-        addFilesToList(_image!);
+        // addFilesToList(_image!);
+        if (type != null) {
+          if (reportsObject.isNotEmpty) {
+            reportsObject.forEach((element) {
+              if (element.id.toString().contains(type)) {
+                element.path = _image!.path ?? '';
+              }
+            });
+          }
+          if(type == "others"){
+            otherFilesObject.add(_image!.path ?? '');
+          }
+          print("otherFilesObject: $otherFilesObject");
+
+        }
       } else {
         print("filesize: ${getFileSize(_image!)}Mb");
 
         AppConfig()
-            .showSnackbar(context, "File size must be <2Mb", isError: true);
+            .showSnackbar(context, "File size must be <10Mb", isError: true);
       }
     });
-    print("captured image: ${_image}");
+    print("captured image: ${_image} ${_image!.path}");
   }
 
   buildReportList(String text,
@@ -913,6 +959,7 @@ class _UploadFilesState extends State<UploadFiles> {
     return isDone ?? false;
   }
 
+  List otherFilesObject = [];
   showRequestedReports(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -954,7 +1001,11 @@ class _UploadFilesState extends State<UploadFiles> {
                             isSingleIcon: (doctorRequestedReports[index].reportType! != "prescription"),
                             onTap: () {
                               if(doctorRequestedReports[index].reportType == "prescription"){
-                                Navigator.push(context, MaterialPageRoute(builder: (ctx)=> MealPdf(pdfLink: doctorRequestedReports[index].report! ,heading: "Prescription",)));
+                                Navigator.push(context, MaterialPageRoute(builder: (ctx)=> MealPdf(pdfLink: doctorRequestedReports[index].report!,
+                                  heading: "Prescription",
+                                  isVideoWidgetVisible: false,
+                                  headCircleIcon: bsHeadPinIcon
+                                )));
                               }
                               else{
                                 reportsObject.forEach((element) {
@@ -993,16 +1044,46 @@ class _UploadFilesState extends State<UploadFiles> {
           color: kLineColor,
         ),
         Visibility(
-          visible: false,
+          visible: true,
           child: Padding(
             padding: padding,
-            child: buildReportList('Prescription', isSingleIcon: false,
-                onTap: () async {
-              //open code
-              //     Navigator.push(context, MaterialPageRoute(builder: (ctx)=> MealPdf(pdfLink: url! ,)));
-                  var file = await getExternalStorageDirectory();
-              print(file!.path);
-            }),
+            child:Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ListTile(
+                  onTap: null,
+                  minVerticalPadding: 0,
+                  dense: true,
+                  // contentPadding: EdgeInsets.only(left: 0.0, right: 0.0),
+                  title: Text(
+                    "Others",
+                    style: TextStyle(
+                        fontSize: 10.sp,
+                        fontFamily: kFontBold,
+                        color: eUser().mainHeadingColor),
+                  ),
+                  trailing: GestureDetector(
+                      onTap: (){
+                        showChooserSheet(type:"others");
+                      },
+                      child: Icon(
+                        Icons.upload_outlined,
+                        color: gsecondaryColor,
+                      )),
+                ),
+                (otherFilesObject.isNotEmpty)
+                    ? ListView.builder(
+                  itemCount: otherFilesObject.length,
+                  shrinkWrap: true,
+                  itemBuilder: (context, index) {
+                    final file = File(otherFilesObject[index]);
+                    print("files===> $file");
+                    return buildFile(file, index, type: "others");
+                  },
+                )
+                    : const Divider(),
+              ],
+            ),
           ),
         ),
 
@@ -1033,6 +1114,13 @@ class _UploadFilesState extends State<UploadFiles> {
             reportsObject[i].path, reportsObject[i].id);
         // print("button res: $res  ${res.runtimeType}");
       }
+    }
+    if(otherFilesObject.isNotEmpty) {
+      otherFilesObject.forEach((element) async{
+        submitDoctorRequestedReport(element, "others").then((value) {
+          otherFilesObject.remove(element);
+        });
+      });
     }
   }
 

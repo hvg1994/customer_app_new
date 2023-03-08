@@ -268,7 +268,7 @@ class Program {
 class PostConsultation {
   String? consultationStatus;
   String? consultationPercentage;
-  int? rewardPoints;
+  PostRewardPoints? rewardPoints;
   String? text;
 
   PostConsultation(
@@ -280,7 +280,7 @@ class PostConsultation {
   PostConsultation.fromJson(Map<String, dynamic> json) {
     consultationStatus = json['consultation_status'];
     consultationPercentage = json['consultation_percentage'];
-    rewardPoints = json['reward_points'];
+    rewardPoints = (json['reward_points'].runtimeType != int) ? PostRewardPoints.fromJson(json['reward_points']) : null;
     text = json['text'];
   }
 
@@ -288,8 +288,28 @@ class PostConsultation {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['consultation_status'] = this.consultationStatus;
     data['consultation_percentage'] = this.consultationPercentage;
-    data['reward_points'] = this.rewardPoints;
+    data['reward_points'] = this.rewardPoints!.toJson();
     data['text'] = this.text;
+    return data;
+  }
+}
+
+class PostRewardPoints {
+  RewardPoints? rewardPoints;
+
+  PostRewardPoints({this.rewardPoints});
+
+  PostRewardPoints.fromJson(Map<String, dynamic> json) {
+    rewardPoints = json['reward_points'] != null
+        ? new RewardPoints.fromJson(json['reward_points'])
+        : null;
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    if (this.rewardPoints != null) {
+      data['reward_points'] = this.rewardPoints!.toJson();
+    }
     return data;
   }
 }

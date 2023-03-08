@@ -54,16 +54,16 @@ import 'package:gwc_customer/screens/appointment_screens/doctor_calender_time_sc
 import 'package:http/http.dart' as http;
 import 'List/program_stages_data.dart';
 
-class GutList extends StatefulWidget {
-  GutList({Key? key}) : super(key: key);
+class GutListOld extends StatefulWidget {
+  GutListOld({Key? key}) : super(key: key);
 
-  final GutListState myAppState=  GutListState();
+  final GutListOldState myAppState=  GutListOldState();
   @override
-  State<GutList> createState() => GutListState();
+  State<GutListOld> createState() => GutListOldState();
 
 }
 
-class GutListState extends State<GutList> {
+class GutListOldState extends State<GutListOld> {
 
   String lockedStage = 'assets/images/dashboard_stages/lock.png';
   String currentStage = 'assets/images/dashboard_stages/current_stage.png';
@@ -681,7 +681,7 @@ class GutListState extends State<GutList> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => MealPlanScreen(postProgramStage: postProgramStage,),
+            builder: (context) => MealPlanScreen(transStage: postProgramStage,),
           ),
         ).then((value) => reloadUI());
       }
@@ -848,7 +848,7 @@ class GutListState extends State<GutList> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => MealPlanScreen(postProgramStage: postProgramStage,),
+                              builder: (context) => MealPlanScreen(transStage: postProgramStage,),
                             ),
                           ).then((value) => reloadUI());
                         }
@@ -1413,7 +1413,7 @@ class GutListState extends State<GutList> {
         levels[4].stage = openedStage;
 
 
-        if((_transModel!.value!.isTransMealCompleted != null) && _transModel!.value!.isTransMealCompleted == true){
+        if((_transModel?.value!.isTransMealCompleted != null) && _transModel?.value?.isTransMealCompleted == true){
           levels[5].stage = openedStage;
         }
         else{

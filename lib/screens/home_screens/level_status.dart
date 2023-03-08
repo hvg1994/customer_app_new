@@ -5,6 +5,7 @@ import 'package:gwc_customer/screens/appointment_screens/consultation_screens/up
 import 'package:gwc_customer/screens/cook_kit_shipping_screens/cook_kit_tracking.dart';
 import 'package:gwc_customer/screens/evalution_form/evaluation_get_details.dart';
 import 'package:gwc_customer/screens/evalution_form/personal_details_screen.dart';
+import 'package:gwc_customer/widgets/comingsoon_widget.dart';
 import 'package:gwc_customer/widgets/constants.dart';
 import 'package:simple_circular_progress_bar/simple_circular_progress_bar.dart';
 import 'package:sizer/sizer.dart';
@@ -67,27 +68,30 @@ class _LevelStatusState extends State<LevelStatus> {
           body: FutureBuilder(
             future: levelFuture,
             builder: (_, snapshot){
-              if(snapshot.connectionState == ConnectionState.done){
-                if(snapshot.hasData){
-                  if(snapshot.data is ErrorModel){
-                    final model = snapshot.data as ErrorModel;
-                    print(model.message);
-                  }
-                  else{
-                    final model = snapshot.data as HomeScreenModel;
-                    addData(model);
-                    return showUI(model);
-                  }
-                }
-                else if(snapshot.hasError){
-                  final model = snapshot.data as ErrorModel;
-                  print(model.message);
-                }
-                else{
-                  return SizedBox();
-                }
-              }
-              return buildCircularIndicator();
+              return Center(
+                              child: ComingSoonWidget(imagePath: "assets/images/new_ds/coming_soon.json"),
+                            );
+              // if(snapshot.connectionState == ConnectionState.done){
+              //   if(snapshot.hasData){
+              //     if(snapshot.data is ErrorModel){
+              //       final model = snapshot.data as ErrorModel;
+              //       print(model.message);
+              //     }
+              //     else{
+              //       final model = snapshot.data as HomeScreenModel;
+              //       addData(model);
+              //       return showUI(model);
+              //     }
+              //   }
+              //   else if(snapshot.hasError){
+              //     final model = snapshot.data as ErrorModel;
+              //     print(model.message);
+              //   }
+              //   else{
+              //     return SizedBox();
+              //   }
+              // }
+              // return buildCircularIndicator();
             },
           )
       ),

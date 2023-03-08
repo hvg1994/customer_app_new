@@ -170,7 +170,8 @@ SnackbarController buildSnackBar(String title, String subTitle) {
   );
 }
 
-buildAppBar(VoidCallback func, {bool isBackEnable = true, bool showNotificationIcon = false, VoidCallback? notificationOnTap, bool showHelpIcon = false, VoidCallback? helpOnTap}) {
+buildAppBar(VoidCallback func, {bool isBackEnable = true, bool showNotificationIcon = false, VoidCallback? notificationOnTap, bool showHelpIcon = false, VoidCallback? helpOnTap,
+  bool showSupportIcon = false, VoidCallback? supportOnTap}) {
   return Row(
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
     children: [
@@ -210,20 +211,35 @@ buildAppBar(VoidCallback func, {bool isBackEnable = true, bool showNotificationI
         children: [
           Visibility(
             visible: showNotificationIcon,
-            child: IconButton(
-              icon: Icon(Icons.notifications_none_sharp,
-                color: gMainColor,
+            child: GestureDetector(
+              child: ImageIcon(AssetImage("assets/images/new_ds/notification.png"),
+                color: gHintTextColor,
               ),
-              onPressed: notificationOnTap,
+              onTap: notificationOnTap,
             ),
+          ),
+          SizedBox(
+            width: 2.w,
           ),
           Visibility(
             visible: showHelpIcon,
-            child: IconButton(
-              icon: Icon(Icons.help_outline_rounded,
-                color: gMainColor,
+            child: GestureDetector(
+              child: ImageIcon(AssetImage("assets/images/new_ds/help.png"),
+                color: gHintTextColor,
               ),
-              onPressed: helpOnTap,
+              onTap: helpOnTap,
+            ),
+          ),
+          SizedBox(
+            width: 2.w,
+          ),
+          Visibility(
+            visible: showSupportIcon,
+            child: GestureDetector(
+              child: ImageIcon(AssetImage("assets/images/new_ds/support.png"),
+                color: gHintTextColor,
+              ),
+              onTap: supportOnTap,
             ),
           ),
         ],

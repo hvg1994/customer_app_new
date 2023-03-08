@@ -156,26 +156,8 @@ class _MyAppState extends State<MyApp> {
     // TODO: implement initState
     super.initState();
     storeLastLogin();
-    getDeviceId();
   }
 
-  Future getDeviceId() async{
-    final _pref = AppConfig().preferences;
-    await AppConfig().getDeviceId().then((id) {
-      print("deviceId: $id");
-      if(id != null){
-        _pref!.setString(AppConfig().deviceId, id);
-      }
-    });
-
-    // this is for getting the state and city name
-    // this was not using currently
-    String? n = await FlutterSimCountryCode.simCountryCode;
-    print("country: $n");
-    if(n!= null) _pref!.setString(AppConfig.countryCode, n);
-    // print("country_code:${n}");
-
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -214,7 +196,7 @@ class _MyAppState extends State<MyApp> {
       DateTime prev = DateTime.fromMillisecondsSinceEpoch(date);
       print(prev);
       print('difference time: ${calculateDifference(prev)}');
-      if(calculateDifference(prev) == -1){
+      if(calculateDifference(prev).isNegative){
         _pref!.setBool(AppConfig.isLogin, false);
       }
     }

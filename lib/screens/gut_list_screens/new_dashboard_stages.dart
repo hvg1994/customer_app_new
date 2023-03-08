@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_vlc_player/flutter_vlc_player.dart';
 import 'package:gwc_customer/model/dashboard_model/get_appointment/get_appointment_after_appointed.dart';
 import 'package:gwc_customer/model/dashboard_model/get_dashboard_data_model.dart';
 import 'package:gwc_customer/model/dashboard_model/get_program_model.dart';
@@ -8,27 +9,38 @@ import 'package:gwc_customer/model/error_model.dart';
 import 'package:gwc_customer/model/profile_model/user_profile/user_profile_model.dart';
 import 'package:gwc_customer/model/ship_track_model/sipping_approve_model.dart';
 import 'package:gwc_customer/repository/api_service.dart';
+import 'package:gwc_customer/repository/chat_repository/message_repo.dart';
 import 'package:gwc_customer/repository/dashboard_repo/gut_repository/dashboard_repository.dart';
 import 'package:gwc_customer/repository/profile_repository/get_user_profile_repo.dart';
 import 'package:gwc_customer/repository/shipping_repository/ship_track_repo.dart';
 import 'package:gwc_customer/screens/appointment_screens/consultation_screens/consultation_rejected.dart';
 import 'package:gwc_customer/screens/appointment_screens/consultation_screens/medical_report_screen.dart';
 import 'package:gwc_customer/screens/appointment_screens/doctor_calender_time_screen.dart';
+import 'package:gwc_customer/screens/chat_support/message_screen.dart';
 import 'package:gwc_customer/screens/cook_kit_shipping_screens/cook_kit_tracking.dart';
 import 'package:gwc_customer/screens/evalution_form/evaluation_get_details.dart';
 import 'package:gwc_customer/screens/help_screens/help_screen.dart';
 import 'package:gwc_customer/screens/notification_screen.dart';
+import 'package:gwc_customer/screens/post_program_screens/new_post_program/pp_levels_demo.dart';
+import 'package:gwc_customer/screens/post_program_screens/new_post_program/pp_levels_screen.dart';
 import 'package:gwc_customer/screens/prepratory%20plan/prepratory_plan_screen.dart';
+import 'package:gwc_customer/screens/prepratory%20plan/schedule_screen.dart';
 import 'package:gwc_customer/screens/prepratory%20plan/transition_mealplan_screen.dart';
+import 'package:gwc_customer/screens/profile_screens/call_support_method.dart';
 import 'package:gwc_customer/screens/program_plans/meal_plan_screen.dart';
+import 'package:gwc_customer/services/chat_service/chat_service.dart';
 import 'package:gwc_customer/services/profile_screen_service/user_profile_service.dart';
+import 'package:gwc_customer/services/quick_blox_service/quick_blox_service.dart';
 import 'package:gwc_customer/services/shipping_service/ship_track_service.dart';
 import 'package:gwc_customer/widgets/constants.dart';
+import 'package:gwc_customer/widgets/open_alert_box.dart';
 import 'package:gwc_customer/widgets/widgets.dart';
 import 'package:jwt_decode/jwt_decode.dart';
+import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:sizer/sizer.dart';
 import 'package:http/http.dart' as http;
+import '../../model/message_model/get_chat_groupid_model.dart';
 import '../../repository/login_otp_repository.dart';
 import '../../services/dashboard_service/gut_service/dashboard_data_service.dart';
 import '../../services/login_otp_service.dart';
@@ -39,18 +51,20 @@ import '../appointment_screens/consultation_screens/upload_files.dart';
 import '../appointment_screens/doctor_slots_details_screen.dart';
 import '../prepratory plan/prepratory_meal_completed_screen.dart';
 import '../program_plans/program_start_screen.dart';
+import 'package:gwc_customer/widgets/vlc_player/vlc_player_with_controls.dart';
 
 enum DirectionAngle{
   topLeft, topRight, bottomLeft, bottomRight
 }
-class NewDashboardScreen extends StatefulWidget {
-  const NewDashboardScreen({Key? key}) : super(key: key);
+class GutList extends StatefulWidget {
+  GutList({Key? key}) : super(key: key);
 
+  final GutListState myAppState=  GutListState();
   @override
-  State<NewDashboardScreen> createState() => _NewDashboardScreenState();
+  State<GutList> createState() => GutListState();
 }
 
-class _NewDashboardScreenState extends State<NewDashboardScreen> {
+class GutListState extends State<GutList> {
   final _pref = AppConfig().preferences;
 
   late GutDataService _gutDataService;
@@ -60,6 +74,10 @@ class _NewDashboardScreenState extends State<NewDashboardScreen> {
 
   bool isProgressDialogOpened = true;
   BuildContext? _progressContext;
+
+  VlcPlayerController? _mealPlayerController;
+  final _key = GlobalKey<VlcPlayerWithControlsState>();
+
 
   String? consultationStage, shippingStage, prepratoryMealStage ,programOptionStage,transStage, postProgramStage;
 
@@ -78,6 +96,13 @@ class _NewDashboardScreenState extends State<NewDashboardScreen> {
 
 
 
+  @override
+  void setState(VoidCallback fn) {
+    // TODO: implement setState
+    if(mounted){
+      super.setState(fn);
+    }
+  }
   @override
   void initState() {
     // TODO: implement initState
@@ -155,8 +180,10 @@ class _NewDashboardScreenState extends State<NewDashboardScreen> {
           consultationStage = _getAppointmentDetailsModel?.data ?? '';
         }
         else{
+          print("consultation else");
           _gutDataModel = _getDashboardDataModel.normal_consultation;
           consultationStage = _gutDataModel?.data ?? '';
+          print(consultationStage);
         }
 
         if(_getDashboardDataModel.prepratory_normal_program != null){
@@ -180,43 +207,48 @@ class _NewDashboardScreenState extends State<NewDashboardScreen> {
         }
         if(_getDashboardDataModel.data_program != null){
           _gutProgramModel = _getDashboardDataModel.data_program;
-          programOptionStage = _gutProgramModel?.data ?? '';
+          print("programOptionStage if: ${programOptionStage}");
+          programOptionStage = _gutProgramModel!.data;
         }
         else{
           _gutNormalProgramModel = _getDashboardDataModel.normal_program;
-          programOptionStage = _gutNormalProgramModel?.data ?? '';
+          print("programOptionStage else: ${programOptionStage}");
+          programOptionStage = _gutNormalProgramModel!.data;
           abc();
         }
 
         if(_getDashboardDataModel.transition_meal_program != null){
           _transMealModel = _getDashboardDataModel.transition_meal_program;
-          transStage = _transMealModel?.data ?? '';
+          transStage = _transMealModel?.data;
         }
         else if(_getDashboardDataModel.trans_program != null){
           _transModel = _getDashboardDataModel.trans_program;
-          transStage = _transModel?.data ?? '';
+          transStage = _transModel!.data;
         }
 
         // post program will open once transition meal plan is completed
         // this is for other postprogram model
         if(_getDashboardDataModel.normal_postprogram != null){
           _gutPostProgramModel = _getDashboardDataModel.normal_postprogram;
-          postProgramStage = _gutPostProgramModel?.data ?? '';
+          postProgramStage = _gutPostProgramModel?.data;
         }
         else{
           _postConsultationAppointment = _getDashboardDataModel.postprogram_consultation;
           print("RESCHEDULE : ${_getDashboardDataModel.postprogram_consultation?.data}");
-          postProgramStage = _postConsultationAppointment?.data ?? '';
+          postProgramStage = _postConsultationAppointment?.data;
         }
       });
     }
   }
 
-
   getUserProfile() async{
     // print("user id: ${_pref!.getInt(AppConfig.KALEYRA_USER_ID)}");
 
-    if(_pref!.getString(AppConfig.User_Name) != null || _pref!.getString(AppConfig.User_Name)!.isNotEmpty){
+    if(_pref!.getString(AppConfig.User_Name) != null
+        || _pref!.getString(AppConfig.User_Name)!.isNotEmpty
+        ||_pref!.getString(AppConfig.KALEYRA_USER_ID) != null
+        ||_pref!.getString(AppConfig.KALEYRA_USER_ID)!.isNotEmpty)
+    {
       final profile = await UserProfileService(repository: userRepository).getUserProfileService();
       if(profile.runtimeType == UserProfileModel){
         UserProfileModel model1 = profile as UserProfileModel;
@@ -224,7 +256,7 @@ class _NewDashboardScreenState extends State<NewDashboardScreen> {
         _pref!.setInt(AppConfig.USER_ID, model1.data?.id ?? -1);
         _pref!.setString(AppConfig.QB_USERNAME, model1.data!.qbUsername ?? '');
         _pref!.setString(AppConfig.QB_CURRENT_USERID, model1.data!.qbUserId ?? '');
-        _pref!.setString(AppConfig.KALEYRA_USER_ID, model1.data!.kaleyraUID!);
+        _pref!.setString(AppConfig.KALEYRA_USER_ID, model1.data!.kaleyraUID ?? '');
 
         if(_pref!.getString(AppConfig.KALEYRA_ACCESS_TOKEN) == null){
           await LoginWithOtpService(repository: loginOtpRepository).getAccessToken(model1.data!.kaleyraUID!);
@@ -285,8 +317,71 @@ class _NewDashboardScreenState extends State<NewDashboardScreen> {
                       showHelpIcon: true,
                       helpOnTap: () {
                         Navigator.push(context, MaterialPageRoute(builder: (_) => HelpScreen()));
-                      }
+                      },
+                    showSupportIcon: true,
+                    supportOnTap: (){
+                      showSupportCallSheet(context);
+                      // openAlertBox(
+                      //     context: context,
+                      //     isContentNeeded: false,
+                      //     titleNeeded: true,
+                      //     title: "Select Call Type",
+                      //     positiveButtonName: "In App Call",
+                      //     positiveButton: (){
+                      //       callSupport();
+                      //       Navigator.pop(context);
+                      //     },
+                      //     negativeButtonName: "Voice Call",
+                      //     negativeButton: (){
+                      //       Navigator.pop(context);
+                      //       if(_pref!.getString(AppConfig.KALEYRA_SUCCESS_ID) == null){
+                      //         AppConfig().showSnackbar(context, "Success Team Not available", isError: true);
+                      //       }
+                      //       else{
+                      //         // // click-to-call
+                      //         // callSupport();
+                      //
+                      //         if(_pref!.getString(AppConfig.KALEYRA_ACCESS_TOKEN) != null){
+                      //           final accessToken = _pref!.getString(AppConfig.KALEYRA_ACCESS_TOKEN);
+                      //           final uId = _pref!.getString(AppConfig.KALEYRA_USER_ID);
+                      //           final successId = _pref!.getString(AppConfig.KALEYRA_SUCCESS_ID);
+                      //           // voice- call
+                      //           supportVoiceCall(uId!, successId!, accessToken!);
+                      //         }
+                      //         else{
+                      //           AppConfig().showSnackbar(context, "Something went wrong!!", isError: true);
+                      //         }
+                      //       }
+                      //     }
+                      // );
+                    },
 
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      InkWell(
+                        onTap: (){
+                          Navigator.push(context, MaterialPageRoute(builder: (_)=> const NewScheduleScreen()));
+                        },
+                        child: Row(children: [
+                          ImageIcon(AssetImage("assets/images/new_ds/follow_up.png"),
+                            size: 11.sp,
+                            color: gHintTextColor,
+                          ),
+                          SizedBox(
+                            width: 3,
+                          ),
+                          Text('Follow-up call',
+                            style: TextStyle(
+                              color: gHintTextColor,
+                              fontSize: headingFont,
+                              decoration: TextDecoration.underline,
+                            ),
+                          )
+                        ],),
+                      )
+                    ],
                   ),
                   Expanded(child: Center(
                     child: (isProgressDialogOpened) ?
@@ -302,6 +397,102 @@ class _NewDashboardScreenState extends State<NewDashboardScreen> {
           ),
         )
     );
+  }
+
+  showSupportCallSheet(BuildContext context){
+    return AppConfig().showSheet(context, Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Center(
+          child: Text("Please Select Call Type",
+            style: TextStyle(
+                fontSize: bottomSheetHeadingFontSize,
+                fontFamily: bottomSheetHeadingFontFamily,
+                height: 1.4
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 15),
+          child: Divider(
+            color: kLineColor,
+            thickness: 1.2,
+          ),
+        ),
+        SizedBox(height: 1.5.h),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            GestureDetector(
+              onTap: (){
+                callSupport();
+                Navigator.pop(context);
+              },
+              child: Container(
+                padding: EdgeInsets.symmetric(
+                    vertical: 1.h, horizontal: 5.w
+                ),
+                decoration: BoxDecoration(
+                    color: gsecondaryColor,
+                    border: Border.all(color: kLineColor, width: 0.5),
+                    borderRadius: BorderRadius.circular(5)),
+                child: Text(
+                  "In App Call",
+                  style: TextStyle(
+                    fontFamily: kFontMedium,
+                    color: gWhiteColor,
+                    fontSize: 11.sp,
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(width: 5.w),
+            GestureDetector(
+              onTap: (){
+                Navigator.pop(context);
+                if(_pref!.getString(AppConfig.KALEYRA_SUCCESS_ID) == null){
+                  AppConfig().showSnackbar(context, "Success Team Not available", isError: true);
+                }
+                else{
+                  // // click-to-call
+                  // callSupport();
+
+                  if(_pref!.getString(AppConfig.KALEYRA_ACCESS_TOKEN) != null){
+                    final accessToken = _pref!.getString(AppConfig.KALEYRA_ACCESS_TOKEN);
+                    final uId = _pref!.getString(AppConfig.KALEYRA_USER_ID);
+                    final successId = _pref!.getString(AppConfig.KALEYRA_SUCCESS_ID);
+                    // voice- call
+                    supportVoiceCall(uId!, successId!, accessToken!);
+                  }
+                  else{
+                    AppConfig().showSnackbar(context, "Something went wrong!!", isError: true);
+                  }
+                }
+              },
+              child: Container(
+                padding: EdgeInsets.symmetric(
+                    vertical: 1.h, horizontal: 5.w),
+                decoration: BoxDecoration(
+                    color: gWhiteColor,
+                    border: Border.all(color: kLineColor, width: 0.5),
+                    borderRadius: BorderRadius.circular(5)),
+                child: Text(
+                  "Voice Call",
+                  style: TextStyle(
+                    fontFamily: kFontMedium,
+                    color: gsecondaryColor,
+                    fontSize: 11.sp,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 1.h)
+      ],
+    ), bottomSheetHeight: 40.h);
   }
 
   view(){
@@ -370,7 +561,7 @@ class _NewDashboardScreenState extends State<NewDashboardScreen> {
                               onTap: (){
                             print("$prepratoryMealStage ");
                             print(((prepratoryMealStage == null || prepratoryMealStage!.isEmpty) && _prepratoryModel == null));
-                                // showPrepratoryMealScreen();
+                                showPrepratoryMealScreen();
                               }
                           ),),
                           SizedBox(
@@ -384,10 +575,14 @@ class _NewDashboardScreenState extends State<NewDashboardScreen> {
                                 "the benefit, you will enjoy this phase.",
                               borderColor: getProgramTransBorderColor("color"),
                               onTap: (){
-                            if(transStage != null){
+                            print(programOptionStage);
+                            print(transStage);
+                            if(transStage != null && transStage!.isNotEmpty){
+                              // showProgramScreen();
                               showTransitionMealScreen();
                             }
-                            else if(programOptionStage != null){
+                            else if(programOptionStage != null && programOptionStage!.isNotEmpty){
+                              print("called");
                               showProgramScreen();
                             }
                             else{
@@ -404,10 +599,16 @@ class _NewDashboardScreenState extends State<NewDashboardScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        GestureDetector(
+                        InkWell(
                           onTap: (){
-                            if(consultationStage == "report_upload"){
-                              goToScreen(MedicalReportScreen(pdfLink: _gutDataModel!.value!,));
+                            if(consultationStage == "report_upload" || consultationStage =="consultation_rejected"){
+                              if(consultationStage == "consultation_rejected"){
+                                print(_gutDataModel!.rejectedCase!.mr!);
+                                goToScreen(MedicalReportScreen(pdfLink: _gutDataModel!.rejectedCase!.mr!,));
+                              }
+                              else{
+                                goToScreen(MedicalReportScreen(pdfLink: _gutDataModel!.value!,));
+                              }
                             }
                             else{
                               AppConfig().showSnackbar(context, "Can't access Locked Stage", isError: true);
@@ -422,22 +623,34 @@ class _NewDashboardScreenState extends State<NewDashboardScreen> {
                               Text("Medical Report",
                                 style: TextStyle(
                                   fontSize: headingFont,
-                                    fontFamily: kFontBook,
-                                  color: gTextColor
+                                    fontFamily: (consultationStage == "report_upload" || consultationStage =="consultation_rejected") ? kFontMedium : kFontBook,
+                                  color: (consultationStage == "report_upload" || consultationStage =="consultation_rejected") ? gsecondaryColor : gTextColor
                                 ),
                               )
                             ],
                           ),
                         ),
-                        GestureDetector(
-                          onTap: (){},
+                        InkWell(
+                          onTap: (){
+                            print(postProgramStage == null || postProgramStage!.isEmpty);
+                            print(postProgramStage!.isNotEmpty);
+                            print(postProgramStage != null && (postProgramStage!.isNotEmpty && programOptionStage != ""));
+                            if(postProgramStage != null && (postProgramStage!.isNotEmpty && programOptionStage != "")){
+                              showPostProgramScreen();
+                            }
+                            else{
+                              print("postProgramStage != null: ${postProgramStage != null}");
+                              print("postProgramStage!.isNotEmpty: ${postProgramStage!.isNotEmpty}");
+                              print("programOptionStage != "": ${programOptionStage != ""}");
+                            }
+                          },
                           child: Row(
                             children: [
                               Text("GMG",
                                 style: TextStyle(
                                   fontSize: headingFont,
-                                    fontFamily: kFontBook,
-                                    color: gTextColor
+                                    fontFamily: (postProgramStage == null || postProgramStage!.isEmpty) ? kFontBook :  kFontMedium,
+                                    color: (postProgramStage == null || postProgramStage!.isEmpty) ? gTextColor :  gsecondaryColor
                                 ),
                               ),
                               SizedBox(width: 5,),
@@ -489,23 +702,28 @@ class _NewDashboardScreenState extends State<NewDashboardScreen> {
             ),
             Flexible(
                 child: Center(
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Image.asset("assets/images/noun-chat-5153452.png",
-                        width: 25,
-                        height: 25,
-                      ),
-                      SizedBox(
-                        width: 5,
-                      ),
-                      Text('Chat Support',
-                        style: TextStyle(
-                          fontSize: headingFont,
-                          decoration: TextDecoration.underline,
+                  child: InkWell(
+                    onTap: (){
+                      getChatGroupId();
+                    },
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Image.asset("assets/images/noun-chat-5153452.png",
+                          width: 25,
+                          height: 25,
                         ),
-                      )
-                    ],
+                        SizedBox(
+                          width: 5,
+                        ),
+                        Text('Chat Support',
+                          style: TextStyle(
+                            fontSize: headingFont,
+                            decoration: TextDecoration.underline,
+                          ),
+                        )
+                      ],
+                    ),
                   ),
                 )
             )
@@ -649,54 +867,56 @@ class _NewDashboardScreenState extends State<NewDashboardScreen> {
       children: [
         GestureDetector(
           onTap: onTap,
-          child: Container(
-            height: 180,
-            decoration: BoxDecoration(
-              color: kBigCircleBg,
-              borderRadius:BorderRadius.only(
-                topRight: (angle == DirectionAngle.bottomLeft.name) ? const Radius.circular(0) : const Radius.circular(80),
-                topLeft: (angle == DirectionAngle.bottomRight.name) ? const Radius.circular(0) : const Radius.circular(80),
-                bottomLeft: (angle == DirectionAngle.topRight.name) ? const Radius.circular(0) : const Radius.circular(80),
-                bottomRight: (angle == DirectionAngle.topLeft.name) ? const Radius.circular(0) : const Radius.circular(80),
-              ),
-              border: Border.all(
-                  color: borderColor ?? gsecondaryColor,
-                  width: 1
-              ),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                SizedBox(
-                  height: 3.h,
+          child: IntrinsicHeight(
+            child: Container(
+              height: 195,
+              decoration: BoxDecoration(
+                color: kBigCircleBg,
+                borderRadius:BorderRadius.only(
+                  topRight: (angle == DirectionAngle.bottomLeft.name) ? const Radius.circular(0) : const Radius.circular(80),
+                  topLeft: (angle == DirectionAngle.bottomRight.name) ? const Radius.circular(0) : const Radius.circular(80),
+                  bottomLeft: (angle == DirectionAngle.topRight.name) ? const Radius.circular(0) : const Radius.circular(80),
+                  bottomRight: (angle == DirectionAngle.topLeft.name) ? const Radius.circular(0) : const Radius.circular(80),
                 ),
-                Center(
-                  child: Text(headingText ?? '',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        fontFamily: eUser().mainHeadingFont,
-                        color: eUser().mainHeadingColor,
-                        fontSize: eUser().mainHeadingFontSize
-                    ),
+                border: Border.all(
+                    color: borderColor ?? gsecondaryColor,
+                    width: 1
+                ),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    height: 3.h,
                   ),
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(subText ?? '',
-                      // "While you wait for your customised Product Kit arrive to be used during the Reset phase of the program, "
-                      //   "You will be give a preparatory meal protocol based on your food type",
-                        // " While you wait for your  customised Product Kit arrive to be used during the Reset phase of the program,",
+                  Center(
+                    child: Text(headingText ?? '',
+                      textAlign: TextAlign.center,
                       style: TextStyle(
-                          fontFamily: kFontBook,
+                          fontFamily: eUser().mainHeadingFont,
                           color: eUser().mainHeadingColor,
-                          fontSize: bottomSheetSubHeadingSFontSize
+                          fontSize: eUser().mainHeadingFontSize
                       ),
-                      textAlign: TextAlign.justify,
                     ),
                   ),
-                )
-              ],
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(subText ?? '',
+                        // "While you wait for your customised Product Kit arrive to be used during the Reset phase of the program, "
+                        //   "You will be give a preparatory meal protocol based on your food type",
+                          // " While you wait for your  customised Product Kit arrive to be used during the Reset phase of the program,",
+                        style: TextStyle(
+                            fontFamily: kFontBook,
+                            color: eUser().mainHeadingColor,
+                            fontSize: bottomSheetSubHeadingSFontSize
+                        ),
+                        textAlign: TextAlign.justify,
+                      ),
+                    ),
+                  )
+                ],
+              ),
             ),
           ),
         ),
@@ -705,24 +925,27 @@ class _NewDashboardScreenState extends State<NewDashboardScreen> {
             top: (angle == DirectionAngle.bottomRight.name || angle == DirectionAngle.bottomLeft.name) ? -16 : null,
             right: (angle == DirectionAngle.bottomLeft.name || angle == DirectionAngle.topLeft.name) ? -8 : null,
             bottom: (angle == DirectionAngle.topRight.name || angle == DirectionAngle.topLeft.name) ? -16 : null,
-            child: Container(
-              width: 40,
-              height: 40,
-              padding: EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: (angle == DirectionAngle.bottomRight.name) ? kNumberCircleGreen :
-                (angle == DirectionAngle.bottomLeft.name) ? kNumberCircleAmber :
-                (angle == DirectionAngle.topLeft.name) ? kNumberCircleRed :
-                kNumberCirclePurple,
-              ),
-              child: Center(child: Text(stageNo,
-                style: TextStyle(
-                  fontFamily: kFontMedium,
-                  fontSize: headingFont,
-                  color: Colors.white
+            child: MediaQuery(
+              data: MediaQuery.of(context).copyWith(textScaleFactor: 0.75),
+              child: Container(
+                width: 40,
+                height: 40,
+                padding: EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: (angle == DirectionAngle.bottomRight.name) ? kNumberCircleGreen :
+                  (angle == DirectionAngle.bottomLeft.name) ? kNumberCircleAmber :
+                  (angle == DirectionAngle.topLeft.name) ? kNumberCircleRed :
+                  kNumberCirclePurple,
                 ),
-              )),
+                child: Center(child: Text(stageNo,
+                  style: TextStyle(
+                    fontFamily: kFontMedium,
+                    fontSize: headingFont,
+                    color: Colors.white
+                  ),
+                )),
+              ),
             )
         ),
         Positioned(
@@ -784,7 +1007,39 @@ class _NewDashboardScreenState extends State<NewDashboardScreen> {
     }
   }
 
+  addUrlToVideoPlayer(String url){
+    print("url"+ url);
+    _mealPlayerController = VlcPlayerController.network(url,
+      // "assets/images/new_ds/popup_video.mp4",
+      // url,
+      // 'http://samples.mplayerhq.hu/MPEG-4/embedded_subs/1Video_2Audio_2SUBs_timed_text_streams_.mp4',
+      // 'https://media.w3.org/2010/05/sintel/trailer.mp4',
+      hwAcc: HwAcc.auto,
+      autoPlay: true,
+      options: VlcPlayerOptions(
+        advanced: VlcAdvancedOptions([
+          VlcAdvancedOptions.networkCaching(2000),
+        ]),
+        subtitle: VlcSubtitleOptions([
+          VlcSubtitleOptions.boldStyle(true),
+          VlcSubtitleOptions.fontSize(30),
+          VlcSubtitleOptions.outlineColor(VlcSubtitleColor.yellow),
+          VlcSubtitleOptions.outlineThickness(VlcSubtitleThickness.normal),
+          // works only on externally added subtitles
+          VlcSubtitleOptions.color(VlcSubtitleColor.navy),
+        ]),
+        http: VlcHttpOptions([
+          VlcHttpOptions.httpReconnect(true),
+        ]),
+        rtp: VlcRtpOptions([
+          VlcRtpOptions.rtpOverRtsp(true),
+        ]),
+      ),
+    );
+  }
+
   mealReadySheet(){
+    addUrlToVideoPlayer(_gutShipDataModel?.value ?? '');
     return AppConfig().showSheet(context, Column(
       children: [
         Text('Hooray!\nYour food prescription is ready',
@@ -795,14 +1050,19 @@ class _NewDashboardScreenState extends State<NewDashboardScreen> {
               fontFamily: bottomSheetSubHeadingBoldFont,
               color: gTextColor
           ),),
+        // need ot show Video
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 8),
-          child: Image.asset('assets/images/meal_popup.png',
-            fit: BoxFit.scaleDown,
-            width: 60.w,
-            filterQuality: FilterQuality.high,
-          ),
+          child: buildMealVideo(),
         ),
+        // Padding(
+        //   padding: const EdgeInsets.symmetric(vertical: 8),
+        //   child: Image.asset('assets/images/meal_popup.png',
+        //     fit: BoxFit.scaleDown,
+        //     width: 60.w,
+        //     filterQuality: FilterQuality.high,
+        //   ),
+        // ),
         Text("You've Unlocked The Next Step!",
           textAlign: TextAlign.center,
           style: TextStyle(
@@ -886,6 +1146,67 @@ class _NewDashboardScreenState extends State<NewDashboardScreen> {
     ), bottomSheetHeight: 75.h);
   }
 
+  buildMealVideo() {
+    if(_mealPlayerController != null){
+      return AspectRatio(
+        aspectRatio: 16/9,
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(5),
+            border: Border.all(color: gPrimaryColor, width: 1),
+            // boxShadow: [
+            //   BoxShadow(
+            //     color: Colors.grey.withOpacity(0.3),
+            //     blurRadius: 20,
+            //     offset: const Offset(2, 10),
+            //   ),
+            // ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(5),
+            child: Center(
+              child: VlcPlayerWithControls(
+                key: _key,
+                controller: _mealPlayerController!,
+                showVolume: false,
+                showVideoProgress: false,
+                seekButtonIconSize: 10.sp,
+                playButtonIconSize: 14.sp,
+                replayButtonSize: 10.sp,
+              ),
+              // child: VlcPlayer(
+              //   controller: _videoPlayerController!,
+              //   aspectRatio: 16 / 9,
+              //   virtualDisplay: false,
+              //   placeholder: Center(child: CircularProgressIndicator()),
+              // ),
+            ),
+          ),
+          // child: Stack(
+          //   children: <Widget>[
+          //     ClipRRect(
+          //       borderRadius: BorderRadius.circular(5),
+          //       child: Center(
+          //         child: VlcPlayer(
+          //           controller: _videoPlayerController!,
+          //           aspectRatio: 16 / 9,
+          //           virtualDisplay: false,
+          //           placeholder: Center(child: CircularProgressIndicator()),
+          //         ),
+          //       ),
+          //     ),
+          //     ControlsOverlay(controller: _videoPlayerController,)
+          //   ],
+          // ),
+        ),
+      );
+    }
+    else {
+      return SizedBox.shrink();
+    }
+  }
+
+
   final ShipTrackRepository shipTrackRepository = ShipTrackRepository(
     apiClient: ApiClient(
       httpClient: http.Client(),
@@ -942,15 +1263,16 @@ class _NewDashboardScreenState extends State<NewDashboardScreen> {
         goToScreen(CheckUserReportsScreen());
         break;
       case 'consultation_rejected':
-        goToScreen(ConsultationRejected(reason: _gutDataModel?.value ?? '',));
+        print(_gutDataModel?.rejectedCase?.reason);
+        goToScreen(ConsultationRejected(reason: _gutDataModel?.rejectedCase?.reason ?? '',));
         break;
       case 'report_upload':
         // need to show consultation completed screen, "You can now View Your Medical Report !!"
         print(_gutDataModel!.toJson());
         print(_gutDataModel!.value);
-        goToScreen(ConsultationRejected(reason: '',));
+        // goToScreen(ConsultationRejected(reason: '',));
 
-        // goToScreen(ConsultationSuccess());
+        goToScreen(ConsultationSuccess());
 
         // goToScreen(DoctorSlotsDetailsScreen(bookingDate: "2023-02-21", bookingTime: "11:34:00", dashboardValueMap: {},isFromDashboard: true,));
 
@@ -1002,20 +1324,31 @@ class _NewDashboardScreenState extends State<NewDashboardScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => TransitionMealPlanScreen(totalDays: _transModel!.value!.trans_days ?? '', dayNumber: _transModel?.value?.currentDay ??'',),
+            builder: (context) => TransitionMealPlanScreen(
+                postProgramStage: postProgramStage,
+              totalDays: _transModel!.value!.trans_days ?? '',
+              dayNumber: _transModel?.value?.currentDay ??'',
+                trackerVideoLink: _gutProgramModel!.value!.tracker_video_url
+            ),
           ),
         ).then((value) => reloadUI());
       }
     }
   }
 
+  /// when user click on meal plan if still prep not completed than
+  /// in meal slide to start need to show prep form submit
+  /// if already submitted than normal ui
   showProgramScreen(){
+    print("func called");
     if(shippingStage == "shipping_delivered" && programOptionStage != null){
       // to slide to start the program
+      _pref!.setString(AppConfig().receipeVideoUrl, _gutProgramModel!.value!.recipeVideo!);
+      _pref!.setString(AppConfig().trackerVideoUrl, _gutProgramModel!.value!.tracker_video_url!);
       if(_gutProgramModel!.value!.startProgram == '0'){
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (context) => ProgramPlanScreen(from: ProgramMealType.program.name,),
+            builder: (context) => ProgramPlanScreen(from: ProgramMealType.program.name, isPrepCompleted: _prepratoryModel!.value!.isPrepCompleted,),
           ),
         ).then((value) => reloadUI());
       }
@@ -1023,7 +1356,10 @@ class _NewDashboardScreenState extends State<NewDashboardScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => MealPlanScreen(postProgramStage: postProgramStage,),
+            builder: (context) => MealPlanScreen(transStage: transStage
+              ,receipeVideoLink: _gutProgramModel!.value!.recipeVideo,
+                trackerVideoLink: _gutProgramModel!.value!.tracker_video_url
+            ),
           ),
         ).then((value) => reloadUI());
       }
@@ -1032,29 +1368,41 @@ class _NewDashboardScreenState extends State<NewDashboardScreen> {
       AppConfig().showSnackbar(context, "program stage not getting", isError:  true);
     }
   }
+
+
   showPostProgramScreen(){
-    if(postProgramStage != null && _postConsultationAppointment != null){
-      Navigator.of(context).push(
-        MaterialPageRoute(
-            builder: (context) =>
-                DoctorSlotsDetailsScreen(
-                  bookingDate: _postConsultationAppointment!.value!.date!,
-                  bookingTime: _postConsultationAppointment!.value!.slotStartTime!,
-                  isPostProgram: true,
-                  dashboardValueMap: _postConsultationAppointment!.value!.toJson() ,)
-          // PostProgramScreen(postProgramStage: postProgramStage,
-          //   consultationData: _postConsultationAppointment,),
-        ),
-      ).then((value) => reloadUI());
-    }
-    else{
-      Navigator.of(context).push(
-        MaterialPageRoute(
-            builder: (context) =>
-                DoctorCalenderTimeScreen(isPostProgram: true,)
-          // PostProgramScreen(postProgramStage: postProgramStage,),
-        ),
-      ).then((value) => reloadUI());
+    if(postProgramStage != null){
+      print(postProgramStage == "protocol_guide");
+      if(postProgramStage == "post_program"){
+        Navigator.of(context).push(
+          MaterialPageRoute(
+              builder: (context) =>
+                  DoctorCalenderTimeScreen(isPostProgram: true,)
+            // PostProgramScreen(postProgramStage: postProgramStage,),
+          ),
+        ).then((value) => reloadUI());
+      }
+      else if(postProgramStage == "post_appointment_booked"){
+        Navigator.of(context).push(
+          MaterialPageRoute(
+              builder: (context) =>
+                  DoctorSlotsDetailsScreen(
+                    bookingDate: _postConsultationAppointment!.value!.date!,
+                    bookingTime: _postConsultationAppointment!.value!.slotStartTime!,
+                    isPostProgram: true,
+                    dashboardValueMap: _postConsultationAppointment!.value!.toJson() ,)
+            // PostProgramScreen(postProgramStage: postProgramStage,
+            //   consultationData: _postConsultationAppointment,),
+          ),
+        ).then((value) => reloadUI());
+      }
+      else if(postProgramStage == "post_appointment_done"){
+        goToScreen(const ConsultationSuccess(isPostProgramSuccess: true,));
+      }
+      else if(postProgramStage == "protocol_guide"){
+        // goToScreen(PPLevelsScreen());
+        goToScreen(PPLevelsDemo());
+      }
     }
   }
 
@@ -1074,8 +1422,10 @@ class _NewDashboardScreenState extends State<NewDashboardScreen> {
   }
 
   getProgramTransBorderColor(String type) {
+    print("getProgramTransBorderColor");
     if(type == "color"){
-      if(transStage != null ){
+      if(transStage != null && transStage!.isNotEmpty){
+        print("if color");
         if(_transModel != null && _transMealModel != null){
           return kBigCircleBorderYellow;
         }
@@ -1083,8 +1433,9 @@ class _NewDashboardScreenState extends State<NewDashboardScreen> {
           return kBigCircleBorderGreen;
         }
       }
-      else if(programOptionStage != null){
-        if(_gutNormalProgramModel != null && _gutProgramModel != null){
+      else if(programOptionStage != null && programOptionStage!.isNotEmpty){
+        print("else color");
+        if(_gutNormalProgramModel != null || _gutProgramModel != null){
           return kBigCircleBorderYellow;
         }
       }
@@ -1093,7 +1444,8 @@ class _NewDashboardScreenState extends State<NewDashboardScreen> {
       }
     }
     else{
-      if(transStage != null ){
+      if(transStage != null && transStage!.isNotEmpty){
+        print("if border");
         if(_transModel != null && _transMealModel != null){
           return newDashboardUnLockIcon;
         }
@@ -1101,8 +1453,8 @@ class _NewDashboardScreenState extends State<NewDashboardScreen> {
           return newDashboardOpenIcon;
         }
       }
-      else if(programOptionStage != null){
-        if(_gutNormalProgramModel != null && _gutProgramModel != null){
+      else if(programOptionStage != null && programOptionStage!.isNotEmpty){
+        if(_gutNormalProgramModel != null || _gutProgramModel != null){
           return newDashboardUnLockIcon;
         }
       }
@@ -1112,6 +1464,45 @@ class _NewDashboardScreenState extends State<NewDashboardScreen> {
     }
 
   }
+
+  getChatGroupId() async{
+    print(_pref!.getInt(AppConfig.GET_QB_SESSION));
+    print(_pref!.getBool(AppConfig.IS_QB_LOGIN));
+
+    print(_pref!.getInt(AppConfig.GET_QB_SESSION) == null || _pref!.getBool(AppConfig.IS_QB_LOGIN) == null || _pref!.getBool(AppConfig.IS_QB_LOGIN) == false);
+    final _qbService = Provider.of<QuickBloxService>(context, listen:  false);
+    print(await _qbService.getSession());
+    if(_pref!.getInt(AppConfig.GET_QB_SESSION) == null || await _qbService.getSession() == true || _pref!.getBool(AppConfig.IS_QB_LOGIN) == null || _pref!.getBool(AppConfig.IS_QB_LOGIN) == false){
+      _qbService.login(_pref!.getString(AppConfig.QB_USERNAME)!);
+    }
+    else{
+      if(await _qbService.isConnected() == false){
+        _qbService.connect(int.parse(_pref!.getString(AppConfig.QB_CURRENT_USERID)!));
+      }
+    }
+    final res = await ChatService(repository: chatRepository).getChatGroupIdService();
+
+    if(res.runtimeType == GetChatGroupIdModel){
+      GetChatGroupIdModel model = res as GetChatGroupIdModel;
+      // QuickBloxRepository().init(AppConfig.QB_APP_ID, AppConfig.QB_AUTH_KEY, AppConfig.QB_AUTH_SECRET, AppConfig.QB_ACCOUNT_KEY);
+      _pref!.setString(AppConfig.GROUP_ID, model.group ?? '');
+      print('model.group: ${model.group}');
+      Navigator.push(context, MaterialPageRoute(builder: (c)=> MessageScreen(isGroupId: true,)));
+    }
+    else{
+      ErrorModel model = res as ErrorModel;
+      AppConfig().showSnackbar(context, model.message.toString(), isError: true);
+    }
+
+  }
+
+  final MessageRepository chatRepository = MessageRepository(
+    apiClient: ApiClient(
+      httpClient: http.Client(),
+    ),
+  );
+
+
 
 
 }

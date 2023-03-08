@@ -201,6 +201,7 @@ class _NewScheduleScreenState extends State<NewScheduleScreen> {
 
   List followUpSlotsList = [];
   String selectedSlot = "";
+  String blockedSlot = "";
   String selectedDate = "";
 
 
@@ -214,7 +215,9 @@ class _NewScheduleScreenState extends State<NewScheduleScreen> {
               }
           );
         }
-    );
+    ). then((value) {
+      selectedSlot = "";
+    });
 
   }
 
@@ -248,6 +251,11 @@ class _NewScheduleScreenState extends State<NewScheduleScreen> {
                   else if(snap.data.runtimeType == SlotModel){
                     final model = snap.data as SlotModel;
                     followUpSlots = model.data;
+                    followUpSlots!.values!.forEach((e){
+                      if(e.isBooked == "1"){
+                        blockedSlot = e.slot!;
+                      }
+                    });
                     return Column(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -269,7 +277,7 @@ class _NewScheduleScreenState extends State<NewScheduleScreen> {
                             alignment: WrapAlignment.start,
                             runAlignment: WrapAlignment.start,
                             children: [
-                              ...followUpSlots!.values.map((e) => slotChip(e.slot!, '',isSelected: selectedSlot.contains(e.slot!), setstate: setState))
+                              ...followUpSlots!.values.map((e) => slotChip(e.slot!, '',isSelected: selectedSlot.contains(e.slot!), setstate: setState, isBlocked: blockedSlot.contains(e.slot!)))
                             ],
                           ),
                         ),
@@ -333,23 +341,26 @@ class _NewScheduleScreenState extends State<NewScheduleScreen> {
     );
   }
 
-  slotChip(String time, String slotName,{bool isSelected = false, Function? setstate}){
+  slotChip(String time, String slotName,{bool isSelected = false, Function? setstate, bool isBlocked = false}){
+    print("isBlocked:= $isBlocked");
     return GestureDetector(
       onTap: (){
-        setstate!(() {
-          selectedSlot = time;
-          // start = selectedSlot.split("-").first;
-          // end = selectedSlot.split("-").last;
-          //
-          // print(start);
-          // print(end);
-          // if(slotName == "Evening"){
-          //   selectedEveningSlot = time;
-          // }
-          // else{
-          //   selectedMorningSlot = time;
-          // }
-        });
+        if(!isBlocked){
+          setstate!(() {
+            selectedSlot = time;
+            // start = selectedSlot.split("-").first;
+            // end = selectedSlot.split("-").last;
+            //
+            // print(start);
+            // print(end);
+            // if(slotName == "Evening"){
+            //   selectedEveningSlot = time;
+            // }
+            // else{
+            //   selectedMorningSlot = time;
+            // }
+          });
+        }
       },
       child: Container(
         padding: EdgeInsets.symmetric(
@@ -359,7 +370,7 @@ class _NewScheduleScreenState extends State<NewScheduleScreen> {
         margin: EdgeInsets.symmetric(horizontal: 2, vertical: 3),
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(6),
-            color: isSelected ? gsecondaryColor : gTapColor
+            color:  (isBlocked) ? kLineColor : isSelected ? gsecondaryColor : gTapColor
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -367,11 +378,11 @@ class _NewScheduleScreenState extends State<NewScheduleScreen> {
             Icon(
                 Icons.timelapse_rounded,
                 size: 10,
-                color: isSelected ? gWhiteColor : gBlackColor
+                color: (isSelected || isBlocked) ? gWhiteColor : gBlackColor
             ),
             Text(time,
               style: TextStyle(
-                  color: isSelected ? gWhiteColor : gBlackColor
+                  color: (isSelected || isBlocked) ? gWhiteColor : gBlackColor
               ),
             )
           ],
@@ -394,7 +405,6 @@ class _NewScheduleScreenState extends State<NewScheduleScreen> {
     else{
       final result = res as SuccessMessageModel;
       AppConfig().showSnackbar(context, result.errorMsg ?? '');
-
     }
     setState(() {
       selectedDate = "";

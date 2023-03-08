@@ -3,6 +3,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_vlc_player/flutter_vlc_player.dart';
 import 'package:gwc_customer/model/error_model.dart';
 import 'package:gwc_customer/model/new_user_model/about_program_model/about_program_model.dart';
 import 'package:gwc_customer/model/new_user_model/about_program_model/feedback_list_model.dart';
@@ -10,10 +11,12 @@ import 'package:gwc_customer/repository/api_service.dart';
 import 'package:gwc_customer/repository/new_user_repository/about_program_repository.dart';
 import 'package:gwc_customer/services/new_user_service/about_program_service.dart';
 import 'package:gwc_customer/widgets/constants.dart';
+import 'package:gwc_customer/widgets/vlc_player/vlc_player_with_controls.dart';
 import 'package:gwc_customer/widgets/widgets.dart';
 import 'package:sizer/sizer.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
 class TestimonialListScreen extends StatefulWidget {
   const TestimonialListScreen({Key? key}) : super(key: key);
@@ -112,7 +115,7 @@ class _TestimonialListScreenState extends State<TestimonialListScreen> {
               return Center(
                 child: Text(model.message ?? '',
                   style: TextStyle(
-                      fontFamily: 'GothamMedium',
+                      fontFamily: kFontMedium,
                       fontSize: 10.sp
                   ),
                 ),
@@ -145,7 +148,7 @@ class _TestimonialListScreenState extends State<TestimonialListScreen> {
             return Center(
               child: Text(snapshot.error.toString(),
                 style: TextStyle(
-                  fontFamily: 'GothamMedium',
+                  fontFamily: kFontMedium,
                   fontSize: 10.sp
                 ),
               ),
@@ -166,7 +169,16 @@ class _TestimonialListScreenState extends State<TestimonialListScreen> {
     );
   }
 
+  final _key = GlobalKey<VlcPlayerWithControlsState>();
+  VlcPlayerController? _videoPlayerController;
+
   showCardViews({String? userProfile, String? feedbackUser, String? feedbackTime, String? feedback, String? imagePath}){
+    final a = imagePath;
+    final file = a?.split(".").last;
+    String format = file.toString();
+    if (format == "mp4") {
+      if(a != null) addUrlToVideoPlayer(a);
+    }
     return Container(
       margin: EdgeInsets.symmetric(vertical: 7, horizontal: 5),
       padding: EdgeInsets.symmetric(horizontal: 5, vertical: 8),
@@ -198,28 +210,30 @@ class _TestimonialListScreenState extends State<TestimonialListScreen> {
             title: Text(feedbackUser ??'',
               style: TextStyle(
                 fontSize: 11.sp,
-                fontFamily: 'GothamBold'
+                fontFamily: kFontBold
               ),
             ),
             subtitle: Text(feedbackTime ?? '',
               style: TextStyle(
                   fontSize: 9.5.sp,
-                  fontFamily: 'GothamLight'
+                  fontFamily: kFontBook
               ),
             ),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: Text(feedback ?? 'Lorem Ipsum is simply dummy text of the print and typesetting industry',
+            child: Text(feedback ?? '',
+                // 'Lorem Ipsum is simply dummy text of the print and typesetting industry',
               style: TextStyle(
                   fontSize: 10.5.sp,
-                  fontFamily: 'GothamMedium',
+                  fontFamily: kFontMedium,
                 height: 1.5
               ),
             ),
           ),
+        if (format == "mp4") buildTestimonial(),
           Visibility(
-            visible: imagePath != null,
+            visible: imagePath != null && format != "mp4",
             child: Center(
               child: Container(
                 width: 70.w,
@@ -254,6 +268,105 @@ class _TestimonialListScreenState extends State<TestimonialListScreen> {
     );
   }
 
+  addUrlToVideoPlayer(String url) {
+    print("url" + url);
+    _videoPlayerController = VlcPlayerController.network(
+      Uri.parse(url).toString(),
+      // "https://gwc.disol.in/dist/img/GMG-Podcast-%20CMN.mp4",
+      // 'http://samples.mplayerhq.hu/MPEG-4/embedded_subs/1Video_2Audio_2SUBs_timed_text_streams_.mp4',
+      //'https://media.w3.org/2010/05/sintel/trailer.mp4',
+      hwAcc: HwAcc.disabled,
+      autoPlay: false,
+      options: VlcPlayerOptions(
+        advanced: VlcAdvancedOptions([
+          VlcAdvancedOptions.networkCaching(2000),
+        ]),
+        subtitle: VlcSubtitleOptions([
+          VlcSubtitleOptions.boldStyle(true),
+          VlcSubtitleOptions.fontSize(30),
+          VlcSubtitleOptions.outlineColor(VlcSubtitleColor.yellow),
+          VlcSubtitleOptions.outlineThickness(VlcSubtitleThickness.normal),
+          // works only on externally added subtitles
+          VlcSubtitleOptions.color(VlcSubtitleColor.navy),
+        ]),
+        http: VlcHttpOptions([
+          VlcHttpOptions.httpReconnect(true),
+        ]),
+        rtp: VlcRtpOptions([
+          VlcRtpOptions.rtpOverRtsp(true),
+        ]),
+      ),
+    );
+  }
+
+  buildTestimonial() {
+    if (_videoPlayerController != null) {
+      return AspectRatio(
+        aspectRatio: 16 / 9,
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(5),
+            border: Border.all(color: gPrimaryColor, width: 1),
+            // boxShadow: [
+            //   BoxShadow(
+            //     color: Colors.grey.withOpacity(0.3),
+            //     blurRadius: 20,
+            //     offset: const Offset(2, 10),
+            //   ),
+            // ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(5),
+            child: Center(
+              child: VlcPlayerWithControls(
+                key: _key,
+                controller: _videoPlayerController!,
+                showVolume: false,
+                showVideoProgress: false,
+                seekButtonIconSize: 10.sp,
+                playButtonIconSize: 14.sp,
+                replayButtonSize: 10.sp,
+              ),
+              // child: VlcPlayer(
+              //   controller: _videoPlayerController!,
+              //   aspectRatio: 16 / 9,
+              //   virtualDisplay: false,
+              //   placeholder: Center(child: CircularProgressIndicator()),
+              // ),
+            ),
+          ),
+          // child: Stack(
+          //   children: <Widget>[
+          //     ClipRRect(
+          //       borderRadius: BorderRadius.circular(5),
+          //       child: Center(
+          //         child: VlcPlayer(
+          //           controller: _videoPlayerController!,
+          //           aspectRatio: 16 / 9,
+          //           virtualDisplay: false,
+          //           placeholder: Center(child: CircularProgressIndicator()),
+          //         ),
+          //       ),
+          //     ),
+          //     ControlsOverlay(controller: _videoPlayerController,)
+          //   ],
+          // ),
+        ),
+      );
+    } else {
+      return const SizedBox.shrink();
+    }
+  }
+
+
+  @override
+  void dispose() async {
+    super.dispose();
+    print('dispose');
+    await _videoPlayerController!.stop();
+    await _videoPlayerController!.stopRendererScanning();
+    await _videoPlayerController!.dispose();
+  }
   loadAsset(String name)  {
     rootBundle.load('assets/images/$name').then((value) {
       if(value != null){

@@ -28,7 +28,7 @@ class MedicalReportScreen extends StatelessWidget {
               Padding(
                 padding:  EdgeInsets.symmetric(horizontal: 4.w),
                 child: Text(
-                  "View your MEDICAL REPORT",
+                  "MEDICAL REPORT",
                   textAlign: TextAlign.center,
                   style: TextStyle(
                       height: 1.5,

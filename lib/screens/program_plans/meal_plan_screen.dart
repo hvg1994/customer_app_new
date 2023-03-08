@@ -42,8 +42,10 @@ import 'package:http/http.dart' as http;
 import 'package:simple_tooltip/simple_tooltip.dart';
 
 class MealPlanScreen extends StatefulWidget {
-  final String? postProgramStage;
-  const MealPlanScreen({Key? key, this.postProgramStage}) : super(key: key);
+  final String? transStage;
+  final String? receipeVideoLink;
+  final String? trackerVideoLink;
+  const MealPlanScreen({Key? key, this.transStage, this.receipeVideoLink, this.trackerVideoLink}) : super(key: key);
 
   @override
   State<MealPlanScreen> createState() => _MealPlanScreenState();
@@ -184,9 +186,11 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
 
   buildDays(ProgramDayModel model) {
     listData = model.data!;
+    print("listData.last.isCompleted: ${listData.last.isCompleted}");
     // this is for bottomsheet
     if (listData.last.isCompleted == 1) {
-      if (widget.postProgramStage == null || widget.postProgramStage!.isEmpty) {
+      print("widget.postProgramStage: ${widget.transStage}");
+      if (widget.transStage == null || widget.transStage!.isEmpty) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (!isOpened) {
             setState(() {
@@ -199,117 +203,11 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
     }
   }
 
-  buildDayCompleted() {
-    Size size = MediaQuery.of(context).size;
-    return showModalBottomSheet(
-      backgroundColor: Colors.transparent,
-      isDismissible: false,
-      context: context,
-      builder: (context) {
-        return Container(
-          padding: EdgeInsets.only(top: 2.h, left: 10.w, right: 10.w),
-          decoration: const BoxDecoration(
-            color: gWhiteColor,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(10),
-              topRight: Radius.circular(10),
-            ),
-          ),
-          height: size.height * 0.50,
-          width: double.infinity,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Padding(
-                padding: EdgeInsets.only(right: 5.w),
-                child: Align(
-                  alignment: Alignment.topRight,
-                  child: InkWell(
-                    onTap: () {
-                      setState(() {
-                        isOpened = false;
-                      });
-                      Navigator.pop(context);
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.all(1),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(30),
-                        border: Border.all(color: gMainColor, width: 1),
-                      ),
-                      child: Icon(
-                        Icons.clear,
-                        color: gMainColor,
-                        size: 1.8.h,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(5),
-                  border: Border.all(color: gMainColor),
-                ),
-                child: Lottie.asset(
-                  "assets/lottie/clap.json",
-                  height: 20.h,
-                ),
-              ),
-              SizedBox(height: 1.5.h),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 3.w),
-                child: Text(
-                  "You Have completed the ${listData.length} days Meal Plan, Now you can proceed",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    height: 1.5,
-                    fontFamily: kFontBold,
-                    color: gTextColor,
-                    fontSize: 10.sp,
-                  ),
-                ),
-              ),
-              SizedBox(height: 5.h),
-              GestureDetector(
-                onTap: () {
-                  setState(() {
-                    isOpened = true;
-                  });
-                  Future.delayed(Duration(seconds: 0)).whenComplete(() {
-                    openProgressDialog(context);
-                  });
-                  startPostProgram();
-                },
-                child: Container(
-                  padding:
-                      EdgeInsets.symmetric(vertical: 1.h, horizontal: 15.w),
-                  decoration: BoxDecoration(
-                    color: gPrimaryColor,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: gMainColor, width: 1),
-                  ),
-                  child: Text(
-                    'Next',
-                    style: TextStyle(
-                      fontFamily: "GothamRoundedBold_21016",
-                      color: gMainColor,
-                      fontSize: 12.sp,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
 
   buildDayCompletedClap() {
     return AppConfig().showSheet(
         context,
-        Column(
+        WillPopScope(child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Container(
@@ -326,7 +224,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 3.w),
               child: Text(
-                "You Have completed the ${listData.length} days Meal Plan, Now you can proceed",
+                "You Have completed the ${listData.length} days Meal Plan, Now you can proceed to Transition",
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   height: 1.2,
@@ -342,10 +240,10 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                 setState(() {
                   isOpened = true;
                 });
-                Future.delayed(Duration(seconds: 0)).whenComplete(() {
-                  openProgressDialog(context);
-                });
-                startPostProgram();
+                Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (_) => DashboardScreen()),
+                        (route) => true);
               },
               child: Container(
                 padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 10.w),
@@ -365,6 +263,8 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
               ),
             ),
           ],
+        ),
+            onWillPop: ()=>Future.value(false)
         ),
         circleIcon: bsHeadPinIcon,
         bottomSheetHeight: 60.h);
@@ -400,22 +300,12 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
     ),
   );
 
-  final _switchController = ValueNotifier<bool>(false);
 
   bool _checked = false;
 
   @override
   void initState() {
     super.initState();
-    _switchController.addListener(() {
-      setState(() {
-        if (_switchController.value) {
-          _checked = true;
-        } else {
-          _checked = false;
-        }
-      });
-    });
     getProgramDays();
     WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
       commentController.addListener(() {
@@ -560,7 +450,6 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
   @override
   void dispose() async {
     super.dispose();
-    _switchController.dispose();
     commentController.dispose();
     await _controller?.dispose();
     await _controller?.stopRendererScanning();
@@ -574,6 +463,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
         data: MediaQuery.of(context).copyWith(textScaleFactor: 0.8),
         child: SafeArea(
           child: Scaffold(
+            resizeToAvoidBottomInset: true,
             body: videoPlayerView(),
           ),
         ),
@@ -744,6 +634,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
   //   }
   // }
 
+  bool showNoteVideo = false;
   backgroundWidgetForPIP() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -834,44 +725,87 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                         onPressed: () {
                           if (planNotePdfLink != null ||
                               planNotePdfLink!.isNotEmpty) {
-                            AppConfig().showSheet(context, Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Center(
-                                  child: Text("Want to know more about the program? Please read",
-                                    style: TextStyle(
-                                        fontSize: bottomSheetHeadingFontSize,
-                                        fontFamily: bottomSheetHeadingFontFamily,
-                                        height: 1.4
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ),
-                                const Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 15),
-                                  child: Divider(
-                                    color: kLineColor,
-                                    thickness: 1.2,
-                                  ),
-                                ),
-                                Expanded(child: SfPdfViewer.network(
-                                    planNotePdfLink!
-                                ),),
-                                SizedBox(
-                                  height: 3.h,
-                                )
-                              ],
-                            ),
-                                bottomSheetHeight: 85.h, circleIcon: bsHeadBulbIcon, topColor: kBottomSheetHeadGreen);
-                            // Navigator.push(
-                            //     context,
-                            //     MaterialPageRoute(
-                            //         builder: (ctx) => MealPdf(
-                            //               pdfLink: planNotePdfLink!,
-                            //               heading: "Note",
-                            //             )));
+                            // addUrlToVideoPlayer("");
+                            // AppConfig().showSheet(context,
+                            //     SizedBox(
+                            //       height: 75.h,
+                            //       child: StatefulBuilder(
+                            //         builder: (_, setState){
+                            //           return Column(
+                            //             mainAxisSize: MainAxisSize.min,
+                            //             crossAxisAlignment: CrossAxisAlignment.start,
+                            //             mainAxisAlignment: MainAxisAlignment.center,
+                            //             children: [
+                            //               Center(
+                            //                 child: Text("Want to know more about the program? Please read",
+                            //                   style: TextStyle(
+                            //                       fontSize: bottomSheetHeadingFontSize,
+                            //                       fontFamily: bottomSheetHeadingFontFamily,
+                            //                       height: 1.4
+                            //                   ),
+                            //                   textAlign: TextAlign.center,
+                            //                 ),
+                            //               ),
+                            //               videoMp4Widget(
+                            //                   onTap: (){
+                            //                     addUrlToVideoPlayer("");
+                            //                     setState(() {
+                            //                       showNoteVideo = true;
+                            //                     });
+                            //                   }
+                            //               ),
+                            //               const Padding(
+                            //                 padding: EdgeInsets.symmetric(horizontal: 15),
+                            //                 child: Divider(
+                            //                   color: kLineColor,
+                            //                   thickness: 1.2,
+                            //                 ),
+                            //               ),
+                            //               Expanded(
+                            //                 child: Stack(
+                            //                   children: [
+                            //                     SfPdfViewer.network(
+                            //                         planNotePdfLink!
+                            //                     ),
+                            //                     Visibility(
+                            //                       visible: showNoteVideo,
+                            //                       child: Positioned(
+                            //                           child: Center(
+                            //                               child: buildMealVideo(
+                            //                                   onTap: () async{
+                            //                                     setState(() {
+                            //                                       showNoteVideo = false;
+                            //                                     });
+                            //                                     _mealPlayerController!.stop();
+                            //                                     // await _mealPlayerController!.stopRendererScanning();
+                            //                                     // await _mealPlayerController!.dispose();
+                            //                                   }
+                            //                               )
+                            //                           )
+                            //                       ),
+                            //                     )
+                            //                   ],
+                            //                 ),
+                            //               ),
+                            //               SizedBox(
+                            //                 height: 3.h,
+                            //               )
+                            //             ],
+                            //           );
+                            //         }
+                            //       ),
+                            //     ),
+                            //     bottomSheetHeight: 85.h, circleIcon: bsHeadBulbIcon, topColor: kBottomSheetHeadGreen);
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (ctx) => MealPdf(
+                                          pdfLink: planNotePdfLink!,
+                                          heading: "Note",
+                                      isVideoWidgetVisible: false,
+                                      headCircleIcon: bsHeadPinIcon,
+                                      topHeadColor: kBottomSheetHeadGreen,
+                                        )));
                           } else {
                             AppConfig().showSnackbar(
                                 context, "Note Link Not available",
@@ -1207,7 +1141,8 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                                                             "u can access $presentDay");
                                                         sendData();
                                                         break;
-                                                      } else {
+                                                      }
+                                                      else {
                                                         print(
                                                             "u r trying else");
                                                       }
@@ -1675,7 +1610,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                                       return element.name == e.name;
                                     }),
                                   );
-                                  showFollowSheet(e);
+                                  showFollowedSheet(e);
                                   // openAlertBox(
                                   //     title: 'Did you Follow this?',
                                   //     titleNeeded: true,
@@ -1792,7 +1727,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
     return _data;
   }
 
-  showFollowSheet(ChildMealPlanDetailsModel e) {
+  showFollowedSheet(ChildMealPlanDetailsModel e) {
     print("eeeee:$e");
     return AppConfig().showSheet(context, showFollowWidget(e),
         bottomSheetHeight: 45.h, circleIcon: bsHeadPinIcon);
@@ -2557,23 +2492,6 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
     print('dummy: $dummy');
 
     showSymptomsTrackerSheet(context, model);
-    // Navigator.push(context, MaterialPageRoute(builder: (_) => DayMealTracerUI(proceedProgramDayModel: model!)));
-    // print('ProceedProgramDayModel: ${jsonEncode(model.toJson())}');
-
-    // final result = await ProgramService(repository: repository).proceedDayMealDetailsService(model);
-    //
-    // print("result: $result");
-    // setState(() {
-    //   isSent = false;
-    // });
-    //
-    // if(result.runtimeType == GetProceedModel){
-    //   Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => DaysProgramPlan()), (route) => route.isFirst);
-    // }
-    // else{
-    //   var model = result as ErrorModel;
-    //   AppConfig().showSnackbar(context, model.message ?? '', isError: true);
-    // }
   }
 
   showPdf(String itemUrl, String? receipeName) {
@@ -2594,7 +2512,10 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
         MaterialPageRoute(
             builder: (ctx) => MealPdf(
                   pdfLink: url!,
+                  mealVideoLink: widget.receipeVideoLink ?? '',
+                  videoName: "Know more about Recipe",
                   heading: receipeName,
+              headCircleIcon: bsHeadBulbIcon,
                 )));
   }
 
@@ -2735,12 +2656,54 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
     }
   }
 
+  bool showMealVideo = false;
   showSymptomsTrackerSheet(BuildContext context, ProceedProgramDayModel model) {
     return AppConfig().showSheet(
         context,
-        TrackerUI(
-          proceedProgramDayModel: model,
-          from: ProgramMealType.program.name,
+        StatefulBuilder(
+            builder: (_, setState){
+              return SizedBox(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children:[
+                    videoMp4Widget(
+                        videoName: "Know more about Symptoms Tracker",
+                    onTap: (){
+                      addUrlToVideoPlayer(widget.trackerVideoLink ?? '');
+                      setState(() {
+                        showMealVideo = true;
+                      });
+                    }),
+                    Stack(
+                      children: [
+                        TrackerUI(
+                          proceedProgramDayModel: model,
+                          from: ProgramMealType.program.name,
+                        ),
+                        Visibility(
+                          visible: showMealVideo,
+                          child: Positioned(
+                              child: Center(
+                                  child: buildMealVideo(
+                                    onTap: () async{
+                                      setState(() {
+                                        showMealVideo = false;
+                                      });
+                                      _mealPlayerController!.stop();
+                                      // await _mealPlayerController!.stopRendererScanning();
+                                      // await _mealPlayerController!.dispose();
+                                    }
+                                  )
+                              )
+                          ),
+                        )
+                      ],
+                    )
+                  ],
+                ),
+              );
+            }
         ),
         circleIcon: bsHeadPinIcon,
         bottomSheetHeight: 90.h);
@@ -2765,6 +2728,124 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
           );
         });
   }
+  VlcPlayerController? _mealPlayerController;
+  final _mealKey = GlobalKey<VlcPlayerWithControlsState>();
+
+  videoMp4Widget({required VoidCallback onTap, String? videoName}){
+    return InkWell(
+      onTap: onTap,
+      child: Card(
+        child: Row(
+          children:[
+            Image.asset("assets/images/meal_placeholder.png",
+              height: 35,
+              width: 40,
+            ),
+            Expanded(child: Text(videoName ?? "Symptom Tracker.mp4",
+              style: TextStyle(
+                fontFamily: kFontBook
+              ),
+            )),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Image.asset("assets/images/arrow_for_video.png",
+                height: 35,
+              ),
+            )
+          ]
+        )
+      ),
+    );
+  }
+
+  addUrlToVideoPlayer(String url){
+    print("url"+ url);
+    _mealPlayerController = VlcPlayerController.network(Uri.parse(url).toString(),
+      // "assets/images/new_ds/popup_video.mp4",
+      // url,
+      // 'http://samples.mplayerhq.hu/MPEG-4/embedded_subs/1Video_2Audio_2SUBs_timed_text_streams_.mp4',
+      // 'https://media.w3.org/2010/05/sintel/trailer.mp4',
+      hwAcc: HwAcc.auto,
+      autoPlay: true,
+      options: VlcPlayerOptions(
+        advanced: VlcAdvancedOptions([
+          VlcAdvancedOptions.networkCaching(2000),
+        ]),
+        subtitle: VlcSubtitleOptions([
+          VlcSubtitleOptions.boldStyle(true),
+          VlcSubtitleOptions.fontSize(30),
+          VlcSubtitleOptions.outlineColor(VlcSubtitleColor.yellow),
+          VlcSubtitleOptions.outlineThickness(VlcSubtitleThickness.normal),
+          // works only on externally added subtitles
+          VlcSubtitleOptions.color(VlcSubtitleColor.navy),
+        ]),
+        http: VlcHttpOptions([
+          VlcHttpOptions.httpReconnect(true),
+        ]),
+        rtp: VlcRtpOptions([
+          VlcRtpOptions.rtpOverRtsp(true),
+        ]),
+      ),
+    );
+  }
+
+  buildMealVideo({required VoidCallback onTap}) {
+    if(_mealPlayerController != null){
+      return Column(
+        children: [
+          AspectRatio(
+            aspectRatio: 16/9,
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(5),
+                border: Border.all(color: gPrimaryColor, width: 1),
+                // boxShadow: [
+                //   BoxShadow(
+                //     color: Colors.grey.withOpacity(0.3),
+                //     blurRadius: 20,
+                //     offset: const Offset(2, 10),
+                //   ),
+                // ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(5),
+                child: Center(
+                  child: VlcPlayerWithControls(
+                    key: _mealKey,
+                    controller: _mealPlayerController!,
+                    showVolume: false,
+                    showVideoProgress: false,
+                    seekButtonIconSize: 10.sp,
+                    playButtonIconSize: 14.sp,
+                    replayButtonSize: 10.sp,
+                  ),
+                  // child: VlcPlayer(
+                  //   controller: _videoPlayerController!,
+                  //   aspectRatio: 16 / 9,
+                  //   virtualDisplay: false,
+                  //   placeholder: Center(child: CircularProgressIndicator()),
+                  // ),
+                ),
+              ),
+            ),
+          ),
+          Center(
+            child: IconButton(
+              icon: Icon(Icons.cancel_outlined,
+                color: gsecondaryColor,
+              ),
+              onPressed: onTap,
+            )
+          )
+        ],
+      );
+    }
+    else {
+      return SizedBox.shrink();
+    }
+  }
+
+
 }
 
 class MealPlanData {

@@ -1127,9 +1127,10 @@ class _PPDailyTasksUIState extends State<PPDailyTasksUI> {
           }
           print("isSelect: ${element.isSelected}");
           earlyMorning.add(RoutineTask(title: element.name ?? '',
-              itemUrl: element.itemPhoto ?? '',
+              itemUrl: (element.itemPhoto != null) ? Uri.parse(element.itemPhoto!).toString() : '',
               isSelected: element.isSelected== 0 ? false : true,
-              benefits: element.benefits ?? '', followId: '1',
+              benefits: element.benefits ?? '',
+              followId: '1',
               itemId: element.itemId
           ));
           earlyMorning.forEach((element) {
@@ -1141,7 +1142,9 @@ class _PPDailyTasksUIState extends State<PPDailyTasksUI> {
           if(element.isSelected == 1) {
             stageMap[0].stageCompleted = true;
           }
-          earlyMorning.add(RoutineTask(title: element.name ?? '', itemUrl: element.itemPhoto ?? '', isSelected: element.isSelected == 0 ? false : true,
+          earlyMorning.add(RoutineTask(title: element.name ?? '',
+              itemUrl: element.itemPhoto ?? '',
+              isSelected: element.isSelected == 0 ? false : true,
               benefits: element.benefits ?? '',
               followId: '2',
             itemId: element.itemId

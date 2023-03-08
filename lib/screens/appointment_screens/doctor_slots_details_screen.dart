@@ -70,6 +70,7 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
   /// this is used when we come from dashboard
   ChildDoctorModel? _childDoctorModel;
   String? doctorName;
+  String? doctorImage;
 
 
   @override
@@ -88,7 +89,7 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
         if(element.user!.roleId == "2"){
           doctorNames.add('Dr. ${element.user!.name}' ?? '');
           doctorName = 'Dr. ${element.user!.name}';
-
+          doctorImage = element.user?.profile ?? '';
         }
       });
       if(widget.data?.kaleyraSuccessId != null){
@@ -106,13 +107,29 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
     ChildAppointmentDetails? model;
     if(widget.isFromDashboard || widget.isPostProgram){
       if(widget.isPostProgram){
-        widget.data?.team?.teamMember?.forEach((element) {
-          if(element.user!.roleId == "2"){
-            doctorNames.add('Dr. ${element.user!.name}' ?? '');
-            doctorName = 'Dr. ${element.user!.name}';
+        if(widget.data?.team?.teamMember == null){
+          model = ChildAppointmentDetails.fromJson(Map.from(widget.dashboardValueMap!));
+          _childDoctorModel = model.doctor;
+          // print("moddd: ${model.teamPatients!.team!.toJson()}");
+          model.teamMember?.forEach((element) {
+            print('from appoi: ${element.toJson()}');
+            if(element.user!.roleId == "2"){
+              doctorNames.add('Dr. ${element.user!.name}' ?? '');
+              doctorName = 'Dr. ${element.user!.name}';
+              doctorImage = element.user?.profile ?? '';
+            }
+          });
+        }
+        else{
+          widget.data?.team?.teamMember?.forEach((element) {
+            if(element.user!.roleId == "2"){
+              doctorNames.add('Dr. ${element.user!.name}' ?? '');
+              doctorName = 'Dr. ${element.user!.name}';
+              doctorImage = element.user?.profile ?? '';
 
-          }
-        });
+            }
+          });
+        }
         if(widget.data?.kaleyraSuccessId != null){
 
         }
@@ -134,6 +151,7 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
           if(element.user!.roleId == "2"){
             doctorNames.add('Dr. ${element.user!.name}' ?? '');
             doctorName = 'Dr. ${element.user!.name}';
+            doctorImage = element.user?.profile ?? '';
           }
         });
         if(model.teamPatients?.patient?.user?.kaleyraId != null){
@@ -142,17 +160,21 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
         }
       }
     }
+    print("doctorName: $doctorName");
   }
 
   Future getAccessToken(String kaleyraId) async{
+    print("getAccessToken: $kaleyraId");
     final res = await ConsultationService(repository: _consultationRepository).getAccessToken(kaleyraId);
 
     print(res);
     if(res.runtimeType == ErrorModel){
       final model = res as ErrorModel;
+      print("getAccessToken error: $kaleyraId ${model.message}");
       AppConfig().showSnackbar(context, model.message ?? '', isError: true);
     }
     else{
+      print("getAccessToken success: $kaleyraId");
       accessToken = res;
     }
   }
@@ -225,37 +247,37 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
                     ),
                   ),
                   SizedBox(height: 3.h),
-                  Center(
-                    child: InkWell(
-                      onTap: () {
-                        getChatGroupId();
-                        // Navigator.of(context).push(
-                        //   MaterialPageRoute(
-                        //       builder: (context) =>
-                        //           const DoctorCalenderTimeScreen()),
-                        // );
-                      },
-                      child: Row(mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Image(
-                            image: const AssetImage(
-                                "assets/images/noun-chat-5153452.png"),
-                            height: 2.h,
-                          ),
-                          SizedBox(width: 2.w),
-                          Text(
-                            'Chat Support',
-                            style: TextStyle(
-                              decoration: TextDecoration.underline,
-                              fontFamily: kFontMedium,
-                              color: gTextColor,
-                              fontSize: 10.sp,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+                  // Center(
+                  //   child: InkWell(
+                  //     onTap: () {
+                  //       getChatGroupId();
+                  //       // Navigator.of(context).push(
+                  //       //   MaterialPageRoute(
+                  //       //       builder: (context) =>
+                  //       //           const DoctorCalenderTimeScreen()),
+                  //       // );
+                  //     },
+                  //     child: Row(mainAxisAlignment: MainAxisAlignment.center,
+                  //       children: [
+                  //         Image(
+                  //           image: const AssetImage(
+                  //               "assets/images/noun-chat-5153452.png"),
+                  //           height: 2.h,
+                  //         ),
+                  //         SizedBox(width: 2.w),
+                  //         Text(
+                  //           'Chat Support',
+                  //           style: TextStyle(
+                  //             decoration: TextDecoration.underline,
+                  //             fontFamily: kFontMedium,
+                  //             color: gTextColor,
+                  //             fontSize: 10.sp,
+                  //           ),
+                  //         ),
+                  //       ],
+                  //     ),
+                  //   ),
+                  // ),
                 ],
               ),
             ),
@@ -378,7 +400,7 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
                                     var curTime = DateTime.now();
                                     print(DateTime.now());
                                     print(widget.bookingDate + widget.bookingTime);
-                                    var res = DateFormat("yyyy-MM-dd HH:mm:ss").parse("${widget.bookingDate} ${widget.bookingTime}");
+                                    var res = DateFormat("yyyy-MM-dd HH:mm:ss").parse("${widget.bookingDate} ${widget.bookingTime}:00");
 
                                     print(curTime.difference(res));
                                     print(res.difference(curTime));
@@ -389,13 +411,30 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
                                     // else{
 
                                       ChildAppointmentDetails? model;
-                                      if(widget.isFromDashboard || widget.isPostProgram){
-                                        model = ChildAppointmentDetails.fromJson(Map.from(widget.dashboardValueMap!));
+                                    String? kaleyraurl;
+
+                                    if(widget.isFromDashboard || widget.isPostProgram){
+                                        if(widget.isPostProgram){
+                                          if(widget.dashboardValueMap != null){
+                                            model = ChildAppointmentDetails.fromJson(Map.from(widget.dashboardValueMap!));
+                                            kaleyraurl = model.kaleyraJoinurl;
+                                          }
+                                          else{
+                                            kaleyraurl = widget.data?.kaleyraJoinurl;
+                                          }
+
+                                        }
+                                        else{
+                                          model = ChildAppointmentDetails.fromJson(Map.from(widget.dashboardValueMap!));
+                                        kaleyraurl = model.kaleyraJoinurl;
+                                        }
                                       }
+                                    else{
+                                      kaleyraurl = widget.data?.kaleyraJoinurl;
+                                    }
                                       // String zoomUrl = model.;
 
-                                      String? kaleyraurl = (widget.isFromDashboard || widget.isPostProgram) ? model?.kaleyraJoinurl : widget.data?.kaleyraJoinurl;
-
+                                    //(widget.isFromDashboard || widget.isPostProgram) ? model?.kaleyraJoinurl : widget.data?.kaleyraJoinurl
                                       print(_pref!.getString(AppConfig.KALEYRA_USER_ID));
                                       kaleyraUID = _pref!.getString(AppConfig.KALEYRA_USER_ID) ?? '';
                                       print("kaleyraurl:=>$kaleyraurl");
@@ -436,18 +475,22 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
                                   height: 4.h,
                                 ),
                                 Visibility(
-                                  visible: !widget.isPostProgram,
+                                  // visible: !widget.isPostProgram,
+                                  visible: true,
                                   child: GestureDetector(
                                     onTap: () {
+                                      print(_childDoctorModel);
                                       Navigator.of(context).push(
                                         MaterialPageRoute(
                                             builder: (context) =>
                                                 DoctorCalenderTimeScreen(
+                                                  isPostProgram: widget.isPostProgram,
                                                   isReschedule: true,
                                                   prevBookingDate: widget.bookingDate,
                                                   prevBookingTime: widget.bookingTime,
                                                   doctorName: doctorName,
-                                                  doctorDetails: (widget.isFromDashboard) ? _childDoctorModel : widget.data!.doctor,
+                                                  doctorPic: doctorImage,
+                                                  doctorDetails: (widget.isFromDashboard || widget.isPostProgram) ? _childDoctorModel : widget.data!.doctor,
                                                 )),
                                       );
                                     },
@@ -527,6 +570,64 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
   }
 
   showJoinPopup(){
+    return AppConfig().showSheet(
+        context,
+        Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text("You're early to the appointment! \nPlease join 5 minutes before the scheduled time for a successful admission.",
+            style: TextStyle(
+                fontFamily: kFontMedium,
+                fontSize: 10.5.sp,
+                height: 1.3,
+                color: gTextColor
+            ),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(
+            height: 1.h,
+          ),
+          MediaQuery(
+            data: MediaQuery.of(context).copyWith(textScaleFactor: 0.75),
+            child: GestureDetector(
+              onTap: (){
+                Navigator.pop(context);
+                // Navigator.pop(context);
+              },
+              child: Container(
+                width: 40.w,
+                height: 4.h,
+                margin: EdgeInsets.symmetric(vertical: 4.h),
+                padding:
+                EdgeInsets.symmetric(vertical: 1.h, horizontal: 10.w),
+                decoration: BoxDecoration(
+                  color: eUser().buttonColor,
+                  borderRadius: BorderRadius.circular(eUser().buttonBorderRadius),
+                  // border: Border.all(
+                  //     color: eUser().buttonBorderColor,
+                  //     width: eUser().buttonBorderWidth
+                  // ),
+                ),
+                child:Center(
+                  child: Text(
+                    'Go Back',
+                    style: TextStyle(
+                      fontFamily: eUser().buttonTextFont,
+                      color: eUser().buttonTextColor,
+                      fontSize: eUser().buttonTextSize,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    ),
+      bottomSheetHeight: 45.h
+    );
     return showDialog(
         context: context,
         builder: (_){

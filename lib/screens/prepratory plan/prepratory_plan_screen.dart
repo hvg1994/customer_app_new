@@ -49,38 +49,76 @@ class _PrepratoryPlanScreenState extends State<PrepratoryPlanScreen> {
   );
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-        child: Scaffold(
-          body: SingleChildScrollView(
-            child: Container(
-              padding: EdgeInsets.only(top: 10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // buildAppBar(
-                  //         (){
-                  //   Navigator.pop(context);
-                  // },
-                  // showHelpIcon: true,
-                  // helpOnTap: (){
-                  //   if(planNotePdfLink != null || planNotePdfLink!.isNotEmpty){
-                  //     Navigator.push(context, MaterialPageRoute(builder: (ctx)=>
-                  //         MealPdf(pdfLink: planNotePdfLink! ,
-                  //           heading: "Note",
-                  //         )));
-                  //   }
-                  //   else{
-                  //     AppConfig().showSnackbar(context, "Note Link Not available", isError: true);
-                  //   }
-                  // }),
-                  FutureBuilder(
-                    future: prepratoryMealFuture,
-                      builder: (_, snapshot){
-                      if(snapshot.hasData){
-                        if(snapshot.data.runtimeType == ErrorModel){
-                          final res = snapshot.data as ErrorModel;
+    return MediaQuery(
+      data: MediaQuery.of(context).copyWith(textScaleFactor: 0.8),
+      child: SafeArea(
+          child: Scaffold(
+            body: SingleChildScrollView(
+              child: Container(
+                padding: EdgeInsets.only(top: 10, left: 10, right: 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    buildAppBar(
+                            (){
+                      Navigator.pop(context);
+                    },
+                    showHelpIcon: true,
+                    helpOnTap: (){
+                      if(planNotePdfLink != null || planNotePdfLink!.isNotEmpty){
+                        Navigator.push(context, MaterialPageRoute(builder: (ctx)=>
+                            MealPdf(pdfLink: planNotePdfLink! ,
+                              isVideoWidgetVisible: false,
+                              headCircleIcon: bsHeadPinIcon,
+                              topHeadColor: kBottomSheetHeadGreen,
+                              heading: "Note",
+                            )));
+                      }
+                      else{
+                        AppConfig().showSnackbar(context, "Note Link Not available", isError: true);
+                      }
+                    }),
+                    FutureBuilder(
+                      future: prepratoryMealFuture,
+                        builder: (_, snapshot){
+                        if(snapshot.hasData){
+                          if(snapshot.data.runtimeType == ErrorModel){
+                            final res = snapshot.data as ErrorModel;
+                            return Center(
+                              child: Text(res.message ?? '',
+                                style: TextStyle(
+                                  fontSize: 10.sp,
+                                  fontFamily: kFontMedium,
+                                ),
+                              ),
+                            );
+                          }
+                          else{
+                            PrepratoryMealModel res = snapshot.data as PrepratoryMealModel;
+                            final dataList = res.data!.toJson();
+                            planNotePdfLink = res.note;
+                            if(res.days != null) totalDays = res.days;
+                            if(res.currentDay != null) dayNumber = res.currentDay;
+                            return customMealPlanTile(dataList);
+                            // lst.addAll(dataList.values.map((e) => MealSlot.fromJson(e)));
+                            // return customMealPlanTile(key, lst);
+
+                            // dataList.map((key, value) {
+                            //   List<MealSlot> lst = [];
+                            //   print("$key==$value");
+                            //   value.forEach((e){
+                            //     lst.add(MealSlot.fromJson(e));
+                            //   });
+                            //   return ;
+                            // });
+                            // return SizedBox();
+
+
+                          }
+                        }
+                        else if(snapshot.hasError){
                           return Center(
-                            child: Text(res.message ?? '',
+                            child: Text(snapshot.error.toString() ?? '',
                               style: TextStyle(
                                 fontSize: 10.sp,
                                 fontFamily: kFontMedium,
@@ -88,47 +126,15 @@ class _PrepratoryPlanScreenState extends State<PrepratoryPlanScreen> {
                             ),
                           );
                         }
-                        else{
-                          PrepratoryMealModel res = snapshot.data as PrepratoryMealModel;
-                          final dataList = res.data!.toJson();
-                          planNotePdfLink = res.note;
-                          if(res.days != null) totalDays = res.days;
-                          if(res.currentDay != null) dayNumber = res.currentDay;
-                          return customMealPlanTile(dataList);
-                          // lst.addAll(dataList.values.map((e) => MealSlot.fromJson(e)));
-                          // return customMealPlanTile(key, lst);
-
-                          // dataList.map((key, value) {
-                          //   List<MealSlot> lst = [];
-                          //   print("$key==$value");
-                          //   value.forEach((e){
-                          //     lst.add(MealSlot.fromJson(e));
-                          //   });
-                          //   return ;
-                          // });
-                          // return SizedBox();
-
-
+                        return Center(child: buildCircularIndicator(),);
                         }
-                      }
-                      else if(snapshot.hasError){
-                        return Center(
-                          child: Text(snapshot.error.toString() ?? '',
-                            style: TextStyle(
-                              fontSize: 10.sp,
-                              fontFamily: kFontMedium,
-                            ),
-                          ),
-                        );
-                      }
-                      return Center(child: buildCircularIndicator(),);
-                      }
-                  )
-                ],
+                    )
+                  ],
+                ),
               ),
             ),
-          ),
-        )
+          )
+      ),
     );
   }
 
@@ -148,7 +154,11 @@ class _PrepratoryPlanScreenState extends State<PrepratoryPlanScreen> {
         ),
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 5),
-          child: Text('${int.parse(totalDays!) - int.parse(dayNumber!)} days Remaining',
+          child: Text((int.parse(totalDays!) - int.parse(dayNumber!)).isNegative
+              ? (int.parse(totalDays!) - int.parse(dayNumber!)) == -1
+              ? '${(int.parse(totalDays!) - int.parse(dayNumber!)).abs()} day Extended'
+              :'${(int.parse(totalDays!) - int.parse(dayNumber!)).abs()} days Extended'
+              : '${int.parse(totalDays!) - int.parse(dayNumber!)} days Remaining',
             style: TextStyle(
                 fontFamily: kFontMedium,
                 color: gHintTextColor,

@@ -25,6 +25,7 @@ class DoctorCalenderTimeScreen extends StatefulWidget {
   final bool isReschedule;
   final String? prevBookingDate;
   final String? prevBookingTime;
+  final String? doctorPic;
   final ChildDoctorModel? doctorDetails;
   final String? doctorName;
   /// this is for post program
@@ -35,6 +36,7 @@ class DoctorCalenderTimeScreen extends StatefulWidget {
     this.prevBookingDate,
     this.prevBookingTime,
     this.doctorDetails,
+    this.doctorPic,
     this.doctorName,
     this.isPostProgram = false
   }) : super(key: key);
@@ -373,8 +375,9 @@ class _DoctorCalenderTimeScreenState extends State<DoctorCalenderTimeScreen> {
                 ),
               ],
               borderRadius: BorderRadius.circular(6),
-              image: const DecorationImage(
-                image: AssetImage("assets/images/doctor_placeholder.png")
+              image: DecorationImage(
+                  image: NetworkImage(widget.doctorPic ?? '')
+                // image: AssetImage("assets/images/doctor_placeholder.png")
               )
             ),
           ),
@@ -409,7 +412,7 @@ class _DoctorCalenderTimeScreenState extends State<DoctorCalenderTimeScreen> {
                 ),
               ),
               SizedBox(height: 1.5.h),
-              buildRating(),
+              //buildRating(),
             ],
           ),
         ],

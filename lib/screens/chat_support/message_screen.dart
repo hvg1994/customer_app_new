@@ -214,9 +214,9 @@ class _MessageScreenState extends State<MessageScreen>
 
   @override
   Widget build(BuildContext context) {
-    return UnfocusWidget(
-      child: WillPopScope(
-        onWillPop: _onWillPop,
+    return WillPopScope(
+      onWillPop: _onWillPop,
+      child: UnfocusWidget(
         child: SafeArea(
           child: Scaffold(
             key: _scaffoldKey,
@@ -667,7 +667,10 @@ class _MessageScreenState extends State<MessageScreen>
   }
 
   buildMessageList(List<QBMessageWrapper> messageList) {
-    return GroupedListView<QBMessageWrapper, DateTime>(
+    return (messageList.isEmpty)
+        ? Center(
+        child: Text("No Messages")
+    ) :  GroupedListView<QBMessageWrapper, DateTime>(
       // shrinkWrap: true,
       elements: messageList,
       order: GroupedListOrder.DESC,
@@ -680,16 +683,16 @@ class _MessageScreenState extends State<MessageScreen>
       // padding: EdgeInsets.symmetric(horizontal: 0.w),
       groupHeaderBuilder: (QBMessageWrapper message) =>
           Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-        Container(
-          margin: EdgeInsets.only(top: 7, bottom: 7),
-          padding: EdgeInsets.only(left: 16, right: 16, top: 3, bottom: 3),
-          decoration: BoxDecoration(
-              color: Color(0xffd9e3f7),
-              borderRadius: BorderRadius.all(Radius.circular(11))),
-          child: Text(_buildHeaderDate(message.qbMessage.dateSent),
-              style: TextStyle(color: Colors.black54, fontSize: 13)),
-        )
-      ]),
+            Container(
+              margin: EdgeInsets.only(top: 7, bottom: 7),
+              padding: EdgeInsets.only(left: 16, right: 16, top: 3, bottom: 3),
+              decoration: BoxDecoration(
+                  color: Color(0xffd9e3f7),
+                  borderRadius: BorderRadius.all(Radius.circular(11))),
+              child: Text(_buildHeaderDate(message.qbMessage.dateSent),
+                  style: TextStyle(color: Colors.black54, fontSize: 13)),
+            )
+          ]),
       itemBuilder: (context, QBMessageWrapper message) => Row(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.end,
@@ -708,193 +711,194 @@ class _MessageScreenState extends State<MessageScreen>
                 children: [
                   IntrinsicWidth(
                     child: (message.qbMessage.attachments == null ||
-                            message.qbMessage.attachments!.isEmpty)
+                        message.qbMessage.attachments!.isEmpty)
                         ? Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            // overflow: Overflow.visible,
-                            // clipBehavior: Clip.none,
-                            children: [
-                              Container(
-                                padding: EdgeInsets.only(
-                                    left: 16, right: 16, top: 13, bottom: 13),
-                                constraints: BoxConstraints(maxWidth: 70.w),
-                                margin: message.isIncoming
-                                    ? EdgeInsets.only(
-                                        top: 1.h, bottom: 1.h, left: 5)
-                                    : EdgeInsets.only(
-                                        top: 1.h, bottom: 1.h, right: 5),
-                                // padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 1.5.h),
-                                decoration: BoxDecoration(
-                                    color: message.isIncoming
-                                        ? gHintTextColor
-                                        : gsecondaryColor,
-                                    borderRadius: BorderRadius.only(
-                                        topLeft: Radius.circular(18),
-                                        topRight: Radius.circular(18),
-                                        bottomLeft: message.isIncoming
-                                            ? Radius.circular(0)
-                                            : Radius.circular(18),
-                                        bottomRight: message.isIncoming
-                                            ? Radius.circular(18)
-                                            : Radius.circular(0))),
-                                child: Text(
-                                  message.qbMessage.body ?? '',
-                                  style: TextStyle(
-                                      fontFamily: "GothamBook",
-                                      height: 1.5,
-                                      color: message.isIncoming
-                                          ? gTextColor
-                                          : gWhiteColor,
-                                      fontSize: 10.sp),
-                                ),
-                              ),
-                              Row(
-                                mainAxisSize: MainAxisSize.min,
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: _buildNameTimeHeader(message),
-                              ),
-                            ],
-                          )
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      // overflow: Overflow.visible,
+                      // clipBehavior: Clip.none,
+                      children: [
+                        Container(
+                          padding: EdgeInsets.only(
+                              left: 16, right: 16, top: 13, bottom: 13),
+                          constraints: BoxConstraints(maxWidth: 70.w),
+                          margin: message.isIncoming
+                              ? EdgeInsets.only(
+                              top: 1.h, bottom: 1.h, left: 5)
+                              : EdgeInsets.only(
+                              top: 1.h, bottom: 1.h, right: 5),
+                          // padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 1.5.h),
+                          decoration: BoxDecoration(
+                              color: message.isIncoming
+                                  ? gBackgroundColor
+                                  : gsecondaryColor,
+                              borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(18),
+                                  topRight: Radius.circular(18),
+                                  bottomLeft: message.isIncoming
+                                      ? Radius.circular(0)
+                                      : Radius.circular(18),
+                                  bottomRight: message.isIncoming
+                                      ? Radius.circular(18)
+                                      : Radius.circular(0))),
+                          child: Text(
+                            message.qbMessage.body ?? '',
+                            style: TextStyle(
+                                fontFamily: kFontBook,
+                                height: 1.5,
+                                color: message.isIncoming
+                                    ? gsecondaryColor
+                                    : gWhiteColor,
+                                fontSize: 10.sp),
+                          ),
+                        ),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment:
+                          MainAxisAlignment.spaceBetween,
+                          children: _buildNameTimeHeader(message),
+                        ),
+                      ],
+                    )
                         : FutureBuilder(
-                            future: _quickBloxService!.getQbAttachmentUrl(
-                                message.qbMessage.attachments!.first!.id!),
-                            builder: (_, imgUrl) {
-                              print('imgUrl.hasError: ${imgUrl.hasError}');
-                              if (imgUrl.hasData) {
-                                QBFile? _file;
-                                print("imgUrl.runtimeType: ${imgUrl.data.runtimeType}");
-                                  _file = (imgUrl.data as Map)['file'];
-                                  // print('_file!.name: ${_file!.name}');
-                                return Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.stretch,
-                                  children: [
-                                    GestureDetector(
-                                      onTap: () {
-                                        if(message.qbMessage.attachments!.first!.type == 'application/pdf'){
-                                          Navigator.push(context, PageRouteBuilder(
-                                            opaque: false, // set to false
-                                            pageBuilder: (_, __, ___) {
-                                              return MealPdf(pdfLink: (imgUrl.data as Map)['url'],);
-                                            },
-                                          ));
-                                        }
-                                        else{
-                                          Navigator.push(context, PageRouteBuilder(
-                                            opaque: false, // set to false
-                                            pageBuilder: (_, __, ___) {
-                                              return showImageFullScreen((imgUrl.data as Map)['url']);
-                                            },
-                                          ));
-                                        }
-                                      },
-                                      child: Container(
-                                        height: message.qbMessage.attachments!
-                                                    .first!.type ==
-                                                'application/pdf'
-                                            ? null
-                                            : 200,
-                                        padding: EdgeInsets.only(
-                                            left: 16,
-                                            right: 16,
-                                            top: 13,
-                                            bottom: 13),
-                                        constraints:
-                                            BoxConstraints(maxWidth: 70.w),
-                                        margin: message.isIncoming
-                                            ? EdgeInsets.only(
-                                                top: 1.h,
-                                                bottom: 1.h,
-                                                left: 5)
-                                            : EdgeInsets.only(
-                                                top: 1.h,
-                                                bottom: 1.h,
-                                                right: 5),
-                                        // padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 1.5.h),
-                                        decoration: (message
-                                                    .qbMessage
-                                                    .attachments!
-                                                    .first!
-                                                    .type ==
-                                                'application/pdf')
-                                            ? BoxDecoration(
-                                                color: message.isIncoming
-                                                    ? gHintTextColor
-                                                    : gsecondaryColor,
-                                                borderRadius: BorderRadius.only(
-                                                    topLeft:
-                                                        Radius.circular(18),
-                                                    topRight:
-                                                        Radius.circular(18),
-                                                    bottomLeft: message.isIncoming
-                                                        ? Radius.circular(0)
-                                                        : Radius.circular(18),
-                                                    bottomRight: message.isIncoming
-                                                        ? Radius.circular(18)
-                                                        : Radius.circular(0)))
-                                            : BoxDecoration(
-                                                image: DecorationImage(
-                                                    filterQuality:
-                                                        FilterQuality.high,
-                                                    fit: BoxFit.fill,
-                                                    image: CachedNetworkImageProvider((imgUrl.data as Map)['url'])),
-                                                boxShadow: [BoxShadow(color: gHintTextColor, blurRadius: 0.2)],
-                                                borderRadius: BorderRadius.only(topLeft: Radius.circular(18), topRight: Radius.circular(18), bottomLeft: message.isIncoming ? Radius.circular(0) : Radius.circular(18), bottomRight: message.isIncoming ? Radius.circular(18) : Radius.circular(0))),
-                                        child: (message.qbMessage.attachments!
-                                                    .first!.type ==
-                                                'application/pdf')
-                                            ? (_file != null)
-                                                ? Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                                  children: [
-                                                    Expanded(
-                                                      child: Text(
-                                                          _file.name ?? '',
-                                                          maxLines: 2,
-                                                          style: TextStyle(
-                                                              fontSize: 10.sp,
-                                                              fontFamily:
-                                                                  'GothamMedium',
-                                                              color: gWhiteColor),
-                                                        ),
-                                                    ),
-                                                    IconButton(
-                                                      icon: Icon(Icons.download,
-                                                        color: Colors.white,),
-                                                      onPressed: () async{
-                                                        if(_file != null){
-                                                          await _quickBloxService!.downloadFile((imgUrl.data as Map)['url'], _file.name!)
-                                                              .then((value) {
-                                                            File file = value as File;
-                                                            AppConfig().showSnackbar(context, "file saved to ${file.path}");
-                                                          }).onError((error, stackTrace) {
-                                                            AppConfig().showSnackbar(context, "file download error");
-                                                          });
-                                                        }
-                                                      },
-                                                    )
-                                                  ],
-                                                )
-                                                : null
-                                            : null,
-                                      ),
-                                    ),
-                                    Row(
+                        future: _quickBloxService!.getQbAttachmentUrl(
+                            message.qbMessage.attachments!.first!.id!),
+                        builder: (_, imgUrl) {
+                          print('imgUrl.hasError: ${imgUrl.hasError}');
+                          if (imgUrl.hasData) {
+                            QBFile? _file;
+                            print("imgUrl.runtimeType: ${imgUrl.data.runtimeType}");
+                            _file = (imgUrl.data as Map)['file'];
+                            // print('_file!.name: ${_file!.name}');
+                            return Column(
+                              crossAxisAlignment:
+                              CrossAxisAlignment.stretch,
+                              children: [
+                                GestureDetector(
+                                  onTap: () {
+                                    if(message.qbMessage.attachments!.first!.type == 'application/pdf'){
+                                      Navigator.push(context, PageRouteBuilder(
+                                        opaque: false, // set to false
+                                        pageBuilder: (_, __, ___) {
+                                          return MealPdf(pdfLink: (imgUrl.data as Map)['url'],);
+                                        },
+                                      ));
+                                    }
+                                    else{
+                                      Navigator.push(context, PageRouteBuilder(
+                                        opaque: false, // set to false
+                                        pageBuilder: (_, __, ___) {
+                                          return showImageFullScreen((imgUrl.data as Map)['url']);
+                                        },
+                                      ));
+                                    }
+                                  },
+                                  child: Container(
+                                    height: message.qbMessage.attachments!
+                                        .first!.type ==
+                                        'application/pdf'
+                                        ? null
+                                        : 200,
+                                    padding: EdgeInsets.only(
+                                        left: 16,
+                                        right: 16,
+                                        top: 13,
+                                        bottom: 13),
+                                    constraints:
+                                    BoxConstraints(maxWidth: 70.w),
+                                    margin: message.isIncoming
+                                        ? EdgeInsets.only(
+                                        top: 1.h,
+                                        bottom: 1.h,
+                                        left: 5)
+                                        : EdgeInsets.only(
+                                        top: 1.h,
+                                        bottom: 1.h,
+                                        right: 5),
+                                    // padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 1.5.h),
+                                    decoration: (message
+                                        .qbMessage
+                                        .attachments!
+                                        .first!
+                                        .type ==
+                                        'application/pdf')
+                                        ? BoxDecoration(
+                                        color: message.isIncoming
+                                            ? gHintTextColor
+                                            : gsecondaryColor,
+                                        borderRadius: BorderRadius.only(
+                                            topLeft:
+                                            Radius.circular(18),
+                                            topRight:
+                                            Radius.circular(18),
+                                            bottomLeft: message.isIncoming
+                                                ? Radius.circular(0)
+                                                : Radius.circular(18),
+                                            bottomRight: message.isIncoming
+                                                ? Radius.circular(18)
+                                                : Radius.circular(0)))
+                                        : BoxDecoration(
+                                        image: DecorationImage(
+                                            filterQuality:
+                                            FilterQuality.high,
+                                            fit: BoxFit.fill,
+                                            image: CachedNetworkImageProvider((imgUrl.data as Map)['url'])),
+                                        boxShadow: [BoxShadow(color: gHintTextColor, blurRadius: 0.2)],
+                                        borderRadius: BorderRadius.only(topLeft: Radius.circular(18), topRight: Radius.circular(18), bottomLeft: message.isIncoming ? Radius.circular(0) : Radius.circular(18), bottomRight: message.isIncoming ? Radius.circular(18) : Radius.circular(0))),
+                                    child: (message.qbMessage.attachments!
+                                        .first!.type ==
+                                        'application/pdf')
+                                        ? (_file != null)
+                                        ? Row(
                                       mainAxisSize: MainAxisSize.min,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: _buildNameTimeHeader(message),
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            _file.name ?? '',
+                                            maxLines: 2,
+                                            style: TextStyle(
+                                                fontSize: 10.sp,
+                                                fontFamily:
+                                                kFontMedium,
+                                                color: gWhiteColor),
+                                          ),
+                                        ),
+                                        IconButton(
+                                          icon: Icon(Icons.download,
+                                            color: Colors.white,),
+                                          onPressed: () async{
+                                            if(_file != null){
+                                              await _quickBloxService!.downloadFile((imgUrl.data as Map)['url'], _file.name!)
+                                                  .then((value) {
+                                                File file = value as File;
+
+                                                AppConfig().showSnackbar(context, "file saved to ${file.path}");
+                                              }).onError((error, stackTrace) {
+                                                AppConfig().showSnackbar(context, "file download error");
+                                              });
+                                            }
+                                          },
+                                        )
+                                      ],
                                     )
-                                  ],
-                                );
-                              } else {
-                                print("imgUrl.error: ${imgUrl.error}");
-                                return SizedBox.shrink(
-                                    child: Text('Not found'));
-                              }
-                              return SizedBox.shrink();
-                            }),
+                                        : null
+                                        : null,
+                                  ),
+                                ),
+                                Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  mainAxisAlignment:
+                                  MainAxisAlignment.spaceBetween,
+                                  children: _buildNameTimeHeader(message),
+                                )
+                              ],
+                            );
+                          } else {
+                            print("imgUrl.error: ${imgUrl.error}");
+                            return SizedBox.shrink(
+                                child: Text('Not found'));
+                          }
+                          return SizedBox.shrink();
+                        }),
                   )
                 ],
               ),
@@ -978,7 +982,7 @@ class _MessageScreenState extends State<MessageScreen>
           style: TextStyle(
               color: gPrimaryColor,
               fontWeight: FontWeight.bold,
-              fontFamily: 'GothamMedium'),
+              fontFamily: kFontMedium),
         ),
       ),
     );
