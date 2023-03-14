@@ -192,25 +192,23 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
                         Center(
                           child: GestureDetector(
                             onTap: () {
-                              if(formKey1.currentState!.validate() && formKey2.currentState!.validate() && formKey3.currentState!.validate()){
-                                if(glassesOfWater.isEmpty){
-                                  showCustomSnack("Please select How Many glass of water do you drink a day");
-                                }
-                                else if(selectedHabitCheckBoxList.isEmpty && !habitOtherSelected){
-                                  showCustomSnack("Please select Habits or Addiction");
-                                }
-                                else if(mealPreferenceSelected.isEmpty){
-                                  showCustomSnack("Please select What is your meal preference");
-                                }
-                                else if(hungerPatternSelected.isEmpty){
-                                  showCustomSnack("Please select Hunger Pattern");
-                                }
-                                else if(bowelPatternSelected.isEmpty){
-                                  showCustomSnack("Please select Bowel Pattern");
-                                }
-                                else{
-                                  submitFormDetails();
-                                }
+                              if(glassesOfWater.isEmpty){
+                                showCustomSnack("Please select How Many glass of water do you drink a day");
+                              }
+                              else if(selectedHabitCheckBoxList.isEmpty && !habitOtherSelected){
+                                showCustomSnack("Please select Habits or Addiction");
+                              }
+                              else if(mealPreferenceSelected.isEmpty){
+                                showCustomSnack("Please select What is your meal preference");
+                              }
+                              else if(hungerPatternSelected.isEmpty){
+                                showCustomSnack("Please select Hunger Pattern");
+                              }
+                              else if(bowelPatternSelected.isEmpty){
+                                showCustomSnack("Please select Bowel Pattern");
+                              }
+                              else{
+                                submitFormDetails();
                               }
                             },
                             child: Container(
@@ -1273,50 +1271,50 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
 
   void checkFields() {
     if(digestionController.text.isEmpty){
-      AppConfig().showSnackbar(context, "Please Mention the food which affect in digestion");
+      AppConfig().showSnackbar(context, "Please Mention the food which affect in digestion", isError: true, bottomPadding: 100);
     }
     else if(specialDietController.text.isEmpty){
-      AppConfig().showSnackbar(context, "Please Mention the Special Diet");
+      AppConfig().showSnackbar(context, "Please Mention the Special Diet", isError: true, bottomPadding: 100);
     }
     else if(foodAllergyController.text.isEmpty){
-      AppConfig().showSnackbar(context, "Please Mention the food allergy Details");
+      AppConfig().showSnackbar(context, "Please Mention the food allergy Details", isError: true, bottomPadding: 100);
     }
     else if(intoleranceController.text.isEmpty){
-      AppConfig().showSnackbar(context, "Please Mention the known intolerance Details");
+      AppConfig().showSnackbar(context, "Please Mention the known intolerance Details", isError: true, bottomPadding: 100);
     }
     else if(cravingsController.text.isEmpty){
-      AppConfig().showSnackbar(context, "Please Mention any Severe food cravings");
+      AppConfig().showSnackbar(context, "Please Mention any Severe food cravings", isError: true, bottomPadding: 100);
     }
     else if(dislikeFoodController.text.isEmpty){
-      AppConfig().showSnackbar(context, "Please Mention the food which You Dislike");
+      AppConfig().showSnackbar(context, "Please Mention the food which You Dislike", isError: true, bottomPadding: 100);
     }
     else if(glassesOfWater.isEmpty){
-      AppConfig().showSnackbar(context, "Please Select how many glasses of water do you have a day");
+      AppConfig().showSnackbar(context, "Please Select how many glasses of water do you have a day", isError: true, bottomPadding: 100);
     }
 
     else if(habitCheckBox.every((element) => element.value == false) && habitOtherSelected == false){
-      AppConfig().showSnackbar(context, "Please Select Habits/Addiction");
+      AppConfig().showSnackbar(context, "Please Select Habits/Addiction", isError: true, bottomPadding: 100);
     }
     else if(habitOtherSelected == true && habitOtherController.text.isEmpty){
-      AppConfig().showSnackbar(context, "Please Mention other Habits/Addiction which not there in list");
+      AppConfig().showSnackbar(context, "Please Mention other Habits/Addiction which not there in list", isError: true, bottomPadding: 100);
     }
     else if(mealPreferenceSelected.isEmpty){
-      AppConfig().showSnackbar(context, "Please Select Meal Preference");
+      AppConfig().showSnackbar(context, "Please Select Meal Preference", isError: true, bottomPadding: 100);
     }
     else if(mealPreferenceSelected.toLowerCase().contains("other") && mealPreferenceController.text.isEmpty){
-      AppConfig().showSnackbar(context, "Please Mention the Meal Preference");
+      AppConfig().showSnackbar(context, "Please Mention the Meal Preference", isError: true, bottomPadding: 100);
     }
     else if(hungerPatternSelected.isEmpty){
-      AppConfig().showSnackbar(context, "Please Select Hunger Pattern");
+      AppConfig().showSnackbar(context, "Please Select Hunger Pattern", isError: true, bottomPadding: 100);
     }
     else if(hungerPatternSelected.toLowerCase().contains("other") && hungerPatternController.text.isEmpty){
-      AppConfig().showSnackbar(context, "Please Mention the Hunger Pattern");
+      AppConfig().showSnackbar(context, "Please Mention the Hunger Pattern", isError: true, bottomPadding: 100);
     }
     else if(bowelPatternSelected.isEmpty){
-      AppConfig().showSnackbar(context, "Please Select Bowel Pattern");
+      AppConfig().showSnackbar(context, "Please Select Bowel Pattern", isError: true, bottomPadding: 100);
     }
     else if(bowelPatternSelected.toLowerCase().contains("other") && bowelPatternController.text.isEmpty){
-      AppConfig().showSnackbar(context, "Please Mention the Bowel Pattern");
+      AppConfig().showSnackbar(context, "Please Mention the Bowel Pattern", isError: true, bottomPadding: 100);
     }
     else{
       addHabitDetails();
@@ -1410,7 +1408,7 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
   showCustomSnack(String msg){
     AppConfig().showSnackbar(context,
         msg,
-        isError: true);
+        isError: true, bottomPadding: 100);
   }
 
 }

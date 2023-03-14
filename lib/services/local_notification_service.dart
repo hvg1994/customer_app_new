@@ -10,14 +10,13 @@ class LocalNotificationService {
   static final _notificationsPlugin = FlutterLocalNotificationsPlugin();
   static final onNotifications = BehaviorSubject<String?>();
 
-  static void initialize(onClickedNotifications) {
+  static void initialize() {
     final initializationSettings = InitializationSettings(
       android: AndroidInitializationSettings("@mipmap/ic_launcher"),
       // iOS: IOSInitializationSettings(),
     );
     _notificationsPlugin.initialize(
       initializationSettings,
-      onSelectNotification: onClickedNotifications
       // onSelectNotification: (payload) async {
       //   print('payload: $payload');
       //   onNotifications.add(payload);

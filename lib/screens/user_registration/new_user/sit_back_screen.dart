@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gwc_customer/screens/user_registration/existing_user.dart';
+import 'package:gwc_customer/screens/user_registration/new_user/about_the_program.dart';
 import 'package:gwc_customer/widgets/constants.dart';
 import 'package:sizer/sizer.dart';
 
@@ -67,6 +68,23 @@ class _SitBackScreenState extends State<SitBackScreen> {
                           fontSize: 12.sp),
                     ),
                   ),
+                  SizedBox(
+                    height: 5.h,
+                  ),
+                  Center(
+                    child: TextButton(
+                      child: Text("Read more About Program >",
+                        style: TextStyle(
+                          fontFamily: kFontMedium,
+                          fontSize: 10.sp,
+                          color: gsecondaryColor
+                        ),
+                      ),
+                      onPressed: (){
+                        Navigator.push(context, MaterialPageRoute(builder: (_)=> AboutTheProgram(isFromSitBackScreen: true,)));
+                      },
+                    )
+                  )
                 ],
               ),
             ),

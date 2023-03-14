@@ -502,7 +502,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
               if (value!.isEmpty || !RegExp(r"^[a-z A-Z]").hasMatch(value)) {
                 AppConfig().showSnackbar(
                     context, "Please enter your First Name",
-                    isError: true);
+                    isError: true, bottomPadding: 100);
                 return 'Please enter your First Name';
               } else {
                 return null;
@@ -843,7 +843,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
               if (value!.isEmpty) {
                 return 'Please enter your Address';
               } else if (value.length < 10) {
-                AppConfig().showSnackbar(context, 'Address length should be greater than 10', isError: true);
+                AppConfig().showSnackbar(context, 'Address length should be greater than 10', isError: true,bottomPadding: 100);
                 return 'Please enter your Address';
               } else {
                 return null;
@@ -868,7 +868,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                   String code = _pref?.getString(AppConfig.countryCode) ?? '';
                   if (pinCodeController.text.length < 6) {
                     AppConfig()
-                        .showSnackbar(context, 'Pincode should be 6 digits');
+                        .showSnackbar(context, 'Pincode should be 6 digits', bottomPadding: 100);
                   } else {
                     fetchCountry(pinCodeController.text, 'IN');
                   }
@@ -1295,7 +1295,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                         tongueCoatingRadio.toLowerCase().contains("other")) {
                       AppConfig().showSnackbar(
                           context, "Please enter the tongue coating details",
-                          isError: true);
+                          isError: true, bottomPadding: 100);
                       return 'Please enter the tongue coating details';
                     } else {
                       return null;
@@ -1494,7 +1494,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                       urineColorValue.toLowerCase().contains('other')) {
                     AppConfig().showSnackbar(
                         context, "Please enter the details about Urine Color",
-                        isError: true);
+                        isError: true, bottomPadding: 100);
                     return 'Please enter the details about Urine Color';
                   } else {
                     return null;
@@ -1658,7 +1658,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                       urineLookLikeValue.toLowerCase().contains('other')) {
                     AppConfig().showSnackbar(
                         context, "Please enter how Urine Looks",
-                        isError: true);
+                        isError: true, bottomPadding: 100);
                     return 'Please enter how Urine Looks';
                   } else {
                     return null;
@@ -2082,46 +2082,46 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
     if (formKey1.currentState!.validate() &&
         formKey2.currentState!.validate()) {
       if(maritalStatus == ""){
-        AppConfig().showSnackbar(context, "Please Select Marital Status");
+        AppConfig().showSnackbar(context, "Please Select Marital Status", bottomPadding: 100);
       }
       else if (address1Controller.text.isEmpty) {
-        AppConfig().showSnackbar(context, "Please Mention Flat Details");
+        AppConfig().showSnackbar(context, "Please Mention Flat Details", isError: true, bottomPadding: 100);
       } else if (address2Controller.text.isEmpty) {
-        AppConfig().showSnackbar(context, "Please Mention Postal Address");
+        AppConfig().showSnackbar(context, "Please Mention Postal Address", isError: true, bottomPadding: 100);
       } else if (pinCodeController.text.isEmpty) {
-        AppConfig().showSnackbar(context, "Please Mention Pin code");
+        AppConfig().showSnackbar(context, "Please Mention Pin code", isError: true, bottomPadding: 100);
       } else if (ft == -1 || inches == -1) {
-        AppConfig().showSnackbar(context, "Please Select Height");
+        AppConfig().showSnackbar(context, "Please Select Height", isError: true, bottomPadding: 100);
       } else if (healthCheckBox1.every((element) => element.value == false)) {
         AppConfig().showSnackbar(
-            context, "Please Select Atleast 1 option from HealthList1");
+            context, "Please Select Atleast 1 option from HealthList1", isError: true, bottomPadding: 100);
       } else if (healthCheckBox2.every((element) => element.value == false)) {
         AppConfig().showSnackbar(
-            context, "Please Select Atleast 1 option from HealthList2");
+            context, "Please Select Atleast 1 option from HealthList2", isError: true, bottomPadding: 100);
       } else if (tongueCoatingRadio.isEmpty) {
         AppConfig()
-            .showSnackbar(context, "Please Select Tongue Coating Details");
+            .showSnackbar(context, "Please Select Tongue Coating Details", isError: true, bottomPadding: 100);
       } else if (urinationValue.isEmpty) {
         // else if(urinFrequencyList.every((element) => element.value == false)){
         AppConfig()
-            .showSnackbar(context, "Please Select Frequency of Urination");
+            .showSnackbar(context, "Please Select Frequency of Urination", isError: true, bottomPadding: 100);
       } else if (urineColorValue.isEmpty) {
         // else if(urinColorList.every((element) => element.value == false) && !urinColorOtherSelected){
-        AppConfig().showSnackbar(context, "Please Select Urine Color");
+        AppConfig().showSnackbar(context, "Please Select Urine Color", bottomPadding: 100);
       } else if (urinSmellList.every((element) => element.value == false) &&
           !urinSmellOtherSelected) {
-        AppConfig().showSnackbar(context, "Please Select Atleast 1 Urine Smell");
+        AppConfig().showSnackbar(context, "Please Select Atleast 1 Urine Smell", isError: true, bottomPadding: 100);
       } else if (urineLookLikeValue.isEmpty) {
         // else if(urinLooksList.every((element) => element.value == false) && !urinLooksLikeOtherSelected){
-        AppConfig().showSnackbar(context, "Please Select Urine Looks List");
+        AppConfig().showSnackbar(context, "Please Select Urine Looks List", isError: true, bottomPadding: 100);
       } else if (selectedStoolMatch.isEmpty) {
         AppConfig()
-            .showSnackbar(context, "Please Select Closest match to your stool");
+            .showSnackbar(context, "Please Select Closest match to your stool", isError: true, bottomPadding: 100);
       } else if (medicalInterventionsDoneBeforeList
               .every((element) => element.value == false) &&
           medicalInterventionsOtherSelected == false) {
         AppConfig().showSnackbar(
-            context, "Please Select Atleast 1 Medication Intervention");
+            context, "Please Select Atleast 1 Medication Intervention", isError: true, bottomPadding: 100);
       }
       // else if (medicalRecords.isEmpty) {
       //   AppConfig().showSnackbar(context, "Please Upload Medical Records");
@@ -2153,62 +2153,62 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
     }
     else {
       if(maritalStatus == ""){
-        AppConfig().showSnackbar(context, "Please Select Marital Status", isError: true);
+        AppConfig().showSnackbar(context, "Please Select Marital Status", isError: true, bottomPadding: 100);
       }
       else if (address1Controller.text.isEmpty) {
         AppConfig().showSnackbar(context, "Please Mention Flat Details",
-            isError: true);
+            isError: true, bottomPadding: 100);
       } else if (address2Controller.text.isEmpty) {
         AppConfig()
-            .showSnackbar(context, "Please Postal Address", isError: true);
+            .showSnackbar(context, "Please Postal Address", isError: true, bottomPadding: 100);
       } else if (pinCodeController.text.isEmpty) {
         AppConfig()
-            .showSnackbar(context, "Please Mention Pincode", isError: true);
+            .showSnackbar(context, "Please Mention Pincode", isError: true, bottomPadding: 100);
       } else if (ft == -1 || inches == -1) {
         AppConfig()
-            .showSnackbar(context, "Please Select Height", isError: true);
+            .showSnackbar(context, "Please Select Height", isError: true, bottomPadding: 100);
       } else if (healController.text.isEmpty) {
         AppConfig().showSnackbar(context, "Please Mention your heal complaints",
-            isError: true);
+            isError: true, bottomPadding: 100);
       } else if (healthCheckBox1.every((element) => element.value == false)) {
         AppConfig().showSnackbar(
             context, "Please Select Atleast 1 option from HealthList1",
-            isError: true);
+            isError: true, bottomPadding: 100);
       } else if (healthCheckBox2.every((element) => element.value == false)) {
         AppConfig().showSnackbar(
             context, "Please Select Atleast 1 option from HealthList2",
-            isError: true);
+            isError: true, bottomPadding: 100);
       } else if (tongueCoatingRadio.isEmpty) {
         AppConfig().showSnackbar(
             context, "Please Select Tongue Coating Details",
-            isError: true);
+            isError: true, bottomPadding: 100);
       } else if (urinationValue.isEmpty) {
         // else if(urinFrequencyList.every((element) => element.value == false)){
         AppConfig().showSnackbar(
             context, "Please Select Frequency of Urination",
-            isError: true);
+            isError: true, bottomPadding: 100);
       } else if (urineColorValue.isEmpty) {
         // else if(urinColorList.every((element) => element.value == false) && !urinColorOtherSelected){
         AppConfig()
-            .showSnackbar(context, "Please Select Urine Color", isError: true);
+            .showSnackbar(context, "Please Select Urine Color", isError: true, bottomPadding: 100);
       } else if (urinSmellList.every((element) => element.value == false) &&
           !urinSmellOtherSelected) {
         AppConfig().showSnackbar(context, "Please Select Atleast 1 Urine Smell",
-            isError: true);
+            isError: true, bottomPadding: 100);
       } else if (urineLookLikeValue.isEmpty) {
         // else if(urinLooksList.every((element) => element.value == false) && !urinLooksLikeOtherSelected){
         AppConfig().showSnackbar(context, "Please Select Urine Looks List",
-            isError: true);
+            isError: true, bottomPadding: 100);
       } else if (selectedStoolMatch.isEmpty) {
         AppConfig().showSnackbar(
             context, "Please Select Closest match to your stool",
-            isError: true);
+            isError: true, bottomPadding: 100);
       } else if (medicalInterventionsDoneBeforeList
               .every((element) => element.value == false) &&
           medicalInterventionsOtherSelected == false) {
         AppConfig().showSnackbar(
             context, "Please Select Atleast 1 Medication Intervention",
-            isError: true);
+            isError: true, bottomPadding: 100);
       }
     }
   }
@@ -3212,7 +3212,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
         _ignoreFields = false;
       });
       AppConfig()
-          .showSnackbar(context, "Please Enter Valid Pincode", isError: true);
+          .showSnackbar(context, "Please Enter Valid Pincode", isError: true, bottomPadding: 100);
     }
     Navigator.pop(context);
   }
@@ -3378,59 +3378,86 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
         ),
         Row(
           children: [
-            Radio(
-              value: "Black",
-              activeColor: kPrimaryColor,
-              groupValue: urineColorValue,
-              onChanged: (value) {
-                setState(() {
-                  urineColorValue = value as String;
-                });
+            GestureDetector(
+              onTap: (){
+                setState(() => urineColorValue = "Black" );
               },
-            ),
-            Text('Black',
-              style: buildTextStyle(
-                  color: urineColorValue == "Black" ? kTextColor : gHintTextColor,
-                  fontFamily: urineColorValue == "Black" ? kFontMedium : kFontBook
+              child: Row(
+                children: [
+                  Radio(
+                    value: "Black",
+                    activeColor: kPrimaryColor,
+                    groupValue: urineColorValue,
+                    onChanged: (value) {
+                      setState(() {
+                        urineColorValue = value as String;
+                      });
+                    },
+                  ),
+                  Text('Black',
+                    style: buildTextStyle(
+                        color: urineColorValue == "Black" ? kTextColor : gHintTextColor,
+                        fontFamily: urineColorValue == "Black" ? kFontMedium : kFontBook
+                    ),
+                  ),
+                ],
               ),
             ),
             SizedBox(
               width: 3.w,
             ),
-            Radio(
-              value: "Yellow",
-              activeColor: kPrimaryColor,
-              groupValue: urineColorValue,
-              onChanged: (value) {
-                setState(() {
-                  urineColorValue = value as String;
-                });
+            GestureDetector(
+              onTap: (){
+                setState(() => urineColorValue = "Yellow" );
               },
-            ),
-            Text(
-              'Yellow',
-              style: buildTextStyle(
-                  color: urineColorValue == "Yellow" ? kTextColor : gHintTextColor,
-                  fontFamily: urineColorValue == "Yellow" ? kFontMedium : kFontBook
+              child: Row(
+                children: [
+                  Radio(
+                    value: "Yellow",
+                    activeColor: kPrimaryColor,
+                    groupValue: urineColorValue,
+                    onChanged: (value) {
+                      setState(() {
+                        urineColorValue = value as String;
+                      });
+                    },
+                  ),
+                  Text(
+                    'Yellow',
+                    style: buildTextStyle(
+                        color: urineColorValue == "Yellow" ? kTextColor : gHintTextColor,
+                        fontFamily: urineColorValue == "Yellow" ? kFontMedium : kFontBook
+                    ),
+                  ),
+                ],
               ),
             ),
             SizedBox(
               width: 3.w,
             ),
-            Radio(
-                value: "Other",
-                groupValue: urineColorValue,
-                activeColor: kPrimaryColor,
-                onChanged: (value) {
-                  setState(() {
-                    urineColorValue = value as String;
-                  });
-                }),
-            Text(
-              "Other",
-              style: buildTextStyle(
-                  color: urineColorValue == "Other" ? kTextColor : gHintTextColor,
-                  fontFamily: urineColorValue == "Other" ? kFontMedium : kFontBook
+            GestureDetector(
+              onTap: (){
+                setState(() => urineColorValue = "Other" );
+              },
+              child: Row(
+                children: [
+                  Radio(
+                      value: "Other",
+                      groupValue: urineColorValue,
+                      activeColor: kPrimaryColor,
+                      onChanged: (value) {
+                        setState(() {
+                          urineColorValue = value as String;
+                        });
+                      }),
+                  Text(
+                    "Other",
+                    style: buildTextStyle(
+                        color: urineColorValue == "Other" ? kTextColor : gHintTextColor,
+                        fontFamily: urineColorValue == "Other" ? kFontMedium : kFontBook
+                    ),
+                  ),
+                ],
               ),
             ),
           ],

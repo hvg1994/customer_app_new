@@ -24,3 +24,13 @@ supportVoiceCall(String kaleyraUID, String kaleyraSuccessID, String accessToken)
   final res = await SettingsService(repository: repository).callToSupportTeam(kaleyraUID, kaleyraSuccessID, accessToken);
   return res;
 }
+
+void openKaleyraChat(String name, String opponentId, String accessToken) async{
+  final res = await SettingsService(repository: repository).openKaleyraChat(name, opponentId, accessToken);
+  return res;
+}
+
+Future getAccessToken(String kaleyraUID) async{
+  final res = await SettingsService(repository: repository).getAccessToken(kaleyraUID);
+  return res;
+}

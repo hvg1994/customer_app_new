@@ -60,15 +60,18 @@ class ChildAboutProgramModel {
 
 class ChildAboutProgramDetailsModel{
   String? aboutPdf;
-  ChildAboutProgramDetailsModel({this.aboutPdf});
+  String? aboutProgramVideo;
+  ChildAboutProgramDetailsModel({this.aboutPdf, this.aboutProgramVideo});
 
   ChildAboutProgramDetailsModel.fromJson(Map json){
     aboutPdf = json['pdf_link'] ?? '';
+    aboutProgramVideo = json['aboutprogram_video'] ?? '';
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['pdf_link'] = this.aboutPdf;
+    data['aboutprogram_video']= this.aboutProgramVideo;
     return data;
   }
 }

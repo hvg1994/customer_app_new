@@ -8,7 +8,7 @@ class TransitionMealModel {
   String? currentDayStatus;
   String? previousDayStatus;
   String? isTransMealCompleted;
-  Data? data;
+  Map<String, List<TransMealSlot>>? data;
 
   TransitionMealModel({this.status, this.note, this.errorCode,this.totalDays, this.isTransMealCompleted, this.key, this.currentDay, this.data, this.currentDayStatus, this.previousDayStatus});
 
@@ -22,7 +22,14 @@ class TransitionMealModel {
     currentDayStatus =json['current_day_status'].toString();
     previousDayStatus = json['previous_day_status'].toString();
     isTransMealCompleted = json['is_trans_completed'];
-    data = json['data'] != null ? Data.fromJson(json['data']) : null;
+    // data = json['data'] != null ? Data.fromJson(json['data']) : null;
+    if(json['data'] != null){
+      data = {};
+      (json['data'] as Map).forEach((key, value) {
+        // print("$key <==> ${(value as List).map((element) =>MealSlot.fromJson(element)) as List<MealSlot>}");
+        data!.putIfAbsent(key, () => List.from((value as List).map((element) => TransMealSlot.fromJson(element))));
+      });
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -36,7 +43,7 @@ class TransitionMealModel {
     data['previous_day_status'] = this.previousDayStatus;
     data['current_day_status'] = this.currentDayStatus;
     if (this.data != null) {
-      data['data'] = this.data!.toJson();
+      data['data'] = this.data!;
     }
     return data;
   }

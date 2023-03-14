@@ -158,7 +158,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   color: Colors.grey,
                 ),
                 profileTile(
-                    "assets/images/noun-chat-5153452.png", "My Rewards", () {
+                    "assets/images/coins.png", "My Rewards", () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) => const RewardScreen(),
@@ -170,8 +170,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   color: Colors.grey,
                 ),
                 profileTile(
-                    "assets/images/noun-chat-5153452.png", "Chat Support", () {
-                  getChatGroupId();
+                    "assets/images/noun-chat-5153452.png", "Chat Support", () async {
+                  final uId = _pref!.getString(AppConfig.KALEYRA_USER_ID);
+                  final res  = await getAccessToken(uId!);
+
+                  if(res.runtimeType != ErrorModel){
+                    final accessToken = _pref.getString(AppConfig.KALEYRA_ACCESS_TOKEN);
+
+                    final chatSuccessId = _pref.getString(AppConfig.KALEYRA_CHAT_SUCCESS_ID);
+                    // chat
+                    openKaleyraChat(uId, chatSuccessId!, accessToken!);
+                  }
+                  // getChatGroupId();
                 }),
                 Container(
                   height: 1,
@@ -364,6 +374,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ],
     );
   }
+
+
 
 
 }

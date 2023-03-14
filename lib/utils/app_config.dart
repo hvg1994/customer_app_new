@@ -7,6 +7,7 @@ import 'package:sizer/sizer.dart';
 
 import '../model/ship_track_model/ship_track_activity_model.dart';
 import '../widgets/constants.dart';
+import 'package:get/get.dart';
 
 class AppConfig{
   static AppConfig? _instance;
@@ -67,6 +68,9 @@ class AppConfig{
   static const String KALEYRA_ACCESS_TOKEN = "kaleyra_access_token";
   static const String KALEYRA_USER_ID = 'kaleyra_uid';
 
+  static const String KALEYRA_CHAT_SUCCESS_ID = 'kaleyra_chat_success_id';
+
+
 
 
   static const String countryCode = "COUNTRY_CODE";
@@ -112,12 +116,13 @@ class AppConfig{
     return deviceId;
   }
 
-  showSnackbar(BuildContext context, String message,{int? duration, bool? isError, SnackBarAction? action}){
+  showSnackbar(BuildContext context, String message,{int? duration, bool? isError, SnackBarAction? action, double? bottomPadding}){
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         behavior: SnackBarBehavior.floating,
         backgroundColor:(isError == null || isError == false) ? gPrimaryColor : gsecondaryColor.withOpacity(0.55),
         content: Text(message),
+        margin: (bottomPadding != null) ? EdgeInsets.only(bottom: bottomPadding) : null,
         duration: Duration(seconds: duration ?? 2),
         action: action,
       ),
@@ -138,8 +143,7 @@ class AppConfig{
     );
   }
 
-  showSheet(BuildContext context, Widget widget,
-      {bool sheetForLogin = false,double? bottomSheetHeight, String? circleIcon, Color? topColor}){
+  showSheet(BuildContext context, Widget widget, {bool sheetForLogin = false,double? bottomSheetHeight, String? circleIcon, Color? topColor, bool isSheetCloseNeeded = false, VoidCallback? sheetCloseOnTap}){
     return showModalBottomSheet(
         isScrollControlled: true,
         isDismissible: false,
@@ -155,14 +159,16 @@ class AppConfig{
               bottomSheetHeight: bottomSheetHeight, circleIcon: circleIcon, topColor: topColor, sheetForLogin: true),
           )
               : commonBottomSheetView(context, widget,
-            bottomSheetHeight: bottomSheetHeight, circleIcon: circleIcon, topColor: topColor
+            bottomSheetHeight: bottomSheetHeight, circleIcon: circleIcon, topColor: topColor, isSheetCloseNeeded: isSheetCloseNeeded,sheetCloseOnTap: sheetCloseOnTap
           );
         }
     );
   }
 
   commonBottomSheetView(BuildContext context, Widget widget,
-      {bool sheetForLogin = false,double? bottomSheetHeight, String? circleIcon, Color? topColor}){
+      {bool sheetForLogin = false,double? bottomSheetHeight,
+        String? circleIcon, Color? topColor,
+        bool isSheetCloseNeeded = false, VoidCallback? sheetCloseOnTap}){
     return Container(
       decoration: const BoxDecoration(
         color: gBackgroundColor,
@@ -174,6 +180,7 @@ class AppConfig{
       padding: (sheetForLogin) ? null : EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
       height: bottomSheetHeight ?? 50.h,
       child: Stack(
+        clipBehavior: Clip.none,
         children: [
           Column(
             children: [
@@ -225,6 +232,15 @@ class AppConfig{
                     ),
                   )
               )
+          ),
+          Visibility(
+            visible: isSheetCloseNeeded,
+            child: Positioned(
+              top: 10,
+                right: 10,
+                child: GestureDetector(
+                  onTap: sheetCloseOnTap ?? (){},
+                    child: Icon(Icons.cancel_outlined, color: gsecondaryColor,size: 28,))),
           )
         ],
       ),

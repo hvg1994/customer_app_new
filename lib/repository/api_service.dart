@@ -2159,6 +2159,7 @@ class ApiClient {
     final region = "eu";
     // testing api key: ak_live_c1ef0ed161003e0a2b419d20
     // final endPoint = "https://cs.${environment}.${region}.bandyer.com";
+    /// live endpoint
     final endPoint = "https://api.in.bandyer.com";
     
     final String url = "$endPoint/rest/sdk/credentials";
@@ -2175,6 +2176,7 @@ class ApiClient {
       if(response.statusCode == 200){
         final json = jsonDecode(response.body);
         result = json['access_token'];
+        print("access token got");
         _prefs!.setString(AppConfig.KALEYRA_ACCESS_TOKEN, result);
       }
       else{

@@ -38,24 +38,35 @@ public class MainActivity extends FlutterActivity {
         mMainPresenter = new MainPresenter(this);
 
         methodChannel = new MethodChannel(Objects.requireNonNull(getFlutterEngine()).getDartExecutor().getBinaryMessenger(), CHANNEL);
-        eventChannel=   new EventChannel(getFlutterEngine().getDartExecutor().getBinaryMessenger(), CHANNEL1);
+        eventChannel = new EventChannel(getFlutterEngine().getDartExecutor().getBinaryMessenger(), CHANNEL1);
 
 
         methodChannel.setMethodCallHandler(
                 new MethodChannel.MethodCallHandler() {
                     @Override
                     public void onMethodCall(@NonNull MethodCall call, @NonNull MethodChannel.Result result) {
-                        if(call.method.equals("kaleyra_call")){
-                            String userId = call.argument("user_id");
-                            String joinUrl = call.argument("url");
-                            String kaleyraAccessToken = call.argument("access_token");
-                            mMainPresenter.joinMeeting(userId, joinUrl,kaleyraAccessToken, result);
-                        }
-                        else if(call.method.equals("call_support")){
-                            String userId = call.argument("user_id");
-                            String successKaleyraId = call.argument("success_id");
-                            String kaleyraAccessToken = call.argument("access_token");
-                            mMainPresenter.normalCall(userId, successKaleyraId,kaleyraAccessToken);
+                        switch (call.method) {
+                            case "kaleyra_call": {
+                                String userId = call.argument("user_id");
+                                String joinUrl = call.argument("url");
+                                String kaleyraAccessToken = call.argument("access_token");
+                                mMainPresenter.joinMeeting(userId, joinUrl, kaleyraAccessToken, result);
+                                break;
+                            }
+                            case "call_support": {
+                                String userId = call.argument("user_id");
+                                String successKaleyraId = call.argument("success_id");
+                                String kaleyraAccessToken = call.argument("access_token");
+                                mMainPresenter.normalCall(userId, successKaleyraId, kaleyraAccessToken);
+                                break;
+                            }
+                            case "chat_support": {
+                                String userId = call.argument("user_id");
+                                String opponentId = call.argument("opponent_id");
+                                String kaleyraAccessToken = call.argument("access_token");
+                                mMainPresenter.openChat(userId, opponentId, kaleyraAccessToken, result);
+                                break;
+                            }
                         }
                     }
                 }

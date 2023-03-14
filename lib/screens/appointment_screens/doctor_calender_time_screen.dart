@@ -119,7 +119,6 @@ class _DoctorCalenderTimeScreenState extends State<DoctorCalenderTimeScreen> {
       print("splited:$splited");
       String hour = splited![0];
       String minute = splited[1];
-      int second = int.parse(splited[2]);
       return '$hour:$minute';
     }
   }
@@ -395,7 +394,7 @@ class _DoctorCalenderTimeScreenState extends State<DoctorCalenderTimeScreen> {
               ),
               SizedBox(height: 1.5.h),
               Text(
-                "${widget.doctorDetails!.experience}Yr Experience" ?? '',
+                "${widget.doctorDetails?.experience}Yr Experience" ?? '',
                 style: TextStyle(
                     fontFamily: kFontMedium,
                     color: gWhiteColor,
@@ -584,7 +583,7 @@ class _DoctorCalenderTimeScreenState extends State<DoctorCalenderTimeScreen> {
       // _pref.setString(AppConfig.doctorId, result.doctorId ?? '');
 
       // AppConfig().showSnackbar(context, result.message ?? '');
-      Navigator.of(context).pushReplacement(
+      Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(
           builder: (context) => DoctorSlotsDetailsScreen(
             bookingDate: date,
@@ -592,7 +591,7 @@ class _DoctorCalenderTimeScreenState extends State<DoctorCalenderTimeScreen> {
             data: result,
             isPostProgram: widget.isPostProgram,
           ),
-        ),).then((value) {
+        ), (route)=> route.isFirst).then((value) {
         setState(() {
 
         });

@@ -27,8 +27,10 @@ import 'package:gwc_customer/widgets/dart_extensions.dart';
 import 'package:gwc_customer/widgets/notification_class.dart';
 import 'package:gwc_customer/widgets/open_alert_box.dart';
 import 'package:gwc_customer/widgets/will_pop_widget.dart';
+import 'package:new_version/new_version.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sizer/sizer.dart';
 import 'model/enquiry_status_model.dart';
 import 'model/error_model.dart';
 import 'repository/api_service.dart';
@@ -74,18 +76,56 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   void initState() {
+    // checkNewVersion();
     getDeviceId();
     super.initState();
     runAllAsync();
     listenMessages();
   }
+  checkNewVersion(){
+    final newVersion = NewVersion(
+      // iOSId: 'com.google.Vespa',
+      androidId: 'com.fembuddy.gwc_customer',
+    );
+
+    // You can let the plugin handle fetching the status and showing a dialog,
+    // or you can fetch the status and display your own dialog, or no dialog.
+    const simpleBehavior = true;
+
+    if (simpleBehavior) {
+      basicStatusCheck(newVersion);
+    } else {
+      advancedStatusCheck(newVersion);
+    }
+  }
+  basicStatusCheck(NewVersion newVersion) {
+    newVersion.showAlertIfNecessary(context: context);
+  }
+
+  advancedStatusCheck(NewVersion newVersion) async {
+    final status = await newVersion.getVersionStatus();
+    if (status != null) {
+      debugPrint(status.releaseNotes);
+      debugPrint(status.appStoreLink);
+      debugPrint(status.localVersion);
+      debugPrint(status.storeVersion);
+      debugPrint(status.canUpdate.toString());
+      newVersion.showUpdateDialog(
+        context: context,
+        versionStatus: status,
+        dialogTitle: 'Custom Title',
+        dialogText: 'Custom Text',
+      );
+    }
+  }
+
   Future getDeviceId() async{
     final _pref = AppConfig().preferences;
     await AppConfig().getDeviceId().then((id) {
       print("deviceId: $id");
       if(id != null){
         _pref!.setString(AppConfig().deviceId, id);
-        getEnquiryStatus(id!);
+        getEnquiryStatus(id);
       }
     });
 
@@ -97,7 +137,7 @@ class _SplashScreenState extends State<SplashScreen> {
     // print("country_code:${n}");
 
   }
-
+  late FirebaseMessaging messaging;
   runAllAsync() async{
     await Future.wait([
       getPermission(),
@@ -109,8 +149,6 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future getSession() async{
     await notificationFunction();
-    LocalNotificationService.initialize(onClickedNotifications);
-
 
     final _qbService = Provider.of<QuickBloxService>(context, listen: false);
     final res = await _qbService.getSession();
@@ -133,11 +171,18 @@ class _SplashScreenState extends State<SplashScreen> {
 
   listenMessages(){
     print("listenMessages");
-    FirebaseMessaging.instance.getInitialMessage().then(
+    messaging.getInitialMessage().then(
           (message) {
         print("FirebaseMessaging.instance.getInitialMessage");
         if (message != null) {
           print("New Notification");
+          if(message != null){
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => NotificationScreen(),
+              ),
+            );
+          }
           // if (message.data['_id'] != null) {
           //   Navigator.of(context).push(
           //     MaterialPageRoute(
@@ -180,15 +225,15 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future getPermission() async{
+    messaging = FirebaseMessaging.instance;
 
-    String? fcmToken = await FirebaseMessaging.instance.getToken();
+    String? fcmToken = await messaging.getToken();
     _pref!.setString(AppConfig.FCM_TOKEN, fcmToken!);
 
     QuickBloxRepository().init(AppConfig.QB_APP_ID, AppConfig.QB_AUTH_KEY, AppConfig.QB_AUTH_SECRET, AppConfig.QB_ACCOUNT_KEY);
 
     QuickBloxRepository().initSubscription(fcmToken);
 
-    FirebaseMessaging messaging = FirebaseMessaging.instance;
 
     NotificationSettings settings = await messaging.requestPermission(
       alert: true,
@@ -306,11 +351,12 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   splashImage() {
-    return const BackgroundWidget(
+    return BackgroundWidget(
       assetName: 'assets/images/Group 2657.png',
       child: Center(
         child: Image(
-          image: AssetImage("assets/images/Gut welness logo green.png"),
+          width: 70.w,
+          image: AssetImage("assets/images/Gut welness logo.png"),
         ),
         // SvgPicture.asset(
         //     "assets/images/splash_screen/Splash screen Logo.svg"),

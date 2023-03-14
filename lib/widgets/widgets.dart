@@ -175,36 +175,32 @@ buildAppBar(VoidCallback func, {bool isBackEnable = true, bool showNotificationI
   return Row(
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
     children: [
-      GestureDetector(
-        onTap: (isBackEnable) ? func : null,
-        child: Row(
-          children: [
-            Visibility(
-              visible: isBackEnable,
-              child: SizedBox(
-                height: 2.h,
-                child: InkWell(
-                  onTap: func,
-                  child: const Image(
-                    image: AssetImage(
-                        "assets/images/Icon ionic-ios-arrow-back.png"),
-                  ),
+      Row(
+        children: [
+          Visibility(
+            visible: isBackEnable,
+            child: SizedBox(
+              width: 2.h,
+              child: IconButton(
+                onPressed: func,
+                icon: Icon(Icons.arrow_back_ios,
+                  color: gMainColor,
                 ),
               ),
             ),
-            SizedBox(
-              width: 10,
+          ),
+          SizedBox(
+            width: 15,
+          ),
+          SizedBox(
+            height: 6.h,
+            child: const Image(
+              image: AssetImage(
+                  "assets/images/Gut welness logo.png"),
             ),
-            SizedBox(
-              height: 6.h,
-              child: const Image(
-                image: AssetImage(
-                    "assets/images/Gut welness logo.png"),
-              ),
-              //SvgPicture.asset("assets/images/splash_screen/Inside Logo.svg"),
-            ),
-          ],
-        ),
+            //SvgPicture.asset("assets/images/splash_screen/Inside Logo.svg"),
+          ),
+        ],
       ),
       Row(
         mainAxisSize: MainAxisSize.min,
@@ -219,7 +215,7 @@ buildAppBar(VoidCallback func, {bool isBackEnable = true, bool showNotificationI
             ),
           ),
           SizedBox(
-            width: 2.w,
+            width: 3.25.w,
           ),
           Visibility(
             visible: showHelpIcon,
@@ -231,7 +227,7 @@ buildAppBar(VoidCallback func, {bool isBackEnable = true, bool showNotificationI
             ),
           ),
           SizedBox(
-            width: 2.w,
+            width: 3.25.w,
           ),
           Visibility(
             visible: showSupportIcon,

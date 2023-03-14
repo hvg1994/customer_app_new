@@ -86,6 +86,10 @@ class _TransitionMealPlanScreenState extends State<TransitionMealPlanScreen> {
                               isVideoWidgetVisible: false,
                               headCircleIcon: bsHeadPinIcon,
                               topHeadColor: kBottomSheetHeadGreen,
+                                isSheetCloseNeeded: true,
+                                sheetCloseOnTap: (){
+                                  Navigator.pop(context);
+                                }
                             )));
                       }
                       else{
@@ -113,7 +117,7 @@ class _TransitionMealPlanScreenState extends State<TransitionMealPlanScreen> {
                             TransitionMealModel res = snapshot.data as TransitionMealModel;
                             final String currentDayStatus = res.currentDayStatus.toString();
                             print("currentDayStatus top: ${currentDayStatus}");
-                            final dataList = res.data!.toJson();
+                            final dataList = res.data ?? {};
                             if(res.currentDay != null) currentDay = res.currentDay;
                             if(res.totalDays != null) totalDays = res.totalDays;
                             planNotePdfLink = res.note;
@@ -155,7 +159,7 @@ class _TransitionMealPlanScreenState extends State<TransitionMealPlanScreen> {
     );
   }
 
-  customMealPlanTile(Map<String, dynamic> dataList, String currentDayStatus){
+  customMealPlanTile(Map<String, List<TransMealSlot>> dataList, String currentDayStatus){
     print("currentDayStatus: ${currentDayStatus}");
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 5),
@@ -186,10 +190,9 @@ class _TransitionMealPlanScreenState extends State<TransitionMealPlanScreen> {
             ),
           ),
           ...dataList.entries.map((e) {
-            List<TransMealSlot> lst = (e.value as List).map((e) => TransMealSlot.fromJson(e)).toList();
-            // (e.value as List).forEach((element) {
-            //   lst.add(MealSlot.fromJson(element));
-            // });
+            // List<TransMealSlot> lst = (e.value as List).map((e) => TransMealSlot.fromJson(e)).toList();
+            List<TransMealSlot> lst = (e.value);
+
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

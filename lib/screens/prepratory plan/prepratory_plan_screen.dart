@@ -72,6 +72,10 @@ class _PrepratoryPlanScreenState extends State<PrepratoryPlanScreen> {
                               headCircleIcon: bsHeadPinIcon,
                               topHeadColor: kBottomSheetHeadGreen,
                               heading: "Note",
+                                isSheetCloseNeeded: true,
+                                sheetCloseOnTap: (){
+                                  Navigator.pop(context);
+                                }
                             )));
                       }
                       else{
@@ -95,24 +99,13 @@ class _PrepratoryPlanScreenState extends State<PrepratoryPlanScreen> {
                           }
                           else{
                             PrepratoryMealModel res = snapshot.data as PrepratoryMealModel;
-                            final dataList = res.data!.toJson();
+                            final dataList = res.data ?? {};
+                            print("dataList ==> $dataList");
                             planNotePdfLink = res.note;
                             if(res.days != null) totalDays = res.days;
                             if(res.currentDay != null) dayNumber = res.currentDay;
-                            return customMealPlanTile(dataList);
-                            // lst.addAll(dataList.values.map((e) => MealSlot.fromJson(e)));
-                            // return customMealPlanTile(key, lst);
-
-                            // dataList.map((key, value) {
-                            //   List<MealSlot> lst = [];
-                            //   print("$key==$value");
-                            //   value.forEach((e){
-                            //     lst.add(MealSlot.fromJson(e));
-                            //   });
-                            //   return ;
-                            // });
                             // return SizedBox();
-
+                            return customMealPlanTile(dataList);
 
                           }
                         }
@@ -138,7 +131,7 @@ class _PrepratoryPlanScreenState extends State<PrepratoryPlanScreen> {
     );
   }
 
-  customMealPlanTile(Map<String, dynamic> dataList){
+  customMealPlanTile(Map<String, List<MealSlot>> dataList){
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -169,10 +162,9 @@ class _PrepratoryPlanScreenState extends State<PrepratoryPlanScreen> {
         ...dataList.entries.map((e) {
           print("${e.key}==${e.value}");
           print(e.value.runtimeType);
-          List<MealSlot> lst = (e.value as List).map((e) => MealSlot.fromJson(e)).toList();
-          // (e.value as List).forEach((element) {
-          //   lst.add(MealSlot.fromJson(element));
-          // });
+          // List<MealSlot> lst = (e.value as List).map((e) => MealSlot.fromJson(e)).toList();
+          List<MealSlot> lst = (e.value);
+
           print(lst);
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -348,5 +340,26 @@ class _PrepratoryPlanScreenState extends State<PrepratoryPlanScreen> {
         ),
       ),
     );
+  }
+
+  String displayHeadingName(String key) {
+    String name = '';
+    switch (key){
+      case 'Early Morning': name = "7am";
+      break;
+      case 'Breakfast': name = "$key 8-9am";
+      break;
+      case 'Mid Day': name = "10:30am (optional)";
+      break;
+      case 'Lunch': name = "Lunch 12-1pm";
+      break;
+      case 'Evening': name = "Snack 4:30pm";
+      break;
+      case 'Dinner': name = "$key 7-8:30pm";
+      break;
+      case 'Post Dinner': name = "9:30pm";
+      break;
+    }
+    return name;
   }
 }

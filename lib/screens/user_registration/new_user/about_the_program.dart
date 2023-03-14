@@ -6,6 +6,7 @@ import 'package:gwc_customer/model/new_user_model/about_program_model/about_prog
 import 'package:gwc_customer/model/new_user_model/about_program_model/child_about_program.dart';
 import 'package:gwc_customer/model/new_user_model/about_program_model/feedback_list_model.dart';
 import 'package:gwc_customer/repository/new_user_repository/about_program_repository.dart';
+import 'package:gwc_customer/screens/user_registration/new_user/sit_back_screen.dart';
 import 'package:gwc_customer/services/new_user_service/about_program_service.dart';
 import 'package:gwc_customer/widgets/vlc_player/vlc_player_with_controls.dart';
 import 'package:sizer/sizer.dart';
@@ -20,7 +21,8 @@ import 'register_screen.dart';
 import 'package:http/http.dart' as http;
 
 class AboutTheProgram extends StatefulWidget {
-  const AboutTheProgram({Key? key}) : super(key: key);
+  final bool isFromSitBackScreen;
+  AboutTheProgram({Key? key, this.isFromSitBackScreen = false}) : super(key: key);
 
   @override
   State<AboutTheProgram> createState() => _AboutTheProgramState();
@@ -41,7 +43,6 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
   late Future _aboutProgramFuture;
 
   VlcPlayerController? _videoPlayerController, _abtProgramPlayerController;
-
 
   @override
   void initState() {
@@ -84,10 +85,14 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
         ]),
       ),
     );
+  }
+  addUrlToAboutProgramVideoPlayer(String url){
+    print("url"+ url);
     _abtProgramPlayerController = VlcPlayerController.network(
+      Uri.parse(url).toString(),
       // url,
       // 'http://samples.mplayerhq.hu/MPEG-4/embedded_subs/1Video_2Audio_2SUBs_timed_text_streams_.mp4',
-      'https://media.w3.org/2010/05/sintel/trailer.mp4',
+      // 'https://media.w3.org/2010/05/sintel/trailer.mp4',
       hwAcc: HwAcc.auto,
       autoPlay: false,
       options: VlcPlayerOptions(
@@ -112,16 +117,21 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
     );
   }
 
+
   @override
   void dispose() async {
     super.dispose();
     print('dispose');
-    await _videoPlayerController!.stop();
-    await _videoPlayerController!.stopRendererScanning();
-    await _videoPlayerController!.dispose();
-    await _abtProgramPlayerController!.stop();
-    await _abtProgramPlayerController!.stopRendererScanning();
-    await _abtProgramPlayerController!.dispose();
+    if(_videoPlayerController != null){
+      await _videoPlayerController!.stop();
+      await _videoPlayerController!.stopRendererScanning();
+      await _videoPlayerController!.dispose();
+    }
+    if(_abtProgramPlayerController != null){
+      await _abtProgramPlayerController!.stop();
+      await _abtProgramPlayerController!.stopRendererScanning();
+      await _abtProgramPlayerController!.dispose();
+    }
   }
 
   @override
@@ -151,6 +161,10 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
                         ChildAboutProgramModel? _aboutProgramText = _programModel.data;
                         // #1
                         String aboutProgramPdf = _aboutProgramText?.aboutProgram?.aboutPdf ?? '';
+                        if(_aboutProgramText!.aboutProgram !=null && _aboutProgramText.aboutProgram!.aboutProgramVideo != null){
+                          String videoLink = _aboutProgramText?.aboutProgram?.aboutProgramVideo  ?? '';
+                          addUrlToAboutProgramVideoPlayer(videoLink);
+                        }
                         // #2 video player
                         if(_aboutProgramText!.testimonial !=null){
                           String videoLink = _aboutProgramText.testimonial?.video ?? '';
@@ -178,7 +192,7 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
                               SizedBox(
                                 height: 2.h,
                               ),
-                              // buildAboutProgramVideo(),
+                              buildAboutProgramVideo(),
                               // SizedBox(height: 2.h),
                               Card(
                                 elevation: 7,
@@ -239,40 +253,52 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
                               // buildFeedback(feedbackList),
                               buildReviews(reviewList),
                               SizedBox(height: 2.h),
-                              Center(
-                                child: GestureDetector(
-                                  onTap: () async{
-                                    print("tap");
-                                    // final res = await _videoPlayerController?.isPlaying();
-                                    // if(res != null && res == true){
-                                    //   await _videoPlayerController?.stop();
-                                    // }
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (context) => const RegisterScreen(),
+                              Visibility(
+                                visible: !widget.isFromSitBackScreen,
+                                child: Center(
+                                  child: GestureDetector(
+                                    onTap: () async{
+                                      print("tap");
+                                      final res;
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (context) => const RegisterScreen(),
+                                        ),
+                                      );
+                                      if(_videoPlayerController != null){
+                                        res = await _videoPlayerController!.isPlaying();
+                                        if(res != null && res == true){
+                                          await _videoPlayerController?.stop();
+                                        }
+                                      }
+                                      if(_abtProgramPlayerController != null){
+                                        final show = await _abtProgramPlayerController!.isPlaying();
+                                        if(show != null && show == true){
+                                          await _abtProgramPlayerController?.stop();
+                                        }
+                                      }
+                                    },
+                                    child: Container(
+                                      width: 40.w,
+                                      height: 5.h,
+                                      padding:
+                                      EdgeInsets.symmetric(vertical: 1.h, horizontal: 15.w),
+                                      decoration: BoxDecoration(
+                                        color: eUser().buttonColor,
+                                        borderRadius: BorderRadius.circular(eUser().buttonBorderRadius),
+                                        // border: Border.all(
+                                        //     color: eUser().buttonBorderColor,
+                                        //     width: eUser().buttonBorderWidth
+                                        // ),
                                       ),
-                                    );
-                                  },
-                                  child: Container(
-                                    width: 40.w,
-                                    height: 5.h,
-                                    padding:
-                                    EdgeInsets.symmetric(vertical: 1.h, horizontal: 15.w),
-                                    decoration: BoxDecoration(
-                                      color: eUser().buttonColor,
-                                      borderRadius: BorderRadius.circular(eUser().buttonBorderRadius),
-                                      // border: Border.all(
-                                      //     color: eUser().buttonBorderColor,
-                                      //     width: eUser().buttonBorderWidth
-                                      // ),
-                                    ),
-                                    child: Center(
-                                      child: Text(
-                                        'Next',
-                                        style: TextStyle(
-                                          fontFamily: eUser().buttonTextFont,
-                                          color: eUser().buttonTextColor,
-                                          fontSize: eUser().buttonTextSize,
+                                      child: Center(
+                                        child: Text(
+                                          'Next',
+                                          style: TextStyle(
+                                            fontFamily: eUser().buttonTextFont,
+                                            color: eUser().buttonTextColor,
+                                            fontSize: eUser().buttonTextSize,
+                                          ),
                                         ),
                                       ),
                                     ),
@@ -325,58 +351,70 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
     );
   }
 
+
   buildAboutProgramVideo() {
     if(_abtProgramPlayerController != null){
-      return AspectRatio(
-        aspectRatio: 16/9,
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(5),
-            border: Border.all(color: gPrimaryColor, width: 1),
-            // boxShadow: [
-            //   BoxShadow(
-            //     color: Colors.grey.withOpacity(0.3),
-            //     blurRadius: 20,
-            //     offset: const Offset(2, 10),
-            //   ),
-            // ],
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(5),
-            child: Center(
-              child: VlcPlayerWithControls(
-                key: _abtProgramVideoKey,
-                controller: _abtProgramPlayerController!,
-                showVolume: false,
-                showVideoProgress: false,
-                seekButtonIconSize: 10.sp,
-                playButtonIconSize: 14.sp,
-                replayButtonSize: 10.sp,
-              ),
-              // child: VlcPlayer(
-              //   controller: _videoPlayerController!,
-              //   aspectRatio: 16 / 9,
-              //   virtualDisplay: false,
-              //   placeholder: Center(child: CircularProgressIndicator()),
-              // ),
+      return Listener(
+        onPointerDown: (_) async{
+          print("pressed");
+          if(_videoPlayerController != null){
+            if(await _videoPlayerController!.isPlaying() == true){
+              _videoPlayerController!.pause();
+              // _abtProgramPlayerController!.play();
+            }
+          }
+        },
+        child: AspectRatio(
+          aspectRatio: 16/9,
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(5),
+              border: Border.all(color: gPrimaryColor, width: 1),
+              // boxShadow: [
+              //   BoxShadow(
+              //     color: Colors.grey.withOpacity(0.3),
+              //     blurRadius: 20,
+              //     offset: const Offset(2, 10),
+              //   ),
+              // ],
             ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(5),
+              child: Center(
+                child: VlcPlayerWithControls(
+                  key: _abtProgramVideoKey,
+                  controller: _abtProgramPlayerController!,
+                  showVolume: false,
+                  showVideoProgress: false,
+                  seekButtonIconSize: 10.sp,
+                  playButtonIconSize: 14.sp,
+                  replayButtonSize: 10.sp,
+                ),
+                // child: VlcPlayer(
+                //   controller: _videoPlayerController!,
+                //   aspectRatio: 16 / 9,
+                //   virtualDisplay: false,
+                //   placeholder: Center(child: CircularProgressIndicator()),
+                // ),
+              ),
+            ),
+            // child: Stack(
+            //   children: <Widget>[
+            //     ClipRRect(
+            //       borderRadius: BorderRadius.circular(5),
+            //       child: Center(
+            //         child: VlcPlayer(
+            //           controller: _videoPlayerController!,
+            //           aspectRatio: 16 / 9,
+            //           virtualDisplay: false,
+            //           placeholder: Center(child: CircularProgressIndicator()),
+            //         ),
+            //       ),
+            //     ),
+            //     ControlsOverlay(controller: _videoPlayerController,)
+            //   ],
+            // ),
           ),
-          // child: Stack(
-          //   children: <Widget>[
-          //     ClipRRect(
-          //       borderRadius: BorderRadius.circular(5),
-          //       child: Center(
-          //         child: VlcPlayer(
-          //           controller: _videoPlayerController!,
-          //           aspectRatio: 16 / 9,
-          //           virtualDisplay: false,
-          //           placeholder: Center(child: CircularProgressIndicator()),
-          //         ),
-          //       ),
-          //     ),
-          //     ControlsOverlay(controller: _videoPlayerController,)
-          //   ],
-          // ),
         ),
       );
     }
@@ -387,56 +425,67 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
 
   buildTestimonial() {
     if(_videoPlayerController != null){
-      return AspectRatio(
-        aspectRatio: 16/9,
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(5),
-            border: Border.all(color: gPrimaryColor, width: 1),
-            // boxShadow: [
-            //   BoxShadow(
-            //     color: Colors.grey.withOpacity(0.3),
-            //     blurRadius: 20,
-            //     offset: const Offset(2, 10),
-            //   ),
-            // ],
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(5),
-            child: Center(
-              child: VlcPlayerWithControls(
-                key: _key,
-                controller: _videoPlayerController!,
-                showVolume: false,
-                showVideoProgress: false,
-                seekButtonIconSize: 10.sp,
-                playButtonIconSize: 14.sp,
-                replayButtonSize: 10.sp,
-              ),
-              // child: VlcPlayer(
-              //   controller: _videoPlayerController!,
-              //   aspectRatio: 16 / 9,
-              //   virtualDisplay: false,
-              //   placeholder: Center(child: CircularProgressIndicator()),
-              // ),
+      return Listener(
+        onPointerDown: (_) async{
+          print("pressed");
+          if(_abtProgramPlayerController != null){
+            if(await _abtProgramPlayerController!.isPlaying() == true){
+              _abtProgramPlayerController!.pause();
+              // _abtProgramPlayerController!.play();
+            }
+          }
+        },
+        child: AspectRatio(
+          aspectRatio: 16/9,
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(5),
+              border: Border.all(color: gPrimaryColor, width: 1),
+              // boxShadow: [
+              //   BoxShadow(
+              //     color: Colors.grey.withOpacity(0.3),
+              //     blurRadius: 20,
+              //     offset: const Offset(2, 10),
+              //   ),
+              // ],
             ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(5),
+              child: Center(
+                child: VlcPlayerWithControls(
+                  key: _key,
+                  controller: _videoPlayerController!,
+                  showVolume: false,
+                  showVideoProgress: false,
+                  seekButtonIconSize: 10.sp,
+                  playButtonIconSize: 14.sp,
+                  replayButtonSize: 10.sp,
+                ),
+                // child: VlcPlayer(
+                //   controller: _videoPlayerController!,
+                //   aspectRatio: 16 / 9,
+                //   virtualDisplay: false,
+                //   placeholder: Center(child: CircularProgressIndicator()),
+                // ),
+              ),
+            ),
+            // child: Stack(
+            //   children: <Widget>[
+            //     ClipRRect(
+            //       borderRadius: BorderRadius.circular(5),
+            //       child: Center(
+            //         child: VlcPlayer(
+            //           controller: _videoPlayerController!,
+            //           aspectRatio: 16 / 9,
+            //           virtualDisplay: false,
+            //           placeholder: Center(child: CircularProgressIndicator()),
+            //         ),
+            //       ),
+            //     ),
+            //     ControlsOverlay(controller: _videoPlayerController,)
+            //   ],
+            // ),
           ),
-          // child: Stack(
-          //   children: <Widget>[
-          //     ClipRRect(
-          //       borderRadius: BorderRadius.circular(5),
-          //       child: Center(
-          //         child: VlcPlayer(
-          //           controller: _videoPlayerController!,
-          //           aspectRatio: 16 / 9,
-          //           virtualDisplay: false,
-          //           placeholder: Center(child: CircularProgressIndicator()),
-          //         ),
-          //       ),
-          //     ),
-          //     ControlsOverlay(controller: _videoPlayerController,)
-          //   ],
-          // ),
         ),
       );
     }

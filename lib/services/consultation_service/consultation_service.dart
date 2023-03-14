@@ -5,6 +5,8 @@ import 'package:flutter/services.dart';
 import '../../repository/consultation_repository/get_slots_list_repository.dart';
 
 class ConsultationService extends ChangeNotifier{
+  String _callEvent = "";
+  String get callEvent => _callEvent;
   final ConsultationRepository? repository;
 
   ConsultationService({this.repository});
@@ -69,6 +71,7 @@ class ConsultationService extends ChangeNotifier{
       print("eventchannel: ${result1.asBroadcastStream().listen((event) {
         // ("type","onNetworkStatusChanged");
         print("event==>: $event");
+        _callEvent = event['status'];
         // if(event['type'].toString().contains(Constants.onNetworkChange)){
         //   _deviceNetworkStatus = event['status'];
         // }
@@ -78,6 +81,7 @@ class ConsultationService extends ChangeNotifier{
       })}");
       print("result1: $result1");
       notifyListeners();
+      Future.delayed(Duration(seconds: 100)).then((value) => _callEvent = '');
       return result1;
     }
     on PlatformException catch (e) {

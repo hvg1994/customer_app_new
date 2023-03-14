@@ -22,6 +22,7 @@ import 'package:sizer/sizer.dart';
 import 'package:get/get.dart';
 import 'repository/api_service.dart';
 import 'repository/enquiry_status_repository.dart';
+import 'services/analytics_service.dart';
 import 'services/consultation_service/consultation_service.dart';
 import 'services/vlc_service/check_state.dart';
 import 'utils/app_config.dart';
@@ -182,6 +183,9 @@ class _MyAppState extends State<MyApp> {
               data: MediaQuery.of(context).copyWith(textScaleFactor: 0.9),
               child: child ?? const SizedBox.shrink(),
             ),
+            navigatorObservers: [
+              AnalyticsService().getAnalyticsObserver(),
+            ],
             home: const SplashScreen()),
       );
     });

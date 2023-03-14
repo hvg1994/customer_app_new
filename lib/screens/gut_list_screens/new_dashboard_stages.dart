@@ -103,6 +103,7 @@ class GutListState extends State<GutList> {
       super.setState(fn);
     }
   }
+
   @override
   void initState() {
     // TODO: implement initState
@@ -426,8 +427,14 @@ class GutListState extends State<GutList> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             GestureDetector(
-              onTap: (){
-                callSupport();
+              onTap: () async{
+                final res = await callSupport();
+                if(res.runtimeType != ErrorModel){
+                  AppConfig().showSnackbar(context, "Call Initiated. Our success Team will call you soon.");
+                } else {
+                  final result = res as ErrorModel;
+                AppConfig().showSnackbar(context, "You can call your Success Team Member once you book your appointment", isError: true, bottomPadding: 50);
+                }
                 Navigator.pop(context);
               },
               child: Container(
@@ -449,41 +456,44 @@ class GutListState extends State<GutList> {
               ),
             ),
             SizedBox(width: 5.w),
-            GestureDetector(
-              onTap: (){
-                Navigator.pop(context);
-                if(_pref!.getString(AppConfig.KALEYRA_SUCCESS_ID) == null){
-                  AppConfig().showSnackbar(context, "Success Team Not available", isError: true);
-                }
-                else{
-                  // // click-to-call
-                  // callSupport();
-
-                  if(_pref!.getString(AppConfig.KALEYRA_ACCESS_TOKEN) != null){
-                    final accessToken = _pref!.getString(AppConfig.KALEYRA_ACCESS_TOKEN);
-                    final uId = _pref!.getString(AppConfig.KALEYRA_USER_ID);
-                    final successId = _pref!.getString(AppConfig.KALEYRA_SUCCESS_ID);
-                    // voice- call
-                    supportVoiceCall(uId!, successId!, accessToken!);
+            Visibility(
+              visible: false,
+              child: GestureDetector(
+                onTap: (){
+                  Navigator.pop(context);
+                  if(_pref!.getString(AppConfig.KALEYRA_SUCCESS_ID) == null){
+                    AppConfig().showSnackbar(context, "Success Team Not available", isError: true);
                   }
                   else{
-                    AppConfig().showSnackbar(context, "Something went wrong!!", isError: true);
+                    // // click-to-call
+                    // callSupport();
+
+                    if(_pref!.getString(AppConfig.KALEYRA_ACCESS_TOKEN) != null){
+                      final accessToken = _pref!.getString(AppConfig.KALEYRA_ACCESS_TOKEN);
+                      final uId = _pref!.getString(AppConfig.KALEYRA_USER_ID);
+                      final successId = _pref!.getString(AppConfig.KALEYRA_SUCCESS_ID);
+                      // voice- call
+                      supportVoiceCall(uId!, successId!, accessToken!);
+                    }
+                    else{
+                      AppConfig().showSnackbar(context, "Something went wrong!!", isError: true);
+                    }
                   }
-                }
-              },
-              child: Container(
-                padding: EdgeInsets.symmetric(
-                    vertical: 1.h, horizontal: 5.w),
-                decoration: BoxDecoration(
-                    color: gWhiteColor,
-                    border: Border.all(color: kLineColor, width: 0.5),
-                    borderRadius: BorderRadius.circular(5)),
-                child: Text(
-                  "Voice Call",
-                  style: TextStyle(
-                    fontFamily: kFontMedium,
-                    color: gsecondaryColor,
-                    fontSize: 11.sp,
+                },
+                child: Container(
+                  padding: EdgeInsets.symmetric(
+                      vertical: 1.h, horizontal: 5.w),
+                  decoration: BoxDecoration(
+                      color: gWhiteColor,
+                      border: Border.all(color: kLineColor, width: 0.5),
+                      borderRadius: BorderRadius.circular(5)),
+                  child: Text(
+                    "Voice Call",
+                    style: TextStyle(
+                      fontFamily: kFontMedium,
+                      color: gsecondaryColor,
+                      fontSize: 11.sp,
+                    ),
                   ),
                 ),
               ),
@@ -492,7 +502,12 @@ class GutListState extends State<GutList> {
         ),
         SizedBox(height: 1.h)
       ],
-    ), bottomSheetHeight: 40.h);
+    ), bottomSheetHeight: 40.h,
+      isSheetCloseNeeded: true,
+      sheetCloseOnTap: (){
+      Navigator.pop(context);
+      }
+    );
   }
 
   view(){
@@ -703,8 +718,18 @@ class GutListState extends State<GutList> {
             Flexible(
                 child: Center(
                   child: InkWell(
-                    onTap: (){
-                      getChatGroupId();
+                    onTap: () async {
+                      // getChatGroupId();
+                      final uId = _pref!.getString(AppConfig.KALEYRA_USER_ID);
+                      final res  = await getAccessToken(uId!);
+
+                      if(res.runtimeType != ErrorModel){
+                        final accessToken = _pref!.getString(AppConfig.KALEYRA_ACCESS_TOKEN);
+
+                        final chatSuccessId = _pref!.getString(AppConfig.KALEYRA_CHAT_SUCCESS_ID);
+                        // chat
+                        openKaleyraChat(uId, chatSuccessId!, accessToken!);
+                      }
                     },
                     child: Row(
                       mainAxisSize: MainAxisSize.min,

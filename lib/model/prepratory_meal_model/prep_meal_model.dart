@@ -6,7 +6,7 @@ class PrepratoryMealModel {
   String? currentDay;
   String? isPrepCompleted;
   String? note;
-  Data? data;
+  Map<String, List<MealSlot>>? data;
 
   PrepratoryMealModel({this.status, this.note, this.currentDay, this.errorCode, this.key, this.data, this.isPrepCompleted, this.days});
 
@@ -18,7 +18,14 @@ class PrepratoryMealModel {
     isPrepCompleted = json['is_prep_completed'];
     note = json['note'];
     days = json['days'];
-    data = json['data'] != null ? Data.fromJson(json['data']) : null;
+    if(json['data'] != null){
+      data = {};
+      (json['data'] as Map).forEach((key, value) {
+        // print("$key <==> ${(value as List).map((element) =>MealSlot.fromJson(element)) as List<MealSlot>}");
+        data!.putIfAbsent(key, () => List.from((value as List).map((element) => MealSlot.fromJson(element))));
+      });
+    }
+    // data = json['data'] != null ?  : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -31,7 +38,7 @@ class PrepratoryMealModel {
     data['days'] = this.days;
     data['note'] = this.note;
     if (this.data != null) {
-      data['data'] = this.data!.toJson();
+      data['data'] = this.data!;
     }
     return data;
   }

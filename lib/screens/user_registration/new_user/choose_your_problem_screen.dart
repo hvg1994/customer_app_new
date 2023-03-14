@@ -17,6 +17,7 @@ import '../../../widgets/widgets.dart';
 import 'about_the_program.dart';
 import 'choose_problems_data.dart';
 import 'package:gwc_customer/widgets/dart_extensions.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class ChooseYourProblemScreen extends StatefulWidget {
   const ChooseYourProblemScreen({Key? key}) : super(key: key);
@@ -194,7 +195,7 @@ class _ChooseYourProblemScreenState extends State<ChooseYourProblemScreen> {
                                             Image(
                                               height: 40,
                                               width: 40,
-                                              image: NetworkImage(problemList?[index].image ?? ''),
+                                              image: CachedNetworkImageProvider(problemList?[index].image ?? ''),
                                             ),
                                             SizedBox(height: 1.5.h),
                                             Expanded(
@@ -386,7 +387,7 @@ class _ChooseYourProblemScreenState extends State<ChooseYourProblemScreen> {
         // AppConfig().showSnackbar(context, _submitResponse.message!);
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (context) => const AboutTheProgram(),
+            builder: (context) => AboutTheProgram(),
           ),
         );
       }

@@ -23,7 +23,7 @@ class SettingsService extends ChangeNotifier{
   }
 
 
-  /// voice call methods****************
+  // voice call methods****************
 
   Future callToSupportTeam(String name, String successTeamId, String accessToken) async{
     final String channelName = "callNative";
@@ -98,6 +98,48 @@ class SettingsService extends ChangeNotifier{
   }
 
 // *************************************
+
+  /// kaleyra Chat methods****************
+  ///   // we need to get access token and need to pass here...
+
+  Future openKaleyraChat(String name, String opponentId, String accessToken) async{
+    final String channelName = "callNative";
+
+
+    var channel = MethodChannel(channelName);
+    print("CHAT");
+
+    Map m = {
+      'user_id': name,
+      'access_token': accessToken,
+      'opponent_id': opponentId
+    };
+
+    print("m: $m");
+
+    try{
+      listenForCall();
+      var result = await channel.invokeMethod("chat_support", m).whenComplete(() {
+        // _showProgress = false;
+        // notifyListeners();
+      });
+      print("Provider openKaleyraChat" + result.toString());
+      // final users = result['users'];
+      // print("users: ${users.runtimeType}");
+      notifyListeners();
+
+    } on PlatformException catch(e){
+      print("Provider openKaleyraChat error" + e.message.toString());
+      // _errorMsg = e.message.toString();
+      // _isGetHomeListSuccess = false;
+      notifyListeners();
+    }
+    // return _isGetHomeListSuccess;
+  }
+
+// *************************************
+
+
 
 
 

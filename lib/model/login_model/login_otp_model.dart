@@ -9,6 +9,7 @@ class LoginOtpModel {
   String? userEvaluationStatus;
   String? chatId;
   String? loginUsername;
+  String? associatedSuccessMemberKaleyraId;
 
   LoginOtpModel({
     this.status,
@@ -19,6 +20,7 @@ class LoginOtpModel {
     this.kaleyraSuccessId,
     this.chatId,
     this.loginUsername,
+    this.associatedSuccessMemberKaleyraId
   });
 
   LoginOtpModel.fromJson(Map<String, dynamic> json) {
@@ -30,6 +32,7 @@ class LoginOtpModel {
     userEvaluationStatus = json['user_status'].toString();
     chatId = json['chat_id'].toString();
     loginUsername = json['login_username'].toString();
+    associatedSuccessMemberKaleyraId = json['associated_success_member'].toString();
   }
 
   Map<String, dynamic> toJson() {
@@ -41,6 +44,7 @@ class LoginOtpModel {
     data['success_team_kaleyra_id'] = this.kaleyraSuccessId;
     data['user_status'] = this.userEvaluationStatus;
     data['chat_id'] = this.chatId;
+    data['associated_success_member'] = this.associatedSuccessMemberKaleyraId;
     data['login_username'] = this.loginUsername;
     return data;
   }

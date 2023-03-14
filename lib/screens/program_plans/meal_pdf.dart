@@ -16,9 +16,11 @@ class MealPdf extends StatefulWidget {
   final Color? topHeadColor;
   final String? headCircleIcon;
   final bool isVideoWidgetVisible;
+  final bool isSheetCloseNeeded;
+  VoidCallback? sheetCloseOnTap;
   MealPdf({Key? key, required this.pdfLink, this.heading, this.mealVideoLink,
     this.topHeadColor, this.headCircleIcon, this.isVideoWidgetVisible = true,
-    this.videoName
+    this.videoName, this.isSheetCloseNeeded = false, this.sheetCloseOnTap
   }) : super(key: key);
 
   @override
@@ -207,6 +209,15 @@ class _MealPdfState extends State<MealPdf> {
                                       ),
                                     )
                                 )
+                            ),
+                            Visibility(
+                              visible: widget.isSheetCloseNeeded,
+                              child: Positioned(
+                                  top: 10,
+                                  right: 10,
+                                  child: GestureDetector(
+                                      onTap: widget.sheetCloseOnTap ?? (){},
+                                      child: Icon(Icons.cancel_outlined, color: gsecondaryColor,size: 28,))),
                             )
                           ],
                         ),

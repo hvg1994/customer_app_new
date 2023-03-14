@@ -22,6 +22,13 @@ import com.bandyer.android_sdk.call.model.CallInfo;
 import com.bandyer.android_sdk.call.notification.CallNotificationListener;
 import com.bandyer.android_sdk.call.notification.CallNotificationStyle;
 import com.bandyer.android_sdk.call.notification.CallNotificationType;
+import com.bandyer.android_sdk.chat.ChatException;
+import com.bandyer.android_sdk.chat.ChatModule;
+import com.bandyer.android_sdk.chat.ChatObserver;
+import com.bandyer.android_sdk.chat.ChatUIObserver;
+import com.bandyer.android_sdk.chat.model.ChatInfo;
+import com.bandyer.android_sdk.chat.notification.ChatNotificationListener;
+import com.bandyer.android_sdk.chat.notification.ChatNotificationStyle;
 import com.bandyer.android_sdk.client.AccessTokenProvider;
 import com.bandyer.android_sdk.client.BandyerSDK;
 import com.bandyer.android_sdk.client.BandyerSDKConfiguration;
@@ -31,10 +38,13 @@ import com.bandyer.android_sdk.intent.BandyerIntent;
 import com.bandyer.android_sdk.intent.call.Call;
 import com.bandyer.android_sdk.intent.call.CallRecordingState;
 import com.bandyer.android_sdk.intent.call.IncomingCall;
+import com.bandyer.android_sdk.intent.chat.Chat;
 import com.bandyer.android_sdk.module.BandyerModule;
 import com.bandyer.android_sdk.module.BandyerModuleObserver;
 import com.bandyer.android_sdk.module.BandyerModuleStatus;
 import com.bandyer.android_sdk.tool_configuration.call.SimpleCallConfiguration;
+import com.bandyer.android_sdk.tool_configuration.chat.CustomChatConfiguration;
+import com.bandyer.android_sdk.tool_configuration.chat.SimpleChatConfiguration;
 import com.kaleyra.app_configuration.activities.ConfigurationActivity;
 import com.kaleyra.app_configuration.model.Configuration;
 import com.kaleyra.app_utilities.storage.ConfigurationPrefsManager;
@@ -81,6 +91,8 @@ public class MainPresenter extends AppCompatActivity implements BandyerModuleObs
     }
 
     abstract class MyCallObserver implements CallUIObserver, CallObserver, CallRecordingObserver {
+    }
+    abstract static class MyChatObserver implements ChatUIObserver, ChatObserver {
     }
 
     @Override
@@ -144,7 +156,7 @@ public class MainPresenter extends AppCompatActivity implements BandyerModuleObs
 //            return null;
 //        });
         AccessTokenProvider accessTokenProvider = (userId1, completion) ->
-//                completion.success("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiMyIsImNvbXBhbnlJZCI6ImNhZDAzMzFmLWU0N2QtNDZjYS1hM2U3LTc1NjBiMzVmMGJjZCIsImFsbG93Q2FtZXJhIjp0cnVlLCJpYXQiOjE2NzE1Mjk3MzQsImV4cCI6MTY3MTUzMzMzNCwiaXNzIjoiQHN3aXRjaGJvYXJkLWNvcmUiLCJzdWIiOiIzI2NhZDAzMzFmLWU0N2QtNDZjYS1hM2U3LTc1NjBiMzVmMGJjZCJ9.H-Qpq_pLZS4YMcLjZvDjU4TI-PdKAdFIFMXd8LRcuAQ");
+//                completion.success("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoidXNyXzNmMjliYmNkMTZjMSIsImNvbXBhbnlJZCI6IjE2MTAxM2Q2LWQ0NGMtNDE5NC04MGVhLTQ5MmZmNzY2NzhlMiIsImFsbG93Q2FtZXJhIjp0cnVlLCJpYXQiOjE2Nzg3MDQzMTksImV4cCI6MTY3ODcwNzkxOSwiaXNzIjoiQHN3aXRjaGJvYXJkLWNvcmUiLCJzdWIiOiJ1c3JfM2YyOWJiY2QxNmMxIzE2MTAxM2Q2LWQ0NGMtNDE5NC04MGVhLTQ5MmZmNzY2NzhlMiJ9.QV7clwOsocBnNK_Ksm0Jj9lb2Tkqqt04lu7whwnIrfk");
 
                 completion.success(accessToken);
         SessionObserver sessionObserver = new SessionObserver() {
@@ -235,8 +247,8 @@ public class MainPresenter extends AppCompatActivity implements BandyerModuleObs
     private boolean areObserversAdded = false;
 
     private void addObservers() {
-        if (areObserversAdded) return;
-        areObserversAdded = true;
+//        if (areObserversAdded) return;
+//        areObserversAdded = true;
 
         // Add an observer for the chat and call modules
         BandyerSDK.getInstance().addModuleObserver(this);
@@ -388,12 +400,112 @@ public class MainPresenter extends AppCompatActivity implements BandyerModuleObs
         };
     }
 
+    private ChatNotificationListener getChatNotificationListener() {
+        // custom notification listener
+        return new ChatNotificationListener() {
+            @Override
+            public void onIncomingChat(@NonNull com.bandyer.android_sdk.intent.chat.IncomingChat chat, boolean isDnd, boolean isScreenLocked) {
+                chat.asNotification().show(mContext);
+            }
+
+            @Override
+            public void onCreateNotification(@NonNull ChatInfo chatInfo, @NonNull ChatNotificationStyle notificationStyle) {
+                notificationStyle.setNotificationColor(Color.RED);
+            }
+        };
+    }
+
+
+    public void openChat(String userId, String opponentUserId,String accessToken, MethodChannel.Result result){
+        chatSdkConfig(userId, accessToken);
+//        Uri uri = Uri.parse("https://sandbox.bandyer.com/eu/direct-rest-call-handler/54e99cced226c5bec7787245be");
+
+        BandyerIntent bandyerIntent = new BandyerIntent.Builder()
+                .startWithChat(mContext)
+                .with(opponentUserId)
+                .build();
+
+        mContext.startActivity(bandyerIntent);
+
+    }
+
+    private final MyChatObserver chatObserver = new MyChatObserver() {
+
+        @Override
+        public void onActivityError(@NonNull Chat chat, @NonNull WeakReference<AppCompatActivity> activity, @NonNull ChatException error) {
+            Log.e(TAG, "onChatActivityError " + error.getMessage());
+        }
+
+        @Override
+        public void onActivityDestroyed(@NonNull Chat chat, @NonNull WeakReference<AppCompatActivity> activity) {
+            Log.d(TAG, "onChatActivityDestroyed");
+        }
+
+        @Override
+        public void onActivityStarted(@NonNull Chat chat, @NonNull WeakReference<AppCompatActivity> activity) {
+            Log.d(TAG, "onChatActivityStarted");
+        }
+    };
+
+
+    private void addChatObservers() {
+        ChatModule chatModule = BandyerSDK.getInstance().getChatModule();
+        if (chatModule == null) return;
+        chatModule.addChatObserver(chatObserver);
+        chatModule.addChatUIObserver(chatObserver);
+    }
+
+
+    public void removeChatObservers() {
+        areObserversAdded = false;
+
+        BandyerSDK.getInstance().removeModuleObserver(this);
+
+        ChatModule chatModule = BandyerSDK.getInstance().getChatModule();
+        if (chatModule != null) {
+            chatModule.removeChatObserver(chatObserver);
+            chatModule.removeChatUIObserver(chatObserver);
+        }
+    }
+
+    private void chatSdkConfig(String userId, String accessToken){
+        BandyerSDKConfiguration.Builder builder1 = new BandyerSDKConfiguration.Builder(
+                appId,
+                environment,
+                region);
+
+     builder1.tools(builder -> {
+            // Set chat configuration created above
+            builder.withChat(configurableChat -> {
+                        configurableChat.setChatConfiguration(chatConfiguration);
+                    }
+            );
+     }).notificationListeners(builder -> {
+         builder.setChatNotificationListener(getChatNotificationListener());
+     }).build();
+
+        BandyerSDK.getInstance().configure(builder1.build());
+
+        addChatObservers();
+
+
+        startBandyerSDK(userId, accessToken);
+
+    }
+
+    CustomChatConfiguration chatConfiguration = new CustomChatConfiguration(
+            new CustomChatConfiguration.CustomCapabilitySet(
+            )
+    );
+
+
 
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         removeObservers();
+        removeChatObservers();
         BandyerSDK.getInstance().disconnect();
     }
 }

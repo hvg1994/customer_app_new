@@ -1,4 +1,5 @@
 // ignore_for_file: deprecated_member_use
+import 'package:flutter/foundation.dart';
 import 'package:gwc_customer/model/consultation_model/appointment_booking/child_doctor_model.dart';
 import 'package:intl/intl.dart';
 import 'dart:async';
@@ -55,7 +56,7 @@ class DoctorSlotsDetailsScreen extends StatefulWidget {
   State<DoctorSlotsDetailsScreen> createState() => _DoctorSlotsDetailsScreenState();
 }
 
-class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
+class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen>with WidgetsBindingObserver {
   Timer? timer;
 
   final _pref = AppConfig().preferences;
@@ -77,6 +78,9 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    print("initstate");
+    WidgetsBinding.instance.addObserver(this);
+
     if(widget.isFromDashboard){
       var splited = widget.bookingTime.split(':');
       int hour = int.parse(splited[0]);
@@ -86,10 +90,12 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
     }
     if(!widget.isPostProgram && !widget.isFromDashboard){
       widget.data?.team?.teamMember?.forEach((element) {
-        if(element.user!.roleId == "2"){
-          doctorNames.add('Dr. ${element.user!.name}' ?? '');
-          doctorName = 'Dr. ${element.user!.name}';
-          doctorImage = element.user?.profile ?? '';
+        if(element.user != null){
+          if(element.user!.roleId == "2"){
+            doctorNames.add('Dr. ${element.user!.name}' ?? '');
+            doctorName = 'Dr. ${element.user!.name}';
+            doctorImage = element.user?.profile ?? '';
+          }
         }
       });
       if(widget.data?.kaleyraSuccessId != null){
@@ -163,6 +169,13 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
     print("doctorName: $doctorName");
   }
 
+  @override
+  void didChangeDependencies() {
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
+    print("didChangeDependencies");
+  }
+
   Future getAccessToken(String kaleyraId) async{
     print("getAccessToken: $kaleyraId");
     final res = await ConsultationService(repository: _consultationRepository).getAccessToken(kaleyraId);
@@ -189,7 +202,20 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
   }
 
   @override
+  void didUpdateWidget(covariant DoctorSlotsDetailsScreen oldWidget) {
+    // TODO: implement didUpdateWidget
+    super.didUpdateWidget(oldWidget);
+    print("didUpdate");
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+  @override
   Widget build(BuildContext context) {
+    print("build");
     return SafeArea(
       child: Scaffold(
         body: Column(
@@ -405,10 +431,10 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
                                     print(curTime.difference(res));
                                     print(res.difference(curTime));
 
-                                    // if(res.difference(curTime).inMinutes > 5){
-                                    //   showJoinPopup();
-                                    // }
-                                    // else{
+                                    if(res.difference(curTime).inMinutes > 5){
+                                      showJoinPopup();
+                                    }
+                                    else{
 
                                       ChildAppointmentDetails? model;
                                     String? kaleyraurl;
@@ -422,7 +448,6 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
                                           else{
                                             kaleyraurl = widget.data?.kaleyraJoinurl;
                                           }
-
                                         }
                                         else{
                                           model = ChildAppointmentDetails.fromJson(Map.from(widget.dashboardValueMap!));
@@ -447,7 +472,7 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
                                       else{
                                         AppConfig().showSnackbar(context, "Uid/accessToken/join url not found");
                                       }
-                                   // }
+                                   }
                                   },
                                   child: Container(
                                     width: 60.w,
@@ -568,6 +593,34 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
       ),
     );
   }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    print("didChangeAppLifecycleState");
+    switch (state) {
+      case AppLifecycleState.resumed:
+        print("app in resumed");
+        if(Provider.of<ConsultationService>(context, listen: false).callEvent == "onCallEnded"){
+          Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const DashboardScreen(),
+              ), (route)=> route.isFirst
+          );
+        }
+        break;
+      case AppLifecycleState.inactive:
+        print("app in inactive");
+        break;
+      case AppLifecycleState.paused:
+        print("app in paused");
+        break;
+      case AppLifecycleState.detached:
+        print("app in detached");
+        break;
+    }
+  }
+
 
   showJoinPopup(){
     return AppConfig().showSheet(
@@ -726,11 +779,13 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen> {
   }
 
   void launchZoomUrl() async{
-    print(widget.data?.patientName);
-    print(widget.isPostProgram);
+    if (kDebugMode) {
+      print(widget.data?.patientName);
+      print(widget.isPostProgram);
+    }
     ChildAppointmentDetails? model;
     if(widget.isFromDashboard || widget.isPostProgram){
-      model = ChildAppointmentDetails.fromJson(Map.from(widget.dashboardValueMap!));
+      if(widget.dashboardValueMap != null) model = ChildAppointmentDetails.fromJson(Map.from(widget.dashboardValueMap!));
     }
     // String zoomUrl = model.;
 

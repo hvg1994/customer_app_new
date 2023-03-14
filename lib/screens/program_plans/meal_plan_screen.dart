@@ -650,19 +650,18 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                   Row(
                     children: [
                       SizedBox(
-                        height: 2.h,
-                        child: InkWell(
-                          onTap: () {
+                        width: 2.h,
+                        child: IconButton(
+                          onPressed: (){
                             Navigator.pop(context);
                           },
-                          child: const Image(
-                            image: AssetImage(
-                                "assets/images/Icon ionic-ios-arrow-back.png"),
+                          icon: Icon(Icons.arrow_back_ios,
+                            color: gMainColor,
                           ),
                         ),
                       ),
                       SizedBox(
-                        width: 10,
+                        width: 15,
                       ),
                       SizedBox(
                         height: 6.h,
@@ -1730,7 +1729,12 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
   showFollowedSheet(ChildMealPlanDetailsModel e) {
     print("eeeee:$e");
     return AppConfig().showSheet(context, showFollowWidget(e),
-        bottomSheetHeight: 45.h, circleIcon: bsHeadPinIcon);
+        bottomSheetHeight: 45.h, circleIcon: bsHeadPinIcon,
+        isSheetCloseNeeded: true,
+        sheetCloseOnTap: (){
+          Navigator.pop(context);
+        }
+        );
   }
 
   showFollowWidget(ChildMealPlanDetailsModel e) {
@@ -2516,6 +2520,10 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                   videoName: "Know more about Recipe",
                   heading: receipeName,
               headCircleIcon: bsHeadBulbIcon,
+                isSheetCloseNeeded: true,
+                sheetCloseOnTap: (){
+                  Navigator.pop(context);
+                }
                 )));
   }
 
