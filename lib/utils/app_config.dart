@@ -52,6 +52,8 @@ class AppConfig{
   final String trackerVideoUrl = "tracker_meal_video";
   final String receipeVideoUrl = "reciepe_meal_video";
 
+  /// to getlocal dashboard data which used in notification screen
+  static const String LOCAL_DASHBOARD_DATA = "local_dashboard_data";
 
 
   static const String isFirstTime = "isFirstTime";
@@ -123,7 +125,7 @@ class AppConfig{
         backgroundColor:(isError == null || isError == false) ? gPrimaryColor : gsecondaryColor.withOpacity(0.55),
         content: Text(message),
         margin: (bottomPadding != null) ? EdgeInsets.only(bottom: bottomPadding) : null,
-        duration: Duration(seconds: duration ?? 2),
+        duration: Duration(seconds: duration ?? 3),
         action: action,
       ),
     );

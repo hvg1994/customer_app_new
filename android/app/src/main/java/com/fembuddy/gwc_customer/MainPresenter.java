@@ -415,6 +415,9 @@ public class MainPresenter extends AppCompatActivity implements BandyerModuleObs
         };
     }
 
+    public void updatePayload(String payload){
+      BandyerSDK.getInstance().handleNotification(payload);
+    }
 
     public void openChat(String userId, String opponentUserId,String accessToken, MethodChannel.Result result){
         chatSdkConfig(userId, accessToken);

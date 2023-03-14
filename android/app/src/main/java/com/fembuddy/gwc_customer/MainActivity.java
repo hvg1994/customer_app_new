@@ -67,6 +67,11 @@ public class MainActivity extends FlutterActivity {
                                 mMainPresenter.openChat(userId, opponentId, kaleyraAccessToken, result);
                                 break;
                             }
+                            case "upload_payload": {
+                                String payload = call.argument("payload");
+                                mMainPresenter.updatePayload(payload);
+                                break;
+                            }
                         }
                     }
                 }

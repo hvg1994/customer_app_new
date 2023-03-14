@@ -11,17 +11,25 @@ API for notification list
 
 https://gwc.disol.in/apidoc/#api-User-notification_list
  */
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:gwc_customer/model/error_model.dart';
 import 'package:gwc_customer/model/notification_model/NotificationModel.dart';
 import 'package:gwc_customer/model/notification_model/child_notification_model.dart';
 import 'package:gwc_customer/repository/api_service.dart';
 import 'package:gwc_customer/repository/notification_repository/notification_repo.dart';
+import 'package:gwc_customer/screens/appointment_screens/consultation_screens/consultation_success.dart';
+import 'package:gwc_customer/screens/appointment_screens/consultation_screens/medical_report_screen.dart';
+import 'package:gwc_customer/screens/appointment_screens/doctor_slots_details_screen.dart';
 import 'package:gwc_customer/services/notification_service/notification_service.dart';
 import 'package:gwc_customer/widgets/constants.dart';
 import 'package:gwc_customer/widgets/widgets.dart';
 import 'package:sizer/sizer.dart';
 import 'package:http/http.dart' as http;
+import 'package:gwc_customer/screens/cook_kit_shipping_screens/cook_kit_tracking.dart';
+import '../model/local_storage_dashboard_model.dart';
+import '../utils/app_config.dart';
 
 enum NotificationTypeEnum{
   meal_plan, enquiry, report, appointment, shopping, reminder_appointment, new_appointment
@@ -36,16 +44,21 @@ class NotificationScreen extends StatefulWidget {
 class _NotificationScreenState extends State<NotificationScreen> {
 
 
+  final _pref = AppConfig().preferences;
   Future? notificationFuture;
 
   String type = "shopping";
+
+  LocalStorageDashboardModel? _localStorageDashboardModel;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     getNotificationList();
-
+    if(_pref!.getString(AppConfig.LOCAL_DASHBOARD_DATA) != null){
+      _localStorageDashboardModel = LocalStorageDashboardModel.fromJson(jsonDecode(_pref!.getString(AppConfig.LOCAL_DASHBOARD_DATA)!));
+    }
   }
 
   getNotificationList(){
@@ -148,12 +161,21 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                   else{
                                     NotificationModel model = snapshot.data as NotificationModel;
                                     List<ChildNotificationModel> childModel = model.data as List<ChildNotificationModel>;
+                                    childModel.forEach((element) {
+                                      print(element.type);
+                                    });
                                     return ListView.builder(
                                       physics: ClampingScrollPhysics(),
                                       shrinkWrap: true,
                                       itemCount: childModel.length,
                                         itemBuilder: (_, index){
-                                        return showListItem(getIcons(childModel[index].type) ?? '', childModel[index].subject ?? '', childModel[index].message ?? '', childModel[index].created_at ?? '');
+                                        return showListItem(
+                                            getIcons(childModel[index].type) ?? '',
+                                            childModel[index].subject ?? '',
+                                            childModel[index].message ?? '',
+                                            childModel[index].created_at ?? '',
+                                          type: childModel[index].type
+                                        );
                                         }
                                     );
                                   }
@@ -206,11 +228,15 @@ class _NotificationScreenState extends State<NotificationScreen> {
     );
   }
 
-  showListItem(String asset, String title, String subTitle, String lastTitle){
+  showListItem(String asset, String title, String subTitle, String lastTitle,
+      {String? type}){
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         ListTile(
+          onTap: (){
+            handleOnTap(type);
+          },
           contentPadding: EdgeInsets.zero,
           horizontalTitleGap: 10,
           leading: Padding(
@@ -335,4 +361,57 @@ class _NotificationScreenState extends State<NotificationScreen> {
 
     return asset;
   }
+
+  handleOnTap(String? type) {
+    if(_localStorageDashboardModel == null || type == null){
+      return null;
+    }
+    else{
+      if(type == NotificationTypeEnum.meal_plan.name){
+        return null;
+      }
+      else if(type == NotificationTypeEnum.enquiry.name){
+        AppConfig().showSnackbar(context, "Already Logged In");
+      }
+      else if(type == NotificationTypeEnum.report.name){
+        goToScreen(MedicalReportScreen(pdfLink: _localStorageDashboardModel!.mrReport!,));
+      }
+      else if(type == NotificationTypeEnum.appointment.name){
+        goToScreen(const ConsultationSuccess());
+      }
+      else if(type == NotificationTypeEnum.reminder_appointment.name){
+        final model = jsonDecode(_localStorageDashboardModel!.appointmentModel!);
+        if(model != null){
+          goToScreen(DoctorSlotsDetailsScreen(bookingDate: model!.value!.date!,
+            bookingTime: model.value!.slotStartTime!,
+            dashboardValueMap: model.value!.toJson(),isFromDashboard: true,));
+        }
+      }
+      else if(type == NotificationTypeEnum.new_appointment.name){
+        print(_localStorageDashboardModel!.toJson());
+          final model = jsonDecode(_localStorageDashboardModel!.appointmentModel!);
+          if(model != null){
+            goToScreen(DoctorSlotsDetailsScreen(bookingDate: model!.value!.date!,
+              bookingTime: model.value!.slotStartTime!,
+              dashboardValueMap: model.value!.toJson(),isFromDashboard: true,));
+          }
+
+      }
+      else if(type == NotificationTypeEnum.shopping.name){
+        goToScreen(CookKitTracking(currentStage: _localStorageDashboardModel?.shippingStage ?? ''));
+        // asset = 'assets/images/notification/list_upload.png';
+      }
+    }
+  }
+
+  goToScreen(screenName){
+    print(screenName);
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => screenName,
+        // builder: (context) => isConsultationCompleted ? ConsultationSuccess() : const DoctorCalenderTimeScreen(),
+      ),
+    );
+  }
+
 }
