@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:gwc_customer/model/error_model.dart';
@@ -15,7 +16,8 @@ import 'package:sizer/sizer.dart';
 class PrepratoryPlanScreen extends StatefulWidget {
   String? totalDays;
   String? dayNumber;
-  PrepratoryPlanScreen({Key? key, required this.dayNumber, required this.totalDays}) : super(key: key);
+  bool viewDay1Details;
+  PrepratoryPlanScreen({Key? key, required this.dayNumber, required this.totalDays, this.viewDay1Details = false}) : super(key: key);
 
   @override
   State<PrepratoryPlanScreen> createState() => _PrepratoryPlanScreenState();
@@ -145,17 +147,20 @@ class _PrepratoryPlanScreenState extends State<PrepratoryPlanScreen> {
             ),
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 5),
-          child: Text((int.parse(totalDays!) - int.parse(dayNumber!)).isNegative
-              ? (int.parse(totalDays!) - int.parse(dayNumber!)) == -1
-              ? '${(int.parse(totalDays!) - int.parse(dayNumber!)).abs()} day Extended'
-              :'${(int.parse(totalDays!) - int.parse(dayNumber!)).abs()} days Extended'
-              : '${int.parse(totalDays!) - int.parse(dayNumber!)} days Remaining',
-            style: TextStyle(
-                fontFamily: kFontMedium,
-                color: gHintTextColor,
-                fontSize: 10.sp
+        Visibility(
+          visible: !widget.viewDay1Details,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 5),
+            child: Text((int.parse(totalDays!) - int.parse(dayNumber!)).isNegative
+                ? (int.parse(totalDays!) - int.parse(dayNumber!)) == -1
+                ? '${(int.parse(totalDays!) - int.parse(dayNumber!)).abs()} day Extended'
+                :'${(int.parse(totalDays!) - int.parse(dayNumber!)).abs()} days Extended'
+                : '${int.parse(totalDays!) - int.parse(dayNumber!)} days Remaining',
+              style: TextStyle(
+                  fontFamily: kFontMedium,
+                  color: gHintTextColor,
+                  fontSize: 10.sp
+              ),
             ),
           ),
         ),
@@ -206,11 +211,13 @@ class _PrepratoryPlanScreenState extends State<PrepratoryPlanScreen> {
                             ),
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(15),
-                              child: (lst[index].itemPhoto == null) ? Image.asset('assets/images/meal_placeholder.png',
+                              child: (lst[index].itemPhoto == null) ?
+                              Image.asset('assets/images/meal_placeholder.png',
                                 fit: BoxFit.fill,
                               ) :
-                              Image.network(lst[index].itemPhoto?? '',
-                                errorBuilder: (_, widget, child){
+                              CachedNetworkImage(
+                                imageUrl:lst[index].itemPhoto?? '',
+                                errorWidget: (_, widget, child){
                                 return Image.asset('assets/images/meal_placeholder.png',
                                   fit: BoxFit.fill,
                                 );

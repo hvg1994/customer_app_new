@@ -43,6 +43,7 @@ import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:sizer/sizer.dart';
 import 'package:http/http.dart' as http;
+import 'package:wakelock/wakelock.dart';
 import '../../model/message_model/get_chat_groupid_model.dart';
 import '../../repository/login_otp_repository.dart';
 import '../../services/dashboard_service/gut_service/dashboard_data_service.dart';
@@ -1064,7 +1065,7 @@ class GutListState extends State<GutList> {
     }
   }
 
-  addUrlToVideoPlayer(String url){
+  addUrlToVideoPlayer(String url) async{
     print("url"+ url);
     _mealPlayerController = VlcPlayerController.network(url,
       // "assets/images/new_ds/popup_video.mp4",
@@ -1093,6 +1094,18 @@ class GutListState extends State<GutList> {
         ]),
       ),
     );
+    if( !await Wakelock.enabled){
+      Wakelock.enable();
+    }
+  }
+
+  disposePlayer() async{
+    if(_mealPlayerController != null){
+      _mealPlayerController!.dispose();
+    }
+    if(await Wakelock.enabled){
+      Wakelock.disable();
+    }
   }
 
   mealReadySheet(){
@@ -1147,6 +1160,7 @@ class GutListState extends State<GutList> {
                 setState(() {
                   isShown = false;
                 });
+                disposePlayer();
                 if(isMealProgressOpened){
                   Navigator.pop(context);
                 }
@@ -1171,10 +1185,12 @@ class GutListState extends State<GutList> {
             SizedBox(width: 5.w),
             GestureDetector(
               onTap: (isPressed) ? (){} : () {
+                Navigator.pop(context);
                 sendApproveStatus('no');
                 setState(() {
                   isShown = false;
                 });
+                disposePlayer();
                 if(isMealProgressOpened){
                   Navigator.pop(context);
                 }

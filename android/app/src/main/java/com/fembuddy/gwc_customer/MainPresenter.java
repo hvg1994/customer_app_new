@@ -88,6 +88,7 @@ public class MainPresenter extends AppCompatActivity implements BandyerModuleObs
         super();
         mContext = (Activity) context;
 
+
     }
 
     abstract class MyCallObserver implements CallUIObserver, CallObserver, CallRecordingObserver {
@@ -127,8 +128,13 @@ public class MainPresenter extends AppCompatActivity implements BandyerModuleObs
                 // set and update the call configuration
                 configurableCall.setCallConfiguration(new SimpleCallConfiguration());
             });
+            builder.withChat(configurableChat -> {
+                        configurableChat.setChatConfiguration(chatConfiguration);
+                    }
+            );
         }).notificationListeners(builder -> {
             builder.setCallNotificationListener(getCallNotificationListener());
+            builder.setChatNotificationListener(getChatNotificationListener());
         }).build();
 
 
@@ -137,9 +143,38 @@ public class MainPresenter extends AppCompatActivity implements BandyerModuleObs
 //        if (!LoginManager.isUserLogged(mContext)){
 //            LoginManager.login(mContext, userId);
 //        }
+        addChatObservers();
         startBandyerSDK(userId, accessToken);
 
     }
+    SessionObserver sessionObserver = new SessionObserver() {
+
+        @Override
+        public void onSessionAuthenticating(@NonNull Session session) {
+            Log.d(TAG, "onSessionAuthenticating for user " + session.getUserId());
+        }
+
+        @Override
+        public void onSessionAuthenticated(@NonNull Session session) {
+            Log.d(TAG, "onSessionAuthenticated for user " + session.getUserId());
+        }
+
+        @Override
+        public void onSessionRefreshing(@NonNull Session session) {
+            Log.d(TAG, "onSessionRefreshing for user " + session.getUserId());
+        }
+
+        @Override
+        public void onSessionRefreshed(@NonNull Session session) {
+            Log.d(TAG, "onSessionRefreshed for user " + session.getUserId());
+        }
+
+        @Override
+        public void onSessionError(@NonNull Session session, @NonNull Error error) {
+            Log.e(TAG, "onSessionError for user " + session.getUserId() + " with error: " + error.getMessage());
+        }
+    };
+
     private void startBandyerSDK(String userId, String accessToken) {
         Log.d("loggedUser", userId);
         Configuration configuration = ConfigurationPrefsManager.INSTANCE.getConfiguration(mContext);
@@ -159,33 +194,6 @@ public class MainPresenter extends AppCompatActivity implements BandyerModuleObs
 //                completion.success("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoidXNyXzNmMjliYmNkMTZjMSIsImNvbXBhbnlJZCI6IjE2MTAxM2Q2LWQ0NGMtNDE5NC04MGVhLTQ5MmZmNzY2NzhlMiIsImFsbG93Q2FtZXJhIjp0cnVlLCJpYXQiOjE2Nzg3MDQzMTksImV4cCI6MTY3ODcwNzkxOSwiaXNzIjoiQHN3aXRjaGJvYXJkLWNvcmUiLCJzdWIiOiJ1c3JfM2YyOWJiY2QxNmMxIzE2MTAxM2Q2LWQ0NGMtNDE5NC04MGVhLTQ5MmZmNzY2NzhlMiJ9.QV7clwOsocBnNK_Ksm0Jj9lb2Tkqqt04lu7whwnIrfk");
 
                 completion.success(accessToken);
-        SessionObserver sessionObserver = new SessionObserver() {
-
-            @Override
-            public void onSessionAuthenticating(@NonNull Session session) {
-                Log.d(TAG, "onSessionAuthenticating for user " + session.getUserId());
-            }
-
-            @Override
-            public void onSessionAuthenticated(@NonNull Session session) {
-                Log.d(TAG, "onSessionAuthenticated for user " + session.getUserId());
-            }
-
-            @Override
-            public void onSessionRefreshing(@NonNull Session session) {
-                Log.d(TAG, "onSessionRefreshing for user " + session.getUserId());
-            }
-
-            @Override
-            public void onSessionRefreshed(@NonNull Session session) {
-                Log.d(TAG, "onSessionRefreshed for user " + session.getUserId());
-            }
-
-            @Override
-            public void onSessionError(@NonNull Session session, @NonNull Error error) {
-                Log.e(TAG, "onSessionError for user " + session.getUserId() + " with error: " + error.getMessage());
-            }
-        };
 
         Session session = new Session(
                 userId,
@@ -201,6 +209,9 @@ public class MainPresenter extends AppCompatActivity implements BandyerModuleObs
 //        BandyerSDK.getInstance().handleNotification();
     }
 
+    public void globalCall(String userId,String accessToken){
+        sdkConfig(userId, accessToken);
+    }
 
     public void joinMeeting(String userId, String JoinUrl,String accessToken, MethodChannel.Result result){
         sdkConfig(userId, accessToken);
@@ -405,6 +416,8 @@ public class MainPresenter extends AppCompatActivity implements BandyerModuleObs
         return new ChatNotificationListener() {
             @Override
             public void onIncomingChat(@NonNull com.bandyer.android_sdk.intent.chat.IncomingChat chat, boolean isDnd, boolean isScreenLocked) {
+                Log.e("isScreenLocked", String.valueOf(isScreenLocked));
+                Log.e("chat", chat.getChatInfo().getChatId());
                 chat.asNotification().show(mContext);
             }
 
@@ -420,7 +433,7 @@ public class MainPresenter extends AppCompatActivity implements BandyerModuleObs
     }
 
     public void openChat(String userId, String opponentUserId,String accessToken, MethodChannel.Result result){
-        chatSdkConfig(userId, accessToken);
+        sdkConfig(userId, accessToken);
 //        Uri uri = Uri.parse("https://sandbox.bandyer.com/eu/direct-rest-call-handler/54e99cced226c5bec7787245be");
 
         BandyerIntent bandyerIntent = new BandyerIntent.Builder()
@@ -498,6 +511,7 @@ public class MainPresenter extends AppCompatActivity implements BandyerModuleObs
 
     CustomChatConfiguration chatConfiguration = new CustomChatConfiguration(
             new CustomChatConfiguration.CustomCapabilitySet(
+
             )
     );
 
@@ -507,8 +521,8 @@ public class MainPresenter extends AppCompatActivity implements BandyerModuleObs
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        removeObservers();
-        removeChatObservers();
-        BandyerSDK.getInstance().disconnect();
+//        removeObservers();
+//        removeChatObservers();
+//        BandyerSDK.getInstance().disconnect();
     }
 }

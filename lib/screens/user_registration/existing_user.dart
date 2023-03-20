@@ -10,6 +10,7 @@ import 'package:gwc_customer/model/login_model/resend_otp_model.dart';
 import 'package:gwc_customer/repository/login_otp_repository.dart';
 import 'package:gwc_customer/screens/evalution_form/evaluation_form_screen.dart';
 import 'package:gwc_customer/screens/help_screens/help_screen.dart';
+import 'package:gwc_customer/screens/profile_screens/call_support_method.dart';
 import 'package:gwc_customer/screens/user_registration/resend_otp_screen.dart';
 import 'package:gwc_customer/services/login_otp_service.dart';
 import 'package:gwc_customer/services/quick_blox_service/quick_blox_service.dart';
@@ -1120,7 +1121,8 @@ class _ExistingUserState extends State<ExistingUser> {
               ),
             ),
           );
-        } else {
+        }
+        else {
           _pref.setBool(AppConfig.isFirstTime, false);
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(
@@ -1139,6 +1141,7 @@ class _ExistingUserState extends State<ExistingUser> {
         final address2 = model1?.patient?.address2 ?? '';
         _pref.setString(AppConfig.SHIPPING_ADDRESS, address1 + address2);
       }
+
     } else {
       bottomsheetSetState(() {
         showLoginProgress = false;
@@ -1153,6 +1156,7 @@ class _ExistingUserState extends State<ExistingUser> {
       //   ),
       // );
     }
+
   }
 
   void storeBearerToken(String token) async {

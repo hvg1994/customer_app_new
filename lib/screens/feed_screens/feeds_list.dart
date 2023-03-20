@@ -9,6 +9,7 @@ import 'package:gwc_customer/screens/notification_screen.dart';
 import 'package:gwc_customer/services/new_user_service/about_program_service.dart';
 import 'package:sizer/sizer.dart';
 import 'package:http/http.dart' as http;
+import 'package:wakelock/wakelock.dart';
 import '../../repository/api_service.dart';
 import '../../widgets/constants.dart';
 import '../../widgets/vlc_player/vlc_player_with_controls.dart';
@@ -37,7 +38,14 @@ class _FeedsListState extends State<FeedsList> {
     super.initState();
     getFuture();
     loadAsset('top-view-indian-food-assortment.png');
+    wake();
   }
+  wake() async{
+    if(await Wakelock.enabled == false){
+      Wakelock.enable();
+    }
+  }
+
 
   getFuture() {
     feedsListFuture =
@@ -80,6 +88,9 @@ class _FeedsListState extends State<FeedsList> {
   void dispose() async {
     super.dispose();
     print('dispose');
+    if(await Wakelock.enabled == true){
+      Wakelock.disable();
+    }
     await _videoPlayerController!.stop();
     await _videoPlayerController!.stopRendererScanning();
     await _videoPlayerController!.dispose();

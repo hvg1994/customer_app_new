@@ -12,12 +12,11 @@ notificationFunction() async{
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   LocalNotificationService.initialize();
 
-
 }
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   print('Handling a background message ${message.messageId}');
-  await Firebase.initializeApp();
+  // await Firebase.initializeApp();
 
   print("message bg: ${message.data.toString()}");
 

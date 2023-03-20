@@ -19,6 +19,8 @@ import '../../../widgets/vlc_player/controls_overlay.dart';
 import '../../../widgets/widgets.dart';
 import 'register_screen.dart';
 import 'package:http/http.dart' as http;
+import 'package:wakelock/wakelock.dart';
+
 
 class AboutTheProgram extends StatefulWidget {
   final bool isFromSitBackScreen;
@@ -50,8 +52,14 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
     super.initState();
     _aboutProgramService = AboutProgramService(repository: repository);
     getFuture();
+    wake();
   }
 
+  wake() async{
+    if(await Wakelock.enabled == false){
+      Wakelock.enable();
+    }
+  }
   getFuture(){
     _aboutProgramFuture = _aboutProgramService.serverAboutProgramService();
   }
@@ -122,6 +130,9 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
   void dispose() async {
     super.dispose();
     print('dispose');
+    if(await Wakelock.enabled == true){
+      Wakelock.disable();
+    }
     if(_videoPlayerController != null){
       await _videoPlayerController!.stop();
       await _videoPlayerController!.stopRendererScanning();

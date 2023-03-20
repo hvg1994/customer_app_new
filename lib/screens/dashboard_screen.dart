@@ -3,6 +3,7 @@ import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:gwc_customer/model/program_model/proceed_model/send_proceed_program_model.dart';
+import 'package:gwc_customer/screens/gut_list_screens/new_dashboard_levels_screen.dart';
 import 'package:gwc_customer/screens/notification_screen.dart';
 import 'package:gwc_customer/screens/post_program_screens/new_post_program/pp_levels_screen.dart';
 import 'package:gwc_customer/screens/post_program_screens/post_program_screen.dart';
@@ -85,7 +86,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
         }
       case 2:
         {
-          return GutList();
+          // return GutList();
+          return NewDashboardLevelsScreen();
         }
       case 3:
         {

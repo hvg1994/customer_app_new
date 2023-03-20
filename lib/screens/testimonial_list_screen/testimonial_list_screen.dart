@@ -17,6 +17,7 @@ import 'package:sizer/sizer.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:visibility_detector/visibility_detector.dart';
+import 'package:wakelock/wakelock.dart';
 
 class TestimonialListScreen extends StatefulWidget {
   const TestimonialListScreen({Key? key}) : super(key: key);
@@ -71,7 +72,14 @@ class _TestimonialListScreenState extends State<TestimonialListScreen> {
     super.initState();
     _aboutProgramService = AboutProgramService(repository: repository);
     getFuture();
+    wake();
   }
+  wake() async{
+    if(await Wakelock.enabled == false){
+      Wakelock.enable();
+    }
+  }
+
   getFuture(){
     _getTestimonialList =  _aboutProgramService.serverAboutProgramService();
   }
@@ -363,6 +371,9 @@ class _TestimonialListScreenState extends State<TestimonialListScreen> {
   void dispose() async {
     super.dispose();
     print('dispose');
+    if(await Wakelock.enabled == true){
+      Wakelock.disable();
+    }
     await _videoPlayerController!.stop();
     await _videoPlayerController!.stopRendererScanning();
     await _videoPlayerController!.dispose();

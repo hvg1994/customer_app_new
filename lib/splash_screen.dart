@@ -12,10 +12,12 @@ API's used in this screen:
  */
 
 import 'dart:async';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:gwc_customer/repository/enquiry_status_repository.dart';
 import 'package:gwc_customer/repository/enquiry_status_repository.dart';
 import 'package:gwc_customer/screens/evalution_form/evaluation_form_screen.dart';
+import 'package:gwc_customer/screens/profile_screens/call_support_method.dart';
 import 'package:gwc_customer/screens/user_registration/existing_user.dart';
 import 'package:gwc_customer/screens/user_registration/new_user/sit_back_screen.dart';
 import 'package:gwc_customer/services/enquiry_status_service.dart';
@@ -29,6 +31,7 @@ import 'package:gwc_customer/widgets/open_alert_box.dart';
 import 'package:gwc_customer/widgets/will_pop_widget.dart';
 import 'package:new_version/new_version.dart';
 import 'package:provider/provider.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
 import 'model/enquiry_status_model.dart';
@@ -42,6 +45,8 @@ import 'package:gwc_customer/repository/quick_blox_repository/quick_blox_reposit
 import 'package:firebase_messaging/firebase_messaging.dart';
 
 import 'screens/notification_screen.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 
 
@@ -80,7 +85,8 @@ class _SplashScreenState extends State<SplashScreen> {
     getDeviceId();
     super.initState();
     runAllAsync();
-    listenMessages();
+    firebaseNotif();
+    // listenMessages();
   }
   checkNewVersion(){
     final newVersion = NewVersion(
@@ -138,11 +144,84 @@ class _SplashScreenState extends State<SplashScreen> {
 
   }
   late FirebaseMessaging messaging;
+
+  static final _notificationsPlugin = FlutterLocalNotificationsPlugin();
+  firebaseNotif() async{
+    final initializationSettings = InitializationSettings(
+      android: AndroidInitializationSettings("@mipmap/ic_launcher"),
+      // iOS: IOSInitializationSettings(),
+    );
+    _notificationsPlugin.initialize(
+      initializationSettings,
+      onSelectNotification: onClickedNotifications
+      // onSelectNotification: (payload) async {
+      //   print('payload: $payload');
+      //   onNotifications.add(payload);
+      //   // Get.to(() => const NotificationsList());
+      //   // print("onSelectNotification");
+      //   // if (id!.isNotEmpty) {
+      //   //   print("Router Value1234 $id");
+      //
+      //   //   // Navigator.of(context).push(
+      //   //   //   MaterialPageRoute(
+      //   //   //     builder: (context) => const NotificationsList(),
+      //   //   //   ),
+      //   //   // );
+      //   // }
+      // },
+    );
+    FirebaseMessaging.onMessage.listen(
+          (message) {
+        print("FirebaseMessaging.onMessage.listen");
+        if (message.notification != null) {
+          print(message.notification!.toMap());
+          print(message.notification!.title);
+          print(message.notification!.body);
+          print("message.data11 ${message.data}");
+          //message.data11 {notification_type: shopping, tag_id: ,
+          // body: Your shopping list has been uploaded. Enjoy!, title: Shopping List, user: user}
+          // W/dy.gwc_custome(31771): Reducing the number of considered missed Gc histogram windows from 150 to 100
+          // I/flutter (31771): message recieved: {senderId: null, category: null, collapseKey: com.fembuddy.gwc_customer, contentAvailable: false, data: {notification_type: shopping, tag_id: , body: Your shopping list has been uploaded. Enjoy!, title: Shopping List, user: user}, from: 223001521272, messageId: 0:1677744200702793%021842b3021842b3, messageType: null, mutableContent: false, notification: {title: Shopping List, titleLocArgs: [], titleLocKey: null, body: Your shopping list has been uploaded. Enjoy!, bodyLocArgs: [], bodyLocKey: null, android: {channelId: null, clickAction: null, color: null, count: null, imageUrl: null, link: null, priority: 0, smallIcon: null, sound: default, ticker: null, tag: null, visibility: 0}, apple: null, web: null}, sentTime: 1677744200683, threadId: null, ttl: 2419200}
+          // I/flutter (31771): Notification Message: {senderId: null, category: null, collapseKey: com.fembuddy.gwc_customer, contentAvailable: false, data: {notification_type: shopping, tag_id: , body: Your shopping list has been uploaded. Enjoy!, title: Shopping List, user: user}, from: 223001521272, messageId: 0:1677744200702793%021842b3021842b3, messageType: null, mutableContent: false, notification: {title: Shopping List, titleLocArgs: [], titleLocKey: null, body: Your shopping list has been uploaded. Enjoy!, bodyLocArgs: [], bodyLocKey: null, android: {channelId: null, clickAction: null, color: null, count: null, imageUrl: null, link: null, priority: 0, smallIcon: null, sound: default, ticker: null, tag: null, visibility: 0}, apple: null, web: null}, sentTime: 1677744200683, threadId: null, ttl: 2419200}
+
+          LocalNotificationService.createanddisplaynotification(message);
+        }
+      },
+    );
+    FirebaseMessaging.onMessageOpenedApp.listen(
+          (message) async {
+        print("FirebaseMessaging.onMessageOpenedApp.listen");
+        if (message.notification != null) {
+          print(message.notification!.title);
+          print(message.notification!.body);
+          print(message.toMap());
+          print("message.data22 ${message.data['notification_type']}");
+          if(message.data != null){
+            if(message.data['notification_type'] == 'new_chat'){
+              final uId = _pref!.getString(AppConfig.KALEYRA_USER_ID);
+
+              final accessToken = _pref!.getString(AppConfig.KALEYRA_ACCESS_TOKEN);
+
+              final chatSuccessId = _pref!.getString(AppConfig.KALEYRA_CHAT_SUCCESS_ID);
+              // chat
+              await openKaleyraChat(uId!, chatSuccessId!, accessToken!);
+            }
+          }
+
+
+        }
+      },
+    );
+    // FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
+  }
+
   runAllAsync() async{
     await Future.wait([
       getPermission(),
-    listenNotifications(),
-      getSession(),
+    // listenNotifications(),
+    //   /// quickblox
+    //   getSession(),
     ]);
     print("starting Application!");
   }
@@ -161,12 +240,19 @@ class _SplashScreenState extends State<SplashScreen> {
 
   void onClickedNotifications(String? payload)
   {
-    // print("on notification click: $payload");
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => const NotificationScreen(),
-      ),
-    );
+    print("on notification click: $payload");
+    if(payload != null){
+      if(payload == 'new_chat'){
+
+      }
+      else{
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => const NotificationScreen(),
+          ),
+        );
+      }
+    }
   }
 
   listenMessages(){
@@ -225,14 +311,16 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future getPermission() async{
+    // await Firebase.initializeApp();
     messaging = FirebaseMessaging.instance;
 
     String? fcmToken = await messaging.getToken();
+    print("fcm: $fcmToken");
     _pref!.setString(AppConfig.FCM_TOKEN, fcmToken!);
 
-    QuickBloxRepository().init(AppConfig.QB_APP_ID, AppConfig.QB_AUTH_KEY, AppConfig.QB_AUTH_SECRET, AppConfig.QB_ACCOUNT_KEY);
-
-    QuickBloxRepository().initSubscription(fcmToken);
+    // QuickBloxRepository().init(AppConfig.QB_APP_ID, AppConfig.QB_AUTH_KEY, AppConfig.QB_AUTH_SECRET, AppConfig.QB_ACCOUNT_KEY);
+    //
+    // QuickBloxRepository().initSubscription(fcmToken);
 
 
     NotificationSettings settings = await messaging.requestPermission(
