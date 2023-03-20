@@ -37,10 +37,10 @@ class _UserDetailsTapState extends State<UserDetailsTap> {
 
                 TabBar(
                     // padding: EdgeInsets.symmetric(horizontal: 3.w),
-                    labelColor: gPrimaryColor,
-                    unselectedLabelColor: gTextColor,
+                    labelColor: gBlackColor,
+                    unselectedLabelColor: gHintTextColor,
                     isScrollable: true,
-                    indicatorColor: gPrimaryColor,
+                    indicatorColor: gsecondaryColor,
                     labelPadding:
                         EdgeInsets.only(right: 6.w, top: 1.h, bottom: 1.h),
                     indicatorPadding: EdgeInsets.only(right: 5.w),
@@ -50,8 +50,8 @@ class _UserDetailsTapState extends State<UserDetailsTap> {
                         fontSize: 9.sp),
                     labelStyle: TextStyle(
                         fontFamily: "GothamMedium",
-                        color: gPrimaryColor,
-                        fontSize: 10.sp),
+                        color: gBlackColor,
+                        fontSize: 11.sp),
                     tabs: const [
                       Text('My Profile'),
                       Text("My Evaluation"),

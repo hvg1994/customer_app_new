@@ -7,43 +7,46 @@ import 'constants.dart';
 import 'package:im_animations/im_animations.dart';
 
 class CommonDecoration {
-  static InputDecoration buildInputDecoration(String hintText, TextEditingController controller, {Widget? suffixIcon}) {
+  static InputDecoration buildInputDecoration(
+      String hintText, TextEditingController controller,
+      {Widget? suffixIcon}) {
     return InputDecoration(
-      hintText: hintText,
-      hintStyle: TextStyle(
-          fontFamily: "GothamBook", color: gTextColor, fontSize: 10.sp),
-      border: InputBorder.none,
-      suffixIcon: suffixIcon
-      // controller.text.isEmpty
-      //     ? Container(
-      //         width: 0,
-      //       )
-      //     : IconButton(
-      //         onPressed: () {
-      //           controller.clear();
-      //         },
-      //         icon: const Icon(
-      //           Icons.close,
-      //           color: kPrimaryColor,
-      //         ),
-      //       ),
-    );
+        hintText: hintText,
+        hintStyle: TextStyle(
+            fontFamily: "GothamBook", color: gTextColor, fontSize: 10.sp),
+        border: InputBorder.none,
+        suffixIcon: suffixIcon
+        // controller.text.isEmpty
+        //     ? Container(
+        //         width: 0,
+        //       )
+        //     : IconButton(
+        //         onPressed: () {
+        //           controller.clear();
+        //         },
+        //         icon: const Icon(
+        //           Icons.close,
+        //           color: kPrimaryColor,
+        //         ),
+        //       ),
+        );
   }
 
-  static InputDecoration buildTextInputDecoration(String hintText, TextEditingController controller, {Widget? suffixIcon, InputBorder? enabledBorder, InputBorder? focusBoder }) {
+  static InputDecoration buildTextInputDecoration(
+      String hintText, TextEditingController controller,
+      {Widget? suffixIcon,
+      InputBorder? enabledBorder,
+      InputBorder? focusBoder}) {
     return InputDecoration(
       hintText: hintText,
       hintStyle: TextStyle(
           fontFamily: eUser().userTextFieldHintFont,
           fontSize: eUser().userTextFieldHintFontSize,
-          color: eUser().userTextFieldHintColor
-      ),
+          color: eUser().userTextFieldHintColor),
       counterText: "",
       border: const UnderlineInputBorder(
         borderSide: BorderSide(
-            color: kPrimaryColor, width: 1.0,
-            style: BorderStyle.solid
-        ),
+            color: kPrimaryColor, width: 1.0, style: BorderStyle.solid),
       ),
       suffixIcon: suffixIcon,
       enabledBorder: enabledBorder,
@@ -120,16 +123,16 @@ TextStyle buildTextStyle({Color? color, String? fontFamily}) {
 
 buildCircularIndicator() {
   return Center(
-      child: HeartBeat(
-        child: Image.asset('assets/images/progress_logo.png',
-          width: 75,
-          height: 75,
-        )
-      ),
+    child: HeartBeat(
+        child: Image.asset(
+      'assets/images/progress_logo.png',
+      width: 75,
+      height: 75,
+    )),
   );
 }
 
-buildThreeBounceIndicator({Color? color}){
+buildThreeBounceIndicator({Color? color}) {
   return Center(
     child: SpinKitThreeBounce(
       color: color ?? gMainColor,
@@ -170,8 +173,14 @@ SnackbarController buildSnackBar(String title, String subTitle) {
   );
 }
 
-buildAppBar(VoidCallback func, {bool isBackEnable = true, bool showNotificationIcon = false, VoidCallback? notificationOnTap, bool showHelpIcon = false, VoidCallback? helpOnTap,
-  bool showSupportIcon = false, VoidCallback? supportOnTap}) {
+buildAppBar(VoidCallback func,
+    {bool isBackEnable = true,
+    bool showNotificationIcon = false,
+    VoidCallback? notificationOnTap,
+    bool showHelpIcon = false,
+    VoidCallback? helpOnTap,
+    bool showSupportIcon = false,
+    VoidCallback? supportOnTap}) {
   return Row(
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
     children: [
@@ -183,7 +192,8 @@ buildAppBar(VoidCallback func, {bool isBackEnable = true, bool showNotificationI
               width: 2.h,
               child: IconButton(
                 onPressed: func,
-                icon: Icon(Icons.arrow_back_ios,
+                icon: Icon(
+                  Icons.arrow_back_ios,
                   color: gMainColor,
                 ),
               ),
@@ -195,8 +205,7 @@ buildAppBar(VoidCallback func, {bool isBackEnable = true, bool showNotificationI
           SizedBox(
             height: 6.h,
             child: const Image(
-              image: AssetImage(
-                  "assets/images/Gut welness logo.png"),
+              image: AssetImage("assets/images/Gut welness logo.png"),
             ),
             //SvgPicture.asset("assets/images/splash_screen/Inside Logo.svg"),
           ),
@@ -208,7 +217,8 @@ buildAppBar(VoidCallback func, {bool isBackEnable = true, bool showNotificationI
           Visibility(
             visible: showNotificationIcon,
             child: GestureDetector(
-              child: ImageIcon(AssetImage("assets/images/new_ds/notification.png"),
+              child: ImageIcon(
+                AssetImage("assets/images/new_ds/notification.png"),
                 color: gHintTextColor,
               ),
               onTap: notificationOnTap,
@@ -220,7 +230,8 @@ buildAppBar(VoidCallback func, {bool isBackEnable = true, bool showNotificationI
           Visibility(
             visible: showHelpIcon,
             child: GestureDetector(
-              child: ImageIcon(AssetImage("assets/images/new_ds/help.png"),
+              child: ImageIcon(
+                AssetImage("assets/images/new_ds/help.png"),
                 color: gHintTextColor,
               ),
               onTap: helpOnTap,
@@ -232,7 +243,8 @@ buildAppBar(VoidCallback func, {bool isBackEnable = true, bool showNotificationI
           Visibility(
             visible: showSupportIcon,
             child: GestureDetector(
-              child: ImageIcon(AssetImage("assets/images/new_ds/support.png"),
+              child: ImageIcon(
+                AssetImage("assets/images/new_ds/support.png"),
                 color: gHintTextColor,
               ),
               onTap: supportOnTap,
@@ -244,9 +256,10 @@ buildAppBar(VoidCallback func, {bool isBackEnable = true, bool showNotificationI
   );
 }
 
-buildLabelTextField(String name, {double? fontSize, double textScleFactor = 0.9}){
+buildLabelTextField(String name,
+    {double? fontSize, double textScleFactor = 0.9}) {
   return RichText(
-    textScaleFactor: textScleFactor,
+      textScaleFactor: textScleFactor,
       text: TextSpan(
           text: name,
           style: TextStyle(
@@ -264,9 +277,7 @@ buildLabelTextField(String name, {double? fontSize, double textScleFactor = 0.9}
                 fontFamily: "PoppinsSemiBold",
               ),
             )
-          ]
-      )
-  );
+          ]));
   return Text(
     'Full Name:*',
     style: TextStyle(
@@ -278,131 +289,125 @@ buildLabelTextField(String name, {double? fontSize, double textScleFactor = 0.9}
 }
 
 showDialogWidget(
-    BuildContext context,
-    String topWidgetText,
-    String okButtonText,
-
-    {bool isSingleButton = true,
-      bool barrierClose = true,
-      required VoidCallback okButtonClick,
-      String? belowWidgetText,
-      String? cancelButtonText,
-      VoidCallback? cancelButtonClick,
-    }
-    )
-{
+  BuildContext context,
+  String topWidgetText,
+  String okButtonText, {
+  bool isSingleButton = true,
+  bool barrierClose = true,
+  required VoidCallback okButtonClick,
+  String? belowWidgetText,
+  String? cancelButtonText,
+  VoidCallback? cancelButtonClick,
+}) {
   return showDialog(
       context: context,
       barrierDismissible: barrierClose,
       builder: (context) => AlertDialog(
-        backgroundColor: kPrimaryColor,
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(15.0.sp))),
-        contentPadding: EdgeInsets.only(top: 1.h),
-        content: Container(
-          decoration: const BoxDecoration(
-            // borderRadius: BorderRadius.only(bottomRight: Radius.circular(15.0.sp), bottomLeft: Radius.circular(15.0.sp)),
-            color: Colors.white,
-          ),
-          padding:
-          EdgeInsets.symmetric(horizontal: 3.w, vertical: 2.h),
-          width: 50.h,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Text(topWidgetText ?? 'Are you sure?',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: kPrimaryColor,
-                    fontSize: 16.sp,
-                  )),
-              const SizedBox(
-                height: 5.0,
+            backgroundColor: kPrimaryColor,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(15.0.sp))),
+            contentPadding: EdgeInsets.only(top: 1.h),
+            content: Container(
+              decoration: const BoxDecoration(
+                // borderRadius: BorderRadius.only(bottomRight: Radius.circular(15.0.sp), bottomLeft: Radius.circular(15.0.sp)),
+                color: Colors.white,
               ),
-              const Divider(
-                color: Colors.grey,
-                height: 4.0,
+              padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 2.h),
+              width: 50.h,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Text(topWidgetText ?? 'Are you sure?',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: kPrimaryColor,
+                        fontSize: 16.sp,
+                      )),
+                  const SizedBox(
+                    height: 5.0,
+                  ),
+                  const Divider(
+                    color: Colors.grey,
+                    height: 4.0,
+                  ),
+                  Visibility(
+                    visible: belowWidgetText != null,
+                    child: Padding(
+                        padding: EdgeInsets.only(left: 4.w, right: 4.w),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: EdgeInsetsDirectional.fromSTEB(
+                                  2.w, 1.h, 2.w, 1.h),
+                              child: Text(belowWidgetText ?? '',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: kPrimaryColor,
+                                    fontSize: 15.sp,
+                                  )),
+                            ),
+                          ],
+                        )),
+                  ),
+                  const SizedBox(
+                    height: 5.0,
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(right: 2.w, bottom: 1.w),
+                    child: (!isSingleButton)
+                        ? Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              GestureDetector(
+                                onTap: cancelButtonClick,
+                                child: Container(
+                                    padding: EdgeInsets.all(7.sp),
+                                    decoration: BoxDecoration(
+                                        color: Colors.amber,
+                                        borderRadius: BorderRadius.circular(3)),
+                                    child: Text(cancelButtonText ?? "NO",
+                                        style: TextStyle(
+                                          color: kPrimaryColor,
+                                          fontSize: 12.sp,
+                                        ))),
+                              ),
+                              SizedBox(width: 3.w),
+                              GestureDetector(
+                                onTap: okButtonClick,
+                                child: Container(
+                                    padding: EdgeInsets.all(7.sp),
+                                    decoration: BoxDecoration(
+                                        color: kPrimaryColor,
+                                        borderRadius: BorderRadius.circular(3)),
+                                    child: Text(okButtonText,
+                                        style: TextStyle(
+                                          color: Colors.amber,
+                                          fontSize: 12.sp,
+                                        ))),
+                              )
+                            ],
+                          )
+                        : GestureDetector(
+                            onTap: okButtonClick,
+                            child: Container(
+                                padding: EdgeInsets.all(7.sp),
+                                decoration: BoxDecoration(
+                                    color: kPrimaryColor,
+                                    borderRadius: BorderRadius.circular(3)),
+                                child: Text(okButtonText,
+                                    style: TextStyle(
+                                      color: Colors.amber,
+                                      fontSize: 12.sp,
+                                    ))),
+                          ),
+                  ),
+                ],
               ),
-              Visibility(
-                visible: belowWidgetText != null,
-                child: Padding(
-                    padding: EdgeInsets.only(left: 4.w, right: 4.w),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: EdgeInsetsDirectional.fromSTEB(
-                              2.w, 1.h, 2.w, 1.h),
-                          child: Text(belowWidgetText ?? '',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: kPrimaryColor,
-                                fontSize: 15.sp,
-                              )),
-                        ),
-                      ],
-                    )),
-              ),
-              const SizedBox(
-                height: 5.0,
-              ),
-              Padding(
-                padding: EdgeInsets.only(right: 2.w, bottom: 1.w),
-                child: (!isSingleButton)
-                    ? Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    GestureDetector(
-                      onTap: cancelButtonClick,
-                      child: Container(
-                          padding: EdgeInsets.all(7.sp),
-                          decoration: BoxDecoration(
-                              color: Colors.amber,
-                              borderRadius: BorderRadius.circular(3)),
-                          child: Text(cancelButtonText ?? "NO",
-                              style: TextStyle(
-                                color: kPrimaryColor,
-                                fontSize: 12.sp,
-                              ))),
-                    ),
-                    SizedBox(width: 3.w),
-                    GestureDetector(
-                      onTap: okButtonClick,
-                      child: Container(
-                          padding: EdgeInsets.all(7.sp),
-                          decoration: BoxDecoration(
-                              color: kPrimaryColor,
-                              borderRadius: BorderRadius.circular(3)),
-                          child: Text(okButtonText,
-                              style: TextStyle(
-                                color: Colors.amber,
-                                fontSize: 12.sp,
-                              ))),
-                    )
-                  ],
-                ) :
-                GestureDetector(
-                  onTap: okButtonClick,
-                  child: Container(
-                      padding: EdgeInsets.all(7.sp),
-                      decoration: BoxDecoration(
-                          color: kPrimaryColor,
-                          borderRadius: BorderRadius.circular(3)),
-                      child: Text(okButtonText,
-                          style: TextStyle(
-                            color: Colors.amber,
-                            fontSize: 12.sp,
-                          ))),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ));
+            ),
+          ));
 }
-
-
 
 // AppBar buildAppBar(String title, VoidCallback fun) {
 //   return AppBar(
@@ -444,3 +449,105 @@ showDialogWidget(
 //     ),
 //   );
 //}
+
+// --- New Changes Widgets --- //
+
+buildNewAppBar(VoidCallback func,
+    {bool isBackEnable = true,
+    bool showNotificationIcon = false,
+    VoidCallback? notificationOnTap,
+    bool showHelpIcon = false,
+    VoidCallback? helpOnTap,
+    bool showSupportIcon = false,
+    VoidCallback? supportOnTap}) {
+  return Row(
+    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    children: [
+      Row(
+        children: [
+          Visibility(
+            visible: isBackEnable,
+            child: GestureDetector(
+              onTap: func,
+              child: Container(
+                padding:  EdgeInsets.only(top: 0.8.h,bottom: 0.8.h,left: 1.w,right: 1.5.w),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: gMainColor, width: 2),
+                ),
+                child: Image(
+                  height: 1.5.h,
+                  image:const
+                      AssetImage("assets/images/Icon ionic-ios-arrow-back.png"),
+                ),
+              ),
+            ),
+          ),
+          SizedBox(
+            width: 10,
+          ),
+          SizedBox(
+            height: 6.h,
+            child: const Image(
+              image: AssetImage("assets/images/Gut welness logo.png"),
+            ),
+            //SvgPicture.asset("assets/images/splash_screen/Inside Logo.svg"),
+          ),
+        ],
+      ),
+      Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Visibility(
+            visible: showNotificationIcon,
+            child: GestureDetector(
+              child: ImageIcon(
+                AssetImage("assets/images/new_ds/notification.png"),
+                color: gHintTextColor,
+              ),
+              onTap: notificationOnTap,
+            ),
+          ),
+          SizedBox(
+            width: 3.25.w,
+          ),
+          Visibility(
+            visible: showHelpIcon,
+            child: GestureDetector(
+              child: ImageIcon(
+                AssetImage("assets/images/new_ds/help.png"),
+                color: gHintTextColor,
+              ),
+              onTap: helpOnTap,
+            ),
+          ),
+          SizedBox(
+            width: 3.25.w,
+          ),
+          Visibility(
+            visible: showSupportIcon,
+            child: GestureDetector(
+              child: ImageIcon(
+                AssetImage("assets/images/new_ds/support.png"),
+                color: gHintTextColor,
+              ),
+              onTap: supportOnTap,
+            ),
+          ),
+        ],
+      )
+    ],
+  );
+}
+
+MaterialStateProperty<Color> getColor(Color color, Color colorPressed) {
+  // ignore: prefer_function_declarations_over_variables
+  final getColor = (Set<MaterialState> states) {
+    if (states.contains(MaterialState.pressed)) {
+      return colorPressed;
+    } else {
+      return color;
+    }
+  };
+  return MaterialStateProperty.resolveWith(getColor);
+}

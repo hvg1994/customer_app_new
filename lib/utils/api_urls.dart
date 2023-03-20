@@ -124,6 +124,8 @@ var getFollowUpSlotUrl = "${AppConfig().BASE_URL}/api/getData/followup_slots/";
 
 var submitSlotSelectedUrl = "${AppConfig().BASE_URL}/api/submitForm/follow_up_book";
 
+var homeRemediesUrl = "${AppConfig().BASE_URL}/api/list/home_remedies";
+
 
 
 

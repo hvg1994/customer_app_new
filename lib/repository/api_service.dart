@@ -47,6 +47,7 @@ import '../model/dashboard_model/shipping_approved/ship_approved_model.dart';
 import '../model/error_model.dart';
 import '../model/evaluation_from_models/get_country_details_model.dart';
 import '../model/faq_model/faq_list_model.dart';
+import '../model/home_remedies_model/home_remedies_model.dart';
 import '../model/new_user_model/choose_your_problem/choose_your_problem_model.dart';
 import '../model/new_user_model/choose_your_problem/submit_problem_response.dart';
 import '../model/new_user_model/register/register_model.dart';
@@ -2519,9 +2520,49 @@ class ApiClient {
     return result;
   }
 
+  // --- Home Remedy --- //
 
+  Future getHomeRemediesApi() async {
+    final String path = homeRemediesUrl;
 
+    print('serverGetProblemList Response header: $path');
+    dynamic result;
 
+    try {
+      final response = await httpClient
+          .get(
+        Uri.parse(path),
+        headers: {
+          "Authorization": getHeaderToken(),
+        },
+      )
+          .timeout(const Duration(seconds: 45));
+
+      print('serverGetProblemList Response header: $path');
+      print('serverGetProblemList Response status: ${response.statusCode}');
+      print('serverGetProblemList Response body: ${response.body}');
+      final json = jsonDecode(response.body);
+
+      print('serverGetProblemList result: $json');
+
+      if (response.statusCode != 200) {
+        result = ErrorModel(
+            status: response.statusCode.toString(), message: response.body);
+      }   else if(response.statusCode == 500){
+        result = ErrorModel(status: "0", message: AppConfig.oopsMessage);
+      }
+      else {
+        if (json['status'] != 200) {
+          result = ErrorModel.fromJson(json);
+        } else {
+          result = HomeRemediesModel.fromJson(json);
+        }
+      }
+    } catch (e) {
+      result = ErrorModel(status: "0", message: e.toString());
+    }
+    return result;
+  }
 
   void storeShipRocketToken(ShipRocketTokenModel result) {
     _prefs!.setString(AppConfig().shipRocketBearer, result.token ?? '');
