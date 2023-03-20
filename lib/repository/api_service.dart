@@ -347,12 +347,12 @@ class ApiClient {
     return result;
   }
 
-  serverLoginWithOtpApi(String phone, String otp) async {
+  serverLoginWithOtpApi(String phone, String otp, String fcm) async {
     var path = loginWithOtpUrl;
 
     dynamic result;
 
-    Map bodyParam = {'phone': phone, 'otp': otp};
+    Map bodyParam = {'phone': phone, 'otp': otp, 'device_token': fcm};
 
     try {
       final response = await httpClient

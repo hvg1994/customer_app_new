@@ -707,12 +707,14 @@ class _ExistingUserState extends State<ExistingUser> {
                   SizedBox(height: 2.h),
                   Center(
                     child: GestureDetector(
-                      // onTap: (showLoginProgress) ? null : () {
+              // onTap: (showLoginProgress) ? null : () {
                       onTap: () {
+                        final fcmToken = _pref.getString(AppConfig.FCM_TOKEN);
+
                         if (mobileFormKey.currentState!.validate() &&
                             phoneController.text.isNotEmpty &&
                             otpController.text.isNotEmpty) {
-                          login(phoneController.text, otpController.text);
+                          login(phoneController.text, otpController.text, fcmToken!);
                         }
                       },
                       child: Container(
@@ -1074,12 +1076,12 @@ class _ExistingUserState extends State<ExistingUser> {
     }
   }
 
-  login(String phone, String otp) async {
+  login(String phone, String otp, String fcm) async {
     bottomsheetSetState(() {
       showLoginProgress = true;
     });
     print("---------Login---------");
-    final result = await _loginWithOtpService.loginWithOtpService(phone, otp);
+    final result = await _loginWithOtpService.loginWithOtpService(phone, otp, fcm);
 
     if (result.runtimeType == LoginOtpModel) {
       LoginOtpModel model = result as LoginOtpModel;

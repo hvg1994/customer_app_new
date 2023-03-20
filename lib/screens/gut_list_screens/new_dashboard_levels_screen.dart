@@ -16,6 +16,7 @@ import 'package:gwc_customer/screens/appointment_screens/consultation_screens/co
 import 'package:gwc_customer/screens/appointment_screens/consultation_screens/medical_report_screen.dart';
 import 'package:gwc_customer/screens/appointment_screens/doctor_calender_time_screen.dart';
 import 'package:gwc_customer/screens/appointment_screens/doctor_slots_details_screen.dart';
+import 'package:gwc_customer/screens/cook_kit_shipping_screens/cook_kit_tracking.dart';
 import 'package:gwc_customer/screens/evalution_form/evaluation_get_details.dart';
 import 'package:gwc_customer/screens/gut_list_screens/meal_popup.dart';
 import 'package:gwc_customer/screens/post_program_screens/new_post_program/pp_levels_demo.dart';
@@ -1071,6 +1072,9 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
               ),
             ).then((value) => reloadUI());
           }
+          else{
+            AppConfig().showSnackbar(context, "Can't access Locked Stage", isError: true);
+          }
         }
         else{
           showPostProgramScreen();
@@ -1262,10 +1266,14 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
                             child: Stack(
                               clipBehavior: Clip.none,
                               children: [
-                                Image(
-                                  height: 7.h,
-                                  image:  AssetImage(
-                                      trackGutIconCircleName ?? ''),
+                                InkWell(
+                                  onTap: ()=>
+                                      handleTrackerRemedyOnTap(type),
+                                  child: Image(
+                                    height: 7.h,
+                                    image:  AssetImage(
+                                        trackGutIconCircleName ?? ''),
+                                  ),
                                 ),
                                 Positioned(
                                   bottom: 9,
@@ -1699,6 +1707,7 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
         levels[4].lockImage = unlockYellowImage;
         levels[4].stageCircleImage = unlockYellowCircleImage;
         levels[4].circleInsideImageColor = unlockYellowColor;
+        levels[4].button2Title = "GMG";
 
         break;
     }
@@ -1824,6 +1833,51 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
         // goToScreen(PPLevelsScreen());
         goToScreen(PPLevelsDemo());
       }
+      else{
+        AppConfig().showSnackbar(context, "Can't access Locked Stage", isError: true);
+      }
+    }
+  }
+
+  handleTrackerRemedyOnTap(StageType type) {
+    switch (type){
+      case StageType.prep_meal:
+        print("tracker clicked");
+        if(shippingStage != null && shippingStage!.isNotEmpty){
+          if(_shippingApprovedModel != null){
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => CookKitTracking(awb_number: _shippingApprovedModel?.value?.awbCode ?? '',currentStage: shippingStage!,),
+              ),
+            ).then((value) => reloadUI());
+          }
+          else{
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => CookKitTracking(currentStage: shippingStage ?? ''),
+              ),
+            ).then((value) => reloadUI());
+          }
+        }
+        else{
+          AppConfig().showSnackbar(context, "Can't access Locked Stage", isError: true);
+        }
+        break;
+      case StageType.normal_meal:
+        // need to show Remedies UI
+        break;
+      case StageType.evaluation:
+        // TODO: Handle this case.
+        break;
+      case StageType.normal_meal:
+        // TODO: Handle this case.
+        break;
+      case StageType.post_consultation:
+        // TODO: Handle this case.
+        break;
+      case StageType.med_consultation:
+        // TODO: Handle this case.
+        break;
     }
   }
 
