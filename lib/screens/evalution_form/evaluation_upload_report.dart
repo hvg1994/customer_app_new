@@ -2,14 +2,16 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_vlc_player/flutter_vlc_player.dart';
 import 'package:gwc_customer/model/evaluation_from_models/evaluation_model_format1.dart';
 import 'package:gwc_customer/screens/evalution_form/personal_details_screen2.dart';
 import 'package:gwc_customer/utils/app_config.dart';
 import 'package:gwc_customer/widgets/constants.dart';
-import 'package:gwc_customer/widgets/vlc_player/vlc_player_with_controls.dart';
 import 'package:gwc_customer/widgets/widgets.dart';
 import 'package:sizer/sizer.dart';
+import 'package:appinio_video_player/appinio_video_player.dart';
+import 'package:wakelock/wakelock.dart';
+
+
 
 class EvaluationUploadReport extends StatefulWidget {
   final EvaluationModelFormat1 evaluationModelFormat1;
@@ -228,7 +230,12 @@ class _EvaluationUploadReportState extends State<EvaluationUploadReport> {
                     if(medicalRecords.isNotEmpty){
                       showUploadReportPopup();
 
-                      _videoPlayerController?.stop();
+                      if(_videoPlayerController != null){
+                        _videoPlayerController!.dispose();
+                      }
+                      if(_customVideoPlayerController != null){
+                        _customVideoPlayerController!.dispose();
+                      }
                       // Navigator.push(
                       //     context,
                       //     MaterialPageRoute(
@@ -285,7 +292,12 @@ class _EvaluationUploadReportState extends State<EvaluationUploadReport> {
                 data: MediaQuery.of(context).copyWith(textScaleFactor: 0.8),
                 child: Center(child:  GestureDetector(
                     onTap: (){
-                      _videoPlayerController?.stop();
+                      if(_videoPlayerController != null){
+                        _videoPlayerController!.dispose();
+                      }
+                      if(_customVideoPlayerController != null){
+                        _customVideoPlayerController!.dispose();
+                      }
                       Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -602,108 +614,90 @@ class _EvaluationUploadReportState extends State<EvaluationUploadReport> {
   }
 
 
-  VlcPlayerController? _videoPlayerController;
-  final _key = GlobalKey<VlcPlayerWithControlsState>();
+  VideoPlayerController? _videoPlayerController;
+  CustomVideoPlayerController? _customVideoPlayerController;
+  final CustomVideoPlayerSettings _customVideoPlayerSettings =
+  CustomVideoPlayerSettings(
+    controlBarAvailable: false,
+    showPlayButton: true,
+    playButton: Center(child: Icon(Icons.play_circle, color: Colors.white,),),
+    settingsButtonAvailable: false,
+    playbackSpeedButtonAvailable: false,
+    placeholderWidget: Container(child: Center(child: CircularProgressIndicator()),color: gBlackColor,),
+  );
+
   bool showUploadProgress = false;
 
   addUrlToVideoPlayer(String url){
     print("url"+ url);
-    _videoPlayerController = VlcPlayerController.network(
-      // url,
-      // 'http://samples.mplayerhq.hu/MPEG-4/embedded_subs/1Video_2Audio_2SUBs_timed_text_streams_.mp4',
-      'https://media.w3.org/2010/05/sintel/trailer.mp4',
-      hwAcc: HwAcc.auto,
-      options: VlcPlayerOptions(
-        advanced: VlcAdvancedOptions([
-          VlcAdvancedOptions.networkCaching(2000),
-        ]),
-        subtitle: VlcSubtitleOptions([
-          VlcSubtitleOptions.boldStyle(true),
-          VlcSubtitleOptions.fontSize(30),
-          VlcSubtitleOptions.outlineColor(VlcSubtitleColor.yellow),
-          VlcSubtitleOptions.outlineThickness(VlcSubtitleThickness.normal),
-          // works only on externally added subtitles
-          VlcSubtitleOptions.color(VlcSubtitleColor.navy),
-        ]),
-        http: VlcHttpOptions([
-          VlcHttpOptions.httpReconnect(true),
-        ]),
-        rtp: VlcRtpOptions([
-          VlcRtpOptions.rtpOverRtsp(true),
-        ]),
-      ),
+    _videoPlayerController = VideoPlayerController.network(Uri.parse(url).toString());
+    _videoPlayerController!.initialize().then((value) => setState(() {}));
+    _customVideoPlayerController = CustomVideoPlayerController(
+      context: context,
+      videoPlayerController: _videoPlayerController!,
+      customVideoPlayerSettings: _customVideoPlayerSettings,
     );
   }
 
 
   buildVideoPlayer() {
     if(_videoPlayerController != null){
-      return AspectRatio(
-        aspectRatio: 16/9,
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(5),
-            border: Border.all(color: gPrimaryColor, width: 1),
-            // boxShadow: [
-            //   BoxShadow(
-            //     color: Colors.grey.withOpacity(0.3),
-            //     blurRadius: 20,
-            //     offset: const Offset(2, 10),
-            //   ),
-            // ],
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(5),
-            child: Center(
-              child: VlcPlayerWithControls(
-                key: _key,
-                controller: _videoPlayerController!,
-                showVolume: false,
-                showVideoProgress: false,
-                seekButtonIconSize: 10.sp,
-                playButtonIconSize: 14.sp,
-                replayButtonSize: 10.sp,
+      return Stack(
+        children: [
+          AspectRatio(
+            aspectRatio: 16/9,
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(5),
+                border: Border.all(color: gPrimaryColor, width: 1),
+                // boxShadow: [
+                //   BoxShadow(
+                //     color: Colors.grey.withOpacity(0.3),
+                //     blurRadius: 20,
+                //     offset: const Offset(2, 10),
+                //   ),
+                // ],
               ),
-              // child: VlcPlayer(
-              //   controller: _videoPlayerController!,
-              //   aspectRatio: 16 / 9,
-              //   virtualDisplay: false,
-              //   placeholder: Center(child: CircularProgressIndicator()),
-              // ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(5),
+                child: Center(
+                  child: CustomVideoPlayer(
+                    customVideoPlayerController: _customVideoPlayerController!,
+                  ),
+                  // child: VlcPlayer(
+                  //   controller: _videoPlayerController!,
+                  //   aspectRatio: 16 / 9,
+                  //   virtualDisplay: false,
+                  //   placeholder: Center(child: CircularProgressIndicator()),
+                  // ),
+                ),
+              ),
             ),
           ),
-          // child: Stack(
-          //   children: <Widget>[
-          //     ClipRRect(
-          //       borderRadius: BorderRadius.circular(5),
-          //       child: Center(
-          //         child: VlcPlayer(
-          //           controller: _videoPlayerController!,
-          //           aspectRatio: 16 / 9,
-          //           virtualDisplay: false,
-          //           placeholder: Center(child: CircularProgressIndicator()),
-          //         ),
-          //       ),
-          //     ),
-          //     ControlsOverlay(controller: _videoPlayerController,)
-          //   ],
-          // ),
-        ),
+          Positioned(child:
+          AspectRatio(
+            aspectRatio: 16/9,
+            child: GestureDetector(
+              onTap: (){
+                print("onTap");
+                if(_videoPlayerController != null){
+                  if(_customVideoPlayerController!.videoPlayerController.value.isPlaying){
+                    _customVideoPlayerController!.videoPlayerController.pause();
+                  }
+                  else{
+                    _customVideoPlayerController!.videoPlayerController.play();
+                  }
+                }
+              },
+            ),
+          )
+          )
+
+        ],
       );
     }
     else {
       return SizedBox.shrink();
-    }
-  }
-
-  isPlaying() async {
-    if(_videoPlayerController != null) {
-      final value = await _videoPlayerController?.isPlaying();
-      print("isPlaying: $value");
-      return value;
-    }
-    else{
-      return false;
     }
   }
 

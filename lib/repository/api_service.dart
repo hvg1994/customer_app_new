@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:crypto/crypto.dart';
+import 'package:gwc_customer/model/home_remedy_model/home_remedies_model.dart';
 import 'package:gwc_customer/model/prepratory_meal_model/get_prep_meal_track_model.dart';
 import 'package:gwc_customer/model/prepratory_meal_model/prep_meal_model.dart';
 import 'package:gwc_customer/model/prepratory_meal_model/transition_meal_model.dart';
@@ -47,7 +48,6 @@ import '../model/dashboard_model/shipping_approved/ship_approved_model.dart';
 import '../model/error_model.dart';
 import '../model/evaluation_from_models/get_country_details_model.dart';
 import '../model/faq_model/faq_list_model.dart';
-import '../model/home_remedies_model/home_remedies_model.dart';
 import '../model/new_user_model/choose_your_problem/choose_your_problem_model.dart';
 import '../model/new_user_model/choose_your_problem/submit_problem_response.dart';
 import '../model/new_user_model/register/register_model.dart';
@@ -348,12 +348,12 @@ class ApiClient {
     return result;
   }
 
-  serverLoginWithOtpApi(String phone, String otp) async {
+  serverLoginWithOtpApi(String phone, String otp, String fcm) async {
     var path = loginWithOtpUrl;
 
     dynamic result;
 
-    Map bodyParam = {'phone': phone, 'otp': otp};
+    Map bodyParam = {'phone': phone, 'otp': otp, 'device_token': fcm};
 
     try {
       final response = await httpClient
@@ -2520,7 +2520,6 @@ class ApiClient {
     return result;
   }
 
-  // --- Home Remedy --- //
 
   Future getHomeRemediesApi() async {
     final String path = homeRemediesUrl;
@@ -2563,6 +2562,9 @@ class ApiClient {
     }
     return result;
   }
+
+
+
 
   void storeShipRocketToken(ShipRocketTokenModel result) {
     _prefs!.setString(AppConfig().shipRocketBearer, result.token ?? '');

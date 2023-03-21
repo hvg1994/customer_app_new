@@ -10,6 +10,7 @@ import 'package:gwc_customer/model/login_model/resend_otp_model.dart';
 import 'package:gwc_customer/repository/login_otp_repository.dart';
 import 'package:gwc_customer/screens/evalution_form/evaluation_form_screen.dart';
 import 'package:gwc_customer/screens/help_screens/help_screen.dart';
+import 'package:gwc_customer/screens/profile_screens/call_support_method.dart';
 import 'package:gwc_customer/screens/user_registration/resend_otp_screen.dart';
 import 'package:gwc_customer/services/login_otp_service.dart';
 import 'package:gwc_customer/services/quick_blox_service/quick_blox_service.dart';
@@ -706,12 +707,14 @@ class _ExistingUserState extends State<ExistingUser> {
                   SizedBox(height: 2.h),
                   Center(
                     child: GestureDetector(
-                      // onTap: (showLoginProgress) ? null : () {
+              // onTap: (showLoginProgress) ? null : () {
                       onTap: () {
+                        final fcmToken = _pref.getString(AppConfig.FCM_TOKEN);
+
                         if (mobileFormKey.currentState!.validate() &&
                             phoneController.text.isNotEmpty &&
                             otpController.text.isNotEmpty) {
-                          login(phoneController.text, otpController.text);
+                          login(phoneController.text, otpController.text, fcmToken!);
                         }
                       },
                       child: Container(
@@ -1073,12 +1076,12 @@ class _ExistingUserState extends State<ExistingUser> {
     }
   }
 
-  login(String phone, String otp) async {
+  login(String phone, String otp, String fcm) async {
     bottomsheetSetState(() {
       showLoginProgress = true;
     });
     print("---------Login---------");
-    final result = await _loginWithOtpService.loginWithOtpService(phone, otp);
+    final result = await _loginWithOtpService.loginWithOtpService(phone, otp, fcm);
 
     if (result.runtimeType == LoginOtpModel) {
       LoginOtpModel model = result as LoginOtpModel;
@@ -1120,7 +1123,8 @@ class _ExistingUserState extends State<ExistingUser> {
               ),
             ),
           );
-        } else {
+        }
+        else {
           _pref.setBool(AppConfig.isFirstTime, false);
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(
@@ -1139,6 +1143,7 @@ class _ExistingUserState extends State<ExistingUser> {
         final address2 = model1?.patient?.address2 ?? '';
         _pref.setString(AppConfig.SHIPPING_ADDRESS, address1 + address2);
       }
+
     } else {
       bottomsheetSetState(() {
         showLoginProgress = false;
@@ -1146,6 +1151,14 @@ class _ExistingUserState extends State<ExistingUser> {
       _pref.setBool(AppConfig.isLogin, false);
 
       ErrorModel response = result as ErrorModel;
+      Get.snackbar(
+        "",
+        response.message ?? '',
+        titleText: SizedBox.shrink(),
+        colorText: gWhiteColor,
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: gsecondaryColor.withOpacity(0.55),
+      );
       AppConfig().showSnackbar(context, response.message!, isError: true);
       // Navigator.of(context).pushReplacement(
       //   MaterialPageRoute(
@@ -1153,6 +1166,7 @@ class _ExistingUserState extends State<ExistingUser> {
       //   ),
       // );
     }
+
   }
 
   void storeBearerToken(String token) async {

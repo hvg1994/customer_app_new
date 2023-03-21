@@ -19,7 +19,7 @@ class ShipmentTrackActivities {
     status = json['status'];
     activity = json['activity'];
     location = json['location'];
-    srStatus = json['sr-status'];
+    srStatus = json['sr-status'].toString();
     srStatusLabel = json['sr-status-label'];
   }
 

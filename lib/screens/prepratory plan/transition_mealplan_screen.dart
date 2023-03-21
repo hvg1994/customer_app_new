@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_vlc_player/flutter_vlc_player.dart';
 import 'package:gwc_customer/model/error_model.dart';
 import 'package:gwc_customer/model/prepratory_meal_model/prep_meal_model.dart';
 import 'package:gwc_customer/model/prepratory_meal_model/transition_meal_model.dart';
@@ -14,22 +13,23 @@ import 'package:gwc_customer/services/prepratory_service/prepratory_service.dart
 import 'package:gwc_customer/utils/app_config.dart';
 import 'package:gwc_customer/widgets/constants.dart';
 import 'package:gwc_customer/widgets/open_alert_box.dart';
-import 'package:gwc_customer/widgets/vlc_player/vlc_player_with_controls.dart';
 import 'package:gwc_customer/widgets/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:lottie/lottie.dart';
 import 'package:sizer/sizer.dart';
-
 import '../../model/program_model/proceed_model/send_proceed_program_model.dart';
 import '../../model/program_model/start_post_program_model.dart';
 import '../program_plans/day_tracker_ui/day_tracker.dart';
+import 'package:appinio_video_player/appinio_video_player.dart';
+import 'package:wakelock/wakelock.dart';
 
 class TransitionMealPlanScreen extends StatefulWidget {
   String totalDays;
   String dayNumber;
   final String? trackerVideoLink;
   final String? postProgramStage;
-  TransitionMealPlanScreen({Key? key, required this.dayNumber, required this.totalDays, this.trackerVideoLink, this.postProgramStage}) : super(key: key);
+  final bool viewDay1Details;
+  TransitionMealPlanScreen({Key? key, required this.dayNumber, required this.totalDays, this.trackerVideoLink, this.postProgramStage, this.viewDay1Details = false}) : super(key: key);
 
   @override
   State<TransitionMealPlanScreen> createState() => _TransitionMealPlanScreenState();
@@ -52,6 +52,14 @@ class _TransitionMealPlanScreenState extends State<TransitionMealPlanScreen> {
     currentDay = widget.dayNumber;
     totalDays = widget.totalDays;
     getTransitionMeals();
+  }
+
+  @override
+  void dispose(){
+    if(_mealPlayerController != null) _mealPlayerController!.dispose();
+    if(_customVideoPlayerController != null)_customVideoPlayerController!.dispose();
+
+    super.dispose();
   }
 
   final PrepratoryRepository repository = PrepratoryRepository(
@@ -179,13 +187,16 @@ class _TransitionMealPlanScreenState extends State<TransitionMealPlanScreen> {
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 5),
-            child: Text('${int.parse(totalDays!) - int.parse(currentDay!)} days Remaining',
-              style: TextStyle(
-                  fontFamily: kFontMedium,
-                  color: gHintTextColor,
-                  fontSize: 10.sp
+          Visibility(
+            visible: !widget.viewDay1Details,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 5),
+              child: Text('${int.parse(totalDays!) - int.parse(currentDay!)} days Remaining',
+                style: TextStyle(
+                    fontFamily: kFontMedium,
+                    color: gHintTextColor,
+                    fontSize: 10.sp
+                ),
               ),
             ),
           ),
@@ -320,7 +331,7 @@ class _TransitionMealPlanScreenState extends State<TransitionMealPlanScreen> {
               ],
             );
           }),
-          if(currentDayStatus == "0") btn(),
+          if(currentDayStatus == "0" && !widget.viewDay1Details) btn(),
         ],
       ),
     );
@@ -409,8 +420,20 @@ class _TransitionMealPlanScreenState extends State<TransitionMealPlanScreen> {
     );
   }
   bool showMealVideo = false;
-  VlcPlayerController? _mealPlayerController;
-  final _mealKey = GlobalKey<VlcPlayerWithControlsState>();
+
+  VideoPlayerController? _mealPlayerController;
+  CustomVideoPlayerController? _customVideoPlayerController;
+  final CustomVideoPlayerSettings _customVideoPlayerSettings =
+  CustomVideoPlayerSettings(
+    controlBarAvailable: false,
+    showPlayButton: true,
+    playButton: Center(child: Icon(Icons.play_circle, color: Colors.white,),),
+    settingsButtonAvailable: false,
+    playbackSpeedButtonAvailable: false,
+    placeholderWidget: Container(child: Center(child: CircularProgressIndicator()),color: gBlackColor,),
+  );
+
+
   videoMp4Widget({required VoidCallback onTap, String? videoName}){
     return InkWell(
       onTap: onTap,
@@ -437,76 +460,77 @@ class _TransitionMealPlanScreenState extends State<TransitionMealPlanScreen> {
       ),
     );
   }
-  addUrlToVideoPlayer(String url){
+  addUrlToVideoPlayer(String url) async{
     print("url"+ url);
-    _mealPlayerController = VlcPlayerController.asset(
-      "assets/images/new_ds/popup_video.mp4",
-      // url,
-      // 'http://samples.mplayerhq.hu/MPEG-4/embedded_subs/1Video_2Audio_2SUBs_timed_text_streams_.mp4',
-      // 'https://media.w3.org/2010/05/sintel/trailer.mp4',
-      hwAcc: HwAcc.auto,
-      autoPlay: true,
-      options: VlcPlayerOptions(
-        advanced: VlcAdvancedOptions([
-          VlcAdvancedOptions.networkCaching(2000),
-        ]),
-        subtitle: VlcSubtitleOptions([
-          VlcSubtitleOptions.boldStyle(true),
-          VlcSubtitleOptions.fontSize(30),
-          VlcSubtitleOptions.outlineColor(VlcSubtitleColor.yellow),
-          VlcSubtitleOptions.outlineThickness(VlcSubtitleThickness.normal),
-          // works only on externally added subtitles
-          VlcSubtitleOptions.color(VlcSubtitleColor.navy),
-        ]),
-        http: VlcHttpOptions([
-          VlcHttpOptions.httpReconnect(true),
-        ]),
-        rtp: VlcRtpOptions([
-          VlcRtpOptions.rtpOverRtsp(true),
-        ]),
-      ),
+    _mealPlayerController = VideoPlayerController.network(Uri.parse(url).toString());
+    _mealPlayerController!.initialize().then((value) => setState(() {}));
+    _customVideoPlayerController = CustomVideoPlayerController(
+      context: context,
+      videoPlayerController: _mealPlayerController!,
+      customVideoPlayerSettings: _customVideoPlayerSettings,
     );
+    _mealPlayerController!.play();
+    if(await Wakelock.enabled == false){
+      Wakelock.enable();
+    }
   }
 
   buildMealVideo({required VoidCallback onTap}) {
     if(_mealPlayerController != null){
       return Column(
         children: [
-          AspectRatio(
-            aspectRatio: 16/9,
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(5),
-                border: Border.all(color: gPrimaryColor, width: 1),
-                // boxShadow: [
-                //   BoxShadow(
-                //     color: Colors.grey.withOpacity(0.3),
-                //     blurRadius: 20,
-                //     offset: const Offset(2, 10),
-                //   ),
-                // ],
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(5),
-                child: Center(
-                  child: VlcPlayerWithControls(
-                    key: _mealKey,
-                    controller: _mealPlayerController!,
-                    showVolume: false,
-                    showVideoProgress: false,
-                    seekButtonIconSize: 10.sp,
-                    playButtonIconSize: 14.sp,
-                    replayButtonSize: 10.sp,
+          Stack(
+            children: [
+              AspectRatio(
+                aspectRatio: 16/9,
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(5),
+                    border: Border.all(color: gPrimaryColor, width: 1),
+                    // boxShadow: [
+                    //   BoxShadow(
+                    //     color: Colors.grey.withOpacity(0.3),
+                    //     blurRadius: 20,
+                    //     offset: const Offset(2, 10),
+                    //   ),
+                    // ],
                   ),
-                  // child: VlcPlayer(
-                  //   controller: _videoPlayerController!,
-                  //   aspectRatio: 16 / 9,
-                  //   virtualDisplay: false,
-                  //   placeholder: Center(child: CircularProgressIndicator()),
-                  // ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(5),
+                    child: Center(
+                      child: CustomVideoPlayer(
+                        customVideoPlayerController: _customVideoPlayerController!,
+                      ),
+                      // child: VlcPlayer(
+                      //   controller: _videoPlayerController!,
+                      //   aspectRatio: 16 / 9,
+                      //   virtualDisplay: false,
+                      //   placeholder: Center(child: CircularProgressIndicator()),
+                      // ),
+                    ),
+                  ),
                 ),
               ),
-            ),
+              Positioned(child:
+              AspectRatio(
+                aspectRatio: 16/9,
+                child: GestureDetector(
+                  onTap: (){
+                    print("onTap");
+                    if(_mealPlayerController != null){
+                      if(_customVideoPlayerController!.videoPlayerController.value.isPlaying){
+                        _customVideoPlayerController!.videoPlayerController.pause();
+                      }
+                      else{
+                        _customVideoPlayerController!.videoPlayerController.play();
+                      }
+                    }
+                  },
+                ),
+              )
+              )
+
+            ],
           ),
           Center(
               child: IconButton(
@@ -551,7 +575,12 @@ class _TransitionMealPlanScreenState extends State<TransitionMealPlanScreen> {
                                       setState(() {
                                         showMealVideo = false;
                                       });
-                                      _mealPlayerController!.stop();
+                                      if(await Wakelock.enabled == true){
+                                        Wakelock.disable();
+                                      }
+                                      if(_mealPlayerController != null) _mealPlayerController!.dispose();
+                                      if(_customVideoPlayerController != null)_customVideoPlayerController!.dispose();
+
                                       // await _mealPlayerController!.stopRendererScanning();
                                       // await _mealPlayerController!.dispose();
                                     }
@@ -587,6 +616,8 @@ class _TransitionMealPlanScreenState extends State<TransitionMealPlanScreen> {
     });
   }
   bool isOpened = false;
+
+
 
   buildDayCompletedClap() {
     return AppConfig().showSheet(

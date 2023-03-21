@@ -1,10 +1,10 @@
 import 'dart:convert';
+import 'package:appinio_video_player/appinio_video_player.dart';
 import 'package:easy_scroll_to_index/easy_scroll_to_index.dart';
 import 'package:auto_orientation/auto_orientation.dart';
-import 'package:dropdown_button2/custom_dropdown_button2.dart';
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_vlc_player/flutter_vlc_player.dart';
 import 'package:grouped_list/grouped_list.dart';
 import 'package:gwc_customer/model/error_model.dart';
 import 'package:gwc_customer/model/program_model/proceed_model/send_proceed_program_model.dart';
@@ -13,6 +13,7 @@ import 'package:gwc_customer/model/program_model/program_days_model/program_day_
 import 'package:gwc_customer/model/program_model/start_post_program_model.dart';
 import 'package:gwc_customer/repository/post_program_repo/post_program_repository.dart';
 import 'package:gwc_customer/repository/program_repository/program_repository.dart';
+import 'package:gwc_customer/screens/cook_kit_shipping_screens/cook_kit_tracking.dart';
 import 'package:gwc_customer/screens/dashboard_screen.dart';
 import 'package:gwc_customer/screens/program_plans/day_tracker_ui/day_tracker.dart';
 import 'package:gwc_customer/screens/program_plans/program_start_screen.dart';
@@ -33,19 +34,21 @@ import '../../services/vlc_service/check_state.dart';
 import '../../utils/app_config.dart';
 import '../../widgets/constants.dart';
 import '../../widgets/pip_package.dart';
-import '../../widgets/vlc_player/vlc_player_with_controls.dart';
 import '../../widgets/widgets.dart';
 import 'day_program_plans.dart';
 import 'meal_pdf.dart';
 import 'meal_plan_data.dart';
 import 'package:http/http.dart' as http;
 import 'package:simple_tooltip/simple_tooltip.dart';
-
+import 'package:video_player/video_player.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:wakelock/wakelock.dart';
 class MealPlanScreen extends StatefulWidget {
   final String? transStage;
   final String? receipeVideoLink;
   final String? trackerVideoLink;
-  const MealPlanScreen({Key? key, this.transStage, this.receipeVideoLink, this.trackerVideoLink}) : super(key: key);
+  final bool viewDay1Details;
+  const MealPlanScreen({Key? key, this.transStage, this.receipeVideoLink, this.trackerVideoLink, this.viewDay1Details = false}) : super(key: key);
 
   @override
   State<MealPlanScreen> createState() => _MealPlanScreenState();
@@ -67,7 +70,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
 
   bool isLoading = false;
 
-  String errorMsg = '';
+  String errorMsg = 'Something Went Wrong!';
 
   List<ChildMealPlanDetailsModel>? shoppingData;
 
@@ -88,8 +91,26 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
   //****************  video player variables  *************
 
   // for video player
-  VlcPlayerController? _controller;
-  final _key = GlobalKey<VlcPlayerWithControlsState>();
+  VideoPlayerController? _mealVideoController, _trackerVideoController;
+  CustomVideoPlayerController? _customVideoPlayerController, _trackerVideoPlayerController;
+  CustomVideoPlayerSettings _customVideoPlayerSettings =
+  CustomVideoPlayerSettings(
+    controlBarAvailable: true,
+    settingsButtonAvailable: false,
+    playbackSpeedButtonAvailable: false,
+    placeholderWidget: Container(child: Center(child: CircularProgressIndicator()),color: gBlackColor,),
+  );
+  // tracker video options
+  final CustomVideoPlayerSettings _trackerVideoPlayerSettings =
+  CustomVideoPlayerSettings(
+    controlBarAvailable: false,
+    showPlayButton: true,
+    playButton: Center(child: Icon(Icons.play_circle, color: Colors.white,),),
+    settingsButtonAvailable: false,
+    playbackSpeedButtonAvailable: false,
+    placeholderWidget: Container(child: Center(child: CircularProgressIndicator()),color: gBlackColor,),
+  );
+
 
   var checkState;
 
@@ -115,6 +136,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
 
   // *****************      End   ************************
 
+
   @override
   void setState(VoidCallback fn) {
     // TODO: implement setState
@@ -136,16 +158,18 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
       //   print('${element.dayNumber} -- ${element.color}');
       // });
       _pref!.setInt(AppConfig.STORE_LENGTH, model.data!.length);
-      presentDay = int.tryParse(model.presentDay!);
-      nextDay = int.tryParse(model.presentDay!)! + 1;
-      selectedDay = int.tryParse(model.presentDay!);
-      model.data!.forEach((element) {
-        if (element.dayNumber == presentDay.toString()) {
-          isDayCompleted = element.isCompleted == 1;
-        }
-      });
-      print("next day: $nextDay");
-      print(isDayCompleted);
+      if(!widget.viewDay1Details){
+        presentDay = int.tryParse(model.presentDay!);
+        nextDay = int.tryParse(model.presentDay!)! + 1;
+        selectedDay = int.tryParse(model.presentDay!);
+        model.data!.forEach((element) {
+          if (element.dayNumber == presentDay.toString()) {
+            isDayCompleted = element.isCompleted == 1;
+          }
+        });
+        print("next day: $nextDay");
+        print(isDayCompleted);
+      }
       Future.delayed(Duration(seconds: 1)).then((value) {
         _scrollController.easyScrollToIndex(
             index: model.data!.indexWhere(
@@ -201,8 +225,88 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
         });
       }
     }
+    for (int i = 0; i < presentDay!; i++) {
+      print(presentDay);
+      if (listData[i].isCompleted == 0 && i + 1 != selectedDay!) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          showMoreTextSheet(listData[i].dayNumber);
+          // AppConfig().showSnackbar(
+          //     context,
+          //     "Please Complete Day ${listData[i].dayNumber}", isError: true,
+          //     duration: 50000,
+          //     action: SnackBarAction(
+          //       label: 'Go',
+          //       onPressed: (){
+          //         ScaffoldMessenger.of(context).hideCurrentSnackBar();
+          //         selectedDay = 1;
+          //         getMeals();
+          //       },
+          //     )
+          // );
+        });
+        break;
+      }
+    }
+
   }
 
+  showMoreTextSheet(String? dayNumber){
+    return AppConfig().showSheet(
+        context,
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Center(
+                child: Column(
+                  children: [
+                    Text(
+                      "It is key to complete your Previous day tracker before moving on to the Current day. ",
+                      style: TextStyle(
+                          fontSize: subHeadingFont,
+                          fontFamily: kFontBook,
+                          height: 1.4),
+                      textAlign: TextAlign.justify,
+                    ),
+                    SizedBox(height: 1.h,),
+                    GestureDetector(
+                      onTap: () {
+                        selectedDay = int.parse(dayNumber!);
+                        getMeals();
+                        Navigator.pop(context);
+                      },
+                      child: Center(
+                        child: Container(
+                          padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 10.w),
+                          decoration: BoxDecoration(
+                            color: gsecondaryColor,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: gMainColor, width: 1),
+                          ),
+                          child: Text(
+                            'Go to - Day${dayNumber}',
+                            style: TextStyle(
+                              fontFamily: kFontMedium,
+                              color: gWhiteColor,
+                              fontSize: 11.sp,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            SizedBox(height: 1.h)
+          ],
+        ),
+        bottomSheetHeight: 34.h,
+        circleIcon: bsHeadPinIcon,
+       );
+  }
 
   buildDayCompletedClap() {
     return AppConfig().showSheet(
@@ -303,18 +407,38 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
 
   bool _checked = false;
 
+  // video player code
+  final videoPlayerController = VideoPlayerController.network(
+      'https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4');
+
+
   @override
   void initState() {
     super.initState();
-    getProgramDays();
-    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+    if(!widget.viewDay1Details) getProgramDays();
+    if(widget.viewDay1Details) {
+      selectedDay = 1;
+      getMeals();
+    }
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       commentController.addListener(() {
         setState(() {});
+      });
+    });
+    hideToolTip();
+  }
+
+  hideToolTip(){
+    Future.delayed(Duration(seconds: 5)).then((value){
+      setState((){
+        shoppingToolTip = false;
+        showToolTip = false;
       });
     });
   }
 
   getMeals() async {
+    print(selectedDay);
     statusList.clear();
     lst.clear();
     final result = await ProgramService(repository: repository)
@@ -413,37 +537,19 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
 
   initVideoView(String? url) {
     print("init url: $url");
-    _controller = VlcPlayerController.network(
-      // url ??
-      Uri.parse(
-              'https://gwc.disol.in/storage/uploads/users/recipes/Calm Module - Functional (AR).mp4')
-          .toString(),
-      hwAcc: HwAcc.full,
-      options: VlcPlayerOptions(
-        advanced: VlcAdvancedOptions([
-          VlcAdvancedOptions.networkCaching(2000),
-        ]),
-        subtitle: VlcSubtitleOptions([
-          VlcSubtitleOptions.boldStyle(true),
-          VlcSubtitleOptions.fontSize(30),
-          VlcSubtitleOptions.outlineColor(VlcSubtitleColor.yellow),
-          VlcSubtitleOptions.outlineThickness(VlcSubtitleThickness.normal),
-          // works only on externally added subtitles
-          VlcSubtitleOptions.color(VlcSubtitleColor.navy),
-        ]),
-        http: VlcHttpOptions([
-          VlcHttpOptions.httpReconnect(true),
-        ]),
-        rtp: VlcRtpOptions([
-          VlcRtpOptions.rtpOverRtsp(true),
-        ]),
-      ),
-    );
 
-    print(
-        "_controller.isReadyToInitialize: ${_controller!.isReadyToInitialize}");
-    _controller!.addOnInitListener(() async {
-      await _controller!.startRendererScanning();
+    _mealVideoController = VideoPlayerController.network(Uri.parse(url!).toString());
+    _mealVideoController!.initialize().then((value) => setState(() {}));
+    _customVideoPlayerController = CustomVideoPlayerController(
+      context: context,
+      videoPlayerController: _mealVideoController!,
+      customVideoPlayerSettings: _customVideoPlayerSettings,
+    );
+    _mealVideoController!.play();
+    _mealVideoController!.addListener(() {
+      if(_mealVideoController!.value.isBuffering){
+        setState(() { });
+      }
     });
   }
 
@@ -451,8 +557,10 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
   void dispose() async {
     super.dispose();
     commentController.dispose();
-    await _controller?.dispose();
-    await _controller?.stopRendererScanning();
+
+    if(_mealVideoController != null)_mealVideoController!.dispose();
+    if(_customVideoPlayerController != null)_customVideoPlayerController!.dispose();
+
   }
 
   @override
@@ -676,46 +784,52 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      SimpleTooltip(
-                        borderColor: gWhiteColor,
-                        maxWidth: 50.w,
-                        ballonPadding: EdgeInsets.symmetric(
-                            horizontal: 0.w, vertical: 0.h),
-                        arrowTipDistance: 2,
-                        arrowLength: 10,
-                        arrowBaseWidth: 10,
-                        hideOnTooltipTap: true,
-                        // targetCenter: const Offset(3,4),
-                        tooltipTap: () {
-                          setState(() {
-                            shoppingToolTip = false;
-                          });
-                        },
-                        animationDuration: const Duration(seconds: 3),
-                        show: shoppingToolTip,
-                        tooltipDirection: TooltipDirection.down,
-                        child: Align(
-                          alignment: Alignment.center,
-                          child: GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                shoppingToolTip = false;
-                              });
-                            },
-                            child: Image(
-                              height: 3.h,
-                              image: AssetImage("assets/images/list.png"),
-                            ),
-                          ),
-                        ),
-                        content: Text(
-                          "Tap here for Shopping List",
-                          style: TextStyle(
-                              fontSize: PPConstants().topViewSubFontSize,
-                              fontFamily: MealPlanConstants().mealNameFont,
-                              color: gHintTextColor),
-                        ),
-                      ),
+                      // SimpleTooltip(
+                      //   borderColor: gWhiteColor,
+                      //   maxWidth: 50.w,
+                      //   ballonPadding: EdgeInsets.symmetric(
+                      //       horizontal: 0.w, vertical: 0.h),
+                      //   arrowTipDistance: 2,
+                      //   arrowLength: 10,
+                      //   arrowBaseWidth: 10,
+                      //   hideOnTooltipTap: true,
+                      //   // targetCenter: const Offset(3,4),
+                      //   tooltipTap: () {
+                      //     setState(() {
+                      //       shoppingToolTip = false;
+                      //     });
+                      //   },
+                      //   animationDuration: const Duration(seconds: 3),
+                      //   show: shoppingToolTip,
+                      //   tooltipDirection: TooltipDirection.down,
+                      //   child: Align(
+                      //     alignment: Alignment.center,
+                      //     child: GestureDetector(
+                      //       onTap: () {
+                      //           shoppingToolTip = false;
+                      //           Navigator.of(context).push(
+                      //             MaterialPageRoute(
+                      //               builder: (context) => CookKitTracking(
+                      //                 currentStage: '',
+                      //                 initialIndex: 1,
+                      //               ),
+                      //             ),
+                      //           );
+                      //       },
+                      //       child: Image(
+                      //         height: 3.h,
+                      //         image: AssetImage("assets/images/list.png"),
+                      //       ),
+                      //     ),
+                      //   ),
+                      //   content: Text(
+                      //     "Tap here for Shopping List",
+                      //     style: TextStyle(
+                      //         fontSize: PPConstants().topViewSubFontSize,
+                      //         fontFamily: MealPlanConstants().mealNameFont,
+                      //         color: gHintTextColor),
+                      //   ),
+                      // ),
                       IconButton(
                         icon: Icon(
                           Icons.help_outline_rounded,
@@ -804,6 +918,10 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                                       isVideoWidgetVisible: false,
                                       headCircleIcon: bsHeadPinIcon,
                                       topHeadColor: kBottomSheetHeadGreen,
+                                      isSheetCloseNeeded: true,
+                                      sheetCloseOnTap: (){
+                                            Navigator.pop(context);
+                                      },
                                         )));
                           } else {
                             AppConfig().showSnackbar(
@@ -827,21 +945,28 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                     color: eUser().mainHeadingColor,
                     fontSize: eUser().mainHeadingFontSize),
               ),
-              SizedBox(
-                height: 1.h,
+              // not showing these when we came from slide screen
+              Visibility(
+                visible: !widget.viewDay1Details,
+                child: SizedBox(
+                  height: 1.h,
+                ),
               ),
-              SizedBox(
-                  height: 4.h,
-                  child: EasyScrollToIndex(
-                    controller: _scrollController, // ScrollToIndexController
-                    itemCount: listData.length,
-                    itemWidth: 50,
-                    itemHeight: 4.h,
-                    scrollDirection: Axis.horizontal,
-                    itemBuilder: (BuildContext context, int index) {
-                      return dayItems(index);
-                    },
-                  )),
+              Visibility(
+                visible: !widget.viewDay1Details,
+                child: SizedBox(
+                    height: 4.h,
+                    child: EasyScrollToIndex(
+                      controller: _scrollController, // ScrollToIndexController
+                      itemCount: listData.length,
+                      itemWidth: 50,
+                      itemHeight: 4.h,
+                      scrollDirection: Axis.horizontal,
+                      itemBuilder: (BuildContext context, int index) {
+                        return dayItems(index);
+                      },
+                    )),
+              ),
             ],
           ),
         ),
@@ -948,33 +1073,6 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                                             print("lst.length ${lst.length}");
                                             print('..............');
                                           },
-                                          // (statusList.length != lst.length)
-                                          //     ? () => AppConfig().showSnackbar(context, "Please complete the Meal Plan Status", isError: true)
-                                          //     // : (statusList.values.any((element) => element.toString().toLowerCase() == 'unfollowed') && commentController.text.isEmpty)
-                                          //     // ? () => AppConfig().showSnackbar(context, "Please Mention the comments why you unfollowed?", isError: true)
-                                          //     : () {
-                                          //   print("this one $presentDay");
-                                          //   for(int i = 0; i< presentDay!; i++){
-                                          //     print(presentDay);
-                                          //     if(listData[i].isCompleted == 0
-                                          //         && i+1 != selectedDay!
-                                          //     ){
-                                          //       AppConfig().showSnackbar(context, "Please Complete Day ${listData[i].dayNumber}", isError: true);
-                                          //       break;
-                                          //     }
-                                          //     else if(listData[i].isCompleted == 1) {
-                                          //       print("completed already");
-                                          //     }
-                                          //     else if(i+1 == presentDay || i+1 == selectedDay){
-                                          //       print("u can access $presentDay");
-                                          //       sendData();
-                                          //       break;
-                                          //     }
-                                          //     else{
-                                          //       print("u r trying else");
-                                          //     }
-                                          //   }
-                                          // },
                                           child: Container(
                                             margin: EdgeInsets.symmetric(
                                                 vertical: 2.h),
@@ -1034,7 +1132,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                                             element
                                                 .toString()
                                                 .toLowerCase()
-                                                .contains('unfollowed'))),
+                                                .contains('unfollowed'))) || !widget.viewDay1Details,
                                     child: IgnorePointer(
                                       ignoring: isDayCompleted == true,
                                       child: Container(
@@ -1199,16 +1297,50 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
           ? Consumer<CheckState>(
               builder: (_, model, __) {
                 print("model.isChanged: ${model.isChanged} $isEnabled");
-                return VlcPlayerWithControls(
-                  key: _key,
-                  controller: _controller!,
-                  showVolume: false,
-                  showVideoProgress: !model.isChanged,
-                  seekButtonIconSize: 10.sp,
-                  playButtonIconSize: 14.sp,
-                  replayButtonSize: 14.sp,
-                  showFullscreenBtn: true,
+                // return VlcPlayerWithControls(
+                //   key: _key,
+                //   controller: _controller!,
+                //   showVolume: false,
+                //   showVideoProgress: !model.isChanged,
+                //   seekButtonIconSize: 10.sp,
+                //   playButtonIconSize: 14.sp,
+                //   replayButtonSize: 14.sp,
+                //   showFullscreenBtn: true,
+                // );
+                Wakelock.enable();
+                _customVideoPlayerSettings =
+                    CustomVideoPlayerSettings(
+                      controlBarAvailable: !model.isChanged,
+                      settingsButtonAvailable: false,
+                      playbackSpeedButtonAvailable: false,
+                      placeholderWidget: Container(child: Center(child: CircularProgressIndicator()),color: gBlackColor,),
+                    );
+                _customVideoPlayerController = CustomVideoPlayerController(
+                  context: context,
+                  videoPlayerController: _mealVideoController!,
+                  customVideoPlayerSettings: _customVideoPlayerSettings,
                 );
+                print("isBuffered: ${_customVideoPlayerController!.videoPlayerController.value.isBuffering}");
+                return Container(child: Stack(
+                  children: [
+                    Center(child: CustomVideoPlayer(
+                      customVideoPlayerController: _customVideoPlayerController!,
+                    )),
+                    if(_customVideoPlayerController != null && _customVideoPlayerController!.videoPlayerController.value.isBuffering)Positioned(
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        top: 0,
+                        child: Center(
+                          child: SizedBox(
+                              width: 50,
+                              height: 50,
+                              child: CircularProgressIndicator()
+                          ),
+                        )
+                    ),
+                  ],
+                ),color: gBlackColor,);
               },
             )
           //     ? FutureBuilder(
@@ -1237,12 +1369,22 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
           : const SizedBox(),
       pipEnabled: isEnabled,
       pipExpandedHeight: double.infinity,
-      onClosed: () {
+      onClosed: () async {
         // await _controller.stop();
         // await _controller.dispose();
         setState(() {
           isEnabled = !isEnabled;
         });
+        if( await Wakelock.enabled){
+          Wakelock.disable();
+        }
+        if(_mealVideoController != null) {
+          _mealVideoController!.dispose();
+          _mealVideoController!.removeListener(() {});
+        }
+        if(_customVideoPlayerController != null)_customVideoPlayerController!.dispose();
+
+
       },
     );
   }
@@ -1453,9 +1595,9 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                                                         borderRadius:
                                                             BorderRadius
                                                                 .circular(15),
-                                                        child: Image.network(
-                                                          e.itemImage!,
-                                                          errorBuilder:
+                                                        child: CachedNetworkImage(
+                                                          imageUrl: e.itemImage!,
+                                                          errorWidget:
                                                               (ctx, _, __) {
                                                             return Image.asset(
                                                               'assets/images/meal_placeholder.png',
@@ -1513,9 +1655,9 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                                                       borderRadius:
                                                           BorderRadius.circular(
                                                               15),
-                                                      child: Image.network(
-                                                        e.itemImage!,
-                                                        errorBuilder:
+                                                      child: CachedNetworkImage(
+                                                        imageUrl: e.itemImage!,
+                                                        errorWidget:
                                                             (ctx, _, __) {
                                                           return Image.asset(
                                                             'assets/images/meal_placeholder.png',
@@ -1600,117 +1742,120 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                                   ],
                                 ),
                               ),
-                              GestureDetector(
-                                onTap: () {
-                                  print(
-                                    value.indexWhere((element) {
-                                      print(element.name);
-                                      print(e.name);
-                                      return element.name == e.name;
-                                    }),
-                                  );
-                                  showFollowedSheet(e);
-                                  // openAlertBox(
-                                  //     title: 'Did you Follow this?',
-                                  //     titleNeeded: true,
-                                  //     context: context,
-                                  //     isContentNeeded: false,
-                                  //     positiveButtonName: 'Followed',
-                                  //     positiveButton: () {
-                                  //       onChangedTab(0,
-                                  //           id: e.itemId, title: list[0]);
-                                  //       Navigator.pop(context);
-                                  //     },
-                                  //     negativeButtonName: 'Missed It',
-                                  //     negativeButton: () {
-                                  //       onChangedTab(0,
-                                  //           id: e.itemId, title: list[1]);
-                                  //       Navigator.pop(context);
-                                  //     });
-                                },
-                                child: (statusList.isNotEmpty &&
-                                        statusList.containsKey(e.itemId) &&
-                                        statusList[e.itemId] == list[0])
-                                    ? Align(
-                                        alignment: Alignment.topCenter,
-                                        child: Container(
-                                          padding: EdgeInsets.symmetric(
-                                              horizontal: 6, vertical: 4),
-                                          decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(eUser()
-                                                      .buttonBorderRadius),
-                                              color: gPrimaryColor),
-                                          child: Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              Text(
-                                                'Followed',
-                                                style: TextStyle(
-                                                    fontSize: 8.sp,
-                                                    fontFamily: kFontMedium,
-                                                    color: gWhiteColor),
-                                              ),
-                                              Image.asset(
-                                                'assets/images/followed2.png',
-                                                width: 20,
-                                                height: 20,
-                                              )
-                                            ],
-                                          ),
-                                        ),
-                                      )
-                                    : (statusList.isNotEmpty &&
-                                            statusList.containsKey(e.itemId) &&
-                                            statusList[e.itemId] == list[1])
-                                        ? Align(
-                                            alignment: Alignment.topCenter,
-                                            child: Container(
-                                              padding: EdgeInsets.symmetric(
-                                                  horizontal: 6, vertical: 4),
-                                              decoration: BoxDecoration(
-                                                  borderRadius: BorderRadius
-                                                      .circular(eUser()
-                                                          .buttonBorderRadius),
-                                                  color: gsecondaryColor),
-                                              child: Row(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  Text(
-                                                    'Missed It',
-                                                    style: TextStyle(
-                                                        fontSize: 8.sp,
-                                                        fontFamily: kFontMedium,
-                                                        color: gWhiteColor),
-                                                  ),
-                                                  Image.asset(
-                                                    'assets/images/unfollowed.png',
-                                                    width: 20,
-                                                    height: 20,
-                                                  )
-                                                ],
-                                              ),
-                                            ),
-                                          )
-                                        : Align(
-                                            alignment: Alignment.bottomCenter,
-                                            child: Container(
-                                              padding: EdgeInsets.symmetric(
-                                                  horizontal: 10, vertical: 8),
-                                              decoration: BoxDecoration(
-                                                  borderRadius: BorderRadius
-                                                      .circular(eUser()
-                                                          .buttonBorderRadius),
-                                                  color: Colors.grey),
-                                              child: Text(
-                                                'Status',
-                                                style: TextStyle(
-                                                    fontSize: 8.sp,
-                                                    fontFamily: kFontMedium,
-                                                    color: gWhiteColor),
-                                              ),
+                              Visibility(
+                                visible: !widget.viewDay1Details,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    print(
+                                      value.indexWhere((element) {
+                                        print(element.name);
+                                        print(e.name);
+                                        return element.name == e.name;
+                                      }),
+                                    );
+                                    showFollowedSheet(e);
+                                    // openAlertBox(
+                                    //     title: 'Did you Follow this?',
+                                    //     titleNeeded: true,
+                                    //     context: context,
+                                    //     isContentNeeded: false,
+                                    //     positiveButtonName: 'Followed',
+                                    //     positiveButton: () {
+                                    //       onChangedTab(0,
+                                    //           id: e.itemId, title: list[0]);
+                                    //       Navigator.pop(context);
+                                    //     },
+                                    //     negativeButtonName: 'Missed It',
+                                    //     negativeButton: () {
+                                    //       onChangedTab(0,
+                                    //           id: e.itemId, title: list[1]);
+                                    //       Navigator.pop(context);
+                                    //     });
+                                  },
+                                  child: (statusList.isNotEmpty &&
+                                          statusList.containsKey(e.itemId) &&
+                                          statusList[e.itemId] == list[0])
+                                      ? Align(
+                                          alignment: Alignment.topCenter,
+                                          child: Container(
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 6, vertical: 4),
+                                            decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(eUser()
+                                                        .buttonBorderRadius),
+                                                color: gPrimaryColor),
+                                            child: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Text(
+                                                  'Followed',
+                                                  style: TextStyle(
+                                                      fontSize: 8.sp,
+                                                      fontFamily: kFontMedium,
+                                                      color: gWhiteColor),
+                                                ),
+                                                Image.asset(
+                                                  'assets/images/followed2.png',
+                                                  width: 20,
+                                                  height: 20,
+                                                )
+                                              ],
                                             ),
                                           ),
+                                        )
+                                      : (statusList.isNotEmpty &&
+                                              statusList.containsKey(e.itemId) &&
+                                              statusList[e.itemId] == list[1])
+                                          ? Align(
+                                              alignment: Alignment.topCenter,
+                                              child: Container(
+                                                padding: EdgeInsets.symmetric(
+                                                    horizontal: 6, vertical: 4),
+                                                decoration: BoxDecoration(
+                                                    borderRadius: BorderRadius
+                                                        .circular(eUser()
+                                                            .buttonBorderRadius),
+                                                    color: gsecondaryColor),
+                                                child: Row(
+                                                  mainAxisSize: MainAxisSize.min,
+                                                  children: [
+                                                    Text(
+                                                      'Missed It',
+                                                      style: TextStyle(
+                                                          fontSize: 8.sp,
+                                                          fontFamily: kFontMedium,
+                                                          color: gWhiteColor),
+                                                    ),
+                                                    Image.asset(
+                                                      'assets/images/unfollowed.png',
+                                                      width: 20,
+                                                      height: 20,
+                                                    )
+                                                  ],
+                                                ),
+                                              ),
+                                            )
+                                          : Align(
+                                              alignment: Alignment.bottomCenter,
+                                              child: Container(
+                                                padding: EdgeInsets.symmetric(
+                                                    horizontal: 10, vertical: 8),
+                                                decoration: BoxDecoration(
+                                                    borderRadius: BorderRadius
+                                                        .circular(eUser()
+                                                            .buttonBorderRadius),
+                                                    color: Colors.grey),
+                                                child: Text(
+                                                  'Status',
+                                                  style: TextStyle(
+                                                      fontSize: 8.sp,
+                                                      fontFamily: kFontMedium,
+                                                      color: gWhiteColor),
+                                                ),
+                                              ),
+                                            ),
+                                ),
                               ),
                             ],
                           ),
@@ -2610,41 +2755,13 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
     );
   }
 
-  showDropdown(ChildMealPlanDetailsModel e) {
-    return Container(
-      padding: const EdgeInsets.all(8.0),
-      child: Row(
-        // mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          Expanded(
-            child: CustomDropdownButton2(
-              // buttonHeight: 25,
-              buttonWidth: 20.w,
-              hint: '',
-              dropdownItems: list,
-              value: statusList.isEmpty ? null : statusList[e.itemId],
-              onChanged: (value) {
-                setState(() {
-                  statusList[e.itemId] = value ?? -1;
-                });
-              },
-              buttonDecoration: BoxDecoration(
-                color: gWhiteColor,
-                borderRadius: BorderRadius.circular(5),
-                border: Border.all(color: gMainColor, width: 1),
-              ),
-              icon: Icon(Icons.keyboard_arrow_down_outlined),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   bool buttonVisibility() {
     bool isVisible;
-    if (isDayCompleted == true) {
+    if(widget.viewDay1Details){
+      isVisible = false;
+    }
+    else if (isDayCompleted == true) {
       isVisible = false;
     } else if (nextDay == selectedDay) {
       isVisible = false;
@@ -2678,7 +2795,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                     videoMp4Widget(
                         videoName: "Know more about Symptoms Tracker",
                     onTap: (){
-                      addUrlToVideoPlayer(widget.trackerVideoLink ?? '');
+                      addTrackerUrlToVideoPlayer(widget.trackerVideoLink ?? '');
                       setState(() {
                         showMealVideo = true;
                       });
@@ -2698,7 +2815,12 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                                       setState(() {
                                         showMealVideo = false;
                                       });
-                                      _mealPlayerController!.stop();
+                                      if(await Wakelock.enabled == true){
+                                        Wakelock.disable();
+                                      }
+                                      if(_trackerVideoController != null)_trackerVideoController!.dispose();
+                                      if(_trackerVideoPlayerController != null)_trackerVideoPlayerController!.dispose();
+
                                       // await _mealPlayerController!.stopRendererScanning();
                                       // await _mealPlayerController!.dispose();
                                     }
@@ -2736,8 +2858,6 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
           );
         });
   }
-  VlcPlayerController? _mealPlayerController;
-  final _mealKey = GlobalKey<VlcPlayerWithControlsState>();
 
   videoMp4Widget({required VoidCallback onTap, String? videoName}){
     return InkWell(
@@ -2766,84 +2886,85 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
     );
   }
 
-  addUrlToVideoPlayer(String url){
+  addTrackerUrlToVideoPlayer(String url) async{
     print("url"+ url);
-    _mealPlayerController = VlcPlayerController.network(Uri.parse(url).toString(),
-      // "assets/images/new_ds/popup_video.mp4",
-      // url,
-      // 'http://samples.mplayerhq.hu/MPEG-4/embedded_subs/1Video_2Audio_2SUBs_timed_text_streams_.mp4',
-      // 'https://media.w3.org/2010/05/sintel/trailer.mp4',
-      hwAcc: HwAcc.auto,
-      autoPlay: true,
-      options: VlcPlayerOptions(
-        advanced: VlcAdvancedOptions([
-          VlcAdvancedOptions.networkCaching(2000),
-        ]),
-        subtitle: VlcSubtitleOptions([
-          VlcSubtitleOptions.boldStyle(true),
-          VlcSubtitleOptions.fontSize(30),
-          VlcSubtitleOptions.outlineColor(VlcSubtitleColor.yellow),
-          VlcSubtitleOptions.outlineThickness(VlcSubtitleThickness.normal),
-          // works only on externally added subtitles
-          VlcSubtitleOptions.color(VlcSubtitleColor.navy),
-        ]),
-        http: VlcHttpOptions([
-          VlcHttpOptions.httpReconnect(true),
-        ]),
-        rtp: VlcRtpOptions([
-          VlcRtpOptions.rtpOverRtsp(true),
-        ]),
-      ),
+    _trackerVideoController = VideoPlayerController.network(Uri.parse(url).toString());
+    _trackerVideoController!.initialize().then((value) => setState(() {}));
+    _trackerVideoPlayerController = CustomVideoPlayerController(
+      context: context,
+      videoPlayerController: _trackerVideoController!,
+      customVideoPlayerSettings: _trackerVideoPlayerSettings,
     );
+    _trackerVideoController!.play();
+    if(await Wakelock.enabled == false){
+      Wakelock.enable();
+    }
   }
 
   buildMealVideo({required VoidCallback onTap}) {
-    if(_mealPlayerController != null){
+    if(_trackerVideoController != null){
       return Column(
         children: [
-          AspectRatio(
-            aspectRatio: 16/9,
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(5),
-                border: Border.all(color: gPrimaryColor, width: 1),
-                // boxShadow: [
-                //   BoxShadow(
-                //     color: Colors.grey.withOpacity(0.3),
-                //     blurRadius: 20,
-                //     offset: const Offset(2, 10),
-                //   ),
-                // ],
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(5),
-                child: Center(
-                  child: VlcPlayerWithControls(
-                    key: _mealKey,
-                    controller: _mealPlayerController!,
-                    showVolume: false,
-                    showVideoProgress: false,
-                    seekButtonIconSize: 10.sp,
-                    playButtonIconSize: 14.sp,
-                    replayButtonSize: 10.sp,
+          Stack(
+            children: [
+              AspectRatio(
+                aspectRatio: 16/9,
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(5),
+                    border: Border.all(color: gPrimaryColor, width: 1),
+                    // boxShadow: [
+                    //   BoxShadow(
+                    //     color: Colors.grey.withOpacity(0.3),
+                    //     blurRadius: 20,
+                    //     offset: const Offset(2, 10),
+                    //   ),
+                    // ],
                   ),
-                  // child: VlcPlayer(
-                  //   controller: _videoPlayerController!,
-                  //   aspectRatio: 16 / 9,
-                  //   virtualDisplay: false,
-                  //   placeholder: Center(child: CircularProgressIndicator()),
-                  // ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(5),
+                    child: Center(
+                      child: CustomVideoPlayer(
+                        customVideoPlayerController: _trackerVideoPlayerController!,
+                      ),
+                      // child: VlcPlayer(
+                      //   controller: _videoPlayerController!,
+                      //   aspectRatio: 16 / 9,
+                      //   virtualDisplay: false,
+                      //   placeholder: Center(child: CircularProgressIndicator()),
+                      // ),
+                    ),
+                  ),
                 ),
               ),
-            ),
+              Positioned(child:
+              AspectRatio(
+                aspectRatio: 16/9,
+                child: GestureDetector(
+                  onTap: (){
+                    print("onTap");
+                    if(_trackerVideoController != null){
+                      if(_trackerVideoPlayerController!.videoPlayerController.value.isPlaying){
+                        _trackerVideoPlayerController!.videoPlayerController.pause();
+                      }
+                      else{
+                        _trackerVideoPlayerController!.videoPlayerController.play();
+                      }
+                    }
+                  },
+                ),
+              )
+              )
+
+            ],
           ),
           Center(
-            child: IconButton(
-              icon: Icon(Icons.cancel_outlined,
-                color: gsecondaryColor,
-              ),
-              onPressed: onTap,
-            )
+              child: IconButton(
+                icon: Icon(Icons.cancel_outlined,
+                  color: gsecondaryColor,
+                ),
+                onPressed: onTap,
+              )
           )
         ],
       );

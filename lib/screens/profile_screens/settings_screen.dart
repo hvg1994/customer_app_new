@@ -181,6 +181,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     // chat
                     openKaleyraChat(uId, chatSuccessId!, accessToken!);
                   }
+                  else{
+                    final result = res as ErrorModel;
+                    print("get Access Token error: ${result.message}");
+                    AppConfig().showSnackbar(context, result.message ?? '', isError: true, bottomPadding: 70 );
+                  }
                   // getChatGroupId();
                 }),
                 Container(

@@ -53,6 +53,11 @@ public class MainActivity extends FlutterActivity {
                                 mMainPresenter.joinMeeting(userId, joinUrl, kaleyraAccessToken, result);
                                 break;
                             }
+                            case "call_global":{
+                                String userId = call.argument("user_id");
+                                String kaleyraAccessToken = call.argument("access_token");
+                                mMainPresenter.globalCall(userId, kaleyraAccessToken);
+                            }
                             case "call_support": {
                                 String userId = call.argument("user_id");
                                 String successKaleyraId = call.argument("success_id");
@@ -65,6 +70,11 @@ public class MainActivity extends FlutterActivity {
                                 String opponentId = call.argument("opponent_id");
                                 String kaleyraAccessToken = call.argument("access_token");
                                 mMainPresenter.openChat(userId, opponentId, kaleyraAccessToken, result);
+                                break;
+                            }
+                            case "upload_payload": {
+                                String payload = call.argument("payload");
+                                mMainPresenter.updatePayload(payload);
                                 break;
                             }
                         }

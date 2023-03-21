@@ -67,8 +67,8 @@ class _CookKitTrackingState extends State<CookKitTracking>{
   void initState() {
     // TODO: implement initState
     super.initState();
+    getShoppingList();
     if(widget.currentStage.isNotEmpty){
-      getShoppingList();
       if((widget.currentStage == 'shipping_approved' || widget.currentStage == 'shipping_delivered' || widget.currentStage == 'shipping_packed') && widget.awb_number != null){
         shippingTracker();
       }
@@ -95,7 +95,7 @@ class _CookKitTrackingState extends State<CookKitTracking>{
                 buildAppBar((){
                   Navigator.pop(context);
                 },
-                    showHelpIcon: true,
+                    showHelpIcon: false,
                     helpOnTap: (){
                       // if(planNotePdfLink != null || planNotePdfLink!.isNotEmpty){
                       //   Navigator.push(context, MaterialPageRoute(builder: (ctx)=>
@@ -168,94 +168,96 @@ class _CookKitTrackingState extends State<CookKitTracking>{
       data: MediaQuery.of(context).copyWith(textScaleFactor: 0.8),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 8),
-        child: DataTable(
-            headingTextStyle: TextStyle(
-              color: gWhiteColor,
-              fontSize: 5.sp,
-              fontFamily: kFontMedium,
-            ),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(8), topRight: Radius.circular(8)),
-              // color: tableHeadingBg,
-            ),
-            headingRowHeight: 5.h,
-            headingRowColor: MaterialStateProperty.all(tableHeadingBg),
-            horizontalMargin: 2.w,
-            columnSpacing: 20.w,
-            dataRowHeight: 7.h,
-            // headingRowColor: MaterialStateProperty.all(const Color(0xffE06666)),
-            columns:  <DataColumn>[
-              DataColumn(
-                label: IntrinsicWidth(
-                  child: Text('Item Name',
-                    style: TextStyle(
-                      height: 1.5,
-                      color: eUser().userFieldLabelColor,
-                      fontSize: 11.sp,
-                      fontFamily: kFontBold,
+        child: SingleChildScrollView(
+          child: DataTable(
+              headingTextStyle: TextStyle(
+                color: gWhiteColor,
+                fontSize: 5.sp,
+                fontFamily: kFontMedium,
+              ),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(8), topRight: Radius.circular(8)),
+                // color: tableHeadingBg,
+              ),
+              headingRowHeight: 5.h,
+              headingRowColor: MaterialStateProperty.all(tableHeadingBg),
+              horizontalMargin: 2.w,
+              columnSpacing: 20.w,
+              dataRowHeight: 7.h,
+              // headingRowColor: MaterialStateProperty.all(const Color(0xffE06666)),
+              columns:  <DataColumn>[
+                DataColumn(
+                  label: IntrinsicWidth(
+                    child: Text('Item Name',
+                      style: TextStyle(
+                        height: 1.5,
+                        color: eUser().userFieldLabelColor,
+                        fontSize: 11.sp,
+                        fontFamily: kFontBold,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              DataColumn(
-                label: ConstrainedBox(
-                  constraints: const BoxConstraints(
-                    maxWidth: 80,
-                    minWidth: 20,
-                  ),
-                  child: Text('Category',
-                    textAlign: TextAlign.right,
-                    style: TextStyle(
-                      height: 1.5,
-                      color: eUser().userFieldLabelColor,
-                      fontSize: 11.sp,
-                      fontFamily: kFontBold,
+                DataColumn(
+                  label: ConstrainedBox(
+                    constraints: const BoxConstraints(
+                      maxWidth: 80,
+                      minWidth: 20,
+                    ),
+                    child: Text('Category',
+                      textAlign: TextAlign.right,
+                      style: TextStyle(
+                        height: 1.5,
+                        color: eUser().userFieldLabelColor,
+                        fontSize: 11.sp,
+                        fontFamily: kFontBold,
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
-            rows: [
-              ...shoppingList.map((e) => DataRow(
-                cells: [
-                  DataCell(
+              ],
+              rows: [
+                ...shoppingList.map((e) => DataRow(
+                  cells: [
+                    DataCell(
+                        IntrinsicWidth(
+                          child: Text(
+                            e.ingredients?.name ?? '',
+                            // sortedData.entries.elementAt(index).value[ind].mealItemWeight?.mealItem?.name?.trimLeft() ?? '',
+                            textAlign: TextAlign.left,
+                            style: TextStyle(
+                              height: 1.5,
+                              color: gTextColor,
+                              fontSize: 8.sp,
+                              fontFamily: kFontBold,
+                            ),
+                          ),
+                        )
+                    ),
+                    DataCell(
                       IntrinsicWidth(
                         child: Text(
-                          e.ingredients?.name ?? '',
-                          // sortedData.entries.elementAt(index).value[ind].mealItemWeight?.mealItem?.name?.trimLeft() ?? '',
-                          textAlign: TextAlign.left,
+                          e.ingredients?.childIngredientCategory?.name ?? '',
+                          // sortedData.entries.elementAt(index).value[ind].itemWeight?.trim() ?? '',
+                          // " ${value[ind].itemWeight}" ?? '',
+                          // maxLines: 3,
+                          textAlign: TextAlign.center,
+                          overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             height: 1.5,
                             color: gTextColor,
                             fontSize: 8.sp,
-                            fontFamily: kFontBold,
+                            fontFamily: kFontBook,
                           ),
                         ),
-                      )
-                  ),
-                  DataCell(
-                    IntrinsicWidth(
-                      child: Text(
-                        e.ingredients?.childIngredientCategory?.name ?? '',
-                        // sortedData.entries.elementAt(index).value[ind].itemWeight?.trim() ?? '',
-                        // " ${value[ind].itemWeight}" ?? '',
-                        // maxLines: 3,
-                        textAlign: TextAlign.center,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          height: 1.5,
-                          color: gTextColor,
-                          fontSize: 8.sp,
-                          fontFamily: kFontBook,
-                        ),
                       ),
+                      placeholder: true,
                     ),
-                    placeholder: true,
-                  ),
-                ],
-              )).toList()
-            ]
+                  ],
+                )).toList()
+              ]
+          ),
         ),
       ),
     );
@@ -440,7 +442,7 @@ class _CookKitTrackingState extends State<CookKitTracking>{
                     child: Text(
                       "Ready to cook Kit Shipping",
                       style: TextStyle(
-                        fontFamily: "GothamRoundedBold_21016",
+                        fontFamily: kFontBold,
                         fontSize: 12.sp,
                         color: gPrimaryColor,
                       ),
@@ -528,15 +530,17 @@ class _CookKitTrackingState extends State<CookKitTracking>{
           ],
         ),
       )
-          : Center(child: Text(
-        errorTextResponse,
-        style: TextStyle(
-          height: 1.5,
-          color: gTextColor,
-          fontSize: 11.sp,
-          fontFamily: "GothamBold",
-        ),
-      ),);
+          : Center(child: showProductgifWhenTrackerSideError()
+      // Text(
+      //   errorTextResponse,
+      //   style: TextStyle(
+      //     height: 1.5,
+      //     color: gTextColor,
+      //     fontSize: 11.sp,
+      //     fontFamily: kFontBold,
+      //   ),
+      // ),
+      );
     }
     else{
       return const Center(
@@ -546,6 +550,28 @@ class _CookKitTrackingState extends State<CookKitTracking>{
         ),
       );
     }
+  }
+
+  showProductgifWhenTrackerSideError(){
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment :MainAxisAlignment.center,
+      children: [
+        Image.asset("assets/images/Shipping.gif"),
+        SizedBox(
+          height: 1.5.h,
+        ),
+        Text("Hey, Your Gut Rhytam Reset Kit,\nIs Placed & Will Soon Be Picked Up\nBy Our Courier Partner.",
+          style: TextStyle(
+              fontFamily: kFontBold,
+              color: gTextColor,
+              fontSize: headingFont,
+            height: 1.5
+          ),
+          textAlign: TextAlign.center,
+        )
+      ],
+    );
   }
 
   noData(){
@@ -730,7 +756,7 @@ class _CookKitTrackingState extends State<CookKitTracking>{
     ),
   );
 
-  String awb1 = '14326322712402';
+  String awb1 = '119982675';
   String awb2 = '14326322712380';
   String awb3 = '14326322704046';
 

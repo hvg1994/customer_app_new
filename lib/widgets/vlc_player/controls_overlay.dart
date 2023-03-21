@@ -80,6 +80,7 @@ class ControlsOverlay extends StatelessWidget {
               );
 
             case PlayingState.buffering:
+              return Center(child: CircularProgressIndicator(),);
             case PlayingState.playing:
               return GestureDetector(
                 onTap: _pause,

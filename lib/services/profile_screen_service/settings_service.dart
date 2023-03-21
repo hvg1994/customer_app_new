@@ -137,6 +137,40 @@ class SettingsService extends ChangeNotifier{
     // return _isGetHomeListSuccess;
   }
 
+  Future callKaleyraGloballyChannel(String name, String accessToken) async{
+    final String channelName = "callNative";
+
+
+    var channel = MethodChannel(channelName);
+    print("CALL GLOBAL");
+
+    Map m = {
+      'user_id': name,
+      'access_token': accessToken,
+    };
+
+    print("m: $m");
+
+    try{
+      var result = await channel.invokeMethod("call_global", m).whenComplete(() {
+        // _showProgress = false;
+        // notifyListeners();
+      });
+      print("Provider callKaleyraGloballyChannel" + result.toString());
+      // final users = result['users'];
+      // print("users: ${users.runtimeType}");
+      notifyListeners();
+
+    } on PlatformException catch(e){
+      print("Provider callKaleyraGloballyChannel error" + e.message.toString());
+      // _errorMsg = e.message.toString();
+      // _isGetHomeListSuccess = false;
+      notifyListeners();
+    }
+    // return _isGetHomeListSuccess;
+  }
+
+
 // *************************************
 
 

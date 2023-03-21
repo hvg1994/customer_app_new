@@ -13,12 +13,12 @@ if (flutterRoot == null) {
 
 def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
 if (flutterVersionCode == null) {
-    flutterVersionCode = '3'
+    flutterVersionCode = '9'
 }
 
 def flutterVersionName = localProperties.getProperty('flutter.versionName')
 if (flutterVersionName == null) {
-    flutterVersionName = '3.0'
+    flutterVersionName = '9.0'
 }
 
 
@@ -64,7 +64,7 @@ android {
         applicationId "com.fembuddy.gwc_customer"
         minSdkVersion 21
         targetSdkVersion sdkVersion
-        versionCode 3
+        versionCode 9
         versionName flutterVersionName
         multiDexEnabled true
 //        ndk {
@@ -88,7 +88,7 @@ android {
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig signingConfigs.debug
             shrinkResources false
-            minifyEnabled true
+            minifyEnabled false
 //            useProguard true
             proguardFiles getDefaultProguardFile(
                     'proguard-android-optimize.txt'),

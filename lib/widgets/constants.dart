@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
+const newDashboardGreenButtonColor = Color(0xffA7CB52);
+const newDashboardLightGreyButtonColor = Color(0xffB9B4B4);
 
 const gPrimaryColor = Color(0xff4E7215);
 

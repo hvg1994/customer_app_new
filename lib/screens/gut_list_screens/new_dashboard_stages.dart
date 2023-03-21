@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_vlc_player/flutter_vlc_player.dart';
 import 'package:gwc_customer/model/dashboard_model/get_appointment/get_appointment_after_appointed.dart';
@@ -6,6 +8,7 @@ import 'package:gwc_customer/model/dashboard_model/get_program_model.dart';
 import 'package:gwc_customer/model/dashboard_model/gut_model/gut_data_model.dart';
 import 'package:gwc_customer/model/dashboard_model/shipping_approved/ship_approved_model.dart';
 import 'package:gwc_customer/model/error_model.dart';
+import 'package:gwc_customer/model/local_storage_dashboard_model.dart';
 import 'package:gwc_customer/model/profile_model/user_profile/user_profile_model.dart';
 import 'package:gwc_customer/model/ship_track_model/sipping_approve_model.dart';
 import 'package:gwc_customer/repository/api_service.dart';
@@ -40,6 +43,7 @@ import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:sizer/sizer.dart';
 import 'package:http/http.dart' as http;
+import 'package:wakelock/wakelock.dart';
 import '../../model/message_model/get_chat_groupid_model.dart';
 import '../../repository/login_otp_repository.dart';
 import '../../services/dashboard_service/gut_service/dashboard_data_service.dart';
@@ -172,8 +176,6 @@ class GutListState extends State<GutList> {
       print("isProgressDialogOpened: $isProgressDialogOpened");
       GetDashboardDataModel _getDashboardDataModel = _getData as GetDashboardDataModel;
       print("_getDashboardDataModel.app_consulation: ${_getDashboardDataModel.app_consulation}");
-
-
       // checking for the consultation data if data = appointment_booked
       setState(() {
         if(_getDashboardDataModel.app_consulation != null){
@@ -239,6 +241,29 @@ class GutListState extends State<GutList> {
           postProgramStage = _postConsultationAppointment?.data;
         }
       });
+
+      LocalStorageDashboardModel _localStorageDashboardModel = LocalStorageDashboardModel(
+        consultStage: consultationStage,
+        appointmentModel: jsonEncode(_getAppointmentDetailsModel),
+        consultStringModel: jsonEncode(_gutDataModel),
+        mrReport: (consultationStage == "report_upload") ? _gutDataModel!.value :"",
+        prepStage: prepratoryMealStage,
+        prepMealModel: jsonEncode(_prepratoryModel),
+        prepStringModel: jsonEncode(_prepProgramModel),
+        shippingStage: shippingStage,
+        shippingModel: jsonEncode(_shippingApprovedModel),
+        shippingStringModel: jsonEncode(_gutShipDataModel),
+        mealProgramStage: programOptionStage,
+        mealModel: jsonEncode(_gutProgramModel),
+        mealStringModel: jsonEncode(_gutNormalProgramModel),
+        transStage: transStage,
+        transModel: jsonEncode(_transModel),
+        transStringModel: jsonEncode(_transMealModel),
+        postProgramStage: postProgramStage,
+        postModel: jsonEncode(_postConsultationAppointment),
+        postStringModel: jsonEncode(_gutPostProgramModel),
+      );
+      _pref!.setString(AppConfig.LOCAL_DASHBOARD_DATA, jsonEncode(_localStorageDashboardModel));
     }
   }
 
@@ -722,6 +747,8 @@ class GutListState extends State<GutList> {
                       // getChatGroupId();
                       final uId = _pref!.getString(AppConfig.KALEYRA_USER_ID);
                       final res  = await getAccessToken(uId!);
+                      debugPrint(uId);
+                      // debugPrint(res);
 
                       if(res.runtimeType != ErrorModel){
                         final accessToken = _pref!.getString(AppConfig.KALEYRA_ACCESS_TOKEN);
@@ -729,6 +756,12 @@ class GutListState extends State<GutList> {
                         final chatSuccessId = _pref!.getString(AppConfig.KALEYRA_CHAT_SUCCESS_ID);
                         // chat
                         openKaleyraChat(uId, chatSuccessId!, accessToken!);
+                      }
+                      else{
+                        final result = res as ErrorModel;
+                        print("get Access Token error: ${result.message}");
+                        AppConfig().showSnackbar(context, result.message ?? '', isError: true, bottomPadding: 70);
+
                       }
                     },
                     child: Row(
@@ -1032,7 +1065,7 @@ class GutListState extends State<GutList> {
     }
   }
 
-  addUrlToVideoPlayer(String url){
+  addUrlToVideoPlayer(String url) async{
     print("url"+ url);
     _mealPlayerController = VlcPlayerController.network(url,
       // "assets/images/new_ds/popup_video.mp4",
@@ -1061,6 +1094,18 @@ class GutListState extends State<GutList> {
         ]),
       ),
     );
+    if( !await Wakelock.enabled){
+      Wakelock.enable();
+    }
+  }
+
+  disposePlayer() async{
+    if(_mealPlayerController != null){
+      _mealPlayerController!.dispose();
+    }
+    if(await Wakelock.enabled){
+      Wakelock.disable();
+    }
   }
 
   mealReadySheet(){
@@ -1115,6 +1160,7 @@ class GutListState extends State<GutList> {
                 setState(() {
                   isShown = false;
                 });
+                disposePlayer();
                 if(isMealProgressOpened){
                   Navigator.pop(context);
                 }
@@ -1139,10 +1185,12 @@ class GutListState extends State<GutList> {
             SizedBox(width: 5.w),
             GestureDetector(
               onTap: (isPressed) ? (){} : () {
+                Navigator.pop(context);
                 sendApproveStatus('no');
                 setState(() {
                   isShown = false;
                 });
+                disposePlayer();
                 if(isMealProgressOpened){
                   Navigator.pop(context);
                 }
@@ -1273,6 +1321,7 @@ class GutListState extends State<GutList> {
         goToScreen(DoctorSlotsDetailsScreen(bookingDate: model!.value!.date!,
           bookingTime: model.value!.slotStartTime!,
           dashboardValueMap: model.value!.toJson(),isFromDashboard: true,));
+
         break;
       case 'consultation_done':
         goToScreen(const ConsultationSuccess());
