@@ -19,6 +19,7 @@ import 'package:gwc_customer/screens/appointment_screens/doctor_slots_details_sc
 import 'package:gwc_customer/screens/cook_kit_shipping_screens/cook_kit_tracking.dart';
 import 'package:gwc_customer/screens/evalution_form/evaluation_get_details.dart';
 import 'package:gwc_customer/screens/gut_list_screens/meal_popup.dart';
+import 'package:gwc_customer/screens/home_remedies/home_remedies_screen.dart';
 import 'package:gwc_customer/screens/post_program_screens/new_post_program/pp_levels_demo.dart';
 import 'package:gwc_customer/screens/prepratory%20plan/prepratory_meal_completed_screen.dart';
 import 'package:gwc_customer/screens/prepratory%20plan/prepratory_plan_screen.dart';
@@ -30,6 +31,7 @@ import 'package:gwc_customer/services/login_otp_service.dart';
 import 'package:gwc_customer/services/profile_screen_service/user_profile_service.dart';
 import 'package:gwc_customer/services/shipping_service/ship_track_service.dart';
 import 'package:jwt_decode/jwt_decode.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:sizer/sizer.dart';
 import '../../model/error_model.dart';
 import '../../utils/app_config.dart';
@@ -87,7 +89,9 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
       newDashboardGreenButtonColor,
       false,
       "View Files",
+      newDashboardGreenButtonColor,
       "",
+        newDashboardLightGreyButtonColor,
       StageType.evaluation
     ),
     NewStageLevels(
@@ -102,7 +106,9 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
       gMainColor,
       true,
       "Schedule",
-      "Join Consult",
+        newDashboardLightGreyButtonColor,
+        "Join Consult",
+        newDashboardLightGreyButtonColor,
         StageType.med_consultation
     ),
     NewStageLevels(
@@ -117,11 +123,14 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
       newDashboardLightGreyButtonColor,
       false,
       "View Plan",
+        newDashboardLightGreyButtonColor,
         "",
+        newDashboardLightGreyButtonColor,
         StageType.prep_meal,
       showTrackGutIcon: true,
       trackGutIconCircleName: "assets/images/dashboard_stages/Group 62698.png",
-      trackGutIconName: "assets/images/dashboard_stages/Group 43340.png"
+      trackGutIconName: "assets/images/dashboard_stages/Group 43340.png",
+        trackGutIconColor: newDashboardLightGreyButtonColor
     ),
     NewStageLevels(
       "assets/images/dashboard_stages/Group 43553.png",
@@ -136,11 +145,14 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
         newDashboardLightGreyButtonColor,
       false,
       "View Plan",
+      newDashboardLightGreyButtonColor,
         "",
+        newDashboardLightGreyButtonColor,
         StageType.normal_meal,
         showTrackGutIcon: true,
         trackGutIconCircleName: "assets/images/dashboard_stages/Group 62698.png",
-        trackGutIconName: "assets/images/dashboard_stages/noun-intestine-2647136.png"
+        trackGutIconName: "assets/images/dashboard_stages/remedy.png",
+        trackGutIconColor: newDashboardLightGreyButtonColor
     ),
     NewStageLevels(
       "assets/images/dashboard_stages/Group 43553.png",
@@ -153,7 +165,9 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
       newDashboardLightGreyButtonColor,
       true,
       "Schedule",
+        newDashboardLightGreyButtonColor,
       "Join Consult",
+        newDashboardLightGreyButtonColor,
         StageType.post_consultation,
     ),
   ];
@@ -327,7 +341,12 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
                   ),
                   Expanded(
                     child: Center(
-                      child: view(),
+                      child: (isProgressDialogOpened) ?
+                      Shimmer.fromColors(
+                        baseColor: Colors.grey.withOpacity(0.3),
+                        highlightColor: Colors.grey.withOpacity(0.7),
+                        child: view(),
+                      ) : view(),
                     ),
                   ),
                 ],
@@ -593,12 +612,16 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
                             "0${index + 1}",
                             levels[index].rescheduleButton,
                             levels[index].buttonTitle,
+                            levels[index].button1Color,
                             levels[index].button2Title,
+                              levels[index].button2Color,
                             levels[index].type,
                             showTrackGutIcon: levels[index].showTrackGutIcon,
                             trackGutIconName: levels[index].trackGutIconName,
                             trackGutIconCircleName:levels[index].trackGutIconCircleName,
-                            circleInsideStageImageColor: levels[index].circleInsideImageColor
+                            trackGutIconColor: levels[index].trackGutIconColor,
+                            circleInsideStageImageColor: levels[index].circleInsideImageColor,
+
                           ),
 
                         ],
@@ -1181,11 +1204,15 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
       String levels,
       bool rescheduleButton,
       String buttonTitle,
-      String button2Title, StageType type,
+      Color button1Color,
+      String button2Title,
+      Color button2Color,
+      StageType type,
   {bool? showTrackGutIcon,
   String? trackGutIconName,
   String? trackGutIconCircleName,
   Color? circleInsideStageImageColor,
+    Color? trackGutIconColor
   }
       ) {
     return IntrinsicHeight(
@@ -1280,9 +1307,10 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
                                   right: 3,
                                   left: 1,
                                   child: Image(
-                                    height: 3.w,
+                                    height: 1.8.h,
                                     image:  AssetImage(
                                         trackGutIconName ?? ''),
+
                                   ),
                                 ),
                               ],
@@ -1371,11 +1399,11 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
                     // ),
                     Row(
                       children: [
-                        buildButton(buttonTitle, newDashboardGreenButtonColor, type, 1),
+                        buildButton(buttonTitle, button1Color, type, 1),
                         SizedBox(width: 3.w),
                         (rescheduleButton)
                             ? buildButton(
-                            button2Title, newDashboardLightGreyButtonColor, type, 2)
+                            button2Title, button2Color, type, 2)
                             : const SizedBox(),
                         SizedBox(width: 3.w),
                       ],
@@ -1435,11 +1463,17 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
       case 'consultation_rejected':
         levels[0].stageColor = unlockGreenColor;
         levels[1].stageColor = unlockYellowColor;
+        levels[1].buttonTitle = "Rejected";
+        levels[1].button1Color = gsecondaryColor;
         break;
       case 'report_upload':
         levels[0].stageColor = unlockGreenColor;
         levels[1].stageColor = unlockYellowColor;
         levels[1].button2Title = "View MR";
+        levels[1].button2Color = newDashboardGreenButtonColor;
+        levels[1].buttonTitle = "Completed";
+        levels[1].button1Color = gsecondaryColor;
+
         break;
       case 'prep_meal_plan_completed':
         levels[0].stageColor = unlockGreenColor;
@@ -1454,6 +1488,7 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
           levels[2].stageCircleImage = unlockYellowCircleImage;
           levels[2].trackGutIconCircleName = yellowTrackGutCircle;
           levels[2].circleInsideImageColor = unlockYellowColor;
+          levels[2].button1Color = gMainColor;
         }
         else{
           levels[2].stageColor = unlockGreenColor;
@@ -1461,6 +1496,7 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
           levels[2].stageCircleImage = unlockGreenCircleImage;
           levels[2].trackGutIconCircleName = greenTrackGutCircle;
           levels[2].circleInsideImageColor = unlockGreenColor;
+          levels[2].button1Color = newDashboardGreenButtonColor;
         }
         break;
       case 'shipping_packed':
@@ -1477,6 +1513,7 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
           levels[2].stageCircleImage = unlockYellowCircleImage;
           levels[2].trackGutIconCircleName = yellowTrackGutCircle;
           levels[2].circleInsideImageColor = unlockYellowColor;
+          levels[2].button1Color = gMainColor;
 
         }
         else{
@@ -1485,6 +1522,8 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
           levels[2].stageCircleImage = unlockGreenCircleImage;
           levels[2].trackGutIconCircleName = greenTrackGutCircle;
           levels[2].circleInsideImageColor = unlockGreenColor;
+          levels[2].button1Color = newDashboardGreenButtonColor;
+
         }
         break;
       case 'shipping_paused':
@@ -1501,6 +1540,7 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
           levels[2].stageCircleImage = unlockYellowCircleImage;
           levels[2].trackGutIconCircleName = yellowTrackGutCircle;
           levels[2].circleInsideImageColor = unlockYellowColor;
+          levels[2].button1Color = gMainColor;
 
         }
         else{
@@ -1509,6 +1549,7 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
           levels[2].stageCircleImage = unlockGreenCircleImage;
           levels[2].trackGutIconCircleName = greenTrackGutCircle;
           levels[2].circleInsideImageColor = unlockGreenColor;
+          levels[2].button1Color = newDashboardGreenButtonColor;
         }
         break;
       case 'shipping_delivered':
@@ -1524,6 +1565,7 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
           levels[2].stageCircleImage = unlockYellowCircleImage;
           levels[2].trackGutIconCircleName = yellowTrackGutCircle;
           levels[2].circleInsideImageColor = unlockYellowColor;
+          levels[2].button1Color = gMainColor;
 
         }
         else{
@@ -1532,6 +1574,7 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
           levels[2].stageCircleImage = unlockGreenCircleImage;
           levels[2].trackGutIconCircleName = greenTrackGutCircle;
           levels[2].circleInsideImageColor = unlockGreenColor;
+          levels[2].button1Color = newDashboardGreenButtonColor;
         }
         break;
       case 'shipping_approved':
@@ -1547,6 +1590,7 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
           levels[2].stageCircleImage = unlockYellowCircleImage;
           levels[2].trackGutIconCircleName = yellowTrackGutCircle;
           levels[2].circleInsideImageColor = unlockYellowColor;
+          levels[2].button1Color = gMainColor;
         }
         else{
           levels[2].stageColor = unlockGreenColor;
@@ -1554,6 +1598,7 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
           levels[2].stageCircleImage = unlockGreenCircleImage;
           levels[2].trackGutIconCircleName = greenTrackGutCircle;
           levels[2].circleInsideImageColor = unlockGreenColor;
+          levels[2].button1Color = newDashboardGreenButtonColor;
         }
         break;
       case 'start_program':
@@ -1569,12 +1614,14 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
         levels[2].stageCircleImage = unlockGreenCircleImage;
         levels[2].trackGutIconCircleName = greenTrackGutCircle;
         levels[2].circleInsideImageColor = unlockGreenColor;
+        levels[2].button1Color = newDashboardGreenButtonColor;
 
         levels[3].stageColor = unlockYellowColor;
         levels[3].lockImage = unlockYellowImage;
         levels[3].stageCircleImage = unlockYellowCircleImage;
         levels[3].trackGutIconCircleName = yellowTrackGutCircle;
         levels[3].circleInsideImageColor = unlockYellowColor;
+        levels[3].button1Color = newDashboardGreenButtonColor;
 
 
         break;
@@ -1591,6 +1638,7 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
         levels[2].stageCircleImage = unlockGreenCircleImage;
         levels[2].trackGutIconCircleName = greenTrackGutCircle;
         levels[2].circleInsideImageColor = unlockGreenColor;
+        levels[2].button1Color = newDashboardGreenButtonColor;
 
         print("_prepratoryModel!.value!.isPrepCompleted != null: ${_transModel!.value!.isTransMealCompleted != null}");
         print("_prepratoryModel!.value!.isPrepCompleted! == true: ${_transModel!.value!.isTransMealCompleted == true} ${_transModel!.value!.isTransMealCompleted}");
@@ -1599,17 +1647,19 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
           levels[3].stageColor = unlockGreenColor;
           levels[3].lockImage = unlockGreenImage;
           levels[3].stageCircleImage = unlockGreenCircleImage;
-          levels[3].trackGutIconCircleName = greenTrackGutCircle;
-          levels[3].circleInsideImageColor = unlockGreenColor;
+          // levels[3].trackGutIconCircleName = greenTrackGutCircle;
+          // levels[3].circleInsideImageColor = unlockGreenColor;
         }
         else{
           levels[3].stageColor = unlockYellowColor;
           levels[3].lockImage = unlockYellowImage;
           levels[3].stageCircleImage = unlockYellowCircleImage;
-          levels[3].trackGutIconCircleName = yellowTrackGutCircle;
-          levels[3].circleInsideImageColor = unlockYellowColor;
+          // levels[3].trackGutIconCircleName = yellowTrackGutCircle;
+          // levels[3].circleInsideImageColor = unlockYellowColor;
 
         }
+        levels[3].button1Color = newDashboardGreenButtonColor;
+
         break;
       case 'post_program':
         levels[0].stageColor = unlockGreenColor;
@@ -1624,23 +1674,28 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
         levels[2].stageCircleImage = unlockGreenCircleImage;
         levels[2].trackGutIconCircleName = greenTrackGutCircle;
         levels[2].circleInsideImageColor = unlockGreenColor;
+        levels[2].button1Color = newDashboardGreenButtonColor;
 
         if((_transModel?.value!.isTransMealCompleted != null) && _transModel?.value?.isTransMealCompleted == true){
           levels[3].stageColor = unlockGreenColor;
           levels[3].lockImage = unlockGreenImage;
           levels[3].stageCircleImage = unlockGreenCircleImage;
-          levels[3].trackGutIconCircleName = greenTrackGutCircle;
-          levels[3].circleInsideImageColor = unlockGreenColor;
+          // levels[3].trackGutIconCircleName = greenTrackGutCircle;
+          // levels[3].circleInsideImageColor = unlockGreenColor;
 
         }
         // else{
         //   levels[3].stageColor = unlockYellowColor;
         //   levels[3].lockImage = unlockYellowImage;
         // }
+        levels[3].button1Color = newDashboardGreenButtonColor;
         levels[4].stageColor = unlockYellowColor;
         levels[4].lockImage = unlockYellowImage;
         levels[4].stageCircleImage = unlockYellowCircleImage;
         levels[4].circleInsideImageColor = unlockYellowColor;
+        levels[4].trackGutIconCircleName = yellowTrackGutCircle;
+        levels[4].circleInsideImageColor = unlockYellowColor;
+        levels[4].button1Color = newDashboardGreenButtonColor;
 
         break;
       case 'post_appointment_booked':
@@ -1658,23 +1713,32 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
         levels[2].stageCircleImage = unlockGreenCircleImage;
         levels[2].trackGutIconCircleName = greenTrackGutCircle;
         levels[2].circleInsideImageColor = unlockGreenColor;
+        levels[2].button1Color = newDashboardGreenButtonColor;
 
         if((_transModel?.value!.isTransMealCompleted != null) && _transModel?.value?.isTransMealCompleted == true){
           levels[3].stageColor = unlockGreenColor;
           levels[3].lockImage = unlockGreenImage;
           levels[3].stageCircleImage = unlockGreenCircleImage;
-          levels[3].trackGutIconCircleName = greenTrackGutCircle;
-          levels[3].circleInsideImageColor = unlockGreenColor;
+          // levels[3].trackGutIconCircleName = greenTrackGutCircle;
+          // levels[3].circleInsideImageColor = unlockGreenColor;
+          //
         }
         // else{
         //   levels[3].stageColor = unlockYellowColor;
         //   levels[3].lockImage = unlockYellowImage;
         // }
+        levels[3].button1Color = newDashboardGreenButtonColor;
+
         levels[4].stageColor = unlockYellowColor;
         levels[4].lockImage = unlockYellowImage;
         levels[4].buttonTitle = "Reschedule";
         levels[4].stageCircleImage = unlockYellowCircleImage;
         levels[4].circleInsideImageColor = unlockYellowColor;
+        levels[4].trackGutIconCircleName = yellowTrackGutCircle;
+        levels[4].circleInsideImageColor = unlockYellowColor;
+        levels[4].button1Color = newDashboardGreenButtonColor;
+        levels[4].button2Color = newDashboardGreenButtonColor;
+
         break;
       case 'protocol_guide':
         levels[0].stageColor = unlockGreenColor;
@@ -1690,15 +1754,18 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
         levels[2].stageCircleImage = unlockGreenCircleImage;
         levels[2].trackGutIconCircleName = greenTrackGutCircle;
         levels[2].circleInsideImageColor = unlockGreenColor;
+        levels[2].button1Color = newDashboardGreenButtonColor;
 
         if((_transModel?.value!.isTransMealCompleted != null) && _transModel?.value?.isTransMealCompleted == true){
           levels[3].stageColor = unlockGreenColor;
           levels[3].lockImage = unlockGreenImage;
           levels[3].stageCircleImage = unlockGreenCircleImage;
-          levels[3].trackGutIconCircleName = greenTrackGutCircle;
-          levels[3].circleInsideImageColor = unlockGreenColor;
+          // levels[3].trackGutIconCircleName = greenTrackGutCircle;
+          // levels[3].circleInsideImageColor = unlockGreenColor;
 
         }
+        levels[3].button1Color = newDashboardGreenButtonColor;
+
         // else{
         //   levels[3].stageColor = unlockYellowColor;
         //   levels[3].lockImage = unlockYellowImage;
@@ -1708,6 +1775,11 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
         levels[4].stageCircleImage = unlockYellowCircleImage;
         levels[4].circleInsideImageColor = unlockYellowColor;
         levels[4].button2Title = "GMG";
+        levels[4].trackGutIconCircleName = yellowTrackGutCircle;
+        levels[4].circleInsideImageColor = unlockYellowColor;
+        levels[4].button1Color = newDashboardGreenButtonColor;
+        levels[4].button2Color = newDashboardGreenButtonColor;
+
 
         break;
     }
@@ -1864,6 +1936,7 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
         }
         break;
       case StageType.normal_meal:
+        goToScreen(HomeRemediesScreen());
         // need to show Remedies UI
         break;
       case StageType.evaluation:
@@ -1897,11 +1970,14 @@ class NewStageLevels {
   Color stageColor;
   bool rescheduleButton;
   String buttonTitle;
+  Color button1Color;
   String button2Title;
+  Color button2Color;
   StageType type;
   bool showTrackGutIcon;
   String? trackGutIconName;
   String? trackGutIconCircleName;
+  Color? trackGutIconColor;
 
   NewStageLevels(
       this.stageCircleImage,
@@ -1912,12 +1988,15 @@ class NewStageLevels {
       this.stageColor,
       this.rescheduleButton,
       this.buttonTitle,
+      this.button1Color,
       this.button2Title,
+      this.button2Color,
       this.type,
       {this.showTrackGutIcon = false,
         this.trackGutIconName,
         this.trackGutIconCircleName,
         this.circleInsideImageColor,
+        this.trackGutIconColor,
       });
 }
 

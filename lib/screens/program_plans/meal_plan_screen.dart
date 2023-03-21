@@ -225,8 +225,88 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
         });
       }
     }
+    for (int i = 0; i < presentDay!; i++) {
+      print(presentDay);
+      if (listData[i].isCompleted == 0 && i + 1 != selectedDay!) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          showMoreTextSheet(listData[i].dayNumber);
+          // AppConfig().showSnackbar(
+          //     context,
+          //     "Please Complete Day ${listData[i].dayNumber}", isError: true,
+          //     duration: 50000,
+          //     action: SnackBarAction(
+          //       label: 'Go',
+          //       onPressed: (){
+          //         ScaffoldMessenger.of(context).hideCurrentSnackBar();
+          //         selectedDay = 1;
+          //         getMeals();
+          //       },
+          //     )
+          // );
+        });
+        break;
+      }
+    }
+
   }
 
+  showMoreTextSheet(String? dayNumber){
+    return AppConfig().showSheet(
+        context,
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Center(
+                child: Column(
+                  children: [
+                    Text(
+                      "It is key to complete your Previous day tracker before moving on to the Current day. ",
+                      style: TextStyle(
+                          fontSize: subHeadingFont,
+                          fontFamily: kFontBook,
+                          height: 1.4),
+                      textAlign: TextAlign.justify,
+                    ),
+                    SizedBox(height: 1.h,),
+                    GestureDetector(
+                      onTap: () {
+                        selectedDay = int.parse(dayNumber!);
+                        getMeals();
+                        Navigator.pop(context);
+                      },
+                      child: Center(
+                        child: Container(
+                          padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 10.w),
+                          decoration: BoxDecoration(
+                            color: gsecondaryColor,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: gMainColor, width: 1),
+                          ),
+                          child: Text(
+                            'Go to - Day${dayNumber}',
+                            style: TextStyle(
+                              fontFamily: kFontMedium,
+                              color: gWhiteColor,
+                              fontSize: 11.sp,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            SizedBox(height: 1.h)
+          ],
+        ),
+        bottomSheetHeight: 34.h,
+        circleIcon: bsHeadPinIcon,
+       );
+  }
 
   buildDayCompletedClap() {
     return AppConfig().showSheet(
@@ -358,6 +438,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
   }
 
   getMeals() async {
+    print(selectedDay);
     statusList.clear();
     lst.clear();
     final result = await ProgramService(repository: repository)
@@ -703,52 +784,52 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      SimpleTooltip(
-                        borderColor: gWhiteColor,
-                        maxWidth: 50.w,
-                        ballonPadding: EdgeInsets.symmetric(
-                            horizontal: 0.w, vertical: 0.h),
-                        arrowTipDistance: 2,
-                        arrowLength: 10,
-                        arrowBaseWidth: 10,
-                        hideOnTooltipTap: true,
-                        // targetCenter: const Offset(3,4),
-                        tooltipTap: () {
-                          setState(() {
-                            shoppingToolTip = false;
-                          });
-                        },
-                        animationDuration: const Duration(seconds: 3),
-                        show: shoppingToolTip,
-                        tooltipDirection: TooltipDirection.down,
-                        child: Align(
-                          alignment: Alignment.center,
-                          child: GestureDetector(
-                            onTap: () {
-                                shoppingToolTip = false;
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (context) => CookKitTracking(
-                                      currentStage: '',
-                                      initialIndex: 1,
-                                    ),
-                                  ),
-                                );
-                            },
-                            child: Image(
-                              height: 3.h,
-                              image: AssetImage("assets/images/list.png"),
-                            ),
-                          ),
-                        ),
-                        content: Text(
-                          "Tap here for Shopping List",
-                          style: TextStyle(
-                              fontSize: PPConstants().topViewSubFontSize,
-                              fontFamily: MealPlanConstants().mealNameFont,
-                              color: gHintTextColor),
-                        ),
-                      ),
+                      // SimpleTooltip(
+                      //   borderColor: gWhiteColor,
+                      //   maxWidth: 50.w,
+                      //   ballonPadding: EdgeInsets.symmetric(
+                      //       horizontal: 0.w, vertical: 0.h),
+                      //   arrowTipDistance: 2,
+                      //   arrowLength: 10,
+                      //   arrowBaseWidth: 10,
+                      //   hideOnTooltipTap: true,
+                      //   // targetCenter: const Offset(3,4),
+                      //   tooltipTap: () {
+                      //     setState(() {
+                      //       shoppingToolTip = false;
+                      //     });
+                      //   },
+                      //   animationDuration: const Duration(seconds: 3),
+                      //   show: shoppingToolTip,
+                      //   tooltipDirection: TooltipDirection.down,
+                      //   child: Align(
+                      //     alignment: Alignment.center,
+                      //     child: GestureDetector(
+                      //       onTap: () {
+                      //           shoppingToolTip = false;
+                      //           Navigator.of(context).push(
+                      //             MaterialPageRoute(
+                      //               builder: (context) => CookKitTracking(
+                      //                 currentStage: '',
+                      //                 initialIndex: 1,
+                      //               ),
+                      //             ),
+                      //           );
+                      //       },
+                      //       child: Image(
+                      //         height: 3.h,
+                      //         image: AssetImage("assets/images/list.png"),
+                      //       ),
+                      //     ),
+                      //   ),
+                      //   content: Text(
+                      //     "Tap here for Shopping List",
+                      //     style: TextStyle(
+                      //         fontSize: PPConstants().topViewSubFontSize,
+                      //         fontFamily: MealPlanConstants().mealNameFont,
+                      //         color: gHintTextColor),
+                      //   ),
+                      // ),
                       IconButton(
                         icon: Icon(
                           Icons.help_outline_rounded,

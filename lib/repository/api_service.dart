@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:crypto/crypto.dart';
+import 'package:gwc_customer/model/home_remedy_model/home_remedies_model.dart';
 import 'package:gwc_customer/model/prepratory_meal_model/get_prep_meal_track_model.dart';
 import 'package:gwc_customer/model/prepratory_meal_model/prep_meal_model.dart';
 import 'package:gwc_customer/model/prepratory_meal_model/transition_meal_model.dart';
@@ -2519,6 +2520,48 @@ class ApiClient {
     return result;
   }
 
+
+  Future getHomeRemediesApi() async {
+    final String path = homeRemediesUrl;
+
+    print('serverGetProblemList Response header: $path');
+    dynamic result;
+
+    try {
+      final response = await httpClient
+          .get(
+        Uri.parse(path),
+        headers: {
+          "Authorization": getHeaderToken(),
+        },
+      )
+          .timeout(const Duration(seconds: 45));
+
+      print('serverGetProblemList Response header: $path');
+      print('serverGetProblemList Response status: ${response.statusCode}');
+      print('serverGetProblemList Response body: ${response.body}');
+      final json = jsonDecode(response.body);
+
+      print('serverGetProblemList result: $json');
+
+      if (response.statusCode != 200) {
+        result = ErrorModel(
+            status: response.statusCode.toString(), message: response.body);
+      }   else if(response.statusCode == 500){
+        result = ErrorModel(status: "0", message: AppConfig.oopsMessage);
+      }
+      else {
+        if (json['status'] != 200) {
+          result = ErrorModel.fromJson(json);
+        } else {
+          result = HomeRemediesModel.fromJson(json);
+        }
+      }
+    } catch (e) {
+      result = ErrorModel(status: "0", message: e.toString());
+    }
+    return result;
+  }
 
 
 

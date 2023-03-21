@@ -1151,6 +1151,14 @@ class _ExistingUserState extends State<ExistingUser> {
       _pref.setBool(AppConfig.isLogin, false);
 
       ErrorModel response = result as ErrorModel;
+      Get.snackbar(
+        "",
+        response.message ?? '',
+        titleText: SizedBox.shrink(),
+        colorText: gWhiteColor,
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: gsecondaryColor.withOpacity(0.55),
+      );
       AppConfig().showSnackbar(context, response.message!, isError: true);
       // Navigator.of(context).pushReplacement(
       //   MaterialPageRoute(

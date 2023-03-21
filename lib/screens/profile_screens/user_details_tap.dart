@@ -45,11 +45,11 @@ class _UserDetailsTapState extends State<UserDetailsTap> {
                         EdgeInsets.only(right: 6.w, top: 1.h, bottom: 1.h),
                     indicatorPadding: EdgeInsets.only(right: 5.w),
                     unselectedLabelStyle: TextStyle(
-                        fontFamily: "GothamBook",
+                        fontFamily: kFontBook,
                         color: gHintTextColor,
                         fontSize: 9.sp),
                     labelStyle: TextStyle(
-                        fontFamily: "GothamMedium",
+                        fontFamily: kFontMedium,
                         color: gPrimaryColor,
                         fontSize: 10.sp),
                     tabs: const [

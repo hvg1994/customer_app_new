@@ -67,8 +67,8 @@ class _CookKitTrackingState extends State<CookKitTracking>{
   void initState() {
     // TODO: implement initState
     super.initState();
+    getShoppingList();
     if(widget.currentStage.isNotEmpty){
-      getShoppingList();
       if((widget.currentStage == 'shipping_approved' || widget.currentStage == 'shipping_delivered' || widget.currentStage == 'shipping_packed') && widget.awb_number != null){
         shippingTracker();
       }
