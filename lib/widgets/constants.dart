@@ -35,6 +35,8 @@ const kDividerColor = Color(0xff000029);
 const String kFontMedium = 'GothamMedium';
 const String kFontBook = 'GothamBook';
 const String kFontBold = 'GothamBold';
+const String kFontSensaBrush = 'SensaBrush';
+
 
 
 // new dashboard colors

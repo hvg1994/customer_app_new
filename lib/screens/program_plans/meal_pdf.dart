@@ -145,10 +145,13 @@ class _MealPdfState extends State<MealPdf> {
                                               visible: widget.isVideoWidgetVisible,
                                               child: videoMp4Widget(
                                               onTap: (){
-                                                addChewieVideoPlayer(widget.mealVideoLink ?? '');
-                                                setState(() {
-                                                  showMealVideo = true;
-                                                });
+                                                if(widget.mealVideoLink != null && widget.mealVideoLink!.isNotEmpty){
+                                                  addChewieVideoPlayer(widget.mealVideoLink ?? '');
+                                                  setState(() {
+                                                    showMealVideo = true;
+                                                  });
+                                                }
+
                                               })),
                                           Flexible(
                                             child: Stack(

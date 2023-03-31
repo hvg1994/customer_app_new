@@ -54,41 +54,7 @@ class _FaqScreenState extends State<FaqScreen> {
   // outside?
   // Only fruits, boiled vegetables, fruit juices & tender coconut water. No milk, No sugar.
 
-  List<String> questions = [
-    'Can I skip a day and restart?',
-    'Can the program be followed by a family member?',
-    "Will I get a refund if i can't continue?",
-    'Can I have ice cream/supplements/curd/egg/apple cider vinegar?',
-    'Can I add flavoring to the meals?',
-    'I am out the whole day today & will be unable to follow my plan, can I have something from outside?',
-    'Can I skip yoga?',
-    'When should I do yoga?',
-    'I am not fit enough to do the yoga modules.',
-  ];
-  List<String> paths = [
-    'assets/images/faq/faq1.png',
-    'assets/images/faq/faq2.png',
-    'assets/images/faq/faq3.png',
-    'assets/images/faq/faq4.png',
-    'assets/images/faq/faq5.png',
-    'assets/images/faq/faq6.png',
-    'assets/images/faq/faq7.png',
-    'assets/images/faq/faq8.png',
-    'assets/images/faq/faq9.png',
-  ];
 
-  List<String> answers = [
-    'No, this will drastically reduce the efficacy.',
-    'No, each program is customized based on your gut & hence will not work for another person.',
-    'Once your program has been created we will not be able to issue a refund.',
-    'No, None. This will drastically reduce the efficacy.',
-    'Yes but only the ones prescribed in your plan. Honey is something you can add.',
-    'Only fruits, boiled vegetables, fruit juices & tender coconut water. No milk, No sugar.',
-    'Not at all, Yoga does 30% of the work in your program & is vital.',
-    'Please follow your yoga modules as prescribed in your Diet & Yoga plans',
-    'Get in touch with us & we’ll have it changed for you.'
-  ];
-  List<FAQ> faq = [];
   List<FAQ> searchFAQResults = [];
 
 
@@ -102,9 +68,6 @@ class _FaqScreenState extends State<FaqScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    for (int i = 0; i < questions.length; i++) {
-      faq.add(FAQ(questions[i], paths[i], answers[i]));
-    }
 
     faqFuture = SettingsService(repository: repo).getFaqListService();
   }
@@ -134,9 +97,8 @@ class _FaqScreenState extends State<FaqScreen> {
                   ),
                   SizedBox(height: 1.h),
                   buildSearchWidget(),
+                  // buildGrids(),
                   buildExpansionTiles(),
-                  //  newDesignUI(context)
-                  // buildQuestions("Can I skip a day and restart?", 0),
                 ],
               ),
             ),
@@ -565,10 +527,6 @@ class _FaqScreenState extends State<FaqScreen> {
                 )));
   }
 
-  oldDesignUI(BuildContext context) {
-    return faq.map((e) => buildQuestionsOld(e, faq.indexOf(e))).toList();
-  }
-
   newDesignUI(BuildContext context) {
     return FutureBuilder(
         future: faqFuture,
@@ -638,6 +596,53 @@ class _FaqScreenState extends State<FaqScreen> {
 
   SettingsRepository repo =
       SettingsRepository(apiClient: ApiClient(httpClient: http.Client()));
+
+  gridTile(String assetName){
+    return Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.5),
+              blurRadius: 5,
+              offset: const Offset(2, 10),
+            ),
+          ],
+        ),
+        child: Column(
+          children: [
+            Center(child: Image.asset(assetName)),
+            Text("Transaction",
+              style: TextStyle(
+                  fontFamily: kFontMedium,
+                  fontSize: 10.sp
+              ),
+            )
+          ],
+        )
+    );
+  }
+
+  buildGrids() {
+    return GridView.builder(
+        scrollDirection: Axis.vertical,
+        physics: const ScrollPhysics(),
+        shrinkWrap: true,
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          mainAxisSpacing: 10,
+          crossAxisSpacing: 10,
+          crossAxisCount: 3,
+          mainAxisExtent: 20.h,
+          // childAspectRatio: MediaQuery.of(context).size.width /
+          //     (MediaQuery.of(context).size.height / 1.4),
+        ),
+        // gridDelegate:SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4),
+        itemCount: 2,
+        itemBuilder: (context, index) {
+          return gridTile("assets/images/faq/challenges_faq.png");
+        });
+  }
+
 }
 
 class FAQ {

@@ -6,7 +6,8 @@ AppConfig() will be Singleton class so than we can use this as local storage
 
 import 'dart:io';
 
-import 'package:catcher/catcher.dart';
+// import 'package:catcher/catcher.dart';
+import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:device_preview/device_preview.dart' hide DeviceType;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -15,7 +16,6 @@ import 'package:flutter/material.dart' hide ModalBottomSheetRoute;
 import 'package:flutter/services.dart';
 import 'package:flutter_sim_country_code/flutter_sim_country_code.dart';
 import 'package:gwc_customer/services/local_notification_service.dart';
-import 'package:gwc_customer/services/quick_blox_service/quick_blox_service.dart';
 import 'package:gwc_customer/splash_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -30,25 +30,31 @@ import 'utils/app_config.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
-
 import 'utils/http_override.dart';
 
 
 cacheManager(){
-  CatcherOptions debugOptions =
-  CatcherOptions(DialogReportMode(), [ConsoleHandler()]);
-
-  /// Release configuration. Same as above, but once user accepts dialog, user will be prompted to send email with crash to support.
-  CatcherOptions releaseOptions = CatcherOptions(DialogReportMode(), [
-    EmailManualHandler(["support@email.com"])
-  ]);
-
-  /// STEP 2. Pass your root widget (MyApp) along with Catcher configuration:
-  Catcher(rootWidget: MyApp(), debugConfig: debugOptions, releaseConfig: releaseOptions);
+  // CatcherOptions debugOptions =
+  // CatcherOptions(DialogReportMode(), [ConsoleHandler()]);
+  //
+  // /// Release configuration. Same as above, but once user accepts dialog, user will be prompted to send email with crash to support.
+  // CatcherOptions releaseOptions = CatcherOptions(DialogReportMode(), [
+  //   EmailManualHandler(["support@email.com"])
+  // ]);
+  //
+  // /// STEP 2. Pass your root widget (MyApp) along with Catcher configuration:
+  // Catcher(rootWidget: MyApp(), debugConfig: debugOptions, releaseConfig: releaseOptions);
 }
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  AssetsAudioPlayer.addNotificationOpenAction((notification) {
+    //custom action
+    return true; //true : handled, does not notify others listeners
+    //false : enable others listeners to handle it
+  });
+
   HttpOverrides.global = new MyHttpOverrides();
   AppConfig().preferences = await SharedPreferences.getInstance();
   // cacheManager();
@@ -189,7 +195,6 @@ class _MyAppState extends State<MyApp> {
       return  MultiProvider(
         providers: [
           ChangeNotifierProvider(create: (_) => CheckState()),
-          ListenableProvider<QuickBloxService>.value(value: QuickBloxService()),
           ChangeNotifierProvider(create: (_)=> ConsultationService())
         ],
         child: GetMaterialApp(

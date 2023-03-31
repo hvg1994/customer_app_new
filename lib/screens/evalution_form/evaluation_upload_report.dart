@@ -2,14 +2,20 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:gwc_customer/model/error_model.dart';
 import 'package:gwc_customer/model/evaluation_from_models/evaluation_model_format1.dart';
+import 'package:gwc_customer/model/new_user_model/about_program_model/about_program_model.dart';
+import 'package:gwc_customer/repository/api_service.dart';
+import 'package:gwc_customer/repository/new_user_repository/about_program_repository.dart';
 import 'package:gwc_customer/screens/evalution_form/personal_details_screen2.dart';
+import 'package:gwc_customer/services/new_user_service/about_program_service.dart';
 import 'package:gwc_customer/utils/app_config.dart';
 import 'package:gwc_customer/widgets/constants.dart';
 import 'package:gwc_customer/widgets/widgets.dart';
 import 'package:sizer/sizer.dart';
 import 'package:appinio_video_player/appinio_video_player.dart';
 import 'package:wakelock/wakelock.dart';
+import 'package:http/http.dart' as http;
 
 
 
@@ -31,7 +37,39 @@ class _EvaluationUploadReportState extends State<EvaluationUploadReport> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    addUrlToVideoPlayer("");
+    getVideoUrl();
+  }
+
+
+  @override
+  void dispose(){
+    disposePlayer();
+    super.dispose();
+  }
+
+
+
+
+  getVideoUrl() async{
+    final res = await AboutProgramService(repository: repository).serverAboutProgramService();
+
+    if(res.runtimeType == ErrorModel){
+      final msg = res as ErrorModel;
+      Future.delayed(Duration.zero).whenComplete(() {
+        AppConfig().showSnackbar(context, msg.message ?? '', isError: true);
+      });
+    }
+    else{
+      final result = res as AboutProgramModel;
+      if(result.uploadReportVideo != null && result.uploadReportVideo!.isNotEmpty){
+        addUrlToVideoPlayer(result.uploadReportVideo ?? '');
+      }
+      else{
+        Future.delayed(Duration.zero).whenComplete(() {
+          AppConfig().showSnackbar(context, AppConfig.oopsMessage, isError: true);
+        });
+      }
+    }
   }
 
   @override
@@ -231,10 +269,7 @@ class _EvaluationUploadReportState extends State<EvaluationUploadReport> {
                       showUploadReportPopup();
 
                       if(_videoPlayerController != null){
-                        _videoPlayerController!.dispose();
-                      }
-                      if(_customVideoPlayerController != null){
-                        _customVideoPlayerController!.dispose();
+                        _videoPlayerController!.pause();
                       }
                       // Navigator.push(
                       //     context,
@@ -293,10 +328,7 @@ class _EvaluationUploadReportState extends State<EvaluationUploadReport> {
                 child: Center(child:  GestureDetector(
                     onTap: (){
                       if(_videoPlayerController != null){
-                        _videoPlayerController!.dispose();
-                      }
-                      if(_customVideoPlayerController != null){
-                        _customVideoPlayerController!.dispose();
+                        _videoPlayerController!.pause();
                       }
                       Navigator.push(
                           context,
@@ -637,6 +669,8 @@ class _EvaluationUploadReportState extends State<EvaluationUploadReport> {
       videoPlayerController: _videoPlayerController!,
       customVideoPlayerSettings: _customVideoPlayerSettings,
     );
+    _videoPlayerController!.play();
+    Wakelock.enable();
   }
 
 
@@ -816,6 +850,24 @@ class _EvaluationUploadReportState extends State<EvaluationUploadReport> {
         ],
       ),
     );
+  }
+
+  final AboutProgramRepository repository = AboutProgramRepository(
+    apiClient: ApiClient(
+      httpClient: http.Client(),
+    ),
+  );
+
+  Future<void> disposePlayer() async {
+    if(_videoPlayerController != null){
+      _videoPlayerController!.dispose();
+    }
+    if(_customVideoPlayerController != null){
+      _customVideoPlayerController!.dispose();
+    }
+    if(await Wakelock.enabled){
+      Wakelock.disable();
+    }
   }
 
 }

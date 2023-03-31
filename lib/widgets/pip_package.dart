@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:auto_orientation/auto_orientation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/vlc_service/check_state.dart';
@@ -17,6 +18,9 @@ class PIPStack extends StatefulWidget {
 
   /// This method is called when a pip close button is clicked.
   final VoidCallback onClosed;
+
+  /// This method is called when a pip close button is clicked.
+  final VoidCallback onPip;
 
   /// This bool value decides if the upper PIP layer is displayed.
   /// The value is false by default and needs to be set to true to start pip mode.
@@ -49,6 +53,7 @@ class PIPStack extends StatefulWidget {
         required this.backgroundWidget,
         required this.pipWidget,
         required this.onClosed,
+        required this.onPip,
         required this.pipEnabled,
         this.pipExpandedContent,
         this.pipExpandedHeight = 200.0,
@@ -166,9 +171,16 @@ class _PIPStackState extends State<PIPStack> with TickerProviderStateMixin {
                             onTap: () {
                               if(!isInSmallMode && !_checkState!.isChanged){
                                 setState(() {
+                                  widget.onPip();
                                   isInSmallMode = true;
                                   alignmentAnimationController?.forward();
                                   pipWindowSizeController?.forward();
+                                  final _ori = MediaQuery.of(context).orientation;
+                                  print(_ori.name);
+                                  bool isPortrait = _ori == Orientation.portrait;
+                                  if(!isPortrait){
+                                    AutoOrientation.portraitUpMode();
+                                  }
                                 });
                                 print('start --');
                                 _checkState!.updateValue(isInSmallMode);
@@ -178,29 +190,29 @@ class _PIPStackState extends State<PIPStack> with TickerProviderStateMixin {
                         ),
                       ]),
                     ),
-                    onVerticalDragEnd: (details) {
-                      if (details.velocity.pixelsPerSecond.dy > 0) {
-                        setState(() {
-                          isInSmallMode = true;
-                          alignmentAnimationController?.forward();
-                          pipWindowSizeController?.forward();
-                        });
-                        print('start --');
-                        _checkState!.updateValue(isInSmallMode);
-                      } else if (details.velocity.pixelsPerSecond.dy <
-                          0) {
-                        setState(() {
-                          alignmentAnimationController?.reverse();
-                          pipWindowSizeController?.reverse().then((value) {
-                            setState(() {
-                              isInSmallMode = false;
-                            });
-                          });
-                          _checkState!.updateValue(false);
-                          print('start ++');
-                        });
-                      }
-                    },
+                    // onVerticalDragEnd: (details) {
+                    //   if (details.velocity.pixelsPerSecond.dy > 0) {
+                    //     setState(() {
+                    //       isInSmallMode = true;
+                    //       alignmentAnimationController?.forward();
+                    //       pipWindowSizeController?.forward();
+                    //     });
+                    //     print('start --');
+                    //     _checkState!.updateValue(isInSmallMode);
+                    //   } else if (details.velocity.pixelsPerSecond.dy <
+                    //       0) {
+                    //     setState(() {
+                    //       alignmentAnimationController?.reverse();
+                    //       pipWindowSizeController?.reverse().then((value) {
+                    //         setState(() {
+                    //           isInSmallMode = false;
+                    //         });
+                    //       });
+                    //       _checkState!.updateValue(false);
+                    //       print('start ++');
+                    //     });
+                    //   }
+                    // },
                   ),
                 )
                     : Expanded(

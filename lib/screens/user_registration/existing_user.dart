@@ -13,7 +13,6 @@ import 'package:gwc_customer/screens/help_screens/help_screen.dart';
 import 'package:gwc_customer/screens/profile_screens/call_support_method.dart';
 import 'package:gwc_customer/screens/user_registration/resend_otp_screen.dart';
 import 'package:gwc_customer/services/login_otp_service.dart';
-import 'package:gwc_customer/services/quick_blox_service/quick_blox_service.dart';
 import 'package:gwc_customer/utils/app_config.dart';
 import 'package:gwc_customer/widgets/constants.dart';
 import 'package:gwc_customer/widgets/unfocus_widget.dart';
@@ -1101,8 +1100,6 @@ class _ExistingUserState extends State<ExistingUser> {
       _loginWithOtpService.getAccessToken(model.kaleyraUserId!);
       _pref.setString(AppConfig.QB_USERNAME, model.loginUsername ?? '');
       _pref.setString(AppConfig.QB_CURRENT_USERID, model.chatId ?? '');
-      final _qbService = Provider.of<QuickBloxService>(context, listen:  false);
-      _qbService.login("${model.loginUsername}");
 
       if (model.userEvaluationStatus!.contains("no_evaluation") ||
           model.userEvaluationStatus!.contains("pending")) {
@@ -1200,6 +1197,10 @@ class _ExistingUserState extends State<ExistingUser> {
       _pref.setString(AppConfig.QB_USERNAME, model1.data!.qbUsername!);
       _pref.setString(AppConfig.QB_CURRENT_USERID, model1.data!.qbUserId ?? '');
       _pref.setString(AppConfig.KALEYRA_USER_ID, model1.data!.kaleyraUID ?? '');
+      _pref.setString(
+          AppConfig.User_Name, model1.data?.name ?? model1.data?.fname ?? '');
+      _pref.setString(AppConfig.User_Profile,model1.data?.profile ?? "");
+      _pref.setString(AppConfig.User_Number,model1.data?.phone ?? "");
       print("pref id: ${_pref.getInt(AppConfig.USER_ID)}");
       print("model1. after: ${_pref.getString(AppConfig.QB_CURRENT_USERID)}");
     }

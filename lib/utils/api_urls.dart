@@ -126,6 +126,10 @@ var submitSlotSelectedUrl = "${AppConfig().BASE_URL}/api/submitForm/follow_up_bo
 
 var homeRemediesUrl = "${AppConfig().BASE_URL}/api/list/home_remedies";
 
+var submitMedicalFeedbackFormUrl = "${AppConfig().BASE_URL}/api/submitForm/medical_feedback";
+
+var submitProgramFeedbackFormUrl = "${AppConfig().BASE_URL}/api/submitForm/program_feedback";
+
 
 
 

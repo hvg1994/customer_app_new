@@ -5,7 +5,6 @@ import 'package:gwc_customer/model/error_model.dart';
 import 'package:gwc_customer/model/rewards_model/reward_point_model.dart';
 import 'package:gwc_customer/repository/api_service.dart';
 import 'package:gwc_customer/repository/rewards_repository/reward_repository.dart';
-import 'package:gwc_customer/screens/profile_screens/reward/levels_screen.dart';
 import 'package:gwc_customer/services/rewards_service/reward_service.dart';
 import 'package:gwc_customer/widgets/constants.dart';
 import 'package:gwc_customer/widgets/widgets.dart';

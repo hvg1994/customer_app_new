@@ -35,13 +35,12 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
   device_preview: ^1.0.0
-  syncfusion_flutter_calendar: 19.4.56
   sizer: ^2.0.15
   convex_bottom_bar: ^3.0.0
   get: ^4.6.1
   flutter_svg: ^1.0.3
   date_picker_timeline: ^1.2.3
-  file_picker: ^4.5.1
+  file_picker: ^5.0.0
   rxdart: ^0.27.5
   lottie: ^1.4.2
   http: any
@@ -58,7 +57,7 @@ dependencies:
   shared_preferences: any
 #  flutter_zoom_sdk: ^1.1.0+4
   im_animations: ^0.1.2
-  syncfusion_flutter_pdfviewer: any
+  syncfusion_flutter_pdfviewer: 20.3.52
   image_picker: any
   jwt_decode: ^0.3.1
   pip_view: ^0.9.7
@@ -71,11 +70,9 @@ dependencies:
 #  flutter_local_notifications: ^13.0.0
   flutter_local_notifications: ^9.7.0
   grouped_list: any
-  quickblox_sdk: ^0.6.0-beta
-  catcher: ^0.6.9
+#  catcher: ^0.7.0
   mime: any
   photo_view: any
-  level_map: ^0.2.0
   circular_progress_bar_with_lines: ^0.0.5
   simple_circular_progress_bar: ^1.0.2
   vertical_percent_indicator: any
@@ -95,11 +92,18 @@ dependencies:
   appinio_video_player: ^1.2.0
   wakelock: any
   flutter_vlc_player: any
+  flutter_meedu_videoplayer: any
+  image_cropper: any
+  assets_audio_player: any
+  tcard: ^1.3.5
+  flutter_rating_bar: ^4.0.1
+
 #  change_app_package_name: ^1.1.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -133,13 +137,15 @@ flutter:
     - assets/images/notification/
     - assets/images/dashboard_stages/
     - assets/images/gmg/
-    - assets/images/faq/
     - assets/images/new_ds/
     - assets/images/help_screens/
-    - assets/GWC Program Details.pdf
   #   - images/a_dot_ham.jpeg
 
   fonts:
+
+    - family: SensaBrush
+      fonts:
+        - asset: assets/font/SensaBrush.otf
 
     - family: GothamMedium
       fonts:

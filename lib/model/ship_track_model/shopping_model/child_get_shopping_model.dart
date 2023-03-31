@@ -195,6 +195,7 @@ class ChildIngredients{
     this.id,
     this.ingredientCategoryId,
     this.name,
+    this.thumbnail,
     this.createdAt,
     this.updatedAt,
     this.childIngredientCategory
@@ -203,6 +204,7 @@ class ChildIngredients{
   int? id;
   String? ingredientCategoryId;
   String? name;
+  String? thumbnail;
   String? createdAt;
   String? updatedAt;
   ChildIngredientCategory? childIngredientCategory;
@@ -210,7 +212,8 @@ class ChildIngredients{
   factory ChildIngredients.fromJson(Map<String, dynamic> json) => ChildIngredients(
     id: json["id"],
     ingredientCategoryId: json["ingredient_category_id"],
-    createdAt: json["created_at"],
+      thumbnail: json["thumbnail"],
+      createdAt: json["created_at"],
     updatedAt: json["updated_at"],
       name: json['name'],
       childIngredientCategory: ChildIngredientCategory.fromJson(json['ingredient_category'])

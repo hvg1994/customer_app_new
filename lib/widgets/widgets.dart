@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:sizer/sizer.dart';
 
 import 'constants.dart';
@@ -275,6 +276,23 @@ buildLabelTextField(String name, {double? fontSize, double textScleFactor = 0.9}
       fontFamily: "PoppinsSemiBold",
     ),
   );
+}
+
+Future<CroppedFile?> cropSelectedImage(String filePath) async {
+  return await ImageCropper().cropImage(
+      sourcePath: filePath,
+      aspectRatio: const CropAspectRatio(ratioX: 1.0, ratioY: 1.0),
+      uiSettings: [
+        AndroidUiSettings(
+            toolbarTitle: 'Cropper',
+            toolbarColor: Colors.deepOrange,
+            toolbarWidgetColor: Colors.white,
+            initAspectRatio: CropAspectRatioPreset.original,
+            lockAspectRatio: false),
+        IOSUiSettings(
+          title: 'Cropper',
+        ),
+      ]);
 }
 
 showDialogWidget(

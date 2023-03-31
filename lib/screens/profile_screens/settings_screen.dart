@@ -12,12 +12,10 @@ import 'package:gwc_customer/screens/notification_screen.dart';
 import 'package:gwc_customer/screens/prepratory%20plan/prepratory_plan_screen.dart';
 import 'package:gwc_customer/screens/profile_screens/call_support_method.dart';
 import 'package:gwc_customer/screens/profile_screens/faq_screens/faq_screen.dart';
-import 'package:gwc_customer/screens/profile_screens/faq_screens/faq_screen_old.dart';
 import 'package:gwc_customer/screens/profile_screens/reward/reward_screen.dart';
 import 'package:gwc_customer/screens/profile_screens/terms_conditions_screen.dart';
 import 'package:gwc_customer/screens/profile_screens/user_details_tap.dart';
 import 'package:gwc_customer/screens/user_registration/existing_user.dart';
-import 'package:gwc_customer/services/quick_blox_service/quick_blox_service.dart';
 import 'package:gwc_customer/widgets/constants.dart';
 import 'package:gwc_customer/widgets/open_alert_box.dart';
 import 'package:provider/provider.dart';
@@ -28,7 +26,6 @@ import '../../model/message_model/get_chat_groupid_model.dart';
 import '../../repository/api_service.dart';
 import '../../repository/chat_repository/message_repo.dart';
 import '../../repository/login_otp_repository.dart';
-import '../../repository/quick_blox_repository/quick_blox_repository.dart';
 import '../../services/chat_service/chat_service.dart';
 import '../../services/login_otp_service.dart';
 import '../../splash_screen.dart';
@@ -52,153 +49,263 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 5.w),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                buildAppBar(() => null, isBackEnable: false,
-                    showNotificationIcon: true,
-                    notificationOnTap: (){
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => NotificationScreen()));
-                    },
-                    showHelpIcon: true,
-                    helpOnTap: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => HelpScreen()));
-                    }
-                ),
-                SizedBox(
-                  height: 3.h,
-                ),
-                Text(
-                  "Settings",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      fontFamily: eUser().mainHeadingFont,
-                      color: eUser().mainHeadingColor,
-                      fontSize: eUser().mainHeadingFontSize
+        backgroundColor: gBackgroundColor,
+        body: Padding(
+          padding: EdgeInsets.only(top: 1.h),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              buildAppBar(() => null,
+                  isBackEnable: false,
+                  showNotificationIcon: true,
+                  notificationOnTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => const NotificationScreen()));
+                  },
+                  showHelpIcon: true,
+                  helpOnTap: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (_) => HelpScreen()));
+                  }),
+              SizedBox(
+                height: 4.h,
+              ),
+              Container(
+                padding: const EdgeInsets.all(3),
+                decoration: BoxDecoration(
+                  color: gWhiteColor,
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    width: 2.5,
+                    color: gsecondaryColor,
                   ),
                 ),
-                profileTile("assets/images/Group 2753.png", "My Profile", () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => const UserDetailsTap(),
-                    ),
-                  );
-                }),
-                Container(
-                  height: 1,
-                  color: Colors.grey,
+                child: CircleAvatar(
+                  radius: 7.h,
+                  backgroundImage: NetworkImage(
+                      "${_pref.getString(AppConfig.User_Profile)}"),
                 ),
-                profileTile("assets/images/Group 2747.png", "FAQ", () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => const FaqScreen(),
-                    ),
-                  );
-                }),
-                Container(
-                  height: 1,
-                  color: Colors.grey,
-                ),
-                profileTile(
-                    "assets/images/Group 2748.png", "Terms & Conditions", () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => const TermsConditionsScreen(),
-                    ),
-                  );
-                }),
-                // Container(
-                //   height: 1,
-                //   color: Colors.grey,
-                // ),
-                // profileTile(
-                //     "assets/images/Group 2748.png", "My Report", () {
-                //   Navigator.of(context).push(
-                //     MaterialPageRoute(
-                //       builder: (context) => UploadFiles(isFromSettings: false,),
-                //     ),
-                //   );
-                // }),
-                // Container(
-                //   height: 1,
-                //   color: Colors.grey,
-                // ),
-                // profileTile(
-                //     "assets/images/Group 2748.png", "My Evaluation Report", () {
-                //   Navigator.of(context).push(
-                //     MaterialPageRoute(
-                //       builder: (context) => const PersonalDetailsScreen(showData: true,),
-                //     ),
-                //   );
-                // }),
-                // Visibility(
-                //   // visible: kDebugMode,
-                //   child: Container(
-                //     height: 1,
-                //     color: Colors.grey,
-                //   ),
-                // ),
-                Visibility(
-                  visible: kDebugMode,
-                    child:profileTile(
-                        "assets/images/Group 2748.png", "Eval form", () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => const EvaluationFormScreen(),
+              ),
+              SizedBox(
+                height: 2.h,
+              ),
+              Text(
+                "${_pref.getString(AppConfig.User_Name)}",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontFamily: eUser().mainHeadingFont,
+                    color: eUser().mainHeadingColor,
+                    fontSize: eUser().mainHeadingFontSize),
+              ),
+              SizedBox(
+                height: 1.h,
+              ),
+              Text(
+                "${_pref.getString(AppConfig.User_Number)}",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontFamily: eUser().userTextFieldHintFont,
+                    color: gHintTextColor,
+                    fontSize: eUser().userTextFieldFontSize),
+              ),
+              // Container(
+              //   height: 10.h,
+              //   width: double.maxFinite,
+              //   child: Image(
+              //     image: AssetImage("assets/images/profile_curve.png"),
+              //     fit: BoxFit.fill,
+              //   ),
+              // ),
+              Expanded(
+                child: Container(
+                  margin: EdgeInsets.only(top: 5.h),
+                  padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 1.h),
+                  decoration: const BoxDecoration(
+                    color: gWhiteColor,
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(30),
+                        topRight: Radius.circular(30)),
+                    boxShadow: [
+                      BoxShadow(
+                        color: kLineColor,
+                        offset: Offset(2, 3),
+                        blurRadius: 5,
+                      )
+                    ],
+                    // border: Border.all(
+                    //   width: 1,
+                    //   color: kLineColor,
+                    // ),
+                  ),
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: SingleChildScrollView(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              profileTile(
+                                  "assets/images/Group 2753.png", "My Profile",
+                                      () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                        const MyProfileDetails(),
+                                      ),
+                                    );
+                                  }),
+
+                              profileTile("assets/images/Group 2747.png", "FAQ",
+                                      () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) => const FaqScreen(),
+                                      ),
+                                    );
+                                  }),
+
+                              profileTile("assets/images/Group 2748.png",
+                                  "Terms & Conditions", () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                        const TermsConditionsScreen(),
+                                      ),
+                                    );
+                                  }),
+                              // Container(
+                              //   height: 1,
+                              //   color: Colors.grey,
+                              // ),
+                              // profileTile(
+                              //     "assets/images/Group 2748.png", "My Report", () {
+                              //   Navigator.of(context).push(
+                              //     MaterialPageRoute(
+                              //       builder: (context) => UploadFiles(isFromSettings: false,),
+                              //     ),
+                              //   );
+                              // }),
+                              // Container(
+                              //   height: 1,
+                              //   color: Colors.grey,
+                              // ),
+                              // profileTile(
+                              //     "assets/images/Group 2748.png", "My Evaluation Report", () {
+                              //   Navigator.of(context).push(
+                              //     MaterialPageRoute(
+                              //       builder: (context) => const PersonalDetailsScreen(showData: true,),
+                              //     ),
+                              //   );
+                              // }),
+                              // Visibility(
+                              //   // visible: kDebugMode,
+                              //   child: Container(
+                              //     height: 1,
+                              //     color: Colors.grey,
+                              //   ),
+                              // ),
+                              // Visibility(
+                              //     visible: kDebugMode,
+                              //     child: profileTile(
+                              //         "assets/images/Group 2748.png", "Eval form",
+                              //         () {
+                              //       Navigator.of(context).push(
+                              //         MaterialPageRoute(
+                              //           builder: (context) =>
+                              //               const EvaluationFormScreen(),
+                              //         ),
+                              //       );
+                              //     })),
+
+                              profileTile(
+                                  "assets/images/coins.png", "My Rewards", () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) => const RewardScreen(),
+                                  ),
+                                );
+                              }),
+
+                              profileTile("assets/images/noun-chat-5153452.png",
+                                  "Chat Support", () async {
+                                    final uId =
+                                    _pref!.getString(AppConfig.KALEYRA_USER_ID);
+                                    final res = await getAccessToken(uId!);
+
+                                    if (res.runtimeType != ErrorModel) {
+                                      final accessToken = _pref.getString(
+                                          AppConfig.KALEYRA_ACCESS_TOKEN);
+
+                                      final chatSuccessId = _pref.getString(
+                                          AppConfig.KALEYRA_CHAT_SUCCESS_ID);
+                                      // chat
+                                      openKaleyraChat(
+                                          uId, chatSuccessId!, accessToken!);
+                                    } else {
+                                      final result = res as ErrorModel;
+                                      print(
+                                          "get Access Token error: ${result.message}");
+                                      AppConfig().showSnackbar(
+                                          context, result.message ?? '',
+                                          isError: true, bottomPadding: 70);
+                                    }
+                                    // getChatGroupId();
+                                  }),
+                            ],
+                          ),
                         ),
-                      );
-                    })
+                      ),
+                      Container(
+                        margin:  EdgeInsets.symmetric(horizontal: 30.w),
+                        padding: EdgeInsets.symmetric(vertical: 1.h,horizontal: 3.w),
+                        decoration: BoxDecoration(
+                          color: gWhiteColor,
+                          borderRadius:  BorderRadius.circular(10),
+                          boxShadow: const [
+                            BoxShadow(
+                              color: kLineColor,
+                              offset: Offset(2, 3),
+                              blurRadius: 5,
+                            )
+                          ],
+                          // border: Border.all(
+                          //   width: 1,
+                          //   color: kLineColor,
+                          // ),
+                        ),
+                        child: GestureDetector(
+                          onTap: () => AppConfig().showSheet(
+                              context, logoutWidget(),
+                              bottomSheetHeight: 45.h),
+                          child: Row(
+                            children: [
+                              Image(
+                                image: const AssetImage(
+                                  "assets/images/Group 2744.png",
+                                ),
+                                height: 4.h,
+                              ),
+                              SizedBox(width: 3.w),
+                              Text(
+                                "Logout",
+                                style: TextStyle(
+                                  color: kTextColor,
+                                  fontFamily: 'GothamBook',
+                                  fontSize: 11.sp,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                Container(
-                  height: 1,
-                  color: Colors.grey,
-                ),
-                profileTile(
-                    "assets/images/coins.png", "My Rewards", () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => const RewardScreen(),
-                    ),
-                  );
-                }),
-                Container(
-                  height: 1,
-                  color: Colors.grey,
-                ),
-                profileTile(
-                    "assets/images/noun-chat-5153452.png", "Chat Support", () async {
-                  final uId = _pref!.getString(AppConfig.KALEYRA_USER_ID);
-                  final res  = await getAccessToken(uId!);
-
-                  if(res.runtimeType != ErrorModel){
-                    final accessToken = _pref.getString(AppConfig.KALEYRA_ACCESS_TOKEN);
-
-                    final chatSuccessId = _pref.getString(AppConfig.KALEYRA_CHAT_SUCCESS_ID);
-                    // chat
-                    openKaleyraChat(uId, chatSuccessId!, accessToken!);
-                  }
-                  else{
-                    final result = res as ErrorModel;
-                    print("get Access Token error: ${result.message}");
-                    AppConfig().showSnackbar(context, result.message ?? '', isError: true, bottomPadding: 70 );
-                  }
-                  // getChatGroupId();
-                }),
-                Container(
-                  height: 1,
-                  color: Colors.grey,
-                ),
-                profileTile("assets/images/Group 2744.png", "Logout", ()=> AppConfig().showSheet(context, logoutWidget(), bottomSheetHeight: 45.h)),
-                Container(
-                  height: 1,
-                  color: Colors.grey,
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
@@ -206,20 +313,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   profileTile(String image, String title, func) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 3.h, horizontal: 4.w),
-      child: InkWell(
-        onTap: func,
-        child: Row(
-          children: [
-            Image(
+    return GestureDetector(
+      onTap: func,
+      child: Row(
+        children: [
+          Container(
+            margin: EdgeInsets.symmetric(vertical: 1.h),
+            padding: const EdgeInsets.all(5),
+            // decoration: BoxDecoration(
+            //   // color: gBlackColor.withOpacity(0.05),
+            //   borderRadius: BorderRadius.circular(5),
+            // ),
+            child: Image(
               image: AssetImage(image),
               height: 4.h,
             ),
-            SizedBox(
-              width: 4.w,
-            ),
-            Text(
+          ),
+          SizedBox(width: 3.w),
+          Expanded(
+            child: Text(
               title,
               style: TextStyle(
                 color: kTextColor,
@@ -227,8 +339,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 fontSize: 11.sp,
               ),
             ),
-          ],
-        ),
+          ),
+          GestureDetector(
+            onTap: func,
+            child: Icon(
+              Icons.arrow_forward_ios,
+              color: gBlackColor,
+              size: 1.8.h,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -239,24 +359,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
     ),
   );
 
-  void logOut() async{
-    final _qbService = Provider.of<QuickBloxService>(context, listen: false);
-    print( await _qbService.getSession());
-    _qbService.logout();
+  void logOut() async {
+    final res =
+    await LoginWithOtpService(repository: repository).logoutService();
 
-    final res = await LoginWithOtpService(repository: repository).logoutService();
-
-    if(res.runtimeType == LogoutModel){
+    if (res.runtimeType == LogoutModel) {
       _pref.setBool(AppConfig.isLogin, false);
       _pref.remove(AppConfig().BEARER_TOKEN);
-      Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (context) => const ExistingUser(),
-          ));
-    }
-    else{
+      Navigator.of(context).pushReplacement(MaterialPageRoute(
+        builder: (context) => const ExistingUser(),
+      ));
+    } else {
       ErrorModel model = res as ErrorModel;
-      AppConfig().showSnackbar(context, model.message!, isError:  true);
+      AppConfig().showSnackbar(context, model.message!, isError: true);
     }
   }
 
@@ -266,49 +381,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
     ),
   );
 
-  getChatGroupId() async{
-    print(_pref.getInt(AppConfig.GET_QB_SESSION));
-    print(_pref.getBool(AppConfig.IS_QB_LOGIN));
-
-    print(_pref.getInt(AppConfig.GET_QB_SESSION) == null || _pref.getBool(AppConfig.IS_QB_LOGIN) == null || _pref.getBool(AppConfig.IS_QB_LOGIN) == false);
-    final _qbService = Provider.of<QuickBloxService>(context, listen:  false);
-    print(await _qbService.getSession());
-    if(_pref.getInt(AppConfig.GET_QB_SESSION) == null || await _qbService.getSession() == true || _pref.getBool(AppConfig.IS_QB_LOGIN) == null || _pref.getBool(AppConfig.IS_QB_LOGIN) == false){
-      _qbService.login(_pref.getString(AppConfig.QB_USERNAME)!);
-    }
-    else{
-      if(await _qbService.isConnected() == false){
-        _qbService.connect(int.parse(_pref.getString(AppConfig.QB_CURRENT_USERID)!));
-      }
-    }
-    final res = await ChatService(repository: chatRepository).getChatGroupIdService();
-
-    if(res.runtimeType == GetChatGroupIdModel){
-      GetChatGroupIdModel model = res as GetChatGroupIdModel;
-      // QuickBloxRepository().init(AppConfig.QB_APP_ID, AppConfig.QB_AUTH_KEY, AppConfig.QB_AUTH_SECRET, AppConfig.QB_ACCOUNT_KEY);
-      _pref.setString(AppConfig.GROUP_ID, model.group ?? '');
-      print('model.group: ${model.group}');
-      Navigator.push(context, MaterialPageRoute(builder: (c)=> MessageScreen(isGroupId: true,)));
-    }
-    else{
-      ErrorModel model = res as ErrorModel;
-      AppConfig().showSnackbar(context, model.message.toString(), isError: true);
-    }
-
-  }
-
-  logoutWidget(){
+  logoutWidget() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Center(
-          child: Text("We will miss you.",
+          child: Text(
+            "We will miss you.",
             style: TextStyle(
                 fontSize: bottomSheetHeadingFontSize,
                 fontFamily: bottomSheetHeadingFontFamily,
-                height: 1.4
-            ),
+                height: 1.4),
             textAlign: TextAlign.center,
           ),
         ),
@@ -337,8 +421,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             GestureDetector(
               onTap: () => logOut(),
               child: Container(
-                padding: EdgeInsets.symmetric(
-                    vertical: 1.h, horizontal: 12.w),
+                padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 12.w),
                 decoration: BoxDecoration(
                     color: gsecondaryColor,
                     border: Border.all(color: kLineColor, width: 0.5),
@@ -357,8 +440,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             GestureDetector(
               onTap: () => Navigator.pop(context),
               child: Container(
-                padding: EdgeInsets.symmetric(
-                    vertical: 1.h, horizontal: 12.w),
+                padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 12.w),
                 decoration: BoxDecoration(
                     color: gWhiteColor,
                     border: Border.all(color: kLineColor, width: 0.5),
@@ -379,8 +461,4 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ],
     );
   }
-
-
-
-
 }

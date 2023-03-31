@@ -65,7 +65,7 @@ class _PPLevelsScreenState extends State<PPLevelsScreen> {
                 SizedBox(
                   height: 7.h,
                   child: const Image(
-                    image: AssetImage("assets/images/Gut wellness logo.png"),
+                    image: AssetImage("assets/images/Gut welness logo.png"),
                   ),
                   //SvgPicture.asset("assets/images/splash_screen/Inside Logo.svg"),
                 ),
@@ -81,7 +81,7 @@ class _PPLevelsScreenState extends State<PPLevelsScreen> {
                       },
                       child: Image(
                         image: const AssetImage(
-                            "assets/images/noun-calendar-5347015.png"),
+                            "assets/images/gmg/noun-calendar-5347015.png"),
                         height: 2.7.h,
                       ),
                     ),
@@ -90,7 +90,7 @@ class _PPLevelsScreenState extends State<PPLevelsScreen> {
                       onTap: () {},
                       child: Image(
                         image: const AssetImage(
-                            "assets/images/noun-percentage-3119037.png"),
+                            "assets/images/gmg/noun-percentage-3119037.png"),
                         height: 3.h,
                       ),
                     ),

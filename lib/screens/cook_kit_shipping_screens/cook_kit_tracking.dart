@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'dart:typed_data';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:gwc_customer/model/error_model.dart';
 import 'package:gwc_customer/model/ship_track_model/shopping_model/get_shopping_model.dart';
-import 'package:gwc_customer/screens/gut_list_screens/gut_list.dart';
 import 'package:gwc_customer/screens/gut_list_screens/new_dashboard_stages.dart';
 import 'package:intl/intl.dart';
 import 'package:sizer/sizer.dart';
@@ -20,7 +22,6 @@ import '../../../widgets/widgets.dart';
 import '../../model/ship_track_model/shopping_model/child_get_shopping_model.dart';
 import '../../utils/app_config.dart';
 import '../../widgets/constants.dart';
-import 'package:gwc_customer/screens/gut_list_screens/gut_list.dart' as gut;
 
 import '../prepratory plan/prepratory_plan_screen.dart';
 
@@ -28,13 +29,18 @@ class CookKitTracking extends StatefulWidget {
   final String currentStage;
   final String? awb_number;
   final int initialIndex;
-  const CookKitTracking({Key? key, this.awb_number, required this.currentStage, this.initialIndex = 0}) : super(key: key);
+  const CookKitTracking(
+      {Key? key,
+        this.awb_number,
+        required this.currentStage,
+        this.initialIndex = 0})
+      : super(key: key);
 
   @override
   State<CookKitTracking> createState() => _CookKitTrackingState();
 }
 
-class _CookKitTrackingState extends State<CookKitTracking>{
+class _CookKitTrackingState extends State<CookKitTracking> {
   double gap = 23.0;
   int activeStep = -1;
 
@@ -58,18 +64,19 @@ class _CookKitTrackingState extends State<CookKitTracking>{
   //
   // Map<String, List<ChildGetShoppingModel>> sortedData = {};
 
-
   List dayList = [];
   List<ChildGetShoppingModel> shoppingList = [];
-
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     getShoppingList();
-    if(widget.currentStage.isNotEmpty){
-      if((widget.currentStage == 'shipping_approved' || widget.currentStage == 'shipping_delivered' || widget.currentStage == 'shipping_packed') && widget.awb_number != null){
+    if (widget.currentStage.isNotEmpty) {
+      if ((widget.currentStage == 'shipping_approved' ||
+          widget.currentStage == 'shipping_delivered' ||
+          widget.currentStage == 'shipping_packed') &&
+          widget.awb_number != null) {
         shippingTracker();
       }
     }
@@ -81,6 +88,7 @@ class _CookKitTrackingState extends State<CookKitTracking>{
     super.dispose();
     timer?.cancel();
   }
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -88,15 +96,16 @@ class _CookKitTrackingState extends State<CookKitTracking>{
       length: tabSize,
       child: SafeArea(
         child: Scaffold(
-          body: Padding(
-            padding: EdgeInsets.only(top: 1.h, left: 4.w, right: 4.w, bottom: 1.w),
-            child: Column(
-              children: [
-                buildAppBar((){
-                  Navigator.pop(context);
-                },
+          body: Column(
+            children: [
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 3.w),
+                child: buildAppBar(
+                        () {
+                      Navigator.pop(context);
+                    },
                     showHelpIcon: false,
-                    helpOnTap: (){
+                    helpOnTap: () {
                       // if(planNotePdfLink != null || planNotePdfLink!.isNotEmpty){
                       //   Navigator.push(context, MaterialPageRoute(builder: (ctx)=>
                       //       MealPdf(pdfLink: planNotePdfLink! ,
@@ -106,64 +115,219 @@ class _CookKitTrackingState extends State<CookKitTracking>{
                       // else{
                       //   AppConfig().showSnackbar(context, "Note Link Not available", isError: true);
                       // }
-                    }
+                    }),
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 3.w),
+                child: TabBar(
+                  labelColor: eUser().userFieldLabelColor,
+                  unselectedLabelColor: gHintTextColor,
+                  isScrollable: false,
+                  indicatorColor: gsecondaryColor,
+                  // indicatorPadding: EdgeInsets.only(right: 5.w, left: 5.w),
+                  unselectedLabelStyle: TextStyle(
+                      fontFamily: "GothamBook",
+                      color: gHintTextColor,
+                      fontSize: 9.sp),
+                  labelStyle: TextStyle(
+                      fontFamily: "GothamMedium",
+                      color: gBlackColor,
+                      fontSize: 11.sp),
+                  tabs: const [
+                    Tab(text: 'Shipping'),
+                    Tab(text: 'Shopping'),
+                  ],
                 ),
-                Expanded(child: tabView())
-              ],
-            ),
+              ),
+              Expanded(
+                child: TabBarView(
+                  children: [
+                    (showTrackingProgress)
+                        ? buildCircularIndicator()
+                        : shipRocketUI(context),
+                    (showShoppingLoading)
+                        ? buildCircularIndicator()
+                        : shoppingUi(),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
       ),
     );
   }
 
-  tabView(){
-    return Padding(
-      padding: const EdgeInsets.all(4.0),
-      child: Column(
-        children: [
-          Container(
-            height: 35,
-            decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(15.0)
-            ),
-            child:  TabBar(
-              indicator: BoxDecoration(
-                  color: gPrimaryColor,
-                  borderRadius:  BorderRadius.circular(15.0)
-              ) ,
-              labelColor: gMainColor,
-              unselectedLabelColor: gPrimaryColor,
-              tabs: const  [
-                Tab(text: 'Shipping',),
-                Tab(text: 'Shopping',),
-              ],
-            ),
-          ),
-          Flexible(
-              child: TabBarView(
-                children:  [
-                  (showTrackingProgress) ? buildCircularIndicator() : shipRocketUI(context),
-                  (showShoppingLoading) ? buildCircularIndicator() : shoppingUi(),
-                ],
-              )
-          )
-        ],
-      ),
-    );
-  }
-
-  shoppingUi(){
-    if(shoppingList.isNotEmpty){
-      return tableView();
-    }
-    else{
+  shoppingUi() {
+    if (shoppingList.isNotEmpty) {
+      return buildShippingList();
+      // return tableView();
+    } else {
       return noData();
     }
   }
 
-  tableView(){
+  ByteData? placeHolderImage;
+
+  void loadAsset(String name) async {
+    var data = await rootBundle.load('assets/images/$name');
+    setState(() => placeHolderImage = data);
+  }
+
+  buildShippingList() {
+    return SingleChildScrollView(
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 3.w),
+        child: Column(
+          children: [
+            Container(
+              height: 1,
+              color: Colors.grey.withOpacity(0.3),
+            ),
+            SizedBox(height: 2.h),
+            MediaQuery(
+              data: MediaQuery.of(context).copyWith(textScaleFactor: 0.8),
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 1.h),
+                child: SingleChildScrollView(
+                  child: GridView.builder(
+                      scrollDirection: Axis.vertical,
+                      physics: const ScrollPhysics(),
+                      shrinkWrap: true,
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        mainAxisSpacing: 15,
+                        crossAxisSpacing: 10,
+                        crossAxisCount: 2,
+                        mainAxisExtent: 22.h,
+                        // childAspectRatio: MediaQuery.of(context).size.width /
+                        //     (MediaQuery.of(context).size.height / 1.4),
+                      ),
+                      // gridDelegate:SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4),
+                      itemCount: shoppingList.length,
+                      itemBuilder: (context, index) {
+                        return Container(
+                          decoration: BoxDecoration(
+                            color: gWhiteColor,
+                            borderRadius: BorderRadius.circular(10),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.3),
+                                blurRadius: 5,
+                                offset: const Offset(3, 8),
+                              ),
+                            ],
+                            // border: Border(
+                            //   right: BorderSide(
+                            //     color: kLineColor.withOpacity(0.5),
+                            //   ),
+                            //   bottom: BorderSide(
+                            //     color: kLineColor.withOpacity(0.5),
+                            //   ),
+                            // ),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Center(
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(10),
+                                  child: (shoppingList[index]
+                                      .ingredients
+                                      ?.thumbnail !=
+                                      null)
+                                      ? SizedBox(
+                                    height: 15.h,
+                                    width: 30.w,
+                                    child: Image(
+                                      image: CachedNetworkImageProvider(
+                                          "${Uri.parse("${shoppingList[index].ingredients?.thumbnail}")}"),
+                                    ),
+                                  )
+                                      : SizedBox(
+                                    height: 15.h,
+                                    width: 30.w,
+                                    child: const Image(
+                                      image: AssetImage(
+                                          "assets/images/meal_placeholder.png"),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: EdgeInsets.only(left: 5.w),
+                                child: Text(
+                                  "${shoppingList[index].ingredients?.name}",
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontSize: 13.sp,
+                                    fontFamily: "GothamMedium",
+                                    color: gTextColor,
+                                  ),
+                                ),
+                              ),
+                              SizedBox(height: 0.5.h),
+                              Padding(
+                                padding: EdgeInsets.only(left: 5.w),
+                                child: RichText(
+                                  textAlign: TextAlign.center,
+                                  text: TextSpan(children: [
+                                    TextSpan(
+                                      text: "Used for : ",
+                                      style: TextStyle(
+                                        fontFamily: kFontBook,
+                                        color: gHintTextColor,
+                                        fontSize: 8.sp,
+                                      ),
+                                    ),
+                                    TextSpan(
+                                      text:
+                                      "${shoppingList[index].ingredients?.childIngredientCategory?.name}",
+                                      style: TextStyle(
+                                        fontFamily: "GothamMedium",
+                                        color: gHintTextColor,
+                                        fontSize: 8.sp,
+                                      ),
+                                    ),
+                                  ]),
+                                ),
+                              ),
+                              // Center(
+                              //   child: Row(
+                              //     children: [
+                              //       Text(
+                              //         "Used for : ",
+                              //         style: TextStyle(
+                              //             fontFamily: "GothamMedium",
+                              //             color: gTextColor,
+                              //             fontSize: 8.sp),
+                              //       ),
+                              //       Text(
+                              //         "${shoppingList[index].ingredients?.childIngredientCategory?.name}" ??
+                              //             "2 minutes ago",
+                              //         style: TextStyle(
+                              //             height: 1.3,
+                              //             fontFamily: kFontBook,
+                              //             color: eUser().mainHeadingColor,
+                              //             fontSize: bottomSheetSubHeadingSFontSize),
+                              //       ),
+                              //     ],
+                              //   ),
+                              // ),
+                            ],
+                          ),
+                        );
+                      }),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  tableView() {
     return MediaQuery(
       data: MediaQuery.of(context).copyWith(textScaleFactor: 0.8),
       child: Padding(
@@ -186,10 +350,11 @@ class _CookKitTrackingState extends State<CookKitTracking>{
               columnSpacing: 20.w,
               dataRowHeight: 7.h,
               // headingRowColor: MaterialStateProperty.all(const Color(0xffE06666)),
-              columns:  <DataColumn>[
+              columns: <DataColumn>[
                 DataColumn(
                   label: IntrinsicWidth(
-                    child: Text('Item Name',
+                    child: Text(
+                      'Item Name',
                       style: TextStyle(
                         height: 1.5,
                         color: eUser().userFieldLabelColor,
@@ -205,7 +370,8 @@ class _CookKitTrackingState extends State<CookKitTracking>{
                       maxWidth: 80,
                       minWidth: 20,
                     ),
-                    child: Text('Category',
+                    child: Text(
+                      'Category',
                       textAlign: TextAlign.right,
                       style: TextStyle(
                         height: 1.5,
@@ -218,27 +384,28 @@ class _CookKitTrackingState extends State<CookKitTracking>{
                 ),
               ],
               rows: [
-                ...shoppingList.map((e) => DataRow(
+                ...shoppingList
+                    .map((e) => DataRow(
                   cells: [
-                    DataCell(
-                        IntrinsicWidth(
-                          child: Text(
-                            e.ingredients?.name ?? '',
-                            // sortedData.entries.elementAt(index).value[ind].mealItemWeight?.mealItem?.name?.trimLeft() ?? '',
-                            textAlign: TextAlign.left,
-                            style: TextStyle(
-                              height: 1.5,
-                              color: gTextColor,
-                              fontSize: 8.sp,
-                              fontFamily: kFontBold,
-                            ),
-                          ),
-                        )
-                    ),
+                    DataCell(IntrinsicWidth(
+                      child: Text(
+                        e.ingredients?.name ?? '',
+                        // sortedData.entries.elementAt(index).value[ind].mealItemWeight?.mealItem?.name?.trimLeft() ?? '',
+                        textAlign: TextAlign.left,
+                        style: TextStyle(
+                          height: 1.5,
+                          color: gTextColor,
+                          fontSize: 8.sp,
+                          fontFamily: kFontBold,
+                        ),
+                      ),
+                    )),
                     DataCell(
                       IntrinsicWidth(
                         child: Text(
-                          e.ingredients?.childIngredientCategory?.name ?? '',
+                          e.ingredients?.childIngredientCategory
+                              ?.name ??
+                              '',
                           // sortedData.entries.elementAt(index).value[ind].itemWeight?.trim() ?? '',
                           // " ${value[ind].itemWeight}" ?? '',
                           // maxLines: 3,
@@ -255,9 +422,9 @@ class _CookKitTrackingState extends State<CookKitTracking>{
                       placeholder: true,
                     ),
                   ],
-                )).toList()
-              ]
-          ),
+                ))
+                    .toList()
+              ]),
         ),
       ),
     );
@@ -416,8 +583,11 @@ class _CookKitTrackingState extends State<CookKitTracking>{
   //   });
   // }
 
-  shipRocketUI(BuildContext context){
-    if((widget.currentStage == "shipping_approved" || widget.currentStage == "shipping_delivered" || widget.currentStage == "shipping_packed") && widget.awb_number != null){
+  shipRocketUI(BuildContext context) {
+    if ((widget.currentStage == "shipping_approved" ||
+        widget.currentStage == "shipping_delivered" ||
+        widget.currentStage == "shipping_packed") &&
+        widget.awb_number != null) {
       return (!showErrorText)
           ? SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
@@ -430,10 +600,10 @@ class _CookKitTrackingState extends State<CookKitTracking>{
               height: 45.h,
               decoration: const BoxDecoration(
                 image: DecorationImage(
-                    image: AssetImage("assets/images/Group 2541.png",
+                    image: AssetImage(
+                      "assets/images/Group 2541.png",
                     ),
-                    fit: BoxFit.fill
-                ),
+                    fit: BoxFit.fill),
               ),
               child: Stack(
                 children: [
@@ -472,10 +642,11 @@ class _CookKitTrackingState extends State<CookKitTracking>{
                       Expanded(
                         child: AnotherStepper(
                           stepperList: getStepper(),
-                          gap:gap,
+                          gap: gap,
                           isInitialText: true,
                           initialText: getStepperInitialValue(),
-                          scrollPhysics: const NeverScrollableScrollPhysics(),
+                          scrollPhysics:
+                          const NeverScrollableScrollPhysics(),
                           stepperDirection: Axis.vertical,
                           horizontalStepperHeight: 5,
                           dotWidget: getIcons(),
@@ -483,8 +654,13 @@ class _CookKitTrackingState extends State<CookKitTracking>{
                           inActiveBarColor: Colors.grey.shade200,
                           activeIndex: activeStep,
                           barThickness: 5,
-                          titleTextStyle: TextStyle(fontSize: 10.sp,fontFamily: "GothamMedium",),
-                          subtitleTextStyle: TextStyle(fontSize: 8.sp,),
+                          titleTextStyle: TextStyle(
+                            fontSize: 10.sp,
+                            fontFamily: "GothamMedium",
+                          ),
+                          subtitleTextStyle: TextStyle(
+                            fontSize: 8.sp,
+                          ),
                         ),
                       ),
                     ],
@@ -531,18 +707,17 @@ class _CookKitTrackingState extends State<CookKitTracking>{
         ),
       )
           : Center(child: showProductgifWhenTrackerSideError()
-      // Text(
-      //   errorTextResponse,
-      //   style: TextStyle(
-      //     height: 1.5,
-      //     color: gTextColor,
-      //     fontSize: 11.sp,
-      //     fontFamily: kFontBold,
-      //   ),
-      // ),
+        // Text(
+        //   errorTextResponse,
+        //   style: TextStyle(
+        //     height: 1.5,
+        //     color: gTextColor,
+        //     fontSize: 11.sp,
+        //     fontFamily: kFontBold,
+        //   ),
+        // ),
       );
-    }
-    else{
+    } else {
       return const Center(
         child: Image(
           image: AssetImage("assets/images/no_data_found.png"),
@@ -552,29 +727,29 @@ class _CookKitTrackingState extends State<CookKitTracking>{
     }
   }
 
-  showProductgifWhenTrackerSideError(){
+  showProductgifWhenTrackerSideError() {
     return Column(
       mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment :MainAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Image.asset("assets/images/Shipping.gif"),
         SizedBox(
           height: 1.5.h,
         ),
-        Text("Hey, Your Gut Rhytam Reset Kit,\nIs Placed & Will Soon Be Picked Up\nBy Our Courier Partner.",
+        Text(
+          "Hey, Your Gut Rhytam Reset Kit,\nIs Placed & Will Soon Be Picked Up\nBy Our Courier Partner.",
           style: TextStyle(
               fontFamily: kFontBold,
               color: gTextColor,
               fontSize: headingFont,
-            height: 1.5
-          ),
+              height: 1.5),
           textAlign: TextAlign.center,
         )
       ],
     );
   }
 
-  noData(){
+  noData() {
     return const Center(
       child: Image(
         image: AssetImage("assets/images/no_data_found.png"),
@@ -689,7 +864,6 @@ class _CookKitTrackingState extends State<CookKitTracking>{
   //     );
   // }
 
-
   // showDataRow(){
   //   return shoppingData1!.map(
   //           (s) => DataRow(
@@ -749,7 +923,6 @@ class _CookKitTrackingState extends State<CookKitTracking>{
     );
   }
 
-
   final ShipTrackRepository repository = ShipTrackRepository(
     apiClient: ApiClient(
       httpClient: http.Client(),
@@ -771,22 +944,22 @@ class _CookKitTrackingState extends State<CookKitTracking>{
     setState(() {
       showTrackingProgress = true;
     });
-    final result = await ShipTrackService(repository: repository).getUserProfileService(widget.awb_number ?? '');
+    final result = await ShipTrackService(repository: repository)
+        .getUserProfileService(widget.awb_number ?? '');
     print("shippingTracker: $result");
     //print(result.runtimeType);
-    if(result.runtimeType == ShippingTrackModel){
+    if (result.runtimeType == ShippingTrackModel) {
       ShippingTrackModel data = result;
-      if(data.trackingData!.error != null){
+      if (data.trackingData!.error != null) {
         setState(() {
           showErrorText = true;
           errorTextResponse = data.trackingData?.error ?? '';
         });
-      }
-      else{
+      } else {
         print(data.trackingData!.shipmentTrackActivities);
         data.trackingData!.shipmentTrackActivities!.forEach((element) {
           trackerList.add(element);
-          if(element.srStatusLabel!.toLowerCase() == 'delivered'){
+          if (element.srStatusLabel!.toLowerCase() == 'delivered') {
             setState(() {
               isDelivered = true;
             });
@@ -801,7 +974,6 @@ class _CookKitTrackingState extends State<CookKitTracking>{
           activeStep = 0;
         });
 
-
         timer = Timer.periodic(const Duration(milliseconds: 500), (timer1) {
           //print(timer1.tick);
           //print('activeStep: $activeStep');
@@ -810,17 +982,15 @@ class _CookKitTrackingState extends State<CookKitTracking>{
             setState(() {
               activeStep++;
             });
-          }
-          else{
+          } else {
             timer1.cancel();
           }
         });
       }
-    }
-    else{
+    } else {
       ErrorModel error = result as ErrorModel;
 
-      if(error.message!.contains("Token has expired")){
+      if (error.message!.contains("Token has expired")) {
         print("called shiprocket token from cook kit tracking");
         GutList().myAppState.getShipRocketToken();
       }
@@ -834,23 +1004,24 @@ class _CookKitTrackingState extends State<CookKitTracking>{
     setState(() {
       showShoppingLoading = true;
     });
-    final result = await ShipTrackService(repository: repository).getShoppingDetailsListService();
+    final result = await ShipTrackService(repository: repository)
+        .getShoppingDetailsListService();
     print("getShoppingList: $result");
     print(result.runtimeType);
-    if(result.runtimeType == GetShoppingListModel){
+    if (result.runtimeType == GetShoppingListModel) {
       print("meal plan");
       GetShoppingListModel model = result as GetShoppingListModel;
 
       shoppingList = model.ingredients ?? [];
 
-      print('shopping list: $shoppingData');
+      print('shopping list: $shoppingList');
       setState(() {
         showShoppingLoading = false;
       });
     }
   }
 
-  getStepper(){
+  getStepper() {
     List<StepperData> stepper = [];
     trackerList.map((e) {
       String txt = 'Location: ${e.location}';
@@ -862,12 +1033,13 @@ class _CookKitTrackingState extends State<CookKitTracking>{
       ));
     }).toList();
     setState(() {
-      gap = trackerList.any((element) => element.location!.length > 60) ? 33 : 23;
+      gap =
+      trackerList.any((element) => element.location!.length > 60) ? 33 : 23;
     });
     return stepper;
   }
 
-  getStepperInitialValue(){
+  getStepperInitialValue() {
     List<StepperData> stepper = [];
     trackerList.map((e) {
       stepper.add(StepperData(
@@ -879,7 +1051,7 @@ class _CookKitTrackingState extends State<CookKitTracking>{
   }
 
   estimatedDateView() {
-    if(!isDelivered){
+    if (!isDelivered) {
       return Padding(
         padding: const EdgeInsets.all(8.0),
         child: RichText(
@@ -897,12 +1069,10 @@ class _CookKitTrackingState extends State<CookKitTracking>{
                       color: gPrimaryColor,
                       fontSize: 10.5.sp),
                 )
-              ]
-          ),
+              ]),
         ),
       );
-    }
-    else{
+    } else {
       return Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
@@ -923,10 +1093,10 @@ class _CookKitTrackingState extends State<CookKitTracking>{
                           color: gMainColor,
                           fontSize: 10.5.sp),
                     )
-                  ]
-              ),
+                  ]),
             ),
-            Text(estimatedDate,
+            Text(
+              estimatedDate,
               style: TextStyle(
                   fontFamily: "GothamBook",
                   color: gPrimaryColor,
@@ -938,32 +1108,36 @@ class _CookKitTrackingState extends State<CookKitTracking>{
     }
   }
 
-  getIcons(){
+  getIcons() {
     // print("activeStep==> $activeStep  trackerList.length => ${trackerList.length}");
     List<Widget> widgets = [];
-    for(var i = 0; i < trackerList.length; i++){
+    for (var i = 0; i < trackerList.length; i++) {
       // print('-i----$i');
       // print(trackerList[i].srStatus != '7');
-      if(i == 0 && trackerList[i].srStatus != '7'){
-
+      if (i == 0 && trackerList[i].srStatus != '7') {
         widgets.add(Container(
             padding: const EdgeInsets.all(2),
             decoration: const BoxDecoration(
                 color: gPrimaryColor,
-                borderRadius: BorderRadius.all(Radius.circular(20))
-            ),
-            child: Icon(Icons.radio_button_checked_sharp, color: Colors.white, size: 15.sp,)
+                borderRadius: BorderRadius.all(Radius.circular(20))),
+            child: Icon(
+              Icons.radio_button_checked_sharp,
+              color: Colors.white,
+              size: 15.sp,
+            )
           // (!trackerList.every((element) => element.srStatus!.contains('7')) && trackerList.length-1) ? Icon(Icons.radio_button_checked_sharp, color: Colors.white, size: 15.sp,) : Icon(Icons.check, color: Colors.white, size: 15.sp,),
         ));
-      }
-      else {
+      } else {
         widgets.add(Container(
             padding: const EdgeInsets.all(2),
             decoration: const BoxDecoration(
                 color: gPrimaryColor,
-                borderRadius: BorderRadius.all(Radius.circular(20))
-            ),
-            child: Icon(Icons.check, color: Colors.white, size: 15.sp,)
+                borderRadius: BorderRadius.all(Radius.circular(20))),
+            child: Icon(
+              Icons.check,
+              color: Colors.white,
+              size: 15.sp,
+            )
           // (!trackerList.every((element) => element.srStatus!.contains('7')) && trackerList.length-1) ? Icon(Icons.radio_button_checked_sharp, color: Colors.white, size: 15.sp,) : Icon(Icons.check, color: Colors.white, size: 15.sp,),
         ));
       }
@@ -971,7 +1145,6 @@ class _CookKitTrackingState extends State<CookKitTracking>{
     return widgets;
   }
 }
-
 
 const shoppingData = [
   {
@@ -985,7 +1158,6 @@ const shoppingData = [
   {
     "title": "Idli/dhokla with chutney green gram porridge*",
     "weight": '10gm',
-
   },
   {
     "title": "Cucumber Juice",

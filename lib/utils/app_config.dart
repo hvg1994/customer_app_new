@@ -65,6 +65,8 @@ class AppConfig{
   static const String SHIPPING_ADDRESS = "ship_address";
   static const String User_Name = "userName";
   static const String USER_ID = "userId";
+  static const String User_Profile ="userProfile";
+  static const String User_Number = "userNumber";
   /// this is for making direct voice call to success team
   static const String KALEYRA_SUCCESS_ID = "kaleyra_success_id";
   static const String KALEYRA_ACCESS_TOKEN = "kaleyra_access_token";

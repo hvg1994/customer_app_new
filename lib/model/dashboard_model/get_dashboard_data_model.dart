@@ -9,6 +9,11 @@ class GetDashboardDataModel {
   String? status;
   String? errorCode;
   String? key;
+  String? evaluationVideo;
+  String? consultationVideo;
+  String? prepVideo;
+  String? programVideo;
+  String? gmgVideo;
   // these 2 for consultation
   GetAppointmentDetailsModel? app_consulation;
   GutDataModel? normal_consultation;
@@ -43,6 +48,11 @@ class GetDashboardDataModel {
         this.trans_program,
         this.transition_meal_program,
         this.normal_postprogram,
+        this.evaluationVideo,
+        this.consultationVideo,
+        this.prepVideo,
+        this.programVideo,
+        this.gmgVideo,
         // this.postprogram
       });
 
@@ -50,6 +60,13 @@ class GetDashboardDataModel {
     status = json['status'].toString();
     errorCode = json['errorCode'].toString();
     key = json['key'];
+
+    evaluationVideo = json['evaluation_video'].toString();
+    consultationVideo = json['consultation_video'].toString();
+    prepVideo = json['prep_video'].toString();
+    programVideo = json['program_video'].toString();
+    gmgVideo = json['gmg_video'].toString();
+
     print(json['Consulation']['value'].runtimeType);
     print(json['Shipping']['value'].runtimeType);
     print(json['PostProgram']['value']);
@@ -122,6 +139,13 @@ class GetDashboardDataModel {
     data['status'] = this.status;
     data['errorCode'] = this.errorCode;
     data['key'] = this.key;
+
+    data['evaluation_video'] = this.evaluationVideo;
+    data['consultation_video'] = this.consultationVideo;
+    data['prep_video'] = this.prepVideo;
+    data['program_video'] = this.programVideo;
+    data['gmg_video'] = this.gmgVideo;
+
     if (this.app_consulation != null) {
       data['Consulation'] = this.app_consulation!.toJson();
     }

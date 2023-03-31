@@ -22,7 +22,6 @@ import 'package:gwc_customer/screens/user_registration/existing_user.dart';
 import 'package:gwc_customer/screens/user_registration/new_user/sit_back_screen.dart';
 import 'package:gwc_customer/services/enquiry_status_service.dart';
 import 'package:gwc_customer/services/local_notification_service.dart';
-import 'package:gwc_customer/services/quick_blox_service/quick_blox_service.dart';
 import 'package:gwc_customer/utils/app_config.dart';
 import 'package:gwc_customer/widgets/background_widget.dart';
 import 'package:gwc_customer/widgets/dart_extensions.dart';
@@ -41,7 +40,6 @@ import 'package:http/http.dart' as http;
 
 import 'screens/dashboard_screen.dart';
 import 'package:flutter_sim_country_code/flutter_sim_country_code.dart';
-import 'package:gwc_customer/repository/quick_blox_repository/quick_blox_repository.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
 import 'screens/notification_screen.dart';
@@ -228,10 +226,6 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future getSession() async{
     await notificationFunction();
-
-    final _qbService = Provider.of<QuickBloxService>(context, listen: false);
-    final res = await _qbService.getSession();
-    print("QB session is $res");
   }
 
   Future listenNotifications()async{
