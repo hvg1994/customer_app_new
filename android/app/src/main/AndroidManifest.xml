@@ -79,6 +79,11 @@
                     android:scheme="https" />
             </intent-filter>
         </activity>
+
+       <activity
+           android:name="com.yalantis.ucrop.UCropActivity"
+           android:screenOrientation="portrait"
+           android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
        <!--  Services for the plugin  -->
        <service
            android:name=".notification.FCMNotificationService"

@@ -1,3 +1,5 @@
+import 'package:gwc_customer/model/prepratory_meal_model/prep_meal_model.dart';
+
 class TransitionMealModel {
   int? status;
   int? errorCode;
@@ -8,7 +10,9 @@ class TransitionMealModel {
   String? currentDayStatus;
   String? previousDayStatus;
   String? isTransMealCompleted;
-  Map<String, List<TransMealSlot>>? data;
+  Map<String, TransSubItems>? data;
+
+  // Map<String, List<TransMealSlot>>? data;
 
   TransitionMealModel({this.status, this.note, this.errorCode,this.totalDays, this.isTransMealCompleted, this.key, this.currentDay, this.data, this.currentDayStatus, this.previousDayStatus});
 
@@ -23,13 +27,27 @@ class TransitionMealModel {
     previousDayStatus = json['previous_day_status'].toString();
     isTransMealCompleted = json['is_trans_completed'];
     // data = json['data'] != null ? Data.fromJson(json['data']) : null;
+    // if(json['data'] != null){
+    //   data = {};
+    //   (json['data'] as Map).forEach((key, value) {
+    //     // print("$key <==> ${(value as List).map((element) =>MealSlot.fromJson(element)) as List<MealSlot>}");
+    //     data!.putIfAbsent(key, () => List.from((value as List).map((element) => TransMealSlot.fromJson(element))));
+    //   });
+    // }
+
     if(json['data'] != null){
       data = {};
       (json['data'] as Map).forEach((key, value) {
         // print("$key <==> ${(value as List).map((element) =>MealSlot.fromJson(element)) as List<MealSlot>}");
-        data!.putIfAbsent(key, () => List.from((value as List).map((element) => TransMealSlot.fromJson(element))));
+        // data!.putIfAbsent(key, () => List.from((value as List).map((element) => MealSlot.fromJson(element))));
+        data!.addAll({key: TransSubItems.fromJson(value)});
+      });
+
+      data!.forEach((key, value) {
+        print("$key -- $value");
       });
     }
+
   }
 
   Map<String, dynamic> toJson() {
@@ -49,96 +67,31 @@ class TransitionMealModel {
   }
 }
 
-class Data {
-  List<TransMealSlot>? earlyMorning;
-  List<TransMealSlot>? breakfast;
-  List<TransMealSlot>? midDay;
-  List<TransMealSlot>? lunch;
-  List<TransMealSlot>? evening;
-  List<TransMealSlot>? dinner;
-  List<TransMealSlot>? postDinner;
+class TransSubItems{
+  // [object]
+  Map<String, List<TransMealSlot>>? subItems;
 
-  Data(
-      {this.earlyMorning,
-      this.breakfast,
-      this.midDay,
-      this.lunch,
-      this.evening,
-      this.dinner,
-      this.postDinner});
+  TransSubItems({
+    this.subItems
+  });
 
-  Data.fromJson(Map<String, dynamic> json) {
-    if (json['Early Morning'] != null) {
-      earlyMorning = <TransMealSlot>[];
-      json['Early Morning'].forEach((v) {
-        earlyMorning!.add( TransMealSlot.fromJson(v));
-      });
-    }
-    if (json['Breakfast'] != null) {
-      breakfast = <TransMealSlot>[];
-      json['Breakfast'].forEach((v) {
-        breakfast!.add( TransMealSlot.fromJson(v));
-      });
-    }
-    if (json['Mid Day'] != null) {
-      midDay = <TransMealSlot>[];
-      json['Mid Day'].forEach((v) {
-        midDay!.add( TransMealSlot.fromJson(v));
-      });
-    }
-    if (json['Lunch'] != null) {
-      lunch = <TransMealSlot>[];
-      json['Lunch'].forEach((v) {
-        lunch!.add( TransMealSlot.fromJson(v));
-      });
-    }
-    if (json['Evening'] != null) {
-      evening = <TransMealSlot>[];
-      json['Evening'].forEach((v) {
-        evening!.add( TransMealSlot.fromJson(v));
-      });
-    }
-    if (json['Dinner'] != null) {
-      dinner = <TransMealSlot>[];
-      json['Dinner'].forEach((v) {
-        dinner!.add( TransMealSlot.fromJson(v));
-      });
-    }
-    if (json['Post Dinner'] != null) {
-      postDinner = <TransMealSlot>[];
-      json['Post Dinner'].forEach((v) {
-        postDinner!.add( TransMealSlot.fromJson(v));
+  TransSubItems.fromJson(Map<String, dynamic> json) {
+    if(json != null && json.isNotEmpty){
+      subItems = {};
+      json.forEach((key, value) {
+        subItems!.putIfAbsent(key, () => List.from(value).map((element) => TransMealSlot.fromJson(element)).toList());
       });
     }
   }
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    if (this.earlyMorning != null) {
-      data['Early Morning'] =
-          this.earlyMorning!.map((v) => v.toJson()).toList();
-    }
-    if (this.breakfast != null) {
-      data['Breakfast'] = this.breakfast!.map((v) => v.toJson()).toList();
-    }
-    if (this.midDay != null) {
-      data['Mid Day'] = this.midDay!.map((v) => v.toJson()).toList();
-    }
-    if (this.lunch != null) {
-      data['Lunch'] = this.lunch!.map((v) => v.toJson()).toList();
-    }
-    if (this.evening != null) {
-      data['Evening'] = this.evening!.map((v) => v.toJson()).toList();
-    }
-    if (this.dinner != null) {
-      data['Dinner'] = this.dinner!.map((v) => v.toJson()).toList();
-    }
-    if (this.postDinner != null) {
-      data['Post Dinner'] = this.postDinner!.map((v) => v.toJson()).toList();
-    }
-    return data;
-  }
+// Map<String, dynamic> toJson() {
+//   final Map<String, dynamic> data = new Map<String, dynamic>();
+//   data['variation_title'] = this.variationTitle;
+//   data['variation_description'] = this.variationDescription;
+//   return data;
+// }
 }
+
 
 class TransMealSlot {
   int? id;
@@ -148,6 +101,12 @@ class TransMealSlot {
   String? benefits;
   String? itemPhoto;
   String? recipeUrl;
+  String? howToStore;
+  String? howToPrepare;
+  List<Ingredient>? ingredient;
+  List<Variation>? variation;
+  List<Faq>? faq;
+  String? cookingTime;
 
   TransMealSlot(
       {this.id,
@@ -156,7 +115,14 @@ class TransMealSlot {
         this.subTitle,
       this.benefits,
       this.itemPhoto,
-      this.recipeUrl});
+      this.recipeUrl,
+        this.howToStore,
+        this.howToPrepare,
+        this.ingredient,
+        this.variation,
+        this.faq,
+        this.cookingTime
+      });
 
   TransMealSlot.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -166,6 +132,27 @@ class TransMealSlot {
     benefits = json['benefits'];
     itemPhoto = json['item_photo'];
     recipeUrl = json['recipe_url'];
+    howToStore = json['how_to_store'];
+    howToPrepare = json['how_to_prepare'];
+    if (json['ingredient'] != null) {
+      ingredient = <Ingredient>[];
+      json['ingredient'].forEach((v) {
+        ingredient!.add(new Ingredient.fromJson(v));
+      });
+    }
+    if (json['variation'] != null) {
+      variation = <Variation>[];
+      json['variation'].forEach((v) {
+        variation!.add(new Variation.fromJson(v));
+      });
+    }
+    if (json['faq'] != null) {
+      faq = <Faq>[];
+      json['faq'].forEach((v) {
+        faq!.add(new Faq.fromJson(v));
+      });
+    }
+    cookingTime = json['cooking_time'];
   }
 
   Map<String, dynamic> toJson() {
@@ -177,6 +164,19 @@ class TransMealSlot {
     data['benefits'] = this.benefits;
     data['item_photo'] = this.itemPhoto;
     data['recipe_url'] = this.recipeUrl;
+    data['how_to_store'] = this.howToStore;
+    data['how_to_prepare'] = this.howToPrepare;
+    if (this.ingredient != null) {
+      data['ingredient'] = this.ingredient!.map((v) => v.toJson()).toList();
+    }
+    if (this.variation != null) {
+      data['variation'] = this.variation!.map((v) => v.toJson()).toList();
+    }
+    if (this.faq != null) {
+      data['faq'] = this.faq!.map((v) => v.toJson()).toList();
+    }
+    data['cooking_time'] = this.cookingTime;
+
     return data;
   }
 }

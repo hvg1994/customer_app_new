@@ -43,6 +43,7 @@ import '../../widgets/widgets.dart';
 import '../appointment_screens/consultation_screens/upload_files.dart';
 import '../help_screens/help_screen.dart';
 import '../notification_screen.dart';
+import '../prepratory plan/new/preparatory_new_screen.dart';
 import '../prepratory plan/schedule_screen.dart';
 import '../profile_screens/call_support_method.dart';
 import 'package:http/http.dart' as http;
@@ -2162,7 +2163,7 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
             builder: (context) =>
             (_prepratoryModel!.value!.isPrepCompleted!) ?
             PrepratoryMealCompletedScreen()
-                : PrepratoryPlanScreen(dayNumber: _prepratoryModel!.value!.currentDay!, totalDays: _prepratoryModel!.value!.prep_days ?? ''),
+                : PreparatoryPlanScreen(dayNumber: _prepratoryModel!.value!.currentDay!, totalDays: _prepratoryModel!.value!.prep_days ?? ''),
             // ProgramPlanScreen(from: ProgramMealType.prepratory.name,)
           ),
         ).then((value) => reloadUI());

@@ -244,7 +244,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                       // chat
                                       openKaleyraChat(
                                           uId, chatSuccessId!, accessToken!);
-                                    } else {
+                                    }
+                                    else {
                                       final result = res as ErrorModel;
                                       print(
                                           "get Access Token error: ${result.message}");
@@ -258,28 +259,28 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           ),
                         ),
                       ),
-                      Container(
-                        margin:  EdgeInsets.symmetric(horizontal: 30.w),
-                        padding: EdgeInsets.symmetric(vertical: 1.h,horizontal: 3.w),
-                        decoration: BoxDecoration(
-                          color: gWhiteColor,
-                          borderRadius:  BorderRadius.circular(10),
-                          boxShadow: const [
-                            BoxShadow(
-                              color: kLineColor,
-                              offset: Offset(2, 3),
-                              blurRadius: 5,
-                            )
-                          ],
-                          // border: Border.all(
-                          //   width: 1,
-                          //   color: kLineColor,
-                          // ),
-                        ),
-                        child: GestureDetector(
-                          onTap: () => AppConfig().showSheet(
-                              context, logoutWidget(),
-                              bottomSheetHeight: 45.h),
+                      GestureDetector(
+                        onTap: () => AppConfig().showSheet(
+                            context, logoutWidget(),
+                            bottomSheetHeight: 45.h),
+                        child: Container(
+                          margin:  EdgeInsets.symmetric(horizontal: 30.w),
+                          padding: EdgeInsets.symmetric(vertical: 1.h,horizontal: 3.w),
+                          decoration: BoxDecoration(
+                            color: gWhiteColor,
+                            borderRadius:  BorderRadius.circular(10),
+                            boxShadow: const [
+                              BoxShadow(
+                                color: kLineColor,
+                                offset: Offset(2, 3),
+                                blurRadius: 5,
+                              )
+                            ],
+                            // border: Border.all(
+                            //   width: 1,
+                            //   color: kLineColor,
+                            // ),
+                          ),
                           child: Row(
                             children: [
                               Image(
@@ -293,7 +294,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 "Logout",
                                 style: TextStyle(
                                   color: kTextColor,
-                                  fontFamily: 'GothamBook',
+                                  fontFamily: kFontBook,
                                   fontSize: 11.sp,
                                 ),
                               ),
@@ -313,7 +314,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   profileTile(String image, String title, func) {
-    return GestureDetector(
+    return InkWell(
       onTap: func,
       child: Row(
         children: [

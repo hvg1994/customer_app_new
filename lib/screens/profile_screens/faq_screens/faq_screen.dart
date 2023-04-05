@@ -4,7 +4,9 @@ import 'package:gwc_customer/model/faq_model/faq_list_model.dart';
 import 'package:gwc_customer/repository/api_service.dart';
 import 'package:gwc_customer/repository/profile_repository/settings_repo.dart';
 import 'package:gwc_customer/screens/profile_screens/faq_screens/faq_answers_screen.dart';
+import 'package:gwc_customer/screens/profile_screens/faq_screens/faq_detailed_list_screen.dart';
 import 'package:gwc_customer/services/profile_screen_service/settings_service.dart';
+import 'package:gwc_customer/utils/app_config.dart';
 import 'package:gwc_customer/widgets/unfocus_widget.dart';
 import 'package:sizer/sizer.dart';
 import 'package:http/http.dart' as http;
@@ -55,8 +57,20 @@ class _FaqScreenState extends State<FaqScreen> {
   // Only fruits, boiled vegetables, fruit juices & tender coconut water. No milk, No sugar.
 
 
-  List<FAQ> searchFAQResults = [];
+List<GridTileItems>  faqGridList = [
+  // GridTileItems("Transaction", "assets/images/faq/transaction_faq.png"),
+  // GridTileItems("Subscription", "assets/images/faq/subscription_faq.png"),
+  GridTileItems(0,"Consultation", "assets/images/faq/consultation_faq.png"),
+  GridTileItems(1,"Our products", "assets/images/faq/ourproducts_faq.png"),
+  GridTileItems(2,"Program Based", "assets/images/faq/program_faq.png"),
+  GridTileItems(3,"Meals/Recipe", "assets/images/faq/meals_faq.png"),
+  GridTileItems(4,"Food\nPrescriptions", "assets/images/faq/food_faq.png"),
+  GridTileItems(5,"Post Program", "assets/images/faq/postprogram_faq.png"),
+  GridTileItems(6,"Medicines/\nSupplements", "assets/images/faq/medicines_faq.png"),
+  GridTileItems(7,"Challenges and Adherence", "assets/images/faq/challenges_faq.png"),
+  GridTileItems(8,"Program\nOutcomes", "assets/images/faq/outcomes_faq.png"),
 
+];
 
 
   List<FaqList> fullFaq = [];
@@ -69,7 +83,34 @@ class _FaqScreenState extends State<FaqScreen> {
     // TODO: implement initState
     super.initState();
 
-    faqFuture = SettingsService(repository: repo).getFaqListService();
+    getFaqListData();
+  }
+  bool showLoading = true;
+  getFaqListData() async{
+    final res = await SettingsService(repository: repo).getFaqListService();
+
+    if (res.runtimeType is ErrorModel)
+    {
+      ErrorModel model = res as ErrorModel;
+      AppConfig().showSnackbar(context, AppConfig.oopsMessage, isError: true);
+    }
+    else {
+      print("else");
+      FaqListModel model = res as FaqListModel;
+      fullFaq.addAll(model.faqList!);
+      print("fullFaq: ${fullFaq}");
+      faqGridList[0].faqList = [];
+      fullFaq.forEach((element) {
+        print(element.faqType == FaqTypes.consultation.name);
+        if(element.faqType == FaqTypes.consultation.name){
+          faqGridList[0].faqList!.add(FaqList.fromJson(element.toJson()));
+        }
+      });
+
+    }
+    setState(() {
+      showLoading = false;
+    });
   }
 
   @override
@@ -78,7 +119,7 @@ class _FaqScreenState extends State<FaqScreen> {
       child: SafeArea(
         child: Scaffold(
           body: Padding(
-            padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 5.w),
+            padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 3.w),
             child: SingleChildScrollView(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -88,23 +129,39 @@ class _FaqScreenState extends State<FaqScreen> {
                     Navigator.pop(context);
                   }),
                   //SizedBox(height: 1.h),
-                  Text(
-                    "FAQ",
-                    style: TextStyle(
-                        fontFamily: "GothamBold",
-                        color: gBlackColor,
-                        fontSize: 13.sp),
-                  ),
-                  SizedBox(height: 1.h),
-                  buildSearchWidget(),
-                  // buildGrids(),
-                  buildExpansionTiles(),
+                  showLoading ? Center(child: buildCircularIndicator(),) :showGrids()
+                  // buildExpansionTiles(),
                 ],
               ),
             ),
           ),
         ),
       ),
+    );
+  }
+
+  showGrids(){
+    return Column(
+     children: [
+       Padding(
+         padding: const EdgeInsets.symmetric(vertical: 12.0),
+         child: Center(
+           child: Text(
+             "How Can We Help You ?",
+             style: TextStyle(
+                 fontFamily: kFontBold,
+                 color: gBlackColor,
+                 fontSize: eUser().mainHeadingFontSize),
+           ),
+         ),
+       ),
+       SizedBox(height: 1.h),
+       buildSearchWidget(),
+       SizedBox(height: 1.5.h),
+       searchController.text.isNotEmpty
+           ? buildSearchList() :
+       buildGrids(),
+     ],
     );
   }
 
@@ -341,72 +398,184 @@ class _FaqScreenState extends State<FaqScreen> {
   }
 
   buildSearchWidget() {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(6),
-        color: Colors.white,
-        // border: Border.all(color: gHintTextColor, width: 1.0),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.3),
-            blurRadius: 2,
-          ),
-        ],
-      ),
-      padding: EdgeInsets.symmetric(horizontal: 2.w),
-      margin: EdgeInsets.symmetric(horizontal: 0.w, vertical: 1.h),
-      child: TextFormField(
-        textAlignVertical: TextAlignVertical.center,
-        controller: searchController,
-        textAlign: TextAlign.left,
-        decoration: InputDecoration(
-          prefixIcon: Icon(
-            Icons.search,
-            color: gBlackColor,
-            size: 2.5.h,
-          ),
-          suffixIcon: GestureDetector(
-            onTap: (){
-              setState(() {
-                searchController.clear();
-                searchedFAQResults.clear();
-              });
-            },
-            child: Icon(
-              Icons.cancel_outlined,
-              color: gBlackColor,
-              size: 2.5.h,
+    return Center(
+      child: Container(
+        width: 50.w,
+        height: 30,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(6),
+          color: Colors.white,
+          // border: Border.all(color: gHintTextColor, width: 1.0),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.3),
+              blurRadius: 2,
             ),
-          ),
-          hintText: "Search...",
-          // suffixIcon: searchController.text.isNotEmpty
-          //     ? GestureDetector(
-          //         child:
-          //             Icon(Icons.close_outlined, size: 2.h, color: gBlackColor),
-          //         onTap: () {
-          //           searchController.clearComposing();
-          //           FocusScope.of(context).requestFocus(FocusNode());
-          //         },
-          //       )
-          //     : null,
-          hintStyle: TextStyle(
-            fontFamily: "GothamBook",
-            color: gBlackColor,
-            fontSize: 9.sp,
-          ),
-          border: InputBorder.none,
+          ],
         ),
-        style: TextStyle(
-            fontFamily: "GothamBook", color: gBlackColor, fontSize: 11.sp),
-        onChanged: (value) {
-          onSearchTextChanged(value);
-        },
+        child: Row(
+          children: [
+            Container(
+              height: 30,
+              padding: EdgeInsets.symmetric(horizontal: 4),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(6),
+                    bottomLeft: Radius.circular(6)
+                ),
+                color: gsecondaryColor,
+              ),
+              child: Icon(
+                Icons.search,
+                color: gWhiteColor,
+                size: 14.sp,
+              ),
+            ),
+            Expanded(
+              child: TextFormField(
+                controller: searchController,
+                textAlign: TextAlign.left,
+                decoration: InputDecoration(
+                  // prefixIconConstraints: BoxConstraints.tight(Size.square(30)),
+                  // prefixIcon: IntrinsicWidth(
+                  //   child: Container(
+                  //     decoration: BoxDecoration(
+                  //       borderRadius: BorderRadius.only(
+                  //           topLeft: Radius.circular(6),
+                  //           bottomLeft: Radius.circular(6)
+                  //       ),
+                  //       color: gsecondaryColor,
+                  //     ),
+                  //     child: Icon(
+                  //       Icons.search,
+                  //       color: gWhiteColor,
+                  //       size: 14.sp,
+                  //     ),
+                  //   ),
+                  // ),
+                  suffixIcon: GestureDetector(
+                    onTap: (){
+                      setState(() {
+                        searchController.clear();
+                        searchedFAQResults.clear();
+                      });
+                    },
+                    child: Icon(
+                      Icons.cancel_outlined,
+                      color: gBlackColor,
+                      size: 14.sp,
+                    ),
+                  ),
+                  contentPadding: EdgeInsets.only(left: 20),
+                  hintText: "Search...",
+                  // suffixIcon: searchController.text.isNotEmpty
+                  //     ? GestureDetector(
+                  //         child:
+                  //             Icon(Icons.close_outlined, size: 2.h, color: gBlackColor),
+                  //         onTap: () {
+                  //           searchController.clearComposing();
+                  //           FocusScope.of(context).requestFocus(FocusNode());
+                  //         },
+                  //       )
+                  //     : null,
+                  hintStyle: TextStyle(
+                    fontFamily: kFontBook,
+                    color: gBlackColor,
+                    fontSize: 9.sp,
+                  ),
+                  border: InputBorder.none,
+                ),
+                style: TextStyle(
+                    fontFamily: "GothamBook", color: gBlackColor, fontSize: 11.sp),
+                onChanged: (value) {
+                  onSearchTextChanged(value);
+                },
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+    return Center(
+      child: Container(
+        width: 50.w,
+        height: 30,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(6),
+          color: Colors.white,
+          // border: Border.all(color: gHintTextColor, width: 1.0),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.3),
+              blurRadius: 2,
+            ),
+          ],
+        ),
+        margin: EdgeInsets.symmetric(horizontal: 0.w, vertical: 1.h),
+        child: TextFormField(
+          controller: searchController,
+          textAlign: TextAlign.left,
+          decoration: InputDecoration(
+            prefixIconConstraints: BoxConstraints.tight(Size.square(30)),
+            prefixIcon: IntrinsicWidth(
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(6),
+                      bottomLeft: Radius.circular(6)
+                  ),
+                  color: gsecondaryColor,
+                ),
+                child: Icon(
+                  Icons.search,
+                  color: gWhiteColor,
+                  size: 14.sp,
+                ),
+              ),
+            ),
+            suffixIcon: GestureDetector(
+              onTap: (){
+                setState(() {
+                  searchController.clear();
+                  searchedFAQResults.clear();
+                });
+              },
+              child: Icon(
+                Icons.cancel_outlined,
+                color: gBlackColor,
+                size: 14.sp,
+              ),
+            ),
+            contentPadding: EdgeInsets.only(left: 20),
+            hintText: "Search...",
+            // suffixIcon: searchController.text.isNotEmpty
+            //     ? GestureDetector(
+            //         child:
+            //             Icon(Icons.close_outlined, size: 2.h, color: gBlackColor),
+            //         onTap: () {
+            //           searchController.clearComposing();
+            //           FocusScope.of(context).requestFocus(FocusNode());
+            //         },
+            //       )
+            //     : null,
+            hintStyle: TextStyle(
+              fontFamily: kFontBook,
+              color: gBlackColor,
+              fontSize: 9.sp,
+            ),
+            border: InputBorder.none,
+          ),
+          style: TextStyle(
+              fontFamily: "GothamBook", color: gBlackColor, fontSize: 11.sp),
+          onChanged: (value) {
+            onSearchTextChanged(value);
+          },
+        ),
       ),
     );
   }
 
   onSearchTextChanged(String text) async {
-    searchFAQResults.clear();
     searchedFAQResults.clear();
 
     if (text.isEmpty) {
@@ -597,29 +766,72 @@ class _FaqScreenState extends State<FaqScreen> {
   SettingsRepository repo =
       SettingsRepository(apiClient: ApiClient(httpClient: http.Client()));
 
-  gridTile(String assetName){
-    return Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.5),
-              blurRadius: 5,
-              offset: const Offset(2, 10),
-            ),
-          ],
-        ),
-        child: Column(
-          children: [
-            Center(child: Image.asset(assetName)),
-            Text("Transaction",
-              style: TextStyle(
-                  fontFamily: kFontMedium,
-                  fontSize: 10.sp
+  goToScreen(screenName){
+    print(screenName);
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => screenName,
+        // builder: (context) => isConsultationCompleted ? ConsultationSuccess() : const DoctorCalenderTimeScreen(),
+      ),
+    );
+  }
+
+  gridTile(GridTileItems items){
+    return InkWell(
+      onTap: (){
+        switch(items.id){
+          case 0:
+            print(items.faqList);
+            goToScreen(FaqDetailedList(faqList: items.faqList,));
+            break;
+          case 1:
+            break;
+          case 2:
+            break;
+          case 3:
+            break;
+          case 4:
+            break;
+          case 5:
+            break;
+        }
+      },
+      child: Container(
+        padding: EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: gWhiteColor,
+            borderRadius: BorderRadius.circular(10),
+            boxShadow: [
+              BoxShadow(
+                color: kLineColor,
+                blurRadius: 2,
+                offset: const Offset(0.9, 1.5),
               ),
-            )
-          ],
-        )
+            ],
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Flexible(
+                child: Center(child: Image.asset(items.assetImage,
+                  color: kLineColor,
+                  fit: BoxFit.scaleDown,
+                )),
+              ),
+              Expanded(
+                child: Center(
+                  child: Text(items.name,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        fontFamily: kFontMedium,
+                        fontSize: 10.sp
+                    ),
+                  ),
+                ),
+              )
+            ],
+          )
+      ),
     );
   }
 
@@ -629,26 +841,47 @@ class _FaqScreenState extends State<FaqScreen> {
         physics: const ScrollPhysics(),
         shrinkWrap: true,
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          mainAxisSpacing: 10,
-          crossAxisSpacing: 10,
+          mainAxisSpacing: 18,
+          crossAxisSpacing: 10.5,
           crossAxisCount: 3,
-          mainAxisExtent: 20.h,
+          // mainAxisExtent: 20.h,
           // childAspectRatio: MediaQuery.of(context).size.width /
           //     (MediaQuery.of(context).size.height / 1.4),
         ),
-        // gridDelegate:SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4),
-        itemCount: 2,
+        itemCount: faqGridList.length,
         itemBuilder: (context, index) {
-          return gridTile("assets/images/faq/challenges_faq.png");
+          return gridTile(faqGridList[index]);
         });
   }
 
 }
 
+
+class GridTileItems{
+  int id;
+  String name;
+  String assetImage;
+  List<FaqList>? faqList;
+  GridTileItems(this.id,this.name, this.assetImage, {this.faqList});
+}
+
 class FAQ {
+  String? heading;
   String questions;
   String path;
   String answers;
 
-  FAQ(this.questions, this.path, this.answers);
+  FAQ(this.questions, this.path, this.answers, this.heading);
+}
+
+enum FaqTypes{
+  consultation,
+  products,
+  program_based,
+  meals,
+  food_prescription,
+  post_program,
+  medicines,
+  challenges,
+  program_outcomes
 }

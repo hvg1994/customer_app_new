@@ -6,7 +6,6 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:gwc_customer/model/error_model.dart';
 import 'package:gwc_customer/model/program_model/meal_plan_details_model/meal_plan_details_model.dart';
 import 'package:gwc_customer/repository/prepratory_repository/prep_repository.dart';
-import 'package:gwc_customer/screens/prepratory%20plan/prepratory_meal_completed_screen.dart';
 import 'package:gwc_customer/screens/prepratory%20plan/prepratory_plan_screen.dart';
 import 'package:gwc_customer/screens/prepratory%20plan/transition_mealplan_screen.dart';
 import 'package:gwc_customer/screens/program_plans/meal_plan_screen.dart';
@@ -23,6 +22,8 @@ import '../../repository/program_repository/program_repository.dart';
 import '../../utils/app_config.dart';
 import '../../widgets/constants.dart';
 import '../../widgets/widgets.dart';
+import '../prepratory plan/new/preparatory_new_screen.dart';
+import '../prepratory plan/prepratory_meal_completed_screen.dart';
 import 'day_program_plans.dart';
 import 'package:http/http.dart' as http;
 
@@ -290,7 +291,7 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
               _customVideoPlayerController!.videoPlayerController.pause();
               if(widget.from == ProgramMealType.prepratory.name){
                 //get Preparatory day1 meals
-                gotoScreen(PrepratoryPlanScreen(dayNumber: "1", totalDays: '1',viewDay1Details: true,));
+                gotoScreen(PreparatoryPlanScreen(dayNumber: "1", totalDays: '1',viewDay1Details: true,));
               }
               else if(widget.from == ProgramMealType.program.name){
                 //get Normal Program day1 meals
@@ -368,7 +369,7 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => PrepratoryPlanScreen(dayNumber: "1", totalDays: '1',),
+              builder: (context) => PreparatoryPlanScreen(dayNumber: "1", totalDays: '1',),
             ),
           );
         }

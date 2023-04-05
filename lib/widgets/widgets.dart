@@ -282,10 +282,10 @@ Future<CroppedFile?> cropSelectedImage(String filePath) async {
   return await ImageCropper().cropImage(
       sourcePath: filePath,
       aspectRatio: const CropAspectRatio(ratioX: 1.0, ratioY: 1.0),
+      cropStyle: CropStyle.circle,
       uiSettings: [
         AndroidUiSettings(
-            toolbarTitle: 'Cropper',
-            toolbarColor: Colors.deepOrange,
+            toolbarColor: gBlackColor,
             toolbarWidgetColor: Colors.white,
             initAspectRatio: CropAspectRatioPreset.original,
             lockAspectRatio: false),

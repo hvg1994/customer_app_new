@@ -25,9 +25,10 @@ import 'package:gwc_customer/screens/evalution_form/evaluation_get_details.dart'
 import 'package:gwc_customer/screens/help_screens/help_screen.dart';
 import 'package:gwc_customer/screens/home_remedies/home_remedies_screen.dart';
 import 'package:gwc_customer/screens/medical_program_feedback_screen/final_feedback_form.dart';
+import 'package:gwc_customer/screens/medical_program_feedback_screen/medical_feedback_form.dart';
 import 'package:gwc_customer/screens/notification_screen.dart';
 import 'package:gwc_customer/screens/post_program_screens/new_post_program/pp_levels_demo.dart';
-import 'package:gwc_customer/screens/prepratory%20plan/prepratory_plan_screen.dart';
+import 'package:gwc_customer/screens/prepratory%20plan/new/preparatory_new_screen.dart';
 import 'package:gwc_customer/screens/prepratory%20plan/schedule_screen.dart';
 import 'package:gwc_customer/screens/prepratory%20plan/transition_mealplan_screen.dart';
 import 'package:gwc_customer/screens/profile_screens/call_support_method.dart';
@@ -53,6 +54,7 @@ import '../appointment_screens/consultation_screens/check_user_report_screen.dar
 import '../appointment_screens/consultation_screens/consultation_success.dart';
 import '../appointment_screens/consultation_screens/upload_files.dart';
 import '../appointment_screens/doctor_slots_details_screen.dart';
+import '../prepratory plan/new/new_transition_design.dart';
 import '../prepratory plan/prepratory_meal_completed_screen.dart';
 import '../program_plans/program_start_screen.dart';
 import 'package:gwc_customer/widgets/vlc_player/vlc_player_with_controls.dart';
@@ -249,19 +251,11 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
         if(_getDashboardDataModel.normal_postprogram != null){
           _gutPostProgramModel = _getDashboardDataModel.normal_postprogram;
           postProgramStage = _gutPostProgramModel?.data;
-          setState(() {
-            initialIndex = 1;
-          });
-          _tabController!.animateTo(initialIndex);
         }
         else{
           _postConsultationAppointment = _getDashboardDataModel.postprogram_consultation;
           print("RESCHEDULE : ${_getDashboardDataModel.postprogram_consultation?.data}");
           postProgramStage = _postConsultationAppointment?.data;
-          setState(() {
-            initialIndex = 1;
-          });
-          _tabController!.animateTo(initialIndex);
         }
         print("init index: $initialIndex");
 
@@ -616,7 +610,7 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
                               // borderColor: ((prepratoryMealStage == null || prepratoryMealStage!.isEmpty) && _prepratoryModel == null) ? null : (_prepratoryModel?.value?.isPrepCompleted == true) ? kBigCircleBorderGreen : kBigCircleBorderYellow,
                             button1Name: prepBtn1Name ??'',
                             button1Color: prepBtn1Color ?? newDashboardLightGreyButtonColor,
-                            button2Color: prepBtn2Color,
+                            button2Color: prepBtn2Color ?? newDashboardLightGreyButtonColor,
                             button2Name: prepBtn2Name,
                             type: StageType.prep_meal,
                           ),),
@@ -634,7 +628,7 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
                               // borderColor: getProgramTransBorderColor("color"),
                               button1Name: mealBtn1Name ??'',
                               button1Color: mealBtn1Color ?? newDashboardLightGreyButtonColor,
-                              button2Color: mealBtn2Color,
+                              button2Color: mealBtn2Color ?? newDashboardLightGreyButtonColor,
                               button2Name: mealBtn2Name,
                               type: StageType.normal_meal,
 
@@ -662,7 +656,7 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
                             showLockIcon: showConsLockIcon,
                             button1Name: consBtn1Name ??'',
                             button1Color: consBtn1Color ?? newDashboardLightGreyButtonColor,
-                            button2Color: consBtn2Color,
+                            button2Color: consBtn2Color ?? newDashboardLightGreyButtonColor,
                             button2Name: consBtn2Name,
                             type: StageType.med_consultation,
                           ),),
@@ -867,10 +861,10 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
             arcColor: yellowArc,
             heading: "GUT MAINTENANCE GUIDE [GMG]",
             subText: "Congratulation on successfully completing the Gut Rhythm Reset Program, Great Job! Now its time to discuss your progress with your consulting doctor and one of the Senior Consultant to evaluate you Gut Condition. If all is well, you will be moved to maintenance. However if some more rectification is needed, They will discuss the next steps ....",
-            btn1Name: gmgBtn1Name ?? 'View PDF',
-            btn1Color: gmgBtn1Color,
-            btn2Name: gmgBtn2Name ?? 'Track & Earn',
+            btn2Name: gmgBtn2Name,
             btn2Color: gmgBtn2Color,
+            btn1Name: gmgBtn1Name ?? 'Track & Earn',
+            btn1Color: gmgBtn1Color,
             btnStage: PPButtonStage.GMG
         ),
         tile(
@@ -889,6 +883,7 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
     );
   }
 
+  //outer 132 inner 130.5
   tile({required Color arcColor, required String heading,required String subText,required String btn1Name,required PPButtonStage btnStage, String? btn2Name, String? btn3Name, Color? btn1Color,  Color? btn2Color,  Color? btn3Color}){
     return IntrinsicHeight(
       child: Container(
@@ -903,7 +898,7 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
               alignment: AlignmentDirectional(1.44, 0.02),
               child: Container(
                 width: 96.w,
-                height: 129,
+                height: 132,
                 decoration: BoxDecoration(
                   color: arcColor,
                   borderRadius: BorderRadius.only(
@@ -927,7 +922,7 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
               alignment: AlignmentDirectional(1.34, 0.02),
               child: Container(
                 width: 92.w,
-                height: 127.5,
+                height: 130.5,
                 padding: EdgeInsets.symmetric(vertical: 3),
                 decoration: BoxDecoration(
                   color: Colors.white,
@@ -973,7 +968,7 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
                                   height: 1.22,
                                     fontFamily: kFontBook,
                                     color: eUser().mainHeadingColor,
-                                    fontSize: subHeadingFont
+                                    fontSize: 9.5.sp
                                 ),
                               ),
                           ),
@@ -1026,9 +1021,11 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
           case PPButtonStage.PPC:
             if(btnId == 1){
               if(postProgramStage == "post_program"){
-                goToScreen(FinalFeedbackForm());
+                goToScreen(MedicalFeedbackForm());
               }
                 else{
+                // goToScreen(FinalFeedbackForm());
+
                 AppConfig().showSnackbar(context, "Can't access Locked Stage", isError: true);
               }
             }
@@ -1246,8 +1243,7 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
                                 SystemMouseCursors
                                     .click,
                                 onTap: () {
-                                  // showMoreTextSheet(
-                                  //     subText);
+                                  showMoreTextSheet(subText);
                                 },
                                 child: Text(
                                   "more",
@@ -1797,6 +1793,9 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
         bg1 = completedBgColor;
         evalBtnColor = newDashboardGreenButtonColor;
         evalBtnName = "View Files";
+
+        mealBtn1Name = "View Plan";
+
         break;
       case 'pending' :
         bg1 = completedBgColor;
@@ -1808,6 +1807,11 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
         consBtn1Name = "Schedule";
         consBtn2Color = newDashboardLightGreyButtonColor;
         consBtn2Name = "Join Cons";
+
+        prepBtn1Name = "View Plan";
+        prepBtn2Name = "Track Kit";
+        mealBtn1Name = "View Plan";
+
         break;
       case 'consultation_reschedule' :
         bg1 = completedBgColor;
@@ -1821,6 +1825,10 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
         consBtn2Name = "Join Cons";
         showConsLockIcon = true;
 
+
+        prepBtn1Name = "View Plan";
+        prepBtn2Name = "Track Kit";
+        mealBtn1Name = "View Plan";
         break;
       case 'appointment_booked':
         bg1 = completedBgColor;
@@ -1834,6 +1842,10 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
         consBtn2Name = "Join Cons";
         showConsLockIcon = true;
 
+
+        prepBtn1Name = "View Plan";
+        prepBtn2Name = "Track Kit";
+        mealBtn1Name = "View Plan";
         break;
       case 'consultation_done':
         bg1 = completedBgColor;
@@ -1847,6 +1859,10 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
         consBtn2Name = "View MR";
         showConsLockIcon = true;
 
+
+        prepBtn1Name = "View Plan";
+        prepBtn2Name = "Track Kit";
+        mealBtn1Name = "View Plan";
         break;
       case 'consultation_accepted':
         bg1 = completedBgColor;
@@ -1860,6 +1876,9 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
         consBtn2Name = "View MR";
         showConsLockIcon = true;
 
+        prepBtn1Name = "View Plan";
+        prepBtn2Name = "Track Kit";
+        mealBtn1Name = "View Plan";
         break;
       case 'consultation_waiting':
         bg1 = completedBgColor;
@@ -1873,6 +1892,10 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
         consBtn2Name = "View MR";
         showConsLockIcon = true;
 
+
+        prepBtn1Name = "View Plan";
+        prepBtn2Name = "Track Kit";
+        mealBtn1Name = "View Plan";
         break;
       case 'check_user_reports':
         bg1 = completedBgColor;
@@ -1886,6 +1909,10 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
         consBtn2Name = "View MR";
         showConsLockIcon = true;
 
+
+        prepBtn1Name = "View Plan";
+        prepBtn2Name = "Track Kit";
+        mealBtn1Name = "View Plan";
         break;
       case 'consultation_rejected':
         bg1 = completedBgColor;
@@ -1899,6 +1926,10 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
         consBtn2Name = "View MR";
         showConsLockIcon = true;
 
+
+        prepBtn1Name = "View Plan";
+        prepBtn2Name = "Track Kit";
+        mealBtn1Name = "View Plan";
         break;
       case 'report_upload':
         bg1 = completedBgColor;
@@ -1913,6 +1944,9 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
         showConsLockIcon = false;
 
 
+        prepBtn1Name = "View Plan";
+        prepBtn2Name = "Track Kit";
+        mealBtn1Name = "View Plan";
         break;
       case 'prep_meal_plan_completed':
         bg1 = completedBgColor;
@@ -1944,6 +1978,7 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
 
         }
 
+        mealBtn1Name = "View Plan";
         break;
       case 'shipping_packed':
         bg1 = completedBgColor;
@@ -1973,6 +2008,8 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
           prepBtn2Name = "Track Kit";
           showPrepLockIcon = false;
         }
+
+        mealBtn1Name = "View Plan";
         break;
       case 'shipping_paused':
         bg1 = completedBgColor;
@@ -2003,6 +2040,8 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
           showPrepLockIcon = false;
 
         }
+
+        mealBtn1Name = "View Plan";
         break;
       case 'shipping_delivered':
         bg1 = completedBgColor;
@@ -2033,6 +2072,9 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
           prepBtn2Name = "Track Kit";
           showPrepLockIcon = false;
         }
+
+
+        mealBtn1Name = "View Plan";
         break;
       case 'shipping_approved':
         bg1 = completedBgColor;
@@ -2064,6 +2106,8 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
           prepBtn2Name = "Track Kit";
           showPrepLockIcon = false;
         }
+
+        mealBtn1Name = "View Plan";
         break;
       case 'start_program':
         bg1 = completedBgColor;
@@ -2134,6 +2178,7 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
         }
         break;
       case 'post_program':
+        changeToggle();
         bg1 = completedBgColor;
         evalBtnColor = newDashboardGreenButtonColor;
         evalBtnName = "View Files";
@@ -2172,6 +2217,7 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
         postBtn3Name = "Join";
         break;
       case 'post_appointment_booked':
+        changeToggle();
         bg1 = completedBgColor;
         evalBtnColor = newDashboardGreenButtonColor;
         evalBtnName = "View Files";
@@ -2211,6 +2257,7 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
 
         break;
       case 'post_appointment_done':
+        changeToggle();
         bg1 = completedBgColor;
         evalBtnColor = newDashboardGreenButtonColor;
         evalBtnName = "View Files";
@@ -2250,6 +2297,7 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
 
         break;
       case 'protocol_guide':
+        changeToggle();
         bg1 = completedBgColor;
         evalBtnColor = newDashboardGreenButtonColor;
         evalBtnName = "View Files";
@@ -2280,7 +2328,7 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
           showMealLockIcon = true;
         }
 
-        postBtn1Color = newDashboardGreenButtonColor;
+        postBtn1Color = newDashboardLightGreyButtonColor;
         postBtn1Name = "Completed";
         postBtn2Color = newDashboardLightGreyButtonColor;
         postBtn2Name = "Completed";
@@ -2288,12 +2336,19 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
         postBtn3Name = "Completed";
 
         gmgBtn1Color = newDashboardGreenButtonColor;
-        gmgBtn1Name = "View PDF";
-        gmgBtn2Color = newDashboardLightGreyButtonColor;
-        gmgBtn2Name = "Earn";
+        gmgBtn1Name = "Track & Earn";
+        // gmgBtn2Color = newDashboardLightGreyButtonColor;
+        // gmgBtn2Name = "View PDF";
 
         break;
     }
+  }
+
+  changeToggle(){
+    setState(() {
+      initialIndex = 1;
+    });
+    _tabController!.animateTo(initialIndex);
   }
 
 
@@ -2481,7 +2536,7 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
             builder: (context) =>
             (_prepratoryModel!.value!.isPrepCompleted!) ?
             PrepratoryMealCompletedScreen()
-                : PrepratoryPlanScreen(dayNumber: _prepratoryModel!.value!.currentDay!, totalDays: _prepratoryModel!.value!.prep_days ?? ''),
+                : PreparatoryPlanScreen(dayNumber: _prepratoryModel!.value!.currentDay!, totalDays: _prepratoryModel!.value!.prep_days ?? ''),
             // ProgramPlanScreen(from: ProgramMealType.prepratory.name,)
           ),
         ).then((value) => reloadUI());
@@ -2503,7 +2558,7 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => TransitionMealPlanScreen(
+            builder: (context) => NewTransitionDesign(
                 postProgramStage: postProgramStage,
                 totalDays: _transModel!.value!.trans_days ?? '',
                 dayNumber: _transModel?.value?.currentDay ??'',
@@ -2581,6 +2636,38 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
       ),
     );
   }
+
+  showMoreTextSheet(String text) {
+    return AppConfig().showSheet(
+        context,
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Center(
+                child: Text(
+                  text,
+                  style: TextStyle(
+                      fontSize: subHeadingFont,
+                      fontFamily: kFontBook,
+                      height: 1.4),
+                  textAlign: TextAlign.justify,
+                ),
+              ),
+            ),
+            SizedBox(height: 1.h)
+          ],
+        ),
+        bottomSheetHeight: 40.h,
+        circleIcon: bsHeadBulbIcon,
+        isSheetCloseNeeded: true, sheetCloseOnTap: () {
+      Navigator.pop(context);
+    });
+  }
+
+
 
 }
 
@@ -3001,6 +3088,7 @@ class GreenPurple extends StatelessWidget {
 
 
   }
+
 
 }
 

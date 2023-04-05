@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
+import 'package:gwc_customer/model/error_model.dart';
 import 'package:gwc_customer/screens/gut_list_screens/new_dashboard_levels_screen.dart';
 import 'package:gwc_customer/screens/profile_screens/settings_screen.dart';
+import 'package:gwc_customer/screens/program_plans/widget/radial/radial_meal.dart';
 import 'package:gwc_customer/screens/testimonial_list_screen/testimonial_list_screen.dart';
 import 'package:gwc_customer/widgets/exit_widget.dart';
 import 'package:sizer/sizer.dart';
@@ -10,6 +12,9 @@ import '../utils/app_config.dart';
 import '../widgets/constants.dart';
 import 'feed_screens/feeds_list.dart';
 import 'gut_list_screens/new_dashboard_stages2.dart';
+import 'profile_screens/call_support_method.dart';
+import 'program_plans/widget/radial/pizza.dart';
+import 'program_plans/widget/radial/syncf_pie.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({Key? key}) : super(key: key);
@@ -25,6 +30,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
   int _bottomNavIndex = 2;
 
   final int save_prev_index = 2;
+
+  bool showFab = true;
 
   // void _onItemTapped(int index) {
   //   if (index != 3) {
@@ -69,6 +76,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
         }
       case 1:
         {
+          // return DemoSlice();
+          // return RadialSliderExample();
           return const FeedsList();
         }
       case 2:
@@ -87,18 +96,56 @@ class _DashboardScreenState extends State<DashboardScreen> {
     }
   }
 
+  bool showProgress = false;
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(
         body: pageCaller(_bottomNavIndex),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {  },
-          child: ImageIcon(
+        floatingActionButton: showFab ? FloatingActionButton(
+          onPressed: (showProgress) ? null : () async{
+            setState(() {
+              showProgress = true;
+            });
+            final _pref = AppConfig().preferences!;
+            final uId =
+            _pref.getString(AppConfig.KALEYRA_USER_ID);
+            final res = await getAccessToken(uId!);
+
+            if (res.runtimeType != ErrorModel) {
+              final accessToken = _pref.getString(
+                  AppConfig.KALEYRA_ACCESS_TOKEN);
+
+              final chatSuccessId = _pref.getString(
+                  AppConfig.KALEYRA_CHAT_SUCCESS_ID);
+              // chat
+              openKaleyraChat(
+                  uId, chatSuccessId!, accessToken!);
+            }
+            else {
+              final result = res as ErrorModel;
+              print(
+                  "get Access Token error: ${result.message}");
+              AppConfig().showSnackbar(
+                  context, result.message ?? '',
+                  isError: true, bottomPadding: 70);
+            }
+            setState(() {
+              showProgress = false;
+            });
+          },
+          backgroundColor: gsecondaryColor.withOpacity(0.7),
+          child: showProgress ?
+          Center(child: SizedBox(
+            height: 15,
+            width: 15,
+            child: CircularProgressIndicator(color: gWhiteColor,),
+          ),)
+              : ImageIcon(
             AssetImage("assets/images/noun-chat-5153452.png")
           ),
-        ),
+        ) : null,
         bottomNavigationBar: ConvexAppBar(
           key: _appBarKey,
           style: TabStyle.react,
@@ -165,7 +212,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
   void onChangedTab(int index) {
     setState(() {
       _bottomNavIndex = index;
+      if(_bottomNavIndex == 4){
+        showFab = false;
+      }
+      else{
+        showFab = true;
+      }
     });
+
   }
 
   Future<bool> _onWillPop() {

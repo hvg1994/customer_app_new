@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gwc_customer/model/error_model.dart';
 import 'package:gwc_customer/model/ship_track_model/shopping_model/get_shopping_model.dart';
+import 'package:gwc_customer/screens/cook_kit_shipping_screens/shopping_list_screen.dart';
 import 'package:gwc_customer/screens/gut_list_screens/new_dashboard_stages.dart';
 import 'package:intl/intl.dart';
 import 'package:sizer/sizer.dart';
@@ -56,7 +57,7 @@ class _CookKitTrackingState extends State<CookKitTracking> {
 
   int tabSize = 2;
 
-  bool showShoppingLoading = false;
+  // bool showShoppingLoading = false;
 
   final _pref = AppConfig().preferences;
   // /// oldresponse variable
@@ -65,13 +66,13 @@ class _CookKitTrackingState extends State<CookKitTracking> {
   // Map<String, List<ChildGetShoppingModel>> sortedData = {};
 
   List dayList = [];
-  List<ChildGetShoppingModel> shoppingList = [];
+  // List<ChildGetShoppingModel> shoppingList = [];
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    getShoppingList();
+    //  getShoppingList();
     if (widget.currentStage.isNotEmpty) {
       if ((widget.currentStage == 'shipping_approved' ||
           widget.currentStage == 'shipping_delivered' ||
@@ -96,6 +97,7 @@ class _CookKitTrackingState extends State<CookKitTracking> {
       length: tabSize,
       child: SafeArea(
         child: Scaffold(
+          backgroundColor: gBackgroundColor,
           body: Column(
             children: [
               Padding(
@@ -117,40 +119,78 @@ class _CookKitTrackingState extends State<CookKitTracking> {
                       // }
                     }),
               ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 3.w),
+              Container(
+                margin: EdgeInsets.symmetric(horizontal: 5.w),
+                height: 35,
                 child: TabBar(
                   labelColor: eUser().userFieldLabelColor,
-                  unselectedLabelColor: gHintTextColor,
+                  unselectedLabelColor: eUser().userTextFieldColor,
+                  // padding: EdgeInsets.symmetric(horizontal: 3.w),
                   isScrollable: false,
                   indicatorColor: gsecondaryColor,
-                  // indicatorPadding: EdgeInsets.only(right: 5.w, left: 5.w),
-                  unselectedLabelStyle: TextStyle(
-                      fontFamily: "GothamBook",
-                      color: gHintTextColor,
-                      fontSize: 9.sp),
                   labelStyle: TextStyle(
-                      fontFamily: "GothamMedium",
-                      color: gBlackColor,
-                      fontSize: 11.sp),
+                      fontFamily: kFontMedium,
+                      color: gPrimaryColor,
+                      fontSize: 12.sp),
+                  unselectedLabelStyle: TextStyle(
+                      fontFamily: kFontBook,
+                      color: gHintTextColor,
+                      fontSize: 10.sp),
+                  // labelPadding: EdgeInsets.only(
+                  //     right: 10.w, left: 2.w, top: 1.h, bottom: 1.h),
+                  indicatorPadding: EdgeInsets.symmetric(horizontal: 5.w),
                   tabs: const [
                     Tab(text: 'Shipping'),
                     Tab(text: 'Shopping'),
                   ],
                 ),
               ),
-              Expanded(
-                child: TabBarView(
-                  children: [
-                    (showTrackingProgress)
-                        ? buildCircularIndicator()
-                        : shipRocketUI(context),
-                    (showShoppingLoading)
-                        ? buildCircularIndicator()
-                        : shoppingUi(),
-                  ],
-                ),
-              ),
+              Flexible(
+                  child: TabBarView(
+                    physics: const NeverScrollableScrollPhysics(),
+                    children: [
+                      (showTrackingProgress)
+                          ? buildCircularIndicator()
+                          : shipRocketUI(context),
+                      const ShoppingListScreen(),
+                      // (showShoppingLoading) ? buildCircularIndicator() : shoppingUi(),
+                    ],
+                  ))
+              // Padding(
+              //   padding: EdgeInsets.symmetric(horizontal: 3.w),
+              //   child: TabBar(
+              //     labelColor: eUser().userFieldLabelColor,
+              //     unselectedLabelColor: gHintTextColor,
+              //     isScrollable: false,
+              //     indicatorColor: gsecondaryColor,
+              //     // indicatorPadding: EdgeInsets.only(right: 5.w, left: 5.w),
+              //     unselectedLabelStyle: TextStyle(
+              //         fontFamily: "GothamBook",
+              //         color: gHintTextColor,
+              //         fontSize: 9.sp),
+              //     labelStyle: TextStyle(
+              //         fontFamily: "GothamMedium",
+              //         color: gBlackColor,
+              //         fontSize: 11.sp),
+              //     tabs: const [
+              //       Tab(text: 'Shipping'),
+              //       Tab(text: 'Shopping'),
+              //     ],
+              //   ),
+              // ),
+              // Expanded(
+              //   child: TabBarView(
+              //     children: [
+              //       (showTrackingProgress)
+              //           ? buildCircularIndicator()
+              //           : shipRocketUI(context),
+              //       ShoppingListScreen(),
+              //       // (showShoppingLoading)
+              //       //     ? buildCircularIndicator()
+              //       //     : shoppingUi(),
+              //     ],
+              //   ),
+              // ),
             ],
           ),
         ),
@@ -158,14 +198,55 @@ class _CookKitTrackingState extends State<CookKitTracking> {
     );
   }
 
-  shoppingUi() {
-    if (shoppingList.isNotEmpty) {
-      return buildShippingList();
-      // return tableView();
-    } else {
-      return noData();
-    }
+  tabView() {
+    return Padding(
+      padding: const EdgeInsets.all(4.0),
+      child: Column(
+        children: [
+          Container(
+            height: 35,
+            decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(15.0)),
+            child: TabBar(
+              indicator: BoxDecoration(
+                  color: gPrimaryColor,
+                  borderRadius: BorderRadius.circular(15.0)),
+              labelColor: gMainColor,
+              unselectedLabelColor: gPrimaryColor,
+              tabs: const [
+                Tab(
+                  text: 'Shipping',
+                ),
+                Tab(
+                  text: 'Shopping',
+                ),
+              ],
+            ),
+          ),
+          Flexible(
+              child: TabBarView(
+                children: [
+                  (showTrackingProgress)
+                      ? buildCircularIndicator()
+                      : shipRocketUI(context),
+                  ShoppingListScreen(),
+                  // (showShoppingLoading) ? buildCircularIndicator() : shoppingUi(),
+                ],
+              ))
+        ],
+      ),
+    );
   }
+
+  // shoppingUi() {
+  //   if (shoppingList.isNotEmpty) {
+  //     return const ShoppingListScreen();
+  //     // return tableView();
+  //   } else {
+  //     return noData();
+  //   }
+  // }
 
   ByteData? placeHolderImage;
 
@@ -174,261 +255,259 @@ class _CookKitTrackingState extends State<CookKitTracking> {
     setState(() => placeHolderImage = data);
   }
 
-  buildShippingList() {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 3.w),
-        child: Column(
-          children: [
-            Container(
-              height: 1,
-              color: Colors.grey.withOpacity(0.3),
-            ),
-            SizedBox(height: 2.h),
-            MediaQuery(
-              data: MediaQuery.of(context).copyWith(textScaleFactor: 0.8),
-              child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 1.h),
-                child: SingleChildScrollView(
-                  child: GridView.builder(
-                      scrollDirection: Axis.vertical,
-                      physics: const ScrollPhysics(),
-                      shrinkWrap: true,
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        mainAxisSpacing: 15,
-                        crossAxisSpacing: 10,
-                        crossAxisCount: 2,
-                        mainAxisExtent: 22.h,
-                        // childAspectRatio: MediaQuery.of(context).size.width /
-                        //     (MediaQuery.of(context).size.height / 1.4),
-                      ),
-                      // gridDelegate:SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4),
-                      itemCount: shoppingList.length,
-                      itemBuilder: (context, index) {
-                        return Container(
-                          decoration: BoxDecoration(
-                            color: gWhiteColor,
-                            borderRadius: BorderRadius.circular(10),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.3),
-                                blurRadius: 5,
-                                offset: const Offset(3, 8),
-                              ),
-                            ],
-                            // border: Border(
-                            //   right: BorderSide(
-                            //     color: kLineColor.withOpacity(0.5),
-                            //   ),
-                            //   bottom: BorderSide(
-                            //     color: kLineColor.withOpacity(0.5),
-                            //   ),
-                            // ),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Center(
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(10),
-                                  child: (shoppingList[index]
-                                      .ingredients
-                                      ?.thumbnail !=
-                                      null)
-                                      ? SizedBox(
-                                    height: 15.h,
-                                    width: 30.w,
-                                    child: Image(
-                                      image: CachedNetworkImageProvider(
-                                          "${Uri.parse("${shoppingList[index].ingredients?.thumbnail}")}"),
-                                    ),
-                                  )
-                                      : SizedBox(
-                                    height: 15.h,
-                                    width: 30.w,
-                                    child: const Image(
-                                      image: AssetImage(
-                                          "assets/images/meal_placeholder.png"),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.only(left: 5.w),
-                                child: Text(
-                                  "${shoppingList[index].ingredients?.name}",
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                    fontSize: 13.sp,
-                                    fontFamily: "GothamMedium",
-                                    color: gTextColor,
-                                  ),
-                                ),
-                              ),
-                              SizedBox(height: 0.5.h),
-                              Padding(
-                                padding: EdgeInsets.only(left: 5.w),
-                                child: RichText(
-                                  textAlign: TextAlign.center,
-                                  text: TextSpan(children: [
-                                    TextSpan(
-                                      text: "Used for : ",
-                                      style: TextStyle(
-                                        fontFamily: kFontBook,
-                                        color: gHintTextColor,
-                                        fontSize: 8.sp,
-                                      ),
-                                    ),
-                                    TextSpan(
-                                      text:
-                                      "${shoppingList[index].ingredients?.childIngredientCategory?.name}",
-                                      style: TextStyle(
-                                        fontFamily: "GothamMedium",
-                                        color: gHintTextColor,
-                                        fontSize: 8.sp,
-                                      ),
-                                    ),
-                                  ]),
-                                ),
-                              ),
-                              // Center(
-                              //   child: Row(
-                              //     children: [
-                              //       Text(
-                              //         "Used for : ",
-                              //         style: TextStyle(
-                              //             fontFamily: "GothamMedium",
-                              //             color: gTextColor,
-                              //             fontSize: 8.sp),
-                              //       ),
-                              //       Text(
-                              //         "${shoppingList[index].ingredients?.childIngredientCategory?.name}" ??
-                              //             "2 minutes ago",
-                              //         style: TextStyle(
-                              //             height: 1.3,
-                              //             fontFamily: kFontBook,
-                              //             color: eUser().mainHeadingColor,
-                              //             fontSize: bottomSheetSubHeadingSFontSize),
-                              //       ),
-                              //     ],
-                              //   ),
-                              // ),
-                            ],
-                          ),
-                        );
-                      }),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  // buildShippingList() {
+  //   return Padding(
+  //     padding: EdgeInsets.symmetric(horizontal: 3.w),
+  //     child: Column(
+  //       children: [
+  //         Container(
+  //           height: 1,
+  //           color: Colors.grey.withOpacity(0.3),
+  //         ),
+  //         SizedBox(height: 2.h),
+  //         MediaQuery(
+  //           data: MediaQuery.of(context).copyWith(textScaleFactor: 0.8),
+  //           child: Padding(
+  //             padding: EdgeInsets.symmetric(vertical: 1.h),
+  //             child: SingleChildScrollView(
+  //               child: GridView.builder(
+  //                   scrollDirection: Axis.vertical,
+  //                   physics: const ScrollPhysics(),
+  //                   shrinkWrap: true,
+  //                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+  //                     mainAxisSpacing: 15,
+  //                     crossAxisSpacing: 10,
+  //                     crossAxisCount: 2,
+  //                     mainAxisExtent: 22.h,
+  //                     // childAspectRatio: MediaQuery.of(context).size.width /
+  //                     //     (MediaQuery.of(context).size.height / 1.4),
+  //                   ),
+  //                   // gridDelegate:SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4),
+  //                   itemCount: shoppingList.length,
+  //                   itemBuilder: (context, index) {
+  //                     return Container(
+  //                       decoration: BoxDecoration(
+  //                         color: gWhiteColor,
+  //                         borderRadius: BorderRadius.circular(10),
+  //                         boxShadow: [
+  //                           BoxShadow(
+  //                             color: Colors.grey.withOpacity(0.3),
+  //                             blurRadius: 5,
+  //                             offset: const Offset(3, 8),
+  //                           ),
+  //                         ],
+  //                         // border: Border(
+  //                         //   right: BorderSide(
+  //                         //     color: kLineColor.withOpacity(0.5),
+  //                         //   ),
+  //                         //   bottom: BorderSide(
+  //                         //     color: kLineColor.withOpacity(0.5),
+  //                         //   ),
+  //                         // ),
+  //                       ),
+  //                       child: Column(
+  //                         crossAxisAlignment: CrossAxisAlignment.start,
+  //                         children: [
+  //                           Center(
+  //                             child: ClipRRect(
+  //                               borderRadius: BorderRadius.circular(10),
+  //                               child: (shoppingList[index]
+  //                                           .ingredients
+  //                                           ?.thumbnail !=
+  //                                       null)
+  //                                   ? SizedBox(
+  //                                       height: 15.h,
+  //                                       width: 30.w,
+  //                                       child: Image(
+  //                                         image: CachedNetworkImageProvider(
+  //                                             "${Uri.parse("${shoppingList[index].ingredients?.thumbnail}")}"),
+  //                                       ),
+  //                                     )
+  //                                   : SizedBox(
+  //                                       height: 15.h,
+  //                                       width: 30.w,
+  //                                       child: const Image(
+  //                                         image: AssetImage(
+  //                                             "assets/images/meal_placeholder.png"),
+  //                                       ),
+  //                                     ),
+  //                             ),
+  //                           ),
+  //                           Padding(
+  //                             padding: EdgeInsets.only(left: 5.w),
+  //                             child: Text(
+  //                               "${shoppingList[index].ingredients?.name}",
+  //                               maxLines: 2,
+  //                               overflow: TextOverflow.ellipsis,
+  //                               style: TextStyle(
+  //                                 fontSize: 13.sp,
+  //                                 fontFamily: "GothamMedium",
+  //                                 color: gTextColor,
+  //                               ),
+  //                             ),
+  //                           ),
+  //                           SizedBox(height: 0.5.h),
+  //                           Padding(
+  //                             padding: EdgeInsets.only(left: 5.w),
+  //                             child: RichText(
+  //                               textAlign: TextAlign.center,
+  //                               text: TextSpan(children: [
+  //                                 TextSpan(
+  //                                   text: "Used for : ",
+  //                                   style: TextStyle(
+  //                                     fontFamily: kFontBook,
+  //                                     color: gHintTextColor,
+  //                                     fontSize: 8.sp,
+  //                                   ),
+  //                                 ),
+  //                                 TextSpan(
+  //                                   text:
+  //                                       "${shoppingList[index].ingredients?.childIngredientCategory?.name}",
+  //                                   style: TextStyle(
+  //                                     fontFamily: "GothamMedium",
+  //                                     color: gHintTextColor,
+  //                                     fontSize: 8.sp,
+  //                                   ),
+  //                                 ),
+  //                               ]),
+  //                             ),
+  //                           ),
+  //                           // Center(
+  //                           //   child: Row(
+  //                           //     children: [
+  //                           //       Text(
+  //                           //         "Used for : ",
+  //                           //         style: TextStyle(
+  //                           //             fontFamily: "GothamMedium",
+  //                           //             color: gTextColor,
+  //                           //             fontSize: 8.sp),
+  //                           //       ),
+  //                           //       Text(
+  //                           //         "${shoppingList[index].ingredients?.childIngredientCategory?.name}" ??
+  //                           //             "2 minutes ago",
+  //                           //         style: TextStyle(
+  //                           //             height: 1.3,
+  //                           //             fontFamily: kFontBook,
+  //                           //             color: eUser().mainHeadingColor,
+  //                           //             fontSize: bottomSheetSubHeadingSFontSize),
+  //                           //       ),
+  //                           //     ],
+  //                           //   ),
+  //                           // ),
+  //                         ],
+  //                       ),
+  //                     );
+  //                   }),
+  //             ),
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
-  tableView() {
-    return MediaQuery(
-      data: MediaQuery.of(context).copyWith(textScaleFactor: 0.8),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        child: SingleChildScrollView(
-          child: DataTable(
-              headingTextStyle: TextStyle(
-                color: gWhiteColor,
-                fontSize: 5.sp,
-                fontFamily: kFontMedium,
-              ),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(8), topRight: Radius.circular(8)),
-                // color: tableHeadingBg,
-              ),
-              headingRowHeight: 5.h,
-              headingRowColor: MaterialStateProperty.all(tableHeadingBg),
-              horizontalMargin: 2.w,
-              columnSpacing: 20.w,
-              dataRowHeight: 7.h,
-              // headingRowColor: MaterialStateProperty.all(const Color(0xffE06666)),
-              columns: <DataColumn>[
-                DataColumn(
-                  label: IntrinsicWidth(
-                    child: Text(
-                      'Item Name',
-                      style: TextStyle(
-                        height: 1.5,
-                        color: eUser().userFieldLabelColor,
-                        fontSize: 11.sp,
-                        fontFamily: kFontBold,
-                      ),
-                    ),
-                  ),
-                ),
-                DataColumn(
-                  label: ConstrainedBox(
-                    constraints: const BoxConstraints(
-                      maxWidth: 80,
-                      minWidth: 20,
-                    ),
-                    child: Text(
-                      'Category',
-                      textAlign: TextAlign.right,
-                      style: TextStyle(
-                        height: 1.5,
-                        color: eUser().userFieldLabelColor,
-                        fontSize: 11.sp,
-                        fontFamily: kFontBold,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-              rows: [
-                ...shoppingList
-                    .map((e) => DataRow(
-                  cells: [
-                    DataCell(IntrinsicWidth(
-                      child: Text(
-                        e.ingredients?.name ?? '',
-                        // sortedData.entries.elementAt(index).value[ind].mealItemWeight?.mealItem?.name?.trimLeft() ?? '',
-                        textAlign: TextAlign.left,
-                        style: TextStyle(
-                          height: 1.5,
-                          color: gTextColor,
-                          fontSize: 8.sp,
-                          fontFamily: kFontBold,
-                        ),
-                      ),
-                    )),
-                    DataCell(
-                      IntrinsicWidth(
-                        child: Text(
-                          e.ingredients?.childIngredientCategory
-                              ?.name ??
-                              '',
-                          // sortedData.entries.elementAt(index).value[ind].itemWeight?.trim() ?? '',
-                          // " ${value[ind].itemWeight}" ?? '',
-                          // maxLines: 3,
-                          textAlign: TextAlign.center,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            height: 1.5,
-                            color: gTextColor,
-                            fontSize: 8.sp,
-                            fontFamily: kFontBook,
-                          ),
-                        ),
-                      ),
-                      placeholder: true,
-                    ),
-                  ],
-                ))
-                    .toList()
-              ]),
-        ),
-      ),
-    );
-  }
+  // tableView() {
+  //   return MediaQuery(
+  //     data: MediaQuery.of(context).copyWith(textScaleFactor: 0.8),
+  //     child: Padding(
+  //       padding: const EdgeInsets.symmetric(vertical: 8),
+  //       child: SingleChildScrollView(
+  //         child: DataTable(
+  //             headingTextStyle: TextStyle(
+  //               color: gWhiteColor,
+  //               fontSize: 5.sp,
+  //               fontFamily: kFontMedium,
+  //             ),
+  //             decoration: BoxDecoration(
+  //               borderRadius: BorderRadius.only(
+  //                   topLeft: Radius.circular(8), topRight: Radius.circular(8)),
+  //               // color: tableHeadingBg,
+  //             ),
+  //             headingRowHeight: 5.h,
+  //             headingRowColor: MaterialStateProperty.all(tableHeadingBg),
+  //             horizontalMargin: 2.w,
+  //             columnSpacing: 20.w,
+  //             dataRowHeight: 7.h,
+  //             // headingRowColor: MaterialStateProperty.all(const Color(0xffE06666)),
+  //             columns: <DataColumn>[
+  //               DataColumn(
+  //                 label: IntrinsicWidth(
+  //                   child: Text(
+  //                     'Item Name',
+  //                     style: TextStyle(
+  //                       height: 1.5,
+  //                       color: eUser().userFieldLabelColor,
+  //                       fontSize: 11.sp,
+  //                       fontFamily: kFontBold,
+  //                     ),
+  //                   ),
+  //                 ),
+  //               ),
+  //               DataColumn(
+  //                 label: ConstrainedBox(
+  //                   constraints: const BoxConstraints(
+  //                     maxWidth: 80,
+  //                     minWidth: 20,
+  //                   ),
+  //                   child: Text(
+  //                     'Category',
+  //                     textAlign: TextAlign.right,
+  //                     style: TextStyle(
+  //                       height: 1.5,
+  //                       color: eUser().userFieldLabelColor,
+  //                       fontSize: 11.sp,
+  //                       fontFamily: kFontBold,
+  //                     ),
+  //                   ),
+  //                 ),
+  //               ),
+  //             ],
+  //             rows: [
+  //               ...shoppingList
+  //                   .map((e) => DataRow(
+  //                         cells: [
+  //                           DataCell(IntrinsicWidth(
+  //                             child: Text(
+  //                               e.ingredients?.name ?? '',
+  //                               // sortedData.entries.elementAt(index).value[ind].mealItemWeight?.mealItem?.name?.trimLeft() ?? '',
+  //                               textAlign: TextAlign.left,
+  //                               style: TextStyle(
+  //                                 height: 1.5,
+  //                                 color: gTextColor,
+  //                                 fontSize: 8.sp,
+  //                                 fontFamily: kFontBold,
+  //                               ),
+  //                             ),
+  //                           )),
+  //                           DataCell(
+  //                             IntrinsicWidth(
+  //                               child: Text(
+  //                                 e.ingredients?.childIngredientCategory
+  //                                         ?.name ??
+  //                                     '',
+  //                                 // sortedData.entries.elementAt(index).value[ind].itemWeight?.trim() ?? '',
+  //                                 // " ${value[ind].itemWeight}" ?? '',
+  //                                 // maxLines: 3,
+  //                                 textAlign: TextAlign.center,
+  //                                 overflow: TextOverflow.ellipsis,
+  //                                 style: TextStyle(
+  //                                   height: 1.5,
+  //                                   color: gTextColor,
+  //                                   fontSize: 8.sp,
+  //                                   fontFamily: kFontBook,
+  //                                 ),
+  //                               ),
+  //                             ),
+  //                             placeholder: true,
+  //                           ),
+  //                         ],
+  //                       ))
+  //                   .toList()
+  //             ]),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   // tableWithDayWiseOldView(){
   //   print("len: ${sortedData.entries.length}");
@@ -1000,26 +1079,26 @@ class _CookKitTrackingState extends State<CookKitTracking> {
     });
   }
 
-  void getShoppingList() async {
-    setState(() {
-      showShoppingLoading = true;
-    });
-    final result = await ShipTrackService(repository: repository)
-        .getShoppingDetailsListService();
-    print("getShoppingList: $result");
-    print(result.runtimeType);
-    if (result.runtimeType == GetShoppingListModel) {
-      print("meal plan");
-      GetShoppingListModel model = result as GetShoppingListModel;
-
-      shoppingList = model.ingredients ?? [];
-
-      print('shopping list: $shoppingList');
-      setState(() {
-        showShoppingLoading = false;
-      });
-    }
-  }
+  // void getShoppingList() async {
+  //   setState(() {
+  //     showShoppingLoading = true;
+  //   });
+  //   final result = await ShipTrackService(repository: repository)
+  //       .getShoppingDetailsListService();
+  //   print("getShoppingList: $result");
+  //   print(result.runtimeType);
+  //   if (result.runtimeType == GetShoppingListModel) {
+  //     print("meal plan");
+  //     GetShoppingListModel model = result as GetShoppingListModel;
+  //
+  //     shoppingList = model.ingredients ?? [];
+  //
+  //     print('shopping list: $shoppingList');
+  //     setState(() {
+  //       showShoppingLoading = false;
+  //     });
+  //   }
+  // }
 
   getStepper() {
     List<StepperData> stepper = [];

@@ -378,13 +378,20 @@ class _TCardPageState extends State<TCardPage> {
                 cards: cards,
                 lockYAxis: true,
                 size: const Size(500, 600),
+                delaySlideFor: 300,
                 controller: _controller,
                 onForward: (index, info) {
                   print("onForward");
-                  _index = index;
-                  print("index: $index");
-                  print("Direction : ${info.direction}");
-                  if(submittedIndex+1 != index){
+                  print("${submittedIndex+1}  $index");
+
+                  if(submittedIndex+1 != index && (submittedIndex+1 < index)){
+                    _controller.back();
+
+                  }
+                  else{
+                    _index = index;
+                    print("index: $index");
+                    print("Direction : ${info.direction}");
                   }
                   setState(() {});
                 },
@@ -701,7 +708,7 @@ class _TCardPageState extends State<TCardPage> {
                     AppConfig().showSnackbar(context, "Please Select Any One !",
                         isError: true, bottomPadding: 10);
                   } else if (selectedAfterTheProgram
-                      .any((element) => element.contains("Other:"))) {
+                      .any((element) => element.contains("Other:")) && afterTheProgramController.text.isEmpty) {
                     AppConfig().showSnackbar(context, "Please Enter your answer",
                         isError: true, bottomPadding: 10);
                   } else {
@@ -2109,7 +2116,7 @@ class _TCardPageState extends State<TCardPage> {
   }
 
   slider18(int index) {
-    return StatefulBuilder(builder: (_, setState) {
+    return StatefulBuilder(builder: (_, setstate) {
       return Container(
         padding: EdgeInsets.symmetric(vertical: 2.h, horizontal: 3.w),
         decoration: BoxDecoration(
@@ -2206,33 +2213,36 @@ class _TCardPageState extends State<TCardPage> {
               Center(
                 child: GestureDetector(
                   onTap: () {
-                    submitProgramFeedbackForm(
-                      widget.programContinuesdStatus,
-                      selectedAfterTheProgram.toString(),
-                      afterTheProgramController.text.toString(),
-                      selectedPercentage.toString(),
-                      selectedBreathing.toString(),
-                      mealyesno.toString(),
-                      yogayesno.toString(),
-                      mealHighLightController.text.toString(),
-                      positiveController.text.toString(),
-                      negativeController.text.toString(),
-                      selectedInfusions.toString(),
-                      selectedSoups.toString(),
-                      selectedPorridges.toString(),
-                      selectedPodi.toString(),
-                      selectedKheer.toString(),
-                      kitItemsController.text.toString(),
-                      rating1.toString(),
-                      rating2.toString(),
-                      rating3.toString(),
-                      improvedHealthController.text.toString(),
-                      suggestionsController.text.toString(),
-                      testimonialController.text.toString(),
-                      referenceController.text.toString(),
-                      supportPlans.toString(),
-                      ifDiscontinuedController.text.toString(),
-                    );
+                    if(!isLoading){
+                      submitProgramFeedbackForm(
+                        setstate,
+                        widget.programContinuesdStatus,
+                        selectedAfterTheProgram.toString(),
+                        afterTheProgramController.text.toString(),
+                        selectedPercentage.toString(),
+                        selectedBreathing.toString(),
+                        mealyesno.toString(),
+                        yogayesno.toString(),
+                        mealHighLightController.text.toString(),
+                        positiveController.text.toString(),
+                        negativeController.text.toString(),
+                        selectedInfusions.toString(),
+                        selectedSoups.toString(),
+                        selectedPorridges.toString(),
+                        selectedPodi.toString(),
+                        selectedKheer.toString(),
+                        kitItemsController.text.toString(),
+                        rating1.toString(),
+                        rating2.toString(),
+                        rating3.toString(),
+                        improvedHealthController.text.toString(),
+                        suggestionsController.text.toString(),
+                        testimonialController.text.toString(),
+                        referenceController.text.toString(),
+                        supportPlans.toString(),
+                        ifDiscontinuedController.text.toString(),
+                      );
+                    }
                   },
                   child: Container(
                     width: 40.w,
@@ -2625,6 +2635,7 @@ class _TCardPageState extends State<TCardPage> {
   );
 
   submitProgramFeedbackForm(
+      Function setstate,
     int programStatus,
     String changesAfterProgram,
     String otherChangesAfterProgram,
@@ -2651,7 +2662,7 @@ class _TCardPageState extends State<TCardPage> {
     String membership,
     String reasonOfProgramDiscontinue,
   ) async {
-    setState(() {
+    setstate(() {
       isLoading = true;
     });
     final res = await medicalFeedbackService?.submitProgramFeedbackService(
@@ -2704,7 +2715,7 @@ class _TCardPageState extends State<TCardPage> {
           ),
           (route) => route.isFirst);
     }
-    setState(() {
+    setstate(() {
       isLoading = false;
     });
   }

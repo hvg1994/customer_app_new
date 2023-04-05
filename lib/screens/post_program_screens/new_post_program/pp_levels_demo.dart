@@ -102,12 +102,30 @@ class _PPLevelsDemoState extends State<PPLevelsDemo> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    SizedBox(
-                      height: 7.h,
-                      child: const Image(
-                        image: AssetImage("assets/images/Gut welness logo.png"),
-                      ),
-                      //SvgPicture.asset("assets/images/splash_screen/Inside Logo.svg"),
+                    Row(
+                      children: [
+                        SizedBox(
+                          width: 2.h,
+                          child: IconButton(
+                            onPressed: (){
+                              Navigator.pop(context);
+                            },
+                            icon: Icon(Icons.arrow_back_ios,
+                              color: gMainColor,
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          width: 15,
+                        ),
+                        SizedBox(
+                          height: 7.h,
+                          child: const Image(
+                            image: AssetImage("assets/images/Gut welness logo.png"),
+                          ),
+                          //SvgPicture.asset("assets/images/splash_screen/Inside Logo.svg"),
+                        ),
+                      ],
                     ),
                     Row(
                       children: [
@@ -185,7 +203,8 @@ class _PPLevelsDemoState extends State<PPLevelsDemo> {
               ),
               SizedBox(height: 1.5.h),
               Expanded(
-                child: (protocolData.isEmpty) ? (isError) ? Center(child: Text(errorText),) : Center(child: buildCircularIndicator(),) :
+                child: (protocolData.isEmpty) ? (isError) ? Center(child: Text(errorText),)
+                    : Center(child: buildCircularIndicator(),) :
                 Container(
                   height: 100.h,
                   width: 100.w,
@@ -296,6 +315,7 @@ class _PPLevelsDemoState extends State<PPLevelsDemo> {
       visible: calender.day.toString() != currentDay,
       child: GestureDetector(
         onTap: () {
+          print(calender.day);
           Navigator.push(context, MaterialPageRoute(builder: (_) => PPDailyTasksUI(day: calender.day.toString(),)));
         },
         child: SizedBox(

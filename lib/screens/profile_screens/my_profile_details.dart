@@ -89,326 +89,328 @@ class _MyProfileDetailsState extends State<MyProfileDetails> {
     double height = MediaQuery.of(context).size.height;
     return SafeArea(
       child: Scaffold(
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(height: 1.h),
-            buildAppBar(() {
-              Navigator.pop(context);
-            }),
-            SizedBox(height: 1.h),
-            FutureBuilder(
-                future: getProfileDetails,
-                builder: (_, snapshot) {
-                  if (snapshot.hasData) {
-                    if (snapshot.data.runtimeType == UserProfileModel) {
-                      UserProfileModel data = snapshot.data as UserProfileModel;
-                      ChildUserModel? subData = data.data;
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 5.w),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  "My Profile",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      fontFamily: "GothamBold",
-                                      color: gBlackColor,
-                                      fontSize: 12.sp),
-                                ),
-                                (!isEdit)
-                                    ? InkWell(
-                                    onTap: () {
-                                      toggleEdit();
-                                      if (isEdit) {
-                                        setState(() {
-                                          ChildUserModel data = subData!;
-                                          print(
-                                              "${data.name}, ${data.age}");
-                                          fnameController.text =
-                                              data.fname ?? '';
-                                          lnameController.text =
-                                              data.lname ?? '';
-                                          ageController.text =
-                                              data.age ?? '';
-                                          genderController.text =
-                                          data.gender!;
-                                          emailController.text =
-                                          data.email!;
-                                          mobileController.text =
-                                          data.phone!;
-                                        });
-                                      }
-                                      // Navigator.of(context).push(
-                                      //   MaterialPageRoute(
-                                      //     builder: (context) =>
-                                      //     const RegisterScreen(),
-                                      //   ),
-                                      // );
-                                    },
-                                    child: SvgPicture.asset(
-                                      "assets/images/Icon feather-edit.svg",
-                                      color: Colors.grey,
-                                      fit: BoxFit.contain,
-                                      height: 2.h,
-                                    ))
-                                    : Align(
-                                  alignment: Alignment.topRight,
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      GestureDetector(
-                                          onTap: () {
-                                            toggleEdit();
-                                            _image = null;
-                                          },
-                                          child: Icon(Icons.clear)),
-                                      SizedBox(
-                                        width: 10,
-                                      ),
-                                      GestureDetector(
-                                          onTap: () async {
-                                            if (int.parse(ageController
-                                                .text) <
-                                                10 ||
-                                                int.parse(ageController
-                                                    .text) >
-                                                    100) {
-                                              AppConfig().showSnackbar(
-                                                  context,
-                                                  "Age Should be Greater than 10 and less than 100",
-                                                  isError: true);
-                                            } else {
-                                              var file;
-                                              if (_image != null) {
-                                                file = await http
-                                                    .MultipartFile
-                                                    .fromPath("photo",
-                                                    _image!.path);
-                                              }
-                                              SendUserModel user =
-                                              SendUserModel(
-                                                  fname:
-                                                  fnameController
-                                                      .text,
-                                                  lname:
-                                                  lnameController
-                                                      .text,
-                                                  age: ageController
-                                                      .text,
-                                                  gender:
-                                                  genderController
-                                                      .text,
-                                                  email:
-                                                  subData!.email,
-                                                  phone:
-                                                  subData.phone,
-                                                  profile: (_image !=
-                                                      null &&
-                                                      file !=
-                                                          null)
-                                                      ? file
-                                                      : null);
-                                              updateProfileData(
-                                                  user.toJson());
-                                            }
-
-                                            // toggleEdit();
-                                          },
-                                          child: Icon(Icons.check))
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Container(
-                            margin: EdgeInsets.only(
-                                top: 2.h, bottom: 3.h, right: 5.w, left: 5.w),
-                            padding: EdgeInsets.only(
-                                top: 2.h, bottom: 2.h, right: 3.w, left: 3.w),
-                            decoration: BoxDecoration(
-                              color: gWhiteColor,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: kLineColor.withOpacity(0.5),
-                                  offset: Offset(2, 3),
-                                  blurRadius: 5,
-                                )
-                              ],
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Center(
-                              child: Column(
+        body: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: 1.h),
+              buildAppBar(() {
+                Navigator.pop(context);
+              }),
+              SizedBox(height: 1.h),
+              FutureBuilder(
+                  future: getProfileDetails,
+                  builder: (_, snapshot) {
+                    if (snapshot.hasData) {
+                      if (snapshot.data.runtimeType == UserProfileModel) {
+                        UserProfileModel data = snapshot.data as UserProfileModel;
+                        ChildUserModel? subData = data.data;
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 5.w),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  CircleAvatar(
-                                    radius: 6.h,
-                                    backgroundColor: Colors.black26,
-                                    backgroundImage:
-                                    // (subData!.profile == null || photoError) ? ExactAssetImage(
-                                    //     "assets/images/cheerful.png") :
-                                    (_image != null)
-                                        ? FileImage(_image!)
-                                        : CachedNetworkImageProvider(
-                                        subData!.profile!,
-                                        errorListener: () {
-                                          print("image error");
-                                          setState(
-                                                  () => photoError = true);
-                                        }) as ImageProvider,
-                                    child: Stack(
-                                      //  overflow: Overflow.visible,
-                                        clipBehavior: Clip.none,
-                                        children: [
-                                          Visibility(
-                                            visible: isEdit,
-                                            child: GestureDetector(
-                                              onTap: showChooserSheet,
-                                              child: Align(
-                                                alignment:
-                                                Alignment.bottomRight,
-                                                child: CircleAvatar(
-                                                  radius: 11,
-                                                  backgroundColor: gPrimaryColor
-                                                      .withOpacity(0.9),
-                                                  child: const Padding(
-                                                    padding:
-                                                    EdgeInsets.all(4.0),
-                                                    child: Icon(
-                                                      CupertinoIcons.camera,
-                                                      color: gWhiteColor,
-                                                      size: 14,
+                                  Text(
+                                    "My Profile",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        fontFamily: "GothamBold",
+                                        color: gBlackColor,
+                                        fontSize: 12.sp),
+                                  ),
+                                  (!isEdit)
+                                      ? InkWell(
+                                      onTap: () {
+                                        toggleEdit();
+                                        if (isEdit) {
+                                          setState(() {
+                                            ChildUserModel data = subData!;
+                                            print(
+                                                "${data.name}, ${data.age}");
+                                            fnameController.text =
+                                                data.fname ?? '';
+                                            lnameController.text =
+                                                data.lname ?? '';
+                                            ageController.text =
+                                                data.age ?? '';
+                                            genderController.text =
+                                            data.gender!;
+                                            emailController.text =
+                                            data.email!;
+                                            mobileController.text =
+                                            data.phone!;
+                                          });
+                                        }
+                                        // Navigator.of(context).push(
+                                        //   MaterialPageRoute(
+                                        //     builder: (context) =>
+                                        //     const RegisterScreen(),
+                                        //   ),
+                                        // );
+                                      },
+                                      child: SvgPicture.asset(
+                                        "assets/images/Icon feather-edit.svg",
+                                        color: Colors.grey,
+                                        fit: BoxFit.contain,
+                                        height: 2.h,
+                                      ))
+                                      : Align(
+                                    alignment: Alignment.topRight,
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        GestureDetector(
+                                            onTap: () {
+                                              toggleEdit();
+                                              _image = null;
+                                            },
+                                            child: Icon(Icons.clear)),
+                                        SizedBox(
+                                          width: 10,
+                                        ),
+                                        GestureDetector(
+                                            onTap: () async {
+                                              if (int.parse(ageController
+                                                  .text) <
+                                                  10 ||
+                                                  int.parse(ageController
+                                                      .text) >
+                                                      100) {
+                                                AppConfig().showSnackbar(
+                                                    context,
+                                                    "Age Should be Greater than 10 and less than 100",
+                                                    isError: true);
+                                              } else {
+                                                var file;
+                                                if (_image != null) {
+                                                  file = await http
+                                                      .MultipartFile
+                                                      .fromPath("photo",
+                                                      _image!.path);
+                                                }
+                                                SendUserModel user =
+                                                SendUserModel(
+                                                    fname:
+                                                    fnameController
+                                                        .text,
+                                                    lname:
+                                                    lnameController
+                                                        .text,
+                                                    age: ageController
+                                                        .text,
+                                                    gender:
+                                                    genderController
+                                                        .text,
+                                                    email:
+                                                    subData!.email,
+                                                    phone:
+                                                    subData.phone,
+                                                    profile: (_image !=
+                                                        null &&
+                                                        file !=
+                                                            null)
+                                                        ? file
+                                                        : null);
+                                                updateProfileData(
+                                                    user.toJson());
+                                              }
+
+                                              // toggleEdit();
+                                            },
+                                            child: Icon(Icons.check))
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Container(
+                              margin: EdgeInsets.only(
+                                  top: 2.h, bottom: 3.h, right: 5.w, left: 5.w),
+                              padding: EdgeInsets.only(
+                                  top: 2.h, bottom: 2.h, right: 3.w, left: 3.w),
+                              decoration: BoxDecoration(
+                                color: gWhiteColor,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: kLineColor.withOpacity(0.5),
+                                    offset: Offset(2, 3),
+                                    blurRadius: 5,
+                                  )
+                                ],
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Center(
+                                child: Column(
+                                  children: [
+                                    CircleAvatar(
+                                      radius: 6.h,
+                                      backgroundColor: Colors.black26,
+                                      backgroundImage:
+                                      // (subData!.profile == null || photoError) ? ExactAssetImage(
+                                      //     "assets/images/cheerful.png") :
+                                      (_image != null)
+                                          ? FileImage(_image!)
+                                          : CachedNetworkImageProvider(
+                                          subData!.profile!,
+                                          errorListener: () {
+                                            print("image error");
+                                            setState(
+                                                    () => photoError = true);
+                                          }) as ImageProvider,
+                                      child: Stack(
+                                        //  overflow: Overflow.visible,
+                                          clipBehavior: Clip.none,
+                                          children: [
+                                            Visibility(
+                                              visible: isEdit,
+                                              child: GestureDetector(
+                                                onTap: showChooserSheet,
+                                                child: Align(
+                                                  alignment:
+                                                  Alignment.bottomRight,
+                                                  child: CircleAvatar(
+                                                    radius: 11,
+                                                    backgroundColor: gPrimaryColor
+                                                        .withOpacity(0.9),
+                                                    child: const Padding(
+                                                      padding:
+                                                      EdgeInsets.all(4.0),
+                                                      child: Icon(
+                                                        CupertinoIcons.camera,
+                                                        color: gWhiteColor,
+                                                        size: 14,
+                                                      ),
                                                     ),
                                                   ),
                                                 ),
                                               ),
                                             ),
-                                          ),
-                                        ]),
-                                  ),
-                                  SizedBox(
-                                    height: 1.h,
-                                  ),
-                                  Text(
-                                    "${subData?.name}",
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        fontFamily: eUser().mainHeadingFont,
-                                        color: eUser().mainHeadingColor,
-                                        fontSize: eUser().mainHeadingFontSize),
-                                  ),
-                                  SizedBox(height: 1.h),
-                                  Text(
-                                    "${subData?.email}",
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        fontFamily:
-                                        eUser().userTextFieldHintFont,
-                                        color: gHintTextColor,
-                                        fontSize:
-                                        eUser().userTextFieldFontSize),
-                                  ),
-                                  SizedBox(height: 1.h),
-                                  Text(
-                                    "${subData?.phone}",
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        fontFamily:
-                                        eUser().userTextFieldHintFont,
-                                        color: gHintTextColor,
-                                        fontSize:
-                                        eUser().userTextFieldFontSize),
-                                  ),
-                                  Padding(
-                                    padding: EdgeInsets.only(
-                                        left: 5.w, top: 2.h, right: 5.w),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
-                                      children: [
-                                        buildButtons(
-                                          "Evaluation",
-                                          "assets/images/Group 62759.png",
-                                              () {
-                                            Navigator.of(context).push(
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                const EvaluationGetDetails(
-                                                  isFromProfile: false,
-                                                ),
-                                                // builder: (context) => isConsultationCompleted ? ConsultationSuccess() : const DoctorCalenderTimeScreen(),
-                                              ),
-                                            );
-                                          },
-                                        ),
-                                        buildButtons(
-                                          "My Reports",
-                                          "assets/images/Group 62760.png",
-                                              () {
-                                            Navigator.of(context).push(
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    UploadFiles(
-                                                      isFromSettings: true,
-                                                    ),
-                                                // builder: (context) => isConsultationCompleted ? ConsultationSuccess() : const DoctorCalenderTimeScreen(),
-                                              ),
-                                            );
-                                          },
-                                        ),
-                                        buildButtons(
-                                          "Feedback",
-                                          "assets/images/Group 62758.png",
-                                              () {
-                                            Navigator.of(context).push(
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    FeedbackRatingScreen(),
-                                                // builder: (context) => isConsultationCompleted ? ConsultationSuccess() : const DoctorCalenderTimeScreen(),
-                                              ),
-                                            );
-                                          },
-                                        ),
-                                      ],
+                                          ]),
                                     ),
-                                  )
-                                ],
+                                    SizedBox(
+                                      height: 1.h,
+                                    ),
+                                    Text(
+                                      "${subData?.name}",
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                          fontFamily: eUser().mainHeadingFont,
+                                          color: eUser().mainHeadingColor,
+                                          fontSize: eUser().mainHeadingFontSize),
+                                    ),
+                                    SizedBox(height: 1.h),
+                                    Text(
+                                      "${subData?.email}",
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                          fontFamily:
+                                          eUser().userTextFieldHintFont,
+                                          color: gHintTextColor,
+                                          fontSize:
+                                          eUser().userTextFieldFontSize),
+                                    ),
+                                    SizedBox(height: 1.h),
+                                    Text(
+                                      "${subData?.phone}",
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                          fontFamily:
+                                          eUser().userTextFieldHintFont,
+                                          color: gHintTextColor,
+                                          fontSize:
+                                          eUser().userTextFieldFontSize),
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.only(
+                                          left: 5.w, top: 2.h, right: 5.w),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                        children: [
+                                          buildButtons(
+                                            "Evaluation",
+                                            "assets/images/Group 62759.png",
+                                                () {
+                                              Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                  const EvaluationGetDetails(
+                                                    isFromProfile: false,
+                                                  ),
+                                                  // builder: (context) => isConsultationCompleted ? ConsultationSuccess() : const DoctorCalenderTimeScreen(),
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                          buildButtons(
+                                            "My Reports",
+                                            "assets/images/Group 62760.png",
+                                                () {
+                                              Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      UploadFiles(
+                                                        isFromSettings: true,
+                                                      ),
+                                                  // builder: (context) => isConsultationCompleted ? ConsultationSuccess() : const DoctorCalenderTimeScreen(),
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                          buildButtons(
+                                            "Feedback",
+                                            "assets/images/Group 62758.png",
+                                                () {
+                                              Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      FeedbackRatingScreen(),
+                                                  // builder: (context) => isConsultationCompleted ? ConsultationSuccess() : const DoctorCalenderTimeScreen(),
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
-                          profileTile("First Name: ",
-                              subData?.fname ?? "Gut-Wellness Club",
-                              controller: fnameController),
-                          profileTile("Last Name: ",
-                              subData?.lname ?? "Gut-Wellness Club",
-                              controller: lnameController),
-                          profileTile("Age: ", subData?.age ?? '',
-                              controller: ageController, maxLength: 2),
-                          profileTile("Gender: ", subData?.gender ?? "",
-                              controller: genderController),
-                          // profileTile("Email: ", subData?.email ?? ''),
-                          // profileTile("Mobile Number: ", subData?.phone ?? ''),
-                        ],
-                      );
-                    } else {
-                      ErrorModel data = snapshot.data as ErrorModel;
-                      // AppConfig().showSnackbar(context, data.message ?? 'Unauthenticated', isError: true);
+                            profileTile("First Name: ",
+                                subData?.fname ?? "Gut-Wellness Club",
+                                controller: fnameController),
+                            profileTile("Last Name: ",
+                                subData?.lname ?? "Gut-Wellness Club",
+                                controller: lnameController),
+                            profileTile("Age: ", subData?.age ?? '',
+                                controller: ageController, maxLength: 2),
+                            profileTile("Gender: ", subData?.gender ?? "",
+                                controller: genderController),
+                            // profileTile("Email: ", subData?.email ?? ''),
+                            // profileTile("Mobile Number: ", subData?.phone ?? ''),
+                          ],
+                        );
+                      } else {
+                        ErrorModel data = snapshot.data as ErrorModel;
+                        // AppConfig().showSnackbar(context, data.message ?? 'Unauthenticated', isError: true);
+                        errorDisplayLayout();
+                      }
+                    } else if (snapshot.hasError) {
+                      // AppConfig().showSnackbar(context, snapshot.error.toString(), isError: true);
                       errorDisplayLayout();
                     }
-                  } else if (snapshot.hasError) {
-                    // AppConfig().showSnackbar(context, snapshot.error.toString(), isError: true);
-                    errorDisplayLayout();
-                  }
-                  return Padding(
-                    padding: EdgeInsets.symmetric(vertical: 30.h),
-                    child: buildCircularIndicator(),
-                  );
-                }),
-          ],
+                    return Padding(
+                      padding: EdgeInsets.symmetric(vertical: 30.h),
+                      child: buildCircularIndicator(),
+                    );
+                  }),
+            ],
+          ),
         ),
         // SizedBox(
         //   height: height * 0.70,

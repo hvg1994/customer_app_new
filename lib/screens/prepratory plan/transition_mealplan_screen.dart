@@ -146,7 +146,7 @@ class _TransitionMealPlanScreenState extends State<TransitionMealPlanScreen> {
                                 });
                               }
                             }
-                              return customMealPlanTile(dataList, currentDayStatus);
+                              return customMealPlanTile({}, currentDayStatus);
 
                           }
                         }

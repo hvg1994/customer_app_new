@@ -1117,7 +1117,6 @@ class _PPDailyTasksUIState extends State<PPDailyTasksUI> {
     else{
       final model = res as PPGetMealModel;
       print("getEarlyMorningApi");
-      print(model.data!.toJson());
       if(model.data!.doMeals !=null){
         model.data!.doMeals!.forEach((element) {
           print(element.isSelected == 1);

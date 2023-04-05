@@ -25,6 +25,7 @@ import 'package:gwc_customer/screens/evalution_form/evaluation_get_details.dart'
 import 'package:gwc_customer/screens/help_screens/help_screen.dart';
 import 'package:gwc_customer/screens/notification_screen.dart';
 import 'package:gwc_customer/screens/post_program_screens/new_post_program/pp_levels_demo.dart';
+import 'package:gwc_customer/screens/prepratory%20plan/new/preparatory_new_screen.dart';
 import 'package:gwc_customer/screens/prepratory%20plan/prepratory_plan_screen.dart';
 import 'package:gwc_customer/screens/prepratory%20plan/schedule_screen.dart';
 import 'package:gwc_customer/screens/prepratory%20plan/transition_mealplan_screen.dart';
@@ -1373,7 +1374,7 @@ class GutListState extends State<GutList> {
             builder: (context) =>
             (_prepratoryModel!.value!.isPrepCompleted!) ?
             PrepratoryMealCompletedScreen()
-                : PrepratoryPlanScreen(dayNumber: _prepratoryModel!.value!.currentDay!, totalDays: _prepratoryModel!.value!.prep_days ?? ''),
+                : PreparatoryPlanScreen(dayNumber: _prepratoryModel!.value!.currentDay!, totalDays: _prepratoryModel!.value!.prep_days ?? ''),
             // ProgramPlanScreen(from: ProgramMealType.prepratory.name,)
           ),
         ).then((value) => reloadUI());

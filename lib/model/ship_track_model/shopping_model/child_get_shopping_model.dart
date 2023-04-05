@@ -1,11 +1,13 @@
 class ChildGetShoppingModel {
   ChildGetShoppingModel({
     this.id,
-    this.teamPatientId,
-    this.ingredientsId,
-    this.createdAt,
-    this.updatedAt,
-    this.ingredients,
+    this.name,
+    this.thumbnail,
+    // this.teamPatientId,
+    // this.ingredientsId,
+    // this.createdAt,
+    // this.updatedAt,
+    // this.ingredients,
     // this.itemWeightId,
     // this.userCustomMealPlanId,
     // this.shopId,
@@ -17,11 +19,13 @@ class ChildGetShoppingModel {
   });
 
   int? id;
-  String? teamPatientId;
-  String? ingredientsId;
-  DateTime? createdAt;
-  DateTime? updatedAt;
-  ChildIngredients? ingredients;
+  String? name;
+  String? thumbnail;
+  // String? teamPatientId;
+  // String? ingredientsId;
+  // DateTime? createdAt;
+  // DateTime? updatedAt;
+  // ChildIngredients? ingredients;
   // String? itemWeightId;
   // String? userCustomMealPlanId;
   // String? shopId;
@@ -33,11 +37,13 @@ class ChildGetShoppingModel {
 
   factory ChildGetShoppingModel.fromJson(Map<String, dynamic> json) => ChildGetShoppingModel(
     id: json["id"],
-    teamPatientId: json["team_patient_id"],
-    createdAt: DateTime.parse(json["created_at"]),
-    updatedAt: DateTime.parse(json["updated_at"]),
-    ingredients: ChildIngredients.fromJson(json['ingredient']),
-    ingredientsId: json["ingredients_id"],
+    name: json["name"],
+    thumbnail: json["thumbnail"],
+    // teamPatientId: json["team_patient_id"],
+    // createdAt: DateTime.parse(json["created_at"]),
+    // updatedAt: DateTime.parse(json["updated_at"]),
+    // ingredients: ChildIngredients.fromJson(json['ingredient']),
+    // ingredientsId: json["ingredients_id"],
     //
     // itemWeightId: json["item_weight_id"],
     // userCustomMealPlanId: json["user_custom_meal_plan_id"],
@@ -52,11 +58,13 @@ class ChildGetShoppingModel {
 
   Map<String, dynamic> toJson() => {
     "id": id,
-    "team_patient_id": teamPatientId,
-    "ingredients_id": ingredientsId,
-    "ingredient": ingredients?.toJson(),
-    "created_at": createdAt?.toIso8601String() ?? '',
-    "updated_at": updatedAt?.toIso8601String() ?? '',
+    "name":name,
+    "thumbnail":thumbnail,
+    // "team_patient_id": teamPatientId,
+    // "ingredients_id": ingredientsId,
+    // "ingredient": ingredients?.toJson(),
+    // "created_at": createdAt?.toIso8601String() ?? '',
+    // "updated_at": updatedAt?.toIso8601String() ?? '',
     //
     // "item_weight_id": itemWeightId,
     // "user_custom_meal_plan_id": userCustomMealPlanId,
@@ -210,12 +218,12 @@ class ChildIngredients{
   ChildIngredientCategory? childIngredientCategory;
 
   factory ChildIngredients.fromJson(Map<String, dynamic> json) => ChildIngredients(
-    id: json["id"],
-    ingredientCategoryId: json["ingredient_category_id"],
-      thumbnail: json["thumbnail"],
+      id: json["id"],
+      ingredientCategoryId: json["ingredient_category_id"],
       createdAt: json["created_at"],
-    updatedAt: json["updated_at"],
+      updatedAt: json["updated_at"],
       name: json['name'],
+      thumbnail: json['thumbnail'],
       childIngredientCategory: ChildIngredientCategory.fromJson(json['ingredient_category'])
   );
 
@@ -225,6 +233,7 @@ class ChildIngredients{
     "created_at": createdAt,
     "updated_at": updatedAt,
     "name": name,
+    'thumbnail':thumbnail,
     "ingredient_category":childIngredientCategory?.toJson()
   };
 }
@@ -243,10 +252,10 @@ class ChildIngredientCategory{
   String? updatedAt;
 
   factory ChildIngredientCategory.fromJson(Map<String, dynamic> json) => ChildIngredientCategory(
-      id: json["id"],
-      name: json["name"],
-      createdAt: json["created_at"],
-      updatedAt: json["updated_at"],
+    id: json["id"],
+    name: json["name"],
+    createdAt: json["created_at"],
+    updatedAt: json["updated_at"],
   );
 
   Map<String, dynamic> toJson() => {

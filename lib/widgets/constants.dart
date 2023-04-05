@@ -17,6 +17,9 @@ const gWhiteColor = Color(0xffFFFFFF);
 const gHintTextColor = Color(0xff676363);
 const kLineColor = Color(0xffB9B4B4);
 
+const tabBarHintColor = Color(0xffBBBBBB);
+
+
 
 const gTextColor = gBlackColor;
 const gTapColor = Color(0xffF8FAFF);
