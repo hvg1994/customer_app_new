@@ -59,7 +59,7 @@ class _GWCStoriesScreenState extends State<GWCStoriesScreen> {
                         image: DecorationImage(
                           fit: BoxFit.cover,
                           image:   AssetImage(
-                            "assets/images/Group 3251.png",
+                            "assets/images/placeholder.png",
                           ),
                         ),
                       ),
@@ -78,7 +78,7 @@ class _GWCStoriesScreenState extends State<GWCStoriesScreen> {
                       image: DecorationImage(
                         fit: BoxFit.cover,
                         image:   AssetImage(
-                          "assets/images/Group 3252.png",
+                          "assets/images/placeholder.png",
                         ),
                       ),
                     ),

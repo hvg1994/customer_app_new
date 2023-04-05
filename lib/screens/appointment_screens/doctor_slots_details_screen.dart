@@ -13,7 +13,6 @@ import 'package:gwc_customer/screens/chat_support/message_screen.dart';
 import 'package:gwc_customer/screens/dashboard_screen.dart';
 import 'package:gwc_customer/screens/evalution_form/evaluation_get_details.dart';
 import 'package:gwc_customer/screens/evalution_form/personal_details_screen.dart';
-import 'package:gwc_customer/services/quick_blox_service/quick_blox_service.dart';
 import 'package:gwc_customer/utils/app_config.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
@@ -431,10 +430,10 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen>with
                                     print(curTime.difference(res));
                                     print(res.difference(curTime));
 
-                                    if(res.difference(curTime).inMinutes > 5){
-                                      showJoinPopup();
-                                    }
-                                    else{
+                                    // if(res.difference(curTime).inMinutes > 5){
+                                    //   showJoinPopup();
+                                    // }
+                                    // else{
 
                                       ChildAppointmentDetails? model;
                                     String? kaleyraurl;
@@ -472,7 +471,7 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen>with
                                       else{
                                         AppConfig().showSnackbar(context, "Uid/accessToken/join url not found");
                                       }
-                                   }
+                                   // }
                                   },
                                   child: Container(
                                     width: 60.w,
@@ -769,7 +768,6 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen>with
     if(res.runtimeType == GetChatGroupIdModel){
       GetChatGroupIdModel model = res as GetChatGroupIdModel;
       _pref!.setString(AppConfig.GROUP_ID, model.group ?? '');
-      Navigator.push(context, MaterialPageRoute(builder: (c)=> MessageScreen(isGroupId: true,)));
     }
     else{
       ErrorModel model = res as ErrorModel;

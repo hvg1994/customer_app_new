@@ -41,6 +41,9 @@ class Feed {
   String? location;
   String? photo;
   AddedBy? addedBy;
+  String? isFeed;
+  String? description;
+  String? thumbnail;
   String? createdAt;
   String? updatedAt;
 
@@ -50,6 +53,9 @@ class Feed {
         this.location,
         this.photo,
         this.addedBy,
+        this.description,
+        this.thumbnail,
+        this.isFeed,
         this.createdAt,
         this.updatedAt});
 
@@ -61,6 +67,9 @@ class Feed {
     addedBy = json['added_by'] != null
         ? new AddedBy.fromJson(json['added_by'])
         : null;
+    isFeed = json["is_feed"];
+    description = json["description"];
+    thumbnail = json['thumbnail'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
   }
@@ -74,6 +83,9 @@ class Feed {
     if (this.addedBy != null) {
       data['added_by'] = this.addedBy!.toJson();
     }
+    data['is_feed'] = this.isFeed;
+    data['thumbnail'] = this.thumbnail;
+    data['description'] = this.description;
     data['created_at'] = this.createdAt;
     data['updated_at'] = this.updatedAt;
     return data;

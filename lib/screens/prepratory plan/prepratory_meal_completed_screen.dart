@@ -7,10 +7,10 @@ import 'package:gwc_customer/services/prepratory_service/prepratory_service.dart
 import 'package:gwc_customer/utils/app_config.dart';
 import 'package:sizer/sizer.dart';
 import 'package:http/http.dart' as http;
-import '../../model/prepratory_meal_model/get_prep_meal_track_model.dart';
-import '../../model/success_message_model.dart';
-import '../../widgets/constants.dart';
-import '../../widgets/widgets.dart';
+import '../../../model/prepratory_meal_model/get_prep_meal_track_model.dart';
+import '../../../model/success_message_model.dart';
+import '../../../widgets/constants.dart';
+import '../../../widgets/widgets.dart';
 
 class PrepratoryMealCompletedScreen extends StatefulWidget {
   const PrepratoryMealCompletedScreen({Key? key}) : super(key: key);

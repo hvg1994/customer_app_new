@@ -61,7 +61,7 @@ class ProtocolCalendar {
   });
 
   DateTime? date;
-  int? day;
+  String? day;
   String? score;
   String? color;
   String? earlyMorning;
@@ -74,8 +74,8 @@ class ProtocolCalendar {
 
   factory ProtocolCalendar.fromJson(Map<String, dynamic> json) =>
       ProtocolCalendar(
-        date: DateTime.parse(json["date"]),
-        day: json["day"],
+        date: (json["date"] != "")? DateTime.parse(json["date"]) : DateTime.now(),
+        day: json["day"].toString(),
         score: json["score"].toString(),
         color: json["color"],
         earlyMorning: json["early_morning"],

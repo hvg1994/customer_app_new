@@ -194,25 +194,25 @@ class _PPSummaryScreenState extends State<PPSummaryScreen> {
     if (data.score == 1) {
       return const Center(
         child: Image(
-          image: AssetImage("assets/images/Group 11526.png"),
+          image: AssetImage("assets/images/gmg/Group 11526.png"),
         ),
       );
     } else if (data.score == 2) {
       return const Center(
         child: Image(
-          image: AssetImage("assets/images/Group 11528.png"),
+          image: AssetImage("assets/images/gmg/Group 11528.png"),
         ),
       );
     } else if (data.score == 3) {
       return const Center(
         child: Image(
-          image: AssetImage("assets/images/Group 11527.png"),
+          image: AssetImage("assets/images/gmg/Group 11527.png"),
         ),
       );
     } else if (data.score == 4) {
       return const Center(
         child: Image(
-          image: AssetImage("assets/images/Group 11552.png"),
+          image: AssetImage("assets/images/gmg/Group 11552.png"),
         ),
       );
     } else {

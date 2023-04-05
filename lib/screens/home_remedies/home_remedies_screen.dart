@@ -50,13 +50,13 @@ class _HomeRemediesScreenState extends State<HomeRemediesScreen> {
                   Navigator.pop(context);
                 }),
                 TabBar(
-                    // padding: EdgeInsets.symmetric(horizontal: 3.w),
-                    labelColor: gBlackColor,
+                  // padding: EdgeInsets.symmetric(horizontal: 3.w),
+                    labelColor: eUser().userFieldLabelColor,
                     unselectedLabelColor: gHintTextColor,
                     isScrollable: false,
                     indicatorColor: gsecondaryColor,
                     labelPadding:
-                        EdgeInsets.only(right: 0.w, top: 1.h, bottom: 1.h),
+                    EdgeInsets.only(right: 0.w, top: 1.h, bottom: 1.h),
                     // indicatorPadding: EdgeInsets.only(right: 5.w, left: 5.w),
                     unselectedLabelStyle: TextStyle(
                         fontFamily: "GothamBook",
@@ -72,7 +72,7 @@ class _HomeRemediesScreenState extends State<HomeRemediesScreen> {
                     ]),
                 Expanded(
                   child: TabBarView(
-                      // physics: const NeverScrollableScrollPhysics(),
+                    // physics: const NeverScrollableScrollPhysics(),
                       children: [
                         buildGeneralProblems(),
                         buildProgramProblems(),
@@ -102,17 +102,17 @@ class _HomeRemediesScreenState extends State<HomeRemediesScreen> {
                 if (snapshot.hasData) {
                   if (snapshot.data.runtimeType == HomeRemediesModel) {
                     HomeRemediesModel model =
-                        snapshot.data as HomeRemediesModel;
+                    snapshot.data as HomeRemediesModel;
                     List<HomeRemedy>? problemList = model.data.homeRemedies;
                     return GridView.builder(
                         scrollDirection: Axis.vertical,
                         physics: const ScrollPhysics(),
                         shrinkWrap: true,
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                          mainAxisSpacing: 15,
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          mainAxisSpacing: 10,
                           crossAxisSpacing: 10,
                           crossAxisCount: 3,
+                          mainAxisExtent: 20.h,
                           // childAspectRatio: MediaQuery.of(context).size.width /
                           //     (MediaQuery.of(context).size.height / 1.4),
                         ),
@@ -126,11 +126,15 @@ class _HomeRemediesScreenState extends State<HomeRemediesScreen> {
                               OutlinedButton(
                                 onPressed: () {
                                   Get.to(
-                                    () => NewKnowMoreScreen(
-                                      knowMore: problemList[index].knowMore,
-                                      healAtHome: problemList[index].healAtHome,
-                                      healAnywhere: problemList[index].healAnywhere,
-                                      whenToReachUs: problemList[index].whenToReachUs,
+                                        () => NewKnowMoreScreen(
+                                      knowMore:
+                                      problemList[index].knowMore,
+                                      healAtHome:
+                                      problemList[index].healAtHome,
+                                      healAnywhere:
+                                      problemList[index].healAnywhere,
+                                      whenToReachUs: problemList[index]
+                                          .whenToReachUs,
                                     ),
                                   );
                                 },
@@ -139,11 +143,18 @@ class _HomeRemediesScreenState extends State<HomeRemediesScreen> {
                                       newDashboardGreenButtonColor),
                                   backgroundColor: getColor(Colors.white,
                                       newDashboardGreenButtonColor),
+                                  shape: MaterialStateProperty.all(
+                                    RoundedRectangleBorder(
+                                      borderRadius:
+                                      BorderRadius.circular(10.0),
+                                    ),
+                                  ),
                                 ),
                                 child: Image(
-                                  height: 12.h,
-                                  width: 23.w,
-                                  image: CachedNetworkImageProvider("${Uri.parse(problemList[index].thumbnail)}"),
+                                  height: 15.h,
+                                  width: 30.w,
+                                  image: CachedNetworkImageProvider(
+                                      "${Uri.parse(problemList[index].thumbnail)}"),
                                 ),
                               ),
                               // GestureDetector(
@@ -184,7 +195,8 @@ class _HomeRemediesScreenState extends State<HomeRemediesScreen> {
                                 ),
                               ),
                             ],
-                          ) : Column(
+                          )
+                              : Column(
                             children: [
                               OutlinedButton(
                                 onPressed: () {
@@ -206,7 +218,8 @@ class _HomeRemediesScreenState extends State<HomeRemediesScreen> {
                                 child: Image(
                                   height: 12.h,
                                   width: 23.w,
-                                  image: CachedNetworkImageProvider("${Uri.parse(problemList[index].thumbnail)}"),
+                                  image: CachedNetworkImageProvider(
+                                      "${Uri.parse(problemList[index].thumbnail)}"),
                                 ),
                               ),
                               // GestureDetector(
@@ -291,16 +304,21 @@ class _HomeRemediesScreenState extends State<HomeRemediesScreen> {
                         // gridDelegate:SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4),
                         itemCount: problemList.length,
                         itemBuilder: (context, index) {
-                          return problemList[index].isGeneral != "1" ?  Column(
+                          return problemList[index].isGeneral != "1"
+                              ? Column(
                             children: [
                               OutlinedButton(
                                 onPressed: () {
                                   Get.to(
                                         () => NewKnowMoreScreen(
-                                      knowMore: problemList[index].knowMore,
-                                      healAtHome: problemList[index].healAtHome,
-                                      healAnywhere: problemList[index].healAnywhere,
-                                      whenToReachUs: problemList[index].whenToReachUs,
+                                      knowMore:
+                                      problemList[index].knowMore,
+                                      healAtHome:
+                                      problemList[index].healAtHome,
+                                      healAnywhere:
+                                      problemList[index].healAnywhere,
+                                      whenToReachUs: problemList[index]
+                                          .whenToReachUs,
                                     ),
                                   );
                                 },
@@ -355,7 +373,8 @@ class _HomeRemediesScreenState extends State<HomeRemediesScreen> {
                                 ),
                               ),
                             ],
-                          ) : const SizedBox();
+                          )
+                              : const SizedBox();
                         });
                   }
                 }
@@ -377,7 +396,6 @@ class _HomeRemediesScreenState extends State<HomeRemediesScreen> {
     };
     return MaterialStateProperty.resolveWith(getColor);
   }
-
 
   final HomeRemediesRepository repository = HomeRemediesRepository(
     apiClient: ApiClient(

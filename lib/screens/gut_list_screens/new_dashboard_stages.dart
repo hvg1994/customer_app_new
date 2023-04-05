@@ -25,7 +25,7 @@ import 'package:gwc_customer/screens/evalution_form/evaluation_get_details.dart'
 import 'package:gwc_customer/screens/help_screens/help_screen.dart';
 import 'package:gwc_customer/screens/notification_screen.dart';
 import 'package:gwc_customer/screens/post_program_screens/new_post_program/pp_levels_demo.dart';
-import 'package:gwc_customer/screens/post_program_screens/new_post_program/pp_levels_screen.dart';
+import 'package:gwc_customer/screens/prepratory%20plan/new/preparatory_new_screen.dart';
 import 'package:gwc_customer/screens/prepratory%20plan/prepratory_plan_screen.dart';
 import 'package:gwc_customer/screens/prepratory%20plan/schedule_screen.dart';
 import 'package:gwc_customer/screens/prepratory%20plan/transition_mealplan_screen.dart';
@@ -33,7 +33,6 @@ import 'package:gwc_customer/screens/profile_screens/call_support_method.dart';
 import 'package:gwc_customer/screens/program_plans/meal_plan_screen.dart';
 import 'package:gwc_customer/services/chat_service/chat_service.dart';
 import 'package:gwc_customer/services/profile_screen_service/user_profile_service.dart';
-import 'package:gwc_customer/services/quick_blox_service/quick_blox_service.dart';
 import 'package:gwc_customer/services/shipping_service/ship_track_service.dart';
 import 'package:gwc_customer/widgets/constants.dart';
 import 'package:gwc_customer/widgets/open_alert_box.dart';
@@ -1068,7 +1067,6 @@ class GutListState extends State<GutList> {
   addUrlToVideoPlayer(String url) async{
     print("url"+ url);
     _mealPlayerController = VlcPlayerController.network(url,
-      // "assets/images/new_ds/popup_video.mp4",
       // url,
       // 'http://samples.mplayerhq.hu/MPEG-4/embedded_subs/1Video_2Audio_2SUBs_timed_text_streams_.mp4',
       // 'https://media.w3.org/2010/05/sintel/trailer.mp4',
@@ -1376,7 +1374,7 @@ class GutListState extends State<GutList> {
             builder: (context) =>
             (_prepratoryModel!.value!.isPrepCompleted!) ?
             PrepratoryMealCompletedScreen()
-                : PrepratoryPlanScreen(dayNumber: _prepratoryModel!.value!.currentDay!, totalDays: _prepratoryModel!.value!.prep_days ?? ''),
+                : PreparatoryPlanScreen(dayNumber: _prepratoryModel!.value!.currentDay!, totalDays: _prepratoryModel!.value!.prep_days ?? ''),
             // ProgramPlanScreen(from: ProgramMealType.prepratory.name,)
           ),
         ).then((value) => reloadUI());
@@ -1535,37 +1533,6 @@ class GutListState extends State<GutList> {
       else{
         return newDashboardLockIcon;
       }
-    }
-
-  }
-
-  getChatGroupId() async{
-    print(_pref!.getInt(AppConfig.GET_QB_SESSION));
-    print(_pref!.getBool(AppConfig.IS_QB_LOGIN));
-
-    print(_pref!.getInt(AppConfig.GET_QB_SESSION) == null || _pref!.getBool(AppConfig.IS_QB_LOGIN) == null || _pref!.getBool(AppConfig.IS_QB_LOGIN) == false);
-    final _qbService = Provider.of<QuickBloxService>(context, listen:  false);
-    print(await _qbService.getSession());
-    if(_pref!.getInt(AppConfig.GET_QB_SESSION) == null || await _qbService.getSession() == true || _pref!.getBool(AppConfig.IS_QB_LOGIN) == null || _pref!.getBool(AppConfig.IS_QB_LOGIN) == false){
-      _qbService.login(_pref!.getString(AppConfig.QB_USERNAME)!);
-    }
-    else{
-      if(await _qbService.isConnected() == false){
-        _qbService.connect(int.parse(_pref!.getString(AppConfig.QB_CURRENT_USERID)!));
-      }
-    }
-    final res = await ChatService(repository: chatRepository).getChatGroupIdService();
-
-    if(res.runtimeType == GetChatGroupIdModel){
-      GetChatGroupIdModel model = res as GetChatGroupIdModel;
-      // QuickBloxRepository().init(AppConfig.QB_APP_ID, AppConfig.QB_AUTH_KEY, AppConfig.QB_AUTH_SECRET, AppConfig.QB_ACCOUNT_KEY);
-      _pref!.setString(AppConfig.GROUP_ID, model.group ?? '');
-      print('model.group: ${model.group}');
-      Navigator.push(context, MaterialPageRoute(builder: (c)=> MessageScreen(isGroupId: true,)));
-    }
-    else{
-      ErrorModel model = res as ErrorModel;
-      AppConfig().showSnackbar(context, model.message.toString(), isError: true);
     }
 
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_vlc_player/flutter_vlc_player.dart';
 import 'package:gwc_customer/model/dashboard_model/get_appointment/get_appointment_after_appointed.dart';
 import 'package:gwc_customer/model/dashboard_model/get_dashboard_data_model.dart';
 import 'package:gwc_customer/model/dashboard_model/get_program_model.dart';
@@ -30,9 +31,11 @@ import 'package:gwc_customer/services/dashboard_service/gut_service/dashboard_da
 import 'package:gwc_customer/services/login_otp_service.dart';
 import 'package:gwc_customer/services/profile_screen_service/user_profile_service.dart';
 import 'package:gwc_customer/services/shipping_service/ship_track_service.dart';
+import 'package:gwc_customer/widgets/vlc_player/vlc_player_with_controls.dart';
 import 'package:jwt_decode/jwt_decode.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:sizer/sizer.dart';
+import 'package:wakelock/wakelock.dart';
 import '../../model/error_model.dart';
 import '../../utils/app_config.dart';
 import '../../widgets/constants.dart';
@@ -40,6 +43,7 @@ import '../../widgets/widgets.dart';
 import '../appointment_screens/consultation_screens/upload_files.dart';
 import '../help_screens/help_screen.dart';
 import '../notification_screen.dart';
+import '../prepratory plan/new/preparatory_new_screen.dart';
 import '../prepratory plan/schedule_screen.dart';
 import '../profile_screens/call_support_method.dart';
 import 'package:http/http.dart' as http;
@@ -143,10 +147,10 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
           "This meal protocol immediately start enhancing you digestive "
           "juices and improving your gut motility",
         newDashboardLightGreyButtonColor,
-      false,
+      true,
       "View Plan",
       newDashboardLightGreyButtonColor,
-        "",
+        'Transition',
         newDashboardLightGreyButtonColor,
         StageType.normal_meal,
         showTrackGutIcon: true,
@@ -173,7 +177,7 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
   ];
 
   /// THIS IS FOR ABC DIALOG MEAL PLAN
-  bool isProgressOpened = false;
+  bool isMealProgressOpened = false;
   /// THIS IS FOR ABC DIALOG MEAL PLAN
   bool isShown = false;
 
@@ -196,6 +200,13 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
   GutDataModel? _gutDataModel, _gutShipDataModel, _gutProgramModel, _gutPostProgramModel, _prepProgramModel, _transMealModel;
 
   late GutDataService _gutDataService;
+
+  VlcPlayerController? _mealPlayerController;
+  final _key = GlobalKey<VlcPlayerWithControlsState>();
+
+  VlcPlayerController? _aboutHomeStageController;
+  final _aboutHomeStageKey = GlobalKey<VlcPlayerWithControlsState>();
+
 
   @override
   void initState() {
@@ -244,111 +255,121 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
         data: MediaQuery.of(context).copyWith(textScaleFactor: 0.8),
         child: SafeArea(
           child: Scaffold(
-            body: Padding(
-              padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 5.w),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  buildAppBar(
-                    () {
-                      Navigator.pop(context);
-                    },
-                    isBackEnable: false,
-                    showNotificationIcon: true,
-                    notificationOnTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (_) => const NotificationScreen()));
-                    },
-                    showHelpIcon: true,
-                    helpOnTap: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (_) => HelpScreen()));
-                    },
-                    showSupportIcon: true,
-                    supportOnTap: () {
-                      showSupportCallSheet(context);
-                      // openAlertBox(
-                      //     context: context,
-                      //     isContentNeeded: false,
-                      //     titleNeeded: true,
-                      //     title: "Select Call Type",
-                      //     positiveButtonName: "In App Call",
-                      //     positiveButton: (){
-                      //       callSupport();
-                      //       Navigator.pop(context);
-                      //     },
-                      //     negativeButtonName: "Voice Call",
-                      //     negativeButton: (){
-                      //       Navigator.pop(context);
-                      //       if(_pref!.getString(AppConfig.KALEYRA_SUCCESS_ID) == null){
-                      //         AppConfig().showSnackbar(context, "Success Team Not available", isError: true);
-                      //       }
-                      //       else{
-                      //         // // click-to-call
-                      //         // callSupport();
-                      //
-                      //         if(_pref!.getString(AppConfig.KALEYRA_ACCESS_TOKEN) != null){
-                      //           final accessToken = _pref!.getString(AppConfig.KALEYRA_ACCESS_TOKEN);
-                      //           final uId = _pref!.getString(AppConfig.KALEYRA_USER_ID);
-                      //           final successId = _pref!.getString(AppConfig.KALEYRA_SUCCESS_ID);
-                      //           // voice- call
-                      //           supportVoiceCall(uId!, successId!, accessToken!);
-                      //         }
-                      //         else{
-                      //           AppConfig().showSnackbar(context, "Something went wrong!!", isError: true);
-                      //         }
-                      //       }
-                      //     }
-                      // );
-                    },
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      InkWell(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (_) => const NewScheduleScreen()));
-                        },
-                        child: Row(
-                          children: [
-                            ImageIcon(
-                              const AssetImage(
-                                  "assets/images/new_ds/follow_up.png"),
-                              size: 11.sp,
-                              color: newDashboardLightGreyButtonColor,
+            body: RefreshIndicator(
+              onRefresh: getData,
+              child: CustomScrollView(
+                physics: AlwaysScrollableScrollPhysics(),
+                slivers: [
+                  SliverFillRemaining(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 5.w),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          buildAppBar(
+                                () {
+                              Navigator.pop(context);
+                            },
+                            isBackEnable: false,
+                            showNotificationIcon: true,
+                            notificationOnTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (_) => const NotificationScreen()));
+                            },
+                            showHelpIcon: true,
+                            helpOnTap: () {
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (_) => HelpScreen()));
+                            },
+                            showSupportIcon: true,
+                            supportOnTap: () {
+                              showSupportCallSheet(context);
+                              // openAlertBox(
+                              //     context: context,
+                              //     isContentNeeded: false,
+                              //     titleNeeded: true,
+                              //     title: "Select Call Type",
+                              //     positiveButtonName: "In App Call",
+                              //     positiveButton: (){
+                              //       callSupport();
+                              //       Navigator.pop(context);
+                              //     },
+                              //     negativeButtonName: "Voice Call",
+                              //     negativeButton: (){
+                              //       Navigator.pop(context);
+                              //       if(_pref!.getString(AppConfig.KALEYRA_SUCCESS_ID) == null){
+                              //         AppConfig().showSnackbar(context, "Success Team Not available", isError: true);
+                              //       }
+                              //       else{
+                              //         // // click-to-call
+                              //         // callSupport();
+                              //
+                              //         if(_pref!.getString(AppConfig.KALEYRA_ACCESS_TOKEN) != null){
+                              //           final accessToken = _pref!.getString(AppConfig.KALEYRA_ACCESS_TOKEN);
+                              //           final uId = _pref!.getString(AppConfig.KALEYRA_USER_ID);
+                              //           final successId = _pref!.getString(AppConfig.KALEYRA_SUCCESS_ID);
+                              //           // voice- call
+                              //           supportVoiceCall(uId!, successId!, accessToken!);
+                              //         }
+                              //         else{
+                              //           AppConfig().showSnackbar(context, "Something went wrong!!", isError: true);
+                              //         }
+                              //       }
+                              //     }
+                              // );
+                            },
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              InkWell(
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (_) => const NewScheduleScreen()));
+                                },
+                                child: Row(
+                                  children: [
+                                    ImageIcon(
+                                      const AssetImage(
+                                          "assets/images/new_ds/follow_up.png"),
+                                      size: 11.sp,
+                                      color: newDashboardLightGreyButtonColor,
+                                    ),
+                                    SizedBox(width: 0.5.w),
+                                    Text(
+                                      'Follow-up call',
+                                      style: TextStyle(
+                                        color: newDashboardLightGreyButtonColor,
+                                        fontSize: headingFont,
+                                        decoration: TextDecoration.underline,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
+                          SizedBox(
+                            height: 1.h,
+                          ),
+                          Expanded(
+                            child: Center(
+                              child: (isProgressDialogOpened) ?
+                              Shimmer.fromColors(
+                                baseColor: Colors.grey.withOpacity(0.3),
+                                highlightColor: Colors.grey.withOpacity(0.7),
+                                child: view(),
+                              ) : view(),
                             ),
-                            SizedBox(width: 0.5.w),
-                            Text(
-                              'Follow-up call',
-                              style: TextStyle(
-                                color: newDashboardLightGreyButtonColor,
-                                fontSize: headingFont,
-                                decoration: TextDecoration.underline,
-                              ),
-                            ),
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
-                  SizedBox(
-                    height: 1.h,
-                  ),
-                  Expanded(
-                    child: Center(
-                      child: (isProgressDialogOpened) ?
-                      Shimmer.fromColors(
-                        baseColor: Colors.grey.withOpacity(0.3),
-                        highlightColor: Colors.grey.withOpacity(0.7),
-                        child: view(),
-                      ) : view(),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
+                  )
                 ],
               ),
             ),
@@ -705,7 +726,152 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
     });
   }
 
+  addUrlToVideoWhenAboutClick(String url) async{
+    print("url"+ url);
+    _aboutHomeStageController = VlcPlayerController.network(
+      Uri.parse(url).toString(),
+      // url,
+      // 'http://samples.mplayerhq.hu/MPEG-4/embedded_subs/1Video_2Audio_2SUBs_timed_text_streams_.mp4',
+      // 'https://media.w3.org/2010/05/sintel/trailer.mp4',
+      hwAcc: HwAcc.auto,
+      autoPlay: true,
+      options: VlcPlayerOptions(
+        advanced: VlcAdvancedOptions([
+          VlcAdvancedOptions.networkCaching(2000),
+        ]),
+        subtitle: VlcSubtitleOptions([
+          VlcSubtitleOptions.boldStyle(true),
+          VlcSubtitleOptions.fontSize(30),
+          VlcSubtitleOptions.outlineColor(VlcSubtitleColor.yellow),
+          VlcSubtitleOptions.outlineThickness(VlcSubtitleThickness.normal),
+          // works only on externally added subtitles
+          VlcSubtitleOptions.color(VlcSubtitleColor.navy),
+        ]),
+        http: VlcHttpOptions([
+          VlcHttpOptions.httpReconnect(true),
+        ]),
+        rtp: VlcRtpOptions([
+          VlcRtpOptions.rtpOverRtsp(true),
+        ]),
+      ),
+    );
+    if( !await Wakelock.enabled){
+      Wakelock.enable();
+    }
+  }
+
+  whenAboutClickSheet(){
+    return AppConfig().showSheet(context,
+        Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: whenAboutClickVideo(),
+        ),
+        SizedBox(height: 5.h,),
+      ],
+    ), bottomSheetHeight: 65.h,
+      sheetCloseOnTap: (){
+      Navigator.pop(context);
+      disposePlayer();
+      },
+      isSheetCloseNeeded: true
+    );
+  }
+
+  whenAboutClickVideo() {
+    if(_aboutHomeStageController != null){
+      return AspectRatio(
+        aspectRatio: 16/9,
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(5),
+            border: Border.all(color: gPrimaryColor, width: 1),
+            // boxShadow: [
+            //   BoxShadow(
+            //     color: Colors.grey.withOpacity(0.3),
+            //     blurRadius: 20,
+            //     offset: const Offset(2, 10),
+            //   ),
+            // ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(5),
+            child: Center(
+              child: VlcPlayerWithControls(
+                key: _aboutHomeStageKey,
+                controller: _aboutHomeStageController!,
+                showVolume: false,
+                showVideoProgress: false,
+                seekButtonIconSize: 10.sp,
+                playButtonIconSize: 14.sp,
+                replayButtonSize: 10.sp,
+              ),
+              // child: VlcPlayer(
+              //   controller: _videoPlayerController!,
+              //   aspectRatio: 16 / 9,
+              //   virtualDisplay: false,
+              //   placeholder: Center(child: CircularProgressIndicator()),
+              // ),
+            ),
+          ),
+        ),
+      );
+    }
+    else {
+      return SizedBox.shrink();
+    }
+  }
+
+
+
+  addUrlToVideoPlayer(String url) async{
+    print("url"+ url);
+    _mealPlayerController = VlcPlayerController.network(url,
+      // url,
+      // 'http://samples.mplayerhq.hu/MPEG-4/embedded_subs/1Video_2Audio_2SUBs_timed_text_streams_.mp4',
+      // 'https://media.w3.org/2010/05/sintel/trailer.mp4',
+      hwAcc: HwAcc.auto,
+      autoPlay: true,
+      options: VlcPlayerOptions(
+        advanced: VlcAdvancedOptions([
+          VlcAdvancedOptions.networkCaching(2000),
+        ]),
+        subtitle: VlcSubtitleOptions([
+          VlcSubtitleOptions.boldStyle(true),
+          VlcSubtitleOptions.fontSize(30),
+          VlcSubtitleOptions.outlineColor(VlcSubtitleColor.yellow),
+          VlcSubtitleOptions.outlineThickness(VlcSubtitleThickness.normal),
+          // works only on externally added subtitles
+          VlcSubtitleOptions.color(VlcSubtitleColor.navy),
+        ]),
+        http: VlcHttpOptions([
+          VlcHttpOptions.httpReconnect(true),
+        ]),
+        rtp: VlcRtpOptions([
+          VlcRtpOptions.rtpOverRtsp(true),
+        ]),
+      ),
+    );
+    if( !await Wakelock.enabled){
+      Wakelock.enable();
+    }
+  }
+
+  disposePlayer() async{
+    if(_mealPlayerController != null){
+      _mealPlayerController!.dispose();
+    }
+    if(_aboutHomeStageController != null){
+      _aboutHomeStageController!.dispose();
+    }
+    if(await Wakelock.enabled){
+      Wakelock.disable();
+    }
+  }
+
   mealReadySheet(){
+    addUrlToVideoPlayer(_gutShipDataModel?.value ?? '');
     return AppConfig().showSheet(context, Column(
       children: [
         Text('Hooray!\nYour food prescription is ready',
@@ -716,14 +882,19 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
               fontFamily: bottomSheetSubHeadingBoldFont,
               color: gTextColor
           ),),
+        // need ot show Video
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 8),
-          child: Image.asset('assets/images/meal_popup.png',
-            fit: BoxFit.scaleDown,
-            width: 60.w,
-            filterQuality: FilterQuality.high,
-          ),
+          child: buildMealVideo(),
         ),
+        // Padding(
+        //   padding: const EdgeInsets.symmetric(vertical: 8),
+        //   child: Image.asset('assets/images/meal_popup.png',
+        //     fit: BoxFit.scaleDown,
+        //     width: 60.w,
+        //     filterQuality: FilterQuality.high,
+        //   ),
+        // ),
         Text("You've Unlocked The Next Step!",
           textAlign: TextAlign.center,
           style: TextStyle(
@@ -751,7 +922,8 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
                 setState(() {
                   isShown = false;
                 });
-                if(isProgressOpened){
+                disposePlayer();
+                if(isMealProgressOpened){
                   Navigator.pop(context);
                 }
               },
@@ -775,11 +947,13 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
             SizedBox(width: 5.w),
             GestureDetector(
               onTap: (isPressed) ? (){} : () {
+                Navigator.pop(context);
                 sendApproveStatus('no');
                 setState(() {
                   isShown = false;
                 });
-                if(isProgressOpened){
+                disposePlayer();
+                if(isMealProgressOpened){
                   Navigator.pop(context);
                 }
               },
@@ -806,6 +980,67 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
       ],
     ), bottomSheetHeight: 75.h);
   }
+
+  buildMealVideo() {
+    if(_mealPlayerController != null){
+      return AspectRatio(
+        aspectRatio: 16/9,
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(5),
+            border: Border.all(color: gPrimaryColor, width: 1),
+            // boxShadow: [
+            //   BoxShadow(
+            //     color: Colors.grey.withOpacity(0.3),
+            //     blurRadius: 20,
+            //     offset: const Offset(2, 10),
+            //   ),
+            // ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(5),
+            child: Center(
+              child: VlcPlayerWithControls(
+                key: _key,
+                controller: _mealPlayerController!,
+                showVolume: false,
+                showVideoProgress: false,
+                seekButtonIconSize: 10.sp,
+                playButtonIconSize: 14.sp,
+                replayButtonSize: 10.sp,
+              ),
+              // child: VlcPlayer(
+              //   controller: _videoPlayerController!,
+              //   aspectRatio: 16 / 9,
+              //   virtualDisplay: false,
+              //   placeholder: Center(child: CircularProgressIndicator()),
+              // ),
+            ),
+          ),
+          // child: Stack(
+          //   children: <Widget>[
+          //     ClipRRect(
+          //       borderRadius: BorderRadius.circular(5),
+          //       child: Center(
+          //         child: VlcPlayer(
+          //           controller: _videoPlayerController!,
+          //           aspectRatio: 16 / 9,
+          //           virtualDisplay: false,
+          //           placeholder: Center(child: CircularProgressIndicator()),
+          //         ),
+          //       ),
+          //     ),
+          //     ControlsOverlay(controller: _videoPlayerController,)
+          //   ],
+          // ),
+        ),
+      );
+    }
+    else {
+      return SizedBox.shrink();
+    }
+  }
+
 
   getUserProfile() async{
     // print("user id: ${_pref!.getInt(AppConfig.KALEYRA_USER_ID)}");
@@ -850,7 +1085,8 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
     ),
   );
 
-  getData() async{
+  GetDashboardDataModel? _getDashboardDataModel;
+  Future getData() async{
     isProgressDialogOpened = true;
     print("isProgressDialogOpened: $isProgressDialogOpened");
 
@@ -879,83 +1115,83 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
     else{
       isProgressDialogOpened = false;
       print("isProgressDialogOpened: $isProgressDialogOpened");
-      GetDashboardDataModel _getDashboardDataModel = _getData as GetDashboardDataModel;
-      print("_getDashboardDataModel.app_consulation: ${_getDashboardDataModel.app_consulation}");
+      _getDashboardDataModel = _getData as GetDashboardDataModel;
+      print("_getDashboardDataModel.app_consulation: ${_getDashboardDataModel!.app_consulation}");
 
 
       // checking for the consultation data if data = appointment_booked
       setState(() {
-        if(_getDashboardDataModel.app_consulation != null){
-          _getAppointmentDetailsModel = _getDashboardDataModel.app_consulation;
+        if(_getDashboardDataModel!.app_consulation != null){
+          _getAppointmentDetailsModel = _getDashboardDataModel!.app_consulation;
           consultationStage = _getAppointmentDetailsModel?.data ?? '';
         }
         else{
-          _gutDataModel = _getDashboardDataModel.normal_consultation;
+          _gutDataModel = _getDashboardDataModel!.normal_consultation;
           consultationStage = _gutDataModel?.data ?? '';
         }
         updateNewStage(consultationStage);
-        if(_getDashboardDataModel.prepratory_normal_program != null){
-          _prepProgramModel = _getDashboardDataModel.prepratory_normal_program;
+        if(_getDashboardDataModel!.prepratory_normal_program != null){
+          _prepProgramModel = _getDashboardDataModel!.prepratory_normal_program;
           prepratoryMealStage = _prepProgramModel?.data ?? '';
         }
-        else if(_getDashboardDataModel.prepratory_program != null){
-          _prepratoryModel = _getDashboardDataModel.prepratory_program;
+        else if(_getDashboardDataModel!.prepratory_program != null){
+          _prepratoryModel = _getDashboardDataModel!.prepratory_program;
           prepratoryMealStage = _prepratoryModel?.data ?? '';
         }
         updateNewStage(prepratoryMealStage);
-        if(_getDashboardDataModel.transition_meal_program != null){
-          _transMealModel = _getDashboardDataModel.transition_meal_program;
+        if(_getDashboardDataModel!.transition_meal_program != null){
+          _transMealModel = _getDashboardDataModel!.transition_meal_program;
         }
-        else if(_getDashboardDataModel.trans_program != null){
-          _transModel = _getDashboardDataModel.trans_program;
+        else if(_getDashboardDataModel!.trans_program != null){
+          _transModel = _getDashboardDataModel!.trans_program;
         }
-        if(_getDashboardDataModel.approved_shipping != null){
-          _shippingApprovedModel = _getDashboardDataModel.approved_shipping;
+        if(_getDashboardDataModel!.approved_shipping != null){
+          _shippingApprovedModel = _getDashboardDataModel!.approved_shipping;
           shippingStage = _shippingApprovedModel?.data ?? '';
           prepratoryMealStage = _prepratoryModel?.data ?? '';
 
           updateNewStage(shippingStage);
         }
         else{
-          _gutShipDataModel = _getDashboardDataModel.normal_shipping;
+          _gutShipDataModel = _getDashboardDataModel!.normal_shipping;
           shippingStage = _gutShipDataModel?.data ?? '';
           updateNewStage(shippingStage);
           // abc();
         }
         if(shippingStage != null && shippingStage == "shipping_delivered"){
         }
-        if(_getDashboardDataModel.data_program != null){
-          _getProgramModel = _getDashboardDataModel.data_program;
+        if(_getDashboardDataModel!.data_program != null){
+          _getProgramModel = _getDashboardDataModel!.data_program;
           programOptionStage = _getProgramModel?.data ?? '';
           updateNewStage(programOptionStage);
         }
         else{
-          _gutProgramModel = _getDashboardDataModel.normal_program;
+          _gutProgramModel = _getDashboardDataModel!.normal_program;
           programOptionStage = _getProgramModel?.data ?? '';
           updateNewStage(programOptionStage);
           abc();
         }
 
-        if(_getDashboardDataModel.data_program != null){
-          _transModel = _getDashboardDataModel.trans_program;
+        if(_getDashboardDataModel!.data_program != null){
+          _transModel = _getDashboardDataModel!.trans_program;
           transStage = _transModel?.data ?? '';
           updateNewStage(transStage);
         }
         else{
-          _transMealModel = _getDashboardDataModel.transition_meal_program;
+          _transMealModel = _getDashboardDataModel!.transition_meal_program;
           transStage = _transMealModel?.data ?? '';
           updateNewStage(transStage);
         }
         // post program will open once transition meal plan is completed
         // this is for other postprogram model
-        if(_getDashboardDataModel.normal_postprogram != null){
-          _gutPostProgramModel = _getDashboardDataModel.normal_postprogram;
+        if(_getDashboardDataModel!.normal_postprogram != null){
+          _gutPostProgramModel = _getDashboardDataModel!.normal_postprogram;
           postProgramStage = _gutPostProgramModel?.data ?? '';
           updateNewStage(postProgramStage);
         }
         else{
-          _postConsultationAppointment = _getDashboardDataModel.postprogram_consultation;
-          print("RESCHEDULE : ${_getDashboardDataModel.postprogram_consultation?.data}");
+          _postConsultationAppointment = _getDashboardDataModel!.postprogram_consultation;
+          print("RESCHEDULE : ${_getDashboardDataModel!.postprogram_consultation?.data}");
           postProgramStage = _postConsultationAppointment?.data ?? '';
           updateNewStage(postProgramStage);
         }
@@ -996,6 +1232,35 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
               break;
             case 'pending' :
               goToScreen(DoctorCalenderTimeScreen());
+              break;
+            case 'appointment_booked':
+              final model = _getAppointmentDetailsModel;
+              print(model!.value!.date);
+              List<String> doctorNames = [];
+              String? doctorName;
+              String? doctorImage;
+
+
+              model.value?.teamMember?.forEach((element) {
+                if(element.user != null){
+                  if(element.user!.roleId == "2"){
+                    doctorNames.add('Dr. ${element.user!.name}' ?? '');
+                    doctorName = 'Dr. ${element.user!.name}';
+                    doctorImage = element.user?.profile ?? '';
+                  }
+                }
+              });
+
+              // add this before calling calendertimescreen for reschedule
+              // _pref!.setString(AppConfig.appointmentId , '');
+              goToScreen(DoctorCalenderTimeScreen(
+                isReschedule: true,
+                prevBookingDate: model.value!.date,
+                prevBookingTime: model.value!.appointmentStartTime,
+                  doctorDetails: model.value!.doctor,
+                  doctorName: doctorName,
+                doctorPic: doctorImage,
+              ));
               break;
             case 'consultation_reschedule' :
               final model = _getAppointmentDetailsModel;
@@ -1051,6 +1316,7 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
               // goToScreen(DoctorCalenderTimeScreen(isReschedule: true,prevBookingTime: '23-09-2022', prevBookingDate: '10AM',));
               goToScreen(MedicalReportScreen(pdfLink: _gutDataModel!.value!,));
               break;
+            default: AppConfig().showSnackbar(context, "Can't access Locked Stage", isError: true);
           }
         }
         break;
@@ -1058,20 +1324,38 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
         showPrepratoryMealScreen();
         break;
       case StageType.normal_meal:
-        if(transStage != null && transStage!.isNotEmpty){
-          // showProgramScreen();
-          showTransitionMealScreen();
-        }
-        else if(programOptionStage != null && programOptionStage!.isNotEmpty){
-          print("called");
-          showProgramScreen();
+        if(buttonId == 1){
+          if(programOptionStage != null && programOptionStage!.isNotEmpty){
+            print("called");
+            showProgramScreen();
+          }
+          else{
+            AppConfig().showSnackbar(context, "Can't access Locked Stage", isError: true);
+          }
         }
         else{
-          AppConfig().showSnackbar(context, "Can't access Locked Stage", isError: true);
+          if(transStage != null && transStage!.isNotEmpty){
+            // showProgramScreen();
+            showTransitionMealScreen();
+          }
+          else{
+            AppConfig().showSnackbar(context, "Can't access Locked Stage", isError: true);
+          }
         }
+        // if(transStage != null && transStage!.isNotEmpty){
+        //   // showProgramScreen();
+        //   showTransitionMealScreen();
+        // }
+        // else if(programOptionStage != null && programOptionStage!.isNotEmpty){
+        //   print("called");
+        //   showProgramScreen();
+        // }
+        // else{
+        //   AppConfig().showSnackbar(context, "Can't access Locked Stage", isError: true);
+        // }
         break;
       case StageType.post_consultation:
-        if(buttonId == 0){
+        if(buttonId == 1){
           if(postProgramStage == "post_program"){
             Navigator.of(context).push(
               MaterialPageRoute(
@@ -1344,9 +1628,70 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
                           child: Icon(
                             Icons.help_outline_rounded,
                             color: gMainColor,
-                            size: 10.sp,
+                            size: 11.5.sp,
                           ),
-                          onTap: () {},
+                          onTap: () {
+                            switch(type){
+                              case StageType.evaluation:
+                                final link = _getDashboardDataModel!.evaluationVideo;
+                                print(link);
+                                if(link != null && link.isNotEmpty) {
+                                  addUrlToVideoWhenAboutClick(link);
+                                  whenAboutClickSheet();
+                                }
+                                else{
+                                  AppConfig().showSnackbar(context, "Link Not Available", isError: true);
+                                }
+                                break;
+                              case StageType.med_consultation:
+                                final link = _getDashboardDataModel!.consultationVideo;
+                                if(link != null && link.isNotEmpty) {
+                                  addUrlToVideoWhenAboutClick(link);
+                                  whenAboutClickSheet();
+                                }
+                                else{
+                                  AppConfig().showSnackbar(context, "Link Not Available", isError: true);
+                                }
+                                break;
+                              case StageType.prep_meal:
+                                final link = _getDashboardDataModel!.prepVideo;
+                                print("prepVideo: $link");
+                                print(link == null);
+                                print(link!.isEmpty);
+                                if(link != null && link.isNotEmpty) {
+                                  addUrlToVideoWhenAboutClick(link);
+                                  whenAboutClickSheet();
+                                }
+                                else{
+                                  AppConfig().showSnackbar(context, "Link Not Available", isError: true);
+                                }
+                                break;
+                              case StageType.normal_meal:
+                                final link = _getDashboardDataModel!.programVideo;
+                                print("programVideo: $link");
+                                if(link != null && link.isNotEmpty) {
+                                  addUrlToVideoWhenAboutClick(link);
+                                  whenAboutClickSheet();
+                                }
+                                else{
+                                  AppConfig().showSnackbar(context, "Link Not Available", isError: true);
+                                }
+                                break;
+                              case StageType.post_consultation:
+                                final link = _getDashboardDataModel!.gmgVideo;
+                                print("gmgVideo: $link");
+                                print(link == null);
+                                print(link!.isEmpty);
+                                if(link != null && link.isNotEmpty) {
+                                  addUrlToVideoWhenAboutClick(link);
+                                  whenAboutClickSheet();
+                                }
+                                else{
+                                  AppConfig().showSnackbar(context, "Link Not Available", isError: true);
+                                }
+                                break;
+                            }
+                          },
                         ),
                       ],
                     ),
@@ -1425,40 +1770,50 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
       case 'evaluation_done' :
         levels[0].stageColor = unlockGreenColor;
         levels[1].stageColor = unlockYellowColor;
+        levels[1].button1Color = newDashboardGreenButtonColor;
         break;
       case 'pending' :
         levels[0].stageColor = unlockGreenColor;
         levels[1].stageColor = unlockYellowColor;
+        levels[1].button1Color = newDashboardGreenButtonColor;
         break;
       case 'consultation_reschedule' :
         levels[0].stageColor = unlockGreenColor;
         levels[1].stageColor = unlockYellowColor;
         levels[1].buttonTitle = "Reschedule";
+        levels[1].button1Color = newDashboardGreenButtonColor;
         break;
       case 'appointment_booked':
         levels[0].stageColor = unlockGreenColor;
         levels[1].stageColor = unlockYellowColor;
         levels[1].buttonTitle = "Reschedule";
+        levels[1].button1Color = newDashboardGreenButtonColor;
+        levels[1].button2Color = newDashboardGreenButtonColor;
+        levels[1].lockImage = unlockYellowImage;
         break;
       case 'consultation_done':
         levels[0].stageColor = unlockGreenColor;
         levels[1].stageColor = unlockYellowColor;
         levels[1].buttonTitle = "Reschedule";
+        levels[1].button1Color = newDashboardGreenButtonColor;
         break;
       case 'consultation_accepted':
         levels[0].stageColor = unlockGreenColor;
         levels[1].stageColor = unlockYellowColor;
-        levels[1].buttonTitle = "Reschedule";
+        levels[1].buttonTitle = "Accepted";
+        levels[1].button1Color = newDashboardGreenButtonColor;
         break;
       case 'consultation_waiting':
         levels[0].stageColor = unlockGreenColor;
         levels[1].stageColor = unlockYellowColor;
-        levels[1].buttonTitle = "Reschedule";
+        levels[1].buttonTitle = "Upload Report";
+        levels[1].button1Color = newDashboardGreenButtonColor;
         break;
       case 'check_user_reports':
         levels[0].stageColor = unlockGreenColor;
         levels[1].stageColor = unlockYellowColor;
-        // levels[1].buttonTitle = "Reschedule";
+        levels[1].button1Color = newDashboardGreenButtonColor;
+        levels[1].buttonTitle = "Awaiting";
         break;
       case 'consultation_rejected':
         levels[0].stageColor = unlockGreenColor;
@@ -1647,15 +2002,18 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
           levels[3].stageColor = unlockGreenColor;
           levels[3].lockImage = unlockGreenImage;
           levels[3].stageCircleImage = unlockGreenCircleImage;
-          // levels[3].trackGutIconCircleName = greenTrackGutCircle;
-          // levels[3].circleInsideImageColor = unlockGreenColor;
+          levels[3].button2Color = newDashboardGreenButtonColor;
+          levels[3].trackGutIconCircleName = greenTrackGutCircle;
+          levels[3].circleInsideImageColor = unlockGreenColor;
         }
         else{
           levels[3].stageColor = unlockYellowColor;
           levels[3].lockImage = unlockYellowImage;
           levels[3].stageCircleImage = unlockYellowCircleImage;
-          // levels[3].trackGutIconCircleName = yellowTrackGutCircle;
-          // levels[3].circleInsideImageColor = unlockYellowColor;
+          levels[3].button2Color = newDashboardGreenButtonColor;
+
+          levels[3].trackGutIconCircleName = yellowTrackGutCircle;
+          levels[3].circleInsideImageColor = unlockYellowColor;
 
         }
         levels[3].button1Color = newDashboardGreenButtonColor;
@@ -1680,14 +2038,14 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
           levels[3].stageColor = unlockGreenColor;
           levels[3].lockImage = unlockGreenImage;
           levels[3].stageCircleImage = unlockGreenCircleImage;
-          // levels[3].trackGutIconCircleName = greenTrackGutCircle;
-          // levels[3].circleInsideImageColor = unlockGreenColor;
+          levels[3].trackGutIconCircleName = greenTrackGutCircle;
+          levels[3].circleInsideImageColor = unlockGreenColor;
 
         }
-        // else{
-        //   levels[3].stageColor = unlockYellowColor;
-        //   levels[3].lockImage = unlockYellowImage;
-        // }
+        else{
+          levels[3].stageColor = unlockYellowColor;
+          levels[3].lockImage = unlockYellowImage;
+        }
         levels[3].button1Color = newDashboardGreenButtonColor;
         levels[4].stageColor = unlockYellowColor;
         levels[4].lockImage = unlockYellowImage;
@@ -1719,14 +2077,14 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
           levels[3].stageColor = unlockGreenColor;
           levels[3].lockImage = unlockGreenImage;
           levels[3].stageCircleImage = unlockGreenCircleImage;
-          // levels[3].trackGutIconCircleName = greenTrackGutCircle;
-          // levels[3].circleInsideImageColor = unlockGreenColor;
-          //
+          levels[3].trackGutIconCircleName = greenTrackGutCircle;
+          levels[3].circleInsideImageColor = unlockGreenColor;
+
         }
-        // else{
-        //   levels[3].stageColor = unlockYellowColor;
-        //   levels[3].lockImage = unlockYellowImage;
-        // }
+        else{
+          levels[3].stageColor = unlockYellowColor;
+          levels[3].lockImage = unlockYellowImage;
+        }
         levels[3].button1Color = newDashboardGreenButtonColor;
 
         levels[4].stageColor = unlockYellowColor;
@@ -1760,16 +2118,16 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
           levels[3].stageColor = unlockGreenColor;
           levels[3].lockImage = unlockGreenImage;
           levels[3].stageCircleImage = unlockGreenCircleImage;
-          // levels[3].trackGutIconCircleName = greenTrackGutCircle;
-          // levels[3].circleInsideImageColor = unlockGreenColor;
+          levels[3].trackGutIconCircleName = greenTrackGutCircle;
+          levels[3].circleInsideImageColor = unlockGreenColor;
 
         }
-        levels[3].button1Color = newDashboardGreenButtonColor;
 
-        // else{
-        //   levels[3].stageColor = unlockYellowColor;
-        //   levels[3].lockImage = unlockYellowImage;
-        // }
+        else{
+          levels[3].stageColor = unlockYellowColor;
+          levels[3].lockImage = unlockYellowImage;
+        }
+        levels[3].button1Color = newDashboardGreenButtonColor;
         levels[4].stageColor = unlockYellowColor;
         levels[4].lockImage = unlockYellowImage;
         levels[4].stageCircleImage = unlockYellowCircleImage;
@@ -1805,7 +2163,7 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
             builder: (context) =>
             (_prepratoryModel!.value!.isPrepCompleted!) ?
             PrepratoryMealCompletedScreen()
-                : PrepratoryPlanScreen(dayNumber: _prepratoryModel!.value!.currentDay!, totalDays: _prepratoryModel!.value!.prep_days ?? ''),
+                : PreparatoryPlanScreen(dayNumber: _prepratoryModel!.value!.currentDay!, totalDays: _prepratoryModel!.value!.prep_days ?? ''),
             // ProgramPlanScreen(from: ProgramMealType.prepratory.name,)
           ),
         ).then((value) => reloadUI());
@@ -1846,8 +2204,8 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
     print("func called");
     if(shippingStage == "shipping_delivered" && programOptionStage != null){
       // to slide to start the program
-      _pref!.setString(AppConfig().receipeVideoUrl, _getProgramModel!.value!.recipeVideo!);
-      _pref!.setString(AppConfig().trackerVideoUrl, _getProgramModel!.value!.tracker_video_url!);
+      if(_getProgramModel!.value!.recipeVideo != null) _pref!.setString(AppConfig().receipeVideoUrl, _getProgramModel!.value!.recipeVideo!);
+      if(_getProgramModel!.value!.tracker_video_url != null) _pref!.setString(AppConfig().trackerVideoUrl, _getProgramModel!.value!.tracker_video_url!);
       if(_getProgramModel!.value!.startProgram == '0'){
         Navigator.of(context).push(
           MaterialPageRoute(

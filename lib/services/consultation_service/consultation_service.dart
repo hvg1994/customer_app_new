@@ -1,8 +1,11 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
+import 'package:gwc_customer/utils/app_config.dart';
+import 'package:get/get.dart';
 
 import '../../repository/consultation_repository/get_slots_list_repository.dart';
+import '../../widgets/constants.dart';
 
 class ConsultationService extends ChangeNotifier{
   String _callEvent = "";
@@ -72,6 +75,13 @@ class ConsultationService extends ChangeNotifier{
         // ("type","onNetworkStatusChanged");
         print("event==>: $event");
         _callEvent = event['status'];
+        if(event['error'] != null){
+          Get.snackbar(event['status'], event['error'].toString(),
+            colorText: gWhiteColor,
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: gsecondaryColor.withOpacity(0.55),
+          );
+        }
         // if(event['type'].toString().contains(Constants.onNetworkChange)){
         //   _deviceNetworkStatus = event['status'];
         // }

@@ -238,30 +238,30 @@ class _FeedbackRatingScreenState extends State<FeedbackRatingScreen> {
     return Column(
       children: [
         Padding(
-          padding: EdgeInsets.only(left: 4.w, right: 4.w, top: 3.h),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // buildAppBar(() {
-              //   Navigator.pop(context);
-              // }),
-              Text('How would you rate your experience with our Program?',
-                style: TextStyle(
-                    fontFamily: "GothamRoundedBold_21016",
-                    color: gWhiteColor,
-                    height: 2,
-                    fontSize: 12.sp
+            padding: EdgeInsets.only(left: 4.w, right: 4.w, top: 3.h),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                buildAppBar(() {
+                  Navigator.pop(context);
+                }),
+                Text('How would you rate your experience with our Program?',
+                  style: TextStyle(
+                      fontFamily: "GothamRoundedBold_21016",
+                      color: gWhiteColor,
+                      height: 2,
+                      fontSize: 12.sp
+                  ),
                 ),
-              ),
-              SizedBox(
-                height: 2.h,
-              ),
-              buildRating(),
-              SizedBox(
-                height: 3.h,
-              ),
-            ],
-          )
+                SizedBox(
+                  height: 2.h,
+                ),
+                buildRating(),
+                SizedBox(
+                  height: 3.h,
+                ),
+              ],
+            )
         ),
         SizedBox(
           height: 2.h,
@@ -334,9 +334,9 @@ class _FeedbackRatingScreenState extends State<FeedbackRatingScreen> {
                         Icon(Icons.folder),
                         Text('Upload File',
                           style: TextStyle(
-                            fontFamily: 'GothamBold',
-                            decoration: TextDecoration.underline,
-                            color: gPrimaryColor
+                              fontFamily: 'GothamBold',
+                              decoration: TextDecoration.underline,
+                              color: gPrimaryColor
                           ),
                         )
                       ],

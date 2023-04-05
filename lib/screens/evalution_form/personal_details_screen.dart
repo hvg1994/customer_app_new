@@ -2371,7 +2371,8 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                   selectedHealthCheckBox1.clear();
                   healthCheckBox1[13].value = false;
                 });
-              } else if (selectedHealthCheckBox1
+              }
+              else if (selectedHealthCheckBox1
                   .contains(healthCheckBox1[12].title)) {
                 print("else if");
 
@@ -2385,7 +2386,8 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                   selectedHealthCheckBox1.add(healthCheckBox.title!);
                   healthCheckBox.value = v;
                 });
-              } else {
+              }
+              else {
                 setState(() {
                   selectedHealthCheckBox1.remove(healthCheckBox.title!);
                   healthCheckBox.value = v;
@@ -2412,7 +2414,8 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                   healthCheckBox.value = v;
                 }
               });
-            } else {
+            }
+            else {
               // print("else");
               if (v == true) {
                 // print("if");

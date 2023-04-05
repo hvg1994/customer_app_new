@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:sizer/sizer.dart';
-import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 import '../../widgets/constants.dart';
 

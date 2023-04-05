@@ -823,19 +823,11 @@ class ApiClient {
         final newHash = sha1.convert(utf8.encode(res.toString())).toString();
 
         print(inMemoryStorage.cache.containsKey(path));
-        if(inMemoryStorage.cache.containsKey(path)){
-          if(sha1.convert(utf8.encode(inMemoryStorage.get(path).toString())).toString() == newHash){
-            result = UserProfileModel.fromJson(inMemoryStorage.get(path));
-          }
-          else{
-            inMemoryStorage.set(path, res);
-            result = UserProfileModel.fromJson(res);
-          }
-        }
-        else{
-          inMemoryStorage.set(path, res);
-          result = UserProfileModel.fromJson(res);
-        }
+        result = UserProfileModel.fromJson(res);
+        _prefs?.setString(
+            AppConfig.User_Name, res['data']['name'] ?? '');
+        _prefs?.setString(AppConfig.User_Profile,res['data']['profile'] ?? '');
+        _prefs?.setString(AppConfig.User_Number,res['data']['phone'] ?? '');
       }
       else if(response.statusCode == 500){
         result = ErrorModel(status: "0", message: AppConfig.oopsMessage);
@@ -2225,8 +2217,10 @@ class ApiClient {
   Future getTransitionMealsApi() async{
     dynamic result;
 
+
     try{
       final response = await httpClient.get(Uri.parse(transitionMealUrl),
+      // final response = await httpClient.get(Uri.parse(prepratoryMealUrl),
           headers: {
             'Authorization': getHeaderToken(),
           }
@@ -2563,6 +2557,170 @@ class ApiClient {
     return result;
   }
 
+
+  Future submitMedicalFeedbackForm({
+    required String resolvedDigestiveIssue,
+    required String unresolvedDigestiveIssue,
+    required String mealPreferences,
+    required String hungerPattern,
+    required String bowelPattern,
+    required String lifestyleHabits,
+  }) async {
+    final String path = submitMedicalFeedbackFormUrl;
+
+    Map bodyParam = {
+      'resolved_digestive_issue': resolvedDigestiveIssue,
+      'unresolved_digestive_issue': unresolvedDigestiveIssue,
+      'meal_preferences': mealPreferences,
+      'hunger_pattern': hungerPattern,
+      'bowel_pattern': bowelPattern,
+      'lifestyle_habits': lifestyleHabits,
+    };
+
+    print("Medical Form Details : $bodyParam");
+    dynamic result;
+
+    try {
+      final response = await httpClient.post(
+        Uri.parse(path),
+        body: bodyParam,
+        headers: {
+          "Authorization": getHeaderToken(),
+        },
+      );
+
+      print('submitMedicalFeedbackForm Response header: $path');
+      print(
+          'submitMedicalFeedbackForm Response status: ${response.statusCode}');
+      print('submitMedicalFeedbackForm Response body: ${response.body}');
+
+      final json = jsonDecode(response.body);
+
+      if (response.statusCode != 200) {
+        result = ErrorModel.fromJson(json);
+      } else if (response.statusCode == 500) {
+        result = ErrorModel(status: "0", message: AppConfig.oopsMessage);
+      } else {
+        print('submitMedicalFeedbackForm result: $json');
+        if (json['status'].toString() == '201') {
+          result = RegisterResponse.fromJson(json);
+        } else {
+          result = ErrorModel.fromJson(json);
+        }
+      }
+    } catch (e) {
+      print("catch error: $e");
+      result = ErrorModel(status: "0", message: e.toString());
+    }
+    return result;
+  }
+
+  Future sumbitProgramFeedbackForm({
+    required int programStatus,
+    required String changesAfterProgram,
+    required String otherChangesAfterProgram,
+    required String didProgramHeal,
+    required String stickToPlan,
+    required String mealPlanEasyToFollow,
+    required String yogaPlanEasyToFollow,
+    required String commentsOnMealYogaPlans,
+    required String programPositiveHighlights,
+    required String programNegativeHighlights,
+    required String infusions,
+    required String soups,
+    required String porridges,
+    required String podi,
+    required String kheer,
+    required String kitItemsImproveSuggestions,
+    required String supportFromDoctors,
+    required String supportInWhatsappGroup,
+    required String homeRemediesDuringProgram,
+    required String improvementAndSuggestions,
+    required String programImproveHealthAnotherWay,
+    required String briefTestimonial,
+    required String referProgram,
+    required String membership,
+    required List<MultipartFile> faceToFeedback,
+    required String reasonOfProgramDiscontinue,
+  }) async {
+    final String path = submitProgramFeedbackFormUrl;
+
+    Map bodyParam = {
+      'program_status': programStatus.toString(),
+      // 'face_to_feedback': faceToFeedback,
+      'changes_after_program': changesAfterProgram,
+      'other_changes_after_program': otherChangesAfterProgram,
+      'did_program_heal': didProgramHeal,
+      'stick_to_plan': stickToPlan,
+      'meal_plan_easy_to_follow': mealPlanEasyToFollow,
+      'yoga_plan_easy_to_follow': yogaPlanEasyToFollow,
+      'comments_on_meal_yoga_plans': commentsOnMealYogaPlans,
+      'program_positive_heighlights': programPositiveHighlights,
+      'program_negative_heighlights': programNegativeHighlights,
+      'infusions': infusions,
+      'soups': soups,
+      'porridges': porridges,
+      'podi': podi,
+      'kheer': kheer,
+      'kit_items_improve_suggestions': kitItemsImproveSuggestions,
+      'support_from_doctors': supportFromDoctors,
+      'support_in_whatsapp_group': supportInWhatsappGroup,
+      'home_remedies_during_program': homeRemediesDuringProgram,
+      'improvement_and_suggestions': improvementAndSuggestions,
+      'program_improve_health_anotherway': programImproveHealthAnotherWay,
+      'brief_testimonial': briefTestimonial,
+      'refer_program': referProgram,
+      'membership': membership,
+      'reason_of_program_discontinue': reasonOfProgramDiscontinue,
+    };
+
+    print("Program Form Details : $bodyParam");
+    dynamic result;
+    print("Face To FaceBook : $faceToFeedback");
+
+    print(bodyParam);
+    var headers = {
+      // "Authorization": "Bearer ${AppConfig().bearerToken}",
+      "Authorization": getHeaderToken(),
+    };
+    try {
+      var request = http.MultipartRequest('POST', Uri.parse(path));
+
+      request.headers.addAll(headers);
+      request.fields.addAll(Map.from(bodyParam));
+
+      if (faceToFeedback.isNotEmpty) {
+        request.files.addAll(faceToFeedback);
+      }
+
+      var response = await http.Response.fromStream(await request.send())
+          .timeout(Duration(seconds: 50));
+
+      print('submitProgramFeedbackForm Response header: $path');
+      print(
+          'submitProgramFeedbackForm Response status: ${response.statusCode}');
+      print('submitProgramFeedbackForm Response body: ${response.body}');
+
+      final json = jsonDecode(response.body);
+
+      if (response.statusCode != 200) {
+        result = ErrorModel.fromJson(json);
+      } else if (response.statusCode == 500) {
+        result = ErrorModel(status: "0", message: AppConfig.oopsMessage);
+      } else {
+        print('submitProgramFeedbackForm result: $json');
+        if (json['status'].toString() == '201') {
+          result = RegisterResponse.fromJson(json);
+        } else {
+          result = ErrorModel.fromJson(json);
+        }
+      }
+    } catch (e) {
+      print("catch error: $e");
+      result = ErrorModel(status: "0", message: e.toString());
+    }
+    return result;
+  }
 
 
 

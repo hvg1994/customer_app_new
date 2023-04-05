@@ -10,6 +10,7 @@ typedef onStopRecordingCallback = void Function(String);
 class VlcPlayerWithControls extends StatefulWidget {
   final VlcPlayerController controller;
   final bool showControls;
+  final bool virtualDisplay;
   final bool showVideoProgress;
   final bool showVolume;
   final double? replayButtonSize;
@@ -28,7 +29,8 @@ class VlcPlayerWithControls extends StatefulWidget {
     this.playButtonIconSize,
     this.replayButtonSize,
     this.seekButtonIconSize,
-    this.showFullscreenBtn = true
+    this.showFullscreenBtn = true,
+    this.virtualDisplay = false
   })  : assert(controller != null, 'You must provide a vlc controller'),
         super(key: key);
 
@@ -304,7 +306,7 @@ class VlcPlayerWithControlsState extends State<VlcPlayerWithControls>
                 Center(
                   child: VlcPlayer(
                     controller: _controller,
-                    virtualDisplay: false,
+                    virtualDisplay: widget.virtualDisplay,
                     aspectRatio: 16 / 9,
                     placeholder: Center(child: CircularProgressIndicator()),
                   ),

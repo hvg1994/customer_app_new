@@ -1,10 +1,15 @@
 import 'dart:convert';
 import 'package:appinio_video_player/appinio_video_player.dart';
+import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:easy_scroll_to_index/easy_scroll_to_index.dart';
 import 'package:auto_orientation/auto_orientation.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_meedu_videoplayer/meedu_player.dart' as md;
+import 'package:flutter_meedu_videoplayer/meedu_player.dart';
+import 'package:flutter_vlc_player/flutter_vlc_player.dart';
 import 'package:grouped_list/grouped_list.dart';
 import 'package:gwc_customer/model/error_model.dart';
 import 'package:gwc_customer/model/program_model/proceed_model/send_proceed_program_model.dart';
@@ -19,6 +24,7 @@ import 'package:gwc_customer/screens/program_plans/day_tracker_ui/day_tracker.da
 import 'package:gwc_customer/screens/program_plans/program_start_screen.dart';
 import 'package:gwc_customer/services/post_program_service/post_program_service.dart';
 import 'package:gwc_customer/widgets/open_alert_box.dart';
+import 'package:gwc_customer/widgets/vlc_player/vlc_player_with_controls.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:readmore/readmore.dart';
@@ -33,6 +39,7 @@ import '../../services/program_service/program_service.dart';
 import '../../services/vlc_service/check_state.dart';
 import '../../utils/app_config.dart';
 import '../../widgets/constants.dart';
+import '../../widgets/mp3/mp3_widget.dart';
 import '../../widgets/pip_package.dart';
 import '../../widgets/widgets.dart';
 import 'day_program_plans.dart';
@@ -89,6 +96,81 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
   ];
 
   //****************  video player variables  *************
+
+  md.MeeduPlayerController _meeduPlayerController = md.MeeduPlayerController(
+    controlsStyle: md.ControlsStyle.secondary,
+    enabledButtons: const EnabledButtons(
+      playBackSpeed: false,
+      muteAndSound: false
+    ),
+  );
+
+
+  _init(String? url) {
+    // _meeduPlayerController.setDataSource(
+    //   md.DataSource(
+    //       type: md.DataSourceType.network,
+    //       source: Uri.parse(url!).toString()
+    //   ),
+    //   autoplay: true,
+    // );
+    _meeduPlayerController.launchAsFullscreen(context,
+      dataSource:  md.DataSource(
+        type: md.DataSourceType.network,
+        source: Uri.parse(url!).toString(),
+    ),
+      autoplay: true,);
+  }
+
+  VlcPlayerController? _controller;
+  final _key = GlobalKey<VlcPlayerWithControlsState>();
+
+  initVideoView(String? url) {
+    print("init url: $url");
+    _controller = VlcPlayerController.network(
+      // url ??
+      Uri.parse(
+        url!
+          // 'https://gwc.disol.in/storage/uploads/users/recipes/Calm Module - Functional (AR).mp4'
+      )
+          .toString(),
+      hwAcc: HwAcc.full,
+      options: VlcPlayerOptions(
+        advanced: VlcAdvancedOptions([
+          VlcAdvancedOptions.networkCaching(2000),
+        ]),
+        subtitle: VlcSubtitleOptions([
+          VlcSubtitleOptions.boldStyle(true),
+          VlcSubtitleOptions.fontSize(30),
+          VlcSubtitleOptions.outlineColor(VlcSubtitleColor.yellow),
+          VlcSubtitleOptions.outlineThickness(VlcSubtitleThickness.normal),
+          // works only on externally added subtitles
+          VlcSubtitleOptions.color(VlcSubtitleColor.navy),
+        ]),
+        http: VlcHttpOptions([
+          VlcHttpOptions.httpReconnect(true),
+        ]),
+        rtp: VlcRtpOptions([
+          VlcRtpOptions.rtpOverRtsp(true),
+        ]),
+      ),
+
+    );
+
+
+    print(
+        "_controller.isReadyToInitialize: ${_controller!.isReadyToInitialize}");
+    _controller!.addOnInitListener(() async {
+      await _controller!.startRendererScanning();
+    });
+    final _ori = MediaQuery.of(context).orientation;
+    print(_ori.name);
+    bool isPortrait = _ori == Orientation.portrait;
+    if(isPortrait){
+      AutoOrientation.landscapeAutoMode();
+    }
+  }
+
 
   // for video player
   VideoPlayerController? _mealVideoController, _trackerVideoController;
@@ -535,28 +617,29 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
         negativeButtonName: isSingleButton ? null : 'Go Back');
   }
 
-  initVideoView(String? url) {
-    print("init url: $url");
-
-    _mealVideoController = VideoPlayerController.network(Uri.parse(url!).toString());
-    _mealVideoController!.initialize().then((value) => setState(() {}));
-    _customVideoPlayerController = CustomVideoPlayerController(
-      context: context,
-      videoPlayerController: _mealVideoController!,
-      customVideoPlayerSettings: _customVideoPlayerSettings,
-    );
-    _mealVideoController!.play();
-    _mealVideoController!.addListener(() {
-      if(_mealVideoController!.value.isBuffering){
-        setState(() { });
-      }
-    });
-  }
+  // initVideoView(String? url) {
+  //   print("init url: $url");
+  //
+  //   _mealVideoController = VideoPlayerController.network(Uri.parse(url!).toString());
+  //   _mealVideoController!.initialize().then((value) => setState(() {}));
+  //   _customVideoPlayerController = CustomVideoPlayerController(
+  //     context: context,
+  //     videoPlayerController: _mealVideoController!,
+  //     customVideoPlayerSettings: _customVideoPlayerSettings,
+  //   );
+  //   _mealVideoController!.play();
+  //   _mealVideoController!.addListener(() {
+  //     if(_mealVideoController!.value.isBuffering){
+  //       setState(() { });
+  //     }
+  //   });
+  // }
 
   @override
   void dispose() async {
     super.dispose();
     commentController.dispose();
+    _meeduPlayerController.dispose();
 
     if(_mealVideoController != null)_mealVideoController!.dispose();
     if(_customVideoPlayerController != null)_customVideoPlayerController!.dispose();
@@ -1296,51 +1379,68 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
       pipWidget: isEnabled
           ? Consumer<CheckState>(
               builder: (_, model, __) {
-                print("model.isChanged: ${model.isChanged} $isEnabled");
-                // return VlcPlayerWithControls(
-                //   key: _key,
-                //   controller: _controller!,
-                //   showVolume: false,
-                //   showVideoProgress: !model.isChanged,
-                //   seekButtonIconSize: 10.sp,
-                //   playButtonIconSize: 14.sp,
-                //   replayButtonSize: 14.sp,
-                //   showFullscreenBtn: true,
-                // );
                 Wakelock.enable();
-                _customVideoPlayerSettings =
-                    CustomVideoPlayerSettings(
-                      controlBarAvailable: !model.isChanged,
-                      settingsButtonAvailable: false,
-                      playbackSpeedButtonAvailable: false,
-                      placeholderWidget: Container(child: Center(child: CircularProgressIndicator()),color: gBlackColor,),
-                    );
-                _customVideoPlayerController = CustomVideoPlayerController(
-                  context: context,
-                  videoPlayerController: _mealVideoController!,
-                  customVideoPlayerSettings: _customVideoPlayerSettings,
+                print("model.isChanged: ${model.isChanged} $isEnabled");
+                if(model.isChanged){
+                }
+                // return AspectRatio(
+                //   aspectRatio: 16 / 9,
+                //   child: md.MeeduVideoPlayer(
+                //     controller: _meeduPlayerController,
+                //   ),
+                // );
+
+                return VlcPlayerWithControls(
+                  key: _key,
+                  controller: _controller!,
+                  showVolume: false,
+                  showVideoProgress: !model.isChanged,
+                  seekButtonIconSize: 10.sp,
+                  playButtonIconSize: 14.sp,
+                  replayButtonSize: 14.sp,
+                  showFullscreenBtn: true,
                 );
-                print("isBuffered: ${_customVideoPlayerController!.videoPlayerController.value.isBuffering}");
-                return Container(child: Stack(
-                  children: [
-                    Center(child: CustomVideoPlayer(
-                      customVideoPlayerController: _customVideoPlayerController!,
-                    )),
-                    if(_customVideoPlayerController != null && _customVideoPlayerController!.videoPlayerController.value.isBuffering)Positioned(
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        top: 0,
-                        child: Center(
-                          child: SizedBox(
-                              width: 50,
-                              height: 50,
-                              child: CircularProgressIndicator()
-                          ),
-                        )
-                    ),
-                  ],
-                ),color: gBlackColor,);
+                // _customVideoPlayerSettings =
+                //     CustomVideoPlayerSettings(
+                //       controlBarAvailable: !model.isChanged,
+                //       settingsButtonAvailable: false,
+                //       playbackSpeedButtonAvailable: false,
+                //       placeholderWidget: Container(child: Center(child: CircularProgressIndicator()),color: gBlackColor,),
+                //     );
+                // _customVideoPlayerController = CustomVideoPlayerController(
+                //   context: context,
+                //   videoPlayerController: _mealVideoController!,
+                //   customVideoPlayerSettings: _customVideoPlayerSettings,
+                // );
+                // print("isBuffered: ${_customVideoPlayerController!.videoPlayerController.value.isBuffering}");
+                // return GestureDetector(
+                //   behavior: HitTestBehavior.deferToChild,
+                //   onTap: () {
+                //     print("pressing");
+                //   },
+                //   child: Container(child:
+                //   Stack(
+                //     children: [
+                //       Center(child: CustomVideoPlayer(
+                //         customVideoPlayerController: _customVideoPlayerController!,
+                //       )),
+                //       // if(_customVideoPlayerController != null && _customVideoPlayerController!.videoPlayerController.value.isBuffering)
+                //         Positioned(
+                //           left: 0,
+                //           right: 0,
+                //           bottom: 0,
+                //           top: 0,
+                //           child: Center(
+                //             child: SizedBox(
+                //                 width: 50,
+                //                 height: 50,
+                //                 child: CircularProgressIndicator()
+                //             ),
+                //           )
+                //       ),
+                //     ],
+                //   ),color: gBlackColor,),
+                // );
               },
             )
           //     ? FutureBuilder(
@@ -1378,6 +1478,9 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
         if( await Wakelock.enabled){
           Wakelock.disable();
         }
+        if(_meeduPlayerController != null){
+          _meeduPlayerController.dispose();
+        }
         if(_mealVideoController != null) {
           _mealVideoController!.dispose();
           _mealVideoController!.removeListener(() {});
@@ -1385,6 +1488,17 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
         if(_customVideoPlayerController != null)_customVideoPlayerController!.dispose();
 
 
+      },
+      onPip: () async{
+        setState(() {
+          isEnabled = true;
+        });
+        final _ori = MediaQuery.of(context).orientation;
+        print(_ori.name);
+        bool isPortrait = _ori == Orientation.portrait;
+        if(!isPortrait){
+          AutoOrientation.portraitUpMode();
+        }
       },
     );
   }
@@ -2656,29 +2770,45 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
       url = itemUrl;
     }
     print(url);
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (ctx) => MealPdf(
+    if(url.isNotEmpty){
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (ctx) => MealPdf(
                   pdfLink: url!,
                   mealVideoLink: widget.receipeVideoLink ?? '',
                   videoName: "Know more about Recipe",
                   heading: receipeName,
-              headCircleIcon: bsHeadBulbIcon,
-                isSheetCloseNeeded: true,
-                sheetCloseOnTap: (){
-                  Navigator.pop(context);
-                }
-                )));
+                  headCircleIcon: bsHeadBulbIcon,
+                  isSheetCloseNeeded: true,
+                  sheetCloseOnTap: (){
+                    Navigator.pop(context);
+                  }
+              )));
+    }
+    else{
+      AppConfig().showSnackbar(context, "Url Not Available", isError: true);
+    }
   }
 
-  showVideo(ChildMealPlanDetailsModel e) {
-    setState(() {
-      isEnabled = !isEnabled;
-      videoName = e.name!;
-      mealTime = e.mealTime!;
-    });
-    initVideoView(e.url);
+  showVideo(ChildMealPlanDetailsModel e) async {
+    if(e.url!.split('.').last == "mp4"){
+      setState(() {
+        isEnabled = !isEnabled;
+        videoName = e.name!;
+        mealTime = e.mealTime!;
+      });
+      initVideoView(e.url);
+    }
+    else{
+      print(e.url);
+
+      Navigator.push(context, MaterialPageRoute(builder: (ctx)=>
+          Mp3Widget(url: e.url ?? '')
+      ));
+
+    }
+    // _init(e.url);
     // Navigator.push(context, MaterialPageRoute(builder: (ctx)=> YogaVideoScreen(yogaDetails: e.toJson(),day: widget.day,)));
   }
 

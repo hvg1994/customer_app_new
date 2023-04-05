@@ -126,22 +126,27 @@ class _TransitionMealPlanScreenState extends State<TransitionMealPlanScreen> {
                             final String currentDayStatus = res.currentDayStatus.toString();
                             print("currentDayStatus top: ${currentDayStatus}");
                             final dataList = res.data ?? {};
+                            print("dataList: $dataList");
                             if(res.currentDay != null) currentDay = res.currentDay;
                             if(res.totalDays != null) totalDays = res.totalDays;
                             planNotePdfLink = res.note;
-                            if(res.previousDayStatus == "0"){
-                              Future.delayed(Duration(seconds: 0)).then((value) {
-                                return showSymptomsTrackerSheet(context, (int.parse(widget.dayNumber)-1).toString()).then((value) {
-                                  getTransitionMeals();
+                            if(!widget.viewDay1Details){
+                              if(res.previousDayStatus == "0"){
+                                Future.delayed(Duration(seconds: 0)).then((value) {
+                                  if(!symptomTrackerSheet){
+                                    return showSymptomsTrackerSheet(context, (int.parse(widget.dayNumber)-1).toString(), isPreviousDaySheet: true).then((value) {
+                                      getTransitionMeals();
+                                    });
+                                  }
                                 });
-                              });
+                              }
+                              if(res.isTransMealCompleted == "1" && (widget.postProgramStage == null || widget.postProgramStage!.isEmpty)){
+                                Future.delayed(Duration(seconds: 0)).then((value) {
+                                  return buildDayCompletedClap();
+                                });
+                              }
                             }
-                            if(res.isTransMealCompleted == "1" && (widget.postProgramStage == null || widget.postProgramStage!.isEmpty)){
-                              Future.delayed(Duration(seconds: 0)).then((value) {
-                                return buildDayCompletedClap();
-                              });
-                            }
-                              return customMealPlanTile(dataList, currentDayStatus);
+                              return customMealPlanTile({}, currentDayStatus);
 
                           }
                         }
@@ -547,50 +552,55 @@ class _TransitionMealPlanScreenState extends State<TransitionMealPlanScreen> {
       return SizedBox.shrink();
     }
   }
-  Future showSymptomsTrackerSheet(BuildContext context, String day) {
+  bool symptomTrackerSheet = false;
+  Future showSymptomsTrackerSheet(BuildContext context, String day, {bool isPreviousDaySheet = false}) {
+    symptomTrackerSheet = true;
     return AppConfig().showSheet(
         context,
         StatefulBuilder(
             builder: (_, setState){
-              return Column(
-                children:[
-                  videoMp4Widget(
-                      videoName: "Know more about Symptoms Tracker",
-                      onTap: (){
-                        addUrlToVideoPlayer("");
-                        setState(() {
-                          showMealVideo = true;
-                        });
-                      }),
-                  Stack(
-                    children: [
-                      TrackerUI(from: ProgramMealType.transition.name,
-                        proceedProgramDayModel: ProceedProgramDayModel(day: day),),
-                      Visibility(
-                        visible: showMealVideo,
-                        child: Positioned(
-                            child: Center(
-                                child: buildMealVideo(
-                                    onTap: () async{
-                                      setState(() {
-                                        showMealVideo = false;
-                                      });
-                                      if(await Wakelock.enabled == true){
-                                        Wakelock.disable();
-                                      }
-                                      if(_mealPlayerController != null) _mealPlayerController!.dispose();
-                                      if(_customVideoPlayerController != null)_customVideoPlayerController!.dispose();
+              return WillPopScope(
+                  child: Column(
+                    children:[
+                      videoMp4Widget(
+                          videoName: "Know more about Symptoms Tracker",
+                          onTap: (){
+                            addUrlToVideoPlayer("");
+                            setState(() {
+                              showMealVideo = true;
+                            });
+                          }),
+                      Stack(
+                        children: [
+                          TrackerUI(from: ProgramMealType.transition.name,
+                            proceedProgramDayModel: ProceedProgramDayModel(day: day),),
+                          Visibility(
+                            visible: showMealVideo,
+                            child: Positioned(
+                                child: Center(
+                                    child: buildMealVideo(
+                                        onTap: () async{
+                                          setState(() {
+                                            showMealVideo = false;
+                                          });
+                                          if(await Wakelock.enabled == true){
+                                            Wakelock.disable();
+                                          }
+                                          if(_mealPlayerController != null) _mealPlayerController!.dispose();
+                                          if(_customVideoPlayerController != null)_customVideoPlayerController!.dispose();
 
-                                      // await _mealPlayerController!.stopRendererScanning();
-                                      // await _mealPlayerController!.dispose();
-                                    }
+                                          // await _mealPlayerController!.stopRendererScanning();
+                                          // await _mealPlayerController!.dispose();
+                                        }
+                                    )
                                 )
-                            )
-                        ),
+                            ),
+                          )
+                        ],
                       )
                     ],
-                  )
-                ],
+                  ),
+                  onWillPop: () => isPreviousDaySheet ? Future.value(false) : Future.value(false)
               );
             }
         ),

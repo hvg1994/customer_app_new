@@ -142,7 +142,7 @@ class _TestimonialListScreenState extends State<TestimonialListScreen> {
                       print("feedbackList[index].file: ${feedbackList[index].file.runtimeType}");
                       return showCardViews(
                         userProfile: feedbackList[index].addedBy?.profile ?? '',
-                          feedbackTime: DateFormat('yyyy/MM/dd, hh:mm a').format(DateTime.parse(feedbackList[index].addedBy?.createdAt ?? '').toLocal()),
+                          feedbackTime: DateFormat('dd MMM yyyy , hh:mm a').format(DateTime.parse(feedbackList[index].addedBy?.createdAt ?? '').toLocal()),
                           feedbackUser: feedbackList[index].addedBy?.name ?? '',
                           feedback: feedbackList[index].feedback,
                           imagePath: (feedbackList[index].file == null) ? null : feedbackList[index].file?.first
@@ -239,6 +239,7 @@ class _TestimonialListScreenState extends State<TestimonialListScreen> {
               ),
             ),
           ),
+        SizedBox(height: 1.h,),
         if (format == "mp4") buildTestimonial(),
           Visibility(
             visible: imagePath != null && format != "mp4",
@@ -252,7 +253,7 @@ class _TestimonialListScreenState extends State<TestimonialListScreen> {
                     image: CachedNetworkImageProvider(
                       imagePath ?? '',
                       errorListener: (){
-                        Image.asset('assets/images/top-view-indian-food-assortment.png');
+                        Image.asset('assets/images/placeholder.png');
                       },
                       // placeholder: (_, __){
                       //   return Image.asset('assets/images/top-view-indian-food-assortment.png');

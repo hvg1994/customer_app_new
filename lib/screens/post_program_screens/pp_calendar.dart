@@ -31,19 +31,19 @@ class _PPCalendarState extends State<PPCalendar> {
   String selectedSummary = "";
 
   static const Widget _eventIcon = Image(
-    image: AssetImage("assets/images/Group 11526.png"),
+    image: AssetImage("assets/images/gmg/Group 11526.png"),
   );
   static const Widget sadIcon = Image(
-    image: AssetImage("assets/images/Group 11527.png"),
+    image: AssetImage("assets/images/gmg/Group 11527.png"),
   );
   static const Widget notCompletedIcon = Image(
-    image: AssetImage("assets/images/Group 11528.png"),
+    image: AssetImage("assets/images/gmg/Group 11528.png"),
   );
   static const Widget skippedIcon = Image(
-    image: AssetImage("assets/images/Group 11552.png"),
+    image: AssetImage("assets/images/gmg/Group 11552.png"),
   );
   static const Widget missedIcon = Image(
-    image: AssetImage("assets/images/Group 11552.png"),
+    image: AssetImage("assets/images/gmg/Group 11552.png"),
   );
 
   List<ProtocolCalendar> calendarEvents = [];
@@ -479,7 +479,7 @@ class _PPCalendarState extends State<PPCalendar> {
             Row(
               children: [
                 Image(
-                  image: const AssetImage("assets/images/Group 11526.png"),
+                  image: const AssetImage("assets/images/gmg/Group 11526.png"),
                   height: 2.5.h,
                 ),
                 SizedBox(width: 2.w),
@@ -492,7 +492,7 @@ class _PPCalendarState extends State<PPCalendar> {
                 ),
                 SizedBox(width: 5.w),
                 Image(
-                  image: const AssetImage("assets/images/Group 11528.png"),
+                  image: const AssetImage("assets/images/gmg/Group 11528.png"),
                   height: 2.5.h,
                 ),
                 SizedBox(width: 2.w),

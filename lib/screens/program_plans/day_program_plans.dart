@@ -19,7 +19,6 @@
 // import '../../utils/app_config.dart';
 // import '../../widgets/constants.dart';
 // import '../../widgets/widgets.dart';
-// import 'days_plan_data.dart';
 // import 'meal_plan_screen.dart';
 // import 'package:http/http.dart' as http;
 //
