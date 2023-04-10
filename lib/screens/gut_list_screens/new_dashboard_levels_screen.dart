@@ -49,8 +49,6 @@ import '../profile_screens/call_support_method.dart';
 import 'package:http/http.dart' as http;
 import '../../repository/api_service.dart';
 
-
-
 class NewDashboardLevelsScreen extends StatefulWidget {
   const NewDashboardLevelsScreen({Key? key}) : super(key: key);
 
@@ -62,102 +60,103 @@ class NewDashboardLevelsScreen extends StatefulWidget {
 class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
   final _pref = AppConfig().preferences;
 
-  String unlockGreenImage = "assets/images/dashboard_stages/noun-unlock-4202358.png";
-  String unlockYellowImage = "assets/images/dashboard_stages/noun-unlock-4202358 (2).png";
+  String unlockGreenImage =
+      "assets/images/dashboard_stages/noun-unlock-4202358.png";
+  String unlockYellowImage =
+      "assets/images/dashboard_stages/noun-unlock-4202358 (2).png";
   String lockImage = "assets/images/dashboard_stages/Locked.png";
 
   late Color unlockGreenColor = newDashboardGreenButtonColor;
   late Color unlockYellowColor = gMainColor;
   late Color lockColor = newDashboardLightGreyButtonColor;
 
-  String unlockGreenCircleImage = "assets/images/dashboard_stages/Group 43551.png";
-  String unlockYellowCircleImage = "assets/images/dashboard_stages/Group 43552.png";
+  String unlockGreenCircleImage =
+      "assets/images/dashboard_stages/Group 43551.png";
+  String unlockYellowCircleImage =
+      "assets/images/dashboard_stages/Group 43552.png";
   String lockCircleImage = "assets/images/dashboard_stages/Group 43553.png";
 
   String greenTrackGutCircle = "assets/images/dashboard_stages/Group 62696.png";
-  String yellowTrackGutCircle = "assets/images/dashboard_stages/Group 62697.png";
+  String yellowTrackGutCircle =
+      "assets/images/dashboard_stages/Group 62697.png";
   String greyTrackGutCircle = "assets/images/dashboard_stages/Group 62698.png";
-
-
 
   List<NewStageLevels> levels = [
     NewStageLevels(
-      "assets/images/dashboard_stages/Group 43551.png",
-      "assets/images/dashboard_stages/noun-evaluation-2234438.png",
-      "Disorder Evaluation",
-      'assets/images/dashboard_stages/noun-unlock-4202358.png',
-      "A Critical information needed by our doctors to understand "
-          "your Medical history, Symptoms, Sleep, Diet & Lifestyle for "
-          "proper diagnosis! This evaluation by itself indicates the "
-          "direction of our diagnosis. So please spend quality time to complete your evaluation",
-      newDashboardGreenButtonColor,
-      false,
-      "View Files",
-      newDashboardGreenButtonColor,
-      "",
+        "assets/images/dashboard_stages/Group 43551.png",
+        "assets/images/dashboard_stages/noun-evaluation-2234438.png",
+        "Disorder Evaluation",
+        'assets/images/dashboard_stages/noun-unlock-4202358.png',
+        "A Critical information needed by our doctors to understand "
+            "your Medical history, Symptoms, Sleep, Diet & Lifestyle for "
+            "proper diagnosis! This evaluation by itself indicates the "
+            "direction of our diagnosis. So please spend quality time to complete your evaluation",
+        newDashboardGreenButtonColor,
+        false,
+        "View Files",
+        newDashboardGreenButtonColor,
+        "",
         newDashboardLightGreyButtonColor,
-      StageType.evaluation
-    ),
+        StageType.evaluation),
     NewStageLevels(
-      "assets/images/dashboard_stages/Group 43552.png",
-      "assets/images/dashboard_stages/noun-appointment-3843032.png",
-      "Medical Consultation",
-      'assets/images/dashboard_stages/Locked.png',
-      "Basis your Evaluation details, a video consultation is the next "
-          "step for our doctors to diagnose the root cause of you Gut Issues. "
-          "Post the consult your, MR (medical report) is uploaded & "
-          "customized Meal Plan is loaded in your account & your Product Kit is despatched",
-      gMainColor,
-      true,
-      "Schedule",
+        "assets/images/dashboard_stages/Group 43552.png",
+        "assets/images/dashboard_stages/noun-appointment-3843032.png",
+        "Medical Consultation",
+        'assets/images/dashboard_stages/Locked.png',
+        "Basis your Evaluation details, a video consultation is the next "
+            "step for our doctors to diagnose the root cause of you Gut Issues. "
+            "Post the consult your, MR (medical report) is uploaded & "
+            "customized Meal Plan is loaded in your account & your Product Kit is despatched",
+        gMainColor,
+        true,
+        "Schedule",
         newDashboardLightGreyButtonColor,
         "Join Consult",
         newDashboardLightGreyButtonColor,
-        StageType.med_consultation
-    ),
+        StageType.med_consultation),
     NewStageLevels(
-      "assets/images/dashboard_stages/Group 43553.png",
-      "assets/images/dashboard_stages/Group 43333.png",
-      "Begin Gut Preparation",
-      'assets/images/dashboard_stages/Locked.png',
-      "A Critical information needed by our doctors to understand "
-          "your Medical history, Symptoms, Sleep, Diet & Lifestyle for "
-          "proper diagnosis! This evaluation by itself indicates the direction of our diagnosis. "
-          "So please spend quality time to complete your evolution",
-      newDashboardLightGreyButtonColor,
-      false,
-      "View Plan",
+        "assets/images/dashboard_stages/Group 43553.png",
+        "assets/images/dashboard_stages/Group 43333.png",
+        "Begin Gut Preparation",
+        'assets/images/dashboard_stages/Locked.png',
+        "A Critical information needed by our doctors to understand "
+            "your Medical history, Symptoms, Sleep, Diet & Lifestyle for "
+            "proper diagnosis! This evaluation by itself indicates the direction of our diagnosis. "
+            "So please spend quality time to complete your evolution",
+        newDashboardLightGreyButtonColor,
+        false,
+        "View Plan",
         newDashboardLightGreyButtonColor,
         "",
         newDashboardLightGreyButtonColor,
         StageType.prep_meal,
-      showTrackGutIcon: true,
-      trackGutIconCircleName: "assets/images/dashboard_stages/Group 62698.png",
-      trackGutIconName: "assets/images/dashboard_stages/Group 43340.png",
-        trackGutIconColor: newDashboardLightGreyButtonColor
-    ),
+        showTrackGutIcon: true,
+        trackGutIconCircleName:
+            "assets/images/dashboard_stages/Group 62698.png",
+        trackGutIconName: "assets/images/dashboard_stages/Group 43340.png",
+        trackGutIconColor: newDashboardLightGreyButtonColor),
     NewStageLevels(
-      "assets/images/dashboard_stages/Group 43553.png",
-      "assets/images/dashboard_stages/noun-diet-3479279.png",
-      "Gut Reset Program Start",
-      'assets/images/dashboard_stages/Locked.png',
-      "While you wait for your customised Product Kit arrive to be "
-          "used during the Reset phase of the program, You will be give "
-          "a preparatory meal protocol based on your food type "
-          "This meal protocol immediately start enhancing you digestive "
-          "juices and improving your gut motility",
+        "assets/images/dashboard_stages/Group 43553.png",
+        "assets/images/dashboard_stages/noun-diet-3479279.png",
+        "Gut Reset Program Start",
+        'assets/images/dashboard_stages/Locked.png',
+        "While you wait for your customised Product Kit arrive to be "
+            "used during the Reset phase of the program, You will be give "
+            "a preparatory meal protocol based on your food type "
+            "This meal protocol immediately start enhancing you digestive "
+            "juices and improving your gut motility",
         newDashboardLightGreyButtonColor,
-      true,
-      "View Plan",
-      newDashboardLightGreyButtonColor,
+        true,
+        "View Plan",
+        newDashboardLightGreyButtonColor,
         'Transition',
         newDashboardLightGreyButtonColor,
         StageType.normal_meal,
         showTrackGutIcon: true,
-        trackGutIconCircleName: "assets/images/dashboard_stages/Group 62698.png",
+        trackGutIconCircleName:
+            "assets/images/dashboard_stages/Group 62698.png",
         trackGutIconName: "assets/images/dashboard_stages/remedy.png",
-        trackGutIconColor: newDashboardLightGreyButtonColor
-    ),
+        trackGutIconColor: newDashboardLightGreyButtonColor),
     NewStageLevels(
       "assets/images/dashboard_stages/Group 43553.png",
       "assets/images/dashboard_stages/noun-online-doctor-4378422.png",
@@ -169,25 +168,31 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
       newDashboardLightGreyButtonColor,
       true,
       "Schedule",
-        newDashboardLightGreyButtonColor,
+      newDashboardLightGreyButtonColor,
       "Join Consult",
-        newDashboardLightGreyButtonColor,
-        StageType.post_consultation,
+      newDashboardLightGreyButtonColor,
+      StageType.post_consultation,
     ),
   ];
 
   /// THIS IS FOR ABC DIALOG MEAL PLAN
   bool isMealProgressOpened = false;
+
   /// THIS IS FOR ABC DIALOG MEAL PLAN
   bool isShown = false;
 
-
   bool isProgressDialogOpened = true;
 
-  String? consultationStage, shippingStage, programOptionStage, postProgramStage, transStage, prepratoryMealStage;
+  String? consultationStage,
+      shippingStage,
+      programOptionStage,
+      postProgramStage,
+      transStage,
+      prepratoryMealStage;
 
   /// this is used when data=appointment_booked status
-  GetAppointmentDetailsModel? _getAppointmentDetailsModel, _postConsultationAppointment;
+  GetAppointmentDetailsModel? _getAppointmentDetailsModel,
+      _postConsultationAppointment;
 
   /// ths is used when data = shipping_approved status
   ShippingApprovedModel? _shippingApprovedModel;
@@ -197,7 +202,12 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
   GetPrePostMealModel? _prepratoryModel, _transModel;
 
   /// for other status we use this one(except shipping_approved & appointment_booked)
-  GutDataModel? _gutDataModel, _gutShipDataModel, _gutProgramModel, _gutPostProgramModel, _prepProgramModel, _transMealModel;
+  GutDataModel? _gutDataModel,
+      _gutShipDataModel,
+      _gutProgramModel,
+      _gutPostProgramModel,
+      _prepProgramModel,
+      _transMealModel;
 
   late GutDataService _gutDataService;
 
@@ -207,7 +217,6 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
   VlcPlayerController? _aboutHomeStageController;
   final _aboutHomeStageKey = GlobalKey<VlcPlayerWithControlsState>();
 
-
   @override
   void initState() {
     // TODO: implement initState
@@ -216,34 +225,35 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
 
     getUserProfile();
 
-    if(_pref!.getString(AppConfig().shipRocketBearer) == null || _pref!.getString(AppConfig().shipRocketBearer)!.isEmpty){
+    if (_pref!.getString(AppConfig().shipRocketBearer) == null ||
+        _pref!.getString(AppConfig().shipRocketBearer)!.isEmpty) {
       getShipRocketToken();
-    }
-    else{
+    } else {
       String token = _pref!.getString(AppConfig().shipRocketBearer)!;
       Map<String, dynamic> payload = Jwt.parseJwt(token);
       print('shiprocketToken : $payload');
       var date = DateTime.fromMillisecondsSinceEpoch(payload['exp'] * 1000);
-      if(!DateTime.now().difference(date).isNegative){
+      if (!DateTime.now().difference(date).isNegative) {
         getShipRocketToken();
       }
     }
 
     getData();
-
   }
 
-  void getShipRocketToken() async{
+  void getShipRocketToken() async {
     print("getShipRocketToken called");
-    ShipTrackService _shipTrackService = ShipTrackService(repository: shipTrackRepository);
-    final getToken = await _shipTrackService.getShipRocketTokenService(AppConfig().shipRocketEmail, AppConfig().shipRocketPassword);
+    ShipTrackService _shipTrackService =
+        ShipTrackService(repository: shipTrackRepository);
+    final getToken = await _shipTrackService.getShipRocketTokenService(
+        AppConfig().shipRocketEmail, AppConfig().shipRocketPassword);
     print(getToken);
   }
 
   @override
   void setState(VoidCallback fn) {
     // TODO: implement setState
-    if(mounted){
+    if (mounted) {
       super.setState(fn);
     }
   }
@@ -262,12 +272,13 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
                 slivers: [
                   SliverFillRemaining(
                     child: Padding(
-                      padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 5.w),
+                      padding:
+                          EdgeInsets.symmetric(vertical: 1.h, horizontal: 5.w),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           buildAppBar(
-                                () {
+                            () {
                               Navigator.pop(context);
                             },
                             isBackEnable: false,
@@ -276,12 +287,15 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (_) => const NotificationScreen()));
+                                      builder: (_) =>
+                                          const NotificationScreen()));
                             },
                             showHelpIcon: true,
                             helpOnTap: () {
-                              Navigator.push(context,
-                                  MaterialPageRoute(builder: (_) => HelpScreen()));
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (_) => HelpScreen()));
                             },
                             showSupportIcon: true,
                             supportOnTap: () {
@@ -329,7 +343,8 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (_) => const NewScheduleScreen()));
+                                          builder: (_) =>
+                                              const NewScheduleScreen()));
                                 },
                                 child: Row(
                                   children: [
@@ -358,12 +373,14 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
                           ),
                           Expanded(
                             child: Center(
-                              child: (isProgressDialogOpened) ?
-                              Shimmer.fromColors(
-                                baseColor: Colors.grey.withOpacity(0.3),
-                                highlightColor: Colors.grey.withOpacity(0.7),
-                                child: view(),
-                              ) : view(),
+                              child: (isProgressDialogOpened)
+                                  ? Shimmer.fromColors(
+                                      baseColor: Colors.grey.withOpacity(0.3),
+                                      highlightColor:
+                                          Colors.grey.withOpacity(0.7),
+                                      child: view(),
+                                    )
+                                  : view(),
                             ),
                           ),
                         ],
@@ -497,7 +514,7 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
     });
   }
 
-  showMoreTextSheet(String text){
+  showMoreTextSheet(String text) {
     return AppConfig().showSheet(
         context,
         Column(
@@ -635,16 +652,16 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
                             levels[index].buttonTitle,
                             levels[index].button1Color,
                             levels[index].button2Title,
-                              levels[index].button2Color,
+                            levels[index].button2Color,
                             levels[index].type,
                             showTrackGutIcon: levels[index].showTrackGutIcon,
                             trackGutIconName: levels[index].trackGutIconName,
-                            trackGutIconCircleName:levels[index].trackGutIconCircleName,
+                            trackGutIconCircleName:
+                                levels[index].trackGutIconCircleName,
                             trackGutIconColor: levels[index].trackGutIconColor,
-                            circleInsideStageImageColor: levels[index].circleInsideImageColor,
-
+                            circleInsideStageImageColor:
+                                levels[index].circleInsideImageColor,
                           ),
-
                         ],
                       );
                     }),
@@ -676,22 +693,22 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
 
   bool isSendApproveStatus = false;
   bool isPressed = false;
-  sendApproveStatus(String status, {bool fromNull = false}) async{
-    if(!isSendApproveStatus){
+  sendApproveStatus(String status, {bool fromNull = false}) async {
+    if (!isSendApproveStatus) {
       setState(() {
         isSendApproveStatus = true;
         isPressed = true;
       });
       print("isPressed: $isPressed");
-      final res = await ShipTrackService(repository: shipTrackRepository).sendSippingApproveStatusService(status);
+      final res = await ShipTrackService(repository: shipTrackRepository)
+          .sendSippingApproveStatusService(status);
 
-      if(res.runtimeType == ShippingApproveModel){
+      if (res.runtimeType == ShippingApproveModel) {
         ShippingApproveModel model = res as ShippingApproveModel;
         print('success: ${model.message}');
         AppConfig().showSnackbar(context, model.message!);
         getData();
-      }
-      else{
+      } else {
         ErrorModel model = res as ErrorModel;
         print('error: ${model.message}');
         AppConfig().showSnackbar(context, model.message!);
@@ -713,10 +730,10 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
       httpClient: http.Client(),
     ),
   );
-  abc(){
+  abc() {
     Future.delayed(Duration(seconds: 0)).whenComplete(() {
-      if(shippingStage == 'meal_plan_completed'){
-        if(!isShown){
+      if (shippingStage == 'meal_plan_completed') {
+        if (!isShown) {
           setState(() {
             isShown = true;
           });
@@ -726,8 +743,8 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
     });
   }
 
-  addUrlToVideoWhenAboutClick(String url) async{
-    print("url"+ url);
+  addUrlToVideoWhenAboutClick(String url) async {
+    print("url" + url);
     _aboutHomeStageController = VlcPlayerController.network(
       Uri.parse(url).toString(),
       // url,
@@ -755,34 +772,35 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
         ]),
       ),
     );
-    if( !await Wakelock.enabled){
+    if (!await Wakelock.enabled) {
       Wakelock.enable();
     }
   }
 
-  whenAboutClickSheet(){
-    return AppConfig().showSheet(context,
+  whenAboutClickSheet() {
+    return AppConfig().showSheet(
+        context,
         Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          child: whenAboutClickVideo(),
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: whenAboutClickVideo(),
+            ),
+            SizedBox(
+              height: 5.h,
+            ),
+          ],
         ),
-        SizedBox(height: 5.h,),
-      ],
-    ), bottomSheetHeight: 65.h,
-      sheetCloseOnTap: (){
+        bottomSheetHeight: 65.h, sheetCloseOnTap: () {
       Navigator.pop(context);
       disposePlayer();
-      },
-      isSheetCloseNeeded: true
-    );
+    }, isSheetCloseNeeded: true);
   }
 
   whenAboutClickVideo() {
-    if(_aboutHomeStageController != null){
+    if (_aboutHomeStageController != null) {
       return AspectRatio(
-        aspectRatio: 16/9,
+        aspectRatio: 16 / 9,
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(5),
@@ -817,17 +835,15 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
           ),
         ),
       );
-    }
-    else {
+    } else {
       return SizedBox.shrink();
     }
   }
 
-
-
-  addUrlToVideoPlayer(String url) async{
-    print("url"+ url);
-    _mealPlayerController = VlcPlayerController.network(url,
+  addUrlToVideoPlayer(String url) async {
+    print("url" + url);
+    _mealPlayerController = VlcPlayerController.network(
+      url,
       // url,
       // 'http://samples.mplayerhq.hu/MPEG-4/embedded_subs/1Video_2Audio_2SUBs_timed_text_streams_.mp4',
       // 'https://media.w3.org/2010/05/sintel/trailer.mp4',
@@ -853,138 +869,152 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
         ]),
       ),
     );
-    if( !await Wakelock.enabled){
+    if (!await Wakelock.enabled) {
       Wakelock.enable();
     }
   }
 
-  disposePlayer() async{
-    if(_mealPlayerController != null){
+  disposePlayer() async {
+    if (_mealPlayerController != null) {
       _mealPlayerController!.dispose();
     }
-    if(_aboutHomeStageController != null){
+    if (_aboutHomeStageController != null) {
       _aboutHomeStageController!.dispose();
     }
-    if(await Wakelock.enabled){
+    if (await Wakelock.enabled) {
       Wakelock.disable();
     }
   }
 
-  mealReadySheet(){
+  mealReadySheet() {
     addUrlToVideoPlayer(_gutShipDataModel?.value ?? '');
-    return AppConfig().showSheet(context, Column(
-      children: [
-        Text('Hooray!\nYour food prescription is ready',
-          textAlign: TextAlign.center,
-          style: TextStyle(
-              height: 1.4,
-              fontSize: bottomSheetSubHeadingXLFontSize,
-              fontFamily: bottomSheetSubHeadingBoldFont,
-              color: gTextColor
-          ),),
-        // need ot show Video
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          child: buildMealVideo(),
-        ),
-        // Padding(
-        //   padding: const EdgeInsets.symmetric(vertical: 8),
-        //   child: Image.asset('assets/images/meal_popup.png',
-        //     fit: BoxFit.scaleDown,
-        //     width: 60.w,
-        //     filterQuality: FilterQuality.high,
-        //   ),
-        // ),
-        Text("You've Unlocked The Next Step!",
-          textAlign: TextAlign.center,
-          style: TextStyle(
-              height: 1.2,
-              fontSize: bottomSheetSubHeadingXLFontSize,
-              fontFamily: bottomSheetSubHeadingMediumFont,
-              color: gTextColor
-          ),),
-        Text("The Product Kit Is Ready. Shall We Ship It For You?",
-          textAlign: TextAlign.center,
-          style: TextStyle(
-              height: 1.2,
-              fontSize: bottomSheetSubHeadingXLFontSize,
-              fontFamily: bottomSheetSubHeadingBookFont,
-              color: gTextColor
-          ),),
-        SizedBox(height: 5.h,),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+    return AppConfig().showSheet(
+        context,
+        Column(
           children: [
-            GestureDetector(
-              onTap: (isPressed) ? (){} : () {
-                Navigator.pop(context);
-                sendApproveStatus('yes');
-                setState(() {
-                  isShown = false;
-                });
-                disposePlayer();
-                if(isMealProgressOpened){
-                  Navigator.pop(context);
-                }
-              },
-              child: Container(
-                padding: EdgeInsets.symmetric(
-                    vertical: 1.5.h, horizontal: 12.w),
-                decoration: BoxDecoration(
-                    color: gsecondaryColor,
-                    border: Border.all(color: kLineColor, width: 0.5),
-                    borderRadius: BorderRadius.circular(5)),
-                child: Text(
-                  "YES",
-                  style: TextStyle(
-                    fontFamily: kFontMedium,
-                    color: gWhiteColor,
-                    fontSize: 11.sp,
-                  ),
-                ),
-              ),
+            Text(
+              'Hooray!\nYour food prescription is ready',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  height: 1.4,
+                  fontSize: bottomSheetSubHeadingXLFontSize,
+                  fontFamily: bottomSheetSubHeadingBoldFont,
+                  color: gTextColor),
             ),
-            SizedBox(width: 5.w),
-            GestureDetector(
-              onTap: (isPressed) ? (){} : () {
-                Navigator.pop(context);
-                sendApproveStatus('no');
-                setState(() {
-                  isShown = false;
-                });
-                disposePlayer();
-                if(isMealProgressOpened){
-                  Navigator.pop(context);
-                }
-              },
-              child: Container(
-                padding: EdgeInsets.symmetric(
-                    vertical: 1.5.h, horizontal: 12.w),
-                decoration: BoxDecoration(
-                    color: gWhiteColor,
-                    border: Border.all(color: kLineColor, width: 0.5),
-                    borderRadius: BorderRadius.circular(5)),
-                child: Text(
-                  "NO",
-                  style: TextStyle(
-                    fontFamily: kFontMedium,
-                    color: gsecondaryColor,
-                    fontSize: 11.sp,
+            // need ot show Video
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: buildMealVideo(),
+            ),
+            // Padding(
+            //   padding: const EdgeInsets.symmetric(vertical: 8),
+            //   child: Image.asset('assets/images/meal_popup.png',
+            //     fit: BoxFit.scaleDown,
+            //     width: 60.w,
+            //     filterQuality: FilterQuality.high,
+            //   ),
+            // ),
+            Text(
+              "You've Unlocked The Next Step!",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  height: 1.2,
+                  fontSize: bottomSheetSubHeadingXLFontSize,
+                  fontFamily: bottomSheetSubHeadingMediumFont,
+                  color: gTextColor),
+            ),
+            Text(
+              "The Product Kit Is Ready. Shall We Ship It For You?",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  height: 1.2,
+                  fontSize: bottomSheetSubHeadingXLFontSize,
+                  fontFamily: bottomSheetSubHeadingBookFont,
+                  color: gTextColor),
+            ),
+            SizedBox(
+              height: 5.h,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                GestureDetector(
+                  onTap: (isPressed)
+                      ? () {}
+                      : () {
+                          Navigator.pop(context);
+                          sendApproveStatus('yes');
+                          setState(() {
+                            isShown = false;
+                          });
+                          disposePlayer();
+                          if (isMealProgressOpened) {
+                            Navigator.pop(context);
+                          }
+                        },
+                  child: Container(
+                    padding:
+                        EdgeInsets.symmetric(vertical: 1.5.h, horizontal: 12.w),
+                    decoration: BoxDecoration(
+                        color: gsecondaryColor,
+                        border: Border.all(color: kLineColor, width: 0.5),
+                        borderRadius: BorderRadius.circular(5)),
+                    child: Text(
+                      "YES",
+                      style: TextStyle(
+                        fontFamily: kFontMedium,
+                        color: gWhiteColor,
+                        fontSize: 11.sp,
+                      ),
+                    ),
                   ),
                 ),
-              ),
+                SizedBox(width: 5.w),
+                GestureDetector(
+                  onTap: (isPressed)
+                      ? () {}
+                      : () {
+                          Navigator.pop(context);
+                          sendApproveStatus('no');
+                          setState(() {
+                            isShown = false;
+                          });
+                          disposePlayer();
+                          if (isMealProgressOpened) {
+                            Navigator.pop(context);
+                          }
+                        },
+                  child: Container(
+                    padding:
+                        EdgeInsets.symmetric(vertical: 1.5.h, horizontal: 12.w),
+                    decoration: BoxDecoration(
+                        color: gWhiteColor,
+                        border: Border.all(color: kLineColor, width: 0.5),
+                        borderRadius: BorderRadius.circular(5)),
+                    child: Text(
+                      "NO",
+                      style: TextStyle(
+                        fontFamily: kFontMedium,
+                        color: gsecondaryColor,
+                        fontSize: 11.sp,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 5.h,
             ),
           ],
         ),
-        SizedBox(height: 5.h,),
-      ],
-    ), bottomSheetHeight: 75.h);
+        bottomSheetHeight: 75.h);
   }
 
   buildMealVideo() {
-    if(_mealPlayerController != null){
+    if (_mealPlayerController != null) {
       return AspectRatio(
-        aspectRatio: 16/9,
+        aspectRatio: 16 / 9,
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(5),
@@ -1035,31 +1065,33 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
           // ),
         ),
       );
-    }
-    else {
+    } else {
       return SizedBox.shrink();
     }
   }
 
-
-  getUserProfile() async{
+  getUserProfile() async {
     // print("user id: ${_pref!.getInt(AppConfig.KALEYRA_USER_ID)}");
 
-    if(_pref!.getString(AppConfig.User_Name) != null || _pref!.getString(AppConfig.User_Name)!.isNotEmpty){
-      final profile = await UserProfileService(repository: userRepository).getUserProfileService();
-      if(profile.runtimeType == UserProfileModel){
+    if (_pref!.getString(AppConfig.User_Name) != null ||
+        _pref!.getString(AppConfig.User_Name)!.isNotEmpty) {
+      final profile = await UserProfileService(repository: userRepository)
+          .getUserProfileService();
+      if (profile.runtimeType == UserProfileModel) {
         UserProfileModel model1 = profile as UserProfileModel;
-        _pref!.setString(AppConfig.User_Name, model1.data?.name ?? model1.data?.fname ?? '');
+        _pref!.setString(
+            AppConfig.User_Name, model1.data?.name ?? model1.data?.fname ?? '');
         _pref!.setInt(AppConfig.USER_ID, model1.data?.id ?? -1);
         _pref!.setString(AppConfig.QB_USERNAME, model1.data!.qbUsername ?? '');
-        _pref!.setString(AppConfig.QB_CURRENT_USERID, model1.data!.qbUserId ?? '');
+        _pref!.setString(
+            AppConfig.QB_CURRENT_USERID, model1.data!.qbUserId ?? '');
         _pref!.setString(AppConfig.KALEYRA_USER_ID, model1.data!.kaleyraUID!);
 
-        if(_pref!.getString(AppConfig.KALEYRA_ACCESS_TOKEN) == null){
-          await LoginWithOtpService(repository: loginOtpRepository).getAccessToken(model1.data!.kaleyraUID!);
+        if (_pref!.getString(AppConfig.KALEYRA_ACCESS_TOKEN) == null) {
+          await LoginWithOtpService(repository: loginOtpRepository)
+              .getAccessToken(model1.data!.kaleyraUID!);
         }
         print("user profile: ${_pref!.getString(AppConfig.QB_CURRENT_USERID)}");
-
       }
     }
     // if(_pref!.getInt(AppConfig.QB_CURRENT_USERID) != null && !await _qbService!.getSession() || _pref!.getBool(AppConfig.IS_QB_LOGIN) == null){
@@ -1074,9 +1106,9 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
     ),
   );
 
-  Future<void> reloadUI() async{
+  Future<void> reloadUI() async {
     await getData();
-    setState(() { });
+    setState(() {});
   }
 
   final UserProfileRepository userRepository = UserProfileRepository(
@@ -1086,7 +1118,7 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
   );
 
   GetDashboardDataModel? _getDashboardDataModel;
-  Future getData() async{
+  Future getData() async {
     isProgressDialogOpened = true;
     print("isProgressDialogOpened: $isProgressDialogOpened");
 
@@ -1095,122 +1127,116 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
 
     final _getData = await _gutDataService.getGutDataService();
     print("_getData: $_getData");
-    if(_getData.runtimeType == ErrorModel){
+    if (_getData.runtimeType == ErrorModel) {
       ErrorModel model = _getData;
       print(model.message);
       isProgressDialogOpened = false;
-      Future.delayed(Duration(seconds: 0)).whenComplete(() =>
-          AppConfig().showSnackbar(context, model.message ?? '', isError: true,
+      Future.delayed(Duration(seconds: 0)).whenComplete(
+          () => AppConfig().showSnackbar(context, model.message ?? '',
+              isError: true,
               duration: 50000,
               action: SnackBarAction(
                 label: 'Retry',
-                onPressed: (){
+                onPressed: () {
                   ScaffoldMessenger.of(context).hideCurrentSnackBar();
                   getData();
                 },
-              )
-          )
-      );
-    }
-    else{
+              )));
+    } else {
       isProgressDialogOpened = false;
       print("isProgressDialogOpened: $isProgressDialogOpened");
       _getDashboardDataModel = _getData as GetDashboardDataModel;
-      print("_getDashboardDataModel.app_consulation: ${_getDashboardDataModel!.app_consulation}");
-
+      print(
+          "_getDashboardDataModel.app_consulation: ${_getDashboardDataModel!.app_consulation}");
 
       // checking for the consultation data if data = appointment_booked
       setState(() {
-        if(_getDashboardDataModel!.app_consulation != null){
+        if (_getDashboardDataModel!.app_consulation != null) {
           _getAppointmentDetailsModel = _getDashboardDataModel!.app_consulation;
           consultationStage = _getAppointmentDetailsModel?.data ?? '';
-        }
-        else{
+        } else {
           _gutDataModel = _getDashboardDataModel!.normal_consultation;
           consultationStage = _gutDataModel?.data ?? '';
         }
         updateNewStage(consultationStage);
-        if(_getDashboardDataModel!.prepratory_normal_program != null){
+        if (_getDashboardDataModel!.prepratory_normal_program != null) {
           _prepProgramModel = _getDashboardDataModel!.prepratory_normal_program;
           prepratoryMealStage = _prepProgramModel?.data ?? '';
-        }
-        else if(_getDashboardDataModel!.prepratory_program != null){
+        } else if (_getDashboardDataModel!.prepratory_program != null) {
           _prepratoryModel = _getDashboardDataModel!.prepratory_program;
           prepratoryMealStage = _prepratoryModel?.data ?? '';
         }
         updateNewStage(prepratoryMealStage);
-        if(_getDashboardDataModel!.transition_meal_program != null){
+        if (_getDashboardDataModel!.transition_meal_program != null) {
           _transMealModel = _getDashboardDataModel!.transition_meal_program;
-        }
-        else if(_getDashboardDataModel!.trans_program != null){
+        } else if (_getDashboardDataModel!.trans_program != null) {
           _transModel = _getDashboardDataModel!.trans_program;
         }
-        if(_getDashboardDataModel!.approved_shipping != null){
+        if (_getDashboardDataModel!.approved_shipping != null) {
           _shippingApprovedModel = _getDashboardDataModel!.approved_shipping;
           shippingStage = _shippingApprovedModel?.data ?? '';
           prepratoryMealStage = _prepratoryModel?.data ?? '';
 
           updateNewStage(shippingStage);
-        }
-        else{
+        } else {
           _gutShipDataModel = _getDashboardDataModel!.normal_shipping;
           shippingStage = _gutShipDataModel?.data ?? '';
           updateNewStage(shippingStage);
           // abc();
         }
-        if(shippingStage != null && shippingStage == "shipping_delivered"){
-        }
-        if(_getDashboardDataModel!.data_program != null){
+        if (shippingStage != null && shippingStage == "shipping_delivered") {}
+        if (_getDashboardDataModel!.data_program != null) {
           _getProgramModel = _getDashboardDataModel!.data_program;
           programOptionStage = _getProgramModel?.data ?? '';
           updateNewStage(programOptionStage);
-        }
-        else{
+        } else {
           _gutProgramModel = _getDashboardDataModel!.normal_program;
           programOptionStage = _getProgramModel?.data ?? '';
           updateNewStage(programOptionStage);
           abc();
         }
 
-        if(_getDashboardDataModel!.data_program != null){
+        if (_getDashboardDataModel!.data_program != null) {
           _transModel = _getDashboardDataModel!.trans_program;
           transStage = _transModel?.data ?? '';
           updateNewStage(transStage);
-        }
-        else{
+        } else {
           _transMealModel = _getDashboardDataModel!.transition_meal_program;
           transStage = _transMealModel?.data ?? '';
           updateNewStage(transStage);
         }
         // post program will open once transition meal plan is completed
         // this is for other postprogram model
-        if(_getDashboardDataModel!.normal_postprogram != null){
+        if (_getDashboardDataModel!.normal_postprogram != null) {
           _gutPostProgramModel = _getDashboardDataModel!.normal_postprogram;
           postProgramStage = _gutPostProgramModel?.data ?? '';
           updateNewStage(postProgramStage);
-        }
-        else{
-          _postConsultationAppointment = _getDashboardDataModel!.postprogram_consultation;
-          print("RESCHEDULE : ${_getDashboardDataModel!.postprogram_consultation?.data}");
+        } else {
+          _postConsultationAppointment =
+              _getDashboardDataModel!.postprogram_consultation;
+          print(
+              "RESCHEDULE : ${_getDashboardDataModel!.postprogram_consultation?.data}");
           postProgramStage = _postConsultationAppointment?.data ?? '';
           updateNewStage(postProgramStage);
         }
         print("postProgramStage: ${postProgramStage}");
-        if(postProgramStage != null && postProgramStage!.isNotEmpty){
+        if (postProgramStage != null && postProgramStage!.isNotEmpty) {
           updateNewStage(postProgramStage);
         }
       });
     }
   }
 
-  goToScreen(screenName){
+  goToScreen(screenName) {
     print(screenName);
-    Navigator.of(context).push(
+    Navigator.of(context)
+        .push(
       MaterialPageRoute(
         builder: (context) => screenName,
         // builder: (context) => isConsultationCompleted ? ConsultationSuccess() : const DoctorCalenderTimeScreen(),
       ),
-    ).then((value) {
+    )
+        .then((value) {
       print(value);
       setState(() {
         getData();
@@ -1218,19 +1244,19 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
     });
   }
 
-  handleButtonOnTapByType(StageType type, int buttonId){
-    switch(type){
+  handleButtonOnTapByType(StageType type, int buttonId) {
+    switch (type) {
       case StageType.evaluation:
         goToScreen(EvaluationGetDetails());
         break;
       case StageType.med_consultation:
         print("Medical consultation ${buttonId}");
-        if(buttonId == 1){
-          switch(consultationStage){
-            case 'evaluation_done'  :
+        if (buttonId == 1) {
+          switch (consultationStage) {
+            case 'evaluation_done':
               goToScreen(DoctorCalenderTimeScreen());
               break;
-            case 'pending' :
+            case 'pending':
               goToScreen(DoctorCalenderTimeScreen());
               break;
             case 'appointment_booked':
@@ -1240,10 +1266,9 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
               String? doctorName;
               String? doctorImage;
 
-
               model.value?.teamMember?.forEach((element) {
-                if(element.user != null){
-                  if(element.user!.roleId == "2"){
+                if (element.user != null) {
+                  if (element.user!.roleId == "2") {
                     doctorNames.add('Dr. ${element.user!.name}' ?? '');
                     doctorName = 'Dr. ${element.user!.name}';
                     doctorImage = element.user?.profile ?? '';
@@ -1257,12 +1282,12 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
                 isReschedule: true,
                 prevBookingDate: model.value!.date,
                 prevBookingTime: model.value!.appointmentStartTime,
-                  doctorDetails: model.value!.doctor,
-                  doctorName: doctorName,
+                doctorDetails: model.value!.doctor,
+                doctorName: doctorName,
                 doctorPic: doctorImage,
               ));
               break;
-            case 'consultation_reschedule' :
+            case 'consultation_reschedule':
               final model = _getAppointmentDetailsModel;
 
               // add this before calling calendertimescreen for reschedule
@@ -1283,26 +1308,34 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
               goToScreen(UploadFiles());
               break;
             case 'consultation_rejected':
-              goToScreen(ConsultationRejected(reason: _gutDataModel?.value ?? '',));
+              goToScreen(ConsultationRejected(
+                reason: _gutDataModel?.value ?? '',
+              ));
               break;
             case 'check_user_reports':
-            // print(_gutDataModel!.value);
+              // print(_gutDataModel!.value);
               goToScreen(CheckUserReportsScreen());
               break;
-            default: goToScreen(const ConsultationSuccess());
+            default:
+              goToScreen(const ConsultationSuccess());
           }
-        }
-        else{
+        } else {
           print(consultationStage);
-          switch(consultationStage){
+          switch (consultationStage) {
             case 'check_user_reports':
-            // print(_gutDataModel!.value);
+              // print(_gutDataModel!.value);
               goToScreen(CheckUserReportsScreen());
               break;
             case 'appointment_booked':
               final model = _getAppointmentDetailsModel;
-              _pref!.setString(AppConfig.appointmentId, model?.value?.id.toString() ?? '');
-              goToScreen(DoctorSlotsDetailsScreen(bookingDate: model!.value!.date!, bookingTime: model.value!.slotStartTime!, dashboardValueMap: model.value!.toJson(),isFromDashboard: true,));
+              _pref!.setString(
+                  AppConfig.appointmentId, model?.value?.id.toString() ?? '');
+              goToScreen(DoctorSlotsDetailsScreen(
+                bookingDate: model!.value!.date!,
+                bookingTime: model.value!.slotStartTime!,
+                dashboardValueMap: model.value!.toJson(),
+                isFromDashboard: true,
+              ));
               break;
             case 'report_upload':
               print(_gutDataModel!.toJson());
@@ -1314,9 +1347,13 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
               // goToScreen(DoctorSlotsDetailsScreen(bookingDate: "2023-02-21", bookingTime: "11:34:00", dashboardValueMap: {},isFromDashboard: true,));
 
               // goToScreen(DoctorCalenderTimeScreen(isReschedule: true,prevBookingTime: '23-09-2022', prevBookingDate: '10AM',));
-              goToScreen(MedicalReportScreen(pdfLink: _gutDataModel!.value!,));
+              goToScreen(MedicalReportScreen(
+                pdfLink: _gutDataModel!.value!,
+              ));
               break;
-            default: AppConfig().showSnackbar(context, "Can't access Locked Stage", isError: true);
+            default:
+              AppConfig().showSnackbar(context, "Can't access Locked Stage",
+                  isError: true);
           }
         }
         break;
@@ -1324,22 +1361,21 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
         showPrepratoryMealScreen();
         break;
       case StageType.normal_meal:
-        if(buttonId == 1){
-          if(programOptionStage != null && programOptionStage!.isNotEmpty){
+        if (buttonId == 1) {
+          if (programOptionStage != null && programOptionStage!.isNotEmpty) {
             print("called");
             showProgramScreen();
+          } else {
+            AppConfig().showSnackbar(context, "Can't access Locked Stage",
+                isError: true);
           }
-          else{
-            AppConfig().showSnackbar(context, "Can't access Locked Stage", isError: true);
-          }
-        }
-        else{
-          if(transStage != null && transStage!.isNotEmpty){
+        } else {
+          if (transStage != null && transStage!.isNotEmpty) {
             // showProgramScreen();
             showTransitionMealScreen();
-          }
-          else{
-            AppConfig().showSnackbar(context, "Can't access Locked Stage", isError: true);
+          } else {
+            AppConfig().showSnackbar(context, "Can't access Locked Stage",
+                isError: true);
           }
         }
         // if(transStage != null && transStage!.isNotEmpty){
@@ -1355,52 +1391,57 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
         // }
         break;
       case StageType.post_consultation:
-        if(buttonId == 1){
-          if(postProgramStage == "post_program"){
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                  builder: (context) =>
-                      DoctorCalenderTimeScreen(isPostProgram: true,)
-                // PostProgramScreen(postProgramStage: postProgramStage,),
-              ),
-            ).then((value) => reloadUI());
+        if (buttonId == 1) {
+          if (postProgramStage == "post_program") {
+            Navigator.of(context)
+                .push(
+                  MaterialPageRoute(
+                      builder: (context) => DoctorCalenderTimeScreen(
+                            isPostProgram: true,
+                          )
+                      // PostProgramScreen(postProgramStage: postProgramStage,),
+                      ),
+                )
+                .then((value) => reloadUI());
+          } else if (postProgramStage == "post_appointment_booked") {
+            Navigator.of(context)
+                .push(
+                  MaterialPageRoute(
+                      builder: (context) => DoctorSlotsDetailsScreen(
+                            bookingDate:
+                                _postConsultationAppointment!.value!.date!,
+                            bookingTime: _postConsultationAppointment!
+                                .value!.slotStartTime!,
+                            isPostProgram: true,
+                            dashboardValueMap:
+                                _postConsultationAppointment!.value!.toJson(),
+                          )
+                      // PostProgramScreen(postProgramStage: postProgramStage,
+                      //   consultationData: _postConsultationAppointment,),
+                      ),
+                )
+                .then((value) => reloadUI());
+          } else {
+            AppConfig().showSnackbar(context, "Can't access Locked Stage",
+                isError: true);
           }
-          else if(postProgramStage == "post_appointment_booked"){
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                  builder: (context) =>
-                      DoctorSlotsDetailsScreen(
-                        bookingDate: _postConsultationAppointment!.value!.date!,
-                        bookingTime: _postConsultationAppointment!.value!.slotStartTime!,
-                        isPostProgram: true,
-                        dashboardValueMap: _postConsultationAppointment!.value!.toJson() ,)
-                // PostProgramScreen(postProgramStage: postProgramStage,
-                //   consultationData: _postConsultationAppointment,),
-              ),
-            ).then((value) => reloadUI());
-          }
-          else{
-            AppConfig().showSnackbar(context, "Can't access Locked Stage", isError: true);
-          }
-        }
-        else{
+        } else {
           showPostProgramScreen();
         }
         break;
     }
-
   }
 
   void showConsultationScreenFromStages(status) {
     print(status);
-    switch(status) {
-      case 'evaluation_done'  :
+    switch (status) {
+      case 'evaluation_done':
         goToScreen(DoctorCalenderTimeScreen());
         break;
-      case 'pending' :
+      case 'pending':
         goToScreen(DoctorCalenderTimeScreen());
         break;
-      case 'consultation_reschedule' :
+      case 'consultation_reschedule':
         final model = _getAppointmentDetailsModel;
 
         // add this before calling calendertimescreen for reschedule
@@ -1409,13 +1450,18 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
           isReschedule: true,
           prevBookingDate: model!.value!.appointmentDate,
           prevBookingTime: model.value!.appointmentStartTime,
-
         ));
         break;
       case 'appointment_booked':
         final model = _getAppointmentDetailsModel;
-        _pref!.setString(AppConfig.appointmentId, model?.value?.id.toString() ?? '');
-        goToScreen(DoctorSlotsDetailsScreen(bookingDate: model!.value!.date!, bookingTime: model.value!.slotStartTime!, dashboardValueMap: model.value!.toJson(),isFromDashboard: true,));
+        _pref!.setString(
+            AppConfig.appointmentId, model?.value?.id.toString() ?? '');
+        goToScreen(DoctorSlotsDetailsScreen(
+          bookingDate: model!.value!.date!,
+          bookingTime: model.value!.slotStartTime!,
+          dashboardValueMap: model.value!.toJson(),
+          isFromDashboard: true,
+        ));
         break;
       case 'consultation_done':
         goToScreen(const ConsultationSuccess());
@@ -1427,16 +1473,20 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
         goToScreen(UploadFiles());
         break;
       case 'check_user_reports':
-      // print(_gutDataModel!.value);
+        // print(_gutDataModel!.value);
         goToScreen(CheckUserReportsScreen());
         break;
       case 'consultation_rejected':
-        goToScreen(ConsultationRejected(reason: _gutDataModel?.value ?? '',));
+        goToScreen(ConsultationRejected(
+          reason: _gutDataModel?.value ?? '',
+        ));
         break;
       case 'report_upload':
         print(_gutDataModel!.toJson());
         print(_gutDataModel!.value);
-        goToScreen(ConsultationRejected(reason: '',));
+        goToScreen(ConsultationRejected(
+          reason: '',
+        ));
 
         // goToScreen(ConsultationSuccess());
 
@@ -1445,13 +1495,13 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
         // goToScreen(DoctorCalenderTimeScreen(isReschedule: true,prevBookingTime: '23-09-2022', prevBookingDate: '10AM',));
         // goToScreen(MedicalReportScreen(pdfLink: _gutDataModel!.value!,));
         break;
-
     }
   }
+
   /// buttonid is required to identify which button pressed
   buildButton(String title, Color color, StageType type, int buttonId) {
     return GestureDetector(
-      onTap: (){
+      onTap: () {
         handleButtonOnTapByType(type, buttonId);
       },
       child: Container(
@@ -1474,8 +1524,6 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
         ),
       ),
     );
-
-
   }
 
   buildNewStages(
@@ -1492,13 +1540,11 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
       String button2Title,
       Color button2Color,
       StageType type,
-  {bool? showTrackGutIcon,
-  String? trackGutIconName,
-  String? trackGutIconCircleName,
-  Color? circleInsideStageImageColor,
-    Color? trackGutIconColor
-  }
-      ) {
+      {bool? showTrackGutIcon,
+      String? trackGutIconName,
+      String? trackGutIconCircleName,
+      Color? circleInsideStageImageColor,
+      Color? trackGutIconColor}) {
     return IntrinsicHeight(
       child: Stack(
         children: [
@@ -1527,21 +1573,20 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
                   padding: const EdgeInsets.all(4),
                   margin: const EdgeInsets.all(2),
                   decoration:
-                  BoxDecoration(color: stageColor, shape: BoxShape.circle),
+                      BoxDecoration(color: stageColor, shape: BoxShape.circle),
                   child: Text(
                     levels,
                     style: TextStyle(
                         color: gWhiteColor,
                         fontSize: 7.sp,
-                        fontFamily: kFontMedium
-                    ),
+                        fontFamily: kFontMedium),
                   ),
                 ),
               ),
               Transform(
                 transform: Matrix4.translationValues(-0.5.w, 0.7.w, 0),
                 child: Stack(
-                  clipBehavior: Clip.none,
+                    clipBehavior: Clip.none,
                     alignment: Alignment.center,
                     children: [
                       Image(
@@ -1569,20 +1614,19 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
                       ),
                       Positioned(
                         bottom: 0,
-                        child:
-                        Visibility(
+                        child: Visibility(
                           visible: showTrackGutIcon ?? false,
                           child: Transform(
-                            transform: Matrix4.translationValues(-3.6.w, 6.6.w, 0),
+                            transform:
+                                Matrix4.translationValues(-3.6.w, 6.6.w, 0),
                             child: Stack(
                               clipBehavior: Clip.none,
                               children: [
                                 InkWell(
-                                  onTap: ()=>
-                                      handleTrackerRemedyOnTap(type),
+                                  onTap: () => handleTrackerRemedyOnTap(type),
                                   child: Image(
                                     height: 7.h,
-                                    image:  AssetImage(
+                                    image: AssetImage(
                                         trackGutIconCircleName ?? ''),
                                   ),
                                 ),
@@ -1592,9 +1636,7 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
                                   left: 1,
                                   child: Image(
                                     height: 1.8.h,
-                                    image:  AssetImage(
-                                        trackGutIconName ?? ''),
-
+                                    image: AssetImage(trackGutIconName ?? ''),
                                   ),
                                 ),
                               ],
@@ -1602,8 +1644,7 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
                           ),
                         ),
                       )
-                    ]
-                ),
+                    ]),
               ),
               SizedBox(width: 0.w),
               Expanded(
@@ -1631,26 +1672,30 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
                             size: 11.5.sp,
                           ),
                           onTap: () {
-                            switch(type){
+                            switch (type) {
                               case StageType.evaluation:
-                                final link = _getDashboardDataModel!.evaluationVideo;
+                                final link =
+                                    _getDashboardDataModel!.evaluationVideo;
                                 print(link);
-                                if(link != null && link.isNotEmpty) {
+                                if (link != null && link.isNotEmpty) {
                                   addUrlToVideoWhenAboutClick(link);
                                   whenAboutClickSheet();
-                                }
-                                else{
-                                  AppConfig().showSnackbar(context, "Link Not Available", isError: true);
+                                } else {
+                                  AppConfig().showSnackbar(
+                                      context, "Link Not Available",
+                                      isError: true);
                                 }
                                 break;
                               case StageType.med_consultation:
-                                final link = _getDashboardDataModel!.consultationVideo;
-                                if(link != null && link.isNotEmpty) {
+                                final link =
+                                    _getDashboardDataModel!.consultationVideo;
+                                if (link != null && link.isNotEmpty) {
                                   addUrlToVideoWhenAboutClick(link);
                                   whenAboutClickSheet();
-                                }
-                                else{
-                                  AppConfig().showSnackbar(context, "Link Not Available", isError: true);
+                                } else {
+                                  AppConfig().showSnackbar(
+                                      context, "Link Not Available",
+                                      isError: true);
                                 }
                                 break;
                               case StageType.prep_meal:
@@ -1658,23 +1703,26 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
                                 print("prepVideo: $link");
                                 print(link == null);
                                 print(link!.isEmpty);
-                                if(link != null && link.isNotEmpty) {
+                                if (link != null && link.isNotEmpty) {
                                   addUrlToVideoWhenAboutClick(link);
                                   whenAboutClickSheet();
-                                }
-                                else{
-                                  AppConfig().showSnackbar(context, "Link Not Available", isError: true);
+                                } else {
+                                  AppConfig().showSnackbar(
+                                      context, "Link Not Available",
+                                      isError: true);
                                 }
                                 break;
                               case StageType.normal_meal:
-                                final link = _getDashboardDataModel!.programVideo;
+                                final link =
+                                    _getDashboardDataModel!.programVideo;
                                 print("programVideo: $link");
-                                if(link != null && link.isNotEmpty) {
+                                if (link != null && link.isNotEmpty) {
                                   addUrlToVideoWhenAboutClick(link);
                                   whenAboutClickSheet();
-                                }
-                                else{
-                                  AppConfig().showSnackbar(context, "Link Not Available", isError: true);
+                                } else {
+                                  AppConfig().showSnackbar(
+                                      context, "Link Not Available",
+                                      isError: true);
                                 }
                                 break;
                               case StageType.post_consultation:
@@ -1682,12 +1730,13 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
                                 print("gmgVideo: $link");
                                 print(link == null);
                                 print(link!.isEmpty);
-                                if(link != null && link.isNotEmpty) {
+                                if (link != null && link.isNotEmpty) {
                                   addUrlToVideoWhenAboutClick(link);
                                   whenAboutClickSheet();
-                                }
-                                else{
-                                  AppConfig().showSnackbar(context, "Link Not Available", isError: true);
+                                } else {
+                                  AppConfig().showSnackbar(
+                                      context, "Link Not Available",
+                                      isError: true);
                                 }
                                 break;
                             }
@@ -1695,42 +1744,40 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
                         ),
                       ],
                     ),
-                RichText(
-                  textAlign: TextAlign.start,
-                  textScaleFactor: 0.85,
-                  maxLines: 2,
-                  text: TextSpan(children: [
-                    TextSpan(
-                      text: subText.substring(
-                          0,
-                          int.parse(
-                              "${(subText.length * 0.298).toInt()}")) +
-                          "...",
-                      style: TextStyle(
-                          height: 1.3,
-                          fontFamily: kFontBook,
-                          color: eUser().mainHeadingColor,
-                          fontSize: bottomSheetSubHeadingSFontSize),
-                    ),
-                    WidgetSpan(
-                        child: InkWell(
-                            mouseCursor: SystemMouseCursors.click,
-                            onTap: () {
-                             showMoreTextSheet(subText);
-                            },
-                            child: Text(
-                              "more",
-                              style: TextStyle(
-                                  height: 1.3,
-                                  fontFamily: kFontBook,
-                                  color: gsecondaryColor,
-                                  fontSize: bottomSheetSubHeadingSFontSize),
-                            )
+                    RichText(
+                      textAlign: TextAlign.start,
+                      textScaleFactor: 0.85,
+                      maxLines: 2,
+                      text: TextSpan(children: [
+                        TextSpan(
+                          text: subText.substring(
+                                  0,
+                                  int.parse(
+                                      "${(subText.length * 0.298).toInt()}")) +
+                              "...",
+                          style: TextStyle(
+                              height: 1.3,
+                              fontFamily: kFontBook,
+                              color: eUser().mainHeadingColor,
+                              fontSize: bottomSheetSubHeadingSFontSize),
                         ),
-                    )
-                  ]
-                  ),
-                ),
+                        WidgetSpan(
+                          child: InkWell(
+                              mouseCursor: SystemMouseCursors.click,
+                              onTap: () {
+                                showMoreTextSheet(subText);
+                              },
+                              child: Text(
+                                "more",
+                                style: TextStyle(
+                                    height: 1.3,
+                                    fontFamily: kFontBook,
+                                    color: gsecondaryColor,
+                                    fontSize: bottomSheetSubHeadingSFontSize),
+                              )),
+                        )
+                      ]),
+                    ),
                     // Text(
                     //   subText,
                     //   //  "While you wait for your customised Product Kit arrive to be used during the Reset phase of the program,You will be give a preparatory meal protocol based on your food type,While you wait for your  customised Product Kit arrive to be used during the Reset phase of the program,",
@@ -1747,8 +1794,7 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
                         buildButton(buttonTitle, button1Color, type, 1),
                         SizedBox(width: 3.w),
                         (rescheduleButton)
-                            ? buildButton(
-                            button2Title, button2Color, type, 2)
+                            ? buildButton(button2Title, button2Color, type, 2)
                             : const SizedBox(),
                         SizedBox(width: 3.w),
                       ],
@@ -1766,18 +1812,18 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
 
   void updateNewStage(String? stage) {
     print("consultationStage: ==> ${stage}");
-    switch(stage){
-      case 'evaluation_done' :
+    switch (stage) {
+      case 'evaluation_done':
         levels[0].stageColor = unlockGreenColor;
         levels[1].stageColor = unlockYellowColor;
         levels[1].button1Color = newDashboardGreenButtonColor;
         break;
-      case 'pending' :
+      case 'pending':
         levels[0].stageColor = unlockGreenColor;
         levels[1].stageColor = unlockYellowColor;
         levels[1].button1Color = newDashboardGreenButtonColor;
         break;
-      case 'consultation_reschedule' :
+      case 'consultation_reschedule':
         levels[0].stageColor = unlockGreenColor;
         levels[1].stageColor = unlockYellowColor;
         levels[1].buttonTitle = "Reschedule";
@@ -1837,15 +1883,15 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
         levels[1].lockImage = unlockGreenImage;
         levels[1].stageCircleImage = unlockGreenCircleImage;
 
-        if(_prepratoryModel!.value!.prep_days! != _prepratoryModel!.value!.currentDay){
+        if (_prepratoryModel!.value!.prep_days! !=
+            _prepratoryModel!.value!.currentDay) {
           levels[2].lockImage = unlockYellowImage;
           levels[2].stageColor = unlockYellowColor;
           levels[2].stageCircleImage = unlockYellowCircleImage;
           levels[2].trackGutIconCircleName = yellowTrackGutCircle;
           levels[2].circleInsideImageColor = unlockYellowColor;
           levels[2].button1Color = gMainColor;
-        }
-        else{
+        } else {
           levels[2].stageColor = unlockGreenColor;
           levels[2].lockImage = unlockGreenImage;
           levels[2].stageCircleImage = unlockGreenCircleImage;
@@ -1861,24 +1907,21 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
         levels[1].stageCircleImage = unlockGreenCircleImage;
         levels[1].circleInsideImageColor = unlockGreenColor;
 
-
-        if(_prepratoryModel!.value!.prep_days! != _prepratoryModel!.value!.currentDay){
+        if (_prepratoryModel!.value!.prep_days! !=
+            _prepratoryModel!.value!.currentDay) {
           levels[2].lockImage = unlockYellowImage;
           levels[2].stageColor = unlockYellowColor;
           levels[2].stageCircleImage = unlockYellowCircleImage;
           levels[2].trackGutIconCircleName = yellowTrackGutCircle;
           levels[2].circleInsideImageColor = unlockYellowColor;
           levels[2].button1Color = gMainColor;
-
-        }
-        else{
+        } else {
           levels[2].stageColor = unlockGreenColor;
           levels[2].lockImage = unlockGreenImage;
           levels[2].stageCircleImage = unlockGreenCircleImage;
           levels[2].trackGutIconCircleName = greenTrackGutCircle;
           levels[2].circleInsideImageColor = unlockGreenColor;
           levels[2].button1Color = newDashboardGreenButtonColor;
-
         }
         break;
       case 'shipping_paused':
@@ -1888,17 +1931,15 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
         levels[1].stageCircleImage = unlockGreenCircleImage;
         levels[1].circleInsideImageColor = unlockGreenColor;
 
-
-        if(_prepratoryModel!.value!.prep_days! != _prepratoryModel!.value!.currentDay){
+        if (_prepratoryModel!.value!.prep_days! !=
+            _prepratoryModel!.value!.currentDay) {
           levels[2].lockImage = unlockYellowImage;
           levels[2].stageColor = unlockYellowColor;
           levels[2].stageCircleImage = unlockYellowCircleImage;
           levels[2].trackGutIconCircleName = yellowTrackGutCircle;
           levels[2].circleInsideImageColor = unlockYellowColor;
           levels[2].button1Color = gMainColor;
-
-        }
-        else{
+        } else {
           levels[2].stageColor = unlockGreenColor;
           levels[2].lockImage = unlockGreenImage;
           levels[2].stageCircleImage = unlockGreenCircleImage;
@@ -1914,16 +1955,15 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
         levels[1].stageCircleImage = unlockGreenCircleImage;
         levels[1].circleInsideImageColor = unlockGreenColor;
 
-        if(_prepratoryModel!.value!.prep_days! != _prepratoryModel!.value!.currentDay){
+        if (_prepratoryModel!.value!.prep_days! !=
+            _prepratoryModel!.value!.currentDay) {
           levels[2].lockImage = unlockYellowImage;
           levels[2].stageColor = unlockYellowColor;
           levels[2].stageCircleImage = unlockYellowCircleImage;
           levels[2].trackGutIconCircleName = yellowTrackGutCircle;
           levels[2].circleInsideImageColor = unlockYellowColor;
           levels[2].button1Color = gMainColor;
-
-        }
-        else{
+        } else {
           levels[2].stageColor = unlockGreenColor;
           levels[2].lockImage = unlockGreenImage;
           levels[2].stageCircleImage = unlockGreenCircleImage;
@@ -1939,15 +1979,15 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
         levels[1].stageCircleImage = unlockGreenCircleImage;
         levels[1].circleInsideImageColor = unlockGreenColor;
 
-        if(_prepratoryModel!.value!.prep_days! != _prepratoryModel!.value!.currentDay){
+        if (_prepratoryModel!.value!.prep_days! !=
+            _prepratoryModel!.value!.currentDay) {
           levels[2].lockImage = unlockYellowImage;
           levels[2].stageColor = unlockYellowColor;
           levels[2].stageCircleImage = unlockYellowCircleImage;
           levels[2].trackGutIconCircleName = yellowTrackGutCircle;
           levels[2].circleInsideImageColor = unlockYellowColor;
           levels[2].button1Color = gMainColor;
-        }
-        else{
+        } else {
           levels[2].stageColor = unlockGreenColor;
           levels[2].lockImage = unlockGreenImage;
           levels[2].stageCircleImage = unlockGreenCircleImage;
@@ -1978,7 +2018,6 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
         levels[3].circleInsideImageColor = unlockYellowColor;
         levels[3].button1Color = newDashboardGreenButtonColor;
 
-
         break;
       case 'trans_program':
         levels[0].stageColor = unlockGreenColor;
@@ -1995,18 +2034,20 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
         levels[2].circleInsideImageColor = unlockGreenColor;
         levels[2].button1Color = newDashboardGreenButtonColor;
 
-        print("_prepratoryModel!.value!.isPrepCompleted != null: ${_transModel!.value!.isTransMealCompleted != null}");
-        print("_prepratoryModel!.value!.isPrepCompleted! == true: ${_transModel!.value!.isTransMealCompleted == true} ${_transModel!.value!.isTransMealCompleted}");
+        print(
+            "_prepratoryModel!.value!.isPrepCompleted != null: ${_transModel!.value!.isTransMealCompleted != null}");
+        print(
+            "_prepratoryModel!.value!.isPrepCompleted! == true: ${_transModel!.value!.isTransMealCompleted == true} ${_transModel!.value!.isTransMealCompleted}");
 
-        if((_transModel!.value!.isTransMealCompleted != null) && _transModel!.value!.isTransMealCompleted == true){
+        if ((_transModel!.value!.isTransMealCompleted != null) &&
+            _transModel!.value!.isTransMealCompleted == true) {
           levels[3].stageColor = unlockGreenColor;
           levels[3].lockImage = unlockGreenImage;
           levels[3].stageCircleImage = unlockGreenCircleImage;
           levels[3].button2Color = newDashboardGreenButtonColor;
           levels[3].trackGutIconCircleName = greenTrackGutCircle;
           levels[3].circleInsideImageColor = unlockGreenColor;
-        }
-        else{
+        } else {
           levels[3].stageColor = unlockYellowColor;
           levels[3].lockImage = unlockYellowImage;
           levels[3].stageCircleImage = unlockYellowCircleImage;
@@ -2014,7 +2055,6 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
 
           levels[3].trackGutIconCircleName = yellowTrackGutCircle;
           levels[3].circleInsideImageColor = unlockYellowColor;
-
         }
         levels[3].button1Color = newDashboardGreenButtonColor;
 
@@ -2034,15 +2074,14 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
         levels[2].circleInsideImageColor = unlockGreenColor;
         levels[2].button1Color = newDashboardGreenButtonColor;
 
-        if((_transModel?.value!.isTransMealCompleted != null) && _transModel?.value?.isTransMealCompleted == true){
+        if ((_transModel?.value!.isTransMealCompleted != null) &&
+            _transModel?.value?.isTransMealCompleted == true) {
           levels[3].stageColor = unlockGreenColor;
           levels[3].lockImage = unlockGreenImage;
           levels[3].stageCircleImage = unlockGreenCircleImage;
           levels[3].trackGutIconCircleName = greenTrackGutCircle;
           levels[3].circleInsideImageColor = unlockGreenColor;
-
-        }
-        else{
+        } else {
           levels[3].stageColor = unlockYellowColor;
           levels[3].lockImage = unlockYellowImage;
         }
@@ -2060,7 +2099,6 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
         levels[0].stageColor = unlockGreenColor;
         levels[0].stageCircleImage = unlockGreenCircleImage;
 
-
         levels[1].stageColor = unlockGreenColor;
         levels[1].lockImage = unlockGreenImage;
         levels[1].stageCircleImage = unlockGreenCircleImage;
@@ -2073,15 +2111,14 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
         levels[2].circleInsideImageColor = unlockGreenColor;
         levels[2].button1Color = newDashboardGreenButtonColor;
 
-        if((_transModel?.value!.isTransMealCompleted != null) && _transModel?.value?.isTransMealCompleted == true){
+        if ((_transModel?.value!.isTransMealCompleted != null) &&
+            _transModel?.value?.isTransMealCompleted == true) {
           levels[3].stageColor = unlockGreenColor;
           levels[3].lockImage = unlockGreenImage;
           levels[3].stageCircleImage = unlockGreenCircleImage;
           levels[3].trackGutIconCircleName = greenTrackGutCircle;
           levels[3].circleInsideImageColor = unlockGreenColor;
-
-        }
-        else{
+        } else {
           levels[3].stageColor = unlockYellowColor;
           levels[3].lockImage = unlockYellowImage;
         }
@@ -2114,16 +2151,14 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
         levels[2].circleInsideImageColor = unlockGreenColor;
         levels[2].button1Color = newDashboardGreenButtonColor;
 
-        if((_transModel?.value!.isTransMealCompleted != null) && _transModel?.value?.isTransMealCompleted == true){
+        if ((_transModel?.value!.isTransMealCompleted != null) &&
+            _transModel?.value?.isTransMealCompleted == true) {
           levels[3].stageColor = unlockGreenColor;
           levels[3].lockImage = unlockGreenImage;
           levels[3].stageCircleImage = unlockGreenCircleImage;
           levels[3].trackGutIconCircleName = greenTrackGutCircle;
           levels[3].circleInsideImageColor = unlockGreenColor;
-
-        }
-
-        else{
+        } else {
           levels[3].stageColor = unlockYellowColor;
           levels[3].lockImage = unlockYellowImage;
         }
@@ -2138,32 +2173,34 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
         levels[4].button1Color = newDashboardGreenButtonColor;
         levels[4].button2Color = newDashboardGreenButtonColor;
 
-
         break;
     }
   }
 
-
-  showPrepratoryMealScreen(){
-    if(_prepratoryModel != null){
+  showPrepratoryMealScreen() {
+    if (_prepratoryModel != null) {
       print("BOOL : ${_prepratoryModel!.value!.isPrepratoryStarted}");
 
       // slide to program  if not started
-      if(_prepratoryModel!.value!.isPrepratoryStarted == false){
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => ProgramPlanScreen(from: ProgramMealType.prepratory.name,),
-          ),
-        ).then((value) => reloadUI());
-      }
-      else{
+      if (_prepratoryModel!.value!.isPrepratoryStarted == false) {
+        Navigator.of(context)
+            .push(
+              MaterialPageRoute(
+                builder: (context) => ProgramPlanScreen(
+                  from: ProgramMealType.prepratory.name,
+                ),
+              ),
+            )
+            .then((value) => reloadUI());
+      } else {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) =>
-            (_prepratoryModel!.value!.isPrepCompleted!) ?
-            PrepratoryMealCompletedScreen()
-                : PreparatoryPlanScreen(dayNumber: _prepratoryModel!.value!.currentDay!, totalDays: _prepratoryModel!.value!.prep_days ?? ''),
+            builder: (context) => (_prepratoryModel!.value!.isPrepCompleted!)
+                ? PrepratoryMealCompletedScreen()
+                : PreparatoryPlanScreen(
+                    dayNumber: _prepratoryModel!.value!.currentDay!,
+                    totalDays: _prepratoryModel!.value!.prep_days ?? ''),
             // ProgramPlanScreen(from: ProgramMealType.prepratory.name,)
           ),
         ).then((value) => reloadUI());
@@ -2171,16 +2208,19 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
     }
   }
 
-  showTransitionMealScreen(){
-    if(_transModel != null){
-      if(_transModel!.value!.isTransMealStarted == false){
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => ProgramPlanScreen(from: ProgramMealType.transition.name,),
-          ),
-        ).then((value) => reloadUI());
-      }
-      else{
+  showTransitionMealScreen() {
+    if (_transModel != null) {
+      if (_transModel!.value!.isTransMealStarted == false) {
+        Navigator.of(context)
+            .push(
+              MaterialPageRoute(
+                builder: (context) => ProgramPlanScreen(
+                  from: ProgramMealType.transition.name,
+                ),
+              ),
+            )
+            .then((value) => reloadUI());
+      } else {
         print(_transModel!.value!.toJson());
         Navigator.push(
           context,
@@ -2188,9 +2228,8 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
             builder: (context) => TransitionMealPlanScreen(
                 postProgramStage: postProgramStage,
                 totalDays: _transModel!.value!.trans_days ?? '',
-                dayNumber: _transModel?.value?.currentDay ??'',
-                trackerVideoLink: _getProgramModel!.value!.tracker_video_url
-            ),
+                dayNumber: _transModel?.value?.currentDay ?? '',
+                trackerVideoLink: _getProgramModel!.value!.tracker_video_url),
           ),
         ).then((value) => reloadUI());
       }
@@ -2200,97 +2239,118 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
   /// when user click on meal plan if still prep not completed than
   /// in meal slide to start need to show prep form submit
   /// if already submitted than normal ui
-  showProgramScreen(){
+  showProgramScreen() {
     print("func called");
-    if(shippingStage == "shipping_delivered" && programOptionStage != null){
+    if (shippingStage == "shipping_delivered" && programOptionStage != null) {
       // to slide to start the program
-      if(_getProgramModel!.value!.recipeVideo != null) _pref!.setString(AppConfig().receipeVideoUrl, _getProgramModel!.value!.recipeVideo!);
-      if(_getProgramModel!.value!.tracker_video_url != null) _pref!.setString(AppConfig().trackerVideoUrl, _getProgramModel!.value!.tracker_video_url!);
-      if(_getProgramModel!.value!.startProgram == '0'){
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => ProgramPlanScreen(from: ProgramMealType.program.name, isPrepCompleted: _prepratoryModel!.value!.isPrepCompleted,),
-          ),
-        ).then((value) => reloadUI());
-      }
-      else{
+      if (_getProgramModel!.value!.recipeVideo != null)
+        _pref!.setString(
+            AppConfig().receipeVideoUrl, _getProgramModel!.value!.recipeVideo!);
+      if (_getProgramModel!.value!.tracker_video_url != null)
+        _pref!.setString(AppConfig().trackerVideoUrl,
+            _getProgramModel!.value!.tracker_video_url!);
+      if (_getProgramModel!.value!.startProgram == '0') {
+        Navigator.of(context)
+            .push(
+              MaterialPageRoute(
+                builder: (context) => ProgramPlanScreen(
+                  from: ProgramMealType.program.name,
+                  isPrepCompleted: _prepratoryModel!.value!.isPrepCompleted,
+                ),
+              ),
+            )
+            .then((value) => reloadUI());
+      } else {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => MealPlanScreen(transStage: transStage
-                ,receipeVideoLink: _getProgramModel!.value!.recipeVideo,
-                trackerVideoLink: _getProgramModel!.value!.tracker_video_url
-            ),
+            builder: (context) => MealPlanScreen(
+                transStage: transStage,
+                receipeVideoLink: _getProgramModel!.value!.recipeVideo,
+                trackerVideoLink: _getProgramModel!.value!.tracker_video_url),
           ),
         ).then((value) => reloadUI());
       }
-    }
-    else{
-      AppConfig().showSnackbar(context, "program stage not getting", isError:  true);
+    } else {
+      AppConfig()
+          .showSnackbar(context, "program stage not getting", isError: true);
     }
   }
 
-  showPostProgramScreen(){
-    if(postProgramStage != null){
+  showPostProgramScreen() {
+    if (postProgramStage != null) {
       print(postProgramStage == "protocol_guide");
-      if(postProgramStage == "post_program"){
-        Navigator.of(context).push(
-          MaterialPageRoute(
-              builder: (context) =>
-                  DoctorCalenderTimeScreen(isPostProgram: true,)
-            // PostProgramScreen(postProgramStage: postProgramStage,),
-          ),
-        ).then((value) => reloadUI());
-      }
-      else if(postProgramStage == "post_appointment_booked"){
-        Navigator.of(context).push(
-          MaterialPageRoute(
-              builder: (context) =>
-                  DoctorSlotsDetailsScreen(
-                    bookingDate: _postConsultationAppointment!.value!.date!,
-                    bookingTime: _postConsultationAppointment!.value!.slotStartTime!,
-                    isPostProgram: true,
-                    dashboardValueMap: _postConsultationAppointment!.value!.toJson() ,)
-            // PostProgramScreen(postProgramStage: postProgramStage,
-            //   consultationData: _postConsultationAppointment,),
-          ),
-        ).then((value) => reloadUI());
-      }
-      else if(postProgramStage == "post_appointment_done"){
-        goToScreen(const ConsultationSuccess(isPostProgramSuccess: true,));
-      }
-      else if(postProgramStage == "protocol_guide"){
+      if (postProgramStage == "post_program") {
+        Navigator.of(context)
+            .push(
+              MaterialPageRoute(
+                  builder: (context) => DoctorCalenderTimeScreen(
+                        isPostProgram: true,
+                      )
+                  // PostProgramScreen(postProgramStage: postProgramStage,),
+                  ),
+            )
+            .then((value) => reloadUI());
+      } else if (postProgramStage == "post_appointment_booked") {
+        Navigator.of(context)
+            .push(
+              MaterialPageRoute(
+                  builder: (context) => DoctorSlotsDetailsScreen(
+                        bookingDate: _postConsultationAppointment!.value!.date!,
+                        bookingTime:
+                            _postConsultationAppointment!.value!.slotStartTime!,
+                        isPostProgram: true,
+                        dashboardValueMap:
+                            _postConsultationAppointment!.value!.toJson(),
+                      )
+                  // PostProgramScreen(postProgramStage: postProgramStage,
+                  //   consultationData: _postConsultationAppointment,),
+                  ),
+            )
+            .then((value) => reloadUI());
+      } else if (postProgramStage == "post_appointment_done") {
+        goToScreen(const ConsultationSuccess(
+          isPostProgramSuccess: true,
+        ));
+      } else if (postProgramStage == "protocol_guide") {
         // goToScreen(PPLevelsScreen());
         goToScreen(PPLevelsDemo());
-      }
-      else{
-        AppConfig().showSnackbar(context, "Can't access Locked Stage", isError: true);
+      } else {
+        AppConfig()
+            .showSnackbar(context, "Can't access Locked Stage", isError: true);
       }
     }
   }
 
   handleTrackerRemedyOnTap(StageType type) {
-    switch (type){
+    switch (type) {
       case StageType.prep_meal:
         print("tracker clicked");
-        if(shippingStage != null && shippingStage!.isNotEmpty){
-          if(_shippingApprovedModel != null){
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => CookKitTracking(awb_number: _shippingApprovedModel?.value?.awbCode ?? '',currentStage: shippingStage!,),
-              ),
-            ).then((value) => reloadUI());
+        if (shippingStage != null && shippingStage!.isNotEmpty) {
+          if (_shippingApprovedModel != null) {
+            Navigator.of(context)
+                .push(
+                  MaterialPageRoute(
+                    builder: (context) => CookKitTracking(
+                      awb_number: _shippingApprovedModel?.value?.awbCode ?? '',
+                      currentStage: shippingStage!,
+                    ),
+                  ),
+                )
+                .then((value) => reloadUI());
+          } else {
+            Navigator.of(context)
+                .push(
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        CookKitTracking(currentStage: shippingStage ?? ''),
+                  ),
+                )
+                .then((value) => reloadUI());
           }
-          else{
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => CookKitTracking(currentStage: shippingStage ?? ''),
-              ),
-            ).then((value) => reloadUI());
-          }
-        }
-        else{
-          AppConfig().showSnackbar(context, "Can't access Locked Stage", isError: true);
+        } else {
+          AppConfig().showSnackbar(context, "Can't access Locked Stage",
+              isError: true);
         }
         break;
       case StageType.normal_meal:
@@ -2311,12 +2371,7 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
         break;
     }
   }
-
-
-
-
 }
-
 
 class NewStageLevels {
   String stageCircleImage;
@@ -2338,24 +2393,24 @@ class NewStageLevels {
   Color? trackGutIconColor;
 
   NewStageLevels(
-      this.stageCircleImage,
-      this.circleInsideimage,
-      this.title,
-      this.lockImage,
-      this.subText,
-      this.stageColor,
-      this.rescheduleButton,
-      this.buttonTitle,
-      this.button1Color,
-      this.button2Title,
-      this.button2Color,
-      this.type,
-      {this.showTrackGutIcon = false,
-        this.trackGutIconName,
-        this.trackGutIconCircleName,
-        this.circleInsideImageColor,
-        this.trackGutIconColor,
-      });
+    this.stageCircleImage,
+    this.circleInsideimage,
+    this.title,
+    this.lockImage,
+    this.subText,
+    this.stageColor,
+    this.rescheduleButton,
+    this.buttonTitle,
+    this.button1Color,
+    this.button2Title,
+    this.button2Color,
+    this.type, {
+    this.showTrackGutIcon = false,
+    this.trackGutIconName,
+    this.trackGutIconCircleName,
+    this.circleInsideImageColor,
+    this.trackGutIconColor,
+  });
 }
 
 class ArcClipper extends CustomClipper<Path> {
@@ -2377,7 +2432,10 @@ class ArcClipper extends CustomClipper<Path> {
   bool shouldReclip(CustomClipper old) => false;
 }
 
-enum StageType{
-  evaluation, med_consultation, prep_meal, normal_meal,post_consultation
+enum StageType {
+  evaluation,
+  med_consultation,
+  prep_meal,
+  normal_meal,
+  post_consultation
 }
-

@@ -80,7 +80,6 @@ List<GridTileItems>  faqGridList = [
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
 
     getFaqListData();
@@ -106,7 +105,6 @@ List<GridTileItems>  faqGridList = [
           faqGridList[0].faqList!.add(FaqList.fromJson(element.toJson()));
         }
       });
-
     }
     setState(() {
       showLoading = false;

@@ -40,9 +40,11 @@ class _FaqDetailedListState extends State<FaqDetailedList> {
         child: Scaffold(
           body: Column(
             children: [
+              SizedBox(height: 1.h),
               buildAppBar(() {
                 Navigator.pop(context);
               }),
+              SizedBox(height: 3.h),
               Expanded(child: (questions.isNotEmpty)
                   ? ListView.builder(
                   physics: NeverScrollableScrollPhysics(),

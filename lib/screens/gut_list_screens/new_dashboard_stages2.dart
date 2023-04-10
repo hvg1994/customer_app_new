@@ -59,18 +59,17 @@ import '../prepratory plan/prepratory_meal_completed_screen.dart';
 import '../program_plans/program_start_screen.dart';
 import 'package:gwc_customer/widgets/vlc_player/vlc_player_with_controls.dart';
 
-enum DirectionAngle{
-  topLeft, topRight, bottomLeft, bottomRight
-}
+enum DirectionAngle { topLeft, topRight, bottomLeft, bottomRight }
+
 class GutList extends StatefulWidget {
   GutList({Key? key}) : super(key: key);
 
-  final GutListState myAppState=  GutListState();
+  final GutListState myAppState = GutListState();
   @override
   State<GutList> createState() => GutListState();
 }
 
-class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
+class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
   final _pref = AppConfig().preferences;
 
   late GutDataService _gutDataService;
@@ -84,11 +83,16 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
   VlcPlayerController? _mealPlayerController;
   final _key = GlobalKey<VlcPlayerWithControlsState>();
 
-
-  String? consultationStage, shippingStage, prepratoryMealStage ,programOptionStage,transStage, postProgramStage;
+  String? consultationStage,
+      shippingStage,
+      prepratoryMealStage,
+      programOptionStage,
+      transStage,
+      postProgramStage;
 
   /// this is used when data=appointment_booked status
-  GetAppointmentDetailsModel? _getAppointmentDetailsModel, _postConsultationAppointment;
+  GetAppointmentDetailsModel? _getAppointmentDetailsModel,
+      _postConsultationAppointment;
 
   /// ths is used when data = shipping_approved status
   ShippingApprovedModel? _shippingApprovedModel;
@@ -98,19 +102,53 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
   GetPrePostMealModel? _prepratoryModel, _transModel;
 
   /// for other status we use this one(except shipping_approved & appointment_booked)
-  GutDataModel? _gutDataModel, _gutShipDataModel, _gutNormalProgramModel, _gutPostProgramModel, _prepProgramModel, _transMealModel;
+  GutDataModel? _gutDataModel,
+      _gutShipDataModel,
+      _gutNormalProgramModel,
+      _gutPostProgramModel,
+      _prepProgramModel,
+      _transMealModel;
 
-  String? evalBtnName, consBtn1Name, consBtn2Name, prepBtn1Name, prepBtn2Name, mealBtn1Name, mealBtn2Name;
-  String? postBtn1Name, postBtn2Name,postBtn3Name, gmgBtn1Name, gmgBtn2Name, mmpBtn1Name;
+  String? evalBtnName,
+      consBtn1Name,
+      consBtn2Name,
+      prepBtn1Name,
+      prepBtn2Name,
+      mealBtn1Name,
+      mealBtn2Name;
+  String? postBtn1Name,
+      postBtn2Name,
+      postBtn3Name,
+      gmgBtn1Name,
+      gmgBtn3Name,
+      gmgBtn2Name,
+      mmpBtn1Name;
 
-  Color? evalBtnColor, consBtn1Color, consBtn2Color, prepBtn1Color, prepBtn2Color, mealBtn1Color, mealBtn2Color, bg1, bg2, bg3, bg4;
-  Color? postBtn1Color, postBtn2Color,postBtn3Color, gmgBtn1Color, gmgBtn2Color, mmpBtn1Color;
+  Color? evalBtnColor,
+      consBtn1Color,
+      consBtn2Color,
+      prepBtn1Color,
+      prepBtn2Color,
+      mealBtn1Color,
+      mealBtn2Color,
+      bg1,
+      bg2,
+      bg3,
+      bg4;
+  Color? postBtn1Color,
+      postBtn2Color,
+      postBtn3Color,
+      gmgBtn1Color,
+      gmgBtn2Color,
+      mmpBtn1Color;
 
-  bool showConsLockIcon = true, showPrepLockIcon = true, showMealLockIcon = true;
+  bool showConsLockIcon = true,
+      showPrepLockIcon = true,
+      showMealLockIcon = true;
   @override
   void setState(VoidCallback fn) {
     // TODO: implement setState
-    if(mounted){
+    if (mounted) {
       super.setState(fn);
     }
   }
@@ -125,36 +163,36 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
     mmpBtn1Color = newDashboardLightGreyButtonColor;
     mmpBtn1Name = "Sign Up";
 
-    if(_pref!.getString(AppConfig().shipRocketBearer) == null || _pref!.getString(AppConfig().shipRocketBearer)!.isEmpty){
+    if (_pref!.getString(AppConfig().shipRocketBearer) == null ||
+        _pref!.getString(AppConfig().shipRocketBearer)!.isEmpty) {
       getShipRocketToken();
-    }
-    else{
+    } else {
       String token = _pref!.getString(AppConfig().shipRocketBearer)!;
       Map<String, dynamic> payload = Jwt.parseJwt(token);
       print('shiprocketToken : $payload');
       var date = DateTime.fromMillisecondsSinceEpoch(payload['exp'] * 1000);
-      if(!DateTime.now().difference(date).isNegative){
+      if (!DateTime.now().difference(date).isNegative) {
         getShipRocketToken();
       }
     }
 
-
-
     getData();
-
   }
-  void getShipRocketToken() async{
+
+  void getShipRocketToken() async {
     print("getShipRocketToken called");
-    ShipTrackService _shipTrackService = ShipTrackService(repository: shipTrackRepository);
-    final getToken = await _shipTrackService.getShipRocketTokenService(AppConfig().shipRocketEmail, AppConfig().shipRocketPassword);
+    ShipTrackService _shipTrackService =
+        ShipTrackService(repository: shipTrackRepository);
+    final getToken = await _shipTrackService.getShipRocketTokenService(
+        AppConfig().shipRocketEmail, AppConfig().shipRocketPassword);
     print(getToken);
   }
 
-  getData() async{
+  getData() async {
     isProgressDialogOpened = true;
     print("isProgressDialogOpened: $isProgressDialogOpened");
     Future.delayed(Duration(seconds: 0)).whenComplete(() {
-      if(mounted) {
+      if (mounted) {
         _progressContext = context;
         //openProgressDialog(_progressContext!, willPop: true);
       }
@@ -164,35 +202,34 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
 
     final _getData = await _gutDataService.getGutDataService();
     print("_getData: $_getData");
-    if(_getData.runtimeType == ErrorModel){
+    if (_getData.runtimeType == ErrorModel) {
       ErrorModel model = _getData;
       print(model.message);
       isProgressDialogOpened = false;
-      Future.delayed(Duration(seconds: 0)).whenComplete(() =>
-          AppConfig().showSnackbar(context, model.message ?? '', isError: true,
+      Future.delayed(Duration(seconds: 0)).whenComplete(
+          () => AppConfig().showSnackbar(context, model.message ?? '',
+              isError: true,
               duration: 50000,
               action: SnackBarAction(
                 label: 'Retry',
-                onPressed: (){
+                onPressed: () {
                   ScaffoldMessenger.of(context).hideCurrentSnackBar();
                   getData();
                 },
-              )
-          )
-      );
-    }
-    else{
+              )));
+    } else {
       isProgressDialogOpened = false;
       print("isProgressDialogOpened: $isProgressDialogOpened");
-      GetDashboardDataModel _getDashboardDataModel = _getData as GetDashboardDataModel;
-      print("_getDashboardDataModel.app_consulation: ${_getDashboardDataModel.app_consulation}");
+      GetDashboardDataModel _getDashboardDataModel =
+          _getData as GetDashboardDataModel;
+      print(
+          "_getDashboardDataModel.app_consulation: ${_getDashboardDataModel.app_consulation}");
       // checking for the consultation data if data = appointment_booked
       setState(() {
-        if(_getDashboardDataModel.app_consulation != null){
+        if (_getDashboardDataModel.app_consulation != null) {
           _getAppointmentDetailsModel = _getDashboardDataModel.app_consulation;
           consultationStage = _getAppointmentDetailsModel?.data ?? '';
-        }
-        else{
+        } else {
           print("consultation else");
           _gutDataModel = _getDashboardDataModel.normal_consultation;
           consultationStage = _gutDataModel?.data ?? '';
@@ -200,34 +237,31 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
         }
         updateNewStage(consultationStage);
 
-        if(_getDashboardDataModel.prepratory_normal_program != null){
+        if (_getDashboardDataModel.prepratory_normal_program != null) {
           _prepProgramModel = _getDashboardDataModel.prepratory_normal_program;
           prepratoryMealStage = _prepProgramModel?.data ?? '';
-        }
-        else if(_getDashboardDataModel.prepratory_program != null){
+        } else if (_getDashboardDataModel.prepratory_program != null) {
           _prepratoryModel = _getDashboardDataModel.prepratory_program;
           print("_prepratoryModel: $_prepratoryModel");
           prepratoryMealStage = _prepratoryModel?.data ?? '';
         }
         updateNewStage(prepratoryMealStage);
 
-        if(_getDashboardDataModel.approved_shipping != null){
+        if (_getDashboardDataModel.approved_shipping != null) {
           _shippingApprovedModel = _getDashboardDataModel.approved_shipping;
           shippingStage = _shippingApprovedModel?.data ?? '';
-        }
-        else{
+        } else {
           _gutShipDataModel = _getDashboardDataModel.normal_shipping;
           shippingStage = _gutShipDataModel?.data ?? '';
           // abc();
         }
         updateNewStage(shippingStage);
 
-        if(_getDashboardDataModel.data_program != null){
+        if (_getDashboardDataModel.data_program != null) {
           _gutProgramModel = _getDashboardDataModel.data_program;
           print("programOptionStage if: ${programOptionStage}");
           programOptionStage = _gutProgramModel!.data;
-        }
-        else{
+        } else {
           _gutNormalProgramModel = _getDashboardDataModel.normal_program;
           print("programOptionStage else: ${programOptionStage}");
           programOptionStage = _gutNormalProgramModel!.data;
@@ -235,39 +269,39 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
         }
         updateNewStage(programOptionStage);
 
-        if(_getDashboardDataModel.transition_meal_program != null){
+        if (_getDashboardDataModel.transition_meal_program != null) {
           _transMealModel = _getDashboardDataModel.transition_meal_program;
           transStage = _transMealModel?.data;
-        }
-        else if(_getDashboardDataModel.trans_program != null){
+        } else if (_getDashboardDataModel.trans_program != null) {
           _transModel = _getDashboardDataModel.trans_program;
           transStage = _transModel!.data;
         }
         updateNewStage(transStage);
 
-
         // post program will open once transition meal plan is completed
         // this is for other postprogram model
-        if(_getDashboardDataModel.normal_postprogram != null){
+        if (_getDashboardDataModel.normal_postprogram != null) {
           _gutPostProgramModel = _getDashboardDataModel.normal_postprogram;
           postProgramStage = _gutPostProgramModel?.data;
-        }
-        else{
-          _postConsultationAppointment = _getDashboardDataModel.postprogram_consultation;
-          print("RESCHEDULE : ${_getDashboardDataModel.postprogram_consultation?.data}");
+        } else {
+          _postConsultationAppointment =
+              _getDashboardDataModel.postprogram_consultation;
+          print(
+              "RESCHEDULE : ${_getDashboardDataModel.postprogram_consultation?.data}");
           postProgramStage = _postConsultationAppointment?.data;
         }
         print("init index: $initialIndex");
 
         updateNewStage(postProgramStage);
-
       });
 
-      LocalStorageDashboardModel _localStorageDashboardModel = LocalStorageDashboardModel(
+      LocalStorageDashboardModel _localStorageDashboardModel =
+          LocalStorageDashboardModel(
         consultStage: consultationStage,
         appointmentModel: jsonEncode(_getAppointmentDetailsModel),
         consultStringModel: jsonEncode(_gutDataModel),
-        mrReport: (consultationStage == "report_upload") ? _gutDataModel!.value :"",
+        mrReport:
+            (consultationStage == "report_upload") ? _gutDataModel!.value : "",
         prepStage: prepratoryMealStage,
         prepMealModel: jsonEncode(_prepratoryModel),
         prepStringModel: jsonEncode(_prepProgramModel),
@@ -284,32 +318,36 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
         postModel: jsonEncode(_postConsultationAppointment),
         postStringModel: jsonEncode(_gutPostProgramModel),
       );
-      _pref!.setString(AppConfig.LOCAL_DASHBOARD_DATA, jsonEncode(_localStorageDashboardModel));
+      _pref!.setString(AppConfig.LOCAL_DASHBOARD_DATA,
+          jsonEncode(_localStorageDashboardModel));
     }
   }
 
-  getUserProfile() async{
+  getUserProfile() async {
     // print("user id: ${_pref!.getInt(AppConfig.KALEYRA_USER_ID)}");
 
-    if(_pref!.getString(AppConfig.User_Name) != null
-        || _pref!.getString(AppConfig.User_Name)!.isNotEmpty
-        ||_pref!.getString(AppConfig.KALEYRA_USER_ID) != null
-        ||_pref!.getString(AppConfig.KALEYRA_USER_ID)!.isNotEmpty)
-    {
-      final profile = await UserProfileService(repository: userRepository).getUserProfileService();
-      if(profile.runtimeType == UserProfileModel){
+    if (_pref!.getString(AppConfig.User_Name) != null ||
+        _pref!.getString(AppConfig.User_Name)!.isNotEmpty ||
+        _pref!.getString(AppConfig.KALEYRA_USER_ID) != null ||
+        _pref!.getString(AppConfig.KALEYRA_USER_ID)!.isNotEmpty) {
+      final profile = await UserProfileService(repository: userRepository)
+          .getUserProfileService();
+      if (profile.runtimeType == UserProfileModel) {
         UserProfileModel model1 = profile as UserProfileModel;
-        _pref!.setString(AppConfig.User_Name, model1.data?.name ?? model1.data?.fname ?? '');
+        _pref!.setString(
+            AppConfig.User_Name, model1.data?.name ?? model1.data?.fname ?? '');
         _pref!.setInt(AppConfig.USER_ID, model1.data?.id ?? -1);
         _pref!.setString(AppConfig.QB_USERNAME, model1.data!.qbUsername ?? '');
-        _pref!.setString(AppConfig.QB_CURRENT_USERID, model1.data!.qbUserId ?? '');
-        _pref!.setString(AppConfig.KALEYRA_USER_ID, model1.data!.kaleyraUID ?? '');
+        _pref!.setString(
+            AppConfig.QB_CURRENT_USERID, model1.data!.qbUserId ?? '');
+        _pref!.setString(
+            AppConfig.KALEYRA_USER_ID, model1.data!.kaleyraUID ?? '');
 
-        if(_pref!.getString(AppConfig.KALEYRA_ACCESS_TOKEN) == null){
-          await LoginWithOtpService(repository: loginOtpRepository).getAccessToken(model1.data!.kaleyraUID!);
+        if (_pref!.getString(AppConfig.KALEYRA_ACCESS_TOKEN) == null) {
+          await LoginWithOtpService(repository: loginOtpRepository)
+              .getAccessToken(model1.data!.kaleyraUID!);
         }
         print("user profile: ${_pref!.getString(AppConfig.QB_CURRENT_USERID)}");
-
       }
     }
     // if(_pref!.getInt(AppConfig.QB_CURRENT_USERID) != null && !await _qbService!.getSession() || _pref!.getBool(AppConfig.IS_QB_LOGIN) == null){
@@ -318,9 +356,9 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
     // }
   }
 
-  Future<void> reloadUI() async{
+  Future<void> reloadUI() async {
     await getData();
-    setState(() { });
+    setState(() {});
   }
 
   final UserProfileRepository userRepository = UserProfileRepository(
@@ -343,8 +381,6 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
   int tabSize = 2, initialIndex = 0;
   TabController? _tabController;
 
-
-
   @override
   Widget build(BuildContext context) {
     return MediaQuery(
@@ -359,22 +395,27 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 5.w),
+                    padding:
+                        EdgeInsets.symmetric(vertical: 1.h, horizontal: 5.w),
                     child: buildAppBar(
-                          () {
+                      () {
                         Navigator.pop(context);
                       },
                       isBackEnable: false,
                       showNotificationIcon: true,
-                      notificationOnTap: (){
-                        Navigator.push(context, MaterialPageRoute(builder: (_) => const NotificationScreen()));
+                      notificationOnTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => const NotificationScreen()));
                       },
                       showHelpIcon: true,
                       helpOnTap: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (_) => HelpScreen()));
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (_) => HelpScreen()));
                       },
                       showSupportIcon: true,
-                      supportOnTap: (){
+                      supportOnTap: () {
                         showSupportCallSheet(context);
                         // openAlertBox(
                         //     context: context,
@@ -410,229 +451,260 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
                         //     }
                         // );
                       },
-
                     ),
                   ),
-                  Center(child: IntrinsicWidth(
+                  Center(
+                      child: IntrinsicWidth(
                     child: Container(
                       height: 35,
                       decoration: BoxDecoration(
                           color: Colors.grey[300],
-                          borderRadius: BorderRadius.circular(18.0)
-                      ),
-                      child:  TabBar(
+                          borderRadius: BorderRadius.circular(18.0)),
+                      child: TabBar(
                         controller: _tabController,
-                        onTap: (value){
+                        onTap: (value) {
                           setState(() {
                             initialIndex = value;
                           });
                         },
                         indicator: BoxDecoration(
                             color: newDashboardGreenButtonColor,
-                            borderRadius:  BorderRadius.circular(18.0)
-                        ) ,
+                            borderRadius: BorderRadius.circular(18.0)),
                         labelColor: gWhiteColor,
                         unselectedLabelColor: gBlackColor,
-                        tabs: const  [
-                          Tab(text: 'Program',),
-                          Tab(text: 'Post Program',),
+                        tabs: const [
+                          Tab(
+                            text: 'Program',
+                          ),
+                          Tab(
+                            text: 'Post Program',
+                          ),
                         ],
                       ),
                     ),
                   )),
-                  Expanded(child: Center(
-                    child: (isProgressDialogOpened) ?
-                    Shimmer.fromColors(
-                      baseColor: Colors.grey.withOpacity(0.3),
-                      highlightColor: Colors.grey.withOpacity(0.7),
-                      child: view(),
-                    ) : tabView()
-                  ))
+                  Expanded(
+                      child: Center(
+                          child: (isProgressDialogOpened)
+                              ? Shimmer.fromColors(
+                                  baseColor: Colors.grey.withOpacity(0.3),
+                                  highlightColor: Colors.grey.withOpacity(0.7),
+                                  child: view(),
+                                )
+                              : tabView()))
                 ],
               ),
             ),
           ),
-        )
-    );
+        ));
   }
 
-  showSupportCallSheet(BuildContext context){
-    return AppConfig().showSheet(context, Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Center(
-          child: Text("Please Select Call Type",
-            style: TextStyle(
-                fontSize: bottomSheetHeadingFontSize,
-                fontFamily: bottomSheetHeadingFontFamily,
-                height: 1.4
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ),
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 15),
-          child: Divider(
-            color: kLineColor,
-            thickness: 1.2,
-          ),
-        ),
-        SizedBox(height: 1.5.h),
-        Row(
+  showSupportCallSheet(BuildContext context) {
+    return AppConfig().showSheet(
+        context,
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            GestureDetector(
-              onTap: () async{
-                final res = await callSupport();
-                if(res.runtimeType != ErrorModel){
-                  AppConfig().showSnackbar(context, "Call Initiated. Our success Team will call you soon.");
-                } else {
-                  final result = res as ErrorModel;
-                AppConfig().showSnackbar(context, "You can call your Success Team Member once you book your appointment", isError: true, bottomPadding: 50);
-                }
-                Navigator.pop(context);
-              },
-              child: Container(
-                padding: EdgeInsets.symmetric(
-                    vertical: 1.h, horizontal: 5.w
-                ),
-                decoration: BoxDecoration(
-                    color: gsecondaryColor,
-                    border: Border.all(color: kLineColor, width: 0.5),
-                    borderRadius: BorderRadius.circular(5)),
-                child: Text(
-                  "In App Call",
-                  style: TextStyle(
-                    fontFamily: kFontMedium,
-                    color: gWhiteColor,
-                    fontSize: 11.sp,
-                  ),
-                ),
+            Center(
+              child: Text(
+                "Please Select Call Type",
+                style: TextStyle(
+                    fontSize: bottomSheetHeadingFontSize,
+                    fontFamily: bottomSheetHeadingFontFamily,
+                    height: 1.4),
+                textAlign: TextAlign.center,
               ),
             ),
-            SizedBox(width: 5.w),
-            Visibility(
-              visible: false,
-              child: GestureDetector(
-                onTap: (){
-                  Navigator.pop(context);
-                  if(_pref!.getString(AppConfig.KALEYRA_SUCCESS_ID) == null){
-                    AppConfig().showSnackbar(context, "Success Team Not available", isError: true);
-                  }
-                  else{
-                    // // click-to-call
-                    // callSupport();
-
-                    if(_pref!.getString(AppConfig.KALEYRA_ACCESS_TOKEN) != null){
-                      final accessToken = _pref!.getString(AppConfig.KALEYRA_ACCESS_TOKEN);
-                      final uId = _pref!.getString(AppConfig.KALEYRA_USER_ID);
-                      final successId = _pref!.getString(AppConfig.KALEYRA_SUCCESS_ID);
-                      // voice- call
-                      supportVoiceCall(uId!, successId!, accessToken!);
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 15),
+              child: Divider(
+                color: kLineColor,
+                thickness: 1.2,
+              ),
+            ),
+            SizedBox(height: 1.5.h),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                GestureDetector(
+                  onTap: () async {
+                    final res = await callSupport();
+                    if (res.runtimeType != ErrorModel) {
+                      AppConfig().showSnackbar(context,
+                          "Call Initiated. Our success Team will call you soon.");
+                    } else {
+                      final result = res as ErrorModel;
+                      AppConfig().showSnackbar(context,
+                          "You can call your Success Team Member once you book your appointment",
+                          isError: true, bottomPadding: 50);
                     }
-                    else{
-                      AppConfig().showSnackbar(context, "Something went wrong!!", isError: true);
-                    }
-                  }
-                },
-                child: Container(
-                  padding: EdgeInsets.symmetric(
-                      vertical: 1.h, horizontal: 5.w),
-                  decoration: BoxDecoration(
-                      color: gWhiteColor,
-                      border: Border.all(color: kLineColor, width: 0.5),
-                      borderRadius: BorderRadius.circular(5)),
-                  child: Text(
-                    "Voice Call",
-                    style: TextStyle(
-                      fontFamily: kFontMedium,
-                      color: gsecondaryColor,
-                      fontSize: 11.sp,
+                    Navigator.pop(context);
+                  },
+                  child: Container(
+                    padding:
+                        EdgeInsets.symmetric(vertical: 1.h, horizontal: 5.w),
+                    decoration: BoxDecoration(
+                        color: gsecondaryColor,
+                        border: Border.all(color: kLineColor, width: 0.5),
+                        borderRadius: BorderRadius.circular(5)),
+                    child: Text(
+                      "In App Call",
+                      style: TextStyle(
+                        fontFamily: kFontMedium,
+                        color: gWhiteColor,
+                        fontSize: 11.sp,
+                      ),
                     ),
                   ),
                 ),
-              ),
+                SizedBox(width: 5.w),
+                Visibility(
+                  visible: false,
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context);
+                      if (_pref!.getString(AppConfig.KALEYRA_SUCCESS_ID) ==
+                          null) {
+                        AppConfig().showSnackbar(
+                            context, "Success Team Not available",
+                            isError: true);
+                      } else {
+                        // // click-to-call
+                        // callSupport();
+
+                        if (_pref!.getString(AppConfig.KALEYRA_ACCESS_TOKEN) !=
+                            null) {
+                          final accessToken =
+                              _pref!.getString(AppConfig.KALEYRA_ACCESS_TOKEN);
+                          final uId =
+                              _pref!.getString(AppConfig.KALEYRA_USER_ID);
+                          final successId =
+                              _pref!.getString(AppConfig.KALEYRA_SUCCESS_ID);
+                          // voice- call
+                          supportVoiceCall(uId!, successId!, accessToken!);
+                        } else {
+                          AppConfig().showSnackbar(
+                              context, "Something went wrong!!",
+                              isError: true);
+                        }
+                      }
+                    },
+                    child: Container(
+                      padding:
+                          EdgeInsets.symmetric(vertical: 1.h, horizontal: 5.w),
+                      decoration: BoxDecoration(
+                          color: gWhiteColor,
+                          border: Border.all(color: kLineColor, width: 0.5),
+                          borderRadius: BorderRadius.circular(5)),
+                      child: Text(
+                        "Voice Call",
+                        style: TextStyle(
+                          fontFamily: kFontMedium,
+                          color: gsecondaryColor,
+                          fontSize: 11.sp,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
+            SizedBox(height: 1.h)
           ],
         ),
-        SizedBox(height: 1.h)
-      ],
-    ), bottomSheetHeight: 40.h,
-      isSheetCloseNeeded: true,
-      sheetCloseOnTap: (){
+        bottomSheetHeight: 40.h,
+        isSheetCloseNeeded: true, sheetCloseOnTap: () {
       Navigator.pop(context);
-      }
-    );
+    });
   }
 
-  view(){
+  view() {
     return SingleChildScrollView(
       child: IntrinsicHeight(
         child: Column(
           children: [
             Flexible(
                 child: Center(
-                  child: GestureDetector(
-                    onTap: (){
-                      handleTrackerRemedyOnTap();
-                    },
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Image.asset("assets/images/home_remedies.png",
-                          width: 120,
-                          height: 50,
-                          fit: BoxFit.cover,
-
-                        ),
-                      ],
+              child: GestureDetector(
+                onTap: () {
+                  handleTrackerRemedyOnTap();
+                },
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Image.asset(
+                      "assets/images/home_remedies.png",
+                      width: 120,
+                      height: 50,
+                      fit: BoxFit.cover,
                     ),
-                  ),
-                )
-            ),
+                  ],
+                ),
+              ),
+            )),
             IntrinsicHeight(
               child: Column(
                 children: [
                   Expanded(
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 8.0, horizontal: 8),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Expanded(child: customCircle(DirectionAngle.topLeft.name, "3",
-                              iconName: ((prepratoryMealStage == null || prepratoryMealStage!.isEmpty) && _prepratoryModel == null) ? null : (_prepratoryModel?.value?.isPrepCompleted == true) ? newDashboardOpenIcon : newDashboardUnLockIcon,
-                            showLockIcon: showPrepLockIcon,
-                            headingText: "BEGIN GUT\nPREPARATION",subText: "While you wait for your customised Product Kit arrive to be used during the Reset phase of the program, "
+                          Expanded(
+                            child: customCircle(
+                              DirectionAngle.topLeft.name, "3",
+                              iconName: ((prepratoryMealStage == null ||
+                                          prepratoryMealStage!.isEmpty) &&
+                                      _prepratoryModel == null)
+                                  ? null
+                                  : (_prepratoryModel?.value?.isPrepCompleted ==
+                                          true)
+                                      ? newDashboardOpenIcon
+                                      : newDashboardUnLockIcon,
+                              showLockIcon: showPrepLockIcon,
+                              headingText: "BEGIN GUT\nPREPARATION",
+                              subText:
+                                  "While you wait for your customised Product Kit arrive to be used during the Reset phase of the program, "
                                   "You will be give a preparatory meal protocol based on your food type",
-                            bgColor: bg3,
+                              bgColor: bg3,
                               // borderColor: ((prepratoryMealStage == null || prepratoryMealStage!.isEmpty) && _prepratoryModel == null) ? null : (_prepratoryModel?.value?.isPrepCompleted == true) ? kBigCircleBorderGreen : kBigCircleBorderYellow,
-                            button1Name: prepBtn1Name ??'',
-                            button1Color: prepBtn1Color ?? newDashboardLightGreyButtonColor,
-                            button2Color: prepBtn2Color ?? newDashboardLightGreyButtonColor,
-                            button2Name: prepBtn2Name,
-                            type: StageType.prep_meal,
-                          ),),
+                              button1Name: prepBtn1Name ?? '',
+                              button1Color: prepBtn1Color ??
+                                  newDashboardLightGreyButtonColor,
+                              button2Color: prepBtn2Color ??
+                                  newDashboardLightGreyButtonColor,
+                              button2Name: prepBtn2Name,
+                              type: StageType.prep_meal,
+                            ),
+                          ),
                           SizedBox(
                             width: 30,
                           ),
-                          Expanded(child: customCircle(DirectionAngle.topRight.name, "4",
+                          Expanded(
+                            child: customCircle(
+                              DirectionAngle.topRight.name, "4",
                               iconName: getProgramTransBorderColor("icon"),
                               showLockIcon: showMealLockIcon,
                               headingText: "GUT RESET\nPROGRAM START",
-                            subText: "You are now ready to detoxify and repair your Gut disorder. First few "
-                                "day swill be challenging due to bland diet, but as you start experiencing "
-                                "the benefit, you will enjoy this phase.",
+                              subText:
+                                  "You are now ready to detoxify and repair your Gut disorder. First few "
+                                  "day swill be challenging due to bland diet, but as you start experiencing "
+                                  "the benefit, you will enjoy this phase.",
                               bgColor: bg4,
                               // borderColor: getProgramTransBorderColor("color"),
-                              button1Name: mealBtn1Name ??'',
-                              button1Color: mealBtn1Color ?? newDashboardLightGreyButtonColor,
-                              button2Color: mealBtn2Color ?? newDashboardLightGreyButtonColor,
+                              button1Name: mealBtn1Name ?? '',
+                              button1Color: mealBtn1Color ??
+                                  newDashboardLightGreyButtonColor,
+                              button2Color: mealBtn2Color ??
+                                  newDashboardLightGreyButtonColor,
                               button2Name: mealBtn2Name,
                               type: StageType.normal_meal,
-
-                          ),),
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -642,41 +714,55 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
                   ),
                   Expanded(
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 8.0, horizontal: 8),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Expanded(child: customCircle(DirectionAngle.bottomLeft.name, "2",
-                              iconName: (consultationStage == null) ? null : consultationStage == "report_upload" ? newDashboardOpenIcon : newDashboardUnLockIcon,
-                            headingText: "MEDICAL\nCONSULTAION",
-                            subText: "Basis your Evaluation details, a video consultation is the next step for our "
-                                "doctors to diagnose the root cause of you Gut Issues.",
-                            bgColor: bg2,
-                            // borderColor:(consultationStage == null) ? null : consultationStage == "report_upload" ? kBigCircleBorderGreen : kBigCircleBorderYellow,
-                            showLockIcon: showConsLockIcon,
-                            button1Name: consBtn1Name ??'',
-                            button1Color: consBtn1Color ?? newDashboardLightGreyButtonColor,
-                            button2Color: consBtn2Color ?? newDashboardLightGreyButtonColor,
-                            button2Name: consBtn2Name,
-                            type: StageType.med_consultation,
-                          ),),
+                          Expanded(
+                            child: customCircle(
+                              DirectionAngle.bottomLeft.name, "2",
+                              iconName: (consultationStage == null)
+                                  ? null
+                                  : consultationStage == "report_upload"
+                                      ? newDashboardOpenIcon
+                                      : newDashboardUnLockIcon,
+                              headingText: "MEDICAL\nCONSULTAION",
+                              subText:
+                                  "Basis your Evaluation details, a video consultation is the next step for our "
+                                  "doctors to diagnose the root cause of you Gut Issues.",
+                              bgColor: bg2,
+                              // borderColor:(consultationStage == null) ? null : consultationStage == "report_upload" ? kBigCircleBorderGreen : kBigCircleBorderYellow,
+                              showLockIcon: showConsLockIcon,
+                              button1Name: consBtn1Name ?? '',
+                              button1Color: consBtn1Color ??
+                                  newDashboardLightGreyButtonColor,
+                              button2Color: consBtn2Color ??
+                                  newDashboardLightGreyButtonColor,
+                              button2Name: consBtn2Name,
+                              type: StageType.med_consultation,
+                            ),
+                          ),
                           SizedBox(
                             width: 30,
                           ),
                           Expanded(
                             child: customCircle(
-                                DirectionAngle.bottomRight.name,
-                                "1",
+                              DirectionAngle.bottomRight.name,
+                              "1",
                               iconName: newDashboardOpenIcon,
-                            showLockIcon: false,
-                            headingText: "DISORDER\nEVALUATION",
-                            subText:"A Critical information needed by our doctors to understand your Medical "
-                                "history, Symptoms, Sleep, Diet & Lifestyle for proper diagnosis!",
-                            bgColor: bg1,
-                                button1Name: evalBtnName ??'',
-                                button1Color: evalBtnColor ?? newDashboardLightGreyButtonColor,
+                              showLockIcon: false,
+                              headingText: "DISORDER\nEVALUATION",
+                              subText:
+                                  "A Critical information needed by our doctors to understand your Medical "
+                                  "history, Symptoms, Sleep, Diet & Lifestyle for proper diagnosis!",
+                              bgColor: bg1,
+                              button1Name: evalBtnName ?? '',
+                              button1Color: evalBtnColor ??
+                                  newDashboardLightGreyButtonColor,
                               type: StageType.evaluation,
-                          ),),
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -685,32 +771,37 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
               ),
             ),
             Flexible(
-              child: Center(
-                child: InkWell(
-                  onTap: (){
-                    Navigator.push(context, MaterialPageRoute(builder: (_)=> const NewScheduleScreen()));
-                  },
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                    ImageIcon(AssetImage("assets/images/new_ds/follow_up.png"),
+                child: Center(
+              child: InkWell(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => const NewScheduleScreen()));
+                },
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ImageIcon(
+                      AssetImage("assets/images/new_ds/follow_up.png"),
                       size: 11.sp,
                       color: gHintTextColor,
                     ),
                     SizedBox(
                       width: 3,
                     ),
-                    Text('Follow-up call',
+                    Text(
+                      'Follow-up call',
                       style: TextStyle(
                         color: gHintTextColor,
                         fontSize: headingFont,
                         decoration: TextDecoration.underline,
                       ),
                     )
-                  ],),
+                  ],
                 ),
-              )
-            ),
+              ),
+            )),
             // Flexible(
             //     child: Center(
             //       child: InkWell(
@@ -762,7 +853,7 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
     );
   }
 
-  PPView(){
+  PPView() {
     return SingleChildScrollView(
       child: IntrinsicHeight(
         child: Column(
@@ -772,7 +863,6 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
             LightPurple(),
             PinkPart1(),
             GreenPurple(),
-
 
             // Flexible(
             //     child: Center(
@@ -829,62 +919,75 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
   Color yellowArc = Color(0xFFFFE889);
   Color greenArc = Color(0xFFA7CB52);
 
-  PPContainerTile(){
+  PPContainerTile() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Opacity(opacity: 0.5,
+        Opacity(
+          opacity: 0.5,
           child: Stack(
             children: [
               tile(
                   arcColor: redArc,
                   heading: "MONTHLY MAINTENANCE PLAN [MMP]",
-                  subText: "Many of our customers request us to hand hold them for few months even after the program. Many want to be in touch with our doctors and seek help to design their meal and Yoga plan. They feel they need that motivation and support for some more time. Hence we have introduced a monthly plan for such customers. If you are interested,please sign up and our representative will reach out and explain how it works.......",
+                  subText:
+                      "Many of our customers request us to hand hold them for few months even after the program. Many want to be in touch with our doctors and seek help to design their meal and Yoga plan. They feel they need that motivation and support for some more time. Hence we have introduced a monthly plan for such customers. If you are interested,please sign up and our representative will reach out and explain how it works.......",
                   btn1Name: mmpBtn1Name ?? '',
                   btn1Color: mmpBtn1Color,
-                  btnStage: PPButtonStage.MMP
-              ),
+                  btnStage: PPButtonStage.MMP),
               Positioned(
                   child: Align(
-                    alignment: Alignment.centerRight,
-                    child: Image.asset(newDashboardLockIcon,
-                      width: 20,
-                      height: 20,
-                      color: redArc,
-                    ),
-                  )
-              )
+                alignment: Alignment.centerRight,
+                child: Image.asset(
+                  newDashboardLockIcon,
+                  width: 20,
+                  height: 20,
+                  color: redArc,
+                ),
+              ))
             ],
           ),
         ),
         tile(
-            arcColor: yellowArc,
-            heading: "GUT MAINTENANCE GUIDE [GMG]",
-            subText: "Congratulation on successfully completing the Gut Rhythm Reset Program, Great Job! Now its time to discuss your progress with your consulting doctor and one of the Senior Consultant to evaluate you Gut Condition. If all is well, you will be moved to maintenance. However if some more rectification is needed, They will discuss the next steps ....",
-            btn2Name: gmgBtn2Name,
-            btn2Color: gmgBtn2Color,
-            btn1Name: gmgBtn1Name ?? 'Track & Earn',
-            btn1Color: gmgBtn1Color,
-            btnStage: PPButtonStage.GMG
+          arcColor: yellowArc,
+          heading: "GUT MAINTENANCE GUIDE [GMG]",
+          subText:
+              "Congratulation on successfully completing the Gut Rhythm Reset Program, Great Job! Now its time to discuss your progress with your consulting doctor and one of the Senior Consultant to evaluate you Gut Condition. If all is well, you will be moved to maintenance. However if some more rectification is needed, They will discuss the next steps ....",
+          btn2Name: gmgBtn2Name ?? "End Report",
+          btn2Color: gmgBtn2Color,
+          btn3Name: gmgBtn1Name ?? 'Track & Earn',
+          btn1Color: gmgBtn1Color,
+          btnStage: PPButtonStage.GMG,
+          btn1Name: gmgBtn3Name ?? 'View GMG',
         ),
         tile(
             arcColor: greenArc,
             heading: "POST PROGRAM CONSULT [PPC]",
-            subText: "Congratulation on successfully completing the Gut Rhythm Reset Program, Great Job! Now its time to discuss your progress with your consulting doctor and one of the Senior Consultant to evaluate you Gut Condition. If all is well, you will be moved to maintenance. However if some more rectification is needed, They will discuss the next steps ....",
+            subText:
+                "Congratulation on successfully completing the Gut Rhythm Reset Program, Great Job! Now its time to discuss your progress with your consulting doctor and one of the Senior Consultant to evaluate you Gut Condition. If all is well, you will be moved to maintenance. However if some more rectification is needed, They will discuss the next steps ....",
             btn1Name: postBtn1Name ?? 'Feedback',
             btn2Name: postBtn2Name ?? 'Schedule',
-          btn3Name: postBtn3Name ?? 'Join',
+            btn3Name: postBtn3Name ?? 'Join',
             btn1Color: postBtn1Color,
             btn2Color: postBtn2Color,
             btn3Color: postBtn3Color,
-            btnStage: PPButtonStage.PPC
-        ),
+            btnStage: PPButtonStage.PPC),
       ],
     );
   }
 
   //outer 132 inner 130.5
-  tile({required Color arcColor, required String heading,required String subText,required String btn1Name,required PPButtonStage btnStage, String? btn2Name, String? btn3Name, Color? btn1Color,  Color? btn2Color,  Color? btn3Color}){
+  tile(
+      {required Color arcColor,
+      required String heading,
+      required String subText,
+      required String btn1Name,
+      required PPButtonStage btnStage,
+      String? btn2Name,
+      String? btn3Name,
+      Color? btn1Color,
+      Color? btn2Color,
+      Color? btn3Color}) {
     return IntrinsicHeight(
       child: Container(
         margin: EdgeInsets.only(top: 5, bottom: 20),
@@ -936,50 +1039,49 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
                 child: Stack(
                   children: [
                     Positioned(
-                      right: 0,
-                      top: 10,
+                        right: 0,
+                        top: 10,
                         left: 30,
                         child: Padding(
-                          padding: const EdgeInsets.only(right:10.0),
+                          padding: const EdgeInsets.only(right: 10.0),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                          Align(
-                            alignment: Alignment.topLeft,
-                            child: Text(heading,
-                              style: TextStyle(
-                                  fontFamily: eUser().mainHeadingFont,
-                                  color: eUser().mainHeadingColor,
-                                  fontSize: 12.sp,
-                              ),
-                              textAlign: TextAlign.left,
-                            ),
-                          ),
-                          SizedBox(
-                            height: 7,
-                          ),
-                          IntrinsicHeight(
-                            child:
-                              Text(subText,
-                                softWrap: true,
-                                maxLines: 5,
-                                style: TextStyle(
-                                  height: 1.22,
-                                    fontFamily: kFontBook,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Align(
+                                alignment: Alignment.topLeft,
+                                child: Text(
+                                  heading,
+                                  style: TextStyle(
+                                    fontFamily: eUser().mainHeadingFont,
                                     color: eUser().mainHeadingColor,
-                                    fontSize: 9.5.sp
+                                    fontSize: 12.sp,
+                                  ),
+                                  textAlign: TextAlign.left,
                                 ),
                               ),
+                              SizedBox(
+                                height: 7,
+                              ),
+                              IntrinsicHeight(
+                                child: Text(
+                                  subText,
+                                  softWrap: true,
+                                  maxLines: 5,
+                                  style: TextStyle(
+                                      height: 1.22,
+                                      fontFamily: kFontBook,
+                                      color: eUser().mainHeadingColor,
+                                      fontSize: 9.5.sp),
+                                ),
+                              ),
+                            ],
                           ),
-                      ],
-                    ),
-                        )
-                    ),
+                        )),
                     Align(
                       alignment: Alignment.bottomRight,
                       child: Padding(
-                        padding: const EdgeInsets.only(right:10.0),
+                        padding: const EdgeInsets.only(right: 10.0),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
@@ -987,8 +1089,12 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
                                 ppBuildButton(btn1Name, 1, btnStage, btn1Color),
-                                if(btn2Name != null) ppBuildButton(btn2Name, 2, btnStage, btn2Color),
-                                if(btn3Name != null) ppBuildButton(btn3Name, 3, btnStage, btn3Color),
+                                if (btn2Name != null)
+                                  ppBuildButton(
+                                      btn2Name, 2, btnStage, btn2Color),
+                                if (btn3Name != null)
+                                  ppBuildButton(
+                                      btn3Name, 3, btnStage, btn3Color),
                               ],
                             ),
                             SizedBox(
@@ -998,7 +1104,6 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
                         ),
                       ),
                     ),
-
                   ],
                 ),
               ),
@@ -1009,47 +1114,48 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
     );
   }
 
-  ppBuildButton(String btnName, int btnId, PPButtonStage stage, Color? btnColor){
+  ppBuildButton(
+      String btnName, int btnId, PPButtonStage stage, Color? btnColor) {
     return GestureDetector(
-      onTap: (){
-        switch(stage){
+      onTap: () {
+        switch (stage) {
           case PPButtonStage.MMP:
             break;
           case PPButtonStage.GMG:
-          showPostProgramScreen();
+            showPostProgramScreen();
             break;
           case PPButtonStage.PPC:
-            if(btnId == 1){
-              if(postProgramStage == "post_program"){
+            if (btnId == 1) {
+              if (postProgramStage == "post_program") {
                 goToScreen(MedicalFeedbackForm());
-              }
-                else{
+              } else {
                 // goToScreen(FinalFeedbackForm());
 
-                AppConfig().showSnackbar(context, "Can't access Locked Stage", isError: true);
+                AppConfig().showSnackbar(context, "Can't access Locked Stage",
+                    isError: true);
               }
-            }
-            else if(btnId == 2){
-              if(postProgramStage == "post_program"){
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          DoctorCalenderTimeScreen(isPostProgram: true,)
-                    // PostProgramScreen(postProgramStage: postProgramStage,),
-                  ),
-                ).then((value) => reloadUI());
-              }
-              else if(postProgramStage == "post_appointment_booked"){
+            } else if (btnId == 2) {
+              if (postProgramStage == "post_program") {
+                Navigator.of(context)
+                    .push(
+                      MaterialPageRoute(
+                          builder: (context) => DoctorCalenderTimeScreen(
+                                isPostProgram: true,
+                              )
+                          // PostProgramScreen(postProgramStage: postProgramStage,),
+                          ),
+                    )
+                    .then((value) => reloadUI());
+              } else if (postProgramStage == "post_appointment_booked") {
                 final model = _getAppointmentDetailsModel;
                 print(model!.value!.date);
                 List<String> doctorNames = [];
                 String? doctorName;
                 String? doctorImage;
 
-
                 model.value?.teamMember?.forEach((element) {
-                  if(element.user != null){
-                    if(element.user!.roleId == "2"){
+                  if (element.user != null) {
+                    if (element.user!.roleId == "2") {
                       doctorNames.add('Dr. ${element.user!.name}' ?? '');
                       doctorName = 'Dr. ${element.user!.name}';
                       doctorImage = element.user?.profile ?? '';
@@ -1068,28 +1174,33 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
                   doctorName: doctorName,
                   doctorPic: doctorImage,
                 ));
+              } else {
+                AppConfig().showSnackbar(context, "Can't access Locked Stage",
+                    isError: true);
               }
-              else{
-                AppConfig().showSnackbar(context, "Can't access Locked Stage", isError: true);
-              }
-            }
-            else{
-              if(postProgramStage == "post_appointment_booked"){
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          DoctorSlotsDetailsScreen(
-                            bookingDate: _postConsultationAppointment!.value!.date!,
-                            bookingTime: _postConsultationAppointment!.value!.slotStartTime!,
-                            isPostProgram: true,
-                            dashboardValueMap: _postConsultationAppointment!.value!.toJson() ,)
-                    // PostProgramScreen(postProgramStage: postProgramStage,
-                    //   consultationData: _postConsultationAppointment,),
-                  ),
-                ).then((value) => reloadUI());
-              }
-              else{
-                AppConfig().showSnackbar(context, "Can't access Locked Stage", isError: true);
+            } else {
+              if (postProgramStage == "post_appointment_booked") {
+                Navigator.of(context)
+                    .push(
+                      MaterialPageRoute(
+                          builder: (context) => DoctorSlotsDetailsScreen(
+                                bookingDate:
+                                    _postConsultationAppointment!.value!.date!,
+                                bookingTime: _postConsultationAppointment!
+                                    .value!.slotStartTime!,
+                                isPostProgram: true,
+                                dashboardValueMap: _postConsultationAppointment!
+                                    .value!
+                                    .toJson(),
+                              )
+                          // PostProgramScreen(postProgramStage: postProgramStage,
+                          //   consultationData: _postConsultationAppointment,),
+                          ),
+                    )
+                    .then((value) => reloadUI());
+              } else {
+                AppConfig().showSnackbar(context, "Can't access Locked Stage",
+                    isError: true);
               }
             }
             break;
@@ -1108,7 +1219,8 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
                 color: kLineColor,
                 blurRadius: 5,
                 offset: const Offset(2, 3),
-              )],
+              )
+            ],
           ),
           child: Center(
             child: Row(
@@ -1121,7 +1233,8 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
                     fontSize: 6.5.sp,
                   ),
                 ),
-                Icon(Icons.arrow_forward,
+                Icon(
+                  Icons.arrow_forward,
                   color: gMainColor,
                   size: 10.sp,
                 )
@@ -1133,15 +1246,21 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
     );
   }
 
-
-
   final completedBgColor = Color(0xFFEFEEC8);
   final currentBgColor = Color(0xFFFFF8DA);
   final lockedBgColor = Color(0xFFF1F2F2);
 
   customCircle(String angle, String stageNo,
-      {String? iconName,String? headingText, String? subText, Color? bgColor, required String button1Name, required Color button1Color,
-    String? button2Name, Color? button2Color, required StageType type, bool showLockIcon = true}){
+      {String? iconName,
+      String? headingText,
+      String? subText,
+      Color? bgColor,
+      required String button1Name,
+      required Color button1Color,
+      String? button2Name,
+      Color? button2Color,
+      required StageType type,
+      bool showLockIcon = true}) {
     return Stack(
       clipBehavior: Clip.none,
       children: [
@@ -1149,25 +1268,33 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
           child: Container(
             height: 170,
             decoration: BoxDecoration(
-              color: bgColor ?? lockedBgColor,
-              borderRadius:BorderRadius.only(
-                topRight: (angle == DirectionAngle.bottomLeft.name) ? const Radius.circular(0) : const Radius.circular(80),
-                topLeft: (angle == DirectionAngle.bottomRight.name) ? const Radius.circular(0) : const Radius.circular(80),
-                bottomLeft: (angle == DirectionAngle.topRight.name) ? const Radius.circular(0) : const Radius.circular(80),
-                bottomRight: (angle == DirectionAngle.topLeft.name) ? const Radius.circular(0) : const Radius.circular(80),
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: kLineColor,
-                  blurRadius: 10,
-                  offset: const Offset(2, 3),
-                )
-              ]
-              // border: Border.all(
-              //     color: borderColor ?? gsecondaryColor,
-              //     width: 1
-              // ),
-            ),
+                color: bgColor ?? lockedBgColor,
+                borderRadius: BorderRadius.only(
+                  topRight: (angle == DirectionAngle.bottomLeft.name)
+                      ? const Radius.circular(0)
+                      : const Radius.circular(80),
+                  topLeft: (angle == DirectionAngle.bottomRight.name)
+                      ? const Radius.circular(0)
+                      : const Radius.circular(80),
+                  bottomLeft: (angle == DirectionAngle.topRight.name)
+                      ? const Radius.circular(0)
+                      : const Radius.circular(80),
+                  bottomRight: (angle == DirectionAngle.topLeft.name)
+                      ? const Radius.circular(0)
+                      : const Radius.circular(80),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: kLineColor,
+                    blurRadius: 10,
+                    offset: const Offset(2, 3),
+                  )
+                ]
+                // border: Border.all(
+                //     color: borderColor ?? gsecondaryColor,
+                //     width: 1
+                // ),
+                ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
@@ -1175,30 +1302,29 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
                   height: 3.h,
                 ),
                 Center(
-                  child: Text(headingText ?? '',
+                  child: Text(
+                    headingText ?? '',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                         fontFamily: eUser().mainHeadingFont,
                         color: eUser().mainHeadingColor,
-                        fontSize: 11.sp
-                    ),
+                        fontSize: 11.sp),
                   ),
                 ),
                 Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10, vertical: 4
-                    ),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   child: LayoutBuilder(
-                    builder: (_, size){
+                    builder: (_, size) {
                       // Build the textspan
                       var span = TextSpan(
                         text: subText,
                         style: TextStyle(
-                            height: 1,
-                            fontFamily: kFontBook,
-                            color: eUser().mainHeadingColor,
-                            fontSize: 8.sp,
-                          ),
+                          height: 1,
+                          fontFamily: kFontBook,
+                          color: eUser().mainHeadingColor,
+                          fontSize: 8.sp,
+                        ),
                       );
                       // Use a textpainter to determine if it will exceed max lines
                       var tp = TextPainter(
@@ -1214,7 +1340,6 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
                       print("tp len: ${tp.text!.toPlainText().length}");
                       print("tp len: ${tp.maxIntrinsicWidth}");
 
-
                       // whether the text overflowed or not
                       var exceeded = tp.didExceedMaxLines;
 
@@ -1226,9 +1351,9 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
                         text: TextSpan(children: [
                           TextSpan(
                             text: subText!.substring(
-                                0,
-                                int.parse(
-                                    "${(subText.length * 0.4789).toInt()}")) +
+                                    0,
+                                    int.parse(
+                                        "${(subText.length * 0.4789).toInt()}")) +
                                 "...",
                             style: TextStyle(
                               height: 1,
@@ -1239,9 +1364,7 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
                           ),
                           WidgetSpan(
                             child: InkWell(
-                                mouseCursor:
-                                SystemMouseCursors
-                                    .click,
+                                mouseCursor: SystemMouseCursors.click,
                                 onTap: () {
                                   showMoreTextSheet(subText);
                                 },
@@ -1249,12 +1372,9 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
                                   "more",
                                   style: TextStyle(
                                       height: 1.3,
-                                      fontFamily:
-                                      kFontBook,
-                                      color:
-                                      gsecondaryColor,
-                                      fontSize:
-                                      bottomSheetSubHeadingSFontSize),
+                                      fontFamily: kFontBook,
+                                      color: gsecondaryColor,
+                                      fontSize: bottomSheetSubHeadingSFontSize),
                                 )),
                           )
                         ]),
@@ -1268,11 +1388,13 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    buildButton(button1Name,button1Color, 1, type),
-                    if(button2Name != null)SizedBox(
-                      width: 5,
-                    ),
-                    if(button2Name != null)buildButton(button2Name,button2Color!, 2, type)
+                    buildButton(button1Name, button1Color, 1, type),
+                    if (button2Name != null)
+                      SizedBox(
+                        width: 5,
+                      ),
+                    if (button2Name != null)
+                      buildButton(button2Name, button2Color!, 2, type)
                   ],
                 )
                 // Expanded(
@@ -1296,56 +1418,83 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
           ),
         ),
         Positioned(
-          left: (angle == DirectionAngle.bottomRight.name || angle == DirectionAngle.topRight.name ) ? -18 : null,
-            top: (angle == DirectionAngle.bottomRight.name || angle == DirectionAngle.bottomLeft.name) ? -17 : null,
-            right: (angle == DirectionAngle.bottomLeft.name || angle == DirectionAngle.topLeft.name) ? -18 : null,
-            bottom: (angle == DirectionAngle.topRight.name || angle == DirectionAngle.topLeft.name) ? -17 : null,
+            left: (angle == DirectionAngle.bottomRight.name ||
+                    angle == DirectionAngle.topRight.name)
+                ? -18
+                : null,
+            top: (angle == DirectionAngle.bottomRight.name ||
+                    angle == DirectionAngle.bottomLeft.name)
+                ? -17
+                : null,
+            right: (angle == DirectionAngle.bottomLeft.name ||
+                    angle == DirectionAngle.topLeft.name)
+                ? -18
+                : null,
+            bottom: (angle == DirectionAngle.topRight.name ||
+                    angle == DirectionAngle.topLeft.name)
+                ? -17
+                : null,
             child: Container(
               width: 45,
               height: 45,
               padding: EdgeInsets.all(10),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: (angle == DirectionAngle.bottomRight.name) ? kNumberCircleGreen :
-                (angle == DirectionAngle.bottomLeft.name) ? kNumberCircleAmber :
-                (angle == DirectionAngle.topLeft.name) ? kNumberCircleRed :
-                kNumberCirclePurple,
+                color: (angle == DirectionAngle.bottomRight.name)
+                    ? kNumberCircleGreen
+                    : (angle == DirectionAngle.bottomLeft.name)
+                        ? kNumberCircleAmber
+                        : (angle == DirectionAngle.topLeft.name)
+                            ? kNumberCircleRed
+                            : kNumberCirclePurple,
               ),
-              child: Center(child: Text(stageNo,
+              child: Center(
+                  child: Text(
+                stageNo,
                 style: TextStyle(
-                  fontFamily: kFontSensaBrush,
-                  fontSize: headingFont,
-                  color: gWhiteColor
-                ),
+                    fontFamily: kFontSensaBrush,
+                    fontSize: headingFont,
+                    color: gWhiteColor),
               )),
-            )
-        ),
+            )),
         Positioned(
-            left: (angle == DirectionAngle.topLeft.name || angle == DirectionAngle.bottomLeft.name) ? 10 : null,
+            left: (angle == DirectionAngle.topLeft.name ||
+                    angle == DirectionAngle.bottomLeft.name)
+                ? 10
+                : null,
             // top: (angle == DirectionAngle.bottomRight.name || angle == DirectionAngle.bottomLeft.name) ?  : null,
-            right: (angle == DirectionAngle.topRight.name || angle == DirectionAngle.bottomRight.name) ? 10 : null,
-            bottom: (angle == DirectionAngle.bottomRight.name || angle == DirectionAngle.bottomLeft.name) ? 6 : null,
+            right: (angle == DirectionAngle.topRight.name ||
+                    angle == DirectionAngle.bottomRight.name)
+                ? 10
+                : null,
+            bottom: (angle == DirectionAngle.bottomRight.name ||
+                    angle == DirectionAngle.bottomLeft.name)
+                ? 6
+                : null,
             child: Visibility(
               visible: showLockIcon,
               child: Image.asset(
-                  (angle == DirectionAngle.topLeft.name) ? iconName ?? newDashboardLockIcon
-                      : (angle == DirectionAngle.topRight.name) ? iconName ?? newDashboardLockIcon :
-                  (angle == DirectionAngle.bottomLeft.name) ? iconName ?? newDashboardLockIcon : iconName ?? newDashboardLockIcon,
+                (angle == DirectionAngle.topLeft.name)
+                    ? iconName ?? newDashboardLockIcon
+                    : (angle == DirectionAngle.topRight.name)
+                        ? iconName ?? newDashboardLockIcon
+                        : (angle == DirectionAngle.bottomLeft.name)
+                            ? iconName ?? newDashboardLockIcon
+                            : iconName ?? newDashboardLockIcon,
                 width: 30,
                 height: 30,
               ),
-            )
-        ),
+            )),
       ],
     );
   }
 
   bool isShown = false;
 
-  abc(){
+  abc() {
     Future.delayed(Duration(seconds: 0)).whenComplete(() {
-      if(shippingStage == 'meal_plan_completed'){
-        if(!isShown){
+      if (shippingStage == 'meal_plan_completed') {
+        if (!isShown) {
           setState(() {
             isShown = true;
           });
@@ -1354,24 +1503,25 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
       }
     });
   }
+
   bool isSendApproveStatus = false;
   bool isPressed = false;
-  sendApproveStatus(String status, {bool fromNull = false}) async{
-    if(!isSendApproveStatus){
+  sendApproveStatus(String status, {bool fromNull = false}) async {
+    if (!isSendApproveStatus) {
       setState(() {
         isSendApproveStatus = true;
         isPressed = true;
       });
       print("isPressed: $isPressed");
-      final res = await ShipTrackService(repository: shipTrackRepository).sendSippingApproveStatusService(status);
+      final res = await ShipTrackService(repository: shipTrackRepository)
+          .sendSippingApproveStatusService(status);
 
-      if(res.runtimeType == ShippingApproveModel){
+      if (res.runtimeType == ShippingApproveModel) {
         ShippingApproveModel model = res as ShippingApproveModel;
         print('success: ${model.message}');
         AppConfig().showSnackbar(context, model.message!);
         getData();
-      }
-      else{
+      } else {
         ErrorModel model = res as ErrorModel;
         print('error: ${model.message}');
         AppConfig().showSnackbar(context, model.message!);
@@ -1382,9 +1532,10 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
     }
   }
 
-  addUrlToVideoPlayer(String url) async{
-    print("url"+ url);
-    _mealPlayerController = VlcPlayerController.network(url,
+  addUrlToVideoPlayer(String url) async {
+    print("url" + url);
+    _mealPlayerController = VlcPlayerController.network(
+      url,
       // url,
       // 'http://samples.mplayerhq.hu/MPEG-4/embedded_subs/1Video_2Audio_2SUBs_timed_text_streams_.mp4',
       // 'https://media.w3.org/2010/05/sintel/trailer.mp4',
@@ -1410,135 +1561,149 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
         ]),
       ),
     );
-    if( !await Wakelock.enabled){
+    if (!await Wakelock.enabled) {
       Wakelock.enable();
     }
   }
 
-  disposePlayer() async{
-    if(_mealPlayerController != null){
+  disposePlayer() async {
+    if (_mealPlayerController != null) {
       _mealPlayerController!.dispose();
     }
-    if(await Wakelock.enabled){
+    if (await Wakelock.enabled) {
       Wakelock.disable();
     }
   }
 
-  mealReadySheet(){
+  mealReadySheet() {
     addUrlToVideoPlayer(_gutShipDataModel?.value ?? '');
-    return AppConfig().showSheet(context, Column(
-      children: [
-        Text('Hooray!\nYour food prescription is ready',
-          textAlign: TextAlign.center,
-          style: TextStyle(
-              height: 1.4,
-              fontSize: bottomSheetSubHeadingXLFontSize,
-              fontFamily: bottomSheetSubHeadingBoldFont,
-              color: gTextColor
-          ),),
-        // need ot show Video
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          child: buildMealVideo(),
-        ),
-        // Padding(
-        //   padding: const EdgeInsets.symmetric(vertical: 8),
-        //   child: Image.asset('assets/images/meal_popup.png',
-        //     fit: BoxFit.scaleDown,
-        //     width: 60.w,
-        //     filterQuality: FilterQuality.high,
-        //   ),
-        // ),
-        Text("You've Unlocked The Next Step!",
-          textAlign: TextAlign.center,
-          style: TextStyle(
-              height: 1.2,
-              fontSize: bottomSheetSubHeadingXLFontSize,
-              fontFamily: bottomSheetSubHeadingMediumFont,
-              color: gTextColor
-          ),),
-        Text("The Product Kit Is Ready. Shall We Ship It For You?",
-          textAlign: TextAlign.center,
-          style: TextStyle(
-              height: 1.2,
-              fontSize: bottomSheetSubHeadingXLFontSize,
-              fontFamily: bottomSheetSubHeadingBookFont,
-              color: gTextColor
-          ),),
-        SizedBox(height: 5.h,),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+    return AppConfig().showSheet(
+        context,
+        Column(
           children: [
-            GestureDetector(
-              onTap: (isPressed) ? (){} : () {
-                Navigator.pop(context);
-                sendApproveStatus('yes');
-                setState(() {
-                  isShown = false;
-                });
-                disposePlayer();
-                if(isMealProgressOpened){
-                  Navigator.pop(context);
-                }
-              },
-              child: Container(
-                padding: EdgeInsets.symmetric(
-                    vertical: 1.5.h, horizontal: 12.w),
-                decoration: BoxDecoration(
-                    color: gsecondaryColor,
-                    border: Border.all(color: kLineColor, width: 0.5),
-                    borderRadius: BorderRadius.circular(5)),
-                child: Text(
-                  "YES",
-                  style: TextStyle(
-                    fontFamily: kFontMedium,
-                    color: gWhiteColor,
-                    fontSize: 11.sp,
-                  ),
-                ),
-              ),
+            Text(
+              'Hooray!\nYour food prescription is ready',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  height: 1.4,
+                  fontSize: bottomSheetSubHeadingXLFontSize,
+                  fontFamily: bottomSheetSubHeadingBoldFont,
+                  color: gTextColor),
             ),
-            SizedBox(width: 5.w),
-            GestureDetector(
-              onTap: (isPressed) ? (){} : () {
-                Navigator.pop(context);
-                sendApproveStatus('no');
-                setState(() {
-                  isShown = false;
-                });
-                disposePlayer();
-                if(isMealProgressOpened){
-                  Navigator.pop(context);
-                }
-              },
-              child: Container(
-                padding: EdgeInsets.symmetric(
-                    vertical: 1.5.h, horizontal: 12.w),
-                decoration: BoxDecoration(
-                    color: gWhiteColor,
-                    border: Border.all(color: kLineColor, width: 0.5),
-                    borderRadius: BorderRadius.circular(5)),
-                child: Text(
-                  "NO",
-                  style: TextStyle(
-                    fontFamily: kFontMedium,
-                    color: gsecondaryColor,
-                    fontSize: 11.sp,
+            // need ot show Video
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: buildMealVideo(),
+            ),
+            // Padding(
+            //   padding: const EdgeInsets.symmetric(vertical: 8),
+            //   child: Image.asset('assets/images/meal_popup.png',
+            //     fit: BoxFit.scaleDown,
+            //     width: 60.w,
+            //     filterQuality: FilterQuality.high,
+            //   ),
+            // ),
+            Text(
+              "You've Unlocked The Next Step!",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  height: 1.2,
+                  fontSize: bottomSheetSubHeadingXLFontSize,
+                  fontFamily: bottomSheetSubHeadingMediumFont,
+                  color: gTextColor),
+            ),
+            Text(
+              "The Product Kit Is Ready. Shall We Ship It For You?",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  height: 1.2,
+                  fontSize: bottomSheetSubHeadingXLFontSize,
+                  fontFamily: bottomSheetSubHeadingBookFont,
+                  color: gTextColor),
+            ),
+            SizedBox(
+              height: 5.h,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                GestureDetector(
+                  onTap: (isPressed)
+                      ? () {}
+                      : () {
+                          Navigator.pop(context);
+                          sendApproveStatus('yes');
+                          setState(() {
+                            isShown = false;
+                          });
+                          disposePlayer();
+                          if (isMealProgressOpened) {
+                            Navigator.pop(context);
+                          }
+                        },
+                  child: Container(
+                    padding:
+                        EdgeInsets.symmetric(vertical: 1.5.h, horizontal: 12.w),
+                    decoration: BoxDecoration(
+                        color: gsecondaryColor,
+                        border: Border.all(color: kLineColor, width: 0.5),
+                        borderRadius: BorderRadius.circular(5)),
+                    child: Text(
+                      "YES",
+                      style: TextStyle(
+                        fontFamily: kFontMedium,
+                        color: gWhiteColor,
+                        fontSize: 11.sp,
+                      ),
+                    ),
                   ),
                 ),
-              ),
+                SizedBox(width: 5.w),
+                GestureDetector(
+                  onTap: (isPressed)
+                      ? () {}
+                      : () {
+                          Navigator.pop(context);
+                          sendApproveStatus('no');
+                          setState(() {
+                            isShown = false;
+                          });
+                          disposePlayer();
+                          if (isMealProgressOpened) {
+                            Navigator.pop(context);
+                          }
+                        },
+                  child: Container(
+                    padding:
+                        EdgeInsets.symmetric(vertical: 1.5.h, horizontal: 12.w),
+                    decoration: BoxDecoration(
+                        color: gWhiteColor,
+                        border: Border.all(color: kLineColor, width: 0.5),
+                        borderRadius: BorderRadius.circular(5)),
+                    child: Text(
+                      "NO",
+                      style: TextStyle(
+                        fontFamily: kFontMedium,
+                        color: gsecondaryColor,
+                        fontSize: 11.sp,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 5.h,
             ),
           ],
         ),
-        SizedBox(height: 5.h,),
-      ],
-    ), bottomSheetHeight: 75.h);
+        bottomSheetHeight: 75.h);
   }
 
   buildMealVideo() {
-    if(_mealPlayerController != null){
+    if (_mealPlayerController != null) {
       return AspectRatio(
-        aspectRatio: 16/9,
+        aspectRatio: 16 / 9,
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(5),
@@ -1589,12 +1754,10 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
           // ),
         ),
       );
-    }
-    else {
+    } else {
       return SizedBox.shrink();
     }
   }
-
 
   final ShipTrackRepository shipTrackRepository = ShipTrackRepository(
     apiClient: ApiClient(
@@ -1604,18 +1767,18 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
 
   void showConsultationScreenFromStages(status) {
     print(status);
-    switch(status) {
-      case 'evaluation_done'  :
+    switch (status) {
+      case 'evaluation_done':
         goToScreen(DoctorCalenderTimeScreen());
         break;
-      case 'pending' :
+      case 'pending':
         goToScreen(DoctorCalenderTimeScreen());
         break;
-      case 'consultation_reschedule' :
+      case 'consultation_reschedule':
         final model = _getAppointmentDetailsModel;
         String? _doctorName;
         model!.value!.teamMember!.forEach((element) {
-          if(element.user!.roleId == "2"){
+          if (element.user!.roleId == "2") {
             _doctorName = 'Dr. ${element.user!.name}' ?? '';
           }
         });
@@ -1623,20 +1786,22 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
         // add this before calling calendertimescreen for reschedule
         // _pref!.setString(AppConfig.appointmentId , '');
         goToScreen(DoctorCalenderTimeScreen(
-          isReschedule: true,
-          prevBookingDate: model!.value!.appointmentDate,
-          prevBookingTime: model.value!.appointmentStartTime,
-          doctorDetails: model.value!.doctor,
-          doctorName: _doctorName
-
-        ));
+            isReschedule: true,
+            prevBookingDate: model!.value!.appointmentDate,
+            prevBookingTime: model.value!.appointmentStartTime,
+            doctorDetails: model.value!.doctor,
+            doctorName: _doctorName));
         break;
       case 'appointment_booked':
         final model = _getAppointmentDetailsModel;
-        _pref!.setString(AppConfig.appointmentId, model?.value?.id.toString() ?? '');
-        goToScreen(DoctorSlotsDetailsScreen(bookingDate: model!.value!.date!,
+        _pref!.setString(
+            AppConfig.appointmentId, model?.value?.id.toString() ?? '');
+        goToScreen(DoctorSlotsDetailsScreen(
+          bookingDate: model!.value!.date!,
           bookingTime: model.value!.slotStartTime!,
-          dashboardValueMap: model.value!.toJson(),isFromDashboard: true,));
+          dashboardValueMap: model.value!.toJson(),
+          isFromDashboard: true,
+        ));
 
         break;
       case 'consultation_done':
@@ -1649,12 +1814,14 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
         goToScreen(UploadFiles());
         break;
       case 'check_user_reports':
-      // print(_gutDataModel!.value);
+        // print(_gutDataModel!.value);
         goToScreen(CheckUserReportsScreen());
         break;
       case 'consultation_rejected':
         print(_gutDataModel?.rejectedCase?.reason);
-        goToScreen(ConsultationRejected(reason: _gutDataModel?.rejectedCase?.reason ?? '',));
+        goToScreen(ConsultationRejected(
+          reason: _gutDataModel?.rejectedCase?.reason ?? '',
+        ));
         break;
       case 'report_upload':
         // need to show consultation completed screen, "You can now View Your Medical Report !!"
@@ -1669,18 +1836,19 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
         // goToScreen(DoctorCalenderTimeScreen(isReschedule: true,prevBookingTime: '23-09-2022', prevBookingDate: '10AM',));
         // goToScreen(MedicalReportScreen(pdfLink: _gutDataModel!.value!,));
         break;
-
     }
   }
 
-  goToScreen(screenName){
+  goToScreen(screenName) {
     print(screenName);
-    Navigator.of(context).push(
+    Navigator.of(context)
+        .push(
       MaterialPageRoute(
         builder: (context) => screenName,
         // builder: (context) => isConsultationCompleted ? ConsultationSuccess() : const DoctorCalenderTimeScreen(),
       ),
-    ).then((value) {
+    )
+        .then((value) {
       print(value);
       setState(() {
         getData();
@@ -1690,46 +1858,40 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
 
   getProgramTransBorderColor(String type) {
     print("getProgramTransBorderColor");
-    if(type == "color"){
-      if(transStage != null && transStage!.isNotEmpty){
+    if (type == "color") {
+      if (transStage != null && transStage!.isNotEmpty) {
         print("if color");
-        if(_transModel != null && _transMealModel != null){
+        if (_transModel != null && _transMealModel != null) {
           return kBigCircleBorderYellow;
-        }
-        else if(_transModel?.value != null && _transModel?.value?.isTransMealCompleted == true){
+        } else if (_transModel?.value != null &&
+            _transModel?.value?.isTransMealCompleted == true) {
           return kBigCircleBorderGreen;
         }
-      }
-      else if(programOptionStage != null && programOptionStage!.isNotEmpty){
+      } else if (programOptionStage != null && programOptionStage!.isNotEmpty) {
         print("else color");
-        if(_gutNormalProgramModel != null || _gutProgramModel != null){
+        if (_gutNormalProgramModel != null || _gutProgramModel != null) {
           return kBigCircleBorderYellow;
         }
-      }
-      else{
+      } else {
         return kBigCircleBorderRed;
       }
-    }
-    else{
-      if(transStage != null && transStage!.isNotEmpty){
+    } else {
+      if (transStage != null && transStage!.isNotEmpty) {
         print("if border");
-        if(_transModel != null && _transMealModel != null){
+        if (_transModel != null && _transMealModel != null) {
           return newDashboardUnLockIcon;
-        }
-        else if(_transModel?.value != null && _transModel?.value?.isTransMealCompleted == true){
+        } else if (_transModel?.value != null &&
+            _transModel?.value?.isTransMealCompleted == true) {
           return newDashboardOpenIcon;
         }
-      }
-      else if(programOptionStage != null && programOptionStage!.isNotEmpty){
-        if(_gutNormalProgramModel != null || _gutProgramModel != null){
+      } else if (programOptionStage != null && programOptionStage!.isNotEmpty) {
+        if (_gutNormalProgramModel != null || _gutProgramModel != null) {
           return newDashboardUnLockIcon;
         }
-      }
-      else{
+      } else {
         return newDashboardLockIcon;
       }
     }
-
   }
 
   final MessageRepository chatRepository = MessageRepository(
@@ -1738,10 +1900,9 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
     ),
   );
 
-
   buildButton(String title, Color color, int buttonId, StageType stageType) {
     return GestureDetector(
-      onTap: (){
+      onTap: () {
         handleButtonOnTapByType(stageType, buttonId);
       },
       child: IntrinsicWidth(
@@ -1753,11 +1914,12 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
             color: color,
             borderRadius: BorderRadius.circular(50),
             boxShadow: [
-            BoxShadow(
-            color: kLineColor,
-            blurRadius: 5,
-            offset: const Offset(2, 3),
-          )],
+              BoxShadow(
+                color: kLineColor,
+                blurRadius: 5,
+                offset: const Offset(2, 3),
+              )
+            ],
           ),
           child: Row(
             children: [
@@ -1769,7 +1931,8 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
                   fontSize: 6.5.sp,
                 ),
               ),
-              Icon(Icons.arrow_forward,
+              Icon(
+                Icons.arrow_forward,
                 color: gMainColor,
                 size: 10.sp,
               )
@@ -1778,18 +1941,15 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
         ),
       ),
     );
-
-
   }
 
 //completedBgColor
 // currentBgColor
 // lockedBgColor
   void updateNewStage(String? stage) {
-
     print("consultationStage: ==> ${stage}");
-    switch(stage){
-      case 'evaluation_done' :
+    switch (stage) {
+      case 'evaluation_done':
         bg1 = completedBgColor;
         evalBtnColor = newDashboardGreenButtonColor;
         evalBtnName = "View Files";
@@ -1797,7 +1957,7 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
         mealBtn1Name = "View Plan";
 
         break;
-      case 'pending' :
+      case 'pending':
         bg1 = completedBgColor;
         evalBtnColor = newDashboardGreenButtonColor;
         evalBtnName = "View Files";
@@ -1813,7 +1973,7 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
         mealBtn1Name = "View Plan";
 
         break;
-      case 'consultation_reschedule' :
+      case 'consultation_reschedule':
         bg1 = completedBgColor;
         evalBtnColor = newDashboardGreenButtonColor;
         evalBtnName = "View Files";
@@ -1824,7 +1984,6 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
         consBtn2Color = newDashboardLightGreyButtonColor;
         consBtn2Name = "Join Cons";
         showConsLockIcon = true;
-
 
         prepBtn1Name = "View Plan";
         prepBtn2Name = "Track Kit";
@@ -1842,7 +2001,6 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
         consBtn2Name = "Join Cons";
         showConsLockIcon = true;
 
-
         prepBtn1Name = "View Plan";
         prepBtn2Name = "Track Kit";
         mealBtn1Name = "View Plan";
@@ -1858,7 +2016,6 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
         consBtn2Color = newDashboardLightGreyButtonColor;
         consBtn2Name = "View MR";
         showConsLockIcon = true;
-
 
         prepBtn1Name = "View Plan";
         prepBtn2Name = "Track Kit";
@@ -1892,7 +2049,6 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
         consBtn2Name = "View MR";
         showConsLockIcon = true;
 
-
         prepBtn1Name = "View Plan";
         prepBtn2Name = "Track Kit";
         mealBtn1Name = "View Plan";
@@ -1908,7 +2064,6 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
         consBtn2Color = newDashboardLightGreyButtonColor;
         consBtn2Name = "View MR";
         showConsLockIcon = true;
-
 
         prepBtn1Name = "View Plan";
         prepBtn2Name = "Track Kit";
@@ -1926,7 +2081,6 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
         consBtn2Name = "View MR";
         showConsLockIcon = true;
 
-
         prepBtn1Name = "View Plan";
         prepBtn2Name = "Track Kit";
         mealBtn1Name = "View Plan";
@@ -1942,7 +2096,6 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
         consBtn2Color = newDashboardGreenButtonColor;
         consBtn2Name = "View MR";
         showConsLockIcon = false;
-
 
         prepBtn1Name = "View Plan";
         prepBtn2Name = "Track Kit";
@@ -1960,22 +2113,21 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
         consBtn2Name = "View MR";
         showConsLockIcon = false;
 
-        if(_prepratoryModel!.value!.prep_days! != _prepratoryModel!.value!.currentDay){
+        if (_prepratoryModel!.value!.prep_days! !=
+            _prepratoryModel!.value!.currentDay) {
           bg3 = currentBgColor;
           prepBtn1Color = newDashboardGreenButtonColor;
           prepBtn1Name = "View Plan";
           prepBtn2Color = newDashboardLightGreyButtonColor;
           prepBtn2Name = "Track Kit";
           showPrepLockIcon = true;
-        }
-        else{
+        } else {
           bg3 = completedBgColor;
           prepBtn1Color = newDashboardGreenButtonColor;
           prepBtn1Name = "View Plan";
           prepBtn2Color = newDashboardLightGreyButtonColor;
           prepBtn2Name = "Track Kit";
           showPrepLockIcon = false;
-
         }
 
         mealBtn1Name = "View Plan";
@@ -1992,15 +2144,15 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
         consBtn2Name = "View MR";
         showConsLockIcon = false;
 
-        if(_prepratoryModel!.value!.prep_days! != _prepratoryModel!.value!.currentDay){
+        if (_prepratoryModel!.value!.prep_days! !=
+            _prepratoryModel!.value!.currentDay) {
           bg3 = currentBgColor;
           prepBtn1Color = newDashboardGreenButtonColor;
           prepBtn1Name = "View Plan";
           prepBtn2Color = newDashboardGreenButtonColor;
           prepBtn2Name = "Track Kit";
           showPrepLockIcon = true;
-        }
-        else{
+        } else {
           bg3 = completedBgColor;
           prepBtn1Color = newDashboardGreenButtonColor;
           prepBtn1Name = "View Plan";
@@ -2023,22 +2175,21 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
         consBtn2Name = "View MR";
         showConsLockIcon = false;
 
-        if(_prepratoryModel!.value!.prep_days! != _prepratoryModel!.value!.currentDay){
+        if (_prepratoryModel!.value!.prep_days! !=
+            _prepratoryModel!.value!.currentDay) {
           bg3 = currentBgColor;
           prepBtn1Color = newDashboardGreenButtonColor;
           prepBtn1Name = "View Plan";
           prepBtn2Color = newDashboardGreenButtonColor;
           prepBtn2Name = "Track Kit";
           showPrepLockIcon = true;
-        }
-        else{
+        } else {
           bg3 = completedBgColor;
           prepBtn1Color = newDashboardGreenButtonColor;
           prepBtn1Name = "View Plan";
           prepBtn2Color = newDashboardGreenButtonColor;
           prepBtn2Name = "Track Kit";
           showPrepLockIcon = false;
-
         }
 
         mealBtn1Name = "View Plan";
@@ -2055,16 +2206,15 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
         consBtn2Name = "View MR";
         showConsLockIcon = false;
 
-
-        if(_prepratoryModel!.value!.prep_days! != _prepratoryModel!.value!.currentDay){
+        if (_prepratoryModel!.value!.prep_days! !=
+            _prepratoryModel!.value!.currentDay) {
           bg3 = currentBgColor;
           prepBtn1Color = newDashboardGreenButtonColor;
           prepBtn1Name = "View Plan";
           prepBtn2Color = newDashboardGreenButtonColor;
           prepBtn2Name = "Track Kit";
           showPrepLockIcon = true;
-        }
-        else{
+        } else {
           bg3 = completedBgColor;
           prepBtn1Color = newDashboardGreenButtonColor;
           prepBtn1Name = "View Plan";
@@ -2072,7 +2222,6 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
           prepBtn2Name = "Track Kit";
           showPrepLockIcon = false;
         }
-
 
         mealBtn1Name = "View Plan";
         break;
@@ -2088,17 +2237,15 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
         consBtn2Name = "View MR";
         showConsLockIcon = false;
 
-
-        if(_prepratoryModel!.value!.prep_days! != _prepratoryModel!.value!.currentDay){
+        if (_prepratoryModel!.value!.prep_days! !=
+            _prepratoryModel!.value!.currentDay) {
           bg3 = currentBgColor;
           prepBtn1Color = newDashboardGreenButtonColor;
           prepBtn1Name = "View Plan";
           prepBtn2Color = newDashboardGreenButtonColor;
           prepBtn2Name = "Track Kit";
           showPrepLockIcon = true;
-
-        }
-        else{
+        } else {
           bg3 = completedBgColor;
           prepBtn1Color = newDashboardGreenButtonColor;
           prepBtn1Name = "View Plan";
@@ -2155,26 +2302,26 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
         prepBtn2Name = "Track Kit";
         showPrepLockIcon = false;
 
+        print(
+            "_prepratoryModel!.value!.isPrepCompleted != null: ${_transModel!.value!.isTransMealCompleted != null}");
+        print(
+            "_prepratoryModel!.value!.isPrepCompleted! == true: ${_transModel!.value!.isTransMealCompleted == true} ${_transModel!.value!.isTransMealCompleted}");
 
-        print("_prepratoryModel!.value!.isPrepCompleted != null: ${_transModel!.value!.isTransMealCompleted != null}");
-        print("_prepratoryModel!.value!.isPrepCompleted! == true: ${_transModel!.value!.isTransMealCompleted == true} ${_transModel!.value!.isTransMealCompleted}");
-
-        if((_transModel!.value!.isTransMealCompleted != null) && _transModel!.value!.isTransMealCompleted == true){
+        if ((_transModel!.value!.isTransMealCompleted != null) &&
+            _transModel!.value!.isTransMealCompleted == true) {
           bg4 = currentBgColor;
           mealBtn1Color = newDashboardGreenButtonColor;
           mealBtn1Name = "View Plan";
           mealBtn2Color = newDashboardGreenButtonColor;
           mealBtn2Name = "Transition";
           showMealLockIcon = false;
-        }
-        else{
+        } else {
           bg4 = currentBgColor;
           mealBtn1Color = newDashboardGreenButtonColor;
           mealBtn1Name = "View Plan";
           mealBtn2Color = newDashboardGreenButtonColor;
           mealBtn2Name = "Transition";
           showMealLockIcon = true;
-
         }
         break;
       case 'post_program':
@@ -2190,17 +2337,15 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
         consBtn2Name = "View MR";
         showConsLockIcon = false;
 
-        if((_transModel?.value!.isTransMealCompleted != null) && _transModel?.value?.isTransMealCompleted == true){
-
+        if ((_transModel?.value!.isTransMealCompleted != null) &&
+            _transModel?.value?.isTransMealCompleted == true) {
           bg4 = currentBgColor;
           mealBtn1Color = newDashboardGreenButtonColor;
           mealBtn1Name = "View Plan";
           mealBtn2Color = newDashboardGreenButtonColor;
           mealBtn2Name = "Transition";
           showMealLockIcon = false;
-
-        }
-        else{
+        } else {
           bg4 = currentBgColor;
           mealBtn1Color = newDashboardGreenButtonColor;
           mealBtn1Name = "View Plan";
@@ -2229,17 +2374,15 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
         consBtn2Name = "View MR";
         showConsLockIcon = false;
 
-        if((_transModel?.value!.isTransMealCompleted != null) && _transModel?.value?.isTransMealCompleted == true){
-
+        if ((_transModel?.value!.isTransMealCompleted != null) &&
+            _transModel?.value?.isTransMealCompleted == true) {
           bg4 = currentBgColor;
           mealBtn1Color = newDashboardGreenButtonColor;
           mealBtn1Name = "View Plan";
           mealBtn2Color = newDashboardGreenButtonColor;
           mealBtn2Name = "Transition";
           showMealLockIcon = false;
-
-        }
-        else{
+        } else {
           bg4 = currentBgColor;
           mealBtn1Color = newDashboardGreenButtonColor;
           mealBtn1Name = "View Plan";
@@ -2269,17 +2412,15 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
         consBtn2Name = "View MR";
         showConsLockIcon = false;
 
-        if((_transModel?.value!.isTransMealCompleted != null) && _transModel?.value?.isTransMealCompleted == true){
-
+        if ((_transModel?.value!.isTransMealCompleted != null) &&
+            _transModel?.value?.isTransMealCompleted == true) {
           bg4 = currentBgColor;
           mealBtn1Color = newDashboardGreenButtonColor;
           mealBtn1Name = "View Plan";
           mealBtn2Color = newDashboardGreenButtonColor;
           mealBtn2Name = "Transition";
           showMealLockIcon = false;
-
-        }
-        else{
+        } else {
           bg4 = currentBgColor;
           mealBtn1Color = newDashboardGreenButtonColor;
           mealBtn1Name = "View Plan";
@@ -2309,17 +2450,15 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
         consBtn2Name = "View MR";
         showConsLockIcon = false;
 
-        if((_transModel?.value!.isTransMealCompleted != null) && _transModel?.value?.isTransMealCompleted == true){
-
+        if ((_transModel?.value!.isTransMealCompleted != null) &&
+            _transModel?.value?.isTransMealCompleted == true) {
           bg4 = currentBgColor;
           mealBtn1Color = newDashboardGreenButtonColor;
           mealBtn1Name = "View Plan";
           mealBtn2Color = newDashboardGreenButtonColor;
           mealBtn2Name = "Transition";
           showMealLockIcon = false;
-
-        }
-        else{
+        } else {
           bg4 = currentBgColor;
           mealBtn1Color = newDashboardGreenButtonColor;
           mealBtn1Name = "View Plan";
@@ -2344,27 +2483,26 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
     }
   }
 
-  changeToggle(){
+  changeToggle() {
     setState(() {
       initialIndex = 1;
     });
     _tabController!.animateTo(initialIndex);
   }
 
-
-  handleButtonOnTapByType(StageType type, int buttonId){
-    switch(type){
+  handleButtonOnTapByType(StageType type, int buttonId) {
+    switch (type) {
       case StageType.evaluation:
         goToScreen(EvaluationGetDetails());
         break;
       case StageType.med_consultation:
         print("Medical consultation ${buttonId}");
-        if(buttonId == 1){
-          switch(consultationStage){
-            case 'evaluation_done'  :
+        if (buttonId == 1) {
+          switch (consultationStage) {
+            case 'evaluation_done':
               goToScreen(DoctorCalenderTimeScreen());
               break;
-            case 'pending' :
+            case 'pending':
               goToScreen(DoctorCalenderTimeScreen());
               break;
             case 'appointment_booked':
@@ -2374,10 +2512,9 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
               String? doctorName;
               String? doctorImage;
 
-
               model.value?.teamMember?.forEach((element) {
-                if(element.user != null){
-                  if(element.user!.roleId == "2"){
+                if (element.user != null) {
+                  if (element.user!.roleId == "2") {
                     doctorNames.add('Dr. ${element.user!.name}' ?? '');
                     doctorName = 'Dr. ${element.user!.name}';
                     doctorImage = element.user?.profile ?? '';
@@ -2396,7 +2533,7 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
                 doctorPic: doctorImage,
               ));
               break;
-            case 'consultation_reschedule' :
+            case 'consultation_reschedule':
               final model = _getAppointmentDetailsModel;
 
               // add this before calling calendertimescreen for reschedule
@@ -2417,26 +2554,34 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
               goToScreen(UploadFiles());
               break;
             case 'consultation_rejected':
-              goToScreen(ConsultationRejected(reason: _gutDataModel?.value ?? '',));
+              goToScreen(ConsultationRejected(
+                reason: _gutDataModel?.value ?? '',
+              ));
               break;
             case 'check_user_reports':
-            // print(_gutDataModel!.value);
+              // print(_gutDataModel!.value);
               goToScreen(CheckUserReportsScreen());
               break;
-            default: goToScreen(const ConsultationSuccess());
+            default:
+              goToScreen(const ConsultationSuccess());
           }
-        }
-        else{
+        } else {
           print(consultationStage);
-          switch(consultationStage){
+          switch (consultationStage) {
             case 'check_user_reports':
-            // print(_gutDataModel!.value);
+              // print(_gutDataModel!.value);
               goToScreen(CheckUserReportsScreen());
               break;
             case 'appointment_booked':
               final model = _getAppointmentDetailsModel;
-              _pref!.setString(AppConfig.appointmentId, model?.value?.id.toString() ?? '');
-              goToScreen(DoctorSlotsDetailsScreen(bookingDate: model!.value!.date!, bookingTime: model.value!.slotStartTime!, dashboardValueMap: model.value!.toJson(),isFromDashboard: true,));
+              _pref!.setString(
+                  AppConfig.appointmentId, model?.value?.id.toString() ?? '');
+              goToScreen(DoctorSlotsDetailsScreen(
+                bookingDate: model!.value!.date!,
+                bookingTime: model.value!.slotStartTime!,
+                dashboardValueMap: model.value!.toJson(),
+                isFromDashboard: true,
+              ));
               break;
             case 'report_upload':
               print(_gutDataModel!.toJson());
@@ -2448,55 +2593,65 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
               // goToScreen(DoctorSlotsDetailsScreen(bookingDate: "2023-02-21", bookingTime: "11:34:00", dashboardValueMap: {},isFromDashboard: true,));
 
               // goToScreen(DoctorCalenderTimeScreen(isReschedule: true,prevBookingTime: '23-09-2022', prevBookingDate: '10AM',));
-              goToScreen(MedicalReportScreen(pdfLink: _gutDataModel!.value!,));
+              goToScreen(MedicalReportScreen(
+                pdfLink: _gutDataModel!.value!,
+              ));
               break;
-            default: AppConfig().showSnackbar(context, "Can't access Locked Stage", isError: true);
+            default:
+              AppConfig().showSnackbar(context, "Can't access Locked Stage",
+                  isError: true);
           }
         }
         break;
       case StageType.prep_meal:
-        if(buttonId == 1){
+        if (buttonId == 1) {
           showPrepratoryMealScreen();
-        }
-        else{
-          if(shippingStage != null && shippingStage!.isNotEmpty){
-            if(_shippingApprovedModel != null){
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => CookKitTracking(awb_number: _shippingApprovedModel?.value?.awbCode ?? '',currentStage: shippingStage!,),
-                ),
-              ).then((value) => reloadUI());
+        } else {
+          if (shippingStage != null && shippingStage!.isNotEmpty) {
+            if (_shippingApprovedModel != null) {
+              Navigator.of(context)
+                  .push(
+                    MaterialPageRoute(
+                      builder: (context) => CookKitTracking(
+                        awb_number:
+                            _shippingApprovedModel?.value?.awbCode ?? '',
+                        currentStage: shippingStage!,
+                      ),
+                    ),
+                  )
+                  .then((value) => reloadUI());
+            } else {
+              Navigator.of(context)
+                  .push(
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          CookKitTracking(currentStage: shippingStage ?? ''),
+                    ),
+                  )
+                  .then((value) => reloadUI());
             }
-            else{
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => CookKitTracking(currentStage: shippingStage ?? ''),
-                ),
-              ).then((value) => reloadUI());
-            }
-          }
-          else{
-            AppConfig().showSnackbar(context, "Can't access Locked Stage", isError: true);
+          } else {
+            AppConfig().showSnackbar(context, "Can't access Locked Stage",
+                isError: true);
           }
         }
         break;
       case StageType.normal_meal:
-        if(buttonId == 1){
-          if(programOptionStage != null && programOptionStage!.isNotEmpty){
+        if (buttonId == 1) {
+          if (programOptionStage != null && programOptionStage!.isNotEmpty) {
             print("called");
             showProgramScreen();
+          } else {
+            AppConfig().showSnackbar(context, "Can't access Locked Stage",
+                isError: true);
           }
-          else{
-            AppConfig().showSnackbar(context, "Can't access Locked Stage", isError: true);
-          }
-        }
-        else{
-          if(transStage != null && transStage!.isNotEmpty){
+        } else {
+          if (transStage != null && transStage!.isNotEmpty) {
             // showProgramScreen();
             showTransitionMealScreen();
-          }
-          else{
-            AppConfig().showSnackbar(context, "Can't access Locked Stage", isError: true);
+          } else {
+            AppConfig().showSnackbar(context, "Can't access Locked Stage",
+                isError: true);
           }
         }
         // if(transStage != null && transStage!.isNotEmpty){
@@ -2514,29 +2669,32 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
       case StageType.post_consultation:
         break;
     }
-
   }
 
-  showPrepratoryMealScreen(){
-    if(_prepratoryModel != null){
+  showPrepratoryMealScreen() {
+    if (_prepratoryModel != null) {
       print("BOOL : ${_prepratoryModel!.value!.isPrepratoryStarted}");
 
       // slide to program  if not started
-      if(_prepratoryModel!.value!.isPrepratoryStarted == false){
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => ProgramPlanScreen(from: ProgramMealType.prepratory.name,),
-          ),
-        ).then((value) => reloadUI());
-      }
-      else{
+      if (_prepratoryModel!.value!.isPrepratoryStarted == false) {
+        Navigator.of(context)
+            .push(
+              MaterialPageRoute(
+                builder: (context) => ProgramPlanScreen(
+                  from: ProgramMealType.prepratory.name,
+                ),
+              ),
+            )
+            .then((value) => reloadUI());
+      } else {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) =>
-            (_prepratoryModel!.value!.isPrepCompleted!) ?
-            PrepratoryMealCompletedScreen()
-                : PreparatoryPlanScreen(dayNumber: _prepratoryModel!.value!.currentDay!, totalDays: _prepratoryModel!.value!.prep_days ?? ''),
+            builder: (context) => (_prepratoryModel!.value!.isPrepCompleted!)
+                ? PrepratoryMealCompletedScreen()
+                : PreparatoryPlanScreen(
+                    dayNumber: _prepratoryModel!.value!.currentDay!,
+                    totalDays: _prepratoryModel!.value!.prep_days ?? ''),
             // ProgramPlanScreen(from: ProgramMealType.prepratory.name,)
           ),
         ).then((value) => reloadUI());
@@ -2544,16 +2702,19 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
     }
   }
 
-  showTransitionMealScreen(){
-    if(_transModel != null){
-      if(_transModel!.value!.isTransMealStarted == false){
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => ProgramPlanScreen(from: ProgramMealType.transition.name,),
-          ),
-        ).then((value) => reloadUI());
-      }
-      else{
+  showTransitionMealScreen() {
+    if (_transModel != null) {
+      if (_transModel!.value!.isTransMealStarted == false) {
+        Navigator.of(context)
+            .push(
+              MaterialPageRoute(
+                builder: (context) => ProgramPlanScreen(
+                  from: ProgramMealType.transition.name,
+                ),
+              ),
+            )
+            .then((value) => reloadUI());
+      } else {
         print(_transModel!.value!.toJson());
         Navigator.push(
           context,
@@ -2561,9 +2722,8 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
             builder: (context) => NewTransitionDesign(
                 postProgramStage: postProgramStage,
                 totalDays: _transModel!.value!.trans_days ?? '',
-                dayNumber: _transModel?.value?.currentDay ??'',
-                trackerVideoLink: _gutProgramModel!.value!.tracker_video_url
-            ),
+                dayNumber: _transModel?.value?.currentDay ?? '',
+                trackerVideoLink: _gutProgramModel!.value!.tracker_video_url),
           ),
         ).then((value) => reloadUI());
       }
@@ -2573,44 +2733,52 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
   /// when user click on meal plan if still prep not completed than
   /// in meal slide to start need to show prep form submit
   /// if already submitted than normal ui
-  showProgramScreen(){
+  showProgramScreen() {
     print("func called");
-    if(shippingStage == "shipping_delivered" && programOptionStage != null){
+    if (shippingStage == "shipping_delivered" && programOptionStage != null) {
       // to slide to start the program
-      if(_gutProgramModel!.value!.recipeVideo != null) _pref!.setString(AppConfig().receipeVideoUrl, _gutProgramModel!.value!.recipeVideo!);
-      if(_gutProgramModel!.value!.tracker_video_url != null) _pref!.setString(AppConfig().trackerVideoUrl, _gutProgramModel!.value!.tracker_video_url!);
-      if(_gutProgramModel!.value!.startProgram == '0'){
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => ProgramPlanScreen(from: ProgramMealType.program.name, isPrepCompleted: _prepratoryModel!.value!.isPrepCompleted,),
-          ),
-        ).then((value) => reloadUI());
-      }
-      else{
+      if (_gutProgramModel!.value!.recipeVideo != null)
+        _pref!.setString(
+            AppConfig().receipeVideoUrl, _gutProgramModel!.value!.recipeVideo!);
+      if (_gutProgramModel!.value!.tracker_video_url != null)
+        _pref!.setString(AppConfig().trackerVideoUrl,
+            _gutProgramModel!.value!.tracker_video_url!);
+      if (_gutProgramModel!.value!.startProgram == '0') {
+        Navigator.of(context)
+            .push(
+              MaterialPageRoute(
+                builder: (context) => ProgramPlanScreen(
+                  from: ProgramMealType.program.name,
+                  isPrepCompleted: _prepratoryModel!.value!.isPrepCompleted,
+                ),
+              ),
+            )
+            .then((value) => reloadUI());
+      } else {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => MealPlanScreen(transStage: transStage
-                ,receipeVideoLink: _gutProgramModel!.value!.recipeVideo,
-                trackerVideoLink: _gutProgramModel!.value!.tracker_video_url
-            ),
+            builder: (context) => MealPlanScreen(
+                transStage: transStage,
+                receipeVideoLink: _gutProgramModel!.value!.recipeVideo,
+                trackerVideoLink: _gutProgramModel!.value!.tracker_video_url),
           ),
         ).then((value) => reloadUI());
       }
-    }
-    else{
-      AppConfig().showSnackbar(context, "program stage not getting", isError:  true);
+    } else {
+      AppConfig()
+          .showSnackbar(context, "program stage not getting", isError: true);
     }
   }
 
-  showPostProgramScreen(){
-    if(postProgramStage != null){
-      if(postProgramStage == "protocol_guide"){
+  showPostProgramScreen() {
+    if (postProgramStage != null) {
+      if (postProgramStage == "protocol_guide") {
         // goToScreen(PPLevelsScreen());
         goToScreen(PPLevelsDemo());
-      }
-      else{
-        AppConfig().showSnackbar(context, "Can't access Locked Stage", isError: true);
+      } else {
+        AppConfig()
+            .showSnackbar(context, "Can't access Locked Stage", isError: true);
       }
     }
   }
@@ -2619,16 +2787,13 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
     goToScreen(HomeRemediesScreen());
   }
 
-  tabView(){
+  tabView() {
     return Padding(
       padding: const EdgeInsets.all(4.0),
       child: TabBarView(
         controller: _tabController,
-        children:  [
-          Align(
-            alignment: Alignment.center,
-            child: view()
-          ),
+        children: [
+          Align(alignment: Alignment.center, child: view()),
           PPContainerTile()
           // PPView(),
         ],
@@ -2666,15 +2831,15 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin{
       Navigator.pop(context);
     });
   }
-
-
-
 }
 
-enum StageType{
-  evaluation, med_consultation, prep_meal, normal_meal, post_consultation
+enum StageType {
+  evaluation,
+  med_consultation,
+  prep_meal,
+  normal_meal,
+  post_consultation
 }
-
 
 class TopPart extends StatelessWidget {
   @override
@@ -2692,11 +2857,8 @@ class TopPart extends StatelessWidget {
             SizedBox(height: 5.0),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-
-              ],
+              children: <Widget>[],
             )
-
           ],
         ),
       ),
@@ -2760,7 +2922,7 @@ class PinkPart extends StatelessWidget {
                                 child: CircleAvatar(
                                   radius: 14.0,
                                   backgroundImage:
-                                  ExactAssetImage('assets/p3.jpg'),
+                                      ExactAssetImage('assets/p3.jpg'),
                                 ),
                               ),
                             ),
@@ -2772,7 +2934,7 @@ class PinkPart extends StatelessWidget {
                               child: CircleAvatar(
                                 radius: 14.0,
                                 backgroundImage:
-                                ExactAssetImage('assets/p2.jpg'),
+                                    ExactAssetImage('assets/p2.jpg'),
                               ),
                             ),
                           ],
@@ -2854,7 +3016,7 @@ class LightPurple extends StatelessWidget {
                                 child: CircleAvatar(
                                   radius: 14.0,
                                   backgroundImage:
-                                  ExactAssetImage('assets/p3.jpeg'),
+                                      ExactAssetImage('assets/p3.jpeg'),
                                 ),
                               ),
                             ),
@@ -2866,7 +3028,7 @@ class LightPurple extends StatelessWidget {
                               child: CircleAvatar(
                                 radius: 14.0,
                                 backgroundImage:
-                                ExactAssetImage('assets/p2.jpg'),
+                                    ExactAssetImage('assets/p2.jpg'),
                               ),
                             ),
                           ],
@@ -2893,6 +3055,7 @@ class LightPurple extends StatelessWidget {
     );
   }
 }
+
 class PinkPart1 extends StatelessWidget {
   final completedBgColor = Color(0xFFEFEEC8);
   final currentBgColor = Color(0xFFFFF8DA);
@@ -2949,7 +3112,7 @@ class PinkPart1 extends StatelessWidget {
                                 child: CircleAvatar(
                                   radius: 14.0,
                                   backgroundImage:
-                                  ExactAssetImage('assets/p3.jpg'),
+                                      ExactAssetImage('assets/p3.jpg'),
                                 ),
                               ),
                             ),
@@ -2961,7 +3124,7 @@ class PinkPart1 extends StatelessWidget {
                               child: CircleAvatar(
                                 radius: 14.0,
                                 backgroundImage:
-                                ExactAssetImage('assets/p2.jpg'),
+                                    ExactAssetImage('assets/p2.jpg'),
                               ),
                             ),
                           ],
@@ -3000,7 +3163,7 @@ class GreenPurple extends StatelessWidget {
       color: Colors.transparent,
       child: Material(
         color: Colors.grey,
-      //  borderRadius: BorderRadius.only(bottomLeft: Radius.circular(60.0)),
+        //  borderRadius: BorderRadius.only(bottomLeft: Radius.circular(60.0)),
         child: Row(
           children: <Widget>[
             SizedBox(
@@ -3049,8 +3212,7 @@ class GreenPurple extends StatelessWidget {
 
   buildButton() {
     return GestureDetector(
-      onTap: (){
-      },
+      onTap: () {},
       child: IntrinsicWidth(
         child: Container(
           height: 3.h,
@@ -3064,7 +3226,8 @@ class GreenPurple extends StatelessWidget {
                 color: kLineColor,
                 blurRadius: 5,
                 offset: const Offset(2, 3),
-              )],
+              )
+            ],
           ),
           child: Row(
             children: [
@@ -3076,7 +3239,8 @@ class GreenPurple extends StatelessWidget {
                   fontSize: 6.5.sp,
                 ),
               ),
-              Icon(Icons.arrow_forward,
+              Icon(
+                Icons.arrow_forward,
                 color: gMainColor,
                 size: 10.sp,
               )
@@ -3085,13 +3249,7 @@ class GreenPurple extends StatelessWidget {
         ),
       ),
     );
-
-
   }
-
-
 }
 
-enum PPButtonStage{
-  MMP, GMG, PPC
-}
+enum PPButtonStage { MMP, GMG, PPC }

@@ -44,7 +44,8 @@ class NewTransitionDesign extends StatefulWidget {
   State<NewTransitionDesign> createState() => _NewTransitionDesignState();
 }
 
-class _NewTransitionDesignState extends State<NewTransitionDesign> with SingleTickerProviderStateMixin{
+class _NewTransitionDesignState extends State<NewTransitionDesign>
+    with SingleTickerProviderStateMixin {
   TabController? _tabController;
   //
   // final List<String> _list = [
@@ -55,11 +56,9 @@ class _NewTransitionDesignState extends State<NewTransitionDesign> with SingleTi
   //   "Post Dinner"
   // ];
 
-
   List<String> _list = [];
 
   Map<String, List<TransMealSlot>> tabs = {};
-
 
   Map<String, TransSubItems> slotNamesForTabs = {};
 
@@ -69,7 +68,6 @@ class _NewTransitionDesignState extends State<NewTransitionDesign> with SingleTi
   bool showLoading = true;
 
   String selectedItemName = "";
-
 
   getTransitionMeals() async {
     final result = await PrepratoryMealService(repository: repository)
@@ -86,8 +84,7 @@ class _NewTransitionDesignState extends State<NewTransitionDesign> with SingleTi
           ),
         ),
       );
-    }
-    else {
+    } else {
       TransitionMealModel res = result as TransitionMealModel;
       final String currentDayStatus = res.currentDayStatus.toString();
       print("currentDayStatus top: ${currentDayStatus}");
@@ -98,33 +95,31 @@ class _NewTransitionDesignState extends State<NewTransitionDesign> with SingleTi
 
       slotNamesForTabs.addAll(dataList);
 
-      slotNamesForTabs.forEach((key,value) {
+      slotNamesForTabs.forEach((key, value) {
         _list.add(key);
 
         print("$key ==> ${value.subItems!.length}");
       });
-
 
       updateTabSize();
     }
     setState(() {
       showLoading = false;
     });
-
   }
 
   String selectedSubTab = "";
   List<Map<String, List<TransMealSlot>>> selectedTabs = [];
 
-  updateTabSize(){
+  updateTabSize() {
     selectedTabs.clear();
     slotNamesForTabs.forEach((key, value) {
-      if(_list[selectedIndex] == key){
+      if (_list[selectedIndex] == key) {
         print("tabsize: ${value.subItems!.length}");
-       setState(() {
-         tabSize = value.subItems!.length;
-         selectedTabs.add(value.subItems!);
-       });
+        setState(() {
+          tabSize = value.subItems!.length;
+          selectedTabs.add(value.subItems!);
+        });
       }
     });
 
@@ -132,7 +127,6 @@ class _NewTransitionDesignState extends State<NewTransitionDesign> with SingleTi
 
     print("selectedTabs: $selectedTabs");
   }
-
 
   String? planNotePdfLink;
   String? currentDay;
@@ -168,210 +162,216 @@ class _NewTransitionDesignState extends State<NewTransitionDesign> with SingleTi
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: showLoading ? kWhiteColor : Color(0xffC8DE95).withOpacity(0.6),
+        backgroundColor: showLoading
+            ? kWhiteColor
+            : const Color(0xffC8DE95).withOpacity(0.6),
         body: showLoading
-            ? Center(child: buildCircularIndicator(),)
+            ? Center(
+                child: buildCircularIndicator(),
+              )
             : DefaultTabController(
-          length: tabSize,
-          child: StatefulBuilder(
-            builder: (_, setstate) {
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.only(top: 1.h, left: 3.w),
-                    child: buildAppBar(
-                            () {
-                          Navigator.pop(context);
-                        },
-                        showHelpIcon: true,
-                        helpOnTap: () {
-                          if (planNotePdfLink != null ||
-                              planNotePdfLink!.isNotEmpty) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (ctx) => MealPdf(
-                                    pdfLink: planNotePdfLink!,
-                                    heading:
-                                    planNotePdfLink?.split('/').last ??
-                                        '',
-                                    isVideoWidgetVisible: false,
-                                    headCircleIcon: bsHeadPinIcon,
-                                    topHeadColor: kBottomSheetHeadGreen,
-                                    isSheetCloseNeeded: true,
-                                    sheetCloseOnTap: () {
-                                      Navigator.pop(context);
-                                    }),
+                length: tabSize,
+                child: StatefulBuilder(
+                  builder: (_, setstate) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(top: 1.h, left: 3.w),
+                          child: buildAppBar(
+                              () {
+                                Navigator.pop(context);
+                              },
+                              showHelpIcon: true,
+                              helpOnTap: () {
+                                if (planNotePdfLink != null ||
+                                    planNotePdfLink!.isNotEmpty) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (ctx) => MealPdf(
+                                          pdfLink: planNotePdfLink!,
+                                          heading: planNotePdfLink
+                                                  ?.split('/')
+                                                  .last ??
+                                              '',
+                                          isVideoWidgetVisible: false,
+                                          headCircleIcon: bsHeadPinIcon,
+                                          topHeadColor: kBottomSheetHeadGreen,
+                                          isSheetCloseNeeded: true,
+                                          sheetCloseOnTap: () {
+                                            Navigator.pop(context);
+                                          }),
+                                    ),
+                                  );
+                                } else {
+                                  AppConfig().showSnackbar(
+                                      context, "Note Link Not available",
+                                      isError: true);
+                                }
+                              }),
+                        ),
+                        SizedBox(height: 1.h),
+                        Text(
+                          'Day ${1} Transition Meal Plan',
+                          style: TextStyle(
+                              fontFamily: eUser().mainHeadingFont,
+                              color: eUser().buttonTextColor,
+                              fontSize: eUser().mainHeadingFontSize),
+                        ),
+                        SizedBox(height: 1.h),
+                        Text(
+                          '2 Days Remaining',
+                          style: TextStyle(
+                              fontFamily: eUser().userTextFieldFont,
+                              color: eUser().buttonTextColor,
+                              fontSize: eUser().userTextFieldHintFontSize),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 28.w, vertical: 4.h),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              GestureDetector(
+                                onTap: () {
+                                  if (selectedIndex == 0) {
+                                  } else {
+                                    setstate(() {
+                                      if (selectedIndex > 0) {
+                                        selectedIndex--;
+                                      }
+                                      updateTabSize();
+                                      print(selectedIndex);
+                                    });
+                                  }
+                                },
+                                child: Icon(
+                                  Icons.arrow_back_ios,
+                                  color: eUser().buttonTextColor,
+                                ),
                               ),
-                            );
-                          } else {
-                            AppConfig().showSnackbar(
-                                context, "Note Link Not available",
-                                isError: true);
-                          }
-                        }),
-                  ),
-                  SizedBox(height: 1.h),
-                  Text(
-                    'Day ${1} Transition Meal Plan',
-                    style: TextStyle(
-                        fontFamily: eUser().mainHeadingFont,
-                        color: eUser().mainHeadingColor,
-                        fontSize: eUser().mainHeadingFontSize),
-                  ),
-                  SizedBox(height: 1.h),
-                  Text(
-                    '2 Days Remaining',
-                    style: TextStyle(
-                        fontFamily: eUser().userTextFieldFont,
-                        color: eUser().mainHeadingColor,
-                        fontSize: eUser().userTextFieldHintFontSize),
-                  ),
-                  Padding(
-                    padding:
-                    EdgeInsets.symmetric(horizontal: 28.w, vertical: 4.h),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        GestureDetector(
-                          onTap: () {
-                            if(selectedIndex == 0){}
-                            else{
-                              setstate(() {
-                                if (selectedIndex > 0) {
-                                  selectedIndex--;
-                                }
-                                updateTabSize();
-                                print(selectedIndex);
-                              });
-                            }
-                          },
-                          child: Icon(
-                            Icons.arrow_back_ios,
-                            color: eUser().mainHeadingColor,
+                              FittedBox(
+                                child: Text(
+                                  _list[selectedIndex],
+                                  style: TextStyle(
+                                      fontFamily: eUser().mainHeadingFont,
+                                      color: eUser().buttonTextColor,
+                                      fontSize: eUser().mainHeadingFontSize),
+                                ),
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  setstate(() {
+                                    if (selectedIndex == _list.length - 1) {
+                                    } else {
+                                      if (selectedIndex >= 0 &&
+                                          selectedIndex != _list.length - 1) {
+                                        selectedIndex++;
+                                      }
+                                      print(selectedIndex);
+                                      updateTabSize();
+                                      print(selectedIndex);
+                                    }
+                                  });
+                                },
+                                child: Icon(
+                                  Icons.arrow_forward_ios,
+                                  color: eUser().buttonTextColor,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        FittedBox(
-                          child: Text(
-                            _list[selectedIndex],
-                            style: TextStyle(
-                                fontFamily: eUser().mainHeadingFont,
-                                color: eUser().mainHeadingColor,
-                                fontSize: eUser().mainHeadingFontSize),
-                          ),
+                        SizedBox(
+                          height: 30,
+                          child: TabBar(
+                              // padding: EdgeInsets.symmetric(horizontal: 3.w),
+                              isScrollable: true,
+                              unselectedLabelColor: tabBarHintColor,
+                              labelColor: gBlackColor,
+                              controller: _tabController,
+                              unselectedLabelStyle: TextStyle(
+                                  fontFamily: kFontBook,
+                                  color: gHintTextColor,
+                                  fontSize: 9.sp),
+                              labelStyle: TextStyle(
+                                  fontFamily: kFontMedium,
+                                  color: gBlackColor,
+                                  fontSize: 9.sp),
+                              indicator: BoxDecoration(
+                                color: gWhiteColor,
+                                borderRadius: const BorderRadius.only(
+                                  topRight: Radius.circular(10),
+                                  bottomLeft: Radius.circular(10),
+                                ),
+                              ),
+                              onTap: (index) {
+                                print("ontap: $index");
+
+                                selectedTabs.forEach((element) {
+                                  print(element.keys.elementAt(index));
+                                  setstate(() {
+                                    selectedSubTab =
+                                        element.keys.elementAt(index);
+                                  });
+                                });
+                              },
+                              tabs: buildTabs()
+                              // [selectedTabs.map((e) => _buildTabs(e)).to]
+
+                              ),
                         ),
-                        GestureDetector(
-                          onTap: () {
-                            setstate(() {
-                              if(selectedIndex == _list.length-1) {}
-                              else{
-                                if (selectedIndex >= 0 &&
-                                    selectedIndex != _list.length-1) {
-                                  selectedIndex++;
-                                }
-                                print(selectedIndex);
-                                updateTabSize();
-                                print(selectedIndex);
-                              }
-                            });
-                          },
-                          child: Icon(
-                            Icons.arrow_forward_ios,
-                            color: eUser().mainHeadingColor,
+                        Expanded(
+                          child: Container(
+                            margin: EdgeInsets.only(top: 3.h),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 0.w, vertical: 1.h),
+                            decoration: const BoxDecoration(
+                              color: gBackgroundColor,
+                              borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(40),
+                                  topRight: Radius.circular(40)),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: kLineColor,
+                                  offset: Offset(2, 3),
+                                  blurRadius: 5,
+                                )
+                              ],
+                              // border: Border.all(
+                              //   width: 1,
+                              //   color: kLineColor,
+                              // ),
+                            ),
+                            child: TabBarView(
+                              controller: _tabController,
+                              physics: const NeverScrollableScrollPhysics(),
+                              children: buildTabBarView(),
+                            ),
                           ),
                         ),
                       ],
-                    ),
-                  ),
-                  SizedBox(
-                    height: 30,
-                    child: TabBar(
-                      // padding: EdgeInsets.symmetric(horizontal: 3.w),
-                      isScrollable: true,
-                      unselectedLabelColor: tabBarHintColor,
-                      labelColor: gBlackColor,
-                      controller: _tabController,
-                      unselectedLabelStyle: TextStyle(
-                          fontFamily: kFontBook,
-                          color: gHintTextColor,
-                          fontSize: 9.sp),
-                      labelStyle: TextStyle(
-                          fontFamily: kFontMedium,
-                          color: gBlackColor,
-                          fontSize: 9.sp),
-                      indicator: BoxDecoration(
-                        color: gWhiteColor,
-                        borderRadius: const BorderRadius.only(
-                          topRight: Radius.circular(10),
-                          bottomLeft: Radius.circular(10),
-                        ),
-                      ),
-                      onTap: (index) {
-                        print("ontap: $index");
-
-                        selectedTabs.forEach((element) {
-                          print(element.keys.elementAt(index));
-                          setstate((){
-                            selectedSubTab = element.keys.elementAt(index);
-                          });
-                        });
-                      },
-                      tabs:buildTabs()
-                       // [selectedTabs.map((e) => _buildTabs(e)).to]
-
-
-                    ),
-                  ),
-                  Expanded(
-                    child: Container(
-                      margin: EdgeInsets.only(top: 3.h),
-                      padding: EdgeInsets.symmetric(
-                          horizontal: 0.w, vertical: 1.h),
-                      decoration: const BoxDecoration(
-                        color: gBackgroundColor,
-                        borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(40),
-                            topRight: Radius.circular(40)),
-                        boxShadow: [
-                          BoxShadow(
-                            color: kLineColor,
-                            offset: Offset(2, 3),
-                            blurRadius: 5,
-                          )
-                        ],
-                        // border: Border.all(
-                        //   width: 1,
-                        //   color: kLineColor,
-                        // ),
-                      ),
-                      child: TabBarView(
-                        controller: _tabController,
-                        physics: const NeverScrollableScrollPhysics(),
-                        children: buildTabBarView(),
-                      ),
-                    ),
-                  ),
-                ],
-              );
-            },
-          ),
-        )
-    );
+                    );
+                  },
+                ),
+              ));
   }
 
-  buildTabs(){
+  buildTabs() {
     List<Widget> widgetList = [];
 
     selectedTabs.forEach((element) {
       element.forEach((key, value) {
-        widgetList.add(Tab(text: key,));
+        widgetList.add(Tab(
+          text: key,
+        ));
       });
     });
     return widgetList;
   }
 
-  buildTabBarView(){
+  buildTabBarView() {
     print("buildTabBarView");
     List<Widget> widgetList = [];
 
@@ -379,7 +379,7 @@ class _NewTransitionDesignState extends State<NewTransitionDesign> with SingleTi
 
     selectedTabs.forEach((element) {
       element.forEach((key, value) {
-          widgetList.add(buildTabView(value));
+        widgetList.add(buildTabView(value));
       });
     });
     // selectedTabs.forEach((element) {
@@ -403,17 +403,22 @@ class _NewTransitionDesignState extends State<NewTransitionDesign> with SingleTi
           // physics: const NeverScrollableScrollPhysics(),
           itemCount: value.length,
           itemBuilder: (context, index) {
-            return Container(
-              width: 300,
-              margin: EdgeInsets.symmetric(
-                horizontal: 3.w,
-                vertical: 8.h,
-              ),
-              decoration: BoxDecoration(
-                color: gBackgroundColor,
-                borderRadius: BorderRadius.circular(40),
-              ),
-              child: buildReceipeDetails(value[index]),
+            return Row(
+              children: [
+                Container(
+                  width: 300,
+                  margin: EdgeInsets.symmetric(
+                    horizontal: 3.w,
+                    vertical: 8.h,
+                  ),
+                  decoration: BoxDecoration(
+                    color: gBackgroundColor,
+                    borderRadius: BorderRadius.circular(40),
+                  ),
+                  child: buildReceipeDetails(value[index]),
+                ),
+                if (value.last.id != value[index].id) orFiled(),
+              ],
             );
           }),
     );
@@ -434,7 +439,8 @@ class _NewTransitionDesignState extends State<NewTransitionDesign> with SingleTi
             decoration: BoxDecoration(
               color: gWhiteColor,
               borderRadius: BorderRadius.circular(40),
-              border: Border.all(color: kLineColor.withOpacity(0.2), width: 0.9),
+              border:
+                  Border.all(color: kLineColor.withOpacity(0.2), width: 0.9),
               // boxShadow: [
               //   BoxShadow(
               //     color: gBlackColor.withOpacity(0.1),
@@ -445,7 +451,8 @@ class _NewTransitionDesignState extends State<NewTransitionDesign> with SingleTi
             ),
             child: SingleChildScrollView(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   SizedBox(
                     height: 15.h,
@@ -462,77 +469,80 @@ class _NewTransitionDesignState extends State<NewTransitionDesign> with SingleTi
                   ),
                   (value.benefits != null)
                       ? Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      ...value.benefits!.split('*').map((element) {
-                        return Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(
-                              Icons.circle_sharp,
-                              color: gGreyColor,
-                              size: 1.h,
-                            ),
-                            SizedBox(width: 3.w),
-                            Expanded(
-                              child: Text(
-                                element ?? '',
-                                style: TextStyle(
-                                    fontFamily: eUser().userTextFieldFont,
-                                    height: 1.5,
-                                    color: eUser().userTextFieldColor,
-                                    fontSize: eUser().userTextFieldHintFontSize),
-                              ),
-                            ),
+                            ...value.benefits!.split(' -').map((element) {
+                              return Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.circle_sharp,
+                                    color: gGreyColor,
+                                    size: 1.h,
+                                  ),
+                                  SizedBox(width: 3.w),
+                                  Expanded(
+                                    child: Text(
+                                      element.replaceAll("-", "") ?? '',
+                                      style: TextStyle(
+                                          fontFamily: eUser().userTextFieldFont,
+                                          height: 1.5,
+                                          color: eUser().userTextFieldColor,
+                                          fontSize: eUser()
+                                              .userTextFieldHintFontSize),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            })
                           ],
-                        );
-                      })
-                    ],
-                  )
+                        )
                       : SizedBox(),
                   SizedBox(height: 5.h),
-                  Center(
-                    child: GestureDetector(
-                      onTap: () {
-                        Get.to(
-                              () =>  MealPlanRecipeDetails(
-                            meal: MealSlot.fromJson(value.toJson()),
+                  (value.howToPrepare != null)
+                      ? Center(
+                          child: GestureDetector(
+                            onTap: () {
+                              Get.to(
+                                () => MealPlanRecipeDetails(
+                                  meal: MealSlot.fromJson(value.toJson()),
+                                ),
+                              );
+                            },
+                            child: Container(
+                              // margin: EdgeInsets.symmetric(horizontal: 5.w),
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 1.h, horizontal: 5.w),
+                              decoration: BoxDecoration(
+                                color: newDashboardGreenButtonColor,
+                                borderRadius: const BorderRadius.only(
+                                  topRight: Radius.circular(15),
+                                  bottomLeft: Radius.circular(15),
+                                ),
+                                boxShadow: const [
+                                  BoxShadow(
+                                    color: kLineColor,
+                                    offset: Offset(2, 3),
+                                    blurRadius: 5,
+                                  )
+                                ],
+                                // border: Border.all(
+                                //   width: 1,
+                                //   color: kLineColor,
+                                // ),
+                              ),
+                              child: Text(
+                                "Recipe",
+                                style: TextStyle(
+                                  color: gWhiteColor,
+                                  fontFamily: 'GothamBook',
+                                  fontSize: 11.sp,
+                                ),
+                              ),
+                            ),
                           ),
-                        );
-                      },
-                      child: Container(
-                        // margin: EdgeInsets.symmetric(horizontal: 5.w),
-                        padding:
-                        EdgeInsets.symmetric(vertical: 1.h, horizontal: 5.w),
-                        decoration: BoxDecoration(
-                          color: newDashboardGreenButtonColor,
-                          borderRadius: const BorderRadius.only(
-                            topRight: Radius.circular(15),
-                            bottomLeft: Radius.circular(15),
-                          ),
-                          boxShadow: const [
-                            BoxShadow(
-                              color: kLineColor,
-                              offset: Offset(2, 3),
-                              blurRadius: 5,
-                            )
-                          ],
-                          // border: Border.all(
-                          //   width: 1,
-                          //   color: kLineColor,
-                          // ),
-                        ),
-                        child: Text(
-                          "Recipe",
-                          style: TextStyle(
-                            color: gWhiteColor,
-                            fontFamily: 'GothamBook',
-                            fontSize: 11.sp,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
+                        )
+                      : const SizedBox(),
                 ],
               ),
             ),
@@ -543,7 +553,7 @@ class _NewTransitionDesignState extends State<NewTransitionDesign> with SingleTi
           left: 0,
           right: 0,
           child: Container(
-            padding:const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: newDashboardGreenButtonColor,
@@ -556,10 +566,17 @@ class _NewTransitionDesignState extends State<NewTransitionDesign> with SingleTi
               ],
             ),
             child: Center(
-              child: CircleAvatar(
-                radius: 8.h,
-                backgroundImage: AssetImage("assets/images/Group 3252.png"),
-              ),
+              child: (value.itemPhoto != null && value.itemPhoto!.isNotEmpty)
+                  ? CircleAvatar(
+                      radius: 8.h,
+                      backgroundImage: NetworkImage("${value.itemPhoto}"),
+                      //AssetImage("assets/images/Group 3252.png"),
+                    )
+                  : CircleAvatar(
+                      radius: 8.h,
+                      backgroundImage: const AssetImage(
+                          "assets/images/meal_placeholder.png"),
+                    ),
             ),
           ),
         ),
@@ -591,26 +608,10 @@ class _NewTransitionDesignState extends State<NewTransitionDesign> with SingleTi
   }
 
   orFiled() {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      child: Center(
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              '------------ ',
-              style: TextStyle(fontFamily: kFontBold, color: gBlackColor),
-            ),
-            Text(
-              'OR',
-              style: TextStyle(fontFamily: kFontBold, color: gBlackColor),
-            ),
-            Text(
-              ' ------------',
-              style: TextStyle(fontFamily: kFontBold, color: gBlackColor),
-            ),
-          ],
-        ),
+    return const Center(
+      child: Text(
+        'OR',
+        style: TextStyle(fontFamily: kFontBold, color: gBlackColor),
       ),
     );
   }

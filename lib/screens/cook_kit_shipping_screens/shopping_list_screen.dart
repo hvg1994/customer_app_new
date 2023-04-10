@@ -67,37 +67,40 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
         : Column(
             children: [
               SizedBox(height: 1.h),
-              SizedBox(
-                height: 30,
-                child: TabBar(
-                  isScrollable: true,
-                  unselectedLabelColor: Colors.black,
-                  labelColor: gWhiteColor,
-                  controller: _tabController,
-                  unselectedLabelStyle: TextStyle(
-                      fontFamily: "GothamBook",
-                      color: gHintTextColor,
-                      fontSize: 9.sp),
-                  labelStyle: TextStyle(
-                      fontFamily: "GothamMedium",
-                      color: gBlackColor,
-                      fontSize: 11.sp),
-                  indicator: const BoxDecoration(
-                    color: newDashboardGreenButtonColor,
-                    borderRadius: BorderRadius.only(
-                      topRight: Radius.circular(15),
-                      bottomLeft: Radius.circular(15),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 3.w),
+                child: SizedBox(
+                  height: 30,
+                  child: TabBar(
+                    isScrollable: true,
+                    unselectedLabelColor: Colors.black,
+                    labelColor: gWhiteColor,
+                    controller: _tabController,
+                    unselectedLabelStyle: TextStyle(
+                        fontFamily: "GothamBook",
+                        color: gHintTextColor,
+                        fontSize: 9.sp),
+                    labelStyle: TextStyle(
+                        fontFamily: "GothamMedium",
+                        color: gBlackColor,
+                        fontSize: 11.sp),
+                    indicator: const BoxDecoration(
+                      color: newDashboardGreenButtonColor,
+                      borderRadius: BorderRadius.only(
+                        topRight: Radius.circular(15),
+                        bottomLeft: Radius.circular(15),
+                      ),
                     ),
+                    onTap: (index) {
+                      print("ontap: $index");
+                      // _buildList(index);
+                    },
+                    tabs: shoppingList.keys.map((e) {
+                      return Tab(
+                        child: Text(e),
+                      );
+                    }).toList(),
                   ),
-                  onTap: (index) {
-                    print("ontap: $index");
-                    // _buildList(index);
-                  },
-                  tabs: shoppingList.keys.map((e) {
-                    return Tab(
-                      child: Text(e),
-                    );
-                  }).toList(),
                 ),
               ),
               Expanded(

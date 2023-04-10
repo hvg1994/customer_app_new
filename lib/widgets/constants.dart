@@ -215,7 +215,7 @@ class MealPlanConstants{
   var dayTextColor = gBlackColor;
   var dayTextSelectedColor = gWhiteColor;
   var dayBgNormalColor = gWhiteColor;
-  var dayBgSelectedColor = gPrimaryColor;
+  var dayBgSelectedColor = newDashboardGreenButtonColor;
   var dayBgPresentdayColor = gsecondaryColor;
   double dayBorderRadius = 8.0;
   double presentDayTextSize = 10.sp;

@@ -50,13 +50,13 @@ class _HomeRemediesScreenState extends State<HomeRemediesScreen> {
                   Navigator.pop(context);
                 }),
                 TabBar(
-                  // padding: EdgeInsets.symmetric(horizontal: 3.w),
+                    // padding: EdgeInsets.symmetric(horizontal: 3.w),
                     labelColor: eUser().userFieldLabelColor,
                     unselectedLabelColor: gHintTextColor,
                     isScrollable: false,
                     indicatorColor: gsecondaryColor,
                     labelPadding:
-                    EdgeInsets.only(right: 0.w, top: 1.h, bottom: 1.h),
+                        EdgeInsets.only(right: 0.w, top: 1.h, bottom: 1.h),
                     // indicatorPadding: EdgeInsets.only(right: 5.w, left: 5.w),
                     unselectedLabelStyle: TextStyle(
                         fontFamily: "GothamBook",
@@ -72,7 +72,7 @@ class _HomeRemediesScreenState extends State<HomeRemediesScreen> {
                     ]),
                 Expanded(
                   child: TabBarView(
-                    // physics: const NeverScrollableScrollPhysics(),
+                      // physics: const NeverScrollableScrollPhysics(),
                       children: [
                         buildGeneralProblems(),
                         buildProgramProblems(),
@@ -102,7 +102,7 @@ class _HomeRemediesScreenState extends State<HomeRemediesScreen> {
                 if (snapshot.hasData) {
                   if (snapshot.data.runtimeType == HomeRemediesModel) {
                     HomeRemediesModel model =
-                    snapshot.data as HomeRemediesModel;
+                        snapshot.data as HomeRemediesModel;
                     List<HomeRemedy>? problemList = model.data.homeRemedies;
                     return GridView.builder(
                         scrollDirection: Axis.vertical,
@@ -122,149 +122,61 @@ class _HomeRemediesScreenState extends State<HomeRemediesScreen> {
                           print("thumbnail : ${problemList[index].thumbnail}");
                           return problemList[index].isGeneral == "1"
                               ? Column(
-                            children: [
-                              OutlinedButton(
-                                onPressed: () {
-                                  Get.to(
-                                        () => NewKnowMoreScreen(
-                                      knowMore:
-                                      problemList[index].knowMore,
-                                      healAtHome:
-                                      problemList[index].healAtHome,
-                                      healAnywhere:
-                                      problemList[index].healAnywhere,
-                                      whenToReachUs: problemList[index]
-                                          .whenToReachUs,
+                                  children: [
+                                    OutlinedButton(
+                                      onPressed: () {
+                                        Get.to(
+                                          () => NewKnowMoreScreen(
+                                            knowMore:
+                                                problemList[index].knowMore,
+                                            healAtHome:
+                                                problemList[index].healAtHome,
+                                            healAnywhere:
+                                                problemList[index].healAnywhere,
+                                            whenToReachUs: problemList[index]
+                                                .whenToReachUs,
+                                          ),
+                                        );
+                                      },
+                                      style: ButtonStyle(
+                                        overlayColor: getColor(Colors.white,
+                                            newDashboardGreenButtonColor),
+                                        backgroundColor: getColor(Colors.white,
+                                            newDashboardGreenButtonColor),
+                                        shape: MaterialStateProperty.all(
+                                          RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10.0),
+                                          ),
+                                        ),
+                                      ),
+                                      child: Image(
+                                        height: 15.h,
+                                        width: 30.w,
+                                        image: CachedNetworkImageProvider(
+                                            "${Uri.parse(problemList[index].thumbnail)}"),
+                                      ),
                                     ),
-                                  );
-                                },
-                                style: ButtonStyle(
-                                  overlayColor: getColor(Colors.white,
-                                      newDashboardGreenButtonColor),
-                                  backgroundColor: getColor(Colors.white,
-                                      newDashboardGreenButtonColor),
-                                  shape: MaterialStateProperty.all(
-                                    RoundedRectangleBorder(
-                                      borderRadius:
-                                      BorderRadius.circular(10.0),
+                                    SizedBox(height: 1.h),
+                                    Text(
+                                      problemList[index].name.toString(),
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontFamily: kFontBold,
+                                        color: gBlackColor,
+                                        fontSize: 9.sp,
+                                      ),
                                     ),
-                                  ),
-                                ),
-                                child: Image(
-                                  height: 15.h,
-                                  width: 30.w,
-                                  image: CachedNetworkImageProvider(
-                                      "${Uri.parse(problemList[index].thumbnail)}"),
-                                ),
-                              ),
-                              // GestureDetector(
-                              //   onTap: () {
-                              //
-                              //
-                              //   },
-                              //   child: Container(
-                              //     height: 12.h,
-                              //     width: 23.w,
-                              //     padding: const EdgeInsets.all(8),
-                              //     decoration: BoxDecoration(
-                              //       borderRadius: BorderRadius.circular(8),
-                              //       color: gWhiteColor,
-                              //       // selectedProblems
-                              //       //         .contains(problemList?[index].id)
-                              //       //     ? newDashboardGreenButtonColor
-                              //       //     : gWhiteColor,
-                              //       border: Border.all(
-                              //           color: eUser().buttonBorderColor,
-                              //           width: eUser().buttonBorderWidth),
-                              //     ),
-                              //     child: Center(
-                              //       child: Image(
-                              //         image: CachedNetworkImageProvider(
-                              //             problemList?[index].image ?? ''),
-                              //       ),
-                              //     ),
-                              //   ),
-                              // ),
-                              SizedBox(height: 1.h),
-                              Text(
-                                problemList[index].name.toString(),
-                                style: TextStyle(
-                                  fontFamily: kFontBold,
-                                  color: gBlackColor,
-                                  fontSize: 9.sp,
-                                ),
-                              ),
-                            ],
-                          )
-                              : Column(
-                            children: [
-                              OutlinedButton(
-                                onPressed: () {
-                                  // Get.to(
-                                  //       () => NewKnowMoreScreen(
-                                  //     knowMore: problemList[index].knowMore,
-                                  //     healAtHome: problemList[index].healAtHome,
-                                  //     healAnywhere: problemList[index].healAnywhere,
-                                  //     whenToReachUs: problemList[index].whenToReachUs,
-                                  //   ),
-                                  // );
-                                },
-                                style: ButtonStyle(
-                                  overlayColor: getColor(Colors.white,
-                                      newDashboardGreenButtonColor),
-                                  backgroundColor: getColor(Colors.white,
-                                      newDashboardGreenButtonColor),
-                                ),
-                                child: Image(
-                                  height: 12.h,
-                                  width: 23.w,
-                                  image: CachedNetworkImageProvider(
-                                      "${Uri.parse(problemList[index].thumbnail)}"),
-                                ),
-                              ),
-                              // GestureDetector(
-                              //   onTap: () {
-                              //
-                              //
-                              //   },
-                              //   child: Container(
-                              //     height: 12.h,
-                              //     width: 23.w,
-                              //     padding: const EdgeInsets.all(8),
-                              //     decoration: BoxDecoration(
-                              //       borderRadius: BorderRadius.circular(8),
-                              //       color: gWhiteColor,
-                              //       // selectedProblems
-                              //       //         .contains(problemList?[index].id)
-                              //       //     ? newDashboardGreenButtonColor
-                              //       //     : gWhiteColor,
-                              //       border: Border.all(
-                              //           color: eUser().buttonBorderColor,
-                              //           width: eUser().buttonBorderWidth),
-                              //     ),
-                              //     child: Center(
-                              //       child: Image(
-                              //         image: CachedNetworkImageProvider(
-                              //             problemList?[index].image ?? ''),
-                              //       ),
-                              //     ),
-                              //   ),
-                              // ),
-                              SizedBox(height: 1.h),
-                              Text(
-                                problemList[index].name.toString(),
-                                style: TextStyle(
-                                  fontFamily: kFontBold,
-                                  color: gBlackColor,
-                                  fontSize: 9.sp,
-                                ),
-                              ),
-                            ],
-                          );
+                                  ],
+                                )
+                              : const SizedBox();
                         });
                   }
                 }
-                return buildCircularIndicator();
+                return Padding(
+                  padding: EdgeInsets.symmetric(vertical: 20.h),
+                  child: buildCircularIndicator(),
+                );
               }),
         ],
       ),
@@ -287,14 +199,14 @@ class _HomeRemediesScreenState extends State<HomeRemediesScreen> {
                 if (snapshot.hasData) {
                   if (snapshot.data.runtimeType == HomeRemediesModel) {
                     HomeRemediesModel model =
-                    snapshot.data as HomeRemediesModel;
+                        snapshot.data as HomeRemediesModel;
                     List<HomeRemedy>? problemList = model.data.homeRemedies;
                     return GridView.builder(
                         scrollDirection: Axis.vertical,
                         physics: const ScrollPhysics(),
                         shrinkWrap: true,
                         gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
+                            const SliverGridDelegateWithFixedCrossAxisCount(
                           mainAxisSpacing: 15,
                           crossAxisSpacing: 10,
                           crossAxisCount: 3,
@@ -306,74 +218,74 @@ class _HomeRemediesScreenState extends State<HomeRemediesScreen> {
                         itemBuilder: (context, index) {
                           return problemList[index].isGeneral != "1"
                               ? Column(
-                            children: [
-                              OutlinedButton(
-                                onPressed: () {
-                                  Get.to(
-                                        () => NewKnowMoreScreen(
-                                      knowMore:
-                                      problemList[index].knowMore,
-                                      healAtHome:
-                                      problemList[index].healAtHome,
-                                      healAnywhere:
-                                      problemList[index].healAnywhere,
-                                      whenToReachUs: problemList[index]
-                                          .whenToReachUs,
+                                  children: [
+                                    OutlinedButton(
+                                      onPressed: () {
+                                        Get.to(
+                                          () => NewKnowMoreScreen(
+                                            knowMore:
+                                                problemList[index].knowMore,
+                                            healAtHome:
+                                                problemList[index].healAtHome,
+                                            healAnywhere:
+                                                problemList[index].healAnywhere,
+                                            whenToReachUs: problemList[index]
+                                                .whenToReachUs,
+                                          ),
+                                        );
+                                      },
+                                      style: ButtonStyle(
+                                        overlayColor: getColor(Colors.white,
+                                            newDashboardGreenButtonColor),
+                                        backgroundColor: getColor(Colors.white,
+                                            newDashboardGreenButtonColor),
+                                      ),
+                                      child: Image(
+                                        height: 12.h,
+                                        width: 23.w,
+                                        image: CachedNetworkImageProvider(
+                                            problemList[index].thumbnail),
+                                      ),
                                     ),
-                                  );
-                                },
-                                style: ButtonStyle(
-                                  overlayColor: getColor(Colors.white,
-                                      newDashboardGreenButtonColor),
-                                  backgroundColor: getColor(Colors.white,
-                                      newDashboardGreenButtonColor),
-                                ),
-                                child: Image(
-                                  height: 12.h,
-                                  width: 23.w,
-                                  image: CachedNetworkImageProvider(
-                                      problemList[index].thumbnail),
-                                ),
-                              ),
-                              // GestureDetector(
-                              //   onTap: () {
-                              //
-                              //
-                              //   },
-                              //   child: Container(
-                              //     height: 12.h,
-                              //     width: 23.w,
-                              //     padding: const EdgeInsets.all(8),
-                              //     decoration: BoxDecoration(
-                              //       borderRadius: BorderRadius.circular(8),
-                              //       color: gWhiteColor,
-                              //       // selectedProblems
-                              //       //         .contains(problemList?[index].id)
-                              //       //     ? newDashboardGreenButtonColor
-                              //       //     : gWhiteColor,
-                              //       border: Border.all(
-                              //           color: eUser().buttonBorderColor,
-                              //           width: eUser().buttonBorderWidth),
-                              //     ),
-                              //     child: Center(
-                              //       child: Image(
-                              //         image: CachedNetworkImageProvider(
-                              //             problemList?[index].image ?? ''),
-                              //       ),
-                              //     ),
-                              //   ),
-                              // ),
-                              SizedBox(height: 1.h),
-                              Text(
-                                problemList![index].name.toString(),
-                                style: TextStyle(
-                                  fontFamily: kFontBold,
-                                  color: gBlackColor,
-                                  fontSize: 9.sp,
-                                ),
-                              ),
-                            ],
-                          )
+                                    // GestureDetector(
+                                    //   onTap: () {
+                                    //
+                                    //
+                                    //   },
+                                    //   child: Container(
+                                    //     height: 12.h,
+                                    //     width: 23.w,
+                                    //     padding: const EdgeInsets.all(8),
+                                    //     decoration: BoxDecoration(
+                                    //       borderRadius: BorderRadius.circular(8),
+                                    //       color: gWhiteColor,
+                                    //       // selectedProblems
+                                    //       //         .contains(problemList?[index].id)
+                                    //       //     ? newDashboardGreenButtonColor
+                                    //       //     : gWhiteColor,
+                                    //       border: Border.all(
+                                    //           color: eUser().buttonBorderColor,
+                                    //           width: eUser().buttonBorderWidth),
+                                    //     ),
+                                    //     child: Center(
+                                    //       child: Image(
+                                    //         image: CachedNetworkImageProvider(
+                                    //             problemList?[index].image ?? ''),
+                                    //       ),
+                                    //     ),
+                                    //   ),
+                                    // ),
+                                    SizedBox(height: 1.h),
+                                    Text(
+                                      problemList![index].name.toString(),
+                                      style: TextStyle(
+                                        fontFamily: kFontBold,
+                                        color: gBlackColor,
+                                        fontSize: 9.sp,
+                                      ),
+                                    ),
+                                  ],
+                                )
                               : const SizedBox();
                         });
                   }

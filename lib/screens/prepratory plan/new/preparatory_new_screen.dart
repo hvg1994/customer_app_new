@@ -33,7 +33,6 @@ class _PreparatoryPlanScreenState extends State<PreparatoryPlanScreen>
   TabController? _tabController;
   final List<String> _list = ["MAINS", "CHUTNEYS", "JUICES", "SOUPS"];
 
-
   Offset checkedPositionOffset = Offset(0, 0);
   Offset lastCheckOffset = Offset(0, 0);
 
@@ -51,7 +50,6 @@ class _PreparatoryPlanScreenState extends State<PreparatoryPlanScreen>
 
   String selectedItemName = "";
 
-
   getPrepratoryMeals() async {
     final result = await PrepratoryMealService(repository: repository)
         .getPrepratoryMealService();
@@ -67,8 +65,7 @@ class _PreparatoryPlanScreenState extends State<PreparatoryPlanScreen>
           ),
         ),
       );
-    }
-    else {
+    } else {
       PrepratoryMealModel res = result as PrepratoryMealModel;
       final dataList = res.data ?? {};
       print("dataList ==> $dataList");
@@ -78,14 +75,11 @@ class _PreparatoryPlanScreenState extends State<PreparatoryPlanScreen>
 
       slotNamesForTabs.addAll(dataList);
 
-
-
       slotNamesForTabs.forEach((key, value) {
         print("$key == ${value.subItems}");
         selectedItemName = value.subItems!.keys.first;
       });
       tabSize = slotNamesForTabs.length;
-
 
       print(tabSize);
 
@@ -96,7 +90,6 @@ class _PreparatoryPlanScreenState extends State<PreparatoryPlanScreen>
       showLoading = false;
     });
     _tabController = TabController(vsync: this, length: tabSize);
-
   }
 
   String? totalDays;
@@ -123,115 +116,131 @@ class _PreparatoryPlanScreenState extends State<PreparatoryPlanScreen>
     return Scaffold(
       backgroundColor: gBackgroundColor,
       body: showLoading
-          ? Center(child: buildCircularIndicator(),)
+          ? Center(
+              child: buildCircularIndicator(),
+            )
           : DefaultTabController(
-        length: tabSize,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Padding(
-              padding: EdgeInsets.only(top: 2.h, left: 3.w),
-              child: buildAppBar(
-                    () {
-                  Navigator.pop(context);
-                },
-              ),
-            ),
-            SizedBox(height: 1.h),
-            Padding(
-              padding: EdgeInsets.only(left: 3.w),
-              child: Text(
-                'Day ${1} Preparatory Meal Plan',
-                style: TextStyle(
-                    fontFamily: eUser().mainHeadingFont,
-                    color: eUser().mainHeadingColor,
-                    fontSize: eUser().mainHeadingFontSize),
-              ),
-            ),
-            SizedBox(height: 1.h),
-            Padding(
-              padding: EdgeInsets.only(left: 3.w),
-              child: Text(
-                '2 Days Remaining',
-                style: TextStyle(
-                    fontFamily: eUser().userTextFieldFont,
-                    color: eUser().userTextFieldColor,
-                    fontSize: eUser().userTextFieldHintFontSize),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.only(top: 2.h),
-              child: SizedBox(
-                height: 30,
-                child: Row(
-                  children: [
-                    Container(
-                      width: 50,
-                      decoration: BoxDecoration(
-                        color: Color(0xffC8DE95).withOpacity(0.6),
-                        borderRadius: const BorderRadius.only(
-                          topRight: Radius.circular(30),
-                        ),
-                      ),
+              length: tabSize,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Padding(
+                    padding: EdgeInsets.only(top: 2.h, left: 3.w),
+                    child: buildAppBar(
+                      () {
+                        Navigator.pop(context);
+                      },
                     ),
-                    SizedBox(width: 2.w),
-                    Expanded(
-                      child: TabBar(
-                        isScrollable: true,
-                        unselectedLabelColor: Colors.black,
-                        labelColor: gWhiteColor,
-                        controller: _tabController,
-                        unselectedLabelStyle: TextStyle(
-                            fontFamily: kFontBook,
-                            color: gHintTextColor,
-                            fontSize: 9.sp),
-                        labelStyle: TextStyle(
-                            fontFamily: kFontMedium,
-                            color: gBlackColor,
-                            fontSize: 11.sp),
-                        indicator: BoxDecoration(
-                          color: newDashboardGreenButtonColor,
-                          borderRadius: const BorderRadius.only(
-                            topRight: Radius.circular(20),
-                            bottomLeft: Radius.circular(20),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(left: 3.w,top: 2.h,bottom: 1.h),
+                    child: Text(
+                      'Preparatory Phase',
+                      style: TextStyle(
+                          fontFamily: eUser().mainHeadingFont,
+                          color: eUser().mainHeadingColor,
+                          fontSize: eUser().mainHeadingFontSize),
+                    ),
+                  ),
+                  // Padding(
+                  //   padding: EdgeInsets.only(left: 3.w),
+                  //   child: Text(
+                  //     'Day ${1} Preparatory Meal Plan',
+                  //     style: TextStyle(
+                  //         fontFamily: eUser().mainHeadingFont,
+                  //         color: eUser().mainHeadingColor,
+                  //         fontSize: eUser().mainHeadingFontSize),
+                  //   ),
+                  // ),
+                  // SizedBox(height: 1.h),
+                  // Padding(
+                  //   padding: EdgeInsets.only(left: 3.w),
+                  //   child: Text(
+                  //     '2 Days Remaining',
+                  //     style: TextStyle(
+                  //         fontFamily: eUser().userTextFieldFont,
+                  //         color: eUser().userTextFieldColor,
+                  //         fontSize: eUser().userTextFieldHintFontSize),
+                  //   ),
+                  // ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 2.h),
+                    child: SizedBox(
+                      height: 30,
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 50,
+                            decoration: BoxDecoration(
+                              color: Color(0xffC8DE95).withOpacity(0.6),
+                              borderRadius: const BorderRadius.only(
+                                topRight: Radius.circular(30),
+                              ),
+                            ),
                           ),
-                        ),
-                        onTap: (index) {
-                          print("ontap: $index");
-                          // print(slotNamesForTabs.keys.elementAt(index));
-                          final slot = slotNamesForTabs.keys.elementAt(index);
-                          setState(() {
-                            slotNamesForTabs.forEach((key, value) {
-                                selectedItemName = value.subItems!.keys.first;
-
-                            });
-                            print(selectedItemName);
-                          });
-                          // _buildList(index);
-                        },
-                        tabs: slotNamesForTabs.keys.map((e) => Tab(
-                          text: e,
-                        )).toList(),
+                          SizedBox(width: 2.w),
+                          Expanded(
+                            child: TabBar(
+                              isScrollable: true,
+                              unselectedLabelColor: Colors.black,
+                              labelColor: gWhiteColor,
+                              controller: _tabController,
+                              unselectedLabelStyle: TextStyle(
+                                  fontFamily: kFontBook,
+                                  color: gHintTextColor,
+                                  fontSize: 9.sp),
+                              labelStyle: TextStyle(
+                                  fontFamily: kFontMedium,
+                                  color: gBlackColor,
+                                  fontSize: 11.sp),
+                              indicator: BoxDecoration(
+                                color: newDashboardGreenButtonColor,
+                                borderRadius: const BorderRadius.only(
+                                  topRight: Radius.circular(20),
+                                  bottomLeft: Radius.circular(20),
+                                ),
+                              ),
+                              onTap: (index) {
+                                print("ontap: $index");
+                                // print(slotNamesForTabs.keys.elementAt(index));
+                                final slot =
+                                    slotNamesForTabs.keys.elementAt(index);
+                                setState(() {
+                                  slotNamesForTabs.forEach((key, value) {
+                                    selectedItemName =
+                                        value.subItems!.keys.first;
+                                  });
+                                  print(selectedItemName);
+                                });
+                                // _buildList(index);
+                              },
+                              tabs: slotNamesForTabs.keys
+                                  .map((e) => Tab(
+                                        text: e,
+                                      ))
+                                  .toList(),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ],
-                ),
-              ),
-            ),
-            Expanded(
-              child: TabBarView(
-                controller: _tabController,
-                physics: const NeverScrollableScrollPhysics(),
-                children: [
-                  ...slotNamesForTabs.values.map((e) =>
-                      buildTabView(e),
-                  ).toList(),
+                  ),
+                  Expanded(
+                    child: TabBarView(
+                      controller: _tabController,
+                      physics: const NeverScrollableScrollPhysics(),
+                      children: [
+                        ...slotNamesForTabs.values
+                            .map(
+                              (e) => buildTabView(e),
+                            )
+                            .toList(),
+                      ],
+                    ),
+                  )
                 ],
               ),
-            )
-          ],
-        ),
-      ),
+            ),
     );
   }
 
@@ -285,10 +294,9 @@ class _PreparatoryPlanScreenState extends State<PreparatoryPlanScreen>
   List<Widget> _buildList(Map<String, List<MealSlot>>? subItems) {
     List<Widget> WidgetList = [];
 
-    if(subItems != null){
-        subItems.forEach((key, value) {
-
-          WidgetList.add(GestureDetector(
+    if (subItems != null) {
+      subItems.forEach((key, value) {
+        WidgetList.add(GestureDetector(
             onTap: () {
               print(key);
               indexChecked(key);
@@ -299,25 +307,23 @@ class _PreparatoryPlanScreenState extends State<PreparatoryPlanScreen>
                 padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 2.w),
                 decoration: selectedItemName == key
                     ? const BoxDecoration(
-                  color: gWhiteColor,
-                  borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(20),
-                    bottomLeft: Radius.circular(20),
-                  ),
-                )
+                        color: gWhiteColor,
+                        borderRadius: BorderRadius.only(
+                          topRight: Radius.circular(20),
+                          bottomLeft: Radius.circular(20),
+                        ),
+                      )
                     : const BoxDecoration(),
                 child: Text(
-                key,
-                style: TextStyle(
-                color: selectedItemName == key ? gBlackColor : gWhiteColor,
-                fontSize: 16,
+                  key,
+                  style: TextStyle(
+                    color: selectedItemName == key ? gBlackColor : gWhiteColor,
+                    fontSize: 16,
+                  ),
                 ),
               ),
-            ),
-          )
-          ));
-        });
-
+            )));
+      });
     }
     return WidgetList;
   }
@@ -352,8 +358,8 @@ class _PreparatoryPlanScreenState extends State<PreparatoryPlanScreen>
 
   buildTabView(SubItems mealNames) {
     List<MealSlot> meals = [];
-    mealNames.subItems!.forEach((key,element) {
-      if(key == selectedItemName){
+    mealNames.subItems!.forEach((key, element) {
+      if (key == selectedItemName) {
         meals.addAll(element);
       }
     });
@@ -415,7 +421,7 @@ class _PreparatoryPlanScreenState extends State<PreparatoryPlanScreen>
                         ),
                         child: buildReceipeDetails(meals[index]),
                       ),
-                      if(meals.last.id != meals[index].id) orFiled(),
+                      orFiled(index),
                     ],
                   );
                 }),
@@ -467,138 +473,78 @@ class _PreparatoryPlanScreenState extends State<PreparatoryPlanScreen>
                   SizedBox(
                     height: 1.h,
                   ),
-                  (meal.benefits != null) ? Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                  ...meal.benefits!.split('*').map((element) {
-                    return Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.circle_sharp,
-                          color: gGreyColor,
-                          size: 1.h,
-                        ),
-                        SizedBox(width: 3.w),
-                        Expanded(
-                          child: Text(
-                            element ?? '',
-                            style: TextStyle(
-                                fontFamily: eUser().userTextFieldFont,
-                                height: 1.5,
-                                color: eUser().userTextFieldColor,
-                                fontSize: eUser().userTextFieldHintFontSize),
-                          ),
-                        ),
-                      ],
-                    );
-                  })
-                    ],
-                  ) : SizedBox(),
-                  // Row(
-                  //   crossAxisAlignment: CrossAxisAlignment.center,
-                  //   children: [
-                  //     Icon(
-                  //       Icons.circle_sharp,
-                  //       color: gGreyColor,
-                  //       size: 1.h,
-                  //     ),
-                  //     SizedBox(width: 3.w),
-                  //     Expanded(
-                  //       child: Text(
-                  //         meal.benefits ?? '',
-                  //         style: TextStyle(
-                  //             fontFamily: eUser().userTextFieldFont,
-                  //             height: 1.5,
-                  //             color: eUser().userTextFieldColor,
-                  //             fontSize: eUser().userTextFieldHintFontSize),
-                  //       ),
-                  //     ),
-                  //   ],
-                  // ),
-                  // SizedBox(height: 1.h),
-                  // Row(
-                  //   crossAxisAlignment: CrossAxisAlignment.center,
-                  //   children: [
-                  //     Icon(
-                  //       Icons.circle_sharp,
-                  //       color: gGreyColor,
-                  //       size: 1.h,
-                  //     ),
-                  //     SizedBox(width: 3.w),
-                  //     Expanded(
-                  //       child: Text(
-                  //         'Light on digestive system',
-                  //         style: TextStyle(
-                  //             fontFamily: eUser().userTextFieldFont,
-                  //             height: 1.5,
-                  //             color: eUser().userTextFieldColor,
-                  //             fontSize: eUser().userTextFieldHintFontSize),
-                  //       ),
-                  //     ),
-                  //   ],
-                  // ),
-                  // SizedBox(height: 1.h),
-                  // Row(
-                  //   crossAxisAlignment: CrossAxisAlignment.center,
-                  //   children: [
-                  //     Icon(
-                  //       Icons.circle_sharp,
-                  //       color: gGreyColor,
-                  //       size: 1.h,
-                  //     ),
-                  //     SizedBox(width: 3.w),
-                  //     Expanded(
-                  //       child: Text(
-                  //         'Easy for your body to assimilate',
-                  //         style: TextStyle(
-                  //             fontFamily: eUser().userTextFieldFont,
-                  //             height: 1.5,
-                  //             color: eUser().userTextFieldColor,
-                  //             fontSize: eUser().userTextFieldHintFontSize),
-                  //       ),
-                  //     ),
-                  //   ],
-                  // ),
-                  SizedBox(height: 5.h),
-                  GestureDetector(
-                    onTap: () {
-                      Get.to(
-                        () =>  MealPlanRecipeDetails(
-                          meal: meal,
-                        ),
-                      );
-                    },
-                    child: Center(
-                      child: Container(
-                        // margin: EdgeInsets.symmetric(horizontal: 5.w),
-                        padding: EdgeInsets.symmetric(
-                            vertical: 1.h, horizontal: 5.w),
-                        decoration: const BoxDecoration(
-                          color: newDashboardGreenButtonColor,
-                          borderRadius: BorderRadius.only(
-                            topRight: Radius.circular(15),
-                            bottomLeft: Radius.circular(15),
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: kLineColor,
-                              offset: Offset(2, 3),
-                              blurRadius: 5,
-                            )
+                  (meal.benefits != null)
+                      ? Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            ...meal.benefits!.split('*').map((element) {
+                              return Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.circle_sharp,
+                                    color: gGreyColor,
+                                    size: 1.h,
+                                  ),
+                                  SizedBox(width: 3.w),
+                                  Expanded(
+                                    child: Text(
+                                      element ?? '',
+                                      style: TextStyle(
+                                          fontFamily: eUser().userTextFieldFont,
+                                          height: 1.5,
+                                          color: eUser().userTextFieldColor,
+                                          fontSize: eUser()
+                                              .userTextFieldHintFontSize),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            })
                           ],
-                        ),
-                        child: Text(
-                          "Recipe",
-                          style: TextStyle(
-                            color: gWhiteColor,
-                            fontFamily: kFontBook,
-                            fontSize: 11.sp,
+                        )
+                      : const SizedBox(),
+                  SizedBox(height: 5.h),
+                  (meal.howToPrepare != null)
+                      ? GestureDetector(
+                          onTap: () {
+                            Get.to(
+                              () => MealPlanRecipeDetails(
+                                meal: meal,
+                              ),
+                            );
+                          },
+                          child: Center(
+                            child: Container(
+                              // margin: EdgeInsets.symmetric(horizontal: 5.w),
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 1.h, horizontal: 5.w),
+                              decoration: const BoxDecoration(
+                                color: newDashboardGreenButtonColor,
+                                borderRadius: BorderRadius.only(
+                                  topRight: Radius.circular(15),
+                                  bottomLeft: Radius.circular(15),
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: kLineColor,
+                                    offset: Offset(2, 3),
+                                    blurRadius: 5,
+                                  )
+                                ],
+                              ),
+                              child: Text(
+                                "Recipe",
+                                style: TextStyle(
+                                  color: gWhiteColor,
+                                  fontFamily: kFontBook,
+                                  fontSize: 11.sp,
+                                ),
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
-                    ),
-                  ),
+                        )
+                      : const SizedBox(),
                 ],
               ),
             ),
@@ -623,11 +569,11 @@ class _PreparatoryPlanScreenState extends State<PreparatoryPlanScreen>
             ),
             child: Center(
               child: CircleAvatar(
-                radius: 8.h,
-                backgroundImage:
-                  CachedNetworkImageProvider(meal.itemPhoto ?? '')
-                // AssetImage("assets/images/Group 3252.png"),
-              ),
+                  radius: 8.h,
+                  backgroundImage:
+                      CachedNetworkImageProvider(meal.itemPhoto ?? '')
+                  // AssetImage("assets/images/Group 3252.png"),
+                  ),
             ),
           ),
         ),
@@ -657,12 +603,16 @@ class _PreparatoryPlanScreenState extends State<PreparatoryPlanScreen>
                   )));
   }
 
-  orFiled() {
-    return const Center(
-      child: Text(
-        'OR',
-        style: TextStyle(fontFamily: kFontBold, color: gBlackColor),
-      ),
-    );
+  orFiled(int index) {
+    if (index.isEven) {
+      return const Center(
+        child: Text(
+          'OR',
+          style: TextStyle(fontFamily: kFontBold, color: gBlackColor),
+        ),
+      );
+    } else {
+      return const SizedBox();
+    }
   }
 }
