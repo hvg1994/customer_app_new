@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_vlc_player/flutter_vlc_player.dart';
 import 'package:get/get.dart';
 import 'package:gwc_customer/model/error_model.dart';
 import 'package:gwc_customer/model/prepratory_meal_model/prep_meal_model.dart';
@@ -15,6 +16,7 @@ import 'package:gwc_customer/screens/program_plans/program_start_screen.dart';
 import 'package:gwc_customer/services/post_program_service/post_program_service.dart';
 import 'package:gwc_customer/utils/app_config.dart';
 import 'package:gwc_customer/widgets/constants.dart';
+import 'package:gwc_customer/widgets/vlc_player/vlc_player_with_controls.dart';
 import 'package:gwc_customer/widgets/widgets.dart';
 import 'package:lottie/lottie.dart';
 import 'package:sizer/sizer.dart';
@@ -56,18 +58,20 @@ class _NewTransitionDesignState extends State<NewTransitionDesign>
   //   "Post Dinner"
   // ];
 
+  /// this is for storing Early morning, lunch dinner
   List<String> _list = [];
 
   Map<String, List<TransMealSlot>> tabs = {};
 
   Map<String, TransSubItems> slotNamesForTabs = {};
 
-  List subItemNames = [];
   int tabSize = 1;
 
   bool showLoading = true;
 
   String selectedItemName = "";
+
+  String currentDayStatus = '';
 
   getTransitionMeals() async {
     final result = await PrepratoryMealService(repository: repository)
@@ -86,22 +90,50 @@ class _NewTransitionDesignState extends State<NewTransitionDesign>
       );
     } else {
       TransitionMealModel res = result as TransitionMealModel;
-      final String currentDayStatus = res.currentDayStatus.toString();
+      currentDayStatus = res.currentDayStatus.toString();
       print("currentDayStatus top: ${currentDayStatus}");
       final dataList = res.data ?? {};
       if (res.currentDay != null) currentDay = res.currentDay;
-      if (res.totalDays != null) totalDays = res.totalDays;
+      if (res.totalDays != null) totalDays = res.totalDays ?? "1";
       planNotePdfLink = res.note;
 
       slotNamesForTabs.addAll(dataList);
 
+      _list.clear();
       slotNamesForTabs.forEach((key, value) {
         _list.add(key);
 
         print("$key ==> ${value.subItems!.length}");
       });
 
+      Future.delayed(Duration.zero).whenComplete(() {
+        if(!widget.viewDay1Details){
+          print("previous day status: ${res.previousDayStatus}");
+          if(res.previousDayStatus == "0"){
+            Future.delayed(Duration(seconds: 0)).then((value) {
+              if(!symptomTrackerSheet){
+                return showSymptomsTrackerSheet(
+                    context,
+                    (int.parse(widget.dayNumber)-1).toString(),
+                    isPreviousDaySheet: true
+                ).then((value) {
+                  // when we close bottomsheet from close icon than we r  not calling this
+                  if(!fromBottomSheet) getTransitionMeals();
+                });
+              }
+            });
+          }
+          if(res.isTransMealCompleted == "1" && (widget.postProgramStage == null || widget.postProgramStage!.isEmpty)){
+            Future.delayed(Duration(seconds: 0)).then((value) {
+              return buildDayCompletedClap();
+            });
+          }
+        }
+
+      });
+
       updateTabSize();
+
     }
     setState(() {
       showLoading = false;
@@ -138,16 +170,16 @@ class _NewTransitionDesignState extends State<NewTransitionDesign>
     super.initState();
     currentDay = widget.dayNumber;
     totalDays = widget.totalDays;
+    print("initstate");
     getTransitionMeals();
   }
 
   @override
   void dispose() {
-    if (_mealPlayerController != null) _mealPlayerController!.dispose();
-    if (_customVideoPlayerController != null) {
-      _customVideoPlayerController!.dispose();
+    if (_mealPlayerController != null) {
+      _mealPlayerController!.dispose();
+      _mealPlayerController!.stopRendererScanning();
     }
-
     super.dispose();
   }
 
@@ -183,6 +215,7 @@ class _NewTransitionDesignState extends State<NewTransitionDesign>
                                 Navigator.pop(context);
                               },
                               showHelpIcon: true,
+                              helpIconColor: gWhiteColor,
                               helpOnTap: () {
                                 if (planNotePdfLink != null ||
                                     planNotePdfLink!.isNotEmpty) {
@@ -213,7 +246,7 @@ class _NewTransitionDesignState extends State<NewTransitionDesign>
                         ),
                         SizedBox(height: 1.h),
                         Text(
-                          'Day ${1} Transition Meal Plan',
+                          'Day ${currentDay} Transition Meal Plan',
                           style: TextStyle(
                               fontFamily: eUser().mainHeadingFont,
                               color: eUser().buttonTextColor,
@@ -221,7 +254,7 @@ class _NewTransitionDesignState extends State<NewTransitionDesign>
                         ),
                         SizedBox(height: 1.h),
                         Text(
-                          '2 Days Remaining',
+                          '${int.parse(totalDays ?? '0') - int.parse(currentDay!)} Days Remaining',
                           style: TextStyle(
                               fontFamily: eUser().userTextFieldFont,
                               color: eUser().buttonTextColor,
@@ -344,10 +377,16 @@ class _NewTransitionDesignState extends State<NewTransitionDesign>
                               //   color: kLineColor,
                               // ),
                             ),
-                            child: TabBarView(
-                              controller: _tabController,
-                              physics: const NeverScrollableScrollPhysics(),
-                              children: buildTabBarView(),
+                            child: Column(
+                              children: [
+                                Expanded(
+                                  child: TabBarView(
+                                    controller: _tabController,
+                                    physics: const NeverScrollableScrollPhysics(),
+                                    children: buildTabBarView(),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ),
@@ -395,32 +434,40 @@ class _NewTransitionDesignState extends State<NewTransitionDesign>
   }
 
   buildTabView(List<TransMealSlot> value) {
-    return SizedBox(
-      height: 65.h,
-      child: ListView.builder(
-          shrinkWrap: true,
-          scrollDirection: Axis.horizontal,
-          // physics: const NeverScrollableScrollPhysics(),
-          itemCount: value.length,
-          itemBuilder: (context, index) {
-            return Row(
-              children: [
-                Container(
-                  width: 300,
-                  margin: EdgeInsets.symmetric(
-                    horizontal: 3.w,
-                    vertical: 8.h,
-                  ),
-                  decoration: BoxDecoration(
-                    color: gBackgroundColor,
-                    borderRadius: BorderRadius.circular(40),
-                  ),
-                  child: buildReceipeDetails(value[index]),
-                ),
-                if (value.last.id != value[index].id) orFiled(),
-              ],
-            );
-          }),
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          SizedBox(
+            height: 58.h,
+            child: ListView.builder(
+                shrinkWrap: true,
+                scrollDirection: Axis.horizontal,
+                // physics: const NeverScrollableScrollPhysics(),
+                itemCount: value.length,
+                itemBuilder: (context, index) {
+                  return Row(
+                    children: [
+                      Container(
+                        width: 300,
+                        margin: EdgeInsets.symmetric(
+                          horizontal: 3.w,
+                          vertical: 2.h,
+                        ),
+                        decoration: BoxDecoration(
+                          color: gBackgroundColor,
+                          borderRadius: BorderRadius.circular(40),
+                        ),
+                        child: buildReceipeDetails(value[index]),
+                      ),
+                      if (value.last.id != value[index].id) orFiled(),
+
+                    ],
+                  );
+                }),
+          ),
+          if(currentDayStatus == "0" && !widget.viewDay1Details) btn(),
+        ],
+      ),
     );
   }
 
@@ -653,25 +700,9 @@ class _NewTransitionDesignState extends State<NewTransitionDesign>
 
   bool showMealVideo = false;
 
-  VideoPlayerController? _mealPlayerController;
-  CustomVideoPlayerController? _customVideoPlayerController;
-  final CustomVideoPlayerSettings _customVideoPlayerSettings =
-      CustomVideoPlayerSettings(
-    controlBarAvailable: false,
-    showPlayButton: true,
-    playButton: Center(
-      child: Icon(
-        Icons.play_circle,
-        color: Colors.white,
-      ),
-    ),
-    settingsButtonAvailable: false,
-    playbackSpeedButtonAvailable: false,
-    placeholderWidget: Container(
-      child: Center(child: CircularProgressIndicator()),
-      color: gBlackColor,
-    ),
-  );
+  VlcPlayerController? _mealPlayerController;
+  final _trackerSheetKey = GlobalKey<VlcPlayerWithControlsState>();
+
 
   videoMp4Widget({required VoidCallback onTap, String? videoName}) {
     return InkWell(
@@ -701,15 +732,33 @@ class _NewTransitionDesignState extends State<NewTransitionDesign>
 
   addUrlToVideoPlayer(String url) async {
     print("url" + url);
-    _mealPlayerController =
-        VideoPlayerController.network(Uri.parse(url).toString());
-    _mealPlayerController!.initialize().then((value) => setState(() {}));
-    _customVideoPlayerController = CustomVideoPlayerController(
-      context: context,
-      videoPlayerController: _mealPlayerController!,
-      customVideoPlayerSettings: _customVideoPlayerSettings,
+    _mealPlayerController = VlcPlayerController.network(
+      Uri.parse(url).toString(),
+      // url,
+      // 'http://samples.mplayerhq.hu/MPEG-4/embedded_subs/1Video_2Audio_2SUBs_timed_text_streams_.mp4',
+      // 'https://media.w3.org/2010/05/sintel/trailer.mp4',
+      hwAcc: HwAcc.auto,
+      autoPlay: true,
+      options: VlcPlayerOptions(
+        advanced: VlcAdvancedOptions([
+          VlcAdvancedOptions.networkCaching(2000),
+        ]),
+        subtitle: VlcSubtitleOptions([
+          VlcSubtitleOptions.boldStyle(true),
+          VlcSubtitleOptions.fontSize(30),
+          VlcSubtitleOptions.outlineColor(VlcSubtitleColor.yellow),
+          VlcSubtitleOptions.outlineThickness(VlcSubtitleThickness.normal),
+          // works only on externally added subtitles
+          VlcSubtitleOptions.color(VlcSubtitleColor.navy),
+        ]),
+        http: VlcHttpOptions([
+          VlcHttpOptions.httpReconnect(true),
+        ]),
+        rtp: VlcRtpOptions([
+          VlcRtpOptions.rtpOverRtsp(true),
+        ]),
+      ),
     );
-    _mealPlayerController!.play();
     if (await Wakelock.enabled == false) {
       Wakelock.enable();
     }
@@ -719,59 +768,41 @@ class _NewTransitionDesignState extends State<NewTransitionDesign>
     if (_mealPlayerController != null) {
       return Column(
         children: [
-          Stack(
-            children: [
-              AspectRatio(
-                aspectRatio: 16 / 9,
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(5),
-                    border: Border.all(color: gPrimaryColor, width: 1),
-                    // boxShadow: [
-                    //   BoxShadow(
-                    //     color: Colors.grey.withOpacity(0.3),
-                    //     blurRadius: 20,
-                    //     offset: const Offset(2, 10),
-                    //   ),
-                    // ],
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(5),
-                    child: Center(
-                      child: CustomVideoPlayer(
-                        customVideoPlayerController:
-                            _customVideoPlayerController!,
-                      ),
-                      // child: VlcPlayer(
-                      //   controller: _videoPlayerController!,
-                      //   aspectRatio: 16 / 9,
-                      //   virtualDisplay: false,
-                      //   placeholder: Center(child: CircularProgressIndicator()),
-                      // ),
-                    ),
-                  ),
+          AspectRatio(
+            aspectRatio: 16 / 9,
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(5),
+                border: Border.all(color: gPrimaryColor, width: 1),
+                // boxShadow: [
+                //   BoxShadow(
+                //     color: Colors.grey.withOpacity(0.3),
+                //     blurRadius: 20,
+                //     offset: const Offset(2, 10),
+                //   ),
+                // ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(5),
+                child: Center(
+                    child: VlcPlayerWithControls(
+                      key: _trackerSheetKey,
+                      controller: _mealPlayerController!,
+                      showVolume: false,
+                      showVideoProgress: false,
+                      seekButtonIconSize: 10.sp,
+                      playButtonIconSize: 14.sp,
+                      replayButtonSize: 10.sp,
+                    )
+                  // child: VlcPlayer(
+                  //   controller: _videoPlayerController!,
+                  //   aspectRatio: 16 / 9,
+                  //   virtualDisplay: false,
+                  //   placeholder: Center(child: CircularProgressIndicator()),
+                  // ),
                 ),
               ),
-              Positioned(
-                  child: AspectRatio(
-                aspectRatio: 16 / 9,
-                child: GestureDetector(
-                  onTap: () {
-                    print("onTap");
-                    if (_mealPlayerController != null) {
-                      if (_customVideoPlayerController!
-                          .videoPlayerController.value.isPlaying) {
-                        _customVideoPlayerController!.videoPlayerController
-                            .pause();
-                      } else {
-                        _customVideoPlayerController!.videoPlayerController
-                            .play();
-                      }
-                    }
-                  },
-                ),
-              ))
-            ],
+            ),
           ),
           Center(
               child: IconButton(
@@ -788,49 +819,78 @@ class _NewTransitionDesignState extends State<NewTransitionDesign>
     }
   }
 
-  Future showSymptomsTrackerSheet(BuildContext context, String day) {
+  bool symptomTrackerSheet = false;
+
+  bool fromBottomSheet = false;
+  Future showSymptomsTrackerSheet(BuildContext context, String day, {bool isPreviousDaySheet = false}) {
+    symptomTrackerSheet = true;
     return AppConfig().showSheet(context,
         StatefulBuilder(builder: (_, setState) {
-      return Column(
-        children: [
-          videoMp4Widget(
-              videoName: "Know more about Symptoms Tracker",
-              onTap: () {
-                addUrlToVideoPlayer("");
-                setState(() {
-                  showMealVideo = true;
-                });
-              }),
-          Stack(
-            children: [
-              TrackerUI(
-                from: ProgramMealType.transition.name,
-                proceedProgramDayModel: ProceedProgramDayModel(day: day),
-              ),
-              Visibility(
-                visible: showMealVideo,
-                child: Positioned(
-                    child: Center(child: buildMealVideo(onTap: () async {
-                  setState(() {
-                    showMealVideo = false;
-                  });
-                  if (await Wakelock.enabled == true) {
-                    Wakelock.disable();
+      return WillPopScope(
+        child: Column(
+          children: [
+            videoMp4Widget(
+                videoName: "Know more about Symptoms Tracker",
+                onTap: () {
+                  if(widget.trackerVideoLink == null){
+                    Future.delayed(Duration.zero).whenComplete(() {
+                      Get.snackbar(
+                        "",
+                        'Video link is Empty',
+                        titleText: SizedBox.shrink(),
+                        colorText: gWhiteColor,
+                        snackPosition: SnackPosition.BOTTOM,
+                        backgroundColor: gsecondaryColor.withOpacity(0.55),
+                      );
+                    });
                   }
-                  if (_mealPlayerController != null)
-                    _mealPlayerController!.dispose();
-                  if (_customVideoPlayerController != null)
-                    _customVideoPlayerController!.dispose();
+                  else{
+                    addUrlToVideoPlayer(widget.trackerVideoLink ?? '');
+                    setState(() {
+                      showMealVideo = true;
+                    });
+                  }
+                }),
+            Stack(
+              children: [
+                TrackerUI(
+                  from: ProgramMealType.transition.name,
+                  proceedProgramDayModel: ProceedProgramDayModel(day: day),
+                ),
+                Visibility(
+                  visible: showMealVideo,
+                  child: Positioned(
+                      child: Center(child: buildMealVideo(onTap: () async {
+                    setState(() {
+                      showMealVideo = false;
+                    });
+                    if (await Wakelock.enabled == true) {
+                      Wakelock.disable();
+                    }
+                    if (_mealPlayerController != null) _mealPlayerController!.dispose();
 
-                  // await _mealPlayerController!.stopRendererScanning();
-                  // await _mealPlayerController!.dispose();
-                }))),
-              )
-            ],
-          )
-        ],
+                    // await _mealPlayerController!.stopRendererScanning();
+                    // await _mealPlayerController!.dispose();
+                  }))),
+                )
+              ],
+            )
+          ],
+        ),
+          onWillPop: () => isPreviousDaySheet ? Future.value(false) : Future.value(false)
       );
-    }), circleIcon: bsHeadPinIcon, bottomSheetHeight: 90.h);
+    }), circleIcon: bsHeadPinIcon, bottomSheetHeight: 90.h,
+    isSheetCloseNeeded: true,
+    sheetCloseOnTap: (){
+      if(isPreviousDaySheet){
+        fromBottomSheet = true;
+        Navigator.pop(context);
+        Navigator.pop(context);
+      }
+      else{
+        Navigator.pop(context);
+      }
+    });
     return showModalBottomSheet(
         isDismissible: false,
         isScrollControlled: true,

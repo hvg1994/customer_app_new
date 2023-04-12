@@ -22,6 +22,7 @@ import 'package:sizer/sizer.dart';
 import 'package:http/http.dart' as http;
 
 import '../../../repository/prepratory_repository/prep_repository.dart';
+import '../../prepratory plan/new/new_transition_design.dart';
 
 // class DayMealTracerUI extends StatefulWidget {
 //   final ProceedProgramDayModel proceedProgramDayModel;
@@ -1522,7 +1523,7 @@ class _TrackerUIState extends State<TrackerUI> {
           ? Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => MealPlanScreen()), (route) => route.isFirst)
           : Navigator.pushAndRemoveUntil(context,
           MaterialPageRoute(
-            builder: (context) => TransitionMealPlanScreen(
+            builder: (context) => NewTransitionDesign(
                 totalDays: '',
                 dayNumber:'',
                 trackerVideoLink: trackerUrl

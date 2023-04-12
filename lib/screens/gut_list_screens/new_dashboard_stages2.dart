@@ -188,7 +188,7 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
     print(getToken);
   }
 
-  getData() async {
+  Future getData() async {
     isProgressDialogOpened = true;
     print("isProgressDialogOpened: $isProgressDialogOpened");
     Future.delayed(Duration(seconds: 0)).whenComplete(() {
@@ -391,108 +391,118 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
           child: SafeArea(
             child: Scaffold(
               backgroundColor: (initialIndex == 1) ? gWhiteColor : null,
-              body: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding:
-                        EdgeInsets.symmetric(vertical: 1.h, horizontal: 5.w),
-                    child: buildAppBar(
-                      () {
-                        Navigator.pop(context);
-                      },
-                      isBackEnable: false,
-                      showNotificationIcon: true,
-                      notificationOnTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) => const NotificationScreen()));
-                      },
-                      showHelpIcon: true,
-                      helpOnTap: () {
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (_) => HelpScreen()));
-                      },
-                      showSupportIcon: true,
-                      supportOnTap: () {
-                        showSupportCallSheet(context);
-                        // openAlertBox(
-                        //     context: context,
-                        //     isContentNeeded: false,
-                        //     titleNeeded: true,
-                        //     title: "Select Call Type",
-                        //     positiveButtonName: "In App Call",
-                        //     positiveButton: (){
-                        //       callSupport();
-                        //       Navigator.pop(context);
-                        //     },
-                        //     negativeButtonName: "Voice Call",
-                        //     negativeButton: (){
-                        //       Navigator.pop(context);
-                        //       if(_pref!.getString(AppConfig.KALEYRA_SUCCESS_ID) == null){
-                        //         AppConfig().showSnackbar(context, "Success Team Not available", isError: true);
-                        //       }
-                        //       else{
-                        //         // // click-to-call
-                        //         // callSupport();
-                        //
-                        //         if(_pref!.getString(AppConfig.KALEYRA_ACCESS_TOKEN) != null){
-                        //           final accessToken = _pref!.getString(AppConfig.KALEYRA_ACCESS_TOKEN);
-                        //           final uId = _pref!.getString(AppConfig.KALEYRA_USER_ID);
-                        //           final successId = _pref!.getString(AppConfig.KALEYRA_SUCCESS_ID);
-                        //           // voice- call
-                        //           supportVoiceCall(uId!, successId!, accessToken!);
-                        //         }
-                        //         else{
-                        //           AppConfig().showSnackbar(context, "Something went wrong!!", isError: true);
-                        //         }
-                        //       }
-                        //     }
-                        // );
-                      },
-                    ),
-                  ),
-                  Center(
-                      child: IntrinsicWidth(
-                    child: Container(
-                      height: 35,
-                      decoration: BoxDecoration(
-                          color: Colors.grey[300],
-                          borderRadius: BorderRadius.circular(18.0)),
-                      child: TabBar(
-                        controller: _tabController,
-                        onTap: (value) {
-                          setState(() {
-                            initialIndex = value;
-                          });
-                        },
-                        indicator: BoxDecoration(
-                            color: newDashboardGreenButtonColor,
-                            borderRadius: BorderRadius.circular(18.0)),
-                        labelColor: gWhiteColor,
-                        unselectedLabelColor: gBlackColor,
-                        tabs: const [
-                          Tab(
-                            text: 'Program',
+              body: RefreshIndicator(
+                onRefresh: getData,
+                child: CustomScrollView(
+                  physics: AlwaysScrollableScrollPhysics(),
+                  slivers: [
+                    SliverFillRemaining(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding:
+                            EdgeInsets.symmetric(vertical: 1.h, horizontal: 5.w),
+                            child: buildAppBar(
+                                  () {
+                                Navigator.pop(context);
+                              },
+                              isBackEnable: false,
+                              showNotificationIcon: true,
+                              notificationOnTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (_) => const NotificationScreen()));
+                              },
+                              showHelpIcon: true,
+                              helpOnTap: () {
+                                Navigator.push(context,
+                                    MaterialPageRoute(builder: (_) => HelpScreen()));
+                              },
+                              showSupportIcon: true,
+                              supportOnTap: () {
+                                showSupportCallSheet(context);
+                                // openAlertBox(
+                                //     context: context,
+                                //     isContentNeeded: false,
+                                //     titleNeeded: true,
+                                //     title: "Select Call Type",
+                                //     positiveButtonName: "In App Call",
+                                //     positiveButton: (){
+                                //       callSupport();
+                                //       Navigator.pop(context);
+                                //     },
+                                //     negativeButtonName: "Voice Call",
+                                //     negativeButton: (){
+                                //       Navigator.pop(context);
+                                //       if(_pref!.getString(AppConfig.KALEYRA_SUCCESS_ID) == null){
+                                //         AppConfig().showSnackbar(context, "Success Team Not available", isError: true);
+                                //       }
+                                //       else{
+                                //         // // click-to-call
+                                //         // callSupport();
+                                //
+                                //         if(_pref!.getString(AppConfig.KALEYRA_ACCESS_TOKEN) != null){
+                                //           final accessToken = _pref!.getString(AppConfig.KALEYRA_ACCESS_TOKEN);
+                                //           final uId = _pref!.getString(AppConfig.KALEYRA_USER_ID);
+                                //           final successId = _pref!.getString(AppConfig.KALEYRA_SUCCESS_ID);
+                                //           // voice- call
+                                //           supportVoiceCall(uId!, successId!, accessToken!);
+                                //         }
+                                //         else{
+                                //           AppConfig().showSnackbar(context, "Something went wrong!!", isError: true);
+                                //         }
+                                //       }
+                                //     }
+                                // );
+                              },
+                            ),
                           ),
-                          Tab(
-                            text: 'Post Program',
-                          ),
+                          Center(
+                              child: IntrinsicWidth(
+                                child: Container(
+                                  height: 35,
+                                  decoration: BoxDecoration(
+                                      color: Colors.grey[300],
+                                      borderRadius: BorderRadius.circular(18.0)),
+                                  child: TabBar(
+                                    controller: _tabController,
+                                    onTap: (value) {
+                                      setState(() {
+                                        initialIndex = value;
+                                      });
+                                    },
+                                    indicator: BoxDecoration(
+                                        color: newDashboardGreenButtonColor,
+                                        borderRadius: BorderRadius.circular(18.0)),
+                                    labelColor: gWhiteColor,
+                                    unselectedLabelColor: gBlackColor,
+                                    tabs: const [
+                                      Tab(
+                                        text: 'Program',
+                                      ),
+                                      Tab(
+                                        text: 'Post Program',
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              )),
+                          Expanded(
+                              child: Center(
+                                  child: (isProgressDialogOpened)
+                                      ? Shimmer.fromColors(
+                                    baseColor: Colors.grey.withOpacity(0.3),
+                                    highlightColor: Colors.grey.withOpacity(0.7),
+                                    child: view(),
+                                  )
+                                      : tabView()))
                         ],
                       ),
-                    ),
-                  )),
-                  Expanded(
-                      child: Center(
-                          child: (isProgressDialogOpened)
-                              ? Shimmer.fromColors(
-                                  baseColor: Colors.grey.withOpacity(0.3),
-                                  highlightColor: Colors.grey.withOpacity(0.7),
-                                  child: view(),
-                                )
-                              : tabView()))
-                ],
+                    )
+                  ],
+                ),
               ),
             ),
           ),
@@ -1956,6 +1966,16 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
 
         mealBtn1Name = "View Plan";
 
+        bg2 = currentBgColor;
+        consBtn1Color = newDashboardGreenButtonColor;
+        consBtn1Name = "Schedule";
+        consBtn2Color = newDashboardLightGreyButtonColor;
+        consBtn2Name = "Join Cons";
+
+        prepBtn1Name = "View Plan";
+        prepBtn2Name = "Track Kit";
+        mealBtn1Name = "View Plan";
+
         break;
       case 'pending':
         bg1 = completedBgColor;
@@ -2101,6 +2121,7 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
         prepBtn2Name = "Track Kit";
         mealBtn1Name = "View Plan";
         break;
+
       case 'prep_meal_plan_completed':
         bg1 = completedBgColor;
         evalBtnColor = newDashboardGreenButtonColor;
@@ -2113,22 +2134,22 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
         consBtn2Name = "View MR";
         showConsLockIcon = false;
 
-        if (_prepratoryModel!.value!.prep_days! !=
-            _prepratoryModel!.value!.currentDay) {
+        // if (_prepratoryModel!.value!.prep_days! !=
+        //     _prepratoryModel!.value!.currentDay) {
+        //   bg3 = currentBgColor;
+        //   prepBtn1Color = newDashboardGreenButtonColor;
+        //   prepBtn1Name = "View Plan";
+        //   prepBtn2Color = newDashboardLightGreyButtonColor;
+        //   prepBtn2Name = "Track Kit";
+        //   showPrepLockIcon = true;
+        // } else {
           bg3 = currentBgColor;
           prepBtn1Color = newDashboardGreenButtonColor;
           prepBtn1Name = "View Plan";
           prepBtn2Color = newDashboardLightGreyButtonColor;
           prepBtn2Name = "Track Kit";
           showPrepLockIcon = true;
-        } else {
-          bg3 = completedBgColor;
-          prepBtn1Color = newDashboardGreenButtonColor;
-          prepBtn1Name = "View Plan";
-          prepBtn2Color = newDashboardLightGreyButtonColor;
-          prepBtn2Name = "Track Kit";
-          showPrepLockIcon = false;
-        }
+        // }
 
         mealBtn1Name = "View Plan";
         break;
@@ -2144,22 +2165,22 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
         consBtn2Name = "View MR";
         showConsLockIcon = false;
 
-        if (_prepratoryModel!.value!.prep_days! !=
-            _prepratoryModel!.value!.currentDay) {
+        // if (_prepratoryModel!.value!.prep_days! !=
+        //     _prepratoryModel!.value!.currentDay) {
+        //   bg3 = currentBgColor;
+        //   prepBtn1Color = newDashboardGreenButtonColor;
+        //   prepBtn1Name = "View Plan";
+        //   prepBtn2Color = newDashboardGreenButtonColor;
+        //   prepBtn2Name = "Track Kit";
+        //   showPrepLockIcon = true;
+        // } else {
           bg3 = currentBgColor;
           prepBtn1Color = newDashboardGreenButtonColor;
           prepBtn1Name = "View Plan";
           prepBtn2Color = newDashboardGreenButtonColor;
           prepBtn2Name = "Track Kit";
           showPrepLockIcon = true;
-        } else {
-          bg3 = completedBgColor;
-          prepBtn1Color = newDashboardGreenButtonColor;
-          prepBtn1Name = "View Plan";
-          prepBtn2Color = newDashboardGreenButtonColor;
-          prepBtn2Name = "Track Kit";
-          showPrepLockIcon = false;
-        }
+        // }
 
         mealBtn1Name = "View Plan";
         break;
@@ -2175,22 +2196,22 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
         consBtn2Name = "View MR";
         showConsLockIcon = false;
 
-        if (_prepratoryModel!.value!.prep_days! !=
-            _prepratoryModel!.value!.currentDay) {
+        // if (_prepratoryModel!.value!.prep_days! !=
+        //     _prepratoryModel!.value!.currentDay) {
+        //   bg3 = currentBgColor;
+        //   prepBtn1Color = newDashboardGreenButtonColor;
+        //   prepBtn1Name = "View Plan";
+        //   prepBtn2Color = newDashboardGreenButtonColor;
+        //   prepBtn2Name = "Track Kit";
+        //   showPrepLockIcon = true;
+        // } else {
           bg3 = currentBgColor;
           prepBtn1Color = newDashboardGreenButtonColor;
           prepBtn1Name = "View Plan";
           prepBtn2Color = newDashboardGreenButtonColor;
           prepBtn2Name = "Track Kit";
           showPrepLockIcon = true;
-        } else {
-          bg3 = completedBgColor;
-          prepBtn1Color = newDashboardGreenButtonColor;
-          prepBtn1Name = "View Plan";
-          prepBtn2Color = newDashboardGreenButtonColor;
-          prepBtn2Name = "Track Kit";
-          showPrepLockIcon = false;
-        }
+        // }
 
         mealBtn1Name = "View Plan";
         break;
@@ -2206,22 +2227,22 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
         consBtn2Name = "View MR";
         showConsLockIcon = false;
 
-        if (_prepratoryModel!.value!.prep_days! !=
-            _prepratoryModel!.value!.currentDay) {
+        // if (_prepratoryModel!.value!.prep_days! !=
+        //     _prepratoryModel!.value!.currentDay) {
+        //   bg3 = currentBgColor;
+        //   prepBtn1Color = newDashboardGreenButtonColor;
+        //   prepBtn1Name = "View Plan";
+        //   prepBtn2Color = newDashboardGreenButtonColor;
+        //   prepBtn2Name = "Track Kit";
+        //   showPrepLockIcon = true;
+        // } else {
           bg3 = currentBgColor;
           prepBtn1Color = newDashboardGreenButtonColor;
           prepBtn1Name = "View Plan";
           prepBtn2Color = newDashboardGreenButtonColor;
           prepBtn2Name = "Track Kit";
           showPrepLockIcon = true;
-        } else {
-          bg3 = completedBgColor;
-          prepBtn1Color = newDashboardGreenButtonColor;
-          prepBtn1Name = "View Plan";
-          prepBtn2Color = newDashboardGreenButtonColor;
-          prepBtn2Name = "Track Kit";
-          showPrepLockIcon = false;
-        }
+        // }
 
         mealBtn1Name = "View Plan";
         break;
@@ -2237,22 +2258,22 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
         consBtn2Name = "View MR";
         showConsLockIcon = false;
 
-        if (_prepratoryModel!.value!.prep_days! !=
-            _prepratoryModel!.value!.currentDay) {
+        // if (_prepratoryModel!.value!.prep_days! !=
+        //     _prepratoryModel!.value!.currentDay) {
+        //   bg3 = currentBgColor;
+        //   prepBtn1Color = newDashboardGreenButtonColor;
+        //   prepBtn1Name = "View Plan";
+        //   prepBtn2Color = newDashboardGreenButtonColor;
+        //   prepBtn2Name = "Track Kit";
+        //   showPrepLockIcon = true;
+        // } else {
           bg3 = currentBgColor;
           prepBtn1Color = newDashboardGreenButtonColor;
           prepBtn1Name = "View Plan";
           prepBtn2Color = newDashboardGreenButtonColor;
           prepBtn2Name = "Track Kit";
           showPrepLockIcon = true;
-        } else {
-          bg3 = completedBgColor;
-          prepBtn1Color = newDashboardGreenButtonColor;
-          prepBtn1Name = "View Plan";
-          prepBtn2Color = newDashboardGreenButtonColor;
-          prepBtn2Name = "Track Kit";
-          showPrepLockIcon = false;
-        }
+        // }
 
         mealBtn1Name = "View Plan";
         break;
@@ -2686,14 +2707,15 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
               ),
             )
             .then((value) => reloadUI());
-      } else {
+      }
+      else {
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => (_prepratoryModel!.value!.isPrepCompleted!)
                 ? PrepratoryMealCompletedScreen()
                 : PreparatoryPlanScreen(
-                    dayNumber: _prepratoryModel!.value!.currentDay!,
+                    dayNumber: _prepratoryModel!.value!.currentDay ?? '',
                     totalDays: _prepratoryModel!.value!.prep_days ?? ''),
             // ProgramPlanScreen(from: ProgramMealType.prepratory.name,)
           ),
@@ -2721,9 +2743,10 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
           MaterialPageRoute(
             builder: (context) => NewTransitionDesign(
                 postProgramStage: postProgramStage,
-                totalDays: _transModel!.value!.trans_days ?? '',
+                totalDays: _transModel!.value!.trans_days ?? '1',
                 dayNumber: _transModel?.value?.currentDay ?? '',
-                trackerVideoLink: _gutProgramModel!.value!.tracker_video_url),
+                trackerVideoLink: _gutProgramModel!.value!.tracker_video_url
+            ),
           ),
         ).then((value) => reloadUI());
       }
@@ -2737,12 +2760,13 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
     print("func called");
     if (shippingStage == "shipping_delivered" && programOptionStage != null) {
       // to slide to start the program
-      if (_gutProgramModel!.value!.recipeVideo != null)
+      if (_gutProgramModel!.value!.recipeVideo != null) {
         _pref!.setString(
             AppConfig().receipeVideoUrl, _gutProgramModel!.value!.recipeVideo!);
-      if (_gutProgramModel!.value!.tracker_video_url != null)
-        _pref!.setString(AppConfig().trackerVideoUrl,
-            _gutProgramModel!.value!.tracker_video_url!);
+      }
+      if (_gutProgramModel!.value!.tracker_video_url != null) {
+        _pref!.setString(AppConfig().trackerVideoUrl, _gutProgramModel!.value!.tracker_video_url!);
+      }
       if (_gutProgramModel!.value!.startProgram == '0') {
         Navigator.of(context)
             .push(

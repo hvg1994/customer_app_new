@@ -7,8 +7,6 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_meedu_videoplayer/meedu_player.dart' as md;
-import 'package:flutter_meedu_videoplayer/meedu_player.dart';
 import 'package:flutter_vlc_player/flutter_vlc_player.dart';
 import 'package:grouped_list/grouped_list.dart';
 import 'package:gwc_customer/model/error_model.dart';
@@ -108,32 +106,10 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
 
   //****************  video player variables  *************
 
-  md.MeeduPlayerController _meeduPlayerController = md.MeeduPlayerController(
-    controlsStyle: md.ControlsStyle.secondary,
-    enabledButtons:
-        const EnabledButtons(playBackSpeed: false, muteAndSound: false),
-  );
-
-  _init(String? url) {
-    // _meeduPlayerController.setDataSource(
-    //   md.DataSource(
-    //       type: md.DataSourceType.network,
-    //       source: Uri.parse(url!).toString()
-    //   ),
-    //   autoplay: true,
-    // );
-    _meeduPlayerController.launchAsFullscreen(
-      context,
-      dataSource: md.DataSource(
-        type: md.DataSourceType.network,
-        source: Uri.parse(url!).toString(),
-      ),
-      autoplay: true,
-    );
-  }
-
-  VlcPlayerController? _controller;
+  VlcPlayerController? _controller, _trackerVideoPlayerController;
   final _key = GlobalKey<VlcPlayerWithControlsState>();
+
+
 
   initVideoView(String? url) {
     print("init url: $url");
@@ -178,38 +154,10 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
     }
   }
 
-  // for video player
-  VideoPlayerController? _mealVideoController, _trackerVideoController;
-  CustomVideoPlayerController? _customVideoPlayerController,
-      _trackerVideoPlayerController;
-  CustomVideoPlayerSettings _customVideoPlayerSettings =
-      CustomVideoPlayerSettings(
-    controlBarAvailable: true,
-    settingsButtonAvailable: false,
-    playbackSpeedButtonAvailable: false,
-    placeholderWidget: Container(
-      child: Center(child: CircularProgressIndicator()),
-      color: gBlackColor,
-    ),
-  );
-  // tracker video options
-  final CustomVideoPlayerSettings _trackerVideoPlayerSettings =
-      CustomVideoPlayerSettings(
-    controlBarAvailable: false,
-    showPlayButton: true,
-    playButton: Center(
-      child: Icon(
-        Icons.play_circle,
-        color: Colors.white,
-      ),
-    ),
-    settingsButtonAvailable: false,
-    playbackSpeedButtonAvailable: false,
-    placeholderWidget: Container(
-      child: Center(child: CircularProgressIndicator()),
-      color: gBlackColor,
-    ),
-  );
+  // for tracker video player
+  final _trackerKey = GlobalKey<VlcPlayerWithControlsState>();
+
+
 
   var checkState;
 
@@ -656,11 +604,8 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
   void dispose() async {
     super.dispose();
     commentController.dispose();
-    _meeduPlayerController.dispose();
 
-    if (_mealVideoController != null) _mealVideoController!.dispose();
-    if (_customVideoPlayerController != null)
-      _customVideoPlayerController!.dispose();
+    if (_trackerVideoPlayerController != null) _trackerVideoPlayerController!.dispose();
   }
 
   @override
@@ -1497,15 +1442,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
         if (await Wakelock.enabled) {
           Wakelock.disable();
         }
-        if (_meeduPlayerController != null) {
-          _meeduPlayerController.dispose();
-        }
-        if (_mealVideoController != null) {
-          _mealVideoController!.dispose();
-          _mealVideoController!.removeListener(() {});
-        }
-        if (_customVideoPlayerController != null)
-          _customVideoPlayerController!.dispose();
+        if (_trackerVideoPlayerController != null) _trackerVideoPlayerController!.stop();
       },
       onPip: () async {
         setState(() {
@@ -3001,10 +2938,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                     if (await Wakelock.enabled == true) {
                       Wakelock.disable();
                     }
-                    if (_trackerVideoController != null)
-                      _trackerVideoController!.dispose();
-                    if (_trackerVideoPlayerController != null)
-                      _trackerVideoPlayerController!.dispose();
+                    if (_trackerVideoPlayerController != null) _trackerVideoPlayerController!.dispose();
 
                     // await _mealPlayerController!.stopRendererScanning();
                     // await _mealPlayerController!.dispose();
@@ -3066,77 +3000,72 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
 
   addTrackerUrlToVideoPlayer(String url) async {
     print("url" + url);
-    _trackerVideoController =
-        VideoPlayerController.network(Uri.parse(url).toString());
-    _trackerVideoController!.initialize().then((value) => setState(() {}));
-    _trackerVideoPlayerController = CustomVideoPlayerController(
-      context: context,
-      videoPlayerController: _trackerVideoController!,
-      customVideoPlayerSettings: _trackerVideoPlayerSettings,
+    _trackerVideoPlayerController = VlcPlayerController.network(
+      Uri.parse(url).toString(),
+      // url,
+      // 'http://samples.mplayerhq.hu/MPEG-4/embedded_subs/1Video_2Audio_2SUBs_timed_text_streams_.mp4',
+      // 'https://media.w3.org/2010/05/sintel/trailer.mp4',
+      hwAcc: HwAcc.auto,
+      autoPlay: true,
+      options: VlcPlayerOptions(
+        advanced: VlcAdvancedOptions([
+          VlcAdvancedOptions.networkCaching(2000),
+        ]),
+        subtitle: VlcSubtitleOptions([
+          VlcSubtitleOptions.boldStyle(true),
+          VlcSubtitleOptions.fontSize(30),
+          VlcSubtitleOptions.outlineColor(VlcSubtitleColor.yellow),
+          VlcSubtitleOptions.outlineThickness(VlcSubtitleThickness.normal),
+          // works only on externally added subtitles
+          VlcSubtitleOptions.color(VlcSubtitleColor.navy),
+        ]),
+        http: VlcHttpOptions([
+          VlcHttpOptions.httpReconnect(true),
+        ]),
+        rtp: VlcRtpOptions([
+          VlcRtpOptions.rtpOverRtsp(true),
+        ]),
+      ),
     );
-    _trackerVideoController!.play();
+    _trackerVideoPlayerController!.play();
     if (await Wakelock.enabled == false) {
       Wakelock.enable();
     }
   }
 
   buildMealVideo({required VoidCallback onTap}) {
-    if (_trackerVideoController != null) {
+    if (_trackerVideoPlayerController != null) {
       return Column(
         children: [
-          Stack(
-            children: [
-              AspectRatio(
-                aspectRatio: 16 / 9,
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(5),
-                    border: Border.all(color: gPrimaryColor, width: 1),
-                    // boxShadow: [
-                    //   BoxShadow(
-                    //     color: Colors.grey.withOpacity(0.3),
-                    //     blurRadius: 20,
-                    //     offset: const Offset(2, 10),
-                    //   ),
-                    // ],
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(5),
-                    child: Center(
-                      child: CustomVideoPlayer(
-                        customVideoPlayerController:
-                            _trackerVideoPlayerController!,
-                      ),
-                      // child: VlcPlayer(
-                      //   controller: _videoPlayerController!,
-                      //   aspectRatio: 16 / 9,
-                      //   virtualDisplay: false,
-                      //   placeholder: Center(child: CircularProgressIndicator()),
-                      // ),
-                    ),
-                  ),
+          AspectRatio(
+            aspectRatio: 16 / 9,
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(5),
+                border: Border.all(color: gPrimaryColor, width: 1),
+                // boxShadow: [
+                //   BoxShadow(
+                //     color: Colors.grey.withOpacity(0.3),
+                //     blurRadius: 20,
+                //     offset: const Offset(2, 10),
+                //   ),
+                // ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(5),
+                child: Center(
+                    child: VlcPlayerWithControls(
+                      key: _trackerKey,
+                      controller: _trackerVideoPlayerController!,
+                      showVolume: false,
+                      showVideoProgress: false,
+                      seekButtonIconSize: 10.sp,
+                      playButtonIconSize: 14.sp,
+                      replayButtonSize: 10.sp,
+                    )
                 ),
               ),
-              Positioned(
-                  child: AspectRatio(
-                aspectRatio: 16 / 9,
-                child: GestureDetector(
-                  onTap: () {
-                    print("onTap");
-                    if (_trackerVideoController != null) {
-                      if (_trackerVideoPlayerController!
-                          .videoPlayerController.value.isPlaying) {
-                        _trackerVideoPlayerController!.videoPlayerController
-                            .pause();
-                      } else {
-                        _trackerVideoPlayerController!.videoPlayerController
-                            .play();
-                      }
-                    }
-                  },
-                ),
-              ))
-            ],
+            ),
           ),
           Center(
               child: IconButton(

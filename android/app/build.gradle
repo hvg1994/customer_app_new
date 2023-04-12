@@ -62,7 +62,7 @@ android {
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "com.fembuddy.gwc_customer"
-        minSdkVersion 23
+        minSdkVersion 21
         targetSdkVersion sdkVersion
         versionCode 12
         versionName flutterVersionName
@@ -133,7 +133,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics'
 
 //    implementation 'androidx.work:work-runtime-ktx:2.8.0-beta01'
-    implementation 'androidx.work:work-runtime:2.8.0'
+    implementation 'androidx.work:work-runtime:2.8.1'
 
     /*** Bandyer Android SDK ***/
     implementation "com.bandyer:bandyer-android-sdk:$bandyerLibVersion"
@@ -146,7 +146,7 @@ dependencies {
     // define this dependency only if you desire to handle usb camera input in a video call
     //implementation "com.bandyer:extension_usb_camera:$bandyerExtensionUsbCamera"
 
-    implementation 'androidx.work:work-runtime-ktx:2.8.0-beta01'
-    implementation 'com.google.firebase:firebase-messaging:23.1.1'
+    implementation 'androidx.work:work-runtime-ktx:2.8.1'
+    implementation 'com.google.firebase:firebase-messaging:23.1.2'
 
 }

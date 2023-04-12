@@ -48,6 +48,7 @@ class _PreparatoryPlanScreenState extends State<PreparatoryPlanScreen>
 
   bool showLoading = true;
 
+  String selectedSlot = "";
   String selectedItemName = "";
 
   getPrepratoryMeals() async {
@@ -77,11 +78,14 @@ class _PreparatoryPlanScreenState extends State<PreparatoryPlanScreen>
 
       slotNamesForTabs.forEach((key, value) {
         print("$key == ${value.subItems}");
-        selectedItemName = value.subItems!.keys.first;
       });
+      selectedSlot = slotNamesForTabs.keys.first;
+      selectedItemName = slotNamesForTabs.values.first.subItems!.keys.first;
       tabSize = slotNamesForTabs.length;
 
-      print(tabSize);
+      print("selectedItemName: $selectedItemName");
+
+      print("tabSize: $tabSize");
 
       // return SizedBox();
       // return customMealPlanTile(dataList);
@@ -113,134 +117,133 @@ class _PreparatoryPlanScreenState extends State<PreparatoryPlanScreen>
   @override
   Widget build(BuildContext context) {
     print("build called");
-    return Scaffold(
-      backgroundColor: gBackgroundColor,
-      body: showLoading
-          ? Center(
-              child: buildCircularIndicator(),
-            )
-          : DefaultTabController(
-              length: tabSize,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Padding(
-                    padding: EdgeInsets.only(top: 2.h, left: 3.w),
-                    child: buildAppBar(
-                      () {
-                        Navigator.pop(context);
-                      },
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(left: 3.w,top: 2.h,bottom: 1.h),
-                    child: Text(
-                      'Preparatory Phase',
-                      style: TextStyle(
-                          fontFamily: eUser().mainHeadingFont,
-                          color: eUser().mainHeadingColor,
-                          fontSize: eUser().mainHeadingFontSize),
-                    ),
-                  ),
-                  // Padding(
-                  //   padding: EdgeInsets.only(left: 3.w),
-                  //   child: Text(
-                  //     'Day ${1} Preparatory Meal Plan',
-                  //     style: TextStyle(
-                  //         fontFamily: eUser().mainHeadingFont,
-                  //         color: eUser().mainHeadingColor,
-                  //         fontSize: eUser().mainHeadingFontSize),
-                  //   ),
-                  // ),
-                  // SizedBox(height: 1.h),
-                  // Padding(
-                  //   padding: EdgeInsets.only(left: 3.w),
-                  //   child: Text(
-                  //     '2 Days Remaining',
-                  //     style: TextStyle(
-                  //         fontFamily: eUser().userTextFieldFont,
-                  //         color: eUser().userTextFieldColor,
-                  //         fontSize: eUser().userTextFieldHintFontSize),
-                  //   ),
-                  // ),
-                  Padding(
-                    padding: EdgeInsets.only(top: 2.h),
-                    child: SizedBox(
-                      height: 30,
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 50,
-                            decoration: BoxDecoration(
-                              color: Color(0xffC8DE95).withOpacity(0.6),
-                              borderRadius: const BorderRadius.only(
-                                topRight: Radius.circular(30),
-                              ),
-                            ),
-                          ),
-                          SizedBox(width: 2.w),
-                          Expanded(
-                            child: TabBar(
-                              isScrollable: true,
-                              unselectedLabelColor: Colors.black,
-                              labelColor: gWhiteColor,
-                              controller: _tabController,
-                              unselectedLabelStyle: TextStyle(
-                                  fontFamily: kFontBook,
-                                  color: gHintTextColor,
-                                  fontSize: 9.sp),
-                              labelStyle: TextStyle(
-                                  fontFamily: kFontMedium,
-                                  color: gBlackColor,
-                                  fontSize: 11.sp),
-                              indicator: BoxDecoration(
-                                color: newDashboardGreenButtonColor,
-                                borderRadius: const BorderRadius.only(
-                                  topRight: Radius.circular(20),
-                                  bottomLeft: Radius.circular(20),
-                                ),
-                              ),
-                              onTap: (index) {
-                                print("ontap: $index");
-                                // print(slotNamesForTabs.keys.elementAt(index));
-                                final slot =
-                                    slotNamesForTabs.keys.elementAt(index);
-                                setState(() {
-                                  slotNamesForTabs.forEach((key, value) {
-                                    selectedItemName =
-                                        value.subItems!.keys.first;
-                                  });
-                                  print(selectedItemName);
-                                });
-                                // _buildList(index);
-                              },
-                              tabs: slotNamesForTabs.keys
-                                  .map((e) => Tab(
-                                        text: e,
-                                      ))
-                                  .toList(),
-                            ),
-                          ),
-                        ],
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: gBackgroundColor,
+        body: showLoading
+            ? Center(
+                child: buildCircularIndicator(),
+              )
+            : DefaultTabController(
+                length: tabSize,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Padding(
+                      padding: EdgeInsets.only(top: 0.5.h, left: 3.w),
+                      child: buildAppBar(
+                        () {
+                          Navigator.pop(context);
+                        },
                       ),
                     ),
-                  ),
-                  Expanded(
-                    child: TabBarView(
-                      controller: _tabController,
-                      physics: const NeverScrollableScrollPhysics(),
-                      children: [
-                        ...slotNamesForTabs.values
-                            .map(
-                              (e) => buildTabView(e),
-                            )
-                            .toList(),
-                      ],
+                    Padding(
+                      padding: EdgeInsets.only(left: 3.w,top: 2.h,bottom: 1.h),
+                      child: Text(
+                        'Preparatory Phase',
+                        style: TextStyle(
+                            fontFamily: eUser().mainHeadingFont,
+                            color: eUser().mainHeadingColor,
+                            fontSize: eUser().mainHeadingFontSize),
+                      ),
                     ),
-                  )
-                ],
+                    // Padding(
+                    //   padding: EdgeInsets.only(left: 3.w),
+                    //   child: Text(
+                    //     'Day ${1} Preparatory Meal Plan',
+                    //     style: TextStyle(
+                    //         fontFamily: eUser().mainHeadingFont,
+                    //         color: eUser().mainHeadingColor,
+                    //         fontSize: eUser().mainHeadingFontSize),
+                    //   ),
+                    // ),
+                    // SizedBox(height: 1.h),
+                    // Padding(
+                    //   padding: EdgeInsets.only(left: 3.w),
+                    //   child: Text(
+                    //     '2 Days Remaining',
+                    //     style: TextStyle(
+                    //         fontFamily: eUser().userTextFieldFont,
+                    //         color: eUser().userTextFieldColor,
+                    //         fontSize: eUser().userTextFieldHintFontSize),
+                    //   ),
+                    // ),
+                    Padding(
+                      padding: EdgeInsets.only(top: 2.h),
+                      child: SizedBox(
+                        height: 30,
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 50,
+                              decoration: BoxDecoration(
+                                color: Color(0xffC8DE95).withOpacity(0.6),
+                                borderRadius: const BorderRadius.only(
+                                  topRight: Radius.circular(30),
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: 2.w),
+                            Expanded(
+                              child: TabBar(
+                                isScrollable: true,
+                                unselectedLabelColor: Colors.black,
+                                labelColor: gWhiteColor,
+                                controller: _tabController,
+                                unselectedLabelStyle: TextStyle(
+                                    fontFamily: kFontBook,
+                                    color: gHintTextColor,
+                                    fontSize: 9.sp),
+                                labelStyle: TextStyle(
+                                    fontFamily: kFontMedium,
+                                    color: gBlackColor,
+                                    fontSize: 11.sp),
+                                indicator: BoxDecoration(
+                                  color: newDashboardGreenButtonColor,
+                                  borderRadius: const BorderRadius.only(
+                                    topRight: Radius.circular(20),
+                                    bottomLeft: Radius.circular(20),
+                                  ),
+                                ),
+                                onTap: (index) {
+                                  print("ontap: $index");
+                                  // print(slotNamesForTabs.keys.elementAt(index));
+                                  selectedSlot =
+                                      slotNamesForTabs.keys.elementAt(index);
+                                  setState(() {
+                                    selectedItemName = slotNamesForTabs[selectedSlot]!.subItems!.keys.first;
+                                    print(selectedItemName);
+                                  });
+                                  // _buildList(index);
+                                },
+                                tabs: slotNamesForTabs.keys
+                                    .map((e) => Tab(
+                                          text: e,
+                                        ))
+                                    .toList(),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: TabBarView(
+                        controller: _tabController,
+                        physics: const NeverScrollableScrollPhysics(),
+                        children: [
+                          ...slotNamesForTabs.values
+                              .map(
+                                (e) => buildTabView(e),
+                              )
+                              .toList(),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
               ),
-            ),
+      ),
     );
   }
 
@@ -291,11 +294,12 @@ class _PreparatoryPlanScreenState extends State<PreparatoryPlanScreen>
   //   );
   // }
 
-  List<Widget> _buildList(Map<String, List<MealSlot>>? subItems) {
+  List<Widget> _buildList(List<String>? subItems) {
     List<Widget> WidgetList = [];
 
     if (subItems != null) {
-      subItems.forEach((key, value) {
+      print("subItems: $subItems");
+      subItems.forEach((key) {
         WidgetList.add(GestureDetector(
             onTap: () {
               print(key);
@@ -307,12 +311,12 @@ class _PreparatoryPlanScreenState extends State<PreparatoryPlanScreen>
                 padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 2.w),
                 decoration: selectedItemName == key
                     ? const BoxDecoration(
-                        color: gWhiteColor,
-                        borderRadius: BorderRadius.only(
-                          topRight: Radius.circular(20),
-                          bottomLeft: Radius.circular(20),
-                        ),
-                      )
+                  color: gWhiteColor,
+                  borderRadius: BorderRadius.only(
+                    topRight: Radius.circular(20),
+                    bottomLeft: Radius.circular(20),
+                  ),
+                )
                     : const BoxDecoration(),
                 child: Text(
                   key,
@@ -325,6 +329,7 @@ class _PreparatoryPlanScreenState extends State<PreparatoryPlanScreen>
             )));
       });
     }
+    print(WidgetList);
     return WidgetList;
   }
 
@@ -358,11 +363,20 @@ class _PreparatoryPlanScreenState extends State<PreparatoryPlanScreen>
 
   buildTabView(SubItems mealNames) {
     List<MealSlot> meals = [];
-    mealNames.subItems!.forEach((key, element) {
-      if (key == selectedItemName) {
-        meals.addAll(element);
+    List<String> subItems = [];
+    slotNamesForTabs.entries.map((e) {
+      print("compare");
+      print(e.value.subItems == mealNames.subItems);
+      if(e.value.subItems == mealNames.subItems){
+        mealNames.subItems!.forEach((key, element) {
+          subItems.add(key);
+          print("$key -- $element");
+          if (key == selectedItemName) {
+            meals.addAll(element);
+          }
+        });
       }
-    });
+    }).toList();
     // print("meals.length: ${meals.length}");
     return Row(
       children: [
@@ -379,7 +393,7 @@ class _PreparatoryPlanScreenState extends State<PreparatoryPlanScreen>
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: _buildList(mealNames.subItems),
+                children: _buildList(subItems),
               ),
             ),
             // Positioned(

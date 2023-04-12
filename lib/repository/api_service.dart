@@ -1409,6 +1409,7 @@ class ApiClient {
       var response = await http.Response.fromStream(await request.send())
           .timeout(Duration(seconds: 45));
 
+      print("startProgramOnSwipeApi response url:" + path);
       print("startProgramOnSwipeApi response code:" + response.statusCode.toString());
       print("startProgramOnSwipeApi response body:" + response.body);
 
@@ -2225,8 +2226,10 @@ class ApiClient {
             'Authorization': getHeaderToken(),
           }
       );
+
+      print("getTransitionMealsApi url : ${transitionMealUrl}");
       print("getTransitionMealsApi status code: ${response.statusCode}");
-      print("getTransitionMealsApi body : ${response.body}");
+      print("getTransitionMealsApi body... : ${response.body}");
 
       final json = jsonDecode(response.body);
       if(response.statusCode == 200){

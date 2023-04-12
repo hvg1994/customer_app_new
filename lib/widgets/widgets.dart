@@ -181,7 +181,7 @@ buildAppBar(VoidCallback func,
     bool showHelpIcon = false,
     VoidCallback? helpOnTap,
     bool showSupportIcon = false,
-    VoidCallback? supportOnTap}) {
+    VoidCallback? supportOnTap, Color? helpIconColor}) {
   return Row(
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
     children: [
@@ -233,7 +233,7 @@ buildAppBar(VoidCallback func,
             child: GestureDetector(
               child: ImageIcon(
                 AssetImage("assets/images/new_ds/help.png"),
-                color: gHintTextColor,
+                color: helpIconColor ?? gHintTextColor,
               ),
               onTap: helpOnTap,
             ),

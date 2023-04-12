@@ -1201,6 +1201,7 @@ class _ExistingUserState extends State<ExistingUser> {
           AppConfig.User_Name, model1.data?.name ?? model1.data?.fname ?? '');
       _pref.setString(AppConfig.User_Profile,model1.data?.profile ?? "");
       _pref.setString(AppConfig.User_Number,model1.data?.phone ?? "");
+
       print("pref id: ${_pref.getInt(AppConfig.USER_ID)}");
       print("model1. after: ${_pref.getString(AppConfig.QB_CURRENT_USERID)}");
     }

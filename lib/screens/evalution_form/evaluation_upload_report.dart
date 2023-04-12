@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_vlc_player/flutter_vlc_player.dart';
 import 'package:gwc_customer/model/error_model.dart';
 import 'package:gwc_customer/model/evaluation_from_models/evaluation_model_format1.dart';
 import 'package:gwc_customer/model/new_user_model/about_program_model/about_program_model.dart';
@@ -11,6 +12,7 @@ import 'package:gwc_customer/screens/evalution_form/personal_details_screen2.dar
 import 'package:gwc_customer/services/new_user_service/about_program_service.dart';
 import 'package:gwc_customer/utils/app_config.dart';
 import 'package:gwc_customer/widgets/constants.dart';
+import 'package:gwc_customer/widgets/vlc_player/vlc_player_with_controls.dart';
 import 'package:gwc_customer/widgets/widgets.dart';
 import 'package:sizer/sizer.dart';
 import 'package:appinio_video_player/appinio_video_player.dart';
@@ -269,7 +271,7 @@ class _EvaluationUploadReportState extends State<EvaluationUploadReport> {
                       showUploadReportPopup();
 
                       if(_videoPlayerController != null){
-                        _videoPlayerController!.pause();
+                        _videoPlayerController!.stop();
                       }
                       // Navigator.push(
                       //     context,
@@ -328,7 +330,7 @@ class _EvaluationUploadReportState extends State<EvaluationUploadReport> {
                 child: Center(child:  GestureDetector(
                     onTap: (){
                       if(_videoPlayerController != null){
-                        _videoPlayerController!.pause();
+                        _videoPlayerController!.stop();
                       }
                       Navigator.push(
                           context,
@@ -505,6 +507,9 @@ class _EvaluationUploadReportState extends State<EvaluationUploadReport> {
                   child: GestureDetector(
                     onTap: () async {
                       if(medicalRecords.isNotEmpty){
+                        if(_videoPlayerController != null){
+                          _videoPlayerController!.stop();
+                        }
                         Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -532,7 +537,7 @@ class _EvaluationUploadReportState extends State<EvaluationUploadReport> {
                           'Submit',
                           style: TextStyle(
                             fontFamily:
-                            "GothamRoundedBold_21016",
+                            kFontMedium,
                             color: gWhiteColor,
                             fontSize: 11.sp,
                           ),
@@ -589,7 +594,7 @@ class _EvaluationUploadReportState extends State<EvaluationUploadReport> {
         maxLines: 2,
         overflow: TextOverflow.ellipsis,
         style: TextStyle(
-          fontFamily: "PoppinsBold",
+          fontFamily: kFontBold,
           fontSize: 11.sp,
         ),
       ),
@@ -645,36 +650,73 @@ class _EvaluationUploadReportState extends State<EvaluationUploadReport> {
     // );
   }
 
+  VlcPlayerController? _videoPlayerController;
+  final _key = GlobalKey<VlcPlayerWithControlsState>();
 
-  VideoPlayerController? _videoPlayerController;
-  CustomVideoPlayerController? _customVideoPlayerController;
-  final CustomVideoPlayerSettings _customVideoPlayerSettings =
-  CustomVideoPlayerSettings(
-    controlBarAvailable: false,
-    showPlayButton: true,
-    playButton: Center(child: Icon(Icons.play_circle, color: Colors.white,),),
-    settingsButtonAvailable: false,
-    playbackSpeedButtonAvailable: false,
-    placeholderWidget: Container(child: Center(child: CircularProgressIndicator()),color: gBlackColor,),
-  );
+  // VideoPlayerController? _videoPlayerController;
+  // CustomVideoPlayerController? _customVideoPlayerController;
+  // final CustomVideoPlayerSettings _customVideoPlayerSettings =
+  // CustomVideoPlayerSettings(
+  //   controlBarAvailable: false,
+  //   showPlayButton: true,
+  //   playButton: Center(child: Icon(Icons.play_circle, color: Colors.white,),),
+  //   settingsButtonAvailable: false,
+  //   playbackSpeedButtonAvailable: false,
+  //   placeholderWidget: Container(child: Center(child: CircularProgressIndicator()),color: gBlackColor,),
+  // );
 
   bool showUploadProgress = false;
 
-  addUrlToVideoPlayer(String url){
+  addUrlToVideoPlayer(String url) async {
     print("url"+ url);
-    _videoPlayerController = VideoPlayerController.network(Uri.parse(url).toString());
-    _videoPlayerController!.initialize().then((value) => setState(() {}));
-    _customVideoPlayerController = CustomVideoPlayerController(
-      context: context,
-      videoPlayerController: _videoPlayerController!,
-      customVideoPlayerSettings: _customVideoPlayerSettings,
-    );
-    _videoPlayerController!.play();
-    Wakelock.enable();
+    // _videoPlayerController = VideoPlayerController.network(Uri.parse(url).toString());
+    // _videoPlayerController!.initialize().then((value) => setState(() {}));
+    // _customVideoPlayerController = CustomVideoPlayerController(
+    //   context: context,
+    //   videoPlayerController: _videoPlayerController!,
+    //   customVideoPlayerSettings: _customVideoPlayerSettings,
+    // );
+    // _videoPlayerController!.play();
+    // Wakelock.enable();
+
+    _videoPlayerController = VlcPlayerController.network(
+      Uri.parse(url).toString(),
+      // url,
+      // 'http://samples.mplayerhq.hu/MPEG-4/embedded_subs/1Video_2Audio_2SUBs_timed_text_streams_.mp4',
+      // 'https://media.w3.org/2010/05/sintel/trailer.mp4',
+      hwAcc: HwAcc.auto,
+      autoPlay: true,
+      options: VlcPlayerOptions(
+        advanced: VlcAdvancedOptions([
+          VlcAdvancedOptions.networkCaching(2000),
+        ]),
+        subtitle: VlcSubtitleOptions([
+          VlcSubtitleOptions.boldStyle(true),
+          VlcSubtitleOptions.fontSize(30),
+          VlcSubtitleOptions.outlineColor(VlcSubtitleColor.yellow),
+          VlcSubtitleOptions.outlineThickness(VlcSubtitleThickness.normal),
+          // works only on externally added subtitles
+          VlcSubtitleOptions.color(VlcSubtitleColor.navy),
+        ]),
+        http: VlcHttpOptions([
+          VlcHttpOptions.httpReconnect(true),
+        ]),
+        rtp: VlcRtpOptions([
+          VlcRtpOptions.rtpOverRtsp(true),
+        ]),
+      ),
+    )..initialize()..play();
+    if (!await Wakelock.enabled) {
+      Wakelock.enable();
+    }
+    setState(() {
+
+    });
   }
 
 
   buildVideoPlayer() {
+    print("_videoPlayerController: $_videoPlayerController");
     if(_videoPlayerController != null){
       return Stack(
         children: [
@@ -695,37 +737,40 @@ class _EvaluationUploadReportState extends State<EvaluationUploadReport> {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(5),
                 child: Center(
-                  child: CustomVideoPlayer(
-                    customVideoPlayerController: _customVideoPlayerController!,
-                  ),
-                  // child: VlcPlayer(
-                  //   controller: _videoPlayerController!,
-                  //   aspectRatio: 16 / 9,
-                  //   virtualDisplay: false,
-                  //   placeholder: Center(child: CircularProgressIndicator()),
+                  // child: CustomVideoPlayer(
+                  //   customVideoPlayerController: _customVideoPlayerController!,
                   // ),
+                    child: VlcPlayerWithControls(
+                      key: _key,
+                      controller: _videoPlayerController!,
+                      showVolume: false,
+                      showVideoProgress: false,
+                      seekButtonIconSize: 10.sp,
+                      playButtonIconSize: 14.sp,
+                      replayButtonSize: 10.sp,
+                    )
                 ),
               ),
             ),
           ),
-          Positioned(child:
-          AspectRatio(
-            aspectRatio: 16/9,
-            child: GestureDetector(
-              onTap: (){
-                print("onTap");
-                if(_videoPlayerController != null){
-                  if(_customVideoPlayerController!.videoPlayerController.value.isPlaying){
-                    _customVideoPlayerController!.videoPlayerController.pause();
-                  }
-                  else{
-                    _customVideoPlayerController!.videoPlayerController.play();
-                  }
-                }
-              },
-            ),
-          )
-          )
+          // Positioned(child:
+          // AspectRatio(
+          //   aspectRatio: 16/9,
+          //   child: GestureDetector(
+          //     onTap: (){
+          //       print("onTap");
+          //       if(_videoPlayerController != null){
+          //         if(_customVideoPlayerController!.videoPlayerController.value.isPlaying){
+          //           _customVideoPlayerController!.videoPlayerController.pause();
+          //         }
+          //         else{
+          //           _customVideoPlayerController!.videoPlayerController.play();
+          //         }
+          //       }
+          //     },
+          //   ),
+          // )
+          // )
 
         ],
       );
@@ -772,6 +817,9 @@ class _EvaluationUploadReportState extends State<EvaluationUploadReport> {
                   model.allReportsUploaded = selectedUploadRadio;
                   // 28 items if other is null
                   print(model.toMap());
+                  if(_videoPlayerController != null){
+                    _videoPlayerController!.stop();
+                  }
                   Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -862,9 +910,9 @@ class _EvaluationUploadReportState extends State<EvaluationUploadReport> {
     if(_videoPlayerController != null){
       _videoPlayerController!.dispose();
     }
-    if(_customVideoPlayerController != null){
-      _customVideoPlayerController!.dispose();
-    }
+    // if(_customVideoPlayerController != null){
+    //   _customVideoPlayerController!.dispose();
+    // }
     if(await Wakelock.enabled){
       Wakelock.disable();
     }

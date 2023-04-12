@@ -22,6 +22,7 @@ import '../../repository/program_repository/program_repository.dart';
 import '../../utils/app_config.dart';
 import '../../widgets/constants.dart';
 import '../../widgets/widgets.dart';
+import '../prepratory plan/new/new_transition_design.dart';
 import '../prepratory plan/new/preparatory_new_screen.dart';
 import '../prepratory plan/prepratory_meal_completed_screen.dart';
 import 'day_program_plans.dart';
@@ -50,7 +51,7 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    addChewieVideoPlayer("https://media.w3.org/2010/05/sintel/trailer.mp4");
+    addUrlToVideoPlayer("https://media.w3.org/2010/05/sintel/trailer.mp4");
   }
 
   @override
@@ -58,6 +59,8 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
     if(mounted){
       if(_aboutSlideStartController != null)_aboutSlideStartController!.dispose();
       if(_customVideoPlayerController != null)_customVideoPlayerController!.dispose();
+
+      if(_videoPlayerController != null) _videoPlayerController!.dispose();
       super.dispose();
     }
   }
@@ -119,6 +122,9 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
 
   // **  *add url to video on initstate *************************
 
+  VlcPlayerController? _videoPlayerController;
+  final _key = GlobalKey<VlcPlayerWithControlsState>();
+
   VideoPlayerController? _aboutSlideStartController;
   CustomVideoPlayerController? _customVideoPlayerController;
   final CustomVideoPlayerSettings _customVideoPlayerSettings =
@@ -145,9 +151,42 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
     }
   }
 
+  addUrlToVideoPlayer(String url) async {
+    print("url" + url);
+    _videoPlayerController = VlcPlayerController.network(
+      url,
+      // url,
+      // 'http://samples.mplayerhq.hu/MPEG-4/embedded_subs/1Video_2Audio_2SUBs_timed_text_streams_.mp4',
+      // 'https://media.w3.org/2010/05/sintel/trailer.mp4',
+      hwAcc: HwAcc.auto,
+      autoPlay: true,
+      options: VlcPlayerOptions(
+        advanced: VlcAdvancedOptions([
+          VlcAdvancedOptions.networkCaching(2000),
+        ]),
+        subtitle: VlcSubtitleOptions([
+          VlcSubtitleOptions.boldStyle(true),
+          VlcSubtitleOptions.fontSize(30),
+          VlcSubtitleOptions.outlineColor(VlcSubtitleColor.yellow),
+          VlcSubtitleOptions.outlineThickness(VlcSubtitleThickness.normal),
+          // works only on externally added subtitles
+          VlcSubtitleOptions.color(VlcSubtitleColor.navy),
+        ]),
+        http: VlcHttpOptions([
+          VlcHttpOptions.httpReconnect(true),
+        ]),
+        rtp: VlcRtpOptions([
+          VlcRtpOptions.rtpOverRtsp(true),
+        ]),
+      ),
+    );
+    if (!await Wakelock.enabled) {
+      Wakelock.enable();
+    }
+  }
 
   buildAboutStartSlideVideo() {
-    if(_aboutSlideStartController != null){
+    if(_videoPlayerController != null){
       return Stack(
         children: [
           AspectRatio(
@@ -167,64 +206,67 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(5),
                 child: Center(
-                  child: CustomVideoPlayer(
-                    customVideoPlayerController: _customVideoPlayerController!,
-                  ),
-                  // child: VlcPlayer(
-                  //   controller: _videoPlayerController!,
-                  //   aspectRatio: 16 / 9,
-                  //   virtualDisplay: false,
-                  //   placeholder: Center(child: CircularProgressIndicator()),
+                  // child: CustomVideoPlayer(
+                  //   customVideoPlayerController: _customVideoPlayerController!,
                   // ),
+                    child: VlcPlayerWithControls(
+                      key: _key,
+                      controller: _videoPlayerController!,
+                      showVolume: false,
+                      showVideoProgress: false,
+                      seekButtonIconSize: 10.sp,
+                      playButtonIconSize: 14.sp,
+                      replayButtonSize: 10.sp,
+                    )
                 ),
               ),
             ),
           ),
-          if(!_customVideoPlayerController!.videoPlayerController.value.isPlaying)AspectRatio(
-              aspectRatio: 16/9,
-            child: SizedBox.expand(
-              child: Container(
-                color: Colors.black45,
-                child: FittedBox(
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      IconButton(
-                        onPressed: (){
-                          _customVideoPlayerController!.videoPlayerController.play();
-                        },
-                        color: gWhiteColor,
-                        iconSize: 15,
-                        icon: Icon(Icons.play_arrow),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Positioned(child:
-          AspectRatio(
-            aspectRatio: 16/9,
-            child: GestureDetector(
-              onTap: (){
-                print("onTap");
-                if(_aboutSlideStartController != null){
-                  if(_customVideoPlayerController!.videoPlayerController.value.isPlaying){
-                    _customVideoPlayerController!.videoPlayerController.pause();
-                  }
-                  else{
-                    _customVideoPlayerController!.videoPlayerController.play();
-                  }
-                }
-                setState(() {
-
-                });
-              },
-            ),
-          )
-          )
+          // if(!_customVideoPlayerController!.videoPlayerController.value.isPlaying)AspectRatio(
+          //     aspectRatio: 16/9,
+          //   child: SizedBox.expand(
+          //     child: Container(
+          //       color: Colors.black45,
+          //       child: FittedBox(
+          //         child: Row(
+          //           crossAxisAlignment: CrossAxisAlignment.center,
+          //           mainAxisAlignment: MainAxisAlignment.spaceAround,
+          //           children: [
+          //             IconButton(
+          //               onPressed: (){
+          //                 _customVideoPlayerController!.videoPlayerController.play();
+          //               },
+          //               color: gWhiteColor,
+          //               iconSize: 15,
+          //               icon: Icon(Icons.play_arrow),
+          //             ),
+          //           ],
+          //         ),
+          //       ),
+          //     ),
+          //   ),
+          // ),
+          // Positioned(child:
+          // AspectRatio(
+          //   aspectRatio: 16/9,
+          //   child: GestureDetector(
+          //     onTap: (){
+          //       print("onTap");
+          //       if(_aboutSlideStartController != null){
+          //         if(_customVideoPlayerController!.videoPlayerController.value.isPlaying){
+          //           _customVideoPlayerController!.videoPlayerController.pause();
+          //         }
+          //         else{
+          //           _customVideoPlayerController!.videoPlayerController.play();
+          //         }
+          //       }
+          //       setState(() {
+          //
+          //       });
+          //     },
+          //   ),
+          // )
+          // )
 
         ],
       );
@@ -276,6 +318,7 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
         Text(
           (widget.from == ProgramMealType.prepratory.name)
               ? "The preparatory phase aids in the optimal preparation of the gastrointestinal tract for detoxification and repair. Gut acid and enzyme optimization can be achieved by adapting typical diets to your gut type and condition, as well as avoiding certain addictions/habits such as smoking, drinking, and so on."
+              "Before receiving your product kit, eat 6-7 meals a day, break addictions, and eliminate bad habits. Start your custom plan now."
               : widget.from == ProgramMealType.program.name
               ? "Our approach on healing the condition: To cleanse and heal your stomach, we employ integrated Calm, Move, and Nourish modules that are tailored to your gut type. \n\nEvery meal is scheduled based on the Metabolic nature of your gut and its relationship to your biological clock. This implies that each food item at each meal time has a distinct role in resetting your gut's functionality by adjusting to your biological clock. "
               : "Congratulations on completing your detox and healing program. Now, let us begin your transition days to enter a normal routine, for optimal healthy gut.",
@@ -288,7 +331,8 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
         ),
         TextButton(
             onPressed: (){
-              _customVideoPlayerController!.videoPlayerController.pause();
+              if(_videoPlayerController != null) _videoPlayerController!.stop();
+              // _customVideoPlayerController!.videoPlayerController.pause();
               if(widget.from == ProgramMealType.prepratory.name){
                 //get Preparatory day1 meals
                 gotoScreen(PreparatoryPlanScreen(dayNumber: "1", totalDays: '1',viewDay1Details: true,));
@@ -307,8 +351,15 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
               else if(widget.from == ProgramMealType.transition.name){
                 //get Transition day1 meals
                 final trackerUrl = _pref!.getString(AppConfig().trackerVideoUrl);
-                gotoScreen(TransitionMealPlanScreen(dayNumber: "1",
-                  totalDays: "1",trackerVideoLink: trackerUrl,viewDay1Details: true,));
+
+                gotoScreen(NewTransitionDesign(
+                    totalDays: '1',
+                    dayNumber: '1',
+                  trackerVideoLink: trackerUrl
+                  ,viewDay1Details: true,));
+                //old screen
+                // gotoScreen(TransitionMealPlanScreen(dayNumber: "1",
+                //   totalDays: "1",trackerVideoLink: trackerUrl,viewDay1Details: true,));
               }
             },
             //Preparatory Meal Plan
@@ -344,6 +395,7 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
     setState(() {
       isStarted = true;
     });
+    await _videoPlayerController!.stop();
     String? start;
     if(widget.from == ProgramMealType.prepratory.name){
       start = "2";
@@ -399,12 +451,23 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
         }
         else if(widget.from == ProgramMealType.transition.name){
           final trackerUrl = _pref!.getString(AppConfig().trackerVideoUrl);
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => TransitionMealPlanScreen(dayNumber: "1",totalDays: "1",trackerVideoLink: trackerUrl,),
-            ),
-          );
+
+          gotoScreen(NewTransitionDesign(
+            totalDays: '1',
+            dayNumber: '1',
+            trackerVideoLink: trackerUrl
+          ));
+
+          // Navigator.pushReplacement(
+          //   context,
+          //   MaterialPageRoute(
+          //     builder: (context) =>
+          //         TransitionMealPlanScreen(
+          //           dayNumber: "1",
+          //           totalDays: "1",
+          //           trackerVideoLink: trackerUrl,),
+          //   ),
+          // );
         }
       }
       else{

@@ -228,6 +228,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   ),
                                 );
                               }),
+                              Visibility(
+                                  visible: kDebugMode,
+                                  child: profileTile(
+                                      "assets/images/Group 2748.png", "Eval form",
+                                          () {
+                                        Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                            const EvaluationFormScreen(),
+                                          ),
+                                        );
+                                      })),
 
                               profileTile("assets/images/noun-chat-5153452.png",
                                   "Chat Support", () async {
@@ -365,8 +377,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     await LoginWithOtpService(repository: repository).logoutService();
 
     if (res.runtimeType == LogoutModel) {
-      _pref.setBool(AppConfig.isLogin, false);
-      _pref.remove(AppConfig().BEARER_TOKEN);
+      clearAllUserDetails();
       Navigator.of(context).pushReplacement(MaterialPageRoute(
         builder: (context) => const ExistingUser(),
       ));
@@ -375,6 +386,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
       AppConfig().showSnackbar(context, model.message!, isError: true);
     }
   }
+
+  clearAllUserDetails(){
+    _pref.setBool(AppConfig.isLogin, false);
+    _pref.remove(AppConfig().BEARER_TOKEN);
+
+    _pref.remove(
+        AppConfig.User_Name);
+    _pref.remove(AppConfig.USER_ID);
+    _pref.remove(AppConfig.QB_USERNAME);
+    _pref.remove(AppConfig.QB_CURRENT_USERID);
+    _pref.remove(AppConfig.KALEYRA_USER_ID);
+    _pref.remove(AppConfig.User_Name);
+    _pref.remove(AppConfig.User_Profile);
+    _pref.remove(AppConfig.User_Number);
+
+  }
+
 
   final MessageRepository chatRepository = MessageRepository(
     apiClient: ApiClient(
