@@ -98,7 +98,7 @@ android {
     configurations {
         all {
             exclude group: "com.quickblox", module: "google-webrtc"
-            exclude group: "com.google.android.exoplayer", module: "exoplayer-core"
+//            exclude group: "com.google.android.exoplayer", module: "exoplayer-core"
 
 //            exclude group: "com.bandyer", module: "bandyer-android-coreav"
         }

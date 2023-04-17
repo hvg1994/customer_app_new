@@ -188,13 +188,16 @@ class GetPrePostMealvalue{
   String? prep_days;
   String? trans_days;
   bool? isPrepratoryStarted;
+  String? startVideo;
   bool? isPrepCompleted;
   bool? isTransMealStarted;
   bool? isTransMealCompleted;
   String? currentDay;
 
 
-  GetPrePostMealvalue({this.prep_days, this.trans_days,this.isPrepratoryStarted, this.isTransMealCompleted,this.isPrepCompleted, this.isTransMealStarted, this.currentDay});
+  GetPrePostMealvalue({this.prep_days, this.trans_days,this.isPrepratoryStarted, this.isTransMealCompleted,this.isPrepCompleted, this.isTransMealStarted, this.currentDay,
+  this.startVideo
+  });
 
   GetPrePostMealvalue.fromJson(Map<String, dynamic> json){
     print("json['days']===> ${json['days']}");
@@ -202,6 +205,8 @@ class GetPrePostMealvalue{
 
     prep_days = json['days'];
     trans_days = json['days'];
+    startVideo = json['video'];
+
     isPrepratoryStarted = json['is_prep_program_started'].toString().contains("0") ? false : true;
     isPrepCompleted = json['is_prep_program_completed'].toString().contains("0") ? false : true;
     isTransMealStarted = json['is_trans_program_started'].toString().contains("0") ? false : true;
@@ -217,6 +222,8 @@ class GetPrePostMealvalue{
     data['is_prep_program_started'] = this.isPrepratoryStarted;
     data['is_trans_program_started'] = this.isTransMealStarted;
     data['current_day'] = this.currentDay;
+    data['video'] = this.startVideo;
+
     return data;
   }
 }

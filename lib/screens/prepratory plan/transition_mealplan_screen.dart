@@ -1,3 +1,4 @@
+import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:gwc_customer/model/error_model.dart';
 import 'package:gwc_customer/model/prepratory_meal_model/prep_meal_model.dart';
@@ -19,9 +20,10 @@ import 'package:lottie/lottie.dart';
 import 'package:sizer/sizer.dart';
 import '../../model/program_model/proceed_model/send_proceed_program_model.dart';
 import '../../model/program_model/start_post_program_model.dart';
+import '../../widgets/video/normal_video.dart';
 import '../program_plans/day_tracker_ui/day_tracker.dart';
-import 'package:appinio_video_player/appinio_video_player.dart';
 import 'package:wakelock/wakelock.dart';
+import 'package:video_player/video_player.dart';
 
 class TransitionMealPlanScreen extends StatefulWidget {
   String totalDays;
@@ -56,8 +58,8 @@ class _TransitionMealPlanScreenState extends State<TransitionMealPlanScreen> {
 
   @override
   void dispose(){
-    if(_mealPlayerController != null) _mealPlayerController!.dispose();
-    if(_customVideoPlayerController != null)_customVideoPlayerController!.dispose();
+    if(mealPlayerController != null) mealPlayerController!.dispose();
+    if(_chewieController != null)_chewieController!.dispose();
 
     super.dispose();
   }
@@ -426,17 +428,39 @@ class _TransitionMealPlanScreenState extends State<TransitionMealPlanScreen> {
   }
   bool showMealVideo = false;
 
-  VideoPlayerController? _mealPlayerController;
-  CustomVideoPlayerController? _customVideoPlayerController;
-  final CustomVideoPlayerSettings _customVideoPlayerSettings =
-  CustomVideoPlayerSettings(
-    controlBarAvailable: false,
-    showPlayButton: true,
-    playButton: Center(child: Icon(Icons.play_circle, color: Colors.white,),),
-    settingsButtonAvailable: false,
-    playbackSpeedButtonAvailable: false,
-    placeholderWidget: Container(child: Center(child: CircularProgressIndicator()),color: gBlackColor,),
-  );
+  VideoPlayerController? mealPlayerController;
+  ChewieController ? _chewieController;
+
+  // appino video player
+  // VideoPlayerController? _mealPlayerController;
+  // CustomVideoPlayerController? _customVideoPlayerController;
+  // final CustomVideoPlayerSettings _customVideoPlayerSettings =
+  // CustomVideoPlayerSettings(
+  //   controlBarAvailable: false,
+  //   showPlayButton: true,
+  //   playButton: Center(child: Icon(Icons.play_circle, color: Colors.white,),),
+  //   settingsButtonAvailable: false,
+  //   playbackSpeedButtonAvailable: false,
+  //   placeholderWidget: Container(child: Center(child: CircularProgressIndicator()),color: gBlackColor,),
+  // );
+
+  addUrlToVideoPlayerChewie(String url) async{
+    print("url"+ url);
+    mealPlayerController = VideoPlayerController.network(url);
+    _chewieController = ChewieController(
+        videoPlayerController: mealPlayerController!,
+        aspectRatio: 16/9,
+        autoInitialize: true,
+        showOptions: false,
+        autoPlay: true,
+        hideControlsTimer: Duration(seconds: 3),
+        showControls: true
+
+    );
+    if(await Wakelock.enabled == false){
+      Wakelock.enable();
+    }
+  }
 
 
   videoMp4Widget({required VoidCallback onTap, String? videoName}){
@@ -465,23 +489,23 @@ class _TransitionMealPlanScreenState extends State<TransitionMealPlanScreen> {
       ),
     );
   }
-  addUrlToVideoPlayer(String url) async{
-    print("url"+ url);
-    _mealPlayerController = VideoPlayerController.network(Uri.parse(url).toString());
-    _mealPlayerController!.initialize().then((value) => setState(() {}));
-    _customVideoPlayerController = CustomVideoPlayerController(
-      context: context,
-      videoPlayerController: _mealPlayerController!,
-      customVideoPlayerSettings: _customVideoPlayerSettings,
-    );
-    _mealPlayerController!.play();
-    if(await Wakelock.enabled == false){
-      Wakelock.enable();
-    }
-  }
+  // addUrlToVideoPlayer(String url) async{
+  //   print("url"+ url);
+  //   _mealPlayerController = VideoPlayerController.network(Uri.parse(url).toString());
+  //   _mealPlayerController!.initialize().then((value) => setState(() {}));
+  //   _customVideoPlayerController = CustomVideoPlayerController(
+  //     context: context,
+  //     videoPlayerController: _mealPlayerController!,
+  //     customVideoPlayerSettings: _customVideoPlayerSettings,
+  //   );
+  //   _mealPlayerController!.play();
+  //   if(await Wakelock.enabled == false){
+  //     Wakelock.enable();
+  //   }
+  // }
 
   buildMealVideo({required VoidCallback onTap}) {
-    if(_mealPlayerController != null){
+    if(mealPlayerController != null){
       return Column(
         children: [
           Stack(
@@ -492,26 +516,13 @@ class _TransitionMealPlanScreenState extends State<TransitionMealPlanScreen> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(5),
                     border: Border.all(color: gPrimaryColor, width: 1),
-                    // boxShadow: [
-                    //   BoxShadow(
-                    //     color: Colors.grey.withOpacity(0.3),
-                    //     blurRadius: 20,
-                    //     offset: const Offset(2, 10),
-                    //   ),
-                    // ],
                   ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(5),
                     child: Center(
-                      child: CustomVideoPlayer(
-                        customVideoPlayerController: _customVideoPlayerController!,
+                      child: OverlayVideo(
+                        controller: _chewieController!,
                       ),
-                      // child: VlcPlayer(
-                      //   controller: _videoPlayerController!,
-                      //   aspectRatio: 16 / 9,
-                      //   virtualDisplay: false,
-                      //   placeholder: Center(child: CircularProgressIndicator()),
-                      // ),
                     ),
                   ),
                 ),
@@ -522,12 +533,12 @@ class _TransitionMealPlanScreenState extends State<TransitionMealPlanScreen> {
                 child: GestureDetector(
                   onTap: (){
                     print("onTap");
-                    if(_mealPlayerController != null){
-                      if(_customVideoPlayerController!.videoPlayerController.value.isPlaying){
-                        _customVideoPlayerController!.videoPlayerController.pause();
+                    if(_chewieController != null){
+                      if(_chewieController!.videoPlayerController.value.isPlaying){
+                        _chewieController!.videoPlayerController.pause();
                       }
                       else{
-                        _customVideoPlayerController!.videoPlayerController.play();
+                        _chewieController!.videoPlayerController.play();
                       }
                     }
                   },
@@ -553,6 +564,7 @@ class _TransitionMealPlanScreenState extends State<TransitionMealPlanScreen> {
     }
   }
   bool symptomTrackerSheet = false;
+
   Future showSymptomsTrackerSheet(BuildContext context, String day, {bool isPreviousDaySheet = false}) {
     symptomTrackerSheet = true;
     return AppConfig().showSheet(
@@ -565,7 +577,7 @@ class _TransitionMealPlanScreenState extends State<TransitionMealPlanScreen> {
                       videoMp4Widget(
                           videoName: "Know more about Symptoms Tracker",
                           onTap: (){
-                            addUrlToVideoPlayer("");
+                            addUrlToVideoPlayerChewie("");
                             setState(() {
                               showMealVideo = true;
                             });
@@ -586,8 +598,8 @@ class _TransitionMealPlanScreenState extends State<TransitionMealPlanScreen> {
                                           if(await Wakelock.enabled == true){
                                             Wakelock.disable();
                                           }
-                                          if(_mealPlayerController != null) _mealPlayerController!.dispose();
-                                          if(_customVideoPlayerController != null)_customVideoPlayerController!.dispose();
+                                          if(mealPlayerController != null) mealPlayerController!.dispose();
+                                          if(_chewieController != null)_chewieController!.dispose();
 
                                           // await _mealPlayerController!.stopRendererScanning();
                                           // await _mealPlayerController!.dispose();

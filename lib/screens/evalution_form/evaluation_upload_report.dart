@@ -1,8 +1,8 @@
 import 'dart:io';
 
+import 'package:chewie/chewie.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_vlc_player/flutter_vlc_player.dart';
 import 'package:gwc_customer/model/error_model.dart';
 import 'package:gwc_customer/model/evaluation_from_models/evaluation_model_format1.dart';
 import 'package:gwc_customer/model/new_user_model/about_program_model/about_program_model.dart';
@@ -15,9 +15,11 @@ import 'package:gwc_customer/widgets/constants.dart';
 import 'package:gwc_customer/widgets/vlc_player/vlc_player_with_controls.dart';
 import 'package:gwc_customer/widgets/widgets.dart';
 import 'package:sizer/sizer.dart';
-import 'package:appinio_video_player/appinio_video_player.dart';
 import 'package:wakelock/wakelock.dart';
+import 'package:video_player/video_player.dart';
 import 'package:http/http.dart' as http;
+
+import '../../widgets/video/normal_video.dart';
 
 
 
@@ -64,7 +66,8 @@ class _EvaluationUploadReportState extends State<EvaluationUploadReport> {
     else{
       final result = res as AboutProgramModel;
       if(result.uploadReportVideo != null && result.uploadReportVideo!.isNotEmpty){
-        addUrlToVideoPlayer(result.uploadReportVideo ?? '');
+        // addUrlToVideoPlayer(result.uploadReportVideo ?? '');
+        addUrlToVideoPlayerChewie(result.uploadReportVideo ?? '');
       }
       else{
         Future.delayed(Duration.zero).whenComplete(() {
@@ -270,17 +273,12 @@ class _EvaluationUploadReportState extends State<EvaluationUploadReport> {
                     if(medicalRecords.isNotEmpty){
                       showUploadReportPopup();
 
-                      if(_videoPlayerController != null){
-                        _videoPlayerController!.stop();
+                      // if(_videoPlayerController != null){
+                      //   _videoPlayerController!.stop();
+                      // }
+                      if(_chewieController != null){
+                        _chewieController!.videoPlayerController.pause();
                       }
-                      // Navigator.push(
-                      //     context,
-                      //     MaterialPageRoute(
-                      //         builder: (ctx) => PersonalDetailsScreen2(
-                      //             evaluationModelFormat1: widget.evaluationModelFormat1,
-                      //             medicalReportList:
-                      //             medicalRecords.map((e) => e.path).toList())
-                      //     ));
                     }
                   },
                   child: Container(
@@ -329,9 +327,11 @@ class _EvaluationUploadReportState extends State<EvaluationUploadReport> {
                 data: MediaQuery.of(context).copyWith(textScaleFactor: 0.8),
                 child: Center(child:  GestureDetector(
                     onTap: (){
-                      if(_videoPlayerController != null){
-                        _videoPlayerController!.stop();
-                      }
+                      // if(_videoPlayerController != null){
+                      //   _videoPlayerController!.stop();
+                      // }
+                      if(videoPlayerController != null) videoPlayerController!.pause();
+                      if(_chewieController != null) _chewieController!.pause();
                       Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -374,185 +374,6 @@ class _EvaluationUploadReportState extends State<EvaluationUploadReport> {
   }
 
 
-  uiLikeUpload(){
-    return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-            colors: [Color(0xffFFE889), Color(0xffFFF3C2)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter),
-      ),
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        body: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Padding(
-                padding: padding,
-                child: Align(
-                  alignment: Alignment.topLeft,
-                  child: buildAppBar(() {
-                    Navigator.pop(context);
-                  }),
-                ),
-              ),
-              SizedBox(height: 5.h),
-              Text(
-                "User Reports",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    fontFamily: eUser().mainHeadingFont,
-                    color: eUser().mainHeadingColor,
-                    fontSize: eUser().mainHeadingFontSize
-                ),
-              ),
-              SizedBox(
-                height: 2.h,
-              ),
-              buildVideoPlayer(),
-              SizedBox(height: 2.h),
-              Padding(
-                padding: padding,
-                child: Text(
-                  "Please Upload Any & All Medical Records That Might Be Helpful To Evaluate Your Condition Better",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      height: 1.5,
-                      fontFamily: kFontBold,
-                      color: gTextColor,
-                      fontSize: 12.sp),
-                ),
-              ),
-              // upload button
-              Padding(
-                padding: padding,
-                child: GestureDetector(
-                  onTap: () async {
-                    final result = await FilePicker.platform
-                        .pickFiles(withReadStream: true, allowMultiple: false);
-
-                    if (result == null) return;
-                    if (result.files.first.extension!.contains("pdf") ||
-                        result.files.first.extension!.contains("png") ||
-                        result.files.first.extension!.contains("jpg")) {
-                      medicalRecords.add(result.files.first);
-                    } else {
-                      AppConfig().showSnackbar(
-                          context, "Please select png/jpg/Pdf files",
-                          isError: true);
-                    }
-                    setState(() {});
-                  },
-                  child: Container(
-                    margin: EdgeInsets.symmetric(
-                        vertical: 5.h, horizontal: 3.w),
-                    padding: EdgeInsets.symmetric(vertical: 2.h),
-                    decoration: BoxDecoration(
-                      color: gMainColor,
-                      borderRadius: BorderRadius.circular(5),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.5),
-                          blurRadius: 20,
-                          offset: const Offset(2, 10),
-                        ),
-                      ],
-                    ),
-                    child: Center(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Image(
-                            image: const AssetImage(
-                                "assets/images/Group 3323.png"),
-                            height: 2.5.h,
-                          ),
-                          Text(
-                            "   Choose file",
-                            style: TextStyle(
-                                fontFamily: "GothamMedium",
-                                color: Colors.black,
-                                fontSize: 10.sp),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 1.8.h,
-              ),
-              if(medicalRecords.isNotEmpty)
-                SizedBox(
-                  width: double.maxFinite,
-                  child: ListView.builder(
-                    itemCount: medicalRecords.length,
-                    shrinkWrap: true,
-                    itemBuilder: (context, index) {
-                      final file = medicalRecords[index];
-                      return buildFile(file, index);
-                    },
-                  ),
-                ),
-              SizedBox(
-                height: 5.h,
-              ),
-              //submit button
-              Padding(
-                padding: padding,
-                child: Center(
-                  child: GestureDetector(
-                    onTap: () async {
-                      if(medicalRecords.isNotEmpty){
-                        if(_videoPlayerController != null){
-                          _videoPlayerController!.stop();
-                        }
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (ctx) => PersonalDetailsScreen2(
-                                    evaluationModelFormat1: widget.evaluationModelFormat1,
-                                    medicalReportList:
-                                    medicalRecords.map((e) => e.path).toList())
-                            ));
-                      }
-                    },
-                    child: Container(
-                      width: 60.w,
-                      height: 5.h,
-                      // padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 10.w),
-                      decoration: BoxDecoration(
-                        color: gPrimaryColor,
-                        borderRadius: BorderRadius.circular(8),
-                        border:
-                        Border.all(color: gMainColor, width: 1),
-                      ),
-                      child: (showUploadProgress)
-                          ? buildThreeBounceIndicator()
-                          : Center(
-                        child: Text(
-                          'Submit',
-                          style: TextStyle(
-                            fontFamily:
-                            kFontMedium,
-                            color: gWhiteColor,
-                            fontSize: 11.sp,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
   Widget buildFile(PlatformFile file, int index) {
     final kb = file.size / 1024;
     final mb = kb / 1024;
@@ -650,8 +471,13 @@ class _EvaluationUploadReportState extends State<EvaluationUploadReport> {
     // );
   }
 
-  VlcPlayerController? _videoPlayerController;
-  final _key = GlobalKey<VlcPlayerWithControlsState>();
+  // vlc
+  // VlcPlayerController? _videoPlayerController;
+  // final _key = GlobalKey<VlcPlayerWithControlsState>();
+
+  // Chewie
+  VideoPlayerController? videoPlayerController;
+  ChewieController? _chewieController;
 
   // VideoPlayerController? _videoPlayerController;
   // CustomVideoPlayerController? _customVideoPlayerController;
@@ -667,7 +493,7 @@ class _EvaluationUploadReportState extends State<EvaluationUploadReport> {
 
   bool showUploadProgress = false;
 
-  addUrlToVideoPlayer(String url) async {
+  addUrlToVideoPlayerChewie(String url) async {
     print("url"+ url);
     // _videoPlayerController = VideoPlayerController.network(Uri.parse(url).toString());
     // _videoPlayerController!.initialize().then((value) => setState(() {}));
@@ -678,34 +504,17 @@ class _EvaluationUploadReportState extends State<EvaluationUploadReport> {
     // );
     // _videoPlayerController!.play();
     // Wakelock.enable();
+    videoPlayerController = VideoPlayerController.network(url);
+    _chewieController = ChewieController(
+        videoPlayerController: videoPlayerController!,
+        aspectRatio: 16/9,
+        autoInitialize: true,
+        showOptions: false,
+        autoPlay: true,
+        hideControlsTimer: Duration(seconds: 3),
+        showControls: false
 
-    _videoPlayerController = VlcPlayerController.network(
-      Uri.parse(url).toString(),
-      // url,
-      // 'http://samples.mplayerhq.hu/MPEG-4/embedded_subs/1Video_2Audio_2SUBs_timed_text_streams_.mp4',
-      // 'https://media.w3.org/2010/05/sintel/trailer.mp4',
-      hwAcc: HwAcc.auto,
-      autoPlay: true,
-      options: VlcPlayerOptions(
-        advanced: VlcAdvancedOptions([
-          VlcAdvancedOptions.networkCaching(2000),
-        ]),
-        subtitle: VlcSubtitleOptions([
-          VlcSubtitleOptions.boldStyle(true),
-          VlcSubtitleOptions.fontSize(30),
-          VlcSubtitleOptions.outlineColor(VlcSubtitleColor.yellow),
-          VlcSubtitleOptions.outlineThickness(VlcSubtitleThickness.normal),
-          // works only on externally added subtitles
-          VlcSubtitleOptions.color(VlcSubtitleColor.navy),
-        ]),
-        http: VlcHttpOptions([
-          VlcHttpOptions.httpReconnect(true),
-        ]),
-        rtp: VlcRtpOptions([
-          VlcRtpOptions.rtpOverRtsp(true),
-        ]),
-      ),
-    )..initialize()..play();
+    );
     if (!await Wakelock.enabled) {
       Wakelock.enable();
     }
@@ -714,67 +523,133 @@ class _EvaluationUploadReportState extends State<EvaluationUploadReport> {
     });
   }
 
+  // addUrlToVideoPlayer(String url) async {
+  //   print("url"+ url);
+  //   // _videoPlayerController = VideoPlayerController.network(Uri.parse(url).toString());
+  //   // _videoPlayerController!.initialize().then((value) => setState(() {}));
+  //   // _customVideoPlayerController = CustomVideoPlayerController(
+  //   //   context: context,
+  //   //   videoPlayerController: _videoPlayerController!,
+  //   //   customVideoPlayerSettings: _customVideoPlayerSettings,
+  //   // );
+  //   // _videoPlayerController!.play();
+  //   // Wakelock.enable();
+  //
+  //   _videoPlayerController = VlcPlayerController.network(
+  //     Uri.parse(url).toString(),
+  //     // url,
+  //     // 'http://samples.mplayerhq.hu/MPEG-4/embedded_subs/1Video_2Audio_2SUBs_timed_text_streams_.mp4',
+  //     // 'https://media.w3.org/2010/05/sintel/trailer.mp4',
+  //     hwAcc: HwAcc.auto,
+  //     autoPlay: true,
+  //     options: VlcPlayerOptions(
+  //       advanced: VlcAdvancedOptions([
+  //         VlcAdvancedOptions.networkCaching(2000),
+  //       ]),
+  //       subtitle: VlcSubtitleOptions([
+  //         VlcSubtitleOptions.boldStyle(true),
+  //         VlcSubtitleOptions.fontSize(30),
+  //         VlcSubtitleOptions.outlineColor(VlcSubtitleColor.yellow),
+  //         VlcSubtitleOptions.outlineThickness(VlcSubtitleThickness.normal),
+  //         // works only on externally added subtitles
+  //         VlcSubtitleOptions.color(VlcSubtitleColor.navy),
+  //       ]),
+  //       http: VlcHttpOptions([
+  //         VlcHttpOptions.httpReconnect(true),
+  //       ]),
+  //       rtp: VlcRtpOptions([
+  //         VlcRtpOptions.rtpOverRtsp(true),
+  //       ]),
+  //     ),
+  //   )..initialize()..play();
+  //   if (!await Wakelock.enabled) {
+  //     Wakelock.enable();
+  //   }
+  //   setState(() {
+  //
+  //   });
+  // }
+
 
   buildVideoPlayer() {
-    print("_videoPlayerController: $_videoPlayerController");
-    if(_videoPlayerController != null){
-      return Stack(
-        children: [
-          AspectRatio(
-            aspectRatio: 16/9,
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(5),
-                border: Border.all(color: gPrimaryColor, width: 1),
-                // boxShadow: [
-                //   BoxShadow(
-                //     color: Colors.grey.withOpacity(0.3),
-                //     blurRadius: 20,
-                //     offset: const Offset(2, 10),
-                //   ),
-                // ],
+    if(_chewieController != null){
+      return AspectRatio(
+        aspectRatio: 16/9,
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(5),
+            border: Border.all(color: gPrimaryColor, width: 1),
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(5),
+            child: Center(
+              child: OverlayVideo(
+                controller: _chewieController!,
               ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(5),
-                child: Center(
-                  // child: CustomVideoPlayer(
-                  //   customVideoPlayerController: _customVideoPlayerController!,
-                  // ),
-                    child: VlcPlayerWithControls(
-                      key: _key,
-                      controller: _videoPlayerController!,
-                      showVolume: false,
-                      showVideoProgress: false,
-                      seekButtonIconSize: 10.sp,
-                      playButtonIconSize: 14.sp,
-                      replayButtonSize: 10.sp,
-                    )
-                ),
-              ),
+
             ),
           ),
-          // Positioned(child:
-          // AspectRatio(
-          //   aspectRatio: 16/9,
-          //   child: GestureDetector(
-          //     onTap: (){
-          //       print("onTap");
-          //       if(_videoPlayerController != null){
-          //         if(_customVideoPlayerController!.videoPlayerController.value.isPlaying){
-          //           _customVideoPlayerController!.videoPlayerController.pause();
-          //         }
-          //         else{
-          //           _customVideoPlayerController!.videoPlayerController.play();
-          //         }
-          //       }
-          //     },
-          //   ),
-          // )
-          // )
-
-        ],
+        ),
       );
     }
+    // else if(_videoPlayerController != null){
+    //   return Stack(
+    //     children: [
+    //       AspectRatio(
+    //         aspectRatio: 16/9,
+    //         child: Container(
+    //           decoration: BoxDecoration(
+    //             borderRadius: BorderRadius.circular(5),
+    //             border: Border.all(color: gPrimaryColor, width: 1),
+    //             // boxShadow: [
+    //             //   BoxShadow(
+    //             //     color: Colors.grey.withOpacity(0.3),
+    //             //     blurRadius: 20,
+    //             //     offset: const Offset(2, 10),
+    //             //   ),
+    //             // ],
+    //           ),
+    //           child: ClipRRect(
+    //             borderRadius: BorderRadius.circular(5),
+    //             child: Center(
+    //               // child: CustomVideoPlayer(
+    //               //   customVideoPlayerController: _customVideoPlayerController!,
+    //               // ),
+    //                 child: VlcPlayerWithControls(
+    //                   key: _key,
+    //                   controller: _videoPlayerController!,
+    //                   showVolume: false,
+    //                   showVideoProgress: false,
+    //                   seekButtonIconSize: 10.sp,
+    //                   playButtonIconSize: 14.sp,
+    //                   replayButtonSize: 10.sp,
+    //                 )
+    //             ),
+    //           ),
+    //         ),
+    //       ),
+    //       // Positioned(child:
+    //       // AspectRatio(
+    //       //   aspectRatio: 16/9,
+    //       //   child: GestureDetector(
+    //       //     onTap: (){
+    //       //       print("onTap");
+    //       //       if(_videoPlayerController != null){
+    //       //         if(_customVideoPlayerController!.videoPlayerController.value.isPlaying){
+    //       //           _customVideoPlayerController!.videoPlayerController.pause();
+    //       //         }
+    //       //         else{
+    //       //           _customVideoPlayerController!.videoPlayerController.play();
+    //       //         }
+    //       //       }
+    //       //     },
+    //       //   ),
+    //       // )
+    //       // )
+    //
+    //     ],
+    //   );
+    // }
     else {
       return SizedBox.shrink();
     }
@@ -813,13 +688,15 @@ class _EvaluationUploadReportState extends State<EvaluationUploadReport> {
             data: MediaQuery.of(context).copyWith(textScaleFactor: 0.75),
             child: Center(child:  GestureDetector(
                 onTap: (){
-                  EvaluationModelFormat1 model = widget.evaluationModelFormat1;
+                  EvaluationModelFormat1 model = widget.evaluationModelFormat1!;
                   model.allReportsUploaded = selectedUploadRadio;
                   // 28 items if other is null
                   print(model.toMap());
-                  if(_videoPlayerController != null){
-                    _videoPlayerController!.stop();
-                  }
+                  // if(_videoPlayerController != null){
+                  //   _videoPlayerController!.stop();
+                  // }
+                  if(videoPlayerController != null) videoPlayerController!.pause();
+                  if(_chewieController != null) _chewieController!.pause();
                   Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -907,9 +784,12 @@ class _EvaluationUploadReportState extends State<EvaluationUploadReport> {
   );
 
   Future<void> disposePlayer() async {
-    if(_videoPlayerController != null){
-      _videoPlayerController!.dispose();
-    }
+    // if(_videoPlayerController != null){
+    //   _videoPlayerController!.dispose();
+    // }
+
+    if(videoPlayerController != null) videoPlayerController!.dispose();
+    if(_chewieController != null) _chewieController!.dispose();
     // if(_customVideoPlayerController != null){
     //   _customVideoPlayerController!.dispose();
     // }

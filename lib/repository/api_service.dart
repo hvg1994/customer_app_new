@@ -1645,6 +1645,8 @@ class ApiClient {
         },
       );
 
+      print('getPPMealsOnStagesApi Response url: $url');
+
       print('getPPMealsOnStagesApi Response status: ${response.statusCode}');
       print('getPPMealsOnStagesApi Response body: ${response.body}');
 
@@ -1784,7 +1786,7 @@ class ApiClient {
     return result;
   }
 
-  Future submitDoctorRequestedReportApi(String reportId, dynamic multipartFile) async {
+  Future submitDoctorRequestedReportApi(List reportIds, dynamic multipartFile) async {
     final path = submitDoctorRequestedReportUrl;
 
     var result;
@@ -1797,15 +1799,18 @@ class ApiClient {
       };
       request.headers.addAll(headers);
 
-      print(reportId);
-      print(reportId != "others");
-
-      if(reportId != "others"){
+      if(reportIds.isNotEmpty){
         request.fields.addAll({
-          'report_id': reportId
+          'report_ids[]': reportIds.join(',').toString()
         });
       }
-      request.files.add(multipartFile);
+
+      // if(reportId != "others"){
+      //   request.fields.addAll({
+      //     'report_id': reportId
+      //   });
+      // }
+      request.files.addAll(multipartFile);
 
       request.persistentConnection = false;
 

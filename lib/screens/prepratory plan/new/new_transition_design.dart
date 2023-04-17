@@ -1,5 +1,6 @@
+import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_vlc_player/flutter_vlc_player.dart';
+import 'package:video_player/video_player.dart';
 import 'package:get/get.dart';
 import 'package:gwc_customer/model/error_model.dart';
 import 'package:gwc_customer/model/prepratory_meal_model/prep_meal_model.dart';
@@ -21,11 +22,11 @@ import 'package:gwc_customer/widgets/widgets.dart';
 import 'package:lottie/lottie.dart';
 import 'package:sizer/sizer.dart';
 import 'package:http/http.dart' as http;
-import 'package:appinio_video_player/appinio_video_player.dart';
 import 'package:wakelock/wakelock.dart';
 
 import '../../../repository/post_program_repo/post_program_repository.dart';
 import '../../../services/prepratory_service/prepratory_service.dart';
+import '../../../widgets/video/normal_video.dart';
 
 class NewTransitionDesign extends StatefulWidget {
   String totalDays;
@@ -176,10 +177,9 @@ class _NewTransitionDesignState extends State<NewTransitionDesign>
 
   @override
   void dispose() {
-    if (_mealPlayerController != null) {
-      _mealPlayerController!.dispose();
-      _mealPlayerController!.stopRendererScanning();
-    }
+    if(mealPlayerController != null) mealPlayerController!.dispose();
+    if(_chewieController != null)_chewieController!.dispose();
+
     super.dispose();
   }
 
@@ -193,208 +193,213 @@ class _NewTransitionDesignState extends State<NewTransitionDesign>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        backgroundColor: showLoading
-            ? kWhiteColor
-            : const Color(0xffC8DE95).withOpacity(0.6),
-        body: showLoading
-            ? Center(
-                child: buildCircularIndicator(),
-              )
-            : DefaultTabController(
-                length: tabSize,
-                child: StatefulBuilder(
-                  builder: (_, setstate) {
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.only(top: 1.h, left: 3.w),
-                          child: buildAppBar(
-                              () {
-                                Navigator.pop(context);
-                              },
-                              showHelpIcon: true,
-                              helpIconColor: gWhiteColor,
-                              helpOnTap: () {
-                                if (planNotePdfLink != null ||
-                                    planNotePdfLink!.isNotEmpty) {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (ctx) => MealPdf(
-                                          pdfLink: planNotePdfLink!,
-                                          heading: planNotePdfLink
-                                                  ?.split('/')
-                                                  .last ??
-                                              '',
-                                          isVideoWidgetVisible: false,
-                                          headCircleIcon: bsHeadPinIcon,
-                                          topHeadColor: kBottomSheetHeadGreen,
-                                          isSheetCloseNeeded: true,
-                                          sheetCloseOnTap: () {
-                                            Navigator.pop(context);
-                                          }),
-                                    ),
-                                  );
-                                } else {
-                                  AppConfig().showSnackbar(
-                                      context, "Note Link Not available",
-                                      isError: true);
-                                }
-                              }),
-                        ),
-                        SizedBox(height: 1.h),
-                        Text(
-                          'Day ${currentDay} Transition Meal Plan',
-                          style: TextStyle(
-                              fontFamily: eUser().mainHeadingFont,
-                              color: eUser().buttonTextColor,
-                              fontSize: eUser().mainHeadingFontSize),
-                        ),
-                        SizedBox(height: 1.h),
-                        Text(
-                          '${int.parse(totalDays ?? '0') - int.parse(currentDay!)} Days Remaining',
-                          style: TextStyle(
-                              fontFamily: eUser().userTextFieldFont,
-                              color: eUser().buttonTextColor,
-                              fontSize: eUser().userTextFieldHintFontSize),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 28.w, vertical: 4.h),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              GestureDetector(
-                                onTap: () {
-                                  if (selectedIndex == 0) {
+    return SafeArea(
+      child: Scaffold(
+          backgroundColor: showLoading
+              ? kWhiteColor
+              : const Color(0xffC8DE95).withOpacity(0.6),
+          body: showLoading
+              ? Center(
+                  child: buildCircularIndicator(),
+                )
+              : DefaultTabController(
+                  length: tabSize,
+                  child: StatefulBuilder(
+                    builder: (_, setstate) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.only(top: 1.h, left: 3.w),
+                            child: buildAppBar(
+                                () {
+                                  Navigator.pop(context);
+                                },
+                                showHelpIcon: true,
+                                helpIconColor: gWhiteColor,
+                                helpOnTap: () {
+                                  if (planNotePdfLink != null ||
+                                      planNotePdfLink!.isNotEmpty) {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (ctx) => MealPdf(
+                                            pdfLink: planNotePdfLink!,
+                                            heading: planNotePdfLink
+                                                    ?.split('/')
+                                                    .last ??
+                                                '',
+                                            isVideoWidgetVisible: false,
+                                            headCircleIcon: bsHeadPinIcon,
+                                            topHeadColor: kBottomSheetHeadGreen,
+                                            isSheetCloseNeeded: true,
+                                            sheetCloseOnTap: () {
+                                              Navigator.pop(context);
+                                            }),
+                                      ),
+                                    );
                                   } else {
-                                    setstate(() {
-                                      if (selectedIndex > 0) {
-                                        selectedIndex--;
-                                      }
-                                      updateTabSize();
-                                      print(selectedIndex);
-                                    });
+                                    AppConfig().showSnackbar(
+                                        context, "Note Link Not available",
+                                        isError: true);
                                   }
-                                },
-                                child: Icon(
-                                  Icons.arrow_back_ios,
-                                  color: eUser().buttonTextColor,
-                                ),
-                              ),
-                              FittedBox(
-                                child: Text(
-                                  _list[selectedIndex],
-                                  style: TextStyle(
-                                      fontFamily: eUser().mainHeadingFont,
-                                      color: eUser().buttonTextColor,
-                                      fontSize: eUser().mainHeadingFontSize),
-                                ),
-                              ),
-                              GestureDetector(
-                                onTap: () {
-                                  setstate(() {
-                                    if (selectedIndex == _list.length - 1) {
-                                    } else {
-                                      if (selectedIndex >= 0 &&
-                                          selectedIndex != _list.length - 1) {
-                                        selectedIndex++;
-                                      }
-                                      print(selectedIndex);
-                                      updateTabSize();
-                                      print(selectedIndex);
-                                    }
-                                  });
-                                },
-                                child: Icon(
-                                  Icons.arrow_forward_ios,
-                                  color: eUser().buttonTextColor,
-                                ),
-                              ),
-                            ],
+                                }),
                           ),
-                        ),
-                        SizedBox(
-                          height: 30,
-                          child: TabBar(
-                              // padding: EdgeInsets.symmetric(horizontal: 3.w),
-                              isScrollable: true,
-                              unselectedLabelColor: tabBarHintColor,
-                              labelColor: gBlackColor,
-                              controller: _tabController,
-                              unselectedLabelStyle: TextStyle(
-                                  fontFamily: kFontBook,
-                                  color: gHintTextColor,
-                                  fontSize: 9.sp),
-                              labelStyle: TextStyle(
-                                  fontFamily: kFontMedium,
-                                  color: gBlackColor,
-                                  fontSize: 9.sp),
-                              indicator: BoxDecoration(
-                                color: gWhiteColor,
-                                borderRadius: const BorderRadius.only(
-                                  topRight: Radius.circular(10),
-                                  bottomLeft: Radius.circular(10),
-                                ),
-                              ),
-                              onTap: (index) {
-                                print("ontap: $index");
-
-                                selectedTabs.forEach((element) {
-                                  print(element.keys.elementAt(index));
-                                  setstate(() {
-                                    selectedSubTab =
-                                        element.keys.elementAt(index);
-                                  });
-                                });
-                              },
-                              tabs: buildTabs()
-                              // [selectedTabs.map((e) => _buildTabs(e)).to]
-
-                              ),
-                        ),
-                        Expanded(
-                          child: Container(
-                            margin: EdgeInsets.only(top: 3.h),
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 0.w, vertical: 1.h),
-                            decoration: const BoxDecoration(
-                              color: gBackgroundColor,
-                              borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(40),
-                                  topRight: Radius.circular(40)),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: kLineColor,
-                                  offset: Offset(2, 3),
-                                  blurRadius: 5,
-                                )
-                              ],
-                              // border: Border.all(
-                              //   width: 1,
-                              //   color: kLineColor,
-                              // ),
+                          SizedBox(height: 1.h),
+                          Text(
+                            'Day ${currentDay} Transition Meal Plan',
+                            style: TextStyle(
+                                fontFamily: eUser().mainHeadingFont,
+                                color: eUser().buttonTextColor,
+                                fontSize: eUser().mainHeadingFontSize),
+                          ),
+                          SizedBox(height: 1.h),
+                          Visibility(
+                            visible: !widget.viewDay1Details,
+                            child: Text(
+                              '${int.parse(totalDays ?? '0') - int.parse(currentDay!)} Days Remaining',
+                              style: TextStyle(
+                                  fontFamily: eUser().userTextFieldFont,
+                                  color: eUser().buttonTextColor,
+                                  fontSize: eUser().userTextFieldHintFontSize),
                             ),
-                            child: Column(
-                              children: [
-                                Expanded(
-                                  child: TabBarView(
-                                    controller: _tabController,
-                                    physics: const NeverScrollableScrollPhysics(),
-                                    children: buildTabBarView(),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 28.w, vertical: 4.h),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                GestureDetector(
+                                  onTap: () {
+                                    if (selectedIndex == 0) {
+                                    } else {
+                                      setstate(() {
+                                        if (selectedIndex > 0) {
+                                          selectedIndex--;
+                                        }
+                                        updateTabSize();
+                                        print(selectedIndex);
+                                      });
+                                    }
+                                  },
+                                  child: Icon(
+                                    Icons.arrow_back_ios,
+                                    color: eUser().buttonTextColor,
+                                  ),
+                                ),
+                                FittedBox(
+                                  child: Text(
+                                    _list[selectedIndex],
+                                    style: TextStyle(
+                                        fontFamily: eUser().mainHeadingFont,
+                                        color: eUser().buttonTextColor,
+                                        fontSize: eUser().mainHeadingFontSize),
+                                  ),
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    setstate(() {
+                                      if (selectedIndex == _list.length - 1) {
+                                      } else {
+                                        if (selectedIndex >= 0 &&
+                                            selectedIndex != _list.length - 1) {
+                                          selectedIndex++;
+                                        }
+                                        print(selectedIndex);
+                                        updateTabSize();
+                                        print(selectedIndex);
+                                      }
+                                    });
+                                  },
+                                  child: Icon(
+                                    Icons.arrow_forward_ios,
+                                    color: eUser().buttonTextColor,
                                   ),
                                 ),
                               ],
                             ),
                           ),
-                        ),
-                      ],
-                    );
-                  },
-                ),
-              ));
+                          SizedBox(
+                            height: 30,
+                            child: TabBar(
+                                // padding: EdgeInsets.symmetric(horizontal: 3.w),
+                                isScrollable: true,
+                                unselectedLabelColor: tabBarHintColor,
+                                labelColor: gBlackColor,
+                                controller: _tabController,
+                                unselectedLabelStyle: TextStyle(
+                                    fontFamily: kFontBook,
+                                    color: gHintTextColor,
+                                    fontSize: 9.sp),
+                                labelStyle: TextStyle(
+                                    fontFamily: kFontMedium,
+                                    color: gBlackColor,
+                                    fontSize: 9.sp),
+                                indicator: BoxDecoration(
+                                  color: gWhiteColor,
+                                  borderRadius: const BorderRadius.only(
+                                    topRight: Radius.circular(10),
+                                    bottomLeft: Radius.circular(10),
+                                  ),
+                                ),
+                                onTap: (index) {
+                                  print("ontap: $index");
+
+                                  selectedTabs.forEach((element) {
+                                    print(element.keys.elementAt(index));
+                                    setstate(() {
+                                      selectedSubTab =
+                                          element.keys.elementAt(index);
+                                    });
+                                  });
+                                },
+                                tabs: buildTabs()
+                                // [selectedTabs.map((e) => _buildTabs(e)).to]
+
+                                ),
+                          ),
+                          Expanded(
+                            child: Container(
+                              margin: EdgeInsets.only(top: 3.h),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 0.w, vertical: 1.h),
+                              decoration: const BoxDecoration(
+                                color: gBackgroundColor,
+                                borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(40),
+                                    topRight: Radius.circular(40)),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: kLineColor,
+                                    offset: Offset(2, 3),
+                                    blurRadius: 5,
+                                  )
+                                ],
+                                // border: Border.all(
+                                //   width: 1,
+                                //   color: kLineColor,
+                                // ),
+                              ),
+                              child: Column(
+                                children: [
+                                  Expanded(
+                                    child: TabBarView(
+                                      controller: _tabController,
+                                      physics: const NeverScrollableScrollPhysics(),
+                                      children: buildTabBarView(),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                )),
+    );
   }
 
   buildTabs() {
@@ -582,7 +587,7 @@ class _NewTransitionDesignState extends State<NewTransitionDesign>
                                 "Recipe",
                                 style: TextStyle(
                                   color: gWhiteColor,
-                                  fontFamily: 'GothamBook',
+                                  fontFamily: kFontBook,
                                   fontSize: 11.sp,
                                 ),
                               ),
@@ -700,10 +705,6 @@ class _NewTransitionDesignState extends State<NewTransitionDesign>
 
   bool showMealVideo = false;
 
-  VlcPlayerController? _mealPlayerController;
-  final _trackerSheetKey = GlobalKey<VlcPlayerWithControlsState>();
-
-
   videoMp4Widget({required VoidCallback onTap, String? videoName}) {
     return InkWell(
       onTap: onTap,
@@ -730,91 +731,119 @@ class _NewTransitionDesignState extends State<NewTransitionDesign>
     );
   }
 
-  addUrlToVideoPlayer(String url) async {
-    print("url" + url);
-    _mealPlayerController = VlcPlayerController.network(
-      Uri.parse(url).toString(),
-      // url,
-      // 'http://samples.mplayerhq.hu/MPEG-4/embedded_subs/1Video_2Audio_2SUBs_timed_text_streams_.mp4',
-      // 'https://media.w3.org/2010/05/sintel/trailer.mp4',
-      hwAcc: HwAcc.auto,
-      autoPlay: true,
-      options: VlcPlayerOptions(
-        advanced: VlcAdvancedOptions([
-          VlcAdvancedOptions.networkCaching(2000),
-        ]),
-        subtitle: VlcSubtitleOptions([
-          VlcSubtitleOptions.boldStyle(true),
-          VlcSubtitleOptions.fontSize(30),
-          VlcSubtitleOptions.outlineColor(VlcSubtitleColor.yellow),
-          VlcSubtitleOptions.outlineThickness(VlcSubtitleThickness.normal),
-          // works only on externally added subtitles
-          VlcSubtitleOptions.color(VlcSubtitleColor.navy),
-        ]),
-        http: VlcHttpOptions([
-          VlcHttpOptions.httpReconnect(true),
-        ]),
-        rtp: VlcRtpOptions([
-          VlcRtpOptions.rtpOverRtsp(true),
-        ]),
-      ),
+  VideoPlayerController? mealPlayerController;
+  ChewieController ? _chewieController;
+
+  addUrlToVideoPlayerChewie(String url) async{
+    print("url"+ url);
+    mealPlayerController = VideoPlayerController.network(url);
+    _chewieController = ChewieController(
+        videoPlayerController: mealPlayerController!,
+        aspectRatio: 16/9,
+        autoInitialize: true,
+        showOptions: false,
+        autoPlay: true,
+        hideControlsTimer: Duration(seconds: 3),
+        showControls: true
+
     );
-    if (await Wakelock.enabled == false) {
+    if(await Wakelock.enabled == false){
       Wakelock.enable();
     }
   }
+  // VlcPlayerController? _mealPlayerController;
+  // final _trackerSheetKey = GlobalKey<VlcPlayerWithControlsState>();
+  //
+  // addUrlToVideoPlayer(String url) async {
+  //   print("url" + url);
+  //   _mealPlayerController = VlcPlayerController.network(
+  //     Uri.parse(url).toString(),
+  //     // url,
+  //     // 'http://samples.mplayerhq.hu/MPEG-4/embedded_subs/1Video_2Audio_2SUBs_timed_text_streams_.mp4',
+  //     // 'https://media.w3.org/2010/05/sintel/trailer.mp4',
+  //     hwAcc: HwAcc.auto,
+  //     autoPlay: true,
+  //     options: VlcPlayerOptions(
+  //       advanced: VlcAdvancedOptions([
+  //         VlcAdvancedOptions.networkCaching(2000),
+  //       ]),
+  //       subtitle: VlcSubtitleOptions([
+  //         VlcSubtitleOptions.boldStyle(true),
+  //         VlcSubtitleOptions.fontSize(30),
+  //         VlcSubtitleOptions.outlineColor(VlcSubtitleColor.yellow),
+  //         VlcSubtitleOptions.outlineThickness(VlcSubtitleThickness.normal),
+  //         // works only on externally added subtitles
+  //         VlcSubtitleOptions.color(VlcSubtitleColor.navy),
+  //       ]),
+  //       http: VlcHttpOptions([
+  //         VlcHttpOptions.httpReconnect(true),
+  //       ]),
+  //       rtp: VlcRtpOptions([
+  //         VlcRtpOptions.rtpOverRtsp(true),
+  //       ]),
+  //     ),
+  //   );
+  //   if (await Wakelock.enabled == false) {
+  //     Wakelock.enable();
+  //   }
+  // }
 
   buildMealVideo({required VoidCallback onTap}) {
-    if (_mealPlayerController != null) {
+    if(mealPlayerController != null){
       return Column(
         children: [
-          AspectRatio(
-            aspectRatio: 16 / 9,
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(5),
-                border: Border.all(color: gPrimaryColor, width: 1),
-                // boxShadow: [
-                //   BoxShadow(
-                //     color: Colors.grey.withOpacity(0.3),
-                //     blurRadius: 20,
-                //     offset: const Offset(2, 10),
-                //   ),
-                // ],
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(5),
-                child: Center(
-                    child: VlcPlayerWithControls(
-                      key: _trackerSheetKey,
-                      controller: _mealPlayerController!,
-                      showVolume: false,
-                      showVideoProgress: false,
-                      seekButtonIconSize: 10.sp,
-                      playButtonIconSize: 14.sp,
-                      replayButtonSize: 10.sp,
-                    )
-                  // child: VlcPlayer(
-                  //   controller: _videoPlayerController!,
-                  //   aspectRatio: 16 / 9,
-                  //   virtualDisplay: false,
-                  //   placeholder: Center(child: CircularProgressIndicator()),
-                  // ),
+          Stack(
+            children: [
+              AspectRatio(
+                aspectRatio: 16/9,
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(5),
+                    border: Border.all(color: gPrimaryColor, width: 1),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(5),
+                    child: Center(
+                      child: OverlayVideo(
+                        controller: _chewieController!,
+                      ),
+                    ),
+                  ),
                 ),
               ),
-            ),
+              Positioned(child:
+              AspectRatio(
+                aspectRatio: 16/9,
+                child: GestureDetector(
+                  onTap: (){
+                    print("onTap");
+                    if(_chewieController != null){
+                      if(_chewieController!.videoPlayerController.value.isPlaying){
+                        _chewieController!.videoPlayerController.pause();
+                      }
+                      else{
+                        _chewieController!.videoPlayerController.play();
+                      }
+                    }
+                  },
+                ),
+              )
+              )
+
+            ],
           ),
           Center(
               child: IconButton(
-            icon: Icon(
-              Icons.cancel_outlined,
-              color: gsecondaryColor,
-            ),
-            onPressed: onTap,
-          ))
+                icon: Icon(Icons.cancel_outlined,
+                  color: gsecondaryColor,
+                ),
+                onPressed: onTap,
+              )
+          )
         ],
       );
-    } else {
+    }
+    else {
       return SizedBox.shrink();
     }
   }
@@ -822,6 +851,7 @@ class _NewTransitionDesignState extends State<NewTransitionDesign>
   bool symptomTrackerSheet = false;
 
   bool fromBottomSheet = false;
+
   Future showSymptomsTrackerSheet(BuildContext context, String day, {bool isPreviousDaySheet = false}) {
     symptomTrackerSheet = true;
     return AppConfig().showSheet(context,
@@ -845,7 +875,7 @@ class _NewTransitionDesignState extends State<NewTransitionDesign>
                     });
                   }
                   else{
-                    addUrlToVideoPlayer(widget.trackerVideoLink ?? '');
+                    addUrlToVideoPlayerChewie(widget.trackerVideoLink ?? '');
                     setState(() {
                       showMealVideo = true;
                     });
@@ -867,9 +897,11 @@ class _NewTransitionDesignState extends State<NewTransitionDesign>
                     if (await Wakelock.enabled == true) {
                       Wakelock.disable();
                     }
-                    if (_mealPlayerController != null) _mealPlayerController!.dispose();
+                    if(mealPlayerController != null) mealPlayerController!.dispose();
+                    if(_chewieController != null)_chewieController!.dispose();
 
-                    // await _mealPlayerController!.stopRendererScanning();
+
+                        // await _mealPlayerController!.stopRendererScanning();
                     // await _mealPlayerController!.dispose();
                   }))),
                 )

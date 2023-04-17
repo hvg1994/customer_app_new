@@ -1,11 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:gwc_customer/widgets/video/normal_video.dart';
 import 'package:sizer/sizer.dart';
 import 'package:wakelock/wakelock.dart';
 import '../../../widgets/constants.dart';
 import '../../../widgets/widgets.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
-import 'package:appinio_video_player/appinio_video_player.dart';
+import 'package:chewie/chewie.dart';
+import 'package:video_player/video_player.dart';
 
 class MealPdf extends StatefulWidget {
   final String? heading;
@@ -174,7 +176,7 @@ class _MealPdfState extends State<MealPdf> {
                                                                   Wakelock.disable();
                                                                 }
                                                                 if(_mealVideoController != null)_mealVideoController!.dispose();
-                                                                if(_customVideoPlayerController != null)_customVideoPlayerController!.dispose();
+                                                                if(_chewieController != null)_chewieController!.dispose();
 
                                                                 // await _mealPlayerController!.stopRendererScanning();
                                                                 // await _mealPlayerController!.dispose();
@@ -350,140 +352,69 @@ class _MealPdfState extends State<MealPdf> {
     );
   }
   VideoPlayerController? _mealVideoController;
-  CustomVideoPlayerController? _customVideoPlayerController;
-  final CustomVideoPlayerSettings _customVideoPlayerSettings =
-  CustomVideoPlayerSettings(
-    controlBarAvailable: false,
-    showPlayButton: true,
-    playButton: Center(child: Icon(Icons.play_circle, color: Colors.white,),),
-    settingsButtonAvailable: false,
-    playbackSpeedButtonAvailable: false,
-    placeholderWidget: Container(child: Center(child: CircularProgressIndicator()),color: gBlackColor,),
-  );
+  ChewieController? _chewieController;
 
   bool showMealVideo = false;
 
   addChewieVideoPlayer(String url) async{
     _mealVideoController = VideoPlayerController.network(Uri.parse(url).toString());
-    _mealVideoController!.initialize().then((value) => setState(() {}));
-    _customVideoPlayerController = CustomVideoPlayerController(
-      context: context,
-      videoPlayerController: _mealVideoController!,
-      customVideoPlayerSettings: _customVideoPlayerSettings,
+    _chewieController = ChewieController(
+        videoPlayerController: _mealVideoController!,
+        aspectRatio: 16/9,
+        autoInitialize: true,
+        showOptions: false,
+        autoPlay: true,
+        hideControlsTimer: Duration(seconds: 3),
+        showControls: false
+
     );
-    _mealVideoController!.play();
     if(await Wakelock.enabled == false){
       Wakelock.enable();
     }
   }
 
+  @override
+  dispose(){
+    if(_mealVideoController != null) _mealVideoController!.dispose();
+    if(_chewieController != null) _chewieController!.dispose();
+    super.dispose();
+  }
   buildMealVideo({required VoidCallback onTap}) {
-    // if(_mealPlayerController != null){
-    //   return Column(
-    //     children: [
-    //       AspectRatio(
-    //         aspectRatio: 16/9,
-    //         child: Container(
-    //           decoration: BoxDecoration(
-    //             borderRadius: BorderRadius.circular(5),
-    //             border: Border.all(color: gPrimaryColor, width: 1),
-    //             // boxShadow: [
-    //             //   BoxShadow(
-    //             //     color: Colors.grey.withOpacity(0.3),
-    //             //     blurRadius: 20,
-    //             //     offset: const Offset(2, 10),
-    //             //   ),
-    //             // ],
-    //           ),
-    //           child: ClipRRect(
-    //             borderRadius: BorderRadius.circular(5),
-    //             child: Center(
-    //               child: VlcPlayerWithControls(
-    //                 key: _mealKey,
-    //                 controller: _mealPlayerController!,
-    //                 showVolume: false,
-    //                 showVideoProgress: false,
-    //                 seekButtonIconSize: 10.sp,
-    //                 playButtonIconSize: 14.sp,
-    //                 replayButtonSize: 10.sp,
-    //               ),
-    //               // child: VlcPlayer(
-    //               //   controller: _videoPlayerController!,
-    //               //   aspectRatio: 16 / 9,
-    //               //   virtualDisplay: false,
-    //               //   placeholder: Center(child: CircularProgressIndicator()),
-    //               // ),
-    //             ),
-    //           ),
-    //         ),
-    //       ),
-    //       Center(
-    //           child: IconButton(
-    //             icon: Icon(Icons.cancel_outlined,
-    //               color: gsecondaryColor,
-    //             ),
-    //             onPressed: onTap,
-    //           )
-    //       )
-    //     ],
-    //   );
-    // }
-    // else
-      if(_mealVideoController != null){
+    if(_chewieController != null){
       return Column(
         children: [
-          Stack(
-            children: [
-              AspectRatio(
-                aspectRatio: 16/9,
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(5),
-                    border: Border.all(color: gPrimaryColor, width: 1),
-                    // boxShadow: [
-                    //   BoxShadow(
-                    //     color: Colors.grey.withOpacity(0.3),
-                    //     blurRadius: 20,
-                    //     offset: const Offset(2, 10),
-                    //   ),
-                    // ],
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(5),
-                    child: Center(
-                      child: CustomVideoPlayer(
-                        customVideoPlayerController: _customVideoPlayerController!,
-                      ),
-                      // child: VlcPlayer(
-                      //   controller: _videoPlayerController!,
-                      //   aspectRatio: 16 / 9,
-                      //   virtualDisplay: false,
-                      //   placeholder: Center(child: CircularProgressIndicator()),
-                      // ),
-                    ),
-                  ),
+          AspectRatio(
+            aspectRatio: 16/9,
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(5),
+                border: Border.all(color: gPrimaryColor, width: 1),
+                // boxShadow: [
+                //   BoxShadow(
+                //     color: Colors.grey.withOpacity(0.3),
+                //     blurRadius: 20,
+                //     offset: const Offset(2, 10),
+                //   ),
+                // ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(5),
+                child: Center(
+                    child: OverlayVideo(
+                      controller: _chewieController!,
+                    )
+                  // child: VlcPlayerWithControls(
+                  //   key: _mealKey,
+                  //   controller: _mealPlayerController!,
+                  //   showVolume: false,
+                  //   showVideoProgress: false,
+                  //   seekButtonIconSize: 10.sp,
+                  //   playButtonIconSize: 14.sp,
+                  //   replayButtonSize: 10.sp,
+                  // ),
                 ),
               ),
-              Positioned(child:
-              AspectRatio(
-              aspectRatio: 16/9,
-              child: GestureDetector(
-                onTap: (){
-                  print("onTap");
-                  if(_mealVideoController != null){
-                    if(_customVideoPlayerController!.videoPlayerController.value.isPlaying){
-                      _customVideoPlayerController!.videoPlayerController.pause();
-                    }
-                    else{
-                      _customVideoPlayerController!.videoPlayerController.play();
-                    }
-                  }
-                },
-              ),
-              )
-              )
-
-            ],
+            ),
           ),
           Center(
               child: IconButton(

@@ -6,7 +6,7 @@ import 'package:gwc_customer/widgets/widgets.dart';
 import 'package:sizer/sizer.dart';
 
 import 'faq_screen.dart';
-
+import 'package:intl/intl.dart';
 class FaqDetailedList extends StatefulWidget {
   List<FaqList>? faqList;
   FaqDetailedList({Key? key, this.faqList}) : super(key: key);
@@ -28,6 +28,10 @@ class _FaqDetailedListState extends State<FaqDetailedList> {
     if(widget.faqList != null){
       questions.addAll(widget.faqList!);
     }
+
+    questions.forEach((element) {
+      print("${element.question}");
+    });
   }
 
   @override
@@ -47,17 +51,19 @@ class _FaqDetailedListState extends State<FaqDetailedList> {
               SizedBox(height: 3.h),
               Expanded(child: (questions.isNotEmpty)
                   ? ListView.builder(
-                  physics: NeverScrollableScrollPhysics(),
+                  physics: ScrollPhysics(),
                   shrinkWrap: true,
                   scrollDirection: Axis.vertical,
                   itemCount: questions.length,
                   itemBuilder: (_, index) {
+                    print("checking");
+                    print(questions[index].question!);
                     return ExpansionTile(
                       title: Text(
-                        questions[index].question!,
+                        questions[index].question ?? '',
                         style: TextStyle(
-                          color: Colors.black87,
-                          fontSize: headingFont,
+                          color: gTextColor,
+                          fontSize: 12.sp,
                           fontFamily: kFontMedium,
                         ),
                       ),
@@ -68,7 +74,7 @@ class _FaqDetailedListState extends State<FaqDetailedList> {
                         Padding(
                           padding: const EdgeInsets.only(left: 20),
                           child: buildMenuItem(
-                            text: questions[index].answer!,
+                            text: Bidi.stripHtmlIfNeeded(questions[index].answer!),
                           ),
                         )
                       ],
@@ -89,18 +95,33 @@ class _FaqDetailedListState extends State<FaqDetailedList> {
     const color = kPrimaryColor;
     const hoverColor = Colors.grey;
 
-    return ListTile(
-      title: Text(
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 2),
+      child: Text(
         text,
+        textAlign: TextAlign.left,
         style: TextStyle(
+          height: 1.3,
           fontFamily: eUser().userTextFieldFont,
           color: eUser().userTextFieldColor,
           fontSize: eUser().userTextFieldFontSize,
         ),
       ),
-      hoverColor: hoverColor,
-      onTap: onClicked,
     );
+    // return ListTile(
+    //   minLeadingWidth: 0,
+    //   title: Text(
+    //     text,
+    //     style: TextStyle(
+    //       height: 1.3,
+    //       fontFamily: eUser().userTextFieldFont,
+    //       color: eUser().userTextFieldColor,
+    //       fontSize: eUser().userTextFieldFontSize,
+    //     ),
+    //   ),
+    //   hoverColor: hoverColor,
+    //   onTap: onClicked,
+    // );
   }
 
   // goto(FaqList faq) {

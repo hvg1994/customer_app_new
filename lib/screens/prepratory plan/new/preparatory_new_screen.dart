@@ -3,6 +3,7 @@ import 'package:gwc_customer/model/error_model.dart';
 import 'package:gwc_customer/model/prepratory_meal_model/prep_meal_model.dart';
 import 'package:gwc_customer/repository/api_service.dart';
 import 'package:gwc_customer/repository/prepratory_repository/prep_repository.dart';
+import 'package:gwc_customer/screens/prepratory%20plan/new/dos_donts_program_screen.dart';
 import 'package:gwc_customer/screens/program_plans/meal_pdf.dart';
 import 'package:gwc_customer/widgets/constants.dart';
 import 'package:gwc_customer/widgets/widgets.dart';
@@ -135,6 +136,10 @@ class _PreparatoryPlanScreenState extends State<PreparatoryPlanScreen>
                         () {
                           Navigator.pop(context);
                         },
+                        showHelpIcon: true,
+                        helpOnTap: (){
+                          Navigator.push(context, MaterialPageRoute(builder: (_)=> DosDontsProgramScreen()));
+                        }
                       ),
                     ),
                     Padding(
@@ -435,7 +440,7 @@ class _PreparatoryPlanScreenState extends State<PreparatoryPlanScreen>
                         ),
                         child: buildReceipeDetails(meals[index]),
                       ),
-                      orFiled(index),
+                      if(meals.length > 1)orFiled(index),
                     ],
                   );
                 }),
@@ -491,8 +496,8 @@ class _PreparatoryPlanScreenState extends State<PreparatoryPlanScreen>
                       ? Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            ...meal.benefits!.split('*').map((element) {
-                              return Row(
+                            ...meal.benefits!.split('-').map((element) {
+                              if(element.isNotEmpty) return Row(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   Icon(
@@ -514,6 +519,8 @@ class _PreparatoryPlanScreenState extends State<PreparatoryPlanScreen>
                                   ),
                                 ],
                               );
+                              else return SizedBox();
+
                             })
                           ],
                         )

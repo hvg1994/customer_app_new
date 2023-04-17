@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_vlc_player/flutter_vlc_player.dart';
 import 'package:gwc_customer/model/error_model.dart';
 import 'package:gwc_customer/model/new_user_model/about_program_model/about_program_model.dart';
 import 'package:gwc_customer/model/new_user_model/about_program_model/child_about_program.dart';
@@ -15,11 +15,14 @@ import 'package:smooth_star_rating_null_safety/smooth_star_rating_null_safety.da
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import '../../../repository/api_service.dart';
 import '../../../widgets/constants.dart';
+import '../../../widgets/video/normal_video.dart';
 import '../../../widgets/vlc_player/controls_overlay.dart';
 import '../../../widgets/widgets.dart';
 import 'register_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:wakelock/wakelock.dart';
+import 'package:video_player/video_player.dart';
+
 
 
 class AboutTheProgram extends StatefulWidget {
@@ -31,8 +34,9 @@ class AboutTheProgram extends StatefulWidget {
 }
 
 class _AboutTheProgramState extends State<AboutTheProgram> {
-  final _key = GlobalKey<VlcPlayerWithControlsState>();
-  final _abtProgramVideoKey = GlobalKey<VlcPlayerWithControlsState>();
+  // final _key = GlobalKey<VlcPlayerWithControlsState>();
+  // final _abtProgramVideoKey = GlobalKey<VlcPlayerWithControlsState>();
+
 
 
   double rating = 4.5;
@@ -43,8 +47,6 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
   late AboutProgramService _aboutProgramService;
 
   late Future _aboutProgramFuture;
-
-  VlcPlayerController? _videoPlayerController, _abtProgramPlayerController;
 
   @override
   void initState() {
@@ -64,64 +66,134 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
     _aboutProgramFuture = _aboutProgramService.serverAboutProgramService();
   }
 
-  addUrlToVideoPlayer(String url){
+  addUrlToVideoPlayerChewie(String url){
     print("url"+ url);
-    _videoPlayerController = VlcPlayerController.network(
-      Uri.parse(url).toString(),
-      // url,
-      // 'http://samples.mplayerhq.hu/MPEG-4/embedded_subs/1Video_2Audio_2SUBs_timed_text_streams_.mp4',
-      // 'https://media.w3.org/2010/05/sintel/trailer.mp4',
-      hwAcc: HwAcc.auto,
-      autoPlay: false,
-      options: VlcPlayerOptions(
-        advanced: VlcAdvancedOptions([
-          VlcAdvancedOptions.networkCaching(2000),
-        ]),
-        subtitle: VlcSubtitleOptions([
-          VlcSubtitleOptions.boldStyle(true),
-          VlcSubtitleOptions.fontSize(30),
-          VlcSubtitleOptions.outlineColor(VlcSubtitleColor.yellow),
-          VlcSubtitleOptions.outlineThickness(VlcSubtitleThickness.normal),
-          // works only on externally added subtitles
-          VlcSubtitleOptions.color(VlcSubtitleColor.navy),
-        ]),
-        http: VlcHttpOptions([
-          VlcHttpOptions.httpReconnect(true),
-        ]),
-        rtp: VlcRtpOptions([
-          VlcRtpOptions.rtpOverRtsp(true),
-        ]),
-      ),
+    testimonialVideoController = VideoPlayerController.network(Uri.parse(url).toString());
+    _testimonialChewieController = ChewieController(
+        videoPlayerController: testimonialVideoController!,
+        aspectRatio: 16/9,
+        autoInitialize: true,
+        showOptions: false,
+        autoPlay: true,
+        // customControls: Center(
+        //   child: FittedBox(
+        //     child: Row(
+        //       crossAxisAlignment: CrossAxisAlignment.center,
+        //       mainAxisAlignment: MainAxisAlignment.spaceAround,
+        //       children: [
+        //         IconButton(
+        //           onPressed: () => _seekRelative(_seekStepBackward),
+        //           color: Colors.white,
+        //           iconSize: 16,
+        //           icon: Icon(Icons.replay_10),
+        //         ),
+        //         IconButton(
+        //           onPressed: (){
+        //             if(videoPlayerController!.value.isPlaying){
+        //               videoPlayerController!.pause();
+        //             }
+        //             else{
+        //               videoPlayerController!.play();
+        //             }
+        //             setState(() {
+        //
+        //             });
+        //           },
+        //           color: Colors.white,
+        //           iconSize: 16,
+        //           icon: (videoPlayerController!.value.isPlaying) ? Icon(Icons.pause)  : Icon(Icons.play_arrow),
+        //         ),
+        //         IconButton(
+        //           onPressed: () => _seekRelative(_seekStepForward),
+        //           color: Colors.white,
+        //           iconSize: 16,
+        //           icon: Icon(Icons.forward_10),
+        //         ),
+        //       ],
+        //     ),
+        //   ),
+        // ),
+        hideControlsTimer: Duration(seconds: 3),
+        showControls: false
+
     );
   }
-  addUrlToAboutProgramVideoPlayer(String url){
-    print("url"+ url);
-    _abtProgramPlayerController = VlcPlayerController.network(
-      Uri.parse(url).toString(),
-      // url,
-      // 'http://samples.mplayerhq.hu/MPEG-4/embedded_subs/1Video_2Audio_2SUBs_timed_text_streams_.mp4',
-      // 'https://media.w3.org/2010/05/sintel/trailer.mp4',
-      hwAcc: HwAcc.auto,
-      autoPlay: false,
-      options: VlcPlayerOptions(
-        advanced: VlcAdvancedOptions([
-          VlcAdvancedOptions.networkCaching(2000),
-        ]),
-        subtitle: VlcSubtitleOptions([
-          VlcSubtitleOptions.boldStyle(true),
-          VlcSubtitleOptions.fontSize(30),
-          VlcSubtitleOptions.outlineColor(VlcSubtitleColor.yellow),
-          VlcSubtitleOptions.outlineThickness(VlcSubtitleThickness.normal),
-          // works only on externally added subtitles
-          VlcSubtitleOptions.color(VlcSubtitleColor.navy),
-        ]),
-        http: VlcHttpOptions([
-          VlcHttpOptions.httpReconnect(true),
-        ]),
-        rtp: VlcRtpOptions([
-          VlcRtpOptions.rtpOverRtsp(true),
-        ]),
-      ),
+
+
+  // VlcPlayerController? _videoPlayerController, _abtProgramPlayerController;
+  // addUrlToVideoPlayer(String url){
+  //   print("url"+ url);
+  //   _videoPlayerController = VlcPlayerController.network(
+  //     Uri.parse(url).toString(),
+  //     // url,
+  //     // 'http://samples.mplayerhq.hu/MPEG-4/embedded_subs/1Video_2Audio_2SUBs_timed_text_streams_.mp4',
+  //     // 'https://media.w3.org/2010/05/sintel/trailer.mp4',
+  //     hwAcc: HwAcc.auto,
+  //     autoPlay: false,
+  //     options: VlcPlayerOptions(
+  //       advanced: VlcAdvancedOptions([
+  //         VlcAdvancedOptions.networkCaching(2000),
+  //       ]),
+  //       subtitle: VlcSubtitleOptions([
+  //         VlcSubtitleOptions.boldStyle(true),
+  //         VlcSubtitleOptions.fontSize(30),
+  //         VlcSubtitleOptions.outlineColor(VlcSubtitleColor.yellow),
+  //         VlcSubtitleOptions.outlineThickness(VlcSubtitleThickness.normal),
+  //         // works only on externally added subtitles
+  //         VlcSubtitleOptions.color(VlcSubtitleColor.navy),
+  //       ]),
+  //       http: VlcHttpOptions([
+  //         VlcHttpOptions.httpReconnect(true),
+  //       ]),
+  //       rtp: VlcRtpOptions([
+  //         VlcRtpOptions.rtpOverRtsp(true),
+  //       ]),
+  //     ),
+  //   );
+  // }
+  // addUrlToAboutProgramVideoPlayer(String url){
+  //   print("url"+ url);
+  //   _abtProgramPlayerController = VlcPlayerController.network(
+  //     Uri.parse(url).toString(),
+  //     // url,
+  //     // 'http://samples.mplayerhq.hu/MPEG-4/embedded_subs/1Video_2Audio_2SUBs_timed_text_streams_.mp4',
+  //     // 'https://media.w3.org/2010/05/sintel/trailer.mp4',
+  //     hwAcc: HwAcc.auto,
+  //     autoPlay: false,
+  //     options: VlcPlayerOptions(
+  //       advanced: VlcAdvancedOptions([
+  //         VlcAdvancedOptions.networkCaching(2000),
+  //       ]),
+  //       subtitle: VlcSubtitleOptions([
+  //         VlcSubtitleOptions.boldStyle(true),
+  //         VlcSubtitleOptions.fontSize(30),
+  //         VlcSubtitleOptions.outlineColor(VlcSubtitleColor.yellow),
+  //         VlcSubtitleOptions.outlineThickness(VlcSubtitleThickness.normal),
+  //         // works only on externally added subtitles
+  //         VlcSubtitleOptions.color(VlcSubtitleColor.navy),
+  //       ]),
+  //       http: VlcHttpOptions([
+  //         VlcHttpOptions.httpReconnect(true),
+  //       ]),
+  //       rtp: VlcRtpOptions([
+  //         VlcRtpOptions.rtpOverRtsp(true),
+  //       ]),
+  //     ),
+  //   );
+  // }
+
+
+  addUrlToAboutProgramVideoPlayerChewie(String url){
+    videoPlayerController = VideoPlayerController.network(Uri.parse(url).toString());
+    _chewieController = ChewieController(
+        videoPlayerController: videoPlayerController!,
+        aspectRatio: 16/9,
+        autoInitialize: true,
+        showOptions: false,
+        autoPlay: true,
+        hideControlsTimer: Duration(seconds: 3),
+        showControls: false
+
     );
   }
 
@@ -133,16 +205,22 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
     if(await Wakelock.enabled == true){
       Wakelock.disable();
     }
-    if(_videoPlayerController != null){
-      await _videoPlayerController!.stop();
-      await _videoPlayerController!.stopRendererScanning();
-      await _videoPlayerController!.dispose();
-    }
-    if(_abtProgramPlayerController != null){
-      await _abtProgramPlayerController!.stop();
-      await _abtProgramPlayerController!.stopRendererScanning();
-      await _abtProgramPlayerController!.dispose();
-    }
+    // if(_videoPlayerController != null){
+    //   await _videoPlayerController!.stop();
+    //   await _videoPlayerController!.stopRendererScanning();
+    //   await _videoPlayerController!.dispose();
+    // }
+    // if(_abtProgramPlayerController != null){
+    //   await _abtProgramPlayerController!.stop();
+    //   await _abtProgramPlayerController!.stopRendererScanning();
+    //   await _abtProgramPlayerController!.dispose();
+    // }
+
+    if(videoPlayerController != null) videoPlayerController!.dispose();
+    if(_chewieController != null) _chewieController!.dispose();
+
+    if(testimonialVideoController != null) testimonialVideoController!.dispose();
+    if(_testimonialChewieController != null) _testimonialChewieController!.dispose();
   }
 
   @override
@@ -173,13 +251,17 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
                         // #1
                         String aboutProgramPdf = _aboutProgramText?.aboutProgram?.aboutPdf ?? '';
                         if(_aboutProgramText!.aboutProgram !=null && _aboutProgramText.aboutProgram!.aboutProgramVideo != null){
-                          String videoLink = _aboutProgramText?.aboutProgram?.aboutProgramVideo  ?? '';
-                          addUrlToAboutProgramVideoPlayer(videoLink);
+                          String videoLink = _aboutProgramText.aboutProgram?.aboutProgramVideo  ?? '';
+                          // addUrlToAboutProgramVideoPlayer(videoLink);
+                          addUrlToAboutProgramVideoPlayerChewie(videoLink);
                         }
                         // #2 video player
-                        if(_aboutProgramText!.testimonial !=null){
+                        // addUrlToVideoPlayerChewie("https://gwc.disol.in/storage/uploads/users/feedback/L%20R%20Narayanan,_1_1_1_1_1_1_1.mp4");
+
+                        if(_aboutProgramText.testimonial !=null){
                           String videoLink = _aboutProgramText.testimonial?.video ?? '';
-                          addUrlToVideoPlayer(videoLink);
+                          // addUrlToVideoPlayer(videoLink);
+                          addUrlToVideoPlayerChewie(videoLink);
                         }
                         // #3 feedback List
                         List<FeedbackList> feedbackList = _aboutProgramText.feedbackList ?? [];
@@ -276,18 +358,31 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
                                           builder: (context) => const RegisterScreen(),
                                         ),
                                       );
-                                      if(_videoPlayerController != null){
-                                        res = await _videoPlayerController!.isPlaying();
-                                        if(res != null && res == true){
-                                          await _videoPlayerController?.stop();
-                                        }
-                                      }
-                                      if(_abtProgramPlayerController != null){
-                                        final show = await _abtProgramPlayerController!.isPlaying();
+                                      // if(_videoPlayerController != null){
+                                      //   res = await _videoPlayerController!.isPlaying();
+                                      //   if(res != null && res == true){
+                                      //     await _videoPlayerController?.stop();
+                                      //   }
+                                      // }
+                                      // if(_abtProgramPlayerController != null){
+                                      //   final show = await _abtProgramPlayerController!.isPlaying();
+                                      //   if(show != null && show == true){
+                                      //     await _abtProgramPlayerController?.stop();
+                                      //   }
+                                      // }
+                                      if(_chewieController != null){
+                                        final show = _chewieController!.videoPlayerController.value.isPlaying;
                                         if(show != null && show == true){
-                                          await _abtProgramPlayerController?.stop();
+                                          _chewieController!.pause();
                                         }
                                       }
+                                      if(_testimonialChewieController != null){
+                                        final show = _testimonialChewieController!.videoPlayerController.value.isPlaying;
+                                        if(show != null && show == true){
+                                          _testimonialChewieController!.pause();
+                                        }
+                                      }
+
                                     },
                                     child: Container(
                                       width: 40.w,
@@ -362,18 +457,27 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
     );
   }
 
+  // *********** chewie video player *******************
+
+  VideoPlayerController? videoPlayerController, testimonialVideoController;
+  ChewieController ? _chewieController, _testimonialChewieController;
+
+  bool showTestVideoControls = false, showAbtVideoControls = false;
+
+  // ***************************************************
 
   buildAboutProgramVideo() {
-    if(_abtProgramPlayerController != null){
+    if(_chewieController != null){
       return Listener(
         onPointerDown: (_) async{
           print("pressed");
-          if(_videoPlayerController != null){
-            if(await _videoPlayerController!.isPlaying() == true){
-              _videoPlayerController!.pause();
-              // _abtProgramPlayerController!.play();
-            }
-          }
+          // if(_testimonialChewieController != null){
+          //   if(_testimonialChewieController!.videoPlayerController.value.isPlaying == true){
+          //     _testimonialChewieController!.videoPlayerController.pause();
+          //       showTestVideoControls = false;
+          //     // _abtProgramPlayerController!.play();
+          //   }
+          // }
         },
         child: AspectRatio(
           aspectRatio: 16/9,
@@ -392,59 +496,98 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(5),
               child: Center(
-                child: VlcPlayerWithControls(
-                  key: _abtProgramVideoKey,
-                  controller: _abtProgramPlayerController!,
-                  showVolume: false,
-                  showVideoProgress: false,
-                  seekButtonIconSize: 10.sp,
-                  playButtonIconSize: 14.sp,
-                  replayButtonSize: 10.sp,
+                child: OverlayVideo(
+                  controller: _chewieController!,
+                  isControlsVisible: showAbtVideoControls,
                 ),
-                // child: VlcPlayer(
-                //   controller: _videoPlayerController!,
-                //   aspectRatio: 16 / 9,
-                //   virtualDisplay: false,
-                //   placeholder: Center(child: CircularProgressIndicator()),
-                // ),
               ),
             ),
-            // child: Stack(
-            //   children: <Widget>[
-            //     ClipRRect(
-            //       borderRadius: BorderRadius.circular(5),
-            //       child: Center(
-            //         child: VlcPlayer(
-            //           controller: _videoPlayerController!,
-            //           aspectRatio: 16 / 9,
-            //           virtualDisplay: false,
-            //           placeholder: Center(child: CircularProgressIndicator()),
-            //         ),
-            //       ),
-            //     ),
-            //     ControlsOverlay(controller: _videoPlayerController,)
-            //   ],
-            // ),
           ),
         ),
       );
     }
+    // else if(_abtProgramPlayerController != null){
+    //   return Listener(
+    //     onPointerDown: (_) async{
+    //       print("pressed");
+    //       if(_videoPlayerController != null){
+    //         if(await _videoPlayerController!.isPlaying() == true){
+    //           _videoPlayerController!.pause();
+    //           // _abtProgramPlayerController!.play();
+    //         }
+    //       }
+    //     },
+    //     child: AspectRatio(
+    //       aspectRatio: 16/9,
+    //       child: Container(
+    //         decoration: BoxDecoration(
+    //           borderRadius: BorderRadius.circular(5),
+    //           border: Border.all(color: gPrimaryColor, width: 1),
+    //           // boxShadow: [
+    //           //   BoxShadow(
+    //           //     color: Colors.grey.withOpacity(0.3),
+    //           //     blurRadius: 20,
+    //           //     offset: const Offset(2, 10),
+    //           //   ),
+    //           // ],
+    //         ),
+    //         child: ClipRRect(
+    //           borderRadius: BorderRadius.circular(5),
+    //           child: Center(
+    //             child: VlcPlayerWithControls(
+    //               key: _abtProgramVideoKey,
+    //               controller: _abtProgramPlayerController!,
+    //               showVolume: false,
+    //               showVideoProgress: false,
+    //               seekButtonIconSize: 10.sp,
+    //               playButtonIconSize: 14.sp,
+    //               replayButtonSize: 10.sp,
+    //             ),
+    //             // child: VlcPlayer(
+    //             //   controller: _videoPlayerController!,
+    //             //   aspectRatio: 16 / 9,
+    //             //   virtualDisplay: false,
+    //             //   placeholder: Center(child: CircularProgressIndicator()),
+    //             // ),
+    //           ),
+    //         ),
+    //         // child: Stack(
+    //         //   children: <Widget>[
+    //         //     ClipRRect(
+    //         //       borderRadius: BorderRadius.circular(5),
+    //         //       child: Center(
+    //         //         child: VlcPlayer(
+    //         //           controller: _videoPlayerController!,
+    //         //           aspectRatio: 16 / 9,
+    //         //           virtualDisplay: false,
+    //         //           placeholder: Center(child: CircularProgressIndicator()),
+    //         //         ),
+    //         //       ),
+    //         //     ),
+    //         //     ControlsOverlay(controller: _videoPlayerController,)
+    //         //   ],
+    //         // ),
+    //       ),
+    //     ),
+    //   );
+    // }
     else {
       return SizedBox.shrink();
     }
   }
 
   buildTestimonial() {
-    if(_videoPlayerController != null){
+    if(_testimonialChewieController != null){
       return Listener(
         onPointerDown: (_) async{
           print("pressed");
-          if(_abtProgramPlayerController != null){
-            if(await _abtProgramPlayerController!.isPlaying() == true){
-              _abtProgramPlayerController!.pause();
-              // _abtProgramPlayerController!.play();
-            }
-          }
+          // if(_chewieController != null){
+          //   if(_chewieController!.videoPlayerController.value.isPlaying == true){
+          //     _chewieController!.videoPlayerController.pause();
+          //     showAbtVideoControls = false;
+          //     // _abtProgramPlayerController!.play();
+          //   }
+          // }
         },
         child: AspectRatio(
           aspectRatio: 16/9,
@@ -463,20 +606,17 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(5),
               child: Center(
-                child: VlcPlayerWithControls(
-                  key: _key,
-                  controller: _videoPlayerController!,
-                  showVolume: false,
-                  showVideoProgress: false,
-                  seekButtonIconSize: 10.sp,
-                  playButtonIconSize: 14.sp,
-                  replayButtonSize: 10.sp,
+                child:  OverlayVideo(
+                  controller: _testimonialChewieController!,
                 ),
-                // child: VlcPlayer(
+                // child: VlcPlayerWithControls(
+                //   key: _key,
                 //   controller: _videoPlayerController!,
-                //   aspectRatio: 16 / 9,
-                //   virtualDisplay: false,
-                //   placeholder: Center(child: CircularProgressIndicator()),
+                //   showVolume: false,
+                //   showVideoProgress: false,
+                //   seekButtonIconSize: 10.sp,
+                //   playButtonIconSize: 14.sp,
+                //   replayButtonSize: 10.sp,
                 // ),
               ),
             ),
@@ -500,22 +640,75 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
         ),
       );
     }
+    // if(_videoPlayerController != null){
+    //   return Listener(
+    //     onPointerDown: (_) async{
+    //       print("pressed");
+    //       if(_abtProgramPlayerController != null){
+    //         if(await _abtProgramPlayerController!.isPlaying() == true){
+    //           _abtProgramPlayerController!.pause();
+    //           // _abtProgramPlayerController!.play();
+    //         }
+    //       }
+    //     },
+    //     child: AspectRatio(
+    //       aspectRatio: 16/9,
+    //       child: Container(
+    //         decoration: BoxDecoration(
+    //           borderRadius: BorderRadius.circular(5),
+    //           border: Border.all(color: gPrimaryColor, width: 1),
+    //           // boxShadow: [
+    //           //   BoxShadow(
+    //           //     color: Colors.grey.withOpacity(0.3),
+    //           //     blurRadius: 20,
+    //           //     offset: const Offset(2, 10),
+    //           //   ),
+    //           // ],
+    //         ),
+    //         child: ClipRRect(
+    //           borderRadius: BorderRadius.circular(5),
+    //           child: Center(
+    //             child: VlcPlayerWithControls(
+    //               key: _key,
+    //               controller: _videoPlayerController!,
+    //               showVolume: false,
+    //               showVideoProgress: false,
+    //               seekButtonIconSize: 10.sp,
+    //               playButtonIconSize: 14.sp,
+    //               replayButtonSize: 10.sp,
+    //             ),
+    //             // child: VlcPlayer(
+    //             //   controller: _videoPlayerController!,
+    //             //   aspectRatio: 16 / 9,
+    //             //   virtualDisplay: false,
+    //             //   placeholder: Center(child: CircularProgressIndicator()),
+    //             // ),
+    //           ),
+    //         ),
+    //         // child: Stack(
+    //         //   children: <Widget>[
+    //         //     ClipRRect(
+    //         //       borderRadius: BorderRadius.circular(5),
+    //         //       child: Center(
+    //         //         child: VlcPlayer(
+    //         //           controller: _videoPlayerController!,
+    //         //           aspectRatio: 16 / 9,
+    //         //           virtualDisplay: false,
+    //         //           placeholder: Center(child: CircularProgressIndicator()),
+    //         //         ),
+    //         //       ),
+    //         //     ),
+    //         //     ControlsOverlay(controller: _videoPlayerController,)
+    //         //   ],
+    //         // ),
+    //       ),
+    //     ),
+    //   );
+    // }
     else {
       return SizedBox.shrink();
     }
   }
-
-  isPlaying() async {
-    if(_videoPlayerController != null) {
-      final value = await _videoPlayerController?.isPlaying();
-      print("isPlaying: $value");
-      return value;
-    }
-    else{
-      return false;
-    }
-  }
-
 
   buildFeedback(List<FeedbackList> feedbackList) {
     if(feedbackList.isNotEmpty){

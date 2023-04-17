@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:gwc_customer/model/faq_model/faq_list_model.dart';
 import 'package:gwc_customer/widgets/widgets.dart';
 import 'package:sizer/sizer.dart';
-import 'package:flutter_vlc_player/flutter_vlc_player.dart';
+// import 'package:flutter_vlc_player/flutter_vlc_player.dart';
 
 import '../../../widgets/constants.dart';
-
+import '../../../widgets/video/normal_video.dart';
+import 'package:video_player/video_player.dart';
+import 'package:chewie/chewie.dart';
 
 class FaqAnswerScreen extends StatefulWidget {
   final FaqList faqList;
@@ -16,8 +18,10 @@ class FaqAnswerScreen extends StatefulWidget {
 }
 
 class _FaqAnswerScreenState extends State<FaqAnswerScreen> {
-  // String question;
-  VlcPlayerController? _videoPlayerController;
+  // VlcPlayerController? _videoPlayerController;
+
+  VideoPlayerController? videoPlayerController;
+  ChewieController ? _chewieController;
 
 
   FaqList? _faqList;
@@ -28,18 +32,33 @@ class _FaqAnswerScreenState extends State<FaqAnswerScreen> {
     _faqList = widget.faqList;
 
     if(_faqList!.type != null && _faqList?.type == 'video'){
-      _videoPlayerController = VlcPlayerController.network(
-        'https://media.w3.org/2010/05/sintel/trailer.mp4',
-        hwAcc: HwAcc.full,
-        autoPlay: false,
-        options: VlcPlayerOptions(),
+      // _videoPlayerController = VlcPlayerController.network(
+      //   'https://media.w3.org/2010/05/sintel/trailer.mp4',
+      //   hwAcc: HwAcc.full,
+      //   autoPlay: false,
+      //   options: VlcPlayerOptions(),
+      // );
+
+      videoPlayerController = VideoPlayerController.network('https://media.w3.org/2010/05/sintel/trailer.mp4');
+      _chewieController = ChewieController(
+          videoPlayerController: videoPlayerController!,
+          aspectRatio: 16/9,
+          autoInitialize: true,
+          showOptions: false,
+          autoPlay: true,
+          hideControlsTimer: Duration(seconds: 3),
+          showControls: true
+
       );
     }
   }
   @override
   void dispose() async {
     super.dispose();
-    await _videoPlayerController?.stopRendererScanning();
+    // await _videoPlayerController?.stopRendererScanning();
+
+    if(videoPlayerController != null)  videoPlayerController!.dispose();
+    if(_chewieController != null)  _chewieController!.dispose();
   }
 
   @override
@@ -116,7 +135,7 @@ class _FaqAnswerScreenState extends State<FaqAnswerScreen> {
       children: [
         Text(_faqList?.question ?? '',
           style: TextStyle(
-              fontFamily: 'GothamBold',
+              fontFamily: kFontBold,
               fontSize: 12.sp,
               height: 1.5
           ),
@@ -136,11 +155,14 @@ class _FaqAnswerScreenState extends State<FaqAnswerScreen> {
               )
             ]
           ),
-          child: VlcPlayer(
-            controller: _videoPlayerController!,
-            aspectRatio: 16 / 9,
-            placeholder: Center(child: CircularProgressIndicator()),
+          child: OverlayVideo(
+            controller: _chewieController!,
           ),
+          // child: VlcPlayer(
+          //   controller: _videoPlayerController!,
+          //   aspectRatio: 16 / 9,
+          //   placeholder: Center(child: CircularProgressIndicator()),
+          // ),
         ),
         SizedBox(
           height: 15,

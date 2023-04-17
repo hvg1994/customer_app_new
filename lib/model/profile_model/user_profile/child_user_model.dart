@@ -24,6 +24,8 @@ class ChildUserModel {
   String? addedBy;
   String? createdAt;
   String? updatedAt;
+  String? associatedSuccessMemberKaleyraId;
+
 
   ChildUserModel(
       {this.id,
@@ -48,7 +50,9 @@ class ChildUserModel {
         this.addedBy,
         this.kaleyraUID,
         this.createdAt,
-        this.updatedAt});
+        this.updatedAt,
+        this.associatedSuccessMemberKaleyraId
+      });
 
   ChildUserModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -77,6 +81,8 @@ class ChildUserModel {
     addedBy = json['added_by'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
+    associatedSuccessMemberKaleyraId = json['associated_success_member'].toString();
+
   }
 
   Map<String, dynamic> toJson() {
@@ -106,6 +112,7 @@ class ChildUserModel {
     data['added_by'] = this.addedBy;
     data['created_at'] = this.createdAt;
     data['updated_at'] = this.updatedAt;
+    data['associated_success_member'] = this.associatedSuccessMemberKaleyraId;
     return data;
   }
 }

@@ -30,6 +30,9 @@ class _MealPlanRecipeDetailsState extends State<MealPlanRecipeDetails>
     super.initState();
     meals = widget.meal;
     mealPlanRecipes = widget.mealPlanRecipe;
+
+    print("itemImage");
+    print(mealPlanRecipes?.itemImage);
   }
 
   @override
@@ -88,7 +91,7 @@ class _MealPlanRecipeDetailsState extends State<MealPlanRecipeDetails>
                         child: Container(
                           height: 33.h,
                           decoration: BoxDecoration(
-                            image: (mealPlanRecipes?.itemImage != null)
+                            image: (mealPlanRecipes?.itemImage != null && mealPlanRecipes?.itemImage != "")
                                 ? DecorationImage(
                                     image: CachedNetworkImageProvider(
                                       mealPlanRecipes?.itemImage ?? '',
@@ -456,12 +459,15 @@ class _MealPlanRecipeDetailsState extends State<MealPlanRecipeDetails>
         crossAxisAlignment: CrossAxisAlignment.start,
         // mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
-            title,
-            style: TextStyle(
-              color: gBlackColor,
-              fontFamily: kFontBold,
-              fontSize: 11.sp,
+          Visibility(
+            visible: title.isNotEmpty,
+            child: Text(
+              title,
+              style: TextStyle(
+                color: gBlackColor,
+                fontFamily: kFontBold,
+                fontSize: 11.sp,
+              ),
             ),
           ),
           SizedBox(height: 1.h),
@@ -606,7 +612,9 @@ class _MealPlanRecipeDetailsState extends State<MealPlanRecipeDetails>
           ),
           SizedBox(height: 2.h),
           if (howToStore != null)
-            ...howToStore.split('*').map((e) {
+            if(!howToStore.contains("*"))  profileTile("", howToStore)
+            else ...howToStore.split('*').map((e) {
+              print(e);
               return profileTile(e.split(":").first, e.split(":").last);
             }).toList(),
 

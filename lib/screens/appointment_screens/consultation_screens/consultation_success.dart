@@ -36,7 +36,7 @@ class ConsultationSuccess extends StatelessWidget {
                   SizedBox(height: 4.h),
                   Text(
                     !isPostProgramSuccess
-                        ? "You Have Successfully Completed Your Consultation"
+                        ? "Congratulations, your consultation has been completed successfully!"
                         : "Post Program Consultation Done.",
                     textAlign: TextAlign.center,
                     style: TextStyle(
@@ -49,7 +49,7 @@ class ConsultationSuccess extends StatelessWidget {
                   SizedBox(height: 1.h),
                   Text(
                     !isPostProgramSuccess
-                        ? "Your Medical Report is getting ready and will be uploaded within 24 hours"
+                        ? "Your medical report is currently being prepared and will be available for online access within the next 24 hours"
                         : "Gut Maintenance Guide and Meal Plans will be Uploaded soon.",
                     textAlign: TextAlign.center,
                     style: TextStyle(

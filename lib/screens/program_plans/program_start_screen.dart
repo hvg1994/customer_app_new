@@ -1,6 +1,7 @@
-import 'package:appinio_video_player/appinio_video_player.dart';
+import 'package:video_player/video_player.dart';
+import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_vlc_player/flutter_vlc_player.dart';
+// import 'package:flutter_vlc_player/flutter_vlc_player.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:gwc_customer/model/error_model.dart';
@@ -21,6 +22,7 @@ import '../../repository/api_service.dart';
 import '../../repository/program_repository/program_repository.dart';
 import '../../utils/app_config.dart';
 import '../../widgets/constants.dart';
+import '../../widgets/video/normal_video.dart';
 import '../../widgets/widgets.dart';
 import '../prepratory plan/new/new_transition_design.dart';
 import '../prepratory plan/new/preparatory_new_screen.dart';
@@ -34,8 +36,11 @@ enum ProgramMealType {
 
 class ProgramPlanScreen extends StatefulWidget {
   final String from;
+  final String? videoLink;
+
+  /// this is for meal plans
   final bool? isPrepCompleted;
-  const ProgramPlanScreen({Key? key, required this.from, this.isPrepCompleted}) : super(key: key);
+  const ProgramPlanScreen({Key? key, required this.from, this.isPrepCompleted, this.videoLink}) : super(key: key);
 
   @override
   State<ProgramPlanScreen> createState() => _ProgramPlanScreenState();
@@ -46,21 +51,32 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
   final _pref = AppConfig().preferences;
   bool isStarted = false;
 
+  String prepText = "Our preparatory phase transforms gut health by adapting your diet to your unique gut type, achieving optimal acid and enzyme levels. Say goodbye to harmful addictions and habits like smoking and drinking, "
+      "and hello to a new, healthier you. Before receiving our product kit, "
+      "we encourage you to eat 6-7 meals a day and start breaking those bad habits that may be holding you back.\n\n"
+      "So why wait? Start your journey towards detoxification and repair today with our program, and discover the power of optimal gut health. Your body will thank you! ";
+      // "The preparatory phase aids in the optimal preparation of the gastrointestinal tract for detoxification and repair. Gut acid and enzyme optimization can be achieved by adapting typical diets to your gut type and condition, as well as avoiding certain addictions/habits such as smoking, drinking, and so on."
+      // "Before receiving your product kit, eat 6-7 meals a day, break addictions, and eliminate bad habits. Start your custom plan now.";
+  String mealText = "Our approach on healing the condition: To cleanse and heal your stomach, we employ integrated Calm, Move, and Nourish modules that are tailored to your gut type. \n\nEvery meal is scheduled based on the Metabolic nature of your gut and its relationship to your biological clock. This implies that each food item at each meal time has a distinct role in resetting your gut's functionality by adjusting to your biological clock. ";
+  String transText = "Congratulations on completing your detox and healing program. Now, let us begin your transition days to enter a normal routine, for optimal healthy gut.";
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    addUrlToVideoPlayer("https://media.w3.org/2010/05/sintel/trailer.mp4");
+    if(widget.videoLink != null && widget.videoLink!.isNotEmpty){
+      addUrlToVideoPlayerChewie(widget.videoLink!);
+    }
+    // addUrlToVideoPlayer("https://media.w3.org/2010/05/sintel/trailer.mp4");
   }
 
   @override
   void dispose() {
     if(mounted){
-      if(_aboutSlideStartController != null)_aboutSlideStartController!.dispose();
-      if(_customVideoPlayerController != null)_customVideoPlayerController!.dispose();
+      if(videoPlayerController != null) videoPlayerController!.dispose();
+      if(_chewieController != null) _chewieController!.dispose();
 
-      if(_videoPlayerController != null) _videoPlayerController!.dispose();
+      // if(_videoPlayerController != null) _videoPlayerController!.dispose();
       super.dispose();
     }
   }
@@ -109,6 +125,9 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
                           color: gTextColor,
                           fontSize: 10.sp),
                       onConfirmation: () {
+                        if(videoPlayerController != null) videoPlayerController!.pause();
+                        if(_chewieController != null) _chewieController!.pause();
+
                         showConfirmSheet();
 
                       })
@@ -122,71 +141,103 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
 
   // **  *add url to video on initstate *************************
 
-  VlcPlayerController? _videoPlayerController;
-  final _key = GlobalKey<VlcPlayerWithControlsState>();
 
-  VideoPlayerController? _aboutSlideStartController;
-  CustomVideoPlayerController? _customVideoPlayerController;
-  final CustomVideoPlayerSettings _customVideoPlayerSettings =
-  CustomVideoPlayerSettings(
-    controlBarAvailable: false,
-    showPlayButton: true,
-    playButton: Center(child: Icon(Icons.play_circle, color: Colors.white,),),
-    settingsButtonAvailable: false,
-    playbackSpeedButtonAvailable: false,
-    placeholderWidget: Container(child: Center(child: CircularProgressIndicator()),color: gBlackColor,),
-  );
-
-  addChewieVideoPlayer(String url) async{
-    _aboutSlideStartController = VideoPlayerController.network(Uri.parse(url).toString());
-    _aboutSlideStartController!.initialize().then((value) => setState(() {}));
-    _customVideoPlayerController = CustomVideoPlayerController(
-      context: context,
-      videoPlayerController: _aboutSlideStartController!,
-      customVideoPlayerSettings: _customVideoPlayerSettings,
-    );
-    _aboutSlideStartController!.play();
-    if(await Wakelock.enabled == false){
-      Wakelock.enable();
-    }
-  }
-
-  addUrlToVideoPlayer(String url) async {
+  VideoPlayerController? videoPlayerController;
+  ChewieController ? _chewieController;
+  addUrlToVideoPlayerChewie(String url) async {
     print("url" + url);
-    _videoPlayerController = VlcPlayerController.network(
-      url,
-      // url,
-      // 'http://samples.mplayerhq.hu/MPEG-4/embedded_subs/1Video_2Audio_2SUBs_timed_text_streams_.mp4',
-      // 'https://media.w3.org/2010/05/sintel/trailer.mp4',
-      hwAcc: HwAcc.auto,
-      autoPlay: true,
-      options: VlcPlayerOptions(
-        advanced: VlcAdvancedOptions([
-          VlcAdvancedOptions.networkCaching(2000),
-        ]),
-        subtitle: VlcSubtitleOptions([
-          VlcSubtitleOptions.boldStyle(true),
-          VlcSubtitleOptions.fontSize(30),
-          VlcSubtitleOptions.outlineColor(VlcSubtitleColor.yellow),
-          VlcSubtitleOptions.outlineThickness(VlcSubtitleThickness.normal),
-          // works only on externally added subtitles
-          VlcSubtitleOptions.color(VlcSubtitleColor.navy),
-        ]),
-        http: VlcHttpOptions([
-          VlcHttpOptions.httpReconnect(true),
-        ]),
-        rtp: VlcRtpOptions([
-          VlcRtpOptions.rtpOverRtsp(true),
-        ]),
-      ),
+    videoPlayerController = VideoPlayerController.network(Uri.parse(url).toString());
+    _chewieController = ChewieController(
+        videoPlayerController: videoPlayerController!,
+        aspectRatio: 16/9,
+        autoInitialize: true,
+        showOptions: false,
+        autoPlay: true,
+        // customControls: Center(
+        //   child: FittedBox(
+        //     child: Row(
+        //       crossAxisAlignment: CrossAxisAlignment.center,
+        //       mainAxisAlignment: MainAxisAlignment.spaceAround,
+        //       children: [
+        //         IconButton(
+        //           onPressed: () => _seekRelative(_seekStepBackward),
+        //           color: Colors.white,
+        //           iconSize: 16,
+        //           icon: Icon(Icons.replay_10),
+        //         ),
+        //         IconButton(
+        //           onPressed: (){
+        //             if(videoPlayerController!.value.isPlaying){
+        //               videoPlayerController!.pause();
+        //             }
+        //             else{
+        //               videoPlayerController!.play();
+        //             }
+        //             setState(() {
+        //
+        //             });
+        //           },
+        //           color: Colors.white,
+        //           iconSize: 16,
+        //           icon: (videoPlayerController!.value.isPlaying) ? Icon(Icons.pause)  : Icon(Icons.play_arrow),
+        //         ),
+        //         IconButton(
+        //           onPressed: () => _seekRelative(_seekStepForward),
+        //           color: Colors.white,
+        //           iconSize: 16,
+        //           icon: Icon(Icons.forward_10),
+        //         ),
+        //       ],
+        //     ),
+        //   ),
+        // ),
+        hideControlsTimer: Duration(seconds: 3),
+        showControls: false
+
     );
     if (!await Wakelock.enabled) {
       Wakelock.enable();
     }
   }
 
+  // VlcPlayerController? _videoPlayerController;
+  // final _key = GlobalKey<VlcPlayerWithControlsState>();
+  // addUrlToVideoPlayer(String url) async {
+  //   print("url" + url);
+  //   _videoPlayerController = VlcPlayerController.network(
+  //     url,
+  //     // url,
+  //     // 'http://samples.mplayerhq.hu/MPEG-4/embedded_subs/1Video_2Audio_2SUBs_timed_text_streams_.mp4',
+  //     // 'https://media.w3.org/2010/05/sintel/trailer.mp4',
+  //     hwAcc: HwAcc.auto,
+  //     autoPlay: true,
+  //     options: VlcPlayerOptions(
+  //       advanced: VlcAdvancedOptions([
+  //         VlcAdvancedOptions.networkCaching(2000),
+  //       ]),
+  //       subtitle: VlcSubtitleOptions([
+  //         VlcSubtitleOptions.boldStyle(true),
+  //         VlcSubtitleOptions.fontSize(30),
+  //         VlcSubtitleOptions.outlineColor(VlcSubtitleColor.yellow),
+  //         VlcSubtitleOptions.outlineThickness(VlcSubtitleThickness.normal),
+  //         // works only on externally added subtitles
+  //         VlcSubtitleOptions.color(VlcSubtitleColor.navy),
+  //       ]),
+  //       http: VlcHttpOptions([
+  //         VlcHttpOptions.httpReconnect(true),
+  //       ]),
+  //       rtp: VlcRtpOptions([
+  //         VlcRtpOptions.rtpOverRtsp(true),
+  //       ]),
+  //     ),
+  //   );
+  //   if (!await Wakelock.enabled) {
+  //     Wakelock.enable();
+  //   }
+  // }
+
   buildAboutStartSlideVideo() {
-    if(_videoPlayerController != null){
+    if(_chewieController != null){
       return Stack(
         children: [
           AspectRatio(
@@ -195,29 +246,14 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(5),
                 border: Border.all(color: gPrimaryColor, width: 1),
-                // boxShadow: [
-                //   BoxShadow(
-                //     color: Colors.grey.withOpacity(0.3),
-                //     blurRadius: 20,
-                //     offset: const Offset(2, 10),
-                //   ),
-                // ],
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(5),
                 child: Center(
-                  // child: CustomVideoPlayer(
-                  //   customVideoPlayerController: _customVideoPlayerController!,
-                  // ),
-                    child: VlcPlayerWithControls(
-                      key: _key,
-                      controller: _videoPlayerController!,
-                      showVolume: false,
-                      showVideoProgress: false,
-                      seekButtonIconSize: 10.sp,
-                      playButtonIconSize: 14.sp,
-                      replayButtonSize: 10.sp,
-                    )
+                  child: OverlayVideo(
+                    isControlsVisible: false,
+                    controller: _chewieController!,
+                  ),
                 ),
               ),
             ),
@@ -300,6 +336,120 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
       //   ),
       // );
     }
+    // else if(_videoPlayerController != null){
+    //   return Stack(
+    //     children: [
+    //       AspectRatio(
+    //         aspectRatio: 16/9,
+    //         child: Container(
+    //           decoration: BoxDecoration(
+    //             borderRadius: BorderRadius.circular(5),
+    //             border: Border.all(color: gPrimaryColor, width: 1),
+    //             // boxShadow: [
+    //             //   BoxShadow(
+    //             //     color: Colors.grey.withOpacity(0.3),
+    //             //     blurRadius: 20,
+    //             //     offset: const Offset(2, 10),
+    //             //   ),
+    //             // ],
+    //           ),
+    //           child: ClipRRect(
+    //             borderRadius: BorderRadius.circular(5),
+    //             child: Center(
+    //               // child: CustomVideoPlayer(
+    //               //   customVideoPlayerController: _customVideoPlayerController!,
+    //               // ),
+    //                 child: VlcPlayerWithControls(
+    //                   key: _key,
+    //                   controller: _videoPlayerController!,
+    //                   showVolume: false,
+    //                   showVideoProgress: false,
+    //                   seekButtonIconSize: 10.sp,
+    //                   playButtonIconSize: 14.sp,
+    //                   replayButtonSize: 10.sp,
+    //                 )
+    //             ),
+    //           ),
+    //         ),
+    //       ),
+    //       // if(!_customVideoPlayerController!.videoPlayerController.value.isPlaying)AspectRatio(
+    //       //     aspectRatio: 16/9,
+    //       //   child: SizedBox.expand(
+    //       //     child: Container(
+    //       //       color: Colors.black45,
+    //       //       child: FittedBox(
+    //       //         child: Row(
+    //       //           crossAxisAlignment: CrossAxisAlignment.center,
+    //       //           mainAxisAlignment: MainAxisAlignment.spaceAround,
+    //       //           children: [
+    //       //             IconButton(
+    //       //               onPressed: (){
+    //       //                 _customVideoPlayerController!.videoPlayerController.play();
+    //       //               },
+    //       //               color: gWhiteColor,
+    //       //               iconSize: 15,
+    //       //               icon: Icon(Icons.play_arrow),
+    //       //             ),
+    //       //           ],
+    //       //         ),
+    //       //       ),
+    //       //     ),
+    //       //   ),
+    //       // ),
+    //       // Positioned(child:
+    //       // AspectRatio(
+    //       //   aspectRatio: 16/9,
+    //       //   child: GestureDetector(
+    //       //     onTap: (){
+    //       //       print("onTap");
+    //       //       if(_aboutSlideStartController != null){
+    //       //         if(_customVideoPlayerController!.videoPlayerController.value.isPlaying){
+    //       //           _customVideoPlayerController!.videoPlayerController.pause();
+    //       //         }
+    //       //         else{
+    //       //           _customVideoPlayerController!.videoPlayerController.play();
+    //       //         }
+    //       //       }
+    //       //       setState(() {
+    //       //
+    //       //       });
+    //       //     },
+    //       //   ),
+    //       // )
+    //       // )
+    //
+    //     ],
+    //   );
+    //   // return AspectRatio(
+    //   //   aspectRatio: 16/9,
+    //   //   child: Container(
+    //   //     decoration: BoxDecoration(
+    //   //       borderRadius: BorderRadius.circular(5),
+    //   //       border: Border.all(color: gPrimaryColor, width: 1),
+    //   //     ),
+    //   //     child: ClipRRect(
+    //   //       borderRadius: BorderRadius.circular(5),
+    //   //       child: Center(
+    //   //         child: VlcPlayerWithControls(
+    //   //           key: _key,
+    //   //           controller: _aboutSlideStartController!,
+    //   //           showVolume: false,
+    //   //           showVideoProgress: false,
+    //   //           seekButtonIconSize: 10.sp,
+    //   //           playButtonIconSize: 14.sp,
+    //   //           replayButtonSize: 10.sp,
+    //   //         ),
+    //   //         // child: VlcPlayer(
+    //   //         //   controller: _videoPlayerController!,
+    //   //         //   aspectRatio: 16 / 9,
+    //   //         //   virtualDisplay: false,
+    //   //         //   placeholder: Center(child: CircularProgressIndicator()),
+    //   //         // ),
+    //   //       ),
+    //   //     ),
+    //   //   ),
+    //   // );
+    // }
     else {
       return SizedBox.shrink();
     }
@@ -317,11 +467,10 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
         SizedBox(height: 4.h),
         Text(
           (widget.from == ProgramMealType.prepratory.name)
-              ? "The preparatory phase aids in the optimal preparation of the gastrointestinal tract for detoxification and repair. Gut acid and enzyme optimization can be achieved by adapting typical diets to your gut type and condition, as well as avoiding certain addictions/habits such as smoking, drinking, and so on."
-              "Before receiving your product kit, eat 6-7 meals a day, break addictions, and eliminate bad habits. Start your custom plan now."
+              ? prepText
               : widget.from == ProgramMealType.program.name
-              ? "Our approach on healing the condition: To cleanse and heal your stomach, we employ integrated Calm, Move, and Nourish modules that are tailored to your gut type. \n\nEvery meal is scheduled based on the Metabolic nature of your gut and its relationship to your biological clock. This implies that each food item at each meal time has a distinct role in resetting your gut's functionality by adjusting to your biological clock. "
-              : "Congratulations on completing your detox and healing program. Now, let us begin your transition days to enter a normal routine, for optimal healthy gut.",
+              ? mealText
+              : transText,
           textAlign: TextAlign.justify,
           style: TextStyle(
               height: 1.5,
@@ -331,8 +480,10 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
         ),
         TextButton(
             onPressed: (){
-              if(_videoPlayerController != null) _videoPlayerController!.stop();
-              // _customVideoPlayerController!.videoPlayerController.pause();
+              if(videoPlayerController != null) videoPlayerController!.pause();
+              if(_chewieController != null) _chewieController!.pause();
+
+              // if(_videoPlayerController != null) _videoPlayerController!.stop();
               if(widget.from == ProgramMealType.prepratory.name){
                 //get Preparatory day1 meals
                 gotoScreen(PreparatoryPlanScreen(dayNumber: "1", totalDays: '1',viewDay1Details: true,));
@@ -395,7 +546,7 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
     setState(() {
       isStarted = true;
     });
-    await _videoPlayerController!.stop();
+    // await _videoPlayerController!.stop();
     String? start;
     if(widget.from == ProgramMealType.prepratory.name){
       start = "2";
@@ -426,7 +577,7 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
           );
         }
         else if(widget.from == ProgramMealType.program.name){
-          if(widget.isPrepCompleted != null && widget.isPrepCompleted == false){
+          if(widget.isPrepCompleted != null && widget.isPrepCompleted == true){
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(

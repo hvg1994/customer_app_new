@@ -38,7 +38,7 @@ class _SitBackScreenState extends State<SitBackScreen> {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
                     child: Text(
-                      "Sit Back And Relax..!!",
+                      "Sit back, relax, and let us do the rest.",
                       style: TextStyle(
                           fontFamily: kFontBold,
                           color: gTextColor,
@@ -47,10 +47,10 @@ class _SitBackScreenState extends State<SitBackScreen> {
                   ),SizedBox(height: 1.h),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Text("We have received your enquiry",
+                    child: Text("We're excited to help you achieve your gut health goals. Get ready to feel your best self yet!",
                       style: TextStyle(
                           height: 1.5,
-                          fontFamily: "GothamRoundedBook_21018",
+                          fontFamily: kFontMedium,
                           color: gTextColor,
                           fontSize: 12.sp),
                     ),
@@ -59,7 +59,8 @@ class _SitBackScreenState extends State<SitBackScreen> {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
                     child: Text(
-                      "Congrats on initiating your journey to a healthy gut. Our team will get in touch via whatsApp within 24hours",
+                      "We'll be in touch soon to kick-start your journey towards optimal gut health.",
+                      // "Congrats on initiating your journey to a healthy gut. Our team will get in touch via whatsApp within 24hours",
                       // "Congratulations on your initiative towards a healthy gut! Our team will reach out to you soon. . .",
                       style: TextStyle(
                           height: 1.5,

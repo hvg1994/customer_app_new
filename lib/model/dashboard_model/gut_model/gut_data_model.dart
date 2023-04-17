@@ -2,14 +2,15 @@ class GutDataModel {
   String? data;
   String? value;
   RejectedCaseClass? rejectedCase;
+  String? isProgramFeedbackSubmitted;
 
-  GutDataModel({this.data, this.value, this.rejectedCase});
+  GutDataModel({this.data, this.value, this.rejectedCase, this.isProgramFeedbackSubmitted});
 
   GutDataModel.fromJson(Map<String, dynamic> json) {
     print("json['value'].runtimeType: ${json['value'].runtimeType}");
     data = json['data'];
     value = (json['value'].runtimeType == String) ? json['value'] ??'' : '';
-
+    isProgramFeedbackSubmitted = (json['is_program_feedback_submitted'].runtimeType == String) ? json['is_program_feedback_submitted'] ??'' : '';
     rejectedCase = (json['value'].runtimeType != String) ? RejectedCaseClass.fromJson(json['value']) : null;
   }
 
@@ -17,6 +18,7 @@ class GutDataModel {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['data'] = this.data;
     data['value'] = this.value;
+    data['is_program_feedback_submitted'] = this.value;
     return data;
   }
 }

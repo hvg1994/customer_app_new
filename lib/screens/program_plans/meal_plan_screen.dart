@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:appinio_video_player/appinio_video_player.dart';
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:easy_scroll_to_index/easy_scroll_to_index.dart';
 import 'package:auto_orientation/auto_orientation.dart';
@@ -7,8 +6,7 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_vlc_player/flutter_vlc_player.dart';
-import 'package:grouped_list/grouped_list.dart';
+// import 'package:flutter_vlc_player/flutter_vlc_player.dart';
 import 'package:gwc_customer/model/error_model.dart';
 import 'package:gwc_customer/model/program_model/proceed_model/send_proceed_program_model.dart';
 import 'package:gwc_customer/model/program_model/program_days_model/child_program_day.dart';
@@ -22,6 +20,7 @@ import 'package:gwc_customer/screens/program_plans/day_tracker_ui/day_tracker.da
 import 'package:gwc_customer/screens/program_plans/program_start_screen.dart';
 import 'package:gwc_customer/services/post_program_service/post_program_service.dart';
 import 'package:gwc_customer/widgets/open_alert_box.dart';
+import 'package:gwc_customer/widgets/video/normal_video.dart';
 import 'package:gwc_customer/widgets/vlc_player/vlc_player_with_controls.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
@@ -50,6 +49,7 @@ import 'package:simple_tooltip/simple_tooltip.dart';
 import 'package:video_player/video_player.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:wakelock/wakelock.dart';
+import 'package:chewie/chewie.dart';
 
 class MealPlanScreen extends StatefulWidget {
   final String? transStage;
@@ -106,46 +106,73 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
 
   //****************  video player variables  *************
 
-  VlcPlayerController? _controller, _trackerVideoPlayerController;
-  final _key = GlobalKey<VlcPlayerWithControlsState>();
+  // VlcPlayerController? _controller, _trackerVideoPlayerController;
+  // final _key = GlobalKey<VlcPlayerWithControlsState>();
+  //
+  // initVideoView(String? url) {
+  //   print("init url: $url");
+  //   _controller = VlcPlayerController.network(
+  //     // url ??
+  //     Uri.parse(url!
+  //       // 'https://gwc.disol.in/storage/uploads/users/recipes/Calm Module - Functional (AR).mp4'
+  //     )
+  //         .toString(),
+  //     hwAcc: HwAcc.full,
+  //     options: VlcPlayerOptions(
+  //       advanced: VlcAdvancedOptions([
+  //         VlcAdvancedOptions.networkCaching(2000),
+  //       ]),
+  //       subtitle: VlcSubtitleOptions([
+  //         VlcSubtitleOptions.boldStyle(true),
+  //         VlcSubtitleOptions.fontSize(30),
+  //         VlcSubtitleOptions.outlineColor(VlcSubtitleColor.yellow),
+  //         VlcSubtitleOptions.outlineThickness(VlcSubtitleThickness.normal),
+  //         // works only on externally added subtitles
+  //         VlcSubtitleOptions.color(VlcSubtitleColor.navy),
+  //       ]),
+  //       http: VlcHttpOptions([
+  //         VlcHttpOptions.httpReconnect(true),
+  //       ]),
+  //       rtp: VlcRtpOptions([
+  //         VlcRtpOptions.rtpOverRtsp(true),
+  //       ]),
+  //     ),
+  //   );
+  //
+  //   print(
+  //       "_controller.isReadyToInitialize: ${_controller!.isReadyToInitialize}");
+  //   _controller!.addOnInitListener(() async {
+  //     await _controller!.startRendererScanning();
+  //   });
+  //   final _ori = MediaQuery.of(context).orientation;
+  //   print(_ori.name);
+  //   bool isPortrait = _ori == Orientation.portrait;
+  //   if (isPortrait) {
+  //     AutoOrientation.landscapeAutoMode();
+  //   }
+  // }
+  //
+
+  VideoPlayerController? _sheetVideoController, _yogaVideoController;
+  ChewieController? _sheetChewieController, _yogaChewieController;
 
 
 
-  initVideoView(String? url) {
+  initChewieView(String? url) {
     print("init url: $url");
-    _controller = VlcPlayerController.network(
-      // url ??
-      Uri.parse(url!
-              // 'https://gwc.disol.in/storage/uploads/users/recipes/Calm Module - Functional (AR).mp4'
-              )
-          .toString(),
-      hwAcc: HwAcc.full,
-      options: VlcPlayerOptions(
-        advanced: VlcAdvancedOptions([
-          VlcAdvancedOptions.networkCaching(2000),
-        ]),
-        subtitle: VlcSubtitleOptions([
-          VlcSubtitleOptions.boldStyle(true),
-          VlcSubtitleOptions.fontSize(30),
-          VlcSubtitleOptions.outlineColor(VlcSubtitleColor.yellow),
-          VlcSubtitleOptions.outlineThickness(VlcSubtitleThickness.normal),
-          // works only on externally added subtitles
-          VlcSubtitleOptions.color(VlcSubtitleColor.navy),
-        ]),
-        http: VlcHttpOptions([
-          VlcHttpOptions.httpReconnect(true),
-        ]),
-        rtp: VlcRtpOptions([
-          VlcRtpOptions.rtpOverRtsp(true),
-        ]),
-      ),
+    _yogaVideoController = VideoPlayerController.network(Uri.parse(url!).toString());
+    _yogaChewieController = ChewieController(
+        videoPlayerController: _yogaVideoController!,
+        aspectRatio: 16/9,
+        autoInitialize: true,
+        showOptions: false,
+        autoPlay: true,
+        allowedScreenSleep: false,
+        hideControlsTimer: Duration(seconds: 3),
+        showControls: true
+
     );
 
-    print(
-        "_controller.isReadyToInitialize: ${_controller!.isReadyToInitialize}");
-    _controller!.addOnInitListener(() async {
-      await _controller!.startRendererScanning();
-    });
     final _ori = MediaQuery.of(context).orientation;
     print(_ori.name);
     bool isPortrait = _ori == Orientation.portrait;
@@ -154,8 +181,9 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
     }
   }
 
+
   // for tracker video player
-  final _trackerKey = GlobalKey<VlcPlayerWithControlsState>();
+  // final _trackerKey = GlobalKey<VlcPlayerWithControlsState>();
 
 
 
@@ -582,30 +610,16 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
         negativeButtonName: isSingleButton ? null : 'Go Back');
   }
 
-  // initVideoView(String? url) {
-  //   print("init url: $url");
-  //
-  //   _mealVideoController = VideoPlayerController.network(Uri.parse(url!).toString());
-  //   _mealVideoController!.initialize().then((value) => setState(() {}));
-  //   _customVideoPlayerController = CustomVideoPlayerController(
-  //     context: context,
-  //     videoPlayerController: _mealVideoController!,
-  //     customVideoPlayerSettings: _customVideoPlayerSettings,
-  //   );
-  //   _mealVideoController!.play();
-  //   _mealVideoController!.addListener(() {
-  //     if(_mealVideoController!.value.isBuffering){
-  //       setState(() { });
-  //     }
-  //   });
-  // }
 
   @override
   void dispose() async {
     super.dispose();
     commentController.dispose();
 
-    if (_trackerVideoPlayerController != null) _trackerVideoPlayerController!.dispose();
+    if(_sheetVideoController != null) _sheetVideoController!.dispose();
+    if(_sheetChewieController != null) _sheetChewieController!.dispose();
+
+    // if (_trackerVideoPlayerController != null) _trackerVideoPlayerController!.dispose();
   }
 
   @override
@@ -886,77 +900,6 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                         onPressed: () {
                           if (planNotePdfLink != null ||
                               planNotePdfLink!.isNotEmpty) {
-                            // addUrlToVideoPlayer("");
-                            // AppConfig().showSheet(context,
-                            //     SizedBox(
-                            //       height: 75.h,
-                            //       child: StatefulBuilder(
-                            //         builder: (_, setState){
-                            //           return Column(
-                            //             mainAxisSize: MainAxisSize.min,
-                            //             crossAxisAlignment: CrossAxisAlignment.start,
-                            //             mainAxisAlignment: MainAxisAlignment.center,
-                            //             children: [
-                            //               Center(
-                            //                 child: Text("Want to know more about the program? Please read",
-                            //                   style: TextStyle(
-                            //                       fontSize: bottomSheetHeadingFontSize,
-                            //                       fontFamily: bottomSheetHeadingFontFamily,
-                            //                       height: 1.4
-                            //                   ),
-                            //                   textAlign: TextAlign.center,
-                            //                 ),
-                            //               ),
-                            //               videoMp4Widget(
-                            //                   onTap: (){
-                            //                     addUrlToVideoPlayer("");
-                            //                     setState(() {
-                            //                       showNoteVideo = true;
-                            //                     });
-                            //                   }
-                            //               ),
-                            //               const Padding(
-                            //                 padding: EdgeInsets.symmetric(horizontal: 15),
-                            //                 child: Divider(
-                            //                   color: kLineColor,
-                            //                   thickness: 1.2,
-                            //                 ),
-                            //               ),
-                            //               Expanded(
-                            //                 child: Stack(
-                            //                   children: [
-                            //                     SfPdfViewer.network(
-                            //                         planNotePdfLink!
-                            //                     ),
-                            //                     Visibility(
-                            //                       visible: showNoteVideo,
-                            //                       child: Positioned(
-                            //                           child: Center(
-                            //                               child: buildMealVideo(
-                            //                                   onTap: () async{
-                            //                                     setState(() {
-                            //                                       showNoteVideo = false;
-                            //                                     });
-                            //                                     _mealPlayerController!.stop();
-                            //                                     // await _mealPlayerController!.stopRendererScanning();
-                            //                                     // await _mealPlayerController!.dispose();
-                            //                                   }
-                            //                               )
-                            //                           )
-                            //                       ),
-                            //                     )
-                            //                   ],
-                            //                 ),
-                            //               ),
-                            //               SizedBox(
-                            //                 height: 3.h,
-                            //               )
-                            //             ],
-                            //           );
-                            //         }
-                            //       ),
-                            //     ),
-                            //     bottomSheetHeight: 85.h, circleIcon: bsHeadBulbIcon, topColor: kBottomSheetHeadGreen);
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -1347,63 +1290,19 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                 Wakelock.enable();
                 print("model.isChanged: ${model.isChanged} $isEnabled");
                 if (model.isChanged) {}
-                // return AspectRatio(
-                //   aspectRatio: 16 / 9,
-                //   child: md.MeeduVideoPlayer(
-                //     controller: _meeduPlayerController,
-                //   ),
-                // );
-
-                return VlcPlayerWithControls(
-                  key: _key,
-                  controller: _controller!,
-                  showVolume: false,
-                  showVideoProgress: !model.isChanged,
-                  seekButtonIconSize: 10.sp,
-                  playButtonIconSize: 14.sp,
-                  replayButtonSize: 14.sp,
-                  showFullscreenBtn: true,
+                return Container(
+                  color: Colors.black,
+                  child: Center(child: Chewie(controller: _yogaChewieController!)),
                 );
-                // _customVideoPlayerSettings =
-                //     CustomVideoPlayerSettings(
-                //       controlBarAvailable: !model.isChanged,
-                //       settingsButtonAvailable: false,
-                //       playbackSpeedButtonAvailable: false,
-                //       placeholderWidget: Container(child: Center(child: CircularProgressIndicator()),color: gBlackColor,),
-                //     );
-                // _customVideoPlayerController = CustomVideoPlayerController(
-                //   context: context,
-                //   videoPlayerController: _mealVideoController!,
-                //   customVideoPlayerSettings: _customVideoPlayerSettings,
-                // );
-                // print("isBuffered: ${_customVideoPlayerController!.videoPlayerController.value.isBuffering}");
-                // return GestureDetector(
-                //   behavior: HitTestBehavior.deferToChild,
-                //   onTap: () {
-                //     print("pressing");
-                //   },
-                //   child: Container(child:
-                //   Stack(
-                //     children: [
-                //       Center(child: CustomVideoPlayer(
-                //         customVideoPlayerController: _customVideoPlayerController!,
-                //       )),
-                //       // if(_customVideoPlayerController != null && _customVideoPlayerController!.videoPlayerController.value.isBuffering)
-                //         Positioned(
-                //           left: 0,
-                //           right: 0,
-                //           bottom: 0,
-                //           top: 0,
-                //           child: Center(
-                //             child: SizedBox(
-                //                 width: 50,
-                //                 height: 50,
-                //                 child: CircularProgressIndicator()
-                //             ),
-                //           )
-                //       ),
-                //     ],
-                //   ),color: gBlackColor,),
+                // return VlcPlayerWithControls(
+                //   key: _key,
+                //   controller: _controller!,
+                //   showVolume: false,
+                //   showVideoProgress: !model.isChanged,
+                //   seekButtonIconSize: 10.sp,
+                //   playButtonIconSize: 14.sp,
+                //   replayButtonSize: 14.sp,
+                //   showFullscreenBtn: true,
                 // );
               },
             )
@@ -1442,7 +1341,10 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
         if (await Wakelock.enabled) {
           Wakelock.disable();
         }
-        if (_trackerVideoPlayerController != null) _trackerVideoPlayerController!.stop();
+        if(_yogaVideoController != null) _yogaVideoController!.dispose();
+        if(_yogaChewieController != null) _yogaChewieController!.dispose();
+
+        // if (_trackerVideoPlayerController != null) _trackerVideoPlayerController!.stop();
       },
       onPip: () async {
         setState(() {
@@ -1481,13 +1383,6 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(8), topRight: Radius.circular(8)),
                 color: tableHeadingBg
-                // gradient: LinearGradient(colors: [
-                //   Color(0xffE06666),
-                //   Color(0xff93C47D),
-                //   Color(0xffFFD966),
-                // ],
-                //     begin: Alignment.topLeft, end: Alignment.topRight
-                // ),
                 ),
             // child: Row(
             //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -2797,7 +2692,8 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
         videoName = e.name!;
         mealTime = e.mealTime!;
       });
-      initVideoView(e.url);
+      initChewieView(e.url);
+      // initVideoView(e.url);
     } else {
       print(e.url);
 
@@ -2917,7 +2813,8 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
             videoMp4Widget(
                 videoName: "Know more about Symptoms Tracker",
                 onTap: () {
-                  addTrackerUrlToVideoPlayer(widget.trackerVideoLink ?? '');
+                  addTrackerUrlToChewiePlayer(widget.trackerVideoLink ?? '');
+                  // addTrackerUrlToVideoPlayer(widget.trackerVideoLink ?? '');
                   setState(() {
                     showMealVideo = true;
                   });
@@ -2938,11 +2835,11 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                     if (await Wakelock.enabled == true) {
                       Wakelock.disable();
                     }
-                    if (_trackerVideoPlayerController != null) _trackerVideoPlayerController!.dispose();
+                    if(_sheetVideoController != null) _sheetVideoController!.dispose();
+                    if(_sheetChewieController != null) _sheetChewieController!.dispose();
 
-                    // await _mealPlayerController!.stopRendererScanning();
-                    // await _mealPlayerController!.dispose();
-                  }))),
+                    // if (_trackerVideoPlayerController != null) _trackerVideoPlayerController!.dispose();
+                      }))),
                 )
               ],
             )
@@ -2998,43 +2895,62 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
     );
   }
 
-  addTrackerUrlToVideoPlayer(String url) async {
+  // addTrackerUrlToVideoPlayer(String url) async {
+  //   print("url" + url);
+  //   _trackerVideoPlayerController = VlcPlayerController.network(
+  //     Uri.parse(url).toString(),
+  //     // url,
+  //     // 'http://samples.mplayerhq.hu/MPEG-4/embedded_subs/1Video_2Audio_2SUBs_timed_text_streams_.mp4',
+  //     // 'https://media.w3.org/2010/05/sintel/trailer.mp4',
+  //     hwAcc: HwAcc.auto,
+  //     autoPlay: true,
+  //     options: VlcPlayerOptions(
+  //       advanced: VlcAdvancedOptions([
+  //         VlcAdvancedOptions.networkCaching(2000),
+  //       ]),
+  //       subtitle: VlcSubtitleOptions([
+  //         VlcSubtitleOptions.boldStyle(true),
+  //         VlcSubtitleOptions.fontSize(30),
+  //         VlcSubtitleOptions.outlineColor(VlcSubtitleColor.yellow),
+  //         VlcSubtitleOptions.outlineThickness(VlcSubtitleThickness.normal),
+  //         // works only on externally added subtitles
+  //         VlcSubtitleOptions.color(VlcSubtitleColor.navy),
+  //       ]),
+  //       http: VlcHttpOptions([
+  //         VlcHttpOptions.httpReconnect(true),
+  //       ]),
+  //       rtp: VlcRtpOptions([
+  //         VlcRtpOptions.rtpOverRtsp(true),
+  //       ]),
+  //     ),
+  //   );
+  //   _trackerVideoPlayerController!.play();
+  //   if (await Wakelock.enabled == false) {
+  //     Wakelock.enable();
+  //   }
+  // }
+  addTrackerUrlToChewiePlayer(String url) async {
     print("url" + url);
-    _trackerVideoPlayerController = VlcPlayerController.network(
-      Uri.parse(url).toString(),
-      // url,
-      // 'http://samples.mplayerhq.hu/MPEG-4/embedded_subs/1Video_2Audio_2SUBs_timed_text_streams_.mp4',
-      // 'https://media.w3.org/2010/05/sintel/trailer.mp4',
-      hwAcc: HwAcc.auto,
-      autoPlay: true,
-      options: VlcPlayerOptions(
-        advanced: VlcAdvancedOptions([
-          VlcAdvancedOptions.networkCaching(2000),
-        ]),
-        subtitle: VlcSubtitleOptions([
-          VlcSubtitleOptions.boldStyle(true),
-          VlcSubtitleOptions.fontSize(30),
-          VlcSubtitleOptions.outlineColor(VlcSubtitleColor.yellow),
-          VlcSubtitleOptions.outlineThickness(VlcSubtitleThickness.normal),
-          // works only on externally added subtitles
-          VlcSubtitleOptions.color(VlcSubtitleColor.navy),
-        ]),
-        http: VlcHttpOptions([
-          VlcHttpOptions.httpReconnect(true),
-        ]),
-        rtp: VlcRtpOptions([
-          VlcRtpOptions.rtpOverRtsp(true),
-        ]),
-      ),
+    _sheetVideoController = VideoPlayerController.network(Uri.parse(url).toString());
+    _sheetChewieController = ChewieController(
+        videoPlayerController: _sheetVideoController!,
+        aspectRatio: 16/9,
+        autoInitialize: true,
+        showOptions: false,
+        autoPlay: true,
+        allowedScreenSleep: false,
+        hideControlsTimer: Duration(seconds: 3),
+        showControls: false
+
     );
-    _trackerVideoPlayerController!.play();
     if (await Wakelock.enabled == false) {
       Wakelock.enable();
     }
   }
 
+
   buildMealVideo({required VoidCallback onTap}) {
-    if (_trackerVideoPlayerController != null) {
+    if (_sheetChewieController != null) {
       return Column(
         children: [
           AspectRatio(
@@ -3043,25 +2959,12 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(5),
                 border: Border.all(color: gPrimaryColor, width: 1),
-                // boxShadow: [
-                //   BoxShadow(
-                //     color: Colors.grey.withOpacity(0.3),
-                //     blurRadius: 20,
-                //     offset: const Offset(2, 10),
-                //   ),
-                // ],
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(5),
                 child: Center(
-                    child: VlcPlayerWithControls(
-                      key: _trackerKey,
-                      controller: _trackerVideoPlayerController!,
-                      showVolume: false,
-                      showVideoProgress: false,
-                      seekButtonIconSize: 10.sp,
-                      playButtonIconSize: 14.sp,
-                      replayButtonSize: 10.sp,
+                    child: OverlayVideo(
+                      controller: _sheetChewieController!,
                     )
                 ),
               ),
@@ -3069,15 +2972,60 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
           ),
           Center(
               child: IconButton(
-            icon: Icon(
-              Icons.cancel_outlined,
-              color: gsecondaryColor,
-            ),
-            onPressed: onTap,
-          ))
+                icon: Icon(
+                  Icons.cancel_outlined,
+                  color: gsecondaryColor,
+                ),
+                onPressed: onTap,
+              ))
         ],
       );
-    } else {
+    }
+    // else if (_trackerVideoPlayerController != null) {
+    //   return Column(
+    //     children: [
+    //       AspectRatio(
+    //         aspectRatio: 16 / 9,
+    //         child: Container(
+    //           decoration: BoxDecoration(
+    //             borderRadius: BorderRadius.circular(5),
+    //             border: Border.all(color: gPrimaryColor, width: 1),
+    //             // boxShadow: [
+    //             //   BoxShadow(
+    //             //     color: Colors.grey.withOpacity(0.3),
+    //             //     blurRadius: 20,
+    //             //     offset: const Offset(2, 10),
+    //             //   ),
+    //             // ],
+    //           ),
+    //           child: ClipRRect(
+    //             borderRadius: BorderRadius.circular(5),
+    //             child: Center(
+    //                 child: VlcPlayerWithControls(
+    //                   key: _trackerKey,
+    //                   controller: _trackerVideoPlayerController!,
+    //                   showVolume: false,
+    //                   showVideoProgress: false,
+    //                   seekButtonIconSize: 10.sp,
+    //                   playButtonIconSize: 14.sp,
+    //                   replayButtonSize: 10.sp,
+    //                 )
+    //             ),
+    //           ),
+    //         ),
+    //       ),
+    //       Center(
+    //           child: IconButton(
+    //         icon: Icon(
+    //           Icons.cancel_outlined,
+    //           color: gsecondaryColor,
+    //         ),
+    //         onPressed: onTap,
+    //       ))
+    //     ],
+    //   );
+    // }
+    else {
       return SizedBox.shrink();
     }
   }

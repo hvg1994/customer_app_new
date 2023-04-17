@@ -1136,7 +1136,8 @@ class _PPDailyTasksUIState extends State<PPDailyTasksUI> {
             print('${element.isSelected}==> ${element.title}');
           });
         });
-        model.data!.doNot!.forEach((element) {
+        if(model.data!.doNot != null) {
+          model.data!.doNot!.forEach((element) {
           print(element.isSelected == 0 ? false : true);
           if(element.isSelected == 1) {
             stageMap[0].stageCompleted = true;
@@ -1149,6 +1150,7 @@ class _PPDailyTasksUIState extends State<PPDailyTasksUI> {
             itemId: element.itemId
           ));
         });
+        }
         earlyMorningSelected = earlyMorning.indexWhere((element) => element.isSelected == true);
         print("eveningSelected==>$earlyMorningSelected");
 
@@ -1192,7 +1194,8 @@ class _PPDailyTasksUIState extends State<PPDailyTasksUI> {
               itemId: element.itemId
           ));
         });
-        model.data!.doNot!.forEach((element) {
+        if(model.data!.doNot != null) {
+          model.data!.doNot!.forEach((element) {
           if(element.isSelected == 1) {
             stageMap[1].stageCompleted = true;
           }
@@ -1203,6 +1206,7 @@ class _PPDailyTasksUIState extends State<PPDailyTasksUI> {
               itemId: element.itemId
           ));
         });
+        }
         breakfastSelected = breakfast.indexWhere((element) => element.isSelected == true);
 
       }
@@ -1233,7 +1237,8 @@ class _PPDailyTasksUIState extends State<PPDailyTasksUI> {
                         itemId: element.itemId
           ));
         });
-        model.data!.doNot!.forEach((element) {
+        if(model.data!.doNot != null) {
+          model.data!.doNot!.forEach((element) {
           if(element.isSelected == 1) {
             stageMap[2].stageCompleted = true;
           }
@@ -1244,6 +1249,7 @@ class _PPDailyTasksUIState extends State<PPDailyTasksUI> {
                         itemId: element.itemId
           ));
         });
+        }
         midDaySelected = midDay.indexWhere((element) => element.isSelected == true);
       }
 
@@ -1275,7 +1281,8 @@ class _PPDailyTasksUIState extends State<PPDailyTasksUI> {
               itemId: element.itemId
           ));
         });
-        model.data!.doNot!.forEach((element) {
+        if(model.data!.doNot != null) {
+          model.data!.doNot!.forEach((element) {
           if(element.isSelected == 1) {
             stageMap[3].stageCompleted = true;
 
@@ -1287,6 +1294,7 @@ class _PPDailyTasksUIState extends State<PPDailyTasksUI> {
               itemId: element.itemId
           ));
         });
+        }
         lunchSelected = lunch.indexWhere((element) => element.isSelected == true);
       }
     }
@@ -1316,7 +1324,8 @@ class _PPDailyTasksUIState extends State<PPDailyTasksUI> {
               itemId: element.itemId
           ));
         });
-        model.data!.doNot!.forEach((element) {
+        if(model.data!.doNot != null) {
+          model.data!.doNot!.forEach((element) {
           if(element.isSelected == 1) {
             stageMap[4].stageCompleted = true;
           }
@@ -1327,6 +1336,7 @@ class _PPDailyTasksUIState extends State<PPDailyTasksUI> {
               itemId: element.itemId
           ));
         });
+        }
         eveningSelected = evening.indexWhere((element) => element.isSelected == true);
       }
     }
@@ -1357,7 +1367,8 @@ class _PPDailyTasksUIState extends State<PPDailyTasksUI> {
               itemId: element.itemId
           ));
         });
-        model.data!.doNot!.forEach((element) {
+        if(model.data!.doNot != null) {
+          model.data!.doNot!.forEach((element) {
           if(element.isSelected == 1) {
             stageMap[5].stageCompleted = true;
           }
@@ -1368,6 +1379,7 @@ class _PPDailyTasksUIState extends State<PPDailyTasksUI> {
               itemId: element.itemId
           ));
         });
+        }
         dinnerSelected = dinner.indexWhere((element) => element.isSelected == true);
       }
     }
@@ -1397,7 +1409,8 @@ class _PPDailyTasksUIState extends State<PPDailyTasksUI> {
               itemId: element.itemId
           ));
         });
-        model.data!.doNot!.forEach((element) {
+        if(model.data!.doNot != null) {
+          model.data!.doNot!.forEach((element) {
           if(element.isSelected == 1) {
             stageMap[6].stageCompleted = true;
           }
@@ -1408,6 +1421,7 @@ class _PPDailyTasksUIState extends State<PPDailyTasksUI> {
               itemId: element.itemId
           ));
         });
+        }
         postDinnerSelected = postDinner.indexWhere((element) => element.isSelected == true);
       }
     }

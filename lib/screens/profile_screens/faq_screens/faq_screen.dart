@@ -69,7 +69,8 @@ List<GridTileItems>  faqGridList = [
   GridTileItems(6,"Medicines/\nSupplements", "assets/images/faq/medicines_faq.png"),
   GridTileItems(7,"Challenges and Adherence", "assets/images/faq/challenges_faq.png"),
   GridTileItems(8,"Program\nOutcomes", "assets/images/faq/outcomes_faq.png"),
-
+  GridTileItems(9,"Move", "assets/images/faq/yoga.png"),
+  GridTileItems(10,"Calm", "assets/images/faq/calm.png"),
 ];
 
 
@@ -98,13 +99,49 @@ List<GridTileItems>  faqGridList = [
       FaqListModel model = res as FaqListModel;
       fullFaq.addAll(model.faqList!);
       print("fullFaq: ${fullFaq}");
-      faqGridList[0].faqList = [];
+      faqGridList.forEach((element) {
+        element.faqList = [];
+      });
+      // faqGridList[0].faqList = [];
+
       fullFaq.forEach((element) {
         print(element.faqType == FaqTypes.consultation.name);
         if(element.faqType == FaqTypes.consultation.name){
           faqGridList[0].faqList!.add(FaqList.fromJson(element.toJson()));
         }
+        else if(element.faqType == FaqTypes.Our_products.name){
+          faqGridList[1].faqList!.add(FaqList.fromJson(element.toJson()));
+        }
+        else if(element.faqType == FaqTypes.Program_Based.name){
+          faqGridList[2].faqList!.add(FaqList.fromJson(element.toJson()));
+        }
+        else if(element.faqType == FaqTypes.Meals_Recipe.name){
+          faqGridList[3].faqList!.add(FaqList.fromJson(element.toJson()));
+        }
+        else if(element.faqType == FaqTypes.food_prescription.name){
+          faqGridList[4].faqList!.add(FaqList.fromJson(element.toJson()));
+        }
+        else if(element.faqType == FaqTypes.Post_Program.name){
+          faqGridList[5].faqList!.add(FaqList.fromJson(element.toJson()));
+        }
+        else if(element.faqType == FaqTypes.medicines.name){
+          faqGridList[6].faqList!.add(FaqList.fromJson(element.toJson()));
+        }
+        else if(element.faqType == FaqTypes.Challenges_and_Adherence.name){
+          faqGridList[7].faqList!.add(FaqList.fromJson(element.toJson()));
+        }
+        else if(element.faqType == FaqTypes.Program_Outcomes.name){
+          faqGridList[8].faqList!.add(FaqList.fromJson(element.toJson()));
+        }
+        else if(element.faqType == FaqTypes.move.name){
+          faqGridList[9].faqList!.add(FaqList.fromJson(element.toJson()));
+        }
+        else if(element.faqType == FaqTypes.calm.name){
+          faqGridList[10].faqList!.add(FaqList.fromJson(element.toJson()));
+        }
       });
+
+      print("faqList: ${faqGridList[1].faqList}");
     }
     setState(() {
       showLoading = false;
@@ -285,7 +322,7 @@ List<GridTileItems>  faqGridList = [
         style: TextStyle(
           color: Colors.black87,
           fontSize: 12.sp,
-          fontFamily: "GothamMedium",
+          fontFamily: kFontMedium,
         ),
       ),
       // leading: Image(
@@ -777,22 +814,37 @@ List<GridTileItems>  faqGridList = [
   gridTile(GridTileItems items){
     return InkWell(
       onTap: (){
-        switch(items.id){
-          case 0:
-            print(items.faqList);
-            goToScreen(FaqDetailedList(faqList: items.faqList,));
-            break;
-          case 1:
-            break;
-          case 2:
-            break;
-          case 3:
-            break;
-          case 4:
-            break;
-          case 5:
-            break;
-        }
+        goToScreen(FaqDetailedList(faqList: items.faqList,));
+        // switch(items.id){
+        //   case 0:
+        //     print(items.faqList);
+        //     goToScreen(FaqDetailedList(faqList: items.faqList,));
+        //     break;
+        //   case 1:
+        //     items.faqList!.forEach((element) {
+        //       print("${element.question}");
+        //     });
+        //     goToScreen(FaqDetailedList(faqList: items.faqList,));
+        //     break;
+        //   case 2:
+        //     goToScreen(FaqDetailedList(faqList: items.faqList,));
+        //     break;
+        //   case 3:
+        //     goToScreen(FaqDetailedList(faqList: items.faqList,));
+        //     break;
+        //   case 4:
+        //     goToScreen(FaqDetailedList(faqList: items.faqList,));
+        //     break;
+        //   case 5:
+        //     goToScreen(FaqDetailedList(faqList: items.faqList,));
+        //     break;
+        //   case 5:
+        //     goToScreen(FaqDetailedList(faqList: items.faqList,));
+        //     break;
+        //   case 5:
+        //     goToScreen(FaqDetailedList(faqList: items.faqList,));
+        //     break;
+        // }
       },
       child: Container(
         padding: EdgeInsets.all(10),
@@ -872,14 +924,18 @@ class FAQ {
   FAQ(this.questions, this.path, this.answers, this.heading);
 }
 
+///food_prescription
+///medicines  not added
 enum FaqTypes{
   consultation,
-  products,
-  program_based,
-  meals,
+  Our_products,
+  Program_Based,
+  Meals_Recipe,
   food_prescription,
-  post_program,
+  Post_Program,
   medicines,
-  challenges,
-  program_outcomes
+  Challenges_and_Adherence,
+  Program_Outcomes,
+  move,
+  calm
 }

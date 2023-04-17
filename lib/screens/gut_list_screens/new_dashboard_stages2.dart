@@ -1,7 +1,9 @@
 import 'dart:convert';
-
+import 'package:gwc_customer/screens/prepratory%20plan/new/dos_donts_program_screen.dart';
+import 'package:video_player/video_player.dart';
+import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_vlc_player/flutter_vlc_player.dart';
+// import 'package:flutter_vlc_player/flutter_vlc_player.dart';
 import 'package:gwc_customer/model/dashboard_model/get_appointment/get_appointment_after_appointed.dart';
 import 'package:gwc_customer/model/dashboard_model/get_dashboard_data_model.dart';
 import 'package:gwc_customer/model/dashboard_model/get_program_model.dart';
@@ -50,6 +52,7 @@ import '../../repository/login_otp_repository.dart';
 import '../../services/dashboard_service/gut_service/dashboard_data_service.dart';
 import '../../services/login_otp_service.dart';
 import '../../utils/app_config.dart';
+import '../../widgets/video/normal_video.dart';
 import '../appointment_screens/consultation_screens/check_user_report_screen.dart';
 import '../appointment_screens/consultation_screens/consultation_success.dart';
 import '../appointment_screens/consultation_screens/upload_files.dart';
@@ -80,8 +83,13 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
   bool isProgressDialogOpened = true;
   BuildContext? _progressContext;
 
-  VlcPlayerController? _mealPlayerController;
-  final _key = GlobalKey<VlcPlayerWithControlsState>();
+  // vlc
+  // VlcPlayerController? _mealPlayerController;
+  // final _key = GlobalKey<VlcPlayerWithControlsState>();
+
+  //chewie
+  VideoPlayerController? videoPlayerController;
+  ChewieController ? _chewieController;
 
   String? consultationStage,
       shippingStage,
@@ -301,7 +309,7 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
         appointmentModel: jsonEncode(_getAppointmentDetailsModel),
         consultStringModel: jsonEncode(_gutDataModel),
         mrReport:
-            (consultationStage == "report_upload") ? _gutDataModel!.value : "",
+            (consultationStage == "report_upload") ? _gutDataModel?.value ?? '' : "",
         prepStage: prepratoryMealStage,
         prepMealModel: jsonEncode(_prepratoryModel),
         prepStringModel: jsonEncode(_prepProgramModel),
@@ -327,9 +335,7 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
     // print("user id: ${_pref!.getInt(AppConfig.KALEYRA_USER_ID)}");
 
     if (_pref!.getString(AppConfig.User_Name) != null ||
-        _pref!.getString(AppConfig.User_Name)!.isNotEmpty ||
-        _pref!.getString(AppConfig.KALEYRA_USER_ID) != null ||
-        _pref!.getString(AppConfig.KALEYRA_USER_ID)!.isNotEmpty) {
+        _pref!.getString(AppConfig.KALEYRA_USER_ID) != null ) {
       final profile = await UserProfileService(repository: userRepository)
           .getUserProfileService();
       if (profile.runtimeType == UserProfileModel) {
@@ -346,6 +352,9 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
         if (_pref!.getString(AppConfig.KALEYRA_ACCESS_TOKEN) == null) {
           await LoginWithOtpService(repository: loginOtpRepository)
               .getAccessToken(model1.data!.kaleyraUID!);
+        }
+        if(_pref!.getString(AppConfig.KALEYRA_CHAT_SUCCESS_ID) == null){
+          _pref!.setString(AppConfig.KALEYRA_CHAT_SUCCESS_ID, model1.data!.associatedSuccessMemberKaleyraId ?? '');
         }
         print("user profile: ${_pref!.getString(AppConfig.QB_CURRENT_USERID)}");
       }
@@ -647,7 +656,7 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
                       "assets/images/home_remedies.png",
                       width: 120,
                       height: 50,
-                      fit: BoxFit.cover,
+                      fit: BoxFit.scaleDown,
                     ),
                   ],
                 ),
@@ -737,7 +746,7 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
                                   : consultationStage == "report_upload"
                                       ? newDashboardOpenIcon
                                       : newDashboardUnLockIcon,
-                              headingText: "MEDICAL\nCONSULTAION",
+                              headingText: "MEDICAL\nCONSULTATION",
                               subText:
                                   "Basis your Evaluation details, a video consultation is the next step for our "
                                   "doctors to diagnose the root cause of you Gut Issues.",
@@ -1542,54 +1551,117 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
     }
   }
 
-  addUrlToVideoPlayer(String url) async {
+  addUrlToVideoPlayerChewie(String url) async {
     print("url" + url);
-    _mealPlayerController = VlcPlayerController.network(
-      url,
-      // url,
-      // 'http://samples.mplayerhq.hu/MPEG-4/embedded_subs/1Video_2Audio_2SUBs_timed_text_streams_.mp4',
-      // 'https://media.w3.org/2010/05/sintel/trailer.mp4',
-      hwAcc: HwAcc.auto,
-      autoPlay: true,
-      options: VlcPlayerOptions(
-        advanced: VlcAdvancedOptions([
-          VlcAdvancedOptions.networkCaching(2000),
-        ]),
-        subtitle: VlcSubtitleOptions([
-          VlcSubtitleOptions.boldStyle(true),
-          VlcSubtitleOptions.fontSize(30),
-          VlcSubtitleOptions.outlineColor(VlcSubtitleColor.yellow),
-          VlcSubtitleOptions.outlineThickness(VlcSubtitleThickness.normal),
-          // works only on externally added subtitles
-          VlcSubtitleOptions.color(VlcSubtitleColor.navy),
-        ]),
-        http: VlcHttpOptions([
-          VlcHttpOptions.httpReconnect(true),
-        ]),
-        rtp: VlcRtpOptions([
-          VlcRtpOptions.rtpOverRtsp(true),
-        ]),
-      ),
+    videoPlayerController = VideoPlayerController.network(Uri.parse(url).toString());
+    _chewieController = ChewieController(
+        videoPlayerController: videoPlayerController!,
+        aspectRatio: 16/9,
+        autoInitialize: true,
+        showOptions: false,
+        autoPlay: true,
+        // customControls: Center(
+        //   child: FittedBox(
+        //     child: Row(
+        //       crossAxisAlignment: CrossAxisAlignment.center,
+        //       mainAxisAlignment: MainAxisAlignment.spaceAround,
+        //       children: [
+        //         IconButton(
+        //           onPressed: () => _seekRelative(_seekStepBackward),
+        //           color: Colors.white,
+        //           iconSize: 16,
+        //           icon: Icon(Icons.replay_10),
+        //         ),
+        //         IconButton(
+        //           onPressed: (){
+        //             if(videoPlayerController!.value.isPlaying){
+        //               videoPlayerController!.pause();
+        //             }
+        //             else{
+        //               videoPlayerController!.play();
+        //             }
+        //             setState(() {
+        //
+        //             });
+        //           },
+        //           color: Colors.white,
+        //           iconSize: 16,
+        //           icon: (videoPlayerController!.value.isPlaying) ? Icon(Icons.pause)  : Icon(Icons.play_arrow),
+        //         ),
+        //         IconButton(
+        //           onPressed: () => _seekRelative(_seekStepForward),
+        //           color: Colors.white,
+        //           iconSize: 16,
+        //           icon: Icon(Icons.forward_10),
+        //         ),
+        //       ],
+        //     ),
+        //   ),
+        // ),
+        hideControlsTimer: Duration(seconds: 3),
+        showControls: false
+
     );
     if (!await Wakelock.enabled) {
       Wakelock.enable();
     }
   }
+  // addUrlToVideoPlayer(String url) async {
+  //   print("url" + url);
+  //   _mealPlayerController = VlcPlayerController.network(
+  //     url,
+  //     // url,
+  //     // 'http://samples.mplayerhq.hu/MPEG-4/embedded_subs/1Video_2Audio_2SUBs_timed_text_streams_.mp4',
+  //     // 'https://media.w3.org/2010/05/sintel/trailer.mp4',
+  //     hwAcc: HwAcc.auto,
+  //     autoPlay: true,
+  //     options: VlcPlayerOptions(
+  //       advanced: VlcAdvancedOptions([
+  //         VlcAdvancedOptions.networkCaching(2000),
+  //       ]),
+  //       subtitle: VlcSubtitleOptions([
+  //         VlcSubtitleOptions.boldStyle(true),
+  //         VlcSubtitleOptions.fontSize(30),
+  //         VlcSubtitleOptions.outlineColor(VlcSubtitleColor.yellow),
+  //         VlcSubtitleOptions.outlineThickness(VlcSubtitleThickness.normal),
+  //         // works only on externally added subtitles
+  //         VlcSubtitleOptions.color(VlcSubtitleColor.navy),
+  //       ]),
+  //       http: VlcHttpOptions([
+  //         VlcHttpOptions.httpReconnect(true),
+  //       ]),
+  //       rtp: VlcRtpOptions([
+  //         VlcRtpOptions.rtpOverRtsp(true),
+  //       ]),
+  //     ),
+  //   );
+  //   if (!await Wakelock.enabled) {
+  //     Wakelock.enable();
+  //   }
+  // }
 
   disposePlayer() async {
-    if (_mealPlayerController != null) {
-      _mealPlayerController!.dispose();
-    }
+    if(_chewieController != null) _chewieController!.dispose();
+    if(videoPlayerController != null) videoPlayerController!.dispose();
+
+    // if (_mealPlayerController != null) {
+    //   _mealPlayerController!.dispose();
+    // }
     if (await Wakelock.enabled) {
       Wakelock.disable();
     }
+
+    if(videoPlayerController != null) videoPlayerController!.dispose();
+    if(_chewieController != null) _chewieController!.dispose();
+
   }
 
   mealReadySheet() {
-    addUrlToVideoPlayer(_gutShipDataModel?.value ?? '');
+    // addUrlToVideoPlayer(_gutShipDataModel?.value ?? '');
+    addUrlToVideoPlayerChewie(_gutShipDataModel?.value ?? '');
     return AppConfig().showSheet(
         context,
-        Column(
+        WillPopScope(child: Column(
           children: [
             Text(
               'Hooray!\nYour food prescription is ready',
@@ -1641,19 +1713,19 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
                   onTap: (isPressed)
                       ? () {}
                       : () {
-                          Navigator.pop(context);
-                          sendApproveStatus('yes');
-                          setState(() {
-                            isShown = false;
-                          });
-                          disposePlayer();
-                          if (isMealProgressOpened) {
-                            Navigator.pop(context);
-                          }
-                        },
+                    Navigator.pop(context);
+                    sendApproveStatus('yes');
+                    setState(() {
+                      isShown = false;
+                    });
+                    disposePlayer();
+                    if (isMealProgressOpened) {
+                      Navigator.pop(context);
+                    }
+                  },
                   child: Container(
                     padding:
-                        EdgeInsets.symmetric(vertical: 1.5.h, horizontal: 12.w),
+                    EdgeInsets.symmetric(vertical: 1.5.h, horizontal: 12.w),
                     decoration: BoxDecoration(
                         color: gsecondaryColor,
                         border: Border.all(color: kLineColor, width: 0.5),
@@ -1673,19 +1745,19 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
                   onTap: (isPressed)
                       ? () {}
                       : () {
-                          Navigator.pop(context);
-                          sendApproveStatus('no');
-                          setState(() {
-                            isShown = false;
-                          });
-                          disposePlayer();
-                          if (isMealProgressOpened) {
-                            Navigator.pop(context);
-                          }
-                        },
+                    Navigator.pop(context);
+                    sendApproveStatus('no');
+                    setState(() {
+                      isShown = false;
+                    });
+                    disposePlayer();
+                    if (isMealProgressOpened) {
+                      Navigator.pop(context);
+                    }
+                  },
                   child: Container(
                     padding:
-                        EdgeInsets.symmetric(vertical: 1.5.h, horizontal: 12.w),
+                    EdgeInsets.symmetric(vertical: 1.5.h, horizontal: 12.w),
                     decoration: BoxDecoration(
                         color: gWhiteColor,
                         border: Border.all(color: kLineColor, width: 0.5),
@@ -1706,12 +1778,15 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
               height: 5.h,
             ),
           ],
-        ),
+        ), onWillPop: () async{
+          disposePlayer();
+          return Future.value(true);
+        }),
         bottomSheetHeight: 75.h);
   }
 
   buildMealVideo() {
-    if (_mealPlayerController != null) {
+    if (_chewieController != null) {
       return AspectRatio(
         aspectRatio: 16 / 9,
         child: Container(
@@ -1729,21 +1804,10 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(5),
             child: Center(
-              child: VlcPlayerWithControls(
-                key: _key,
-                controller: _mealPlayerController!,
-                showVolume: false,
-                showVideoProgress: false,
-                seekButtonIconSize: 10.sp,
-                playButtonIconSize: 14.sp,
-                replayButtonSize: 10.sp,
+              child: OverlayVideo(
+                isControlsVisible: false,
+                controller: _chewieController!,
               ),
-              // child: VlcPlayer(
-              //   controller: _videoPlayerController!,
-              //   aspectRatio: 16 / 9,
-              //   virtualDisplay: false,
-              //   placeholder: Center(child: CircularProgressIndicator()),
-              // ),
             ),
           ),
           // child: Stack(
@@ -1764,7 +1828,62 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
           // ),
         ),
       );
-    } else {
+    }
+    // else if (_mealPlayerController != null) {
+    //   return AspectRatio(
+    //     aspectRatio: 16 / 9,
+    //     child: Container(
+    //       decoration: BoxDecoration(
+    //         borderRadius: BorderRadius.circular(5),
+    //         border: Border.all(color: gPrimaryColor, width: 1),
+    //         // boxShadow: [
+    //         //   BoxShadow(
+    //         //     color: Colors.grey.withOpacity(0.3),
+    //         //     blurRadius: 20,
+    //         //     offset: const Offset(2, 10),
+    //         //   ),
+    //         // ],
+    //       ),
+    //       child: ClipRRect(
+    //         borderRadius: BorderRadius.circular(5),
+    //         child: Center(
+    //           child: VlcPlayerWithControls(
+    //             key: _key,
+    //             controller: _mealPlayerController!,
+    //             showVolume: false,
+    //             showVideoProgress: false,
+    //             seekButtonIconSize: 10.sp,
+    //             playButtonIconSize: 14.sp,
+    //             replayButtonSize: 10.sp,
+    //           ),
+    //           // child: VlcPlayer(
+    //           //   controller: _videoPlayerController!,
+    //           //   aspectRatio: 16 / 9,
+    //           //   virtualDisplay: false,
+    //           //   placeholder: Center(child: CircularProgressIndicator()),
+    //           // ),
+    //         ),
+    //       ),
+    //       // child: Stack(
+    //       //   children: <Widget>[
+    //       //     ClipRRect(
+    //       //       borderRadius: BorderRadius.circular(5),
+    //       //       child: Center(
+    //       //         child: VlcPlayer(
+    //       //           controller: _videoPlayerController!,
+    //       //           aspectRatio: 16 / 9,
+    //       //           virtualDisplay: false,
+    //       //           placeholder: Center(child: CircularProgressIndicator()),
+    //       //         ),
+    //       //       ),
+    //       //     ),
+    //       //     ControlsOverlay(controller: _videoPlayerController,)
+    //       //   ],
+    //       // ),
+    //     ),
+    //   );
+    // }
+    else {
       return SizedBox.shrink();
     }
   }
@@ -1774,80 +1893,6 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
       httpClient: http.Client(),
     ),
   );
-
-  void showConsultationScreenFromStages(status) {
-    print(status);
-    switch (status) {
-      case 'evaluation_done':
-        goToScreen(DoctorCalenderTimeScreen());
-        break;
-      case 'pending':
-        goToScreen(DoctorCalenderTimeScreen());
-        break;
-      case 'consultation_reschedule':
-        final model = _getAppointmentDetailsModel;
-        String? _doctorName;
-        model!.value!.teamMember!.forEach((element) {
-          if (element.user!.roleId == "2") {
-            _doctorName = 'Dr. ${element.user!.name}' ?? '';
-          }
-        });
-
-        // add this before calling calendertimescreen for reschedule
-        // _pref!.setString(AppConfig.appointmentId , '');
-        goToScreen(DoctorCalenderTimeScreen(
-            isReschedule: true,
-            prevBookingDate: model!.value!.appointmentDate,
-            prevBookingTime: model.value!.appointmentStartTime,
-            doctorDetails: model.value!.doctor,
-            doctorName: _doctorName));
-        break;
-      case 'appointment_booked':
-        final model = _getAppointmentDetailsModel;
-        _pref!.setString(
-            AppConfig.appointmentId, model?.value?.id.toString() ?? '');
-        goToScreen(DoctorSlotsDetailsScreen(
-          bookingDate: model!.value!.date!,
-          bookingTime: model.value!.slotStartTime!,
-          dashboardValueMap: model.value!.toJson(),
-          isFromDashboard: true,
-        ));
-
-        break;
-      case 'consultation_done':
-        goToScreen(const ConsultationSuccess());
-        break;
-      case 'consultation_accepted':
-        goToScreen(const ConsultationSuccess());
-        break;
-      case 'consultation_waiting':
-        goToScreen(UploadFiles());
-        break;
-      case 'check_user_reports':
-        // print(_gutDataModel!.value);
-        goToScreen(CheckUserReportsScreen());
-        break;
-      case 'consultation_rejected':
-        print(_gutDataModel?.rejectedCase?.reason);
-        goToScreen(ConsultationRejected(
-          reason: _gutDataModel?.rejectedCase?.reason ?? '',
-        ));
-        break;
-      case 'report_upload':
-        // need to show consultation completed screen, "You can now View Your Medical Report !!"
-        print(_gutDataModel!.toJson());
-        print(_gutDataModel!.value);
-        // goToScreen(ConsultationRejected(reason: '',));
-
-        goToScreen(ConsultationSuccess());
-
-        // goToScreen(DoctorSlotsDetailsScreen(bookingDate: "2023-02-21", bookingTime: "11:34:00", dashboardValueMap: {},isFromDashboard: true,));
-
-        // goToScreen(DoctorCalenderTimeScreen(isReschedule: true,prevBookingTime: '23-09-2022', prevBookingDate: '10AM',));
-        // goToScreen(MedicalReportScreen(pdfLink: _gutDataModel!.value!,));
-        break;
-    }
-  }
 
   goToScreen(screenName) {
     print(screenName);
@@ -2296,12 +2341,19 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
         prepBtn2Name = "Track Kit";
         showPrepLockIcon = false;
 
-        bg4 = currentBgColor;
-        mealBtn1Color = newDashboardGreenButtonColor;
+        if(_prepratoryModel!.value!.isPrepCompleted != null && _prepratoryModel!.value!.isPrepCompleted == true){
+          mealBtn1Color = newDashboardGreenButtonColor;
+          showMealLockIcon = true;
+          bg4 = currentBgColor;
+        }
+        else{
+          mealBtn2Color = newDashboardLightGreyButtonColor;
+          showMealLockIcon = false;
+          bg4 = lockedBgColor;
+        }
         mealBtn1Name = "View Plan";
         mealBtn2Color = newDashboardLightGreyButtonColor;
         mealBtn2Name = "Transition";
-        showMealLockIcon = true;
 
         break;
       case 'trans_program':
@@ -2377,7 +2429,14 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
 
         postBtn1Color = newDashboardGreenButtonColor;
         postBtn1Name = "Feedback";
-        postBtn2Color = newDashboardGreenButtonColor;
+        if(_gutPostProgramModel!.isProgramFeedbackSubmitted != null){
+          if(_gutPostProgramModel!.isProgramFeedbackSubmitted == "0"){
+            postBtn2Color = newDashboardLightGreyButtonColor;
+          }
+          else{
+            postBtn2Color = newDashboardGreenButtonColor;
+          }
+        }
         postBtn2Name = "Schedule";
         postBtn3Color = newDashboardLightGreyButtonColor;
         postBtn3Name = "Join";
@@ -2557,11 +2616,12 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
             case 'consultation_reschedule':
               final model = _getAppointmentDetailsModel;
 
+              print(model!.value!.toJson());
               // add this before calling calendertimescreen for reschedule
               // _pref!.setString(AppConfig.appointmentId , '');
               goToScreen(DoctorCalenderTimeScreen(
                 isReschedule: true,
-                prevBookingDate: model!.value!.appointmentDate,
+                prevBookingDate: model!.value!.date,
                 prevBookingTime: model.value!.appointmentStartTime,
               ));
               break;
@@ -2659,7 +2719,8 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
         break;
       case StageType.normal_meal:
         if (buttonId == 1) {
-          if (programOptionStage != null && programOptionStage!.isNotEmpty) {
+          if (programOptionStage != null && programOptionStage!.isNotEmpty
+              && (_prepratoryModel!.value!.isPrepCompleted != null && _prepratoryModel!.value!.isPrepCompleted == true)) {
             print("called");
             showProgramScreen();
           } else {
@@ -2703,10 +2764,12 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
               MaterialPageRoute(
                 builder: (context) => ProgramPlanScreen(
                   from: ProgramMealType.prepratory.name,
+                  videoLink: _prepratoryModel?.value?.startVideo ?? "",
                 ),
               ),
             )
-            .then((value) => reloadUI());
+            .then((value) => reloadUI()
+        );
       }
       else {
         Navigator.push(
@@ -2732,11 +2795,13 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
               MaterialPageRoute(
                 builder: (context) => ProgramPlanScreen(
                   from: ProgramMealType.transition.name,
+                  videoLink: _transModel?.value?.startVideo ?? "",
                 ),
               ),
             )
             .then((value) => reloadUI());
-      } else {
+      }
+      else {
         print(_transModel!.value!.toJson());
         Navigator.push(
           context,

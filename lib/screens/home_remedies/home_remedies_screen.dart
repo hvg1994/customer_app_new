@@ -59,11 +59,11 @@ class _HomeRemediesScreenState extends State<HomeRemediesScreen> {
                         EdgeInsets.only(right: 0.w, top: 1.h, bottom: 1.h),
                     // indicatorPadding: EdgeInsets.only(right: 5.w, left: 5.w),
                     unselectedLabelStyle: TextStyle(
-                        fontFamily: "GothamBook",
+                        fontFamily: kFontBook,
                         color: gHintTextColor,
                         fontSize: 9.sp),
                     labelStyle: TextStyle(
-                        fontFamily: "GothamMedium",
+                        fontFamily: kFontMedium,
                         color: gBlackColor,
                         fontSize: 11.sp),
                     tabs: const [
@@ -150,11 +150,16 @@ class _HomeRemediesScreenState extends State<HomeRemediesScreen> {
                                           ),
                                         ),
                                       ),
-                                      child: Image(
+                                      child: CachedNetworkImage(
                                         height: 15.h,
                                         width: 30.w,
-                                        image: CachedNetworkImageProvider(
-                                            "${Uri.parse(problemList[index].thumbnail)}"),
+                                        imageUrl: "${Uri.parse(problemList[index].thumbnail)}",
+                                        placeholder: (_,__){
+                                          return Image.asset("assets/images/placeholder.png");
+                                        },
+                                        errorWidget: (_,__, ___){
+                                          return Image.asset("assets/images/placeholder.png");
+                                        },
                                       ),
                                     ),
                                     SizedBox(height: 1.h),
@@ -240,11 +245,16 @@ class _HomeRemediesScreenState extends State<HomeRemediesScreen> {
                                         backgroundColor: getColor(Colors.white,
                                             newDashboardGreenButtonColor),
                                       ),
-                                      child: Image(
+                                      child: CachedNetworkImage(
                                         height: 12.h,
                                         width: 23.w,
-                                        image: CachedNetworkImageProvider(
-                                            problemList[index].thumbnail),
+                                        imageUrl: "${Uri.parse(problemList[index].thumbnail)}",
+                                        placeholder: (_,__){
+                                          return Image.asset("assets/images/placeholder.png");
+                                        },
+                                        errorWidget: (_,__, ___){
+                                          return Image.asset("assets/images/placeholder.png");
+                                        },
                                       ),
                                     ),
                                     // GestureDetector(

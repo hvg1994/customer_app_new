@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_vlc_player/flutter_vlc_player.dart';
 import 'package:gwc_customer/model/dashboard_model/get_appointment/get_appointment_after_appointed.dart';
 import 'package:gwc_customer/model/dashboard_model/get_dashboard_data_model.dart';
 import 'package:gwc_customer/model/dashboard_model/get_program_model.dart';
@@ -39,6 +38,7 @@ import 'package:wakelock/wakelock.dart';
 import '../../model/error_model.dart';
 import '../../utils/app_config.dart';
 import '../../widgets/constants.dart';
+import '../../widgets/video/normal_video.dart';
 import '../../widgets/widgets.dart';
 import '../appointment_screens/consultation_screens/upload_files.dart';
 import '../help_screens/help_screen.dart';
@@ -48,6 +48,8 @@ import '../prepratory plan/schedule_screen.dart';
 import '../profile_screens/call_support_method.dart';
 import 'package:http/http.dart' as http;
 import '../../repository/api_service.dart';
+import 'package:chewie/chewie.dart';
+import 'package:video_player/video_player.dart';
 
 class NewDashboardLevelsScreen extends StatefulWidget {
   const NewDashboardLevelsScreen({Key? key}) : super(key: key);
@@ -211,11 +213,8 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
 
   late GutDataService _gutDataService;
 
-  VlcPlayerController? _mealPlayerController;
-  final _key = GlobalKey<VlcPlayerWithControlsState>();
-
-  VlcPlayerController? _aboutHomeStageController;
-  final _aboutHomeStageKey = GlobalKey<VlcPlayerWithControlsState>();
+  VideoPlayerController? videoPlayerController1, videoPlayerController2;
+  ChewieController ? _mealPlayerController, _aboutHomeStageController;
 
   @override
   void initState() {
@@ -743,39 +742,98 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
     });
   }
 
-  addUrlToVideoWhenAboutClick(String url) async {
+  addUrlToVideoWhenAboutClickChewie(String url) async {
     print("url" + url);
-    _aboutHomeStageController = VlcPlayerController.network(
-      Uri.parse(url).toString(),
-      // url,
-      // 'http://samples.mplayerhq.hu/MPEG-4/embedded_subs/1Video_2Audio_2SUBs_timed_text_streams_.mp4',
-      // 'https://media.w3.org/2010/05/sintel/trailer.mp4',
-      hwAcc: HwAcc.auto,
-      autoPlay: true,
-      options: VlcPlayerOptions(
-        advanced: VlcAdvancedOptions([
-          VlcAdvancedOptions.networkCaching(2000),
-        ]),
-        subtitle: VlcSubtitleOptions([
-          VlcSubtitleOptions.boldStyle(true),
-          VlcSubtitleOptions.fontSize(30),
-          VlcSubtitleOptions.outlineColor(VlcSubtitleColor.yellow),
-          VlcSubtitleOptions.outlineThickness(VlcSubtitleThickness.normal),
-          // works only on externally added subtitles
-          VlcSubtitleOptions.color(VlcSubtitleColor.navy),
-        ]),
-        http: VlcHttpOptions([
-          VlcHttpOptions.httpReconnect(true),
-        ]),
-        rtp: VlcRtpOptions([
-          VlcRtpOptions.rtpOverRtsp(true),
-        ]),
-      ),
+    videoPlayerController2 = VideoPlayerController.network(Uri.parse(url).toString());
+    _aboutHomeStageController = ChewieController(
+        videoPlayerController: videoPlayerController2!,
+        aspectRatio: 16/9,
+        autoInitialize: true,
+        showOptions: false,
+        autoPlay: true,
+        // customControls: Center(
+        //   child: FittedBox(
+        //     child: Row(
+        //       crossAxisAlignment: CrossAxisAlignment.center,
+        //       mainAxisAlignment: MainAxisAlignment.spaceAround,
+        //       children: [
+        //         IconButton(
+        //           onPressed: () => _seekRelative(_seekStepBackward),
+        //           color: Colors.white,
+        //           iconSize: 16,
+        //           icon: Icon(Icons.replay_10),
+        //         ),
+        //         IconButton(
+        //           onPressed: (){
+        //             if(videoPlayerController!.value.isPlaying){
+        //               videoPlayerController!.pause();
+        //             }
+        //             else{
+        //               videoPlayerController!.play();
+        //             }
+        //             setState(() {
+        //
+        //             });
+        //           },
+        //           color: Colors.white,
+        //           iconSize: 16,
+        //           icon: (videoPlayerController!.value.isPlaying) ? Icon(Icons.pause)  : Icon(Icons.play_arrow),
+        //         ),
+        //         IconButton(
+        //           onPressed: () => _seekRelative(_seekStepForward),
+        //           color: Colors.white,
+        //           iconSize: 16,
+        //           icon: Icon(Icons.forward_10),
+        //         ),
+        //       ],
+        //     ),
+        //   ),
+        // ),
+        hideControlsTimer: Duration(seconds: 3),
+        showControls: false
+
     );
     if (!await Wakelock.enabled) {
       Wakelock.enable();
     }
   }
+
+
+  // VlcPlayerController? _aboutHomeStageController;
+  // final _aboutHomeStageKey = GlobalKey<VlcPlayerWithControlsState>();
+  // addUrlToVideoWhenAboutClick(String url) async {
+  //   print("url" + url);
+  //   _aboutHomeStageController = VlcPlayerController.network(
+  //     Uri.parse(url).toString(),
+  //     // url,
+  //     // 'http://samples.mplayerhq.hu/MPEG-4/embedded_subs/1Video_2Audio_2SUBs_timed_text_streams_.mp4',
+  //     // 'https://media.w3.org/2010/05/sintel/trailer.mp4',
+  //     hwAcc: HwAcc.auto,
+  //     autoPlay: true,
+  //     options: VlcPlayerOptions(
+  //       advanced: VlcAdvancedOptions([
+  //         VlcAdvancedOptions.networkCaching(2000),
+  //       ]),
+  //       subtitle: VlcSubtitleOptions([
+  //         VlcSubtitleOptions.boldStyle(true),
+  //         VlcSubtitleOptions.fontSize(30),
+  //         VlcSubtitleOptions.outlineColor(VlcSubtitleColor.yellow),
+  //         VlcSubtitleOptions.outlineThickness(VlcSubtitleThickness.normal),
+  //         // works only on externally added subtitles
+  //         VlcSubtitleOptions.color(VlcSubtitleColor.navy),
+  //       ]),
+  //       http: VlcHttpOptions([
+  //         VlcHttpOptions.httpReconnect(true),
+  //       ]),
+  //       rtp: VlcRtpOptions([
+  //         VlcRtpOptions.rtpOverRtsp(true),
+  //       ]),
+  //     ),
+  //   );
+  //   if (!await Wakelock.enabled) {
+  //     Wakelock.enable();
+  //   }
+  // }
 
   whenAboutClickSheet() {
     return AppConfig().showSheet(
@@ -816,20 +874,17 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(5),
             child: Center(
-              child: VlcPlayerWithControls(
-                key: _aboutHomeStageKey,
-                controller: _aboutHomeStageController!,
-                showVolume: false,
-                showVideoProgress: false,
-                seekButtonIconSize: 10.sp,
-                playButtonIconSize: 14.sp,
-                replayButtonSize: 10.sp,
-              ),
-              // child: VlcPlayer(
-              //   controller: _videoPlayerController!,
-              //   aspectRatio: 16 / 9,
-              //   virtualDisplay: false,
-              //   placeholder: Center(child: CircularProgressIndicator()),
+                child: OverlayVideo(
+                  controller: _aboutHomeStageController!,
+                )
+              // child: VlcPlayerWithControls(
+              //   key: _aboutHomeStageKey,
+              //   controller: _aboutHomeStageController!,
+              //   showVolume: false,
+              //   showVideoProgress: false,
+              //   seekButtonIconSize: 10.sp,
+              //   playButtonIconSize: 14.sp,
+              //   replayButtonSize: 10.sp,
               // ),
             ),
           ),
@@ -840,54 +895,116 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
     }
   }
 
-  addUrlToVideoPlayer(String url) async {
+  addUrlToVideoPlayerChewie(String url) async {
     print("url" + url);
-    _mealPlayerController = VlcPlayerController.network(
-      url,
-      // url,
-      // 'http://samples.mplayerhq.hu/MPEG-4/embedded_subs/1Video_2Audio_2SUBs_timed_text_streams_.mp4',
-      // 'https://media.w3.org/2010/05/sintel/trailer.mp4',
-      hwAcc: HwAcc.auto,
-      autoPlay: true,
-      options: VlcPlayerOptions(
-        advanced: VlcAdvancedOptions([
-          VlcAdvancedOptions.networkCaching(2000),
-        ]),
-        subtitle: VlcSubtitleOptions([
-          VlcSubtitleOptions.boldStyle(true),
-          VlcSubtitleOptions.fontSize(30),
-          VlcSubtitleOptions.outlineColor(VlcSubtitleColor.yellow),
-          VlcSubtitleOptions.outlineThickness(VlcSubtitleThickness.normal),
-          // works only on externally added subtitles
-          VlcSubtitleOptions.color(VlcSubtitleColor.navy),
-        ]),
-        http: VlcHttpOptions([
-          VlcHttpOptions.httpReconnect(true),
-        ]),
-        rtp: VlcRtpOptions([
-          VlcRtpOptions.rtpOverRtsp(true),
-        ]),
-      ),
+    videoPlayerController1 = VideoPlayerController.network(Uri.parse(url).toString());
+    _mealPlayerController = ChewieController(
+        videoPlayerController: videoPlayerController1!,
+        aspectRatio: 16/9,
+        autoInitialize: true,
+        showOptions: false,
+        autoPlay: true,
+        // customControls: Center(
+        //   child: FittedBox(
+        //     child: Row(
+        //       crossAxisAlignment: CrossAxisAlignment.center,
+        //       mainAxisAlignment: MainAxisAlignment.spaceAround,
+        //       children: [
+        //         IconButton(
+        //           onPressed: () => _seekRelative(_seekStepBackward),
+        //           color: Colors.white,
+        //           iconSize: 16,
+        //           icon: Icon(Icons.replay_10),
+        //         ),
+        //         IconButton(
+        //           onPressed: (){
+        //             if(videoPlayerController!.value.isPlaying){
+        //               videoPlayerController!.pause();
+        //             }
+        //             else{
+        //               videoPlayerController!.play();
+        //             }
+        //             setState(() {
+        //
+        //             });
+        //           },
+        //           color: Colors.white,
+        //           iconSize: 16,
+        //           icon: (videoPlayerController!.value.isPlaying) ? Icon(Icons.pause)  : Icon(Icons.play_arrow),
+        //         ),
+        //         IconButton(
+        //           onPressed: () => _seekRelative(_seekStepForward),
+        //           color: Colors.white,
+        //           iconSize: 16,
+        //           icon: Icon(Icons.forward_10),
+        //         ),
+        //       ],
+        //     ),
+        //   ),
+        // ),
+        hideControlsTimer: Duration(seconds: 3),
+        showControls: false
+
     );
     if (!await Wakelock.enabled) {
       Wakelock.enable();
     }
   }
 
+
+  // VlcPlayerController? _mealPlayerController;
+  // final _key = GlobalKey<VlcPlayerWithControlsState>();
+  // addUrlToVideoPlayer(String url) async {
+  //   print("url" + url);
+  //   _mealPlayerController = VlcPlayerController.network(
+  //     url,
+  //     // url,
+  //     // 'http://samples.mplayerhq.hu/MPEG-4/embedded_subs/1Video_2Audio_2SUBs_timed_text_streams_.mp4',
+  //     // 'https://media.w3.org/2010/05/sintel/trailer.mp4',
+  //     hwAcc: HwAcc.auto,
+  //     autoPlay: true,
+  //     options: VlcPlayerOptions(
+  //       advanced: VlcAdvancedOptions([
+  //         VlcAdvancedOptions.networkCaching(2000),
+  //       ]),
+  //       subtitle: VlcSubtitleOptions([
+  //         VlcSubtitleOptions.boldStyle(true),
+  //         VlcSubtitleOptions.fontSize(30),
+  //         VlcSubtitleOptions.outlineColor(VlcSubtitleColor.yellow),
+  //         VlcSubtitleOptions.outlineThickness(VlcSubtitleThickness.normal),
+  //         // works only on externally added subtitles
+  //         VlcSubtitleOptions.color(VlcSubtitleColor.navy),
+  //       ]),
+  //       http: VlcHttpOptions([
+  //         VlcHttpOptions.httpReconnect(true),
+  //       ]),
+  //       rtp: VlcRtpOptions([
+  //         VlcRtpOptions.rtpOverRtsp(true),
+  //       ]),
+  //     ),
+  //   );
+  //   if (!await Wakelock.enabled) {
+  //     Wakelock.enable();
+  //   }
+  // }
+
   disposePlayer() async {
-    if (_mealPlayerController != null) {
-      _mealPlayerController!.dispose();
-    }
-    if (_aboutHomeStageController != null) {
-      _aboutHomeStageController!.dispose();
-    }
+    if(_mealPlayerController != null) _mealPlayerController!.dispose();
+    if(videoPlayerController1 != null) videoPlayerController1!.dispose();
+
+    // if (_mealPlayerController != null) {
+    //   _mealPlayerController!.dispose();
+    // }
+    // if (_aboutHomeStageController != null) {
+    //   _aboutHomeStageController!.dispose();
+    // }
     if (await Wakelock.enabled) {
       Wakelock.disable();
     }
   }
 
   mealReadySheet() {
-    addUrlToVideoPlayer(_gutShipDataModel?.value ?? '');
+    addUrlToVideoPlayerChewie(_gutShipDataModel?.value ?? '');
     return AppConfig().showSheet(
         context,
         Column(
@@ -1030,20 +1147,17 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(5),
             child: Center(
-              child: VlcPlayerWithControls(
-                key: _key,
+              child: OverlayVideo(
                 controller: _mealPlayerController!,
-                showVolume: false,
-                showVideoProgress: false,
-                seekButtonIconSize: 10.sp,
-                playButtonIconSize: 14.sp,
-                replayButtonSize: 10.sp,
-              ),
-              // child: VlcPlayer(
-              //   controller: _videoPlayerController!,
-              //   aspectRatio: 16 / 9,
-              //   virtualDisplay: false,
-              //   placeholder: Center(child: CircularProgressIndicator()),
+              )
+              // child: VlcPlayerWithControls(
+              //   key: _key,
+              //   controller: _mealPlayerController!,
+              //   showVolume: false,
+              //   showVideoProgress: false,
+              //   seekButtonIconSize: 10.sp,
+              //   playButtonIconSize: 14.sp,
+              //   replayButtonSize: 10.sp,
               // ),
             ),
           ),
@@ -1678,7 +1792,7 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
                                     _getDashboardDataModel!.evaluationVideo;
                                 print(link);
                                 if (link != null && link.isNotEmpty) {
-                                  addUrlToVideoWhenAboutClick(link);
+                                  addUrlToVideoWhenAboutClickChewie(link);
                                   whenAboutClickSheet();
                                 } else {
                                   AppConfig().showSnackbar(
@@ -1690,7 +1804,7 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
                                 final link =
                                     _getDashboardDataModel!.consultationVideo;
                                 if (link != null && link.isNotEmpty) {
-                                  addUrlToVideoWhenAboutClick(link);
+                                  addUrlToVideoWhenAboutClickChewie(link);
                                   whenAboutClickSheet();
                                 } else {
                                   AppConfig().showSnackbar(
@@ -1704,7 +1818,7 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
                                 print(link == null);
                                 print(link!.isEmpty);
                                 if (link != null && link.isNotEmpty) {
-                                  addUrlToVideoWhenAboutClick(link);
+                                  addUrlToVideoWhenAboutClickChewie(link);
                                   whenAboutClickSheet();
                                 } else {
                                   AppConfig().showSnackbar(
@@ -1717,7 +1831,7 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
                                     _getDashboardDataModel!.programVideo;
                                 print("programVideo: $link");
                                 if (link != null && link.isNotEmpty) {
-                                  addUrlToVideoWhenAboutClick(link);
+                                  addUrlToVideoWhenAboutClickChewie(link);
                                   whenAboutClickSheet();
                                 } else {
                                   AppConfig().showSnackbar(
@@ -1731,7 +1845,7 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
                                 print(link == null);
                                 print(link!.isEmpty);
                                 if (link != null && link.isNotEmpty) {
-                                  addUrlToVideoWhenAboutClick(link);
+                                  addUrlToVideoWhenAboutClickChewie(link);
                                   whenAboutClickSheet();
                                 } else {
                                   AppConfig().showSnackbar(
