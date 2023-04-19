@@ -1058,6 +1058,7 @@ class _TrackerUIState extends State<TrackerUI> {
           ),
           buildLabelTextField('Please let us know if you notice any other signs or have any other worries. If none, enter "No."', fontSize: questionFont),
           TextFormField(
+            textCapitalization: TextCapitalization.words,
             controller: worriesController,
             cursorColor: kPrimaryColor,
             validator: (value) {
@@ -1078,6 +1079,7 @@ class _TrackerUIState extends State<TrackerUI> {
           ),
           buildLabelTextField('Did you eat something other than what was on your meal plan? If "Yes", please give more information? If not, type "No."', fontSize: questionFont),
           TextFormField(
+            textCapitalization: TextCapitalization.words,
             controller: eatSomethingController,
             cursorColor: kPrimaryColor,
             validator: (value) {
@@ -1171,6 +1173,7 @@ class _TrackerUIState extends State<TrackerUI> {
           ),
           buildLabelTextField('Have you had a medical exam or taken any medications during the program? If "Yes", please give more information. Type "No" if not.', fontSize: questionFont),
           TextFormField(
+            textCapitalization: TextCapitalization.words,
             controller: anyMedicationsController,
             cursorColor: kPrimaryColor,
             validator: (value) {

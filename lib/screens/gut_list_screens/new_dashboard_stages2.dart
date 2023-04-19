@@ -57,6 +57,7 @@ import '../appointment_screens/consultation_screens/check_user_report_screen.dar
 import '../appointment_screens/consultation_screens/consultation_success.dart';
 import '../appointment_screens/consultation_screens/upload_files.dart';
 import '../appointment_screens/doctor_slots_details_screen.dart';
+import '../post_program_screens/protcol_guide_details.dart';
 import '../prepratory plan/new/new_transition_design.dart';
 import '../prepratory plan/prepratory_meal_completed_screen.dart';
 import '../program_plans/program_start_screen.dart';
@@ -148,6 +149,7 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
       postBtn3Color,
       gmgBtn1Color,
       gmgBtn2Color,
+      gmgBtn3Color,
       mmpBtn1Color;
 
   bool showConsLockIcon = true,
@@ -334,35 +336,28 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
   getUserProfile() async {
     // print("user id: ${_pref!.getInt(AppConfig.KALEYRA_USER_ID)}");
 
-    if (_pref!.getString(AppConfig.User_Name) != null ||
-        _pref!.getString(AppConfig.KALEYRA_USER_ID) != null ) {
-      final profile = await UserProfileService(repository: userRepository)
-          .getUserProfileService();
-      if (profile.runtimeType == UserProfileModel) {
-        UserProfileModel model1 = profile as UserProfileModel;
-        _pref!.setString(
-            AppConfig.User_Name, model1.data?.name ?? model1.data?.fname ?? '');
-        _pref!.setInt(AppConfig.USER_ID, model1.data?.id ?? -1);
-        _pref!.setString(AppConfig.QB_USERNAME, model1.data!.qbUsername ?? '');
-        _pref!.setString(
-            AppConfig.QB_CURRENT_USERID, model1.data!.qbUserId ?? '');
-        _pref!.setString(
-            AppConfig.KALEYRA_USER_ID, model1.data!.kaleyraUID ?? '');
+    final profile = await UserProfileService(repository: userRepository)
+        .getUserProfileService();
+    if (profile.runtimeType == UserProfileModel) {
+      UserProfileModel model1 = profile as UserProfileModel;
+      _pref!.setString(
+          AppConfig.User_Name, model1.data?.name ?? model1.data?.fname ?? '');
+      _pref!.setInt(AppConfig.USER_ID, model1.data?.id ?? -1);
+      _pref!.setString(AppConfig.QB_USERNAME, model1.data!.qbUsername ?? '');
+      _pref!.setString(
+          AppConfig.QB_CURRENT_USERID, model1.data!.qbUserId ?? '');
+      _pref!.setString(
+          AppConfig.KALEYRA_USER_ID, model1.data!.kaleyraUID ?? '');
 
-        if (_pref!.getString(AppConfig.KALEYRA_ACCESS_TOKEN) == null) {
-          await LoginWithOtpService(repository: loginOtpRepository)
-              .getAccessToken(model1.data!.kaleyraUID!);
-        }
-        if(_pref!.getString(AppConfig.KALEYRA_CHAT_SUCCESS_ID) == null){
-          _pref!.setString(AppConfig.KALEYRA_CHAT_SUCCESS_ID, model1.data!.associatedSuccessMemberKaleyraId ?? '');
-        }
-        print("user profile: ${_pref!.getString(AppConfig.QB_CURRENT_USERID)}");
+      if (_pref!.getString(AppConfig.KALEYRA_ACCESS_TOKEN) == null) {
+        await LoginWithOtpService(repository: loginOtpRepository)
+            .getAccessToken(model1.data!.kaleyraUID!);
       }
+      if(_pref!.getString(AppConfig.KALEYRA_CHAT_SUCCESS_ID) == null){
+        _pref!.setString(AppConfig.KALEYRA_CHAT_SUCCESS_ID, model1.associatedSuccessMemberKaleyraId ?? '');
+      }
+      print("user profile: ${_pref!.getString(AppConfig.QB_CURRENT_USERID)}");
     }
-    // if(_pref!.getInt(AppConfig.QB_CURRENT_USERID) != null && !await _qbService!.getSession() || _pref!.getBool(AppConfig.IS_QB_LOGIN) == null){
-    //   String _uName = _pref!.getString(AppConfig.QB_USERNAME)!;
-    //   _qbService!.login(_uName);
-    // }
   }
 
   Future<void> reloadUI() async {
@@ -504,7 +499,7 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
                                       ? Shimmer.fromColors(
                                     baseColor: Colors.grey.withOpacity(0.3),
                                     highlightColor: Colors.grey.withOpacity(0.7),
-                                    child: view(),
+                                    child: IgnorePointer(child: view()),
                                   )
                                       : tabView()))
                         ],
@@ -972,12 +967,13 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
           heading: "GUT MAINTENANCE GUIDE [GMG]",
           subText:
               "Congratulation on successfully completing the Gut Rhythm Reset Program, Great Job! Now its time to discuss your progress with your consulting doctor and one of the Senior Consultant to evaluate you Gut Condition. If all is well, you will be moved to maintenance. However if some more rectification is needed, They will discuss the next steps ....",
-          btn2Name: gmgBtn2Name ?? "End Report",
-          btn2Color: gmgBtn2Color,
-          btn3Name: gmgBtn1Name ?? 'Track & Earn',
-          btn1Color: gmgBtn1Color,
-          btnStage: PPButtonStage.GMG,
-          btn1Name: gmgBtn3Name ?? 'View GMG',
+            btnStage: PPButtonStage.GMG,
+            btn1Name: gmgBtn1Name ?? 'View GMG',
+            btn1Color: gmgBtn1Color,
+            btn2Name: gmgBtn2Name ?? "End Report",
+            btn2Color: gmgBtn2Color,
+            btn3Name: gmgBtn3Name ?? 'Track & Earn',
+          btn3Color: gmgBtn3Color
         ),
         tile(
             arcColor: greenArc,
@@ -995,7 +991,7 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
     );
   }
 
-  //outer 132 inner 130.5
+  ///outer 132 inner 130.5
   tile(
       {required Color arcColor,
       required String heading,
@@ -1141,12 +1137,65 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
           case PPButtonStage.MMP:
             break;
           case PPButtonStage.GMG:
-            showPostProgramScreen();
+            if(btnId == 1){
+              if (postProgramStage == "protocol_guide") {
+                if(_postConsultationAppointment!.value != null){
+                  if(_postConsultationAppointment!.value!.gmgPdfUrl != null){
+                    goToScreen(ProtocolGuideDetails(
+                      pdfLink: _postConsultationAppointment!.value!.gmgPdfUrl!,
+                      heading: "GMG",
+                      headCircleIcon: bsHeadPinIcon,
+                      isSheetCloseNeeded: true,
+                    ));
+                  }
+                  else{
+                    AppConfig().showSnackbar(context, "GMG Url is Empty", isError: true);
+                  }
+                }
+              }
+              else {
+                // goToScreen(FinalFeedbackForm());
+
+                AppConfig().showSnackbar(context, "Can't access Locked Stage",
+                    isError: true);
+              }
+            }
+            else if(btnId == 2){
+              if (postProgramStage == "protocol_guide") {
+                if(_postConsultationAppointment!.value != null){
+                  if(_postConsultationAppointment!.value!.programEndReportUser != null){
+                    goToScreen(ProtocolGuideDetails(
+                      pdfLink: _postConsultationAppointment!.value!.programEndReportUser!,
+                      heading: "User EndReport",
+                      headCircleIcon: bsHeadPinIcon,
+                      isSheetCloseNeeded: true,
+                    ));
+                  }
+                  else{
+                    AppConfig().showSnackbar(context, "User EndReport is Empty", isError: true);
+                  }
+                }
+              }
+              else {
+                // goToScreen(FinalFeedbackForm());
+
+                AppConfig().showSnackbar(context, "Can't access Locked Stage",
+                    isError: true);
+              }
+            }
+            else{
+              showPostProgramScreen();
+            }
             break;
           case PPButtonStage.PPC:
             if (btnId == 1) {
               if (postProgramStage == "post_program") {
-                goToScreen(MedicalFeedbackForm());
+                if(_gutPostProgramModel!.isProgramFeedbackSubmitted == "1") {
+                  AppConfig().showSnackbar(context, "Feedback Already Submitted");
+                }
+                else{
+                  goToScreen(MedicalFeedbackForm());
+                }
               } else {
                 // goToScreen(FinalFeedbackForm());
 
@@ -1155,17 +1204,23 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
               }
             } else if (btnId == 2) {
               if (postProgramStage == "post_program") {
-                Navigator.of(context)
-                    .push(
-                      MaterialPageRoute(
-                          builder: (context) => DoctorCalenderTimeScreen(
-                                isPostProgram: true,
-                              )
-                          // PostProgramScreen(postProgramStage: postProgramStage,),
-                          ),
-                    )
-                    .then((value) => reloadUI());
-              } else if (postProgramStage == "post_appointment_booked") {
+                if(_gutPostProgramModel!.isProgramFeedbackSubmitted == "1"){
+                  Navigator.of(context)
+                      .push(
+                    MaterialPageRoute(
+                        builder: (context) => DoctorCalenderTimeScreen(
+                          isPostProgram: true,
+                        )
+                      // PostProgramScreen(postProgramStage: postProgramStage,),
+                    ),
+                  )
+                      .then((value) => reloadUI());
+                }
+                else{
+                  AppConfig().showSnackbar(context, "Please complete the Feedback", isError: true);
+                }
+              }
+              else if (postProgramStage == "post_appointment_booked") {
                 final model = _getAppointmentDetailsModel;
                 print(model!.value!.date);
                 List<String> doctorNames = [];
@@ -1193,11 +1248,16 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
                   doctorName: doctorName,
                   doctorPic: doctorImage,
                 ));
-              } else {
+              }
+              else if (postProgramStage == "protocol_guide") {
+                // when protocolo guide need to show completed ui
+              }
+              else {
                 AppConfig().showSnackbar(context, "Can't access Locked Stage",
                     isError: true);
               }
-            } else {
+            }
+            else {
               if (postProgramStage == "post_appointment_booked") {
                 Navigator.of(context)
                     .push(
@@ -2427,14 +2487,17 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
           showMealLockIcon = true;
         }
 
-        postBtn1Color = newDashboardGreenButtonColor;
         postBtn1Name = "Feedback";
         if(_gutPostProgramModel!.isProgramFeedbackSubmitted != null){
+          print("PPC");
+          print(_gutPostProgramModel!.isProgramFeedbackSubmitted);
           if(_gutPostProgramModel!.isProgramFeedbackSubmitted == "0"){
             postBtn2Color = newDashboardLightGreyButtonColor;
+            postBtn1Color = newDashboardGreenButtonColor;
           }
           else{
             postBtn2Color = newDashboardGreenButtonColor;
+            postBtn1Color = newDashboardLightGreyButtonColor;
           }
         }
         postBtn2Name = "Schedule";
@@ -2462,7 +2525,8 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
           mealBtn2Color = newDashboardGreenButtonColor;
           mealBtn2Name = "Transition";
           showMealLockIcon = false;
-        } else {
+        }
+        else {
           bg4 = currentBgColor;
           mealBtn1Color = newDashboardGreenButtonColor;
           mealBtn1Name = "View Plan";
@@ -2509,7 +2573,7 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
           showMealLockIcon = true;
         }
 
-        postBtn1Color = newDashboardGreenButtonColor;
+        postBtn1Color = newDashboardLightGreyButtonColor;
         postBtn1Name = "Feedback";
         postBtn2Color = newDashboardGreenButtonColor;
         postBtn2Name = "Completed";
@@ -2555,7 +2619,11 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
         postBtn3Name = "Completed";
 
         gmgBtn1Color = newDashboardGreenButtonColor;
-        gmgBtn1Name = "Track & Earn";
+        gmgBtn1Name = "View GMG";
+        gmgBtn2Color = newDashboardGreenButtonColor;
+        gmgBtn2Name = "End Report";
+        gmgBtn3Color = newDashboardGreenButtonColor;
+        gmgBtn3Name = "Track & Earn";
         // gmgBtn2Color = newDashboardLightGreyButtonColor;
         // gmgBtn2Name = "View PDF";
 
@@ -2646,24 +2714,25 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
             default:
               goToScreen(const ConsultationSuccess());
           }
-        } else {
+        }
+        else {
           print(consultationStage);
           switch (consultationStage) {
             case 'check_user_reports':
               // print(_gutDataModel!.value);
               goToScreen(CheckUserReportsScreen());
               break;
-            case 'appointment_booked':
-              final model = _getAppointmentDetailsModel;
-              _pref!.setString(
-                  AppConfig.appointmentId, model?.value?.id.toString() ?? '');
-              goToScreen(DoctorSlotsDetailsScreen(
-                bookingDate: model!.value!.date!,
-                bookingTime: model.value!.slotStartTime!,
-                dashboardValueMap: model.value!.toJson(),
-                isFromDashboard: true,
-              ));
-              break;
+            // case 'appointment_booked':
+            //   final model = _getAppointmentDetailsModel;
+            //   _pref!.setString(
+            //       AppConfig.appointmentId, model?.value?.id.toString() ?? '');
+            //   goToScreen(DoctorSlotsDetailsScreen(
+            //     bookingDate: model!.value!.date!,
+            //     bookingTime: model.value!.slotStartTime!,
+            //     dashboardValueMap: model.value!.toJson(),
+            //     isFromDashboard: true,
+            //   ));
+            //   break;
             case 'report_upload':
               print(_gutDataModel!.toJson());
               print(_gutDataModel!.value);
@@ -2838,6 +2907,7 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
               MaterialPageRoute(
                 builder: (context) => ProgramPlanScreen(
                   from: ProgramMealType.program.name,
+                  videoLink: _gutProgramModel?.value?.startVideoUrl ?? "",
                   isPrepCompleted: _prepratoryModel!.value!.isPrepCompleted,
                 ),
               ),

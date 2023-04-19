@@ -100,11 +100,11 @@ class GetDashboardDataModel {
     if(json['Program'] != null){
       if(json['Program']['value'].runtimeType == String){
         normal_program = GutDataModel.fromJson(json['Program']);
-        print("program: ${normal_program!.toJson()}");
+        print("normal_program: ${normal_program!.toJson()}");
       }
       else{
         data_program = GetProgramModel.fromJson(json['Program']);
-        print("program: ${data_program!.toJson()}");
+        print("data_program: ${data_program!.toJson()}");
       }
     }
     if(json['TransProgram'] != null){

@@ -5,14 +5,18 @@ class UserProfileModel {
   String? errorCode;
   String? key;
   ChildUserModel? data;
+  String? associatedSuccessMemberKaleyraId;
 
-  UserProfileModel({this.status, this.errorCode, this.key, this.data});
+  UserProfileModel({this.status, this.errorCode, this.key, this.data,
+    this.associatedSuccessMemberKaleyraId
+  });
 
   UserProfileModel.fromJson(Map<String, dynamic> json) {
     status = json['status'].toString();
     errorCode = json['errorCode'].toString();
     key = json['key'];
     data = json['data'] != null ? ChildUserModel.fromJson(json['data']) : null;
+    associatedSuccessMemberKaleyraId = json['associated_success_member'].toString();
   }
 
   Map<String, dynamic> toJson() {
@@ -23,6 +27,7 @@ class UserProfileModel {
     if (this.data != null) {
       data['data'] = this.data!.toJson();
     }
+    data['associated_success_member'] = this.associatedSuccessMemberKaleyraId;
     return data;
   }
 }

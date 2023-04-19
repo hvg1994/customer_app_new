@@ -23,6 +23,7 @@ class GetProgramModel {
 class Value {
   int? id;
   String? userId;
+  String? startVideoUrl;
   String? tracker_video_url;
   String? recipeVideo;
   String? programId;
@@ -35,6 +36,7 @@ class Value {
   Value(
       {this.id,
         this.userId,
+        this.startVideoUrl,
         this.tracker_video_url,
         this.recipeVideo,
         this.programId,
@@ -48,6 +50,7 @@ class Value {
     print("value from json: $json");
     id = json['id'];
     userId = json['user_id'];
+    startVideoUrl = json['video'];
     tracker_video_url = json['tracker_video'];
     recipeVideo = json['recipe_video'];
     programId = json['program_id'];
@@ -62,6 +65,7 @@ class Value {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
     data['user_id'] = this.userId;
+    data['video'] = this.startVideoUrl;
     data['recipe_video'] = this.recipeVideo;
     data['tracker_video'] = this.tracker_video_url;
     data['program_id'] = this.programId;

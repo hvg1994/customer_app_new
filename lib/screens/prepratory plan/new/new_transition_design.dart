@@ -743,8 +743,9 @@ class _NewTransitionDesignState extends State<NewTransitionDesign>
         autoInitialize: true,
         showOptions: false,
         autoPlay: true,
+        allowedScreenSleep: false,
         hideControlsTimer: Duration(seconds: 3),
-        showControls: true
+        showControls: false
 
     );
     if(await Wakelock.enabled == false){
@@ -805,6 +806,7 @@ class _NewTransitionDesignState extends State<NewTransitionDesign>
                     borderRadius: BorderRadius.circular(5),
                     child: Center(
                       child: OverlayVideo(
+                        isControlsVisible: false,
                         controller: _chewieController!,
                       ),
                     ),

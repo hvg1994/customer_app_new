@@ -824,8 +824,7 @@ class ApiClient {
 
         print(inMemoryStorage.cache.containsKey(path));
         result = UserProfileModel.fromJson(res);
-        _prefs?.setString(
-            AppConfig.User_Name, res['data']['name'] ?? '');
+        _prefs?.setString(AppConfig.User_Name, res['data']['name'] ?? '');
         _prefs?.setString(AppConfig.User_Profile,res['data']['profile'] ?? '');
         _prefs?.setString(AppConfig.User_Number,res['data']['phone'] ?? '');
       }
@@ -1804,6 +1803,15 @@ class ApiClient {
           'report_ids[]': reportIds.join(',').toString()
         });
       }
+      // if(reportIds.isNotEmpty){
+      //   reportIds.forEach((element) {
+      //     request.fields.addAll({
+      //       'report_ids[]': element.toString()
+      //     });
+      //   });
+      // }
+
+      print(request.fields);
 
       // if(reportId != "others"){
       //   request.fields.addAll({

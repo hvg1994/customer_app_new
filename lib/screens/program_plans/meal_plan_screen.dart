@@ -914,7 +914,8 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                                             Navigator.pop(context);
                                           },
                                         )));
-                          } else {
+                          }
+                          else {
                             AppConfig().showSnackbar(
                                 context, "Note Link Not available",
                                 isError: true);
@@ -1292,7 +1293,8 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                 if (model.isChanged) {}
                 return Container(
                   color: Colors.black,
-                  child: Center(child: Chewie(controller: _yogaChewieController!)),
+                  child: Center(child: Chewie(controller: _yogaChewieController!,
+                  )),
                 );
                 // return VlcPlayerWithControls(
                 //   key: _key,
@@ -1732,7 +1734,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                                     // ),
                                     Expanded(
                                       child: Text(
-                                        e.benefits!.replaceAll("- ", '\n') ??
+                                        e.benefits!.replaceAll("* ", '\n') ??
                                             '',
                                         // "- Good for Health and super food\n\n- Good for Health and super food\n\n- Good for Health and super food\n\n- Very Effective and quick recipe,\n\n- Ready To Cook",
                                         style: TextStyle(
@@ -2965,6 +2967,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                 child: Center(
                     child: OverlayVideo(
                       controller: _sheetChewieController!,
+                      isControlsVisible: false,
                     )
                 ),
               ),

@@ -9,6 +9,7 @@ class LoginOtpModel {
   String? userEvaluationStatus;
   String? chatId;
   String? loginUsername;
+  String? currentUser;
   String? associatedSuccessMemberKaleyraId;
 
   LoginOtpModel({
@@ -20,6 +21,7 @@ class LoginOtpModel {
     this.kaleyraSuccessId,
     this.chatId,
     this.loginUsername,
+    this.currentUser,
     this.associatedSuccessMemberKaleyraId
   });
 
@@ -32,6 +34,7 @@ class LoginOtpModel {
     userEvaluationStatus = json['user_status'].toString();
     chatId = json['chat_id'].toString();
     loginUsername = json['login_username'].toString();
+    currentUser = json['current_user'].toString();
     associatedSuccessMemberKaleyraId = json['associated_success_member'].toString();
   }
 
@@ -46,6 +49,7 @@ class LoginOtpModel {
     data['chat_id'] = this.chatId;
     data['associated_success_member'] = this.associatedSuccessMemberKaleyraId;
     data['login_username'] = this.loginUsername;
+    data['current_user'] = this.currentUser;
     return data;
   }
 }

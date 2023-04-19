@@ -706,7 +706,7 @@ class _ExistingUserState extends State<ExistingUser> {
                   Center(
                     child: GestureDetector(
               // onTap: (showLoginProgress) ? null : () {
-                      onTap: () {
+                      onTap: (showLoginProgress) ? null : () {
                         final fcmToken = _pref.getString(AppConfig.FCM_TOKEN);
 
                         if (mobileFormKey.currentState!.validate() &&
@@ -1090,6 +1090,7 @@ class _ExistingUserState extends State<ExistingUser> {
 
       _pref.setString(AppConfig.EVAL_STATUS, model.userEvaluationStatus!);
       storeBearerToken(model.accessToken ?? '');
+      _pref.setString(AppConfig.User_Name, model.currentUser ?? '');
       _pref.setString(AppConfig.KALEYRA_USER_ID, model.kaleyraUserId ?? '');
       _pref.setString(AppConfig.KALEYRA_SUCCESS_ID, model.kaleyraSuccessId ?? '');
       _pref.setString(AppConfig.KALEYRA_CHAT_SUCCESS_ID, model.associatedSuccessMemberKaleyraId ?? '');
@@ -1122,10 +1123,14 @@ class _ExistingUserState extends State<ExistingUser> {
         }
         else {
           _pref.setBool(AppConfig.isFirstTime, false);
-          Navigator.of(context).pushReplacement(
+
+          Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(
               builder: (context) => const DashboardScreen(),
-            ),
+            ),(route) {
+              print(route.currentResult);
+              return false;
+          }
           );
         }
       }
@@ -1188,21 +1193,17 @@ class _ExistingUserState extends State<ExistingUser> {
         .getUserProfileService();
     if (profile.runtimeType == UserProfileModel) {
       UserProfileModel model1 = profile as UserProfileModel;
-      print("model1.datqbUserIda!.: ${model1.data!.qbUserId}");
+      print("model1.datqbUserIda!.: ${model1.data?.name}");
 
-      _pref.setString(
-          AppConfig.User_Name, model1.data?.name ?? model1.data?.fname ?? '');
       _pref.setInt(AppConfig.USER_ID, model1.data?.id ?? -1);
-      _pref.setString(AppConfig.QB_USERNAME, model1.data!.qbUsername!);
       _pref.setString(AppConfig.QB_CURRENT_USERID, model1.data!.qbUserId ?? '');
       _pref.setString(AppConfig.KALEYRA_USER_ID, model1.data!.kaleyraUID ?? '');
-      _pref.setString(
-          AppConfig.User_Name, model1.data?.name ?? model1.data?.fname ?? '');
+
       _pref.setString(AppConfig.User_Profile,model1.data?.profile ?? "");
       _pref.setString(AppConfig.User_Number,model1.data?.phone ?? "");
 
       print("pref id: ${_pref.getInt(AppConfig.USER_ID)}");
-      print("model1. after: ${_pref.getString(AppConfig.QB_CURRENT_USERID)}");
+      print("_currentUser: ${_pref.getString(AppConfig.User_Name)}");
     }
   }
 

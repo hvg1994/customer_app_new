@@ -58,7 +58,10 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
       // "The preparatory phase aids in the optimal preparation of the gastrointestinal tract for detoxification and repair. Gut acid and enzyme optimization can be achieved by adapting typical diets to your gut type and condition, as well as avoiding certain addictions/habits such as smoking, drinking, and so on."
       // "Before receiving your product kit, eat 6-7 meals a day, break addictions, and eliminate bad habits. Start your custom plan now.";
   String mealText = "Our approach on healing the condition: To cleanse and heal your stomach, we employ integrated Calm, Move, and Nourish modules that are tailored to your gut type. \n\nEvery meal is scheduled based on the Metabolic nature of your gut and its relationship to your biological clock. This implies that each food item at each meal time has a distinct role in resetting your gut's functionality by adjusting to your biological clock. ";
-  String transText = "Congratulations on completing your detox and healing program. Now, let us begin your transition days to enter a normal routine, for optimal healthy gut.";
+  String transText =
+      "Congratulations on completing the Gut Wellness Program! It takes a lot of dedication and hard work to prioritize your health and make positive changes to your gut health. Now that you've worked hard to improve your gut health, it's time to transition back into your normal food habits.\n\n"
+      "As you transition back to normal food habits, I want to remind you of the amazing benefits you will continue to experience. You have taken control of your gut health and are now able to enjoy a wider variety of foods without worrying about the discomfort and negative symptoms that once plagued you.\n\n"
+      "A healthy gut can improve your mood, energy levels, and even help you sleep better at night.";
 
   @override
   void initState() {

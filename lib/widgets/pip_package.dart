@@ -157,7 +157,7 @@ class _PIPStackState extends State<PIPStack> with TickerProviderStateMixin {
                       height: currentWindowHeight,
                       child: Stack(children: [
                         widget.pipWidget,
-                        Padding(
+                        if(widget.pipEnabled) Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: GestureDetector(
                             child: Align(

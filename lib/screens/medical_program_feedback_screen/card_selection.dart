@@ -2076,15 +2076,18 @@ class _TCardPageState extends State<TCardPage> {
                 ),
               ),
               (medicalRecords.isEmpty)
-                  ? Container()
+                  ? SizedBox()
                   : Center(
-                    child: ListView.builder(
-                      itemCount: medicalRecords.length,
-                      shrinkWrap: true,
-                      itemBuilder: (context, index) {
-                        final file = medicalRecords[index];
-                        return buildFile(file, index);
-                      },
+                    child: SizedBox(
+                      height: 27.h,
+                      child: ListView.builder(
+                        itemCount: medicalRecords.length,
+                        shrinkWrap: true,
+                        itemBuilder: (context, index) {
+                          final file = medicalRecords[index];
+                          return buildFile(file, index);
+                        },
+                      ),
                     ),
                   ),
               SizedBox(height: 2.h),

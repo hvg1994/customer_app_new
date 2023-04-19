@@ -4,6 +4,11 @@ import 'package:gwc_customer/model/consultation_model/appointment_booking/child_
 import 'child_team_patients_appointment.dart';
 
 class ChildAppointmentDetails {
+  // this is for protocol guide stage -> reports parameter
+  String? programEndReport;
+  String? programEndReportUser;
+  String? gmgPdfUrl;
+  // this is for post consultation stage -> parameters
   int? id;
   String? teamPatientId;
   String? date;
@@ -26,7 +31,11 @@ class ChildAppointmentDetails {
   ChildTeamPatientsAppointment? teamPatients;
 
   ChildAppointmentDetails(
-      {this.id,
+      {
+        this.programEndReport,
+        this.programEndReportUser,
+        this.gmgPdfUrl,
+        this.id,
         this.teamPatientId,
         this.date,
         this.slotStartTime,
@@ -48,6 +57,11 @@ class ChildAppointmentDetails {
         this.teamPatients});
 
   ChildAppointmentDetails.fromJson(Map<String, dynamic> json) {
+    programEndReport = json['Program_End_Report'];
+    programEndReportUser = json['Program_End_Report_User'];
+    gmgPdfUrl = json['gmg'];
+
+    // post consultation
     id = json['id'];
     teamPatientId = json['team_patient_id'];
     date = json['date'];

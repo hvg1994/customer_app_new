@@ -10,7 +10,7 @@ class GutDataModel {
     print("json['value'].runtimeType: ${json['value'].runtimeType}");
     data = json['data'];
     value = (json['value'].runtimeType == String) ? json['value'] ??'' : '';
-    isProgramFeedbackSubmitted = (json['is_program_feedback_submitted'].runtimeType == String) ? json['is_program_feedback_submitted'] ??'' : '';
+    isProgramFeedbackSubmitted = json['is_program_feedback_submitted'].toString() ?? '';
     rejectedCase = (json['value'].runtimeType != String) ? RejectedCaseClass.fromJson(json['value']) : null;
   }
 
