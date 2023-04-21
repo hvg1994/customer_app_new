@@ -40,6 +40,7 @@ import 'package:gwc_customer/model/ship_track_model/shopping_model/get_shopping_
 import 'package:gwc_customer/model/ship_track_model/sipping_approve_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
+import 'package:permission_handler/permission_handler.dart';
 import '../model/consultation_model/appointment_booking/appointment_book_model.dart';
 import '../model/consultation_model/appointment_slot_model.dart';
 import '../model/dashboard_model/report_upload_model/report_list_model.dart';
@@ -2736,6 +2737,24 @@ class ApiClient {
       result = ErrorModel(status: "0", message: e.toString());
     }
     return result;
+  }
+
+  Future downloadFile(String url, String filename, String path) async {
+    var httpClient = new HttpClient();
+    try{
+      var request = await httpClient.getUrl(Uri.parse(url));
+      var response = await request.close();
+      var bytes = await consolidateHttpClientResponseBytes(response);
+
+      //(await getApplicationDocumentsDirectory()).path;
+      File file =  File('${path}/$filename');
+      await file.writeAsBytes(bytes);
+      print('downloaded file path = ${file.path}');
+      return file;
+    }catch(error){
+      print('pdf downloading error = $error');
+      return error;
+    }
   }
 
 

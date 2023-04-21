@@ -19,7 +19,12 @@ class ReportService extends ChangeNotifier{
     return await repository.submitDoctorRequestedReportRepo(reportId, multipartFile);
   }
 
+  Future downloadPrescriptionService(String url,String filename,String path) async{
+    return await repository.downloadPrescriptionRepo(url, filename, path);
+  }
+
   Future doctorRequestedReportListService() async{
     return await repository.doctorRequestedReportListRepo();
   }
+
 }

@@ -1025,21 +1025,60 @@ class _UploadFilesState extends State<UploadFiles> {
   // }
 
 
-  _createFolder()async{
+  _createFolder({String? url})async{
     final permissionStatus = await Permission.storage.status;
+    var status = await Permission.manageExternalStorage.status;
 
-    if(!permissionStatus.isGranted){
+    if(!permissionStatus.isGranted || !status.isGranted){
       Permission.storage.request();
+      Permission.manageExternalStorage.request();
     }
     final folderName="GWC";
-    final path= Directory("storage/emulated/0/$folderName");
+    final path = Directory("storage/emulated/0/$folderName");
     if ((await path.exists())){
       print("exist");
+      if(url!= null) storeToFolder(path.path, url);
     }else{
       print("not exist");
-      path.create();
+      path.create().then((value) {
+        if(url!= null) storeToFolder(path.path, url);
+      });
+    }
+    print(permissionStatus.isGranted);
+  }
+
+  storeToFolder(String path, String url) async{
+    final res = await ReportService(repository: repository).downloadPrescriptionService(url, url.split('/').last, path);
+
+    print(res.runtimeType);
+    print(res.runtimeType.toString() == "_File");
+    if(res.runtimeType.toString() == "_File"){
+      File f = res;
+      AppConfig().showSnackbar(context, "File Saved to ${f.path}");
+    }
+    else{
+      AppConfig().showSnackbar(context, "File Download Error");
     }
   }
+
+  Future downloadFile(String url, String filename) async {
+    var httpClient = new HttpClient();
+    try{
+      var request = await httpClient.getUrl(Uri.parse(url));
+      var response = await request.close();
+      var bytes = await consolidateHttpClientResponseBytes(response);
+      final dir = await getTemporaryDirectory();
+      //(await getApplicationDocumentsDirectory()).path;
+      File file = new File('${dir.path}/$filename');
+      await file.writeAsBytes(bytes);
+      print('downloaded file path = ${file.path}');
+      return file;
+    }catch(error){
+      print('pdf downloading error = $error');
+      return error;
+    }
+  }
+
   List otherFilesObject = [];
 
   showRequestedReports(BuildContext context) {
@@ -1094,6 +1133,9 @@ class _UploadFilesState extends State<UploadFiles> {
                                     isVideoWidgetVisible: false,
                                     headCircleIcon: bsHeadPinIcon,
                                     isSheetCloseNeeded: true,
+                                    sheetCloseOnTap: (){
+                                      Navigator.pop(context);
+                                    },
                                   )));
                         }
                         else {
@@ -1123,7 +1165,7 @@ class _UploadFilesState extends State<UploadFiles> {
                       onSecondaryIconTap: (){
                         if (doctorRequestedReports[index].reportType ==
                             "prescription") {
-                          _createFolder();
+                          _createFolder(url: doctorRequestedReports[index].report!);
                         }
                       }
                   );
