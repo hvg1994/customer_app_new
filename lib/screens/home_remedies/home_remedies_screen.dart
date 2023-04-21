@@ -224,16 +224,16 @@ class _HomeRemediesScreenState extends State<HomeRemediesScreen> {
                           return problemList[index].isGeneral != "1"
                               ? Column(
                                   children: [
-                                    OutlinedButton(
+                                    Expanded(child: OutlinedButton(
                                       onPressed: () {
                                         Get.to(
-                                          () => NewKnowMoreScreen(
+                                              () => NewKnowMoreScreen(
                                             knowMore:
-                                                problemList[index].knowMore,
+                                            problemList[index].knowMore,
                                             healAtHome:
-                                                problemList[index].healAtHome,
+                                            problemList[index].healAtHome,
                                             healAnywhere:
-                                                problemList[index].healAnywhere,
+                                            problemList[index].healAnywhere,
                                             whenToReachUs: problemList[index]
                                                 .whenToReachUs,
                                           ),
@@ -256,7 +256,7 @@ class _HomeRemediesScreenState extends State<HomeRemediesScreen> {
                                           return Image.asset("assets/images/placeholder.png");
                                         },
                                       ),
-                                    ),
+                                    )),
                                     // GestureDetector(
                                     //   onTap: () {
                                     //
@@ -287,12 +287,13 @@ class _HomeRemediesScreenState extends State<HomeRemediesScreen> {
                                     // ),
                                     SizedBox(height: 1.h),
                                     Text(
-                                      problemList![index].name.toString(),
+                                      problemList[index].name.toString(),
                                       style: TextStyle(
                                         fontFamily: kFontBold,
                                         color: gBlackColor,
                                         fontSize: 9.sp,
                                       ),
+                                      textAlign: TextAlign.center,
                                     ),
                                   ],
                                 )

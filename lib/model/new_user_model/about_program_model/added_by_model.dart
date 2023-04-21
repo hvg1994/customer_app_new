@@ -50,7 +50,7 @@ class AddedBy {
 
   AddedBy.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    roleId = json['role_id'];
+    roleId = json['role_id'].toString();
     name = json['name'];
     fname = json['fname'];
     lname = json['lname'];

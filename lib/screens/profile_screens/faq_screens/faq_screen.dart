@@ -105,8 +105,8 @@ List<GridTileItems>  faqGridList = [
       // faqGridList[0].faqList = [];
 
       fullFaq.forEach((element) {
-        print(element.faqType == FaqTypes.consultation.name);
-        if(element.faqType == FaqTypes.consultation.name){
+        print(element.faqType == FaqTypes.Consultation.name);
+        if(element.faqType == FaqTypes.Consultation.name){
           faqGridList[0].faqList!.add(FaqList.fromJson(element.toJson()));
         }
         else if(element.faqType == FaqTypes.Our_products.name){
@@ -118,13 +118,13 @@ List<GridTileItems>  faqGridList = [
         else if(element.faqType == FaqTypes.Meals_Recipe.name){
           faqGridList[3].faqList!.add(FaqList.fromJson(element.toJson()));
         }
-        else if(element.faqType == FaqTypes.food_prescription.name){
+        else if(element.faqType == FaqTypes.Food_Prescription.name){
           faqGridList[4].faqList!.add(FaqList.fromJson(element.toJson()));
         }
         else if(element.faqType == FaqTypes.Post_Program.name){
           faqGridList[5].faqList!.add(FaqList.fromJson(element.toJson()));
         }
-        else if(element.faqType == FaqTypes.medicines.name){
+        else if(element.faqType == FaqTypes.Medicines_Supplements.name){
           faqGridList[6].faqList!.add(FaqList.fromJson(element.toJson()));
         }
         else if(element.faqType == FaqTypes.Challenges_and_Adherence.name){
@@ -133,10 +133,10 @@ List<GridTileItems>  faqGridList = [
         else if(element.faqType == FaqTypes.Program_Outcomes.name){
           faqGridList[8].faqList!.add(FaqList.fromJson(element.toJson()));
         }
-        else if(element.faqType == FaqTypes.move.name){
+        else if(element.faqType == FaqTypes.Yoga.name){
           faqGridList[9].faqList!.add(FaqList.fromJson(element.toJson()));
         }
-        else if(element.faqType == FaqTypes.calm.name){
+        else if(element.faqType == FaqTypes.Calm.name){
           faqGridList[10].faqList!.add(FaqList.fromJson(element.toJson()));
         }
       });
@@ -927,15 +927,15 @@ class FAQ {
 ///food_prescription
 ///medicines  not added
 enum FaqTypes{
-  consultation,
+  Consultation,
   Our_products,
   Program_Based,
   Meals_Recipe,
-  food_prescription,
+  Food_Prescription,
   Post_Program,
-  medicines,
+  Medicines_Supplements,
   Challenges_and_Adherence,
   Program_Outcomes,
-  move,
-  calm
+  Yoga,
+  Calm
 }

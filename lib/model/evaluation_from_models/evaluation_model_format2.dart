@@ -1,6 +1,14 @@
 import 'dart:convert';
 
 class EvaluationModelFormat2{
+  String vegNonVegVegan;
+  String earlyMorning;
+  String breakfast;
+  String midDay;
+  String lunch;
+  String evening;
+  String dinner;
+  String postDinner;
   String digesion;
   String diet;
   String foodAllergy;
@@ -19,6 +27,14 @@ class EvaluationModelFormat2{
 
   EvaluationModelFormat2(
       {
+        required this.vegNonVegVegan,
+        required this.earlyMorning,
+        required this.breakfast,
+        required this.midDay,
+        required this.lunch,
+        required this.evening,
+        required this.dinner,
+        required this.postDinner,
         required this.digesion,
       required this.diet,
       required this.foodAllergy,
@@ -37,6 +53,15 @@ class EvaluationModelFormat2{
 
   Map<String, dynamic> toMap() {
     final Map<String, String> data = new Map<String, String>();
+    data['veg_nonveg_vegan'] = this.vegNonVegVegan;
+    data['early_morning'] = this.earlyMorning;
+    data['breakfast'] = this.breakfast;
+    data['mid_day'] = this.midDay;
+    data['lunch'] = this.lunch;
+    data['evening'] = this.evening;
+    data['dinner'] = this.dinner;
+    data['post_dinner'] = this.postDinner;
+
     data['mention_if_any_food_affects_your_digesion'] = this.digesion;
     data['any_special_diet'] = this.diet;
     data['any_food_allergy'] = this.foodAllergy;

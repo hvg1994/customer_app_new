@@ -166,8 +166,8 @@ class _ExistingUserState extends State<ExistingUser> {
                     ),
                 child: Center(
                   child: Image(
-                    fit: BoxFit.fill,
-                    height: 15.h,
+                    fit: BoxFit.fitWidth,
+                    // height: 15.h,
                     width: 80.w,
                     image: const AssetImage(
                       "assets/images/Gut welness logo.png",

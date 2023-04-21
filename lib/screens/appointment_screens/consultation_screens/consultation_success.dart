@@ -42,7 +42,7 @@ class ConsultationSuccess extends StatelessWidget {
                     style: TextStyle(
                         height: 1.5,
                         fontFamily: kFontBold,
-                        color: gPrimaryColor,
+                        color: gTextColor,
                         fontSize: 12.sp
                     ),
                   ),
@@ -54,8 +54,8 @@ class ConsultationSuccess extends StatelessWidget {
                     textAlign: TextAlign.center,
                     style: TextStyle(
                         height: 1.5,
-                        fontFamily: kFontMedium,
-                        color: gPrimaryColor,
+                        fontFamily: kFontBook,
+                        color: gTextColor,
                         fontSize: 10.sp
                     ),
                   ),

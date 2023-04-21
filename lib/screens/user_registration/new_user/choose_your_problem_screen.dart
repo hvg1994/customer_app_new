@@ -192,11 +192,22 @@ class _ChooseYourProblemScreenState extends State<ChooseYourProblemScreen> {
                                         child: Column(
                                           children: [
                                             // SizedBox(height: 1.h),
-                                            Image(
+                                            CachedNetworkImage(
+                                              imageUrl: problemList?[index].image ?? '',
                                               height: 40,
                                               width: 40,
-                                              image: CachedNetworkImageProvider(problemList?[index].image ?? ''),
+                                              errorWidget: (ctx, _, __){
+                                                return Image.asset("assets/images/placeholder.png",
+                                                  height: 40,
+                                                  width: 40,
+                                                );
+                                              },
                                             ),
+                                            // Image(
+                                            //   height: 40,
+                                            //   width: 40,
+                                            //   image: CachedNetworkImageProvider(problemList?[index].image ?? ''),
+                                            // ),
                                             SizedBox(height: 1.5.h),
                                             Expanded(
                                               child: Text(

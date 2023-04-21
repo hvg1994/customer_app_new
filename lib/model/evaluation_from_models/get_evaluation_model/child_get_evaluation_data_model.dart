@@ -26,6 +26,14 @@ class ChildGetEvaluationDataModel {
   String? anyMedicationConsumeAtMoment;
   String? anyTherapiesHaveDoneBefore;
   String? medicalReport;
+  String? vegNonVegVegan;
+  String? earlyMorning;
+  String? breakfast;
+  String? midDay;
+  String? lunch;
+  String? evening;
+  String? dinner;
+  String? postDinner;
   String? mentionIfAnyFoodAffectsYourDigesion;
   String? anySpecialDiet;
   String? anyFoodAllergy;
@@ -69,6 +77,14 @@ class ChildGetEvaluationDataModel {
         this.anyMedicationConsumeAtMoment,
         this.anyTherapiesHaveDoneBefore,
         this.medicalReport,
+        this.vegNonVegVegan,
+        this.earlyMorning,
+        this.breakfast,
+        this.midDay,
+        this.lunch,
+        this.evening,
+        this.dinner,
+        this.postDinner,
         this.mentionIfAnyFoodAffectsYourDigesion,
         this.anySpecialDiet,
         this.anyFoodAllergy,
@@ -114,6 +130,18 @@ class ChildGetEvaluationDataModel {
     anyMedicationConsumeAtMoment = json['any_medication_consume_at_moment'];
     anyTherapiesHaveDoneBefore = json['any_therapies_have_done_before'];
     medicalReport = json['medical_report'] ?? '';
+
+
+    vegNonVegVegan = json['veg_nonveg_vegan'];
+    print("vegNonVegVegan: $vegNonVegVegan");
+    earlyMorning = json['early_morning'];
+    breakfast = json['breakfast'];
+    midDay = json['mid_day'];
+    lunch = json['lunch'];
+    evening = json['evening'];
+    dinner = json['dinner'];
+    postDinner = json['post_dinner'];
+
     mentionIfAnyFoodAffectsYourDigesion =
     json['mention_if_any_food_affects_your_digesion'];
     anySpecialDiet = json['any_special_diet'];
@@ -164,6 +192,16 @@ class ChildGetEvaluationDataModel {
         this.anyMedicationConsumeAtMoment;
     data['any_therapies_have_done_before'] = this.anyTherapiesHaveDoneBefore;
     data['medical_report'] = this.medicalReport;
+
+    data['veg_nonveg_vegan'] = this.vegNonVegVegan;
+    data['early_morning'] = this.earlyMorning;
+    data['breakfast'] = this.breakfast;
+    data['mid_day'] = this.midDay;
+    data['lunch'] = this.lunch;
+    data['evening'] = this.evening;
+    data['dinner'] = this.dinner;
+    data['post_dinner'] = this.postDinner;
+
     data['mention_if_any_food_affects_your_digesion'] =
         this.mentionIfAnyFoodAffectsYourDigesion;
     data['any_special_diet'] = this.anySpecialDiet;

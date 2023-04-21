@@ -466,6 +466,8 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
             SizedBox(height: 2.h),
             buildHealthDetails(model),
             SizedBox(height: 2.h),
+            buildDietDetails(model),
+            SizedBox(height: 2.h),
             buildFoodHabitsDetails(model),
             SizedBox(height: 2.h),
             buildLifeStyleDetails(model),
@@ -985,6 +987,167 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
         buildLabelTextField("Uploaded Files", fontSize: questionFont),
         SizedBox(height: 1.h),
         showFiles(model!.medicalReport),
+        SizedBox(height: 2.h),
+      ],
+    );
+  }
+
+  buildDietDetails(ChildGetEvaluationDataModel? model) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  "Diet",
+                  textAlign: TextAlign.start,
+                  style: TextStyle(
+                      fontFamily: kFontMedium,
+                      color: gBlackColor,
+                      fontSize: headingFont),
+                ),
+                SizedBox(
+                  width: 2.w,
+                ),
+                Expanded(
+                  child: Container(
+                    height: 1,
+                    color: kLineColor,
+                  ),
+                ),
+              ],
+            ),
+            // SizedBox(
+            //   height: 0.5.h
+            // ),
+            // Text(
+            //   "To Make Your Meal Plans As Simple & Easy For You To Follow As Possible",
+            //   textAlign: TextAlign.start,
+            //   style: TextStyle(
+            //     height: 1.2,
+            //       fontFamily: kFontMedium,
+            //       color: gHintTextColor,
+            //       fontSize: subHeadingFont),
+            // ),
+          ],
+        ),
+        SizedBox(height: 2.h),
+        buildLabelTextField("To Customize Your Meal Plans & Make It As Simple & Easy For You To Follow As Possible",
+            fontSize: questionFont),
+        SizedBox(height: 1.h),
+        Visibility(
+          visible: model?.vegNonVegVegan != null,
+          child: ListTile(
+            visualDensity: const VisualDensity(vertical: -3), // to compact
+            minVerticalPadding: 0,
+            minLeadingWidth: 30,
+            horizontalTitleGap: 0,
+            dense: true,
+            contentPadding:
+            const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+            leading: const Icon(
+              Icons.radio_button_checked,
+              color: gsecondaryColor,
+            ),
+            title: Text(
+              model?.vegNonVegVegan.toString().toTitleCase() ?? "",
+              style: TextStyle(
+                fontSize: 10.sp,
+                height: 1.3,
+                color: gBlackColor,
+                fontFamily: kFontBook,
+              ),
+            ),
+          ),
+        ),
+        buildLabelTextField("What Do You Usually Have As Your Morning Beverage/Snack", fontSize: questionFont),
+        SizedBox(height: 1.h),
+        buildContainer(model?.earlyMorning ?? ""),
+        SizedBox(height: 1.h),
+        buildLabelTextField(
+            "What Do You Usually Have For Breakfast",
+            fontSize: questionFont),
+        SizedBox(height: 1.h),
+        buildContainer(model?.breakfast ?? ""),
+        SizedBox(height: 1.h),
+        buildLabelTextField(
+            "What Do You Usually Have For Mid-Day Snack/Beverage",
+            fontSize: questionFont),
+        SizedBox(height: 1.h),
+        buildContainer(model?.midDay ?? ""),
+        SizedBox(height: 1.h),
+        buildLabelTextField(
+            "What Do You Usually Have For Lunch",
+            fontSize: questionFont),
+        SizedBox(height: 1.h),
+        buildContainer(model?.lunch ?? ""),
+        SizedBox(height: 1.h),
+        buildLabelTextField(
+            "What Do You Usually Have For Evening Snack/Beverage",
+            fontSize: questionFont),
+        SizedBox(height: 1.h),
+        buildContainer(model?.evening ?? ""),
+        SizedBox(height: 1.h),
+        buildLabelTextField(
+            "What Do You Usually Have For Dinner",
+            fontSize: questionFont),
+        SizedBox(height: 1.h),
+        buildContainer(model?.dinner ?? ""),
+        SizedBox(height: 1.h),
+        buildLabelTextField(
+            "What Do You Usually Have Post Dinner/Beverage",
+            fontSize: questionFont),
+        SizedBox(height: 1.h),
+        buildContainer(model?.postDinner ?? ""),
+        // Row(
+        //   children: [
+        //     Radio(
+        //       value: "1-2",
+        //       activeColor: kPrimaryColor,
+        //       groupValue: model?.noGalssesDay,
+        //       onChanged: (value) {},
+        //     ),
+        //     Text(
+        //       '1-2',
+        //       style: buildTextStyle(),
+        //     ),
+        //     SizedBox(width: 3.w),
+        //     Radio(
+        //       value: "3-4",
+        //       activeColor: kPrimaryColor,
+        //       groupValue: model?.noGalssesDay,
+        //       onChanged: (value) {},
+        //     ),
+        //     Text(
+        //       '3-4',
+        //       style: buildTextStyle(),
+        //     ),
+        //     SizedBox(width: 3.w),
+        //     Radio(
+        //         value: "6-8",
+        //         groupValue: model?.noGalssesDay,
+        //         activeColor: kPrimaryColor,
+        //         onChanged: (value) {}),
+        //     Text(
+        //       "6-8",
+        //       style: buildTextStyle(),
+        //     ),
+        //     SizedBox(width: 3.w),
+        //     Radio(
+        //         value: "9+",
+        //         groupValue: model?.noGalssesDay,
+        //         activeColor: kPrimaryColor,
+        //         onChanged: (value) {}),
+        //     Text(
+        //       "9+",
+        //       style: buildTextStyle(),
+        //     ),
+        //   ],
+        // ),
         SizedBox(height: 2.h),
       ],
     );

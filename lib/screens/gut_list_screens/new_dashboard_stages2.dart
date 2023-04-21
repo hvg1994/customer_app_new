@@ -2641,6 +2641,8 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
   handleButtonOnTapByType(StageType type, int buttonId) {
     switch (type) {
       case StageType.evaluation:
+        // goToScreen(UploadFiles());
+
         goToScreen(EvaluationGetDetails());
         break;
       case StageType.med_consultation:
