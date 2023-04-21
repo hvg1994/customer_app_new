@@ -36,6 +36,8 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
   final formKey1 = GlobalKey<FormState>();
   final formKey2 = GlobalKey<FormState>();
   final formKey3 = GlobalKey<FormState>();
+  final formKey4 = GlobalKey<FormState>();
+
 
   final String otherText = "Other";
   TextEditingController digestionController = TextEditingController();
@@ -49,6 +51,24 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
 
   String glassesOfWater = "";
 
+  final customizedMealCheckBox = [
+    "Veg",
+    "Non-Veg",
+    "Ovo-Vegetarian",
+    "Vegan",
+    "Others",
+  ];
+  String customizedMealPlanSelected = "";
+  TextEditingController customizedMealPlanOther = TextEditingController();
+
+  TextEditingController morningBeverageController = TextEditingController();
+  TextEditingController breakfastController = TextEditingController();
+  TextEditingController midDayBeverageController = TextEditingController();
+  TextEditingController lunchController = TextEditingController();
+  TextEditingController eveningBeverageController = TextEditingController();
+  TextEditingController dinnerController = TextEditingController();
+  TextEditingController postDinnerController = TextEditingController();
+
   final _pref = AppConfig().preferences;
 
   final habitCheckBox = [
@@ -58,7 +78,7 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
     CheckBoxSettings(title: "Tea"),
     CheckBoxSettings(title: "Soft Drinks/Carbonated Drinks"),
     CheckBoxSettings(title: "Drugs"),
-    CheckBoxSettings(title: "No"),
+    CheckBoxSettings(title: "None"),
   ];
   bool habitOtherSelected = false;
   List selectedHabitCheckBoxList = [];
@@ -186,6 +206,7 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
                     physics: const BouncingScrollPhysics(),
                     child: Column(
                       children: [
+                        buildHealthDetails(),
                         buildFoodHabitsDetails(),
                         buildLifeStyleDetails(),
                         buildBowelDetails(),
@@ -208,7 +229,15 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
                                 showCustomSnack("Please select Bowel Pattern");
                               }
                               else{
-                                submitFormDetails();
+                                if(formKey1.currentState!.validate()){
+                                  if(formKey2.currentState!.validate()){
+                                    if(formKey3.currentState!.validate()){
+                                      if(formKey4.currentState!.validate()){
+                                        submitFormDetails();
+                                      }
+                                    }
+                                  }
+                                }
                               }
                             },
                             child: Container(
@@ -249,6 +278,392 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  buildHealthDetails() {
+    return Form(
+      key: formKey4,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    "Diet",
+                    textAlign: TextAlign.start,
+                    style: TextStyle(
+                        fontFamily: kFontBold,
+                        color: gBlackColor,
+                        fontSize: headingFont
+                    ),
+                  ),
+                  SizedBox(
+                    width: 2.w,
+                  ),
+                  Expanded(
+                    child: Container(
+                      height: 1,
+                      color: kLineColor,
+                    ),
+                  ),
+                ],
+              ),
+              // Text(
+              //   "To Make Your Meal Plans As Simple & Easy For You To Follow As Possible",
+              //   textAlign: TextAlign.start,
+              //   style: TextStyle(
+              //       fontFamily: kFontBook,
+              //       color: gTextColor,
+              //       fontSize: 9.sp
+              //   ),
+              // ),
+            ],
+          ),
+          SizedBox(
+            height: 3.h,
+          ),
+          buildLabelTextField("To Customize Your Meal Plans & Make It As Simple & Easy For You To Follow As Possible", fontSize: questionFont),
+          ListView(
+        shrinkWrap: true,
+        physics: const BouncingScrollPhysics(),
+        children: [
+          Wrap(
+            children: [
+              GestureDetector(
+                onTap: (){
+                  setState(() {
+                    customizedMealPlanSelected = customizedMealCheckBox[0];
+                  });
+                },
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Radio(
+                      value: customizedMealCheckBox[0],
+                      activeColor: kPrimaryColor,
+                      groupValue: customizedMealPlanSelected,
+                      onChanged: (value) {
+                        setState(() {
+                          customizedMealPlanSelected = value as String;
+                        });
+                      },
+                    ),
+                    Text(
+                      customizedMealCheckBox[0],
+                      style: buildTextStyle(color: customizedMealPlanSelected == customizedMealCheckBox[0] ? kTextColor : gHintTextColor,
+                          fontFamily: customizedMealPlanSelected == customizedMealCheckBox[0] ? kFontMedium : kFontBook
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              GestureDetector(
+                onTap: (){
+                  setState(() {
+                    customizedMealPlanSelected = customizedMealCheckBox[1];
+                  });
+                },
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Radio(
+                      value: customizedMealCheckBox[1],
+                      activeColor: kPrimaryColor,
+                      groupValue: customizedMealPlanSelected,
+                      onChanged: (value) {
+                        setState(() {
+                          customizedMealPlanSelected = value as String;
+                        });
+                      },
+                    ),
+                    Text(
+                      customizedMealCheckBox[1],
+                      style: buildTextStyle(color: customizedMealPlanSelected == customizedMealCheckBox[1] ? kTextColor : gHintTextColor,
+                          fontFamily: customizedMealPlanSelected == customizedMealCheckBox[1] ? kFontMedium : kFontBook
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              GestureDetector(
+                onTap: (){
+                  setState(() {
+                    customizedMealPlanSelected = customizedMealCheckBox[2];
+                  });
+                },
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Radio(
+                      value: customizedMealCheckBox[2],
+                      activeColor: kPrimaryColor,
+                      groupValue: customizedMealPlanSelected,
+                      onChanged: (value) {
+                        setState(() {
+                          customizedMealPlanSelected = value as String;
+                        });
+                      },
+                    ),
+                    Text(
+                      customizedMealCheckBox[2],
+                      style: buildTextStyle(color: customizedMealPlanSelected == customizedMealCheckBox[2] ? kTextColor : gHintTextColor,
+                          fontFamily: customizedMealPlanSelected == customizedMealCheckBox[2] ? kFontMedium : kFontBook
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              GestureDetector(
+                onTap: (){
+                  setState(() {
+                    customizedMealPlanSelected = customizedMealCheckBox[3];
+                  });
+                },
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Radio(
+                      value: customizedMealCheckBox[3],
+                      activeColor: kPrimaryColor,
+                      groupValue: customizedMealPlanSelected,
+                      onChanged: (value) {
+                        setState(() {
+                          customizedMealPlanSelected = value as String;
+                        });
+                      },
+                    ),
+                    Text(
+                      customizedMealCheckBox[3],
+                      style: buildTextStyle(color: customizedMealPlanSelected == customizedMealCheckBox[3] ? kTextColor : gHintTextColor,
+                          fontFamily: customizedMealPlanSelected == customizedMealCheckBox[3] ? kFontMedium : kFontBook
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              GestureDetector(
+                onTap: (){
+                  setState(() {
+                    customizedMealPlanSelected = customizedMealCheckBox[4];
+                  });
+                },
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Radio(
+                      value: customizedMealCheckBox[4],
+                      activeColor: kPrimaryColor,
+                      groupValue: customizedMealPlanSelected,
+                      onChanged: (value) {
+                        setState(() {
+                          customizedMealPlanSelected = value as String;
+                        });
+                      },
+                    ),
+                    Text(
+                      customizedMealCheckBox[4],
+                      style: buildTextStyle(color: customizedMealPlanSelected == customizedMealCheckBox[4] ? kTextColor : gHintTextColor,
+                          fontFamily: customizedMealPlanSelected == customizedMealCheckBox[4] ? kFontMedium : kFontBook
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          Visibility(
+            visible: customizedMealPlanSelected == customizedMealCheckBox[4],
+            child: TextFormField(
+              textCapitalization: TextCapitalization.sentences,
+              controller: customizedMealPlanOther,
+              cursorColor: kPrimaryColor,
+              validator: (value) {
+                if (value!.isEmpty && customizedMealPlanSelected.contains(customizedMealCheckBox[4])) {
+                  return 'Please Select Customize Meal plan';
+                } else {
+                  return null;
+                }
+              },
+              decoration: CommonDecoration.buildTextInputDecoration(
+                  "Enter Your answer", customizedMealPlanOther),
+              textInputAction: TextInputAction.next,
+              textAlign: TextAlign.start,
+              keyboardType: TextInputType.text,
+            ),
+          ),
+        ],
+      ),
+          SizedBox(
+            height: 2.h,
+          ),
+          buildLabelTextField("What Do You Usually Have As Your Morning Beverage/Snack", fontSize: questionFont, ),
+          TextFormField(
+            textCapitalization: TextCapitalization.sentences,
+            controller: morningBeverageController,
+            cursorColor: kPrimaryColor,
+            validator: (value) {
+              if (value!.isEmpty ) {
+                return 'Please enter your Changed';
+              } else if (value.length < 2) {
+                return emptyStringMsg;
+              } else {
+                return null;
+              }
+            },
+            decoration: CommonDecoration.buildTextInputDecoration(
+                "Enter Enter Your answer", morningBeverageController),
+            textInputAction: TextInputAction.next,
+            textAlign: TextAlign.start,
+            keyboardType: TextInputType.text,
+          ),
+          SizedBox(
+            height: 2.h,
+          ),
+          buildLabelTextField("What Do You Usually Have For Breakfast", fontSize: questionFont),
+          TextFormField(
+            textCapitalization: TextCapitalization.sentences,
+            controller: breakfastController,
+            cursorColor: kPrimaryColor,
+            validator: (value) {
+              if (value!.isEmpty) {
+                return 'Please enter your Changed';
+              } else if (value.length < 2) {
+                return emptyStringMsg;
+              } else {
+                return null;
+              }
+            },
+            decoration: CommonDecoration.buildTextInputDecoration(
+                "Enter Your answer", breakfastController),
+            textInputAction: TextInputAction.next,
+            textAlign: TextAlign.start,
+            keyboardType: TextInputType.text,
+          ),
+          SizedBox(
+            height: 2.h,
+          ),
+          buildLabelTextField("What Do You Usually Have For Mid-Day Snack/Beverage", fontSize: questionFont),
+          TextFormField(
+            textCapitalization: TextCapitalization.sentences,
+            controller: midDayBeverageController,
+            cursorColor: kPrimaryColor,
+            validator: (value) {
+              if (value!.isEmpty ) {
+                return 'Please enter your Changed';
+              }else if (value.length < 2) {
+                return emptyStringMsg;
+              }else {
+                return null;
+              }
+            },
+            decoration: CommonDecoration.buildTextInputDecoration(
+                "Enter Your answer", midDayBeverageController),
+            textInputAction: TextInputAction.next,
+            textAlign: TextAlign.start,
+            keyboardType: TextInputType.text,
+          ),
+          SizedBox(
+            height: 2.h,
+          ),
+          buildLabelTextField("What Do You Usually Have For Lunch", fontSize: questionFont),
+          TextFormField(
+            textCapitalization: TextCapitalization.sentences,
+            controller: lunchController,
+            cursorColor: kPrimaryColor,
+            validator: (value) {
+              if (value!.isEmpty ) {
+                return 'Please enter your Changed';
+              } else if (value.length < 2) {
+                return emptyStringMsg;
+              } else {
+                return null;
+              }
+            },
+            decoration: CommonDecoration.buildTextInputDecoration(
+                "Enter Your answer", lunchController),
+            textInputAction: TextInputAction.next,
+            textAlign: TextAlign.start,
+            keyboardType: TextInputType.text,
+          ),
+          SizedBox(
+            height: 2.h,
+          ),
+          buildLabelTextField("What Do You Usually Have For Evening Snack/Beverage", fontSize: questionFont),
+          TextFormField(
+            textCapitalization: TextCapitalization.sentences,
+            controller: eveningBeverageController,
+            cursorColor: kPrimaryColor,
+            validator: (value) {
+              if (value!.isEmpty ) {
+                return 'Please enter your Changed';
+              }else if (value.length < 2) {
+                return emptyStringMsg;
+              }else {
+                return null;
+              }
+            },
+            decoration: CommonDecoration.buildTextInputDecoration(
+                "Enter Your answer", eveningBeverageController),
+            textInputAction: TextInputAction.next,
+            textAlign: TextAlign.start,
+            keyboardType: TextInputType.text,
+          ),
+          SizedBox(
+            height: 2.h,
+          ),
+          buildLabelTextField("What Do You Usually Have For Dinner", fontSize: questionFont),
+          TextFormField(
+            textCapitalization: TextCapitalization.sentences,
+            controller: dinnerController,
+            cursorColor: kPrimaryColor,
+            validator: (value) {
+              if (value!.isEmpty ) {
+                return 'Please enter your Changed';
+              } else if (value.length < 2) {
+                return emptyStringMsg;
+              } else {
+                return null;
+              }
+            },
+            decoration: CommonDecoration.buildTextInputDecoration(
+                "Enter Your answer", dinnerController),
+            textInputAction: TextInputAction.next,
+            textAlign: TextAlign.start,
+            keyboardType: TextInputType.text,
+          ),
+          SizedBox(
+            height: 2.h,
+          ),
+          buildLabelTextField("What Do You Usually Have Post Dinner/Beverage", fontSize: questionFont),
+          TextFormField(
+            textCapitalization: TextCapitalization.sentences,
+            controller: postDinnerController,
+            cursorColor: kPrimaryColor,
+            validator: (value) {
+              if (value!.isEmpty ) {
+                return 'Please enter your Changed';
+              } else if (value.length < 2) {
+                return emptyStringMsg;
+              } else {
+                return null;
+              }
+            },
+            decoration: CommonDecoration.buildTextInputDecoration(
+                "Enter Your answer", postDinnerController),
+            textInputAction: TextInputAction.next,
+            textAlign: TextAlign.start,
+            keyboardType: TextInputType.text,
+          ),
+          SizedBox(
+            height: 4.h,
+          ),
+        ],
       ),
     );
   }
@@ -1330,6 +1745,15 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
 
   createFormMap(){
     return EvaluationModelFormat2(
+      vegNonVegVegan: customizedMealPlanSelected,
+      earlyMorning: morningBeverageController.text,
+      breakfast: breakfastController.text,
+      midDay: midDayBeverageController.text,
+      lunch: lunchController.text,
+      evening: eveningBeverageController.text,
+      dinner: dinnerController.text,
+      postDinner: postDinnerController.text,
+
       digesion: digestionController.text,
       diet: specialDietController.text,
       foodAllergy: foodAllergyController.text,

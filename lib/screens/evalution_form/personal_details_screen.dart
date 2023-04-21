@@ -800,7 +800,9 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                         }),
                     Text(
                       "Other",
-                      style: buildTextStyle(),
+                      style: buildTextStyle(color: gender == "Other" ? kTextColor : gHintTextColor,
+                          fontFamily: gender == "Other" ? kFontMedium : kFontBook
+                      ),
                     ),
                   ],
                 ),
