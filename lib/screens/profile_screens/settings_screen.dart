@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get/get.dart';
 import 'package:gwc_customer/model/error_model.dart';
 import 'package:gwc_customer/model/profile_model/logout_model.dart';
 import 'package:gwc_customer/screens/appointment_screens/consultation_screens/upload_files.dart';
@@ -373,18 +374,29 @@ class _SettingsScreenState extends State<SettingsScreen> {
   );
 
   void logOut() async {
-    final res =
-    await LoginWithOtpService(repository: repository).logoutService();
+    logoutProgressState(() {
+      showLogoutProgress = true;
+    });
+    final res = await LoginWithOtpService(repository: repository).logoutService();
 
     if (res.runtimeType == LogoutModel) {
       clearAllUserDetails();
       Navigator.of(context).pushReplacement(MaterialPageRoute(
         builder: (context) => const ExistingUser(),
       ));
-    } else {
-      ErrorModel model = res as ErrorModel;
-      AppConfig().showSnackbar(context, model.message!, isError: true);
     }
+    else {
+      ErrorModel model = res as ErrorModel;
+      Get.snackbar("", model.message!,
+        colorText: gWhiteColor,
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: gsecondaryColor.withOpacity(0.55),
+      );
+    }
+
+    logoutProgressState(() {
+      showLogoutProgress = true;
+    });
   }
 
   clearAllUserDetails(){
@@ -410,84 +422,95 @@ class _SettingsScreenState extends State<SettingsScreen> {
     ),
   );
 
+  bool showLogoutProgress = false;
+
+  var logoutProgressState;
+
   logoutWidget() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Center(
-          child: Text(
-            "We will miss you.",
-            style: TextStyle(
-                fontSize: bottomSheetHeadingFontSize,
-                fontFamily: bottomSheetHeadingFontFamily,
-                height: 1.4),
-            textAlign: TextAlign.center,
-          ),
-        ),
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 15),
-          child: Divider(
-            color: kLineColor,
-            thickness: 1.2,
-          ),
-        ),
-        Center(
-          child: Text(
-            'Do you really want to logout?',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: gTextColor,
-              fontSize: bottomSheetSubHeadingXFontSize,
-              fontFamily: bottomSheetSubHeadingMediumFont,
-            ),
-          ),
-        ),
-        SizedBox(height: 3.h),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            GestureDetector(
-              onTap: () => logOut(),
-              child: Container(
-                padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 12.w),
-                decoration: BoxDecoration(
-                    color: gsecondaryColor,
-                    border: Border.all(color: kLineColor, width: 0.5),
-                    borderRadius: BorderRadius.circular(5)),
+    return StatefulBuilder(
+        builder: (_, setstate){
+          logoutProgressState = setstate;
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Center(
                 child: Text(
-                  "YES",
+                  "We will miss you.",
                   style: TextStyle(
-                    fontFamily: kFontMedium,
-                    color: gWhiteColor,
-                    fontSize: 11.sp,
+                      fontSize: bottomSheetHeadingFontSize,
+                      fontFamily: bottomSheetHeadingFontFamily,
+                      height: 1.4),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 15),
+                child: Divider(
+                  color: kLineColor,
+                  thickness: 1.2,
+                ),
+              ),
+              Center(
+                child: Text(
+                  'Do you really want to logout?',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: gTextColor,
+                    fontSize: bottomSheetSubHeadingXFontSize,
+                    fontFamily: bottomSheetSubHeadingMediumFont,
                   ),
                 ),
               ),
-            ),
-            SizedBox(width: 5.w),
-            GestureDetector(
-              onTap: () => Navigator.pop(context),
-              child: Container(
-                padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 12.w),
-                decoration: BoxDecoration(
-                    color: gWhiteColor,
-                    border: Border.all(color: kLineColor, width: 0.5),
-                    borderRadius: BorderRadius.circular(5)),
-                child: Text(
-                  "NO",
-                  style: TextStyle(
-                    fontFamily: kFontMedium,
-                    color: gsecondaryColor,
-                    fontSize: 11.sp,
+              SizedBox(height: 3.h),
+              (showLogoutProgress)
+                  ? Center(child: buildCircularIndicator())
+                  : Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  GestureDetector(
+                    onTap: () => logOut(),
+                    child: Container(
+                      padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 12.w),
+                      decoration: BoxDecoration(
+                          color: gsecondaryColor,
+                          border: Border.all(color: kLineColor, width: 0.5),
+                          borderRadius: BorderRadius.circular(5)),
+                      child: Text(
+                        "YES",
+                        style: TextStyle(
+                          fontFamily: kFontMedium,
+                          color: gWhiteColor,
+                          fontSize: 11.sp,
+                        ),
+                      ),
+                    ),
                   ),
-                ),
+                  SizedBox(width: 5.w),
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: Container(
+                      padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 12.w),
+                      decoration: BoxDecoration(
+                          color: gWhiteColor,
+                          border: Border.all(color: kLineColor, width: 0.5),
+                          borderRadius: BorderRadius.circular(5)),
+                      child: Text(
+                        "NO",
+                        style: TextStyle(
+                          fontFamily: kFontMedium,
+                          color: gsecondaryColor,
+                          fontSize: 11.sp,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ),
-          ],
-        ),
-        SizedBox(height: 1.h)
-      ],
+              SizedBox(height: 1.h)
+            ],
+          );
+        }
     );
   }
 }

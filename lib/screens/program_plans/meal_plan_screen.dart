@@ -975,134 +975,136 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                             ? Shimmer.fromColors(
                                 baseColor: Colors.grey.withOpacity(0.3),
                                 highlightColor: Colors.grey.withOpacity(0.7),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    SizedBox(
-                                      height: 8,
-                                    ),
-                                    // buildNewItemList(),
-                                    // buildNewItemList(),
-                                    // buildNewItemList(),
-                                    // buildNewItemList(),
-                                    // buildNewItemList(),
-                                    //                buildMealPlan(),
-                                    ...groupList(),
-                                    Visibility(
-                                      visible: (statusList.isNotEmpty &&
-                                          statusList.values.any((element) =>
-                                              element
-                                                  .toString()
-                                                  .toLowerCase()
-                                                  .contains('unfollowed'))),
-                                      child: IgnorePointer(
-                                        ignoring: isDayCompleted == true,
-                                        child: Container(
-                                          height: 15.h,
-                                          margin: EdgeInsets.symmetric(
-                                              horizontal: 4.w, vertical: 1.h),
-                                          padding: EdgeInsets.symmetric(
-                                              horizontal: 3.w),
-                                          decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            borderRadius:
-                                                BorderRadius.circular(5),
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: Colors.grey
-                                                    .withOpacity(0.3),
-                                                blurRadius: 20,
-                                                offset: const Offset(2, 10),
-                                              ),
-                                            ],
-                                          ),
-                                          child: TextFormField(
-                                            controller: commentController,
-                                            cursorColor: gPrimaryColor,
-                                            style: TextStyle(
-                                                fontFamily: "GothamBook",
-                                                color: gTextColor,
-                                                fontSize: 11.sp),
-                                            decoration: InputDecoration(
-                                              suffixIcon: commentController
-                                                          .text.isEmpty ||
-                                                      isDayCompleted != null
-                                                  ? SizedBox()
-                                                  : InkWell(
-                                                      onTap: () {
-                                                        commentController
-                                                            .clear();
-                                                      },
-                                                      child: const Icon(
-                                                        Icons.close,
-                                                        color: gTextColor,
-                                                      ),
-                                                    ),
-                                              hintText: "Comments",
-                                              border: InputBorder.none,
-                                              hintStyle: TextStyle(
-                                                fontFamily: "GothamBook",
-                                                color: gTextColor,
-                                                fontSize: 9.sp,
-                                              ),
+                                child: IgnorePointer(
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      SizedBox(
+                                        height: 8,
+                                      ),
+                                      // buildNewItemList(),
+                                      // buildNewItemList(),
+                                      // buildNewItemList(),
+                                      // buildNewItemList(),
+                                      // buildNewItemList(),
+                                      //                buildMealPlan(),
+                                      ...groupList(),
+                                      Visibility(
+                                        visible: (statusList.isNotEmpty &&
+                                            statusList.values.any((element) =>
+                                                element
+                                                    .toString()
+                                                    .toLowerCase()
+                                                    .contains('unfollowed'))),
+                                        child: IgnorePointer(
+                                          ignoring: isDayCompleted == true,
+                                          child: Container(
+                                            height: 15.h,
+                                            margin: EdgeInsets.symmetric(
+                                                horizontal: 4.w, vertical: 1.h),
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 3.w),
+                                            decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              borderRadius:
+                                                  BorderRadius.circular(5),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.grey
+                                                      .withOpacity(0.3),
+                                                  blurRadius: 20,
+                                                  offset: const Offset(2, 10),
+                                                ),
+                                              ],
                                             ),
-                                            textInputAction:
-                                                TextInputAction.next,
-                                            textAlign: TextAlign.start,
-                                            keyboardType:
-                                                TextInputType.emailAddress,
+                                            child: TextFormField(
+                                              controller: commentController,
+                                              cursorColor: gPrimaryColor,
+                                              style: TextStyle(
+                                                  fontFamily: "GothamBook",
+                                                  color: gTextColor,
+                                                  fontSize: 11.sp),
+                                              decoration: InputDecoration(
+                                                suffixIcon: commentController
+                                                            .text.isEmpty ||
+                                                        isDayCompleted != null
+                                                    ? SizedBox()
+                                                    : InkWell(
+                                                        onTap: () {
+                                                          commentController
+                                                              .clear();
+                                                        },
+                                                        child: const Icon(
+                                                          Icons.close,
+                                                          color: gTextColor,
+                                                        ),
+                                                      ),
+                                                hintText: "Comments",
+                                                border: InputBorder.none,
+                                                hintStyle: TextStyle(
+                                                  fontFamily: "GothamBook",
+                                                  color: gTextColor,
+                                                  fontSize: 9.sp,
+                                                ),
+                                              ),
+                                              textInputAction:
+                                                  TextInputAction.next,
+                                              textAlign: TextAlign.start,
+                                              keyboardType:
+                                                  TextInputType.emailAddress,
+                                            ),
                                           ),
                                         ),
                                       ),
-                                    ),
-                                    Visibility(
-                                      visible: buttonVisibility(),
-                                      child: Center(
-                                        child: GestureDetector(
-                                          onTap: () {
-                                            print(
-                                                "statusList.length: ${statusList.length}");
-                                            print("lst.length ${lst.length}");
-                                            print('..............');
-                                          },
-                                          child: Container(
-                                            margin: EdgeInsets.symmetric(
-                                                vertical: 2.h),
-                                            width: btnText.length > 22
-                                                ? 75.w
-                                                : 60.w,
-                                            height: 5.h,
-                                            decoration: BoxDecoration(
-                                              color: (statusList.length ==
-                                                      lst.length)
-                                                  ? eUser().buttonColor
-                                                  : tableHeadingBg,
-                                              borderRadius:
-                                                  BorderRadius.circular(eUser()
-                                                      .buttonBorderRadius),
-                                              // border: Border.all(color: eUser().buttonBorderColor,
-                                              //     width: eUser().buttonBorderWidth),
-                                            ),
-                                            child: Center(
-                                              child: Text(
-                                                btnText,
-                                                // 'Proceed to Day $proceedToDay',
-                                                style: TextStyle(
-                                                  fontFamily:
-                                                      eUser().buttonTextFont,
-                                                  color:
-                                                      eUser().buttonTextColor,
-                                                  // color: (statusList.length != lst.length) ? gPrimaryColor : gMainColor,
-                                                  fontSize:
-                                                      eUser().buttonTextSize,
+                                      Visibility(
+                                        visible: buttonVisibility(),
+                                        child: Center(
+                                          child: GestureDetector(
+                                            onTap: () {
+                                              print(
+                                                  "statusList.length: ${statusList.length}");
+                                              print("lst.length ${lst.length}");
+                                              print('..............');
+                                            },
+                                            child: Container(
+                                              margin: EdgeInsets.symmetric(
+                                                  vertical: 2.h),
+                                              width: btnText.length > 22
+                                                  ? 75.w
+                                                  : 60.w,
+                                              height: 5.h,
+                                              decoration: BoxDecoration(
+                                                color: (statusList.length ==
+                                                        lst.length)
+                                                    ? eUser().buttonColor
+                                                    : tableHeadingBg,
+                                                borderRadius:
+                                                    BorderRadius.circular(eUser()
+                                                        .buttonBorderRadius),
+                                                // border: Border.all(color: eUser().buttonBorderColor,
+                                                //     width: eUser().buttonBorderWidth),
+                                              ),
+                                              child: Center(
+                                                child: Text(
+                                                  btnText,
+                                                  // 'Proceed to Day $proceedToDay',
+                                                  style: TextStyle(
+                                                    fontFamily:
+                                                        eUser().buttonTextFont,
+                                                    color:
+                                                        eUser().buttonTextColor,
+                                                    // color: (statusList.length != lst.length) ? gPrimaryColor : gMainColor,
+                                                    fontSize:
+                                                        eUser().buttonTextSize,
+                                                  ),
                                                 ),
                                               ),
                                             ),
                                           ),
                                         ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                               )
                             : Column(
@@ -2560,7 +2562,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
         child: Text(
           title,
           style: TextStyle(
-            fontFamily: "GothamBook",
+            fontFamily: kFontBook,
             // color: (planStatus == index) ? color : gTextColor,
             color: (statusList[itemId] == title) ? color : gTextColor,
             fontSize: 9.5.sp,

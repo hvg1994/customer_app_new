@@ -38,7 +38,7 @@ class TransitionMealPlanScreen extends StatefulWidget {
 }
 
 class _TransitionMealPlanScreenState extends State<TransitionMealPlanScreen> {
-  String? planNotePdfLink;
+  String? doDontPdfLink;
   Future? transitionMealFuture;
   getTransitionMeals() {
     transitionMealFuture = PrepratoryMealService(repository: repository).getTransitionMealService();
@@ -89,10 +89,10 @@ class _TransitionMealPlanScreenState extends State<TransitionMealPlanScreen> {
                     },
                         showHelpIcon: true,
                         helpOnTap: (){
-                      if(planNotePdfLink != null || planNotePdfLink!.isNotEmpty){
+                      if(doDontPdfLink != null || doDontPdfLink!.isNotEmpty){
                         Navigator.push(context, MaterialPageRoute(builder: (ctx)=>
-                            MealPdf(pdfLink: planNotePdfLink! ,
-                              heading: planNotePdfLink?.split('/').last ?? '',
+                            MealPdf(pdfLink: doDontPdfLink! ,
+                              heading: doDontPdfLink?.split('/').last ?? '',
                               isVideoWidgetVisible: false,
                               headCircleIcon: bsHeadPinIcon,
                               topHeadColor: kBottomSheetHeadGreen,
@@ -131,7 +131,7 @@ class _TransitionMealPlanScreenState extends State<TransitionMealPlanScreen> {
                             print("dataList: $dataList");
                             if(res.currentDay != null) currentDay = res.currentDay;
                             if(res.totalDays != null) totalDays = res.totalDays;
-                            planNotePdfLink = res.note;
+                            doDontPdfLink = res.dosDontPdfLink;
                             if(!widget.viewDay1Details){
                               if(res.previousDayStatus == "0"){
                                 Future.delayed(Duration(seconds: 0)).then((value) {

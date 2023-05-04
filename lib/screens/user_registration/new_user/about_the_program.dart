@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
@@ -229,231 +231,252 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
       child: Scaffold(
         backgroundColor: gBackgroundColor,
         body: Padding(
-          padding: EdgeInsets.only(left: 4.w, right: 4.w, top: 1.h, bottom: 1.h),
+          padding: EdgeInsets.only(left: 1.w, right: 1.w, top: 1.h, bottom: 1.h),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              buildAppBar(() {
-                Navigator.pop(context);
-              }),
+              Padding(
+                  padding: EdgeInsets.only(left: 1.5.w, right: 1.5.w),
+                child: buildAppBar(() {
+                  Navigator.pop(context);
+                })
+              ),
               SizedBox(
                 height: 1.h,
               ),
               Expanded(
-                child: FutureBuilder(
-                  future: _aboutProgramFuture,
-                  builder: (_, snapshot){
-                    if(snapshot.hasData){
-                      if(snapshot.data.runtimeType == AboutProgramModel){
-                        AboutProgramModel _programModel = snapshot.data as AboutProgramModel;
-                        ChildAboutProgramModel? _aboutProgramText = _programModel.data;
-                        // #1
-                        String aboutProgramPdf = _aboutProgramText?.aboutProgram?.aboutPdf ?? '';
-                        if(_aboutProgramText!.aboutProgram !=null && _aboutProgramText.aboutProgram!.aboutProgramVideo != null){
-                          String videoLink = _aboutProgramText.aboutProgram?.aboutProgramVideo  ?? '';
-                          // addUrlToAboutProgramVideoPlayer(videoLink);
-                          addUrlToAboutProgramVideoPlayerChewie(videoLink);
-                        }
-                        // #2 video player
-                        // addUrlToVideoPlayerChewie("https://gwc.disol.in/storage/uploads/users/feedback/L%20R%20Narayanan,_1_1_1_1_1_1_1.mp4");
-
-                        if(_aboutProgramText.testimonial !=null){
-                          String videoLink = _aboutProgramText.testimonial?.video ?? '';
-                          // addUrlToVideoPlayer(videoLink);
-                          addUrlToVideoPlayerChewie(videoLink);
-                        }
-                        // #3 feedback List
-                        List<FeedbackList> feedbackList = _aboutProgramText.feedbackList ?? [];
-                        List<String> reviewList = _aboutProgramText.reviewsList ?? [];
-
-                        print("feedbackList: $feedbackList");
-                        return SingleChildScrollView(
-                          physics: const ClampingScrollPhysics(),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "About The Program",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    fontFamily: eUser().mainHeadingFont,
-                                    color: eUser().mainHeadingColor,
-                                    fontSize: eUser().mainHeadingFontSize
-                                ),
-                              ),
-                              SizedBox(
-                                height: 2.h,
-                              ),
-                              buildAboutProgramVideo(),
-                              // SizedBox(height: 2.h),
-                              Card(
-                                elevation: 7,
-                                child: SizedBox(
-                                  height: 30.h,
-                                  child: SfPdfViewer.network(aboutProgramPdf,
-                                  // asset('assets/GWC Program Details.pdf',
-                                    scrollDirection: PdfScrollDirection.horizontal,
-                                  ),
-                                ),
-                                // child: Container(
-                                //   padding: EdgeInsets.symmetric(
-                                //       vertical: 1.h, horizontal: 3.w),
-                                //   decoration: BoxDecoration(
-                                //     color: Colors.white,
-                                //     borderRadius: BorderRadius.circular(5),
-                                //     border: Border.all(color: gPrimaryColor, width: 1),
-                                //     boxShadow: [
-                                //       BoxShadow(
-                                //         color: Colors.grey.withOpacity(0.3),
-                                //         blurRadius: 20,
-                                //         offset: const Offset(2, 10),
-                                //       ),
-                                //     ],
-                                //   ),
-                                //   child: Image(
-                                //     image: AssetImage('assets/images/about_program.jpeg'),
-                                //   ),
-                                //   // child: Text(
-                                //   //   _programText,
-                                //   //   // 'Lorem lpsum is simply dummy text of the printing and typesetting industry. Lorem lpsum has been the industry\'s standard dummy text ever since the 1500s,when an unknown printer took a gallery of type and scrambled it to make a type specimen book.',
-                                //   //   style: TextStyle(
-                                //   //     height: 1.7,
-                                //   //     fontFamily: "GothamBook",
-                                //   //     color: gTextColor,
-                                //   //     fontSize: 9.sp,
-                                //   //   ),
-                                //   // ),
-                                // ),
-                              ),
-                              SizedBox(height: 2.h),
-                              Text(
-                                "Testimonial",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    fontFamily: eUser().mainHeadingFont,
-                                    color: eUser().mainHeadingColor,
-                                    fontSize: eUser().mainHeadingFontSize
-                                ),
-                              ),
-                              SizedBox(
-                                height: 2.h,
-                              ),
-                              buildTestimonial(),
-                              SizedBox(
-                                height: 2.h,
-                              ),
-                              // buildFeedback(feedbackList),
-                              buildReviews(reviewList),
-                              SizedBox(height: 2.h),
-                              Visibility(
-                                visible: !widget.isFromSitBackScreen,
-                                child: Center(
-                                  child: GestureDetector(
-                                    onTap: () async{
-                                      print("tap");
-                                      final res;
-                                      Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                          builder: (context) => const RegisterScreen(),
-                                        ),
-                                      );
-                                      // if(_videoPlayerController != null){
-                                      //   res = await _videoPlayerController!.isPlaying();
-                                      //   if(res != null && res == true){
-                                      //     await _videoPlayerController?.stop();
-                                      //   }
-                                      // }
-                                      // if(_abtProgramPlayerController != null){
-                                      //   final show = await _abtProgramPlayerController!.isPlaying();
-                                      //   if(show != null && show == true){
-                                      //     await _abtProgramPlayerController?.stop();
-                                      //   }
-                                      // }
-                                      if(_chewieController != null){
-                                        final show = _chewieController!.videoPlayerController.value.isPlaying;
-                                        if(show != null && show == true){
-                                          _chewieController!.pause();
-                                        }
-                                      }
-                                      if(_testimonialChewieController != null){
-                                        final show = _testimonialChewieController!.videoPlayerController.value.isPlaying;
-                                        if(show != null && show == true){
-                                          _testimonialChewieController!.pause();
-                                        }
-                                      }
-
-                                    },
-                                    child: Container(
-                                      width: 40.w,
-                                      height: 5.h,
-                                      padding:
-                                      EdgeInsets.symmetric(vertical: 1.h, horizontal: 15.w),
-                                      decoration: BoxDecoration(
-                                        color: eUser().buttonColor,
-                                        borderRadius: BorderRadius.circular(eUser().buttonBorderRadius),
-                                        // border: Border.all(
-                                        //     color: eUser().buttonBorderColor,
-                                        //     width: eUser().buttonBorderWidth
-                                        // ),
-                                      ),
-                                      child: Center(
-                                        child: Text(
-                                          'Next',
-                                          style: TextStyle(
-                                            fontFamily: eUser().buttonTextFont,
-                                            color: eUser().buttonTextColor,
-                                            fontSize: eUser().buttonTextSize,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      }
-                      else{
-                        ErrorModel data = snapshot.data as ErrorModel;
-                        print("data.message: ${data.message}");
-                        if(data.message!.contains("Connection closed before full header was received")){
-                          getFuture();
-                        }
-                        return Center(
-                          child: Column(
-                            children: [
-                              Text(data.message ?? '',
-                                style: TextStyle(
-                                  fontSize: 10.sp,
-                                  fontFamily: 'GothamMedium'
-                                ),
-                              ),
-                              TextButton(
-                                  onPressed: (){
-                                    getFuture();
-                                  },
-                                  child: Text("Retry",
-                                    style: TextStyle(
-                                        fontSize: 10.sp,
-                                        fontFamily: 'GothamMedium'
-                                    ),
-                                  )
-                              )
-                            ],
-                          )
-                        );
-                      }
-                    }
-                    return buildCircularIndicator();
-                  },
-                ),
+                child: _mainView(),
               ),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  _mainView(){
+    return Padding(
+      padding: EdgeInsets.only(left: 4.w, right: 4.w),
+      child: FutureBuilder(
+        future: _aboutProgramFuture,
+        builder: (_, snapshot){
+          if(snapshot.hasData){
+            if(snapshot.data.runtimeType == AboutProgramModel){
+              AboutProgramModel _programModel = snapshot.data as AboutProgramModel;
+              ChildAboutProgramModel? _aboutProgramText = _programModel.data;
+              // #1
+              String aboutProgramPdf = _aboutProgramText?.aboutProgram?.aboutPdf ?? '';
+              if(_aboutProgramText!.aboutProgram !=null && _aboutProgramText.aboutProgram!.aboutProgramVideo != null){
+                String videoLink = _aboutProgramText.aboutProgram?.aboutProgramVideo  ?? '';
+                // addUrlToAboutProgramVideoPlayer(videoLink);
+                addUrlToAboutProgramVideoPlayerChewie(videoLink);
+              }
+              // #2 video player
+              // addUrlToVideoPlayerChewie("https://gwc.disol.in/storage/uploads/users/feedback/L%20R%20Narayanan,_1_1_1_1_1_1_1.mp4");
+
+              if(_aboutProgramText.testimonial !=null){
+                String videoLink = _aboutProgramText.testimonial?.video ?? '';
+                // addUrlToVideoPlayer(videoLink);
+                addUrlToVideoPlayerChewie(videoLink);
+              }
+              // #3 feedback List
+              List<FeedbackList> feedbackList = _aboutProgramText.feedbackList ?? [];
+              List<String> reviewList = _aboutProgramText.reviewsList ?? [];
+
+              print("feedbackList: $feedbackList");
+              return SingleChildScrollView(
+                physics: const ClampingScrollPhysics(),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "About The Program",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          fontFamily: eUser().mainHeadingFont,
+                          color: eUser().mainHeadingColor,
+                          fontSize: eUser().mainHeadingFontSize
+                      ),
+                    ),
+                    SizedBox(
+                      height: 2.h,
+                    ),
+                    buildAboutProgramVideo(),
+                    // SizedBox(height: 2.h),
+                    Card(
+                      elevation: 7,
+                      child: SizedBox(
+                        height: 30.h,
+                        child: FutureBuilder(
+                          future: getCachedPdfViewer(aboutProgramPdf),
+                          builder: (_, snapFile){
+                            if(snapFile.connectionState == ConnectionState.done)
+                            {
+                              if(snapFile.data == null){
+                                print("from: network");
+                                return SfPdfViewer.network(aboutProgramPdf,
+                                  // asset('assets/GWC Program Details.pdf',
+                                  scrollDirection: PdfScrollDirection.horizontal,
+                                  onDocumentLoaded: (details) async{
+                                    writePdfFile(details, aboutProgramPdf);
+                                  },
+                                );
+                              }
+                              else{
+
+                                print("from: file ${snapFile.data}");
+                                return SfPdfViewer.file(
+                                  snapFile.data as File,
+                                  scrollDirection: PdfScrollDirection.horizontal,
+                                );
+                              }
+                            }
+                            else return SizedBox();
+                          },
+                        )
+                      ),
+                      // child: Container(
+                      //   padding: EdgeInsets.symmetric(
+                      //       vertical: 1.h, horizontal: 3.w),
+                      //   decoration: BoxDecoration(
+                      //     color: Colors.white,
+                      //     borderRadius: BorderRadius.circular(5),
+                      //     border: Border.all(color: gPrimaryColor, width: 1),
+                      //     boxShadow: [
+                      //       BoxShadow(
+                      //         color: Colors.grey.withOpacity(0.3),
+                      //         blurRadius: 20,
+                      //         offset: const Offset(2, 10),
+                      //       ),
+                      //     ],
+                      //   ),
+                      //   child: Image(
+                      //     image: AssetImage('assets/images/about_program.jpeg'),
+                      //   ),
+                      //   // child: Text(
+                      //   //   _programText,
+                      //   //   // 'Lorem lpsum is simply dummy text of the printing and typesetting industry. Lorem lpsum has been the industry\'s standard dummy text ever since the 1500s,when an unknown printer took a gallery of type and scrambled it to make a type specimen book.',
+                      //   //   style: TextStyle(
+                      //   //     height: 1.7,
+                      //   //     fontFamily: "GothamBook",
+                      //   //     color: gTextColor,
+                      //   //     fontSize: 9.sp,
+                      //   //   ),
+                      //   // ),
+                      // ),
+                    ),
+                    SizedBox(height: 2.h),
+                    Text(
+                      "Testimonial",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          fontFamily: eUser().mainHeadingFont,
+                          color: eUser().mainHeadingColor,
+                          fontSize: eUser().mainHeadingFontSize
+                      ),
+                    ),
+                    SizedBox(
+                      height: 2.h,
+                    ),
+                    buildTestimonial(),
+                    SizedBox(
+                      height: 2.h,
+                    ),
+                    // buildFeedback(feedbackList),
+                    buildReviews(reviewList),
+                    SizedBox(height: 2.h),
+                    Visibility(
+                      visible: !widget.isFromSitBackScreen,
+                      child: Center(
+                        child: GestureDetector(
+                          onTap: () async{
+                            if(_chewieController != null){
+                              final show = _chewieController!.videoPlayerController.value.isPlaying;
+                              if(show != null && show == true){
+                                _chewieController!.pause();
+                              }
+                            }
+                            if(_testimonialChewieController != null){
+                              final show = _testimonialChewieController!.videoPlayerController.value.isPlaying;
+                              if(show != null && show == true){
+                                _testimonialChewieController!.pause();
+                              }
+                            }
+
+                            print("tap");
+                            final res;
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => const RegisterScreen(),
+                              ),
+                            );
+                          },
+                          child: Container(
+                            width: 40.w,
+                            height: 5.h,
+                            padding:
+                            EdgeInsets.symmetric(vertical: 1.h, horizontal: 15.w),
+                            decoration: BoxDecoration(
+                              color: eUser().buttonColor,
+                              borderRadius: BorderRadius.circular(eUser().buttonBorderRadius),
+                              // border: Border.all(
+                              //     color: eUser().buttonBorderColor,
+                              //     width: eUser().buttonBorderWidth
+                              // ),
+                            ),
+                            child: Center(
+                              child: Text(
+                                'Next',
+                                style: TextStyle(
+                                  fontFamily: eUser().buttonTextFont,
+                                  color: eUser().buttonTextColor,
+                                  fontSize: eUser().buttonTextSize,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
+            else{
+              ErrorModel data = snapshot.data as ErrorModel;
+              print("data.message: ${data.message}");
+              if(data.message!.contains("Connection closed before full header was received")){
+                getFuture();
+              }
+              return Center(
+                  child: Column(
+                    children: [
+                      Text(data.message ?? '',
+                        style: TextStyle(
+                            fontSize: 10.sp,
+                            fontFamily: 'GothamMedium'
+                        ),
+                      ),
+                      TextButton(
+                          onPressed: (){
+                            getFuture();
+                          },
+                          child: Text("Retry",
+                            style: TextStyle(
+                                fontSize: 10.sp,
+                                fontFamily: 'GothamMedium'
+                            ),
+                          )
+                      )
+                    ],
+                  )
+              );
+            }
+          }
+          return buildCircularIndicator();
+        },
+      )
     );
   }
 

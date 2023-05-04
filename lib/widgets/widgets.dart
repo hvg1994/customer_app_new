@@ -1,8 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
 import 'package:image_cropper/image_cropper.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:sizer/sizer.dart';
+import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
 import 'constants.dart';
 import 'package:im_animations/im_animations.dart';
@@ -189,11 +193,11 @@ buildAppBar(VoidCallback func,
         children: [
           Visibility(
             visible: isBackEnable,
-            child: SizedBox(
-              width: 2.h,
-              child: IconButton(
-                onPressed: func,
-                icon: Icon(
+            child: GestureDetector(
+              onTap: func,
+              child: SizedBox(
+                width: 2.h,
+                child: Icon(
                   Icons.arrow_back_ios,
                   color: gMainColor,
                 ),
@@ -568,4 +572,30 @@ MaterialStateProperty<Color> getColor(Color color, Color colorPressed) {
     }
   };
   return MaterialStateProperty.resolveWith(getColor);
+}
+
+
+
+Future<File> getCachedPdfViewer(String url) async{
+  File? _tempFile;
+  final Directory tempPath = await getApplicationDocumentsDirectory();
+  final File tempFile = File(tempPath.path + '/${url.split('/').last}');
+  final bool checkFileExist = await tempFile.exists();
+  if (checkFileExist) {
+    _tempFile = tempFile;
+  }
+  return Future.value(_tempFile);
+}
+
+writePdfFile(PdfDocumentLoadedDetails details, String url) async{
+  print("writePdfFile");
+  final Directory tempPath1 = await getTemporaryDirectory();
+
+  print(tempPath1);
+
+  final Directory tempPath = await getApplicationDocumentsDirectory();
+  final _temp = await File(tempPath.path + '/${url.split('/').last}')
+      .writeAsBytes(await details.document.save());
+
+  print(_temp.exists());
 }

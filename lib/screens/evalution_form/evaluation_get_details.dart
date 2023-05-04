@@ -454,43 +454,48 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
       physics: const AlwaysScrollableScrollPhysics(),
       child: Padding(
         padding:
-            EdgeInsets.symmetric(horizontal: (widget.isFromProfile) ? 2 : 3.w,vertical:(widget.isFromProfile) ? 2.h : 0 ),
+            EdgeInsets.symmetric(horizontal: (widget.isFromProfile) ? 2 : 0,vertical:(widget.isFromProfile) ? 2.h : 0 ),
         child: Column(
           children: [
             if (!widget.isFromProfile)
-              buildAppBar(() {
-                Navigator.pop(context);
-              }),
+              Padding(
+                padding: EdgeInsets.only(left: 1.8.w, right: 1.w, top: 1.h, bottom: 1.h),
+                  child: buildAppBar(() {
+      Navigator.pop(context);
+    })
+              ),
+            Padding(
+              padding: EdgeInsets.only(left: 4.w, right: 4.w),
+              child: _mainView(model)
+            )
             // SizedBox(height: 1.h),
-            buildPersonalDetails(model),
-            SizedBox(height: 2.h),
-            buildHealthDetails(model),
-            SizedBox(height: 2.h),
-            buildDietDetails(model),
-            SizedBox(height: 2.h),
-            buildFoodHabitsDetails(model),
-            SizedBox(height: 2.h),
-            buildLifeStyleDetails(model),
-            SizedBox(height: 2.h),
-            buildBowelDetails(model),
+
           ],
         ),
       ),
     );
   }
 
+  _mainView(ChildGetEvaluationDataModel? model){
+    return Column(
+      children: [
+        buildPersonalDetails(model),
+        SizedBox(height: 2.h),
+        buildHealthDetails(model),
+        SizedBox(height: 2.h),
+        buildDietDetails(model),
+        SizedBox(height: 2.h),
+        buildFoodHabitsDetails(model),
+        SizedBox(height: 2.h),
+        buildLifeStyleDetails(model),
+        SizedBox(height: 2.h),
+        buildBowelDetails(model),
+      ],
+    );
+  }
+
   buildContainer(String title) {
     return Container(
-      // padding: EdgeInsets.symmetric(vertical: 1.h),
-      // width: double.maxFinite,
-      // decoration: BoxDecoration(
-      //   border: Border.all(
-      //     color: gHintTextColor,
-      //     width: 1,
-      //   ),
-      //   borderRadius: BorderRadius.circular(8),
-      //   color: gWhiteColor,
-      // ),
       child: Text(
         title,
         textAlign: TextAlign.start,
@@ -846,8 +851,7 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
         SizedBox(height: 1.h),
         buildLabelTextField("Urine Color", fontSize: questionFont),
         SizedBox(height: 1.h),
-        buildUrineColorRadioButton(
-            "${model?.urineColor.toString().capitalize()}"),
+        buildUrineColorRadioButton("${model?.urineColor.toString().capitalize()}"),
         buildContainer(model?.urineColorOther ?? ""),
         SizedBox(height: 1.h),
         buildLabelTextField("Urine Smell", fontSize: questionFont),
@@ -861,7 +865,7 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
         SizedBox(height: 1.h),
         buildUrineLookRadioButton("${model?.urineLookLike}"),
         SizedBox(height: 1.h),
-        buildContainer(model?.urineSmellOther ?? ""),
+        buildContainer(model?.urineLookLikeOther ?? ""),
         SizedBox(height: 1.h),
         buildLabelTextField("Which one is the closest match to your stool",
             fontSize: questionFont),
@@ -1386,209 +1390,17 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
             fontSize: questionFont),
         SizedBox(height: 1.h),
         buildMealPreferenceButton("${model?.afterMealPreference}"),
-        // ListView(
-        //   shrinkWrap: true,
-        //   physics: const BouncingScrollPhysics(),
-        //   children: [
-        //     Row(
-        //       children: [
-        //         Radio(
-        //           value: mealPreferenceList[0],
-        //           activeColor: kPrimaryColor,
-        //           groupValue: model?.afterMealPreference,
-        //           onChanged: (value) {},
-        //         ),
-        //         Expanded(
-        //           child: Text(
-        //             mealPreferenceList[0],
-        //             style: buildTextStyle(),
-        //           ),
-        //         ),
-        //       ],
-        //     ),
-        //     Row(
-        //       children: [
-        //         Radio(
-        //           value: mealPreferenceList[1],
-        //           activeColor: kPrimaryColor,
-        //           groupValue: model?.afterMealPreference,
-        //           onChanged: (value) {},
-        //         ),
-        //         Expanded(
-        //           child: Text(
-        //             mealPreferenceList[1],
-        //             style: buildTextStyle(),
-        //           ),
-        //         ),
-        //       ],
-        //     ),
-        //     Row(
-        //       children: [
-        //         Radio(
-        //           value: mealPreferenceList[2],
-        //           activeColor: kPrimaryColor,
-        //           groupValue: model?.afterMealPreference,
-        //           onChanged: (value) {},
-        //         ),
-        //         Text(
-        //           mealPreferenceList[2],
-        //           style: buildTextStyle(),
-        //         ),
-        //       ],
-        //     ),
-        //     buildContainer(model?.afterMealPreferenceOther ?? ""),
-        //   ],
-        // ),
+        buildContainer(model?.afterMealPreferenceOther ?? ""),
         SizedBox(height: 1.h),
         buildLabelTextField("Hunger Pattern", fontSize: questionFont),
         SizedBox(height: 1.h),
         buildHungerPatternButton("${model?.hungerPattern}"),
-        // ListView(
-        //   shrinkWrap: true,
-        //   physics: const BouncingScrollPhysics(),
-        //   children: [
-        //     Row(
-        //       children: [
-        //         Radio(
-        //           value: hungerPatternList[0],
-        //           activeColor: kPrimaryColor,
-        //           groupValue: model?.hungerPattern,
-        //           onChanged: (value) {},
-        //         ),
-        //         Expanded(
-        //           child: Text(
-        //             hungerPatternList[0],
-        //             style: buildTextStyle(),
-        //           ),
-        //         ),
-        //       ],
-        //     ),
-        //     Row(
-        //       children: [
-        //         Radio(
-        //           value: hungerPatternList[1],
-        //           activeColor: kPrimaryColor,
-        //           groupValue: model?.hungerPattern,
-        //           onChanged: (value) {},
-        //         ),
-        //         Expanded(
-        //           child: Text(
-        //             hungerPatternList[1],
-        //             style: buildTextStyle(),
-        //           ),
-        //         ),
-        //       ],
-        //     ),
-        //     Row(
-        //       children: [
-        //         Radio(
-        //           value: hungerPatternList[2],
-        //           activeColor: kPrimaryColor,
-        //           groupValue: model?.hungerPattern,
-        //           onChanged: (value) {},
-        //         ),
-        //         Expanded(
-        //           child: Text(
-        //             hungerPatternList[2],
-        //             style: buildTextStyle(),
-        //           ),
-        //         ),
-        //       ],
-        //     ),
-        //     Row(
-        //       children: [
-        //         Radio(
-        //           value: hungerPatternList[3],
-        //           activeColor: kPrimaryColor,
-        //           groupValue: model?.hungerPattern,
-        //           onChanged: (value) {},
-        //         ),
-        //         Expanded(
-        //           child: Text(
-        //             hungerPatternList[3],
-        //             style: buildTextStyle(),
-        //           ),
-        //         ),
-        //       ],
-        //     ),
-        //     buildContainer(model?.hungerPatternOther ?? ""),
-        //   ],
-        // ),
+        buildContainer(model?.hungerPatternOther ?? ""),
         SizedBox(height: 1.h),
         buildLabelTextField("Bowel Pattern", fontSize: questionFont),
         SizedBox(height: 1.h),
         buildBowelPatternButton("${model?.bowelPattern}"),
-        // ListView(
-        //   shrinkWrap: true,
-        //   physics: const BouncingScrollPhysics(),
-        //   children: [
-        //     Row(
-        //       children: [
-        //         Radio(
-        //           value: bowelPatternList[0],
-        //           activeColor: kPrimaryColor,
-        //           groupValue: model?.bowelPattern,
-        //           onChanged: (value) {},
-        //         ),
-        //         Expanded(
-        //           child: Text(
-        //             bowelPatternList[0],
-        //             style: buildTextStyle(),
-        //           ),
-        //         ),
-        //       ],
-        //     ),
-        //     Row(
-        //       children: [
-        //         Radio(
-        //           value: bowelPatternList[1],
-        //           activeColor: kPrimaryColor,
-        //           groupValue: model?.bowelPattern,
-        //           onChanged: (value) {},
-        //         ),
-        //         Expanded(
-        //           child: Text(
-        //             bowelPatternList[1],
-        //             style: buildTextStyle(),
-        //           ),
-        //         ),
-        //       ],
-        //     ),
-        //     Row(
-        //       children: [
-        //         Radio(
-        //           value: bowelPatternList[2],
-        //           activeColor: kPrimaryColor,
-        //           groupValue: model?.bowelPattern,
-        //           onChanged: (value) {},
-        //         ),
-        //         Expanded(
-        //           child: Text(
-        //             bowelPatternList[2],
-        //             style: buildTextStyle(),
-        //           ),
-        //         ),
-        //       ],
-        //     ),
-        //     Row(
-        //       children: [
-        //         Radio(
-        //           value: bowelPatternList[3],
-        //           activeColor: kPrimaryColor,
-        //           groupValue: model?.bowelPattern,
-        //           onChanged: (value) {},
-        //         ),
-        //         Expanded(
-        //           child: Text(
-        //             bowelPatternList[3],
-        //             style: buildTextStyle(),
-        //           ),
-        //         ),
-        //       ],
-        //     ),
-        //     buildContainer(model?.bowelPatternOther ?? ""),
-        //   ],
-        // ),
+        buildContainer(model?.bowelPatternOther ?? ""),
         SizedBox(height: 1.h),
       ],
     );

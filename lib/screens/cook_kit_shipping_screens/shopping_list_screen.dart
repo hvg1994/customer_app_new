@@ -64,7 +64,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
   Widget build(BuildContext context) {
     return (showShoppingLoading)
         ? buildCircularIndicator()
-        : Column(
+        : (shoppingList.isNotEmpty) ? Column(
             children: [
               SizedBox(height: 1.h),
               Padding(
@@ -77,11 +77,11 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
                     labelColor: gWhiteColor,
                     controller: _tabController,
                     unselectedLabelStyle: TextStyle(
-                        fontFamily: "GothamBook",
+                        fontFamily: kFontBook,
                         color: gHintTextColor,
                         fontSize: 9.sp),
                     labelStyle: TextStyle(
-                        fontFamily: "GothamMedium",
+                        fontFamily: kFontMedium,
                         color: gBlackColor,
                         fontSize: 11.sp),
                     indicator: const BoxDecoration(
@@ -114,7 +114,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
                 ),
               ),
             ],
-          );
+          ) : noData();
   }
 
   shoppingUi(List<ChildGetShoppingModel> shoppingItem) {

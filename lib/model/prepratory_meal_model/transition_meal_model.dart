@@ -10,6 +10,7 @@ class TransitionMealModel {
   String? currentDayStatus;
   String? previousDayStatus;
   String? isTransMealCompleted;
+  String? dosDontPdfLink;
   Map<String, TransSubItems>? data;
 
   // Map<String, List<TransMealSlot>>? data;
@@ -26,6 +27,8 @@ class TransitionMealModel {
     currentDayStatus =json['current_day_status'].toString();
     previousDayStatus = json['previous_day_status'].toString();
     isTransMealCompleted = json['is_trans_completed'];
+    dosDontPdfLink = json['do_dont'];
+
     // data = json['data'] != null ? Data.fromJson(json['data']) : null;
     // if(json['data'] != null){
     //   data = {};
@@ -60,6 +63,7 @@ class TransitionMealModel {
     data['current_day'] = this.currentDay;
     data['previous_day_status'] = this.previousDayStatus;
     data['current_day_status'] = this.currentDayStatus;
+    data['do_dont'] = this.dosDontPdfLink;
     if (this.data != null) {
       data['data'] = this.data!;
     }

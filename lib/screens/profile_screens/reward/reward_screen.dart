@@ -89,8 +89,8 @@ class _RewardScreenState extends State<RewardScreen> {
                               "Refer your friends",
                               textAlign: TextAlign.center,
                               style: TextStyle(
-                                  fontFamily: "GothamBook",
-                                  color: gMainColor,
+                                  fontFamily: kFontBook,
+                                  color: gWhiteColor,
                                   fontSize: 12.sp),
                             ),
                             SizedBox(
@@ -100,8 +100,8 @@ class _RewardScreenState extends State<RewardScreen> {
                               "Earn $rupeeSymbol 150 Each",
                               textAlign: TextAlign.center,
                               style: TextStyle(
-                                  fontFamily: "GothamBold",
-                                  color: gMainColor,
+                                  fontFamily: kFontBold,
+                                  color: gWhiteColor,
                                   fontSize: 11.sp),
                             ),
                           ],
@@ -162,7 +162,7 @@ class _RewardScreenState extends State<RewardScreen> {
                                                   child: Center(
                                                     child: Text('There is No Rewards',
                                                       style: TextStyle(
-                                                        fontFamily: 'GothamBook'
+                                                        fontFamily: kFontBook
                                                       ),
                                                     ),
                                                   ),
@@ -248,7 +248,7 @@ class _RewardScreenState extends State<RewardScreen> {
                                                       Text(
                                                         "TOTAL REWARD",
                                                         style: TextStyle(
-                                                            fontFamily: "GothamBook",
+                                                            fontFamily: kFontBook,
                                                             color: gTextColor,
                                                             letterSpacing: 0.4,
                                                             fontSize: 11.sp),
@@ -256,7 +256,7 @@ class _RewardScreenState extends State<RewardScreen> {
                                                       Text(
                                                         "${model.totalReward} Pts",
                                                         style: TextStyle(
-                                                            fontFamily: "GothamBold",
+                                                            fontFamily: kFontBold,
                                                             color: gTextColor,
                                                             height: 1.5,
                                                             fontSize: 11.sp),
@@ -264,10 +264,13 @@ class _RewardScreenState extends State<RewardScreen> {
                                                     ],
                                                   ),
                                                 ),
-                                                Icon(
-                                                  Icons.arrow_forward_ios_sharp,
-                                                  color: gMainColor,
-                                                  size: 2.h,
+                                                Visibility(
+                                                  visible: false,
+                                                  child: Icon(
+                                                    Icons.arrow_forward_ios_sharp,
+                                                    color: gMainColor,
+                                                    size: 2.h,
+                                                  ),
                                                 )
                                               ],
                                             ),
@@ -324,7 +327,7 @@ class _RewardScreenState extends State<RewardScreen> {
       minLeadingWidth: 30,
       title: Text('$rupee Pt',
         style: TextStyle(
-          fontFamily: 'GothamMedium',
+          fontFamily: kFontMedium,
           fontSize: 11.sp,
             color: gTextColor
         ),
@@ -333,17 +336,16 @@ class _RewardScreenState extends State<RewardScreen> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          //GothamRoundedBold_21016
           Text(name,
             style: TextStyle(
-                fontFamily: 'GothamMedium',
+                fontFamily: kFontMedium,
                 fontSize: 10.sp,
               color: gTextColor
             ),
           ),
           Text(DateFormat('yyyy/MM/dd, hh:mm a').format(DateTime.parse(time).toLocal()).toString(),
             style: TextStyle(
-                fontFamily: 'GothamLight',
+                fontFamily: kFontBook,
                 fontSize: 9.sp,
                 color: gTextColor
             ),
@@ -369,7 +371,7 @@ class _RewardScreenState extends State<RewardScreen> {
               "Frequently asked questions",
               textAlign: TextAlign.start,
               style: TextStyle(
-                  fontFamily: "GothamBold",
+                  fontFamily: kFontBold,
                   color: gTextColor,
                   fontSize: 12.sp),
             ),
@@ -403,7 +405,7 @@ class _RewardScreenState extends State<RewardScreen> {
                 child: Text('What is the Refer and Earn program?',
                   style: TextStyle(
                       fontSize: 10.5.sp,
-                      fontFamily: 'GothamMedium'
+                      fontFamily: kFontMedium
                   ),
                 ),
               ),

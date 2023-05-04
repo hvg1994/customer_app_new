@@ -91,14 +91,17 @@ class _TestimonialListScreenState extends State<TestimonialListScreen> {
     return SafeArea(
       child: Scaffold(
         body: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: EdgeInsets.only(top: 1.h),
           child: Column(
             children: [
               buildAppBar(() => null,
                 isBackEnable: false
               ),
               Expanded(
-                child: newUI()
+                child: Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: newUI(),
+                )
               )
             ],
           ),
@@ -289,7 +292,7 @@ class _TestimonialListScreenState extends State<TestimonialListScreen> {
         aspectRatio: 16/9,
         autoInitialize: true,
         showOptions: false,
-        autoPlay: true,
+        autoPlay: false,
         // customControls: Center(
         //   child: FittedBox(
         //     child: Row(
@@ -389,6 +392,7 @@ class _TestimonialListScreenState extends State<TestimonialListScreen> {
             child: Center(
               child:  OverlayVideo(
                 controller: _chewieController!,
+                isControlsVisible: false,
               )
             ),
           ),

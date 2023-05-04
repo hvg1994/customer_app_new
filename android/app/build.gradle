@@ -13,12 +13,12 @@ if (flutterRoot == null) {
 
 def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
 if (flutterVersionCode == null) {
-    flutterVersionCode = '13'
+    flutterVersionCode = '16'
 }
 
 def flutterVersionName = localProperties.getProperty('flutter.versionName')
 if (flutterVersionName == null) {
-    flutterVersionName = '13.0'
+    flutterVersionName = '16.0'
 }
 
 
@@ -64,7 +64,7 @@ android {
         applicationId "com.fembuddy.gwc_customer"
         minSdkVersion 21
         targetSdkVersion sdkVersion
-        versionCode 13
+        versionCode 16
         versionName flutterVersionName
         multiDexEnabled true
 //        ndk {

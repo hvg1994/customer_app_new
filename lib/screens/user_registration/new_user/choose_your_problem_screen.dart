@@ -99,38 +99,53 @@ class _ChooseYourProblemScreenState extends State<ChooseYourProblemScreen> {
       child: Scaffold(
         backgroundColor: gBackgroundColor,
         body: Padding(
-          padding:
-          EdgeInsets.only(left: 4.w, right: 4.w, top: 2.h, bottom: 1.h),
+          padding: EdgeInsets.only(left: 1.w, right: 1.w, top: 1.h),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              buildAppBar(() {
-                Navigator.pop(context);
-              }),
-              SizedBox(
-                height: 1.h,
+              Padding(
+                  padding: EdgeInsets.only(left: 1.5.w, right: 1.5.w),
+                child: buildAppBar(() {
+                  Navigator.pop(context);
+                })
               ),
-              Text(
-                "Choose Your Gut Issue",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    fontFamily: eUser().mainHeadingFont,
-                    fontSize: eUser().mainHeadingFontSize,
-                    color: eUser().mainHeadingColor
-                ),
-              ),
-              SizedBox(
-                height: 2.5.h,
-              ),
-              Expanded(
-                flex: 4,
-                child: buildChooseProblem(),
-              ),
+              Expanded(child: _mainView())
             ],
           ),
         ),
       ),
+    );
+  }
+
+  _mainView(){
+    return Padding(
+        padding: EdgeInsets.only(left: 4.w, right: 4.w),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            height: 1.h,
+          ),
+          Text(
+            "Choose Your Gut Issue",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+                fontFamily: eUser().mainHeadingFont,
+                fontSize: eUser().mainHeadingFontSize,
+                color: eUser().mainHeadingColor
+            ),
+          ),
+          SizedBox(
+            height: 2.5.h,
+          ),
+          Expanded(
+            flex: 4,
+            child: buildChooseProblem(),
+          ),
+        ],
+      )
     );
   }
 
@@ -220,7 +235,7 @@ class _ChooseYourProblemScreenState extends State<ChooseYourProblemScreen> {
                                                 ),
                                               ),
                                             ),
-                                            SizedBox(height: 1.h),
+                                            const SizedBox(height: 1),
                                           ],
                                         ),
                                       ),

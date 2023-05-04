@@ -467,7 +467,8 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen>with
                                       else{
                                         AppConfig().showSnackbar(context, "Uid/accessToken/join url not found");
                                       }
-                                    }else{
+                                    }
+                                    else{
                                       if(res.difference(curTime).inMinutes > 5){
                                         showJoinPopup();
                                       }

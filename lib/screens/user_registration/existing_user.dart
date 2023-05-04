@@ -684,7 +684,7 @@ class _ExistingUserState extends State<ExistingUser> {
                       onTap: (_resendTimer != 0 || !enableResendOtp)
                           ? null
                           : () {
-                        getOtp(phoneController.text);
+                        getOtp(phoneController.text, isFromResendOtp: true);
                         // Navigator.push(context, MaterialPageRoute(builder: (_) => ResendOtpScreen()));
                       },
                       child: Text(
@@ -1039,7 +1039,7 @@ class _ExistingUserState extends State<ExistingUser> {
   bool isPhone(String input) =>
       RegExp(r'^(?:[+0]9)?[0-9]{10}$').hasMatch(input);
 
-  void getOtp(String phoneNumber) async {
+  void getOtp(String phoneNumber, {bool isFromResendOtp = false}) async {
     setState(() {
       otpSent = true;
     });
@@ -1054,7 +1054,7 @@ class _ExistingUserState extends State<ExistingUser> {
           showOpenBottomSheetProgress = false;
         if (kDebugMode) otpController.text = result.otp!;
       });
-      buildGetOTP(context);
+      if(!isFromResendOtp) buildGetOTP(context);
       Future.delayed(Duration(seconds: 2)).whenComplete(() {
         setState(() {
           otpSent = false;
@@ -1062,7 +1062,8 @@ class _ExistingUserState extends State<ExistingUser> {
         });
       });
       // if (kDebugMode) _timer!.cancel();
-    } else {
+    }
+    else {
       setState(() {
         otpSent = false;
         showOpenBottomSheetProgress = false;
@@ -1070,7 +1071,7 @@ class _ExistingUserState extends State<ExistingUser> {
       ErrorModel response = result as ErrorModel;
       if(_timer != null) _timer!.cancel();
       _resendTimer = 0;
-      AppConfig().showSnackbar(context, response.message!, isError: true);
+      AppConfig().showSnackbar(context, AppConfig.numberNotFound, isError: true);
     }
   }
 

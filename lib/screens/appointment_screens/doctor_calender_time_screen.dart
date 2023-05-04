@@ -129,155 +129,168 @@ class _DoctorCalenderTimeScreenState extends State<DoctorCalenderTimeScreen> {
       child: Scaffold(
         body: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
-          child: Padding(
-            padding:
-                EdgeInsets.only(left: 4.w, right: 4.w, top: 1.h, bottom: 5.h),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                buildAppBar(() {
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: EdgeInsets.only(left: 1.8.w, right: 1.w, top: 1.h),
+                child: buildAppBar(() {
                   Navigator.pop(context);
-                }),
-                SizedBox(height: 2.h),
-                (!widget.isReschedule) ? buildDoctor() : buildDoctorExpList(),
-                SizedBox(height: 1.h),
-                // Row(
-                //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                //   children: [
-                //     buildDoctorDetails(
-                //         "Patient", "10K", "assets/images/Patient.svg"),
-                //     buildDoctorDetails("Experience", "12 Years",
-                //         "assets/images/Experences.svg"),
-                //     buildDoctorDetails(
-                //         "Rating", "4.5", "assets/images/star.svg"),
-                //   ],
-                // ),
-                SizedBox(
-                  height: 2.h,
-                ),
-                Visibility(
-                  visible: widget.isReschedule,
-                  child: Padding(
-                    padding:
-                    EdgeInsets.symmetric(horizontal: 12.w),
-                    child: RichText(
-                      textAlign: TextAlign.center,
-                      text: TextSpan(
-                        children: <TextSpan>[
-                          TextSpan(
-                            text: 'Your Previous Appointment was Booked ',
-                            style: TextStyle(
-                              height: 1.5,
-                              fontSize: 10.sp,
-                              fontFamily: kFontBook,
-                              color: gBlackColor,
-                            ),
-                          ),
-                          TextSpan(
-                            text: (widget.prevBookingDate != null) ? '@ ${getTime()}  ${DateFormat('dd MMM yyyy').format(DateTime.parse((widget.prevBookingDate.toString()))).toString()}' : '',
-                            style: TextStyle(
-                              height: 1.5,
-                              fontSize: 11.sp,
-                              fontFamily: kFontMedium,
-                              color: gsecondaryColor,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                Visibility(
-                  visible: widget.isReschedule,
-                  child: SizedBox(
-                    height: 3.h,
-                  ),
-                ),
-                Text(
-                  "Choose Your Preferred Day",
-                  style: TextStyle(
-                      fontFamily: kFontBold,
-                      color: eUser().mainHeadingColor,
-                      fontSize: 11.sp),
-                ),
-                buildChooseDay(),
-                SizedBox(
-                  height: 1.h,
-                ),
-                Text(
-                  "Choose Your Preferred Time",
-                  style: TextStyle(
-                      fontFamily: kFontBold,
-                      color: eUser().mainHeadingColor,
-                      fontSize: 11.sp),
-                ),
-                SizedBox(height: 2.h),
-                SizedBox(
-                  width: double.infinity,
-                  child: (isLoading) ? Center(
-                    child: buildCircularIndicator(),
-                  ) : (slotList!.isEmpty) ? Center(
-                    child:  Text(
-                      slotErrorText,
-                      style: TextStyle(
-                          fontFamily: kFontBold,
-                          color: gPrimaryColor,
-                          fontSize: 10.sp),
-                    ),
-                  ) : Wrap(
-                    alignment: WrapAlignment.center,
-                    runSpacing: 20,
-                    spacing: 20,
-                    children: [
-                      // ...list.map((e) => buildChooseTime(e)).toList(),
-                      ...slotList!.values.map((e) => buildChooseTime(e)).toList()
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  height: 6.h,
-                ),
-                Center(
-                  child: GestureDetector(
-                    onTap: (isSelected.isEmpty || showBookingProgress) ? (){
-                      AppConfig().showSnackbar(context, 'Please select time');
-                    } : () {
-                      buildConfirm(DateFormat('yyyy-MM-dd').format(selectedDate), selectedTimeSlotFullName);
-                    },
-                    child: Container(
-                      width: 60.w,
-                      height: 5.h,
-                      // padding: EdgeInsets.symmetric(
-                      //     vertical: 1.h, horizontal: 25.w),
-                      decoration: BoxDecoration(
-                        color: eUser().buttonColor,
-                        borderRadius: BorderRadius.circular(eUser().buttonBorderRadius),
-                        // border: Border.all(
-                        //     color: eUser().buttonBorderColor,
-                        //     width: eUser().buttonBorderWidth
-                        // ),
-                      ),
-                      child: (showBookingProgress)
-                          ? buildThreeBounceIndicator(color: eUser().threeBounceIndicatorColor)
-                          : Center(
-                        child: Text(
-                          'Next',
-                          style: TextStyle(
-                            fontFamily: eUser().buttonTextFont,
-                            color: eUser().buttonTextColor,
-                            fontSize: eUser().buttonTextSize,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                )
-              ],
-            ),
+                })
+              ),
+              Padding(
+                padding: EdgeInsets.only(left: 4.w, right: 4.w),
+                child: _mainView()
+              )
+            ],
           ),
         ),
       ),
+    );
+  }
+
+  _mainView(){
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(height: 2.h),
+        (!widget.isReschedule) ? buildDoctor() : buildDoctorExpList(),
+        SizedBox(height: 1.h),
+        // Row(
+        //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        //   children: [
+        //     buildDoctorDetails(
+        //         "Patient", "10K", "assets/images/Patient.svg"),
+        //     buildDoctorDetails("Experience", "12 Years",
+        //         "assets/images/Experences.svg"),
+        //     buildDoctorDetails(
+        //         "Rating", "4.5", "assets/images/star.svg"),
+        //   ],
+        // ),
+        SizedBox(
+          height: 2.h,
+        ),
+        Visibility(
+          visible: widget.isReschedule,
+          child: Padding(
+            padding:
+            EdgeInsets.symmetric(horizontal: 12.w),
+            child: RichText(
+              textAlign: TextAlign.center,
+              text: TextSpan(
+                children: <TextSpan>[
+                  TextSpan(
+                    text: 'Your Previous Appointment was Booked ',
+                    style: TextStyle(
+                      height: 1.5,
+                      fontSize: 10.sp,
+                      fontFamily: kFontBook,
+                      color: gBlackColor,
+                    ),
+                  ),
+                  TextSpan(
+                    text: (widget.prevBookingDate != null) ? '@ ${getTime()}  ${DateFormat('dd MMM yyyy').format(DateTime.parse((widget.prevBookingDate.toString()))).toString()}' : '',
+                    style: TextStyle(
+                      height: 1.5,
+                      fontSize: 11.sp,
+                      fontFamily: kFontMedium,
+                      color: gsecondaryColor,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        Visibility(
+          visible: widget.isReschedule,
+          child: SizedBox(
+            height: 3.h,
+          ),
+        ),
+        Text(
+          "Choose Your Preferred Day",
+          style: TextStyle(
+              fontFamily: kFontBold,
+              color: eUser().mainHeadingColor,
+              fontSize: 11.sp),
+        ),
+        buildChooseDay(),
+        SizedBox(
+          height: 1.h,
+        ),
+        Text(
+          "Choose Your Preferred Time",
+          style: TextStyle(
+              fontFamily: kFontBold,
+              color: eUser().mainHeadingColor,
+              fontSize: 11.sp),
+        ),
+        SizedBox(height: 2.h),
+        SizedBox(
+          width: double.infinity,
+          child: (isLoading) ? Center(
+            child: buildCircularIndicator(),
+          ) : (slotList!.isEmpty) ? Center(
+            child:  Text(
+              slotErrorText,
+              style: TextStyle(
+                  fontFamily: kFontBold,
+                  color: gHintTextColor,
+                  fontSize: 10.sp
+              ),
+            ),
+          ) : Wrap(
+            alignment: WrapAlignment.center,
+            runSpacing: 20,
+            spacing: 20,
+            children: [
+              // ...list.map((e) => buildChooseTime(e)).toList(),
+              ...slotList!.values.map((e) => buildChooseTime(e)).toList()
+            ],
+          ),
+        ),
+        SizedBox(
+          height: 6.h,
+        ),
+        Center(
+          child: GestureDetector(
+            onTap: (isSelected.isEmpty || showBookingProgress) ? (){
+              AppConfig().showSnackbar(context, 'Please select time');
+            } : () {
+              buildConfirm(DateFormat('yyyy-MM-dd').format(selectedDate), selectedTimeSlotFullName);
+            },
+            child: Container(
+              width: 60.w,
+              height: 5.h,
+              // padding: EdgeInsets.symmetric(
+              //     vertical: 1.h, horizontal: 25.w),
+              decoration: BoxDecoration(
+                color: eUser().buttonColor,
+                borderRadius: BorderRadius.circular(eUser().buttonBorderRadius),
+                // border: Border.all(
+                //     color: eUser().buttonBorderColor,
+                //     width: eUser().buttonBorderWidth
+                // ),
+              ),
+              child: (showBookingProgress)
+                  ? buildThreeBounceIndicator(color: eUser().threeBounceIndicatorColor)
+                  : Center(
+                child: Text(
+                  'Next',
+                  style: TextStyle(
+                    fontFamily: eUser().buttonTextFont,
+                    color: eUser().buttonTextColor,
+                    fontSize: eUser().buttonTextSize,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        )
+      ],
     );
   }
 

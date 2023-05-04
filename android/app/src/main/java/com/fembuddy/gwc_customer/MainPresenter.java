@@ -450,6 +450,13 @@ public class MainPresenter extends AppCompatActivity implements BandyerModuleObs
         @Override
         public void onActivityError(@NonNull Chat chat, @NonNull WeakReference<AppCompatActivity> activity, @NonNull ChatException error) {
             Log.e(TAG, "onChatActivityError " + error.getMessage());
+            resultMap = new HashMap<String, String>()
+            {{
+                put("status", "onChatActivityError");
+                put("error", error.getMessage());
+            }};
+            if(events != null)
+                events.success(resultMap);
         }
 
         @Override

@@ -52,6 +52,8 @@ class _PreparatoryPlanScreenState extends State<PreparatoryPlanScreen>
   String selectedSlot = "";
   String selectedItemName = "";
 
+  String? doDontPdfLink;
+
   getPrepratoryMeals() async {
     final result = await PrepratoryMealService(repository: repository)
         .getPrepratoryMealService();
@@ -72,6 +74,7 @@ class _PreparatoryPlanScreenState extends State<PreparatoryPlanScreen>
       final dataList = res.data ?? {};
       print("dataList ==> $dataList");
       planNotePdfLink = res.note;
+      doDontPdfLink = res.dosDontPdfLink;
       if (res.days != null) totalDays = res.days;
       if (res.currentDay != null) dayNumber = res.currentDay;
 
@@ -138,7 +141,20 @@ class _PreparatoryPlanScreenState extends State<PreparatoryPlanScreen>
                         },
                         showHelpIcon: true,
                         helpOnTap: (){
-                          Navigator.push(context, MaterialPageRoute(builder: (_)=> DosDontsProgramScreen()));
+                          // if(doDontPdfLink != null || doDontPdfLink!.isNotEmpty){
+                          //   Navigator.push(context, MaterialPageRoute(builder: (ctx)=>
+                          //       MealPdf(pdfLink: doDontPdfLink! ,
+                          //           heading: doDontPdfLink?.split('/').last ?? '',
+                          //           isVideoWidgetVisible: false,
+                          //           headCircleIcon: bsHeadPinIcon,
+                          //           topHeadColor: kBottomSheetHeadGreen,
+                          //           isSheetCloseNeeded: true,
+                          //           sheetCloseOnTap: (){
+                          //             Navigator.pop(context);
+                          //           }
+                          //       )));
+                          // }
+                          Navigator.push(context, MaterialPageRoute(builder: (_)=> DosDontsProgramScreen(pdfLink: doDontPdfLink!,)));
                         }
                       ),
                     ),

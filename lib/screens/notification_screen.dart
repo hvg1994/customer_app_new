@@ -32,7 +32,7 @@ import '../model/local_storage_dashboard_model.dart';
 import '../utils/app_config.dart';
 
 enum NotificationTypeEnum{
-  meal_plan, enquiry, report, appointment, shopping, reminder_appointment, new_appointment
+  meal_plan, enquiry, report, appointment, shopping, reminder_appointment, new_appointment, doctor_requested_reports
 }
 class NotificationScreen extends StatefulWidget {
   const NotificationScreen({Key? key}) : super(key: key);
@@ -356,6 +356,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
       asset = 'assets/images/notification/booking.png';
     }
     else if(type == NotificationTypeEnum.shopping.name){
+      asset = 'assets/images/notification/list_upload.png';
+    }
+    else if(type == NotificationTypeEnum.doctor_requested_reports.name){
       asset = 'assets/images/notification/list_upload.png';
     }
 

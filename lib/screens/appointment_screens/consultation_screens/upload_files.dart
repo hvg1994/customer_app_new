@@ -437,6 +437,7 @@ class _UploadFilesState extends State<UploadFiles> {
 
   getUserReportList() async {
     print("getUserReportList");
+    showUploadProgress = true;
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       openProgressDialog(context);
     });
@@ -479,7 +480,8 @@ class _UploadFilesState extends State<UploadFiles> {
       print("result.data: ${result.data}");
       setState(() {});
       // AppConfig().showSnackbar(context, result.message ?? '');
-    } else {
+    }
+    else {
       ErrorModel result = res;
       AppConfig().showSnackbar(context, result.message ?? '', isError: true);
       setState(() {
@@ -516,7 +518,7 @@ class _UploadFilesState extends State<UploadFiles> {
                       fontSize: 12.sp),
                 ),
                 SizedBox(height: 2.h),
-                (doctorRequestedReports.isEmpty)
+                (showUploadProgress) ? SizedBox() : (doctorRequestedReports.isEmpty)
                     ? Padding(
                   padding: EdgeInsets.symmetric(vertical: 15.h),
                   child: const Center(
@@ -549,6 +551,10 @@ class _UploadFilesState extends State<UploadFiles> {
                             Navigator.push(context, MaterialPageRoute(builder: (ctx)=> MealPdf(
                                 isVideoWidgetVisible: false,
                                 pdfLink: url ,
+                                isSheetCloseNeeded: true,
+                                sheetCloseOnTap: (){
+                                  Navigator.pop(context);
+                                },
                                 heading: doctorRequestedReports[index]
                                     .report
                                     .toString()
@@ -970,12 +976,12 @@ class _UploadFilesState extends State<UploadFiles> {
 
   submitDoctorRequestedReport(List<File> selectedFilesList, List selectedFilesIds) async{
     multipartFileList.clear();
-      // openProgressDialog(context);
-      for (var element in selectedFilesList) {
-        multipartFileList.add(await http.MultipartFile.fromPath("files[]", element.path));
-      }
+      openProgressDialog(context);
+    for (var element in selectedFilesList) {
+      multipartFileList.add(await http.MultipartFile.fromPath("files[]", element.path));
+    }
 
-      print("multipartFile: $multipartFileList");
+    print("multipartFile: $multipartFileList");
 
     final res = await ReportService(repository: repository)
         .submitDoctorRequestedReportService(selectedFilesIds, multipartFileList);
@@ -988,15 +994,15 @@ class _UploadFilesState extends State<UploadFiles> {
       print(result.errorMsg);
       AppConfig().showSnackbar(context, result.errorMsg ?? '');
       reportsObject.forEach((element) {
-          element.isSubmited = true;
-          element.path = [];
+        element.isSubmited = true;
+        element.path = [];
       });
       otherFilesObject.clear();
       setState(() {});
     }
 
-      // Navigator.pop(context);
-
+    Navigator.pop(context);
+    Navigator.pop(context);
 
   }
   // Future submitDoctorRequestedReport(String filePath, String reportId) async {
@@ -1027,18 +1033,18 @@ class _UploadFilesState extends State<UploadFiles> {
 
   _createFolder({String? url})async{
     final permissionStatus = await Permission.storage.status;
-    var status = await Permission.manageExternalStorage.status;
-
-    if(!permissionStatus.isGranted || !status.isGranted){
+    if(!permissionStatus.isGranted){
       Permission.storage.request();
-      Permission.manageExternalStorage.request();
     }
-    final folderName="GWC";
-    final path = Directory("storage/emulated/0/$folderName");
+    const folderName="GWC";
+
+    final path = Directory("/storage/emulated/0/Download/$folderName");
+
     if ((await path.exists())){
       print("exist");
       if(url!= null) storeToFolder(path.path, url);
-    }else{
+    }
+    else{
       print("not exist");
       path.create().then((value) {
         if(url!= null) storeToFolder(path.path, url);
@@ -1287,6 +1293,16 @@ class _UploadFilesState extends State<UploadFiles> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            buildReportList(
+                'Prescription',
+                id: 'pres',
+                isSingleIcon: false,
+                onTap: () {},
+                onSecondaryIconTap: (){
+                    _createFolder(url: "https://gwc.disol.in/storage/uploads/users/medical_report/Gc_Kiran-mr_report.pdf");
+
+                }
+            ),
             buildReportList('Blood Report', onTap: () {
               showChooserSheet();
             }),

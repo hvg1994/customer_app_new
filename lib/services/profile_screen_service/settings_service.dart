@@ -1,8 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 
 import '../../model/profile_model/terms_condition_model.dart';
 import '../../repository/profile_repository/settings_repo.dart';
+import '../../widgets/constants.dart';
 
 class SettingsService extends ChangeNotifier{
   final SettingsRepository repository;
@@ -79,6 +81,15 @@ class SettingsService extends ChangeNotifier{
       print("eventchannel: ${result1.asBroadcastStream().listen((event) {
         // ("type","onNetworkStatusChanged");
         print("event==>: $event");
+
+        if(event['error'] != null){
+          Get.snackbar(event['status'], event['error'].toString(),
+            colorText: gWhiteColor,
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: gsecondaryColor.withOpacity(0.55),
+          );
+        }
+
         // if(event['type'].toString().contains(Constants.onNetworkChange)){
         //   _deviceNetworkStatus = event['status'];
         // }

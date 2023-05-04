@@ -96,7 +96,7 @@ class _NewTransitionDesignState extends State<NewTransitionDesign>
       final dataList = res.data ?? {};
       if (res.currentDay != null) currentDay = res.currentDay;
       if (res.totalDays != null) totalDays = res.totalDays ?? "1";
-      planNotePdfLink = res.note;
+      planNotePdfLink = res.dosDontPdfLink;
 
       slotNamesForTabs.addAll(dataList);
 
@@ -257,7 +257,7 @@ class _NewTransitionDesignState extends State<NewTransitionDesign>
                           Visibility(
                             visible: !widget.viewDay1Details,
                             child: Text(
-                              '${int.parse(totalDays ?? '0') - int.parse(currentDay!)} Days Remaining',
+                              '${(int.parse(totalDays ?? '0') - int.parse(currentDay ?? '0')).abs()} Days Remaining',
                               style: TextStyle(
                                   fontFamily: eUser().userTextFieldFont,
                                   color: eUser().buttonTextColor,

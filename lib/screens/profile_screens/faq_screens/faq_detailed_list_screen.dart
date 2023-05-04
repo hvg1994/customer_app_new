@@ -80,7 +80,12 @@ class _FaqDetailedListState extends State<FaqDetailedList> {
                       ],
                     );
                   })
-                  : Center(child: Text("List is Empty"),)
+                  : Center(
+                child: Image(
+                  image: AssetImage("assets/images/no_data_found.png"),
+                  fit: BoxFit.scaleDown,
+                ),
+              )
               )
             ],
           ),

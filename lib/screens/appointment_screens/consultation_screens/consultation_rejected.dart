@@ -12,17 +12,11 @@ class ConsultationRejected extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(
-          // gradient: LinearGradient(
-          //     colors: [Color(0xffC10B02), Color(0xffFFA29E)],
-          //     begin: Alignment.topCenter,
-          //     end: Alignment.bottomCenter),
-        ),
         child: Padding(
           padding: EdgeInsets.only(
             left: 4.w,
             right: 4.w,
-            top: 4.h,
+            top: 1.h,
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,

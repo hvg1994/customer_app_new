@@ -6,10 +6,11 @@ class PrepratoryMealModel {
   String? currentDay;
   String? isPrepCompleted;
   String? note;
+  String? dosDontPdfLink;
   // early morning <=> Object
   Map<String, SubItems>? data;
 
-  PrepratoryMealModel({this.status, this.note, this.currentDay, this.errorCode, this.key, this.data, this.isPrepCompleted, this.days});
+  PrepratoryMealModel({this.status, this.note, this.currentDay, this.errorCode, this.key, this.data, this.isPrepCompleted, this.days, this.dosDontPdfLink});
 
   PrepratoryMealModel.fromJson(Map<String, dynamic> json) {
     status = json['status'];
@@ -18,6 +19,7 @@ class PrepratoryMealModel {
     currentDay = json['current_day'];
     isPrepCompleted = json['is_prep_completed'];
     note = json['note'];
+    dosDontPdfLink = json['do_dont'];
     days = json['days'];
 
     if(json['data'] != null){
@@ -44,6 +46,7 @@ class PrepratoryMealModel {
     data['is_prep_completed'] = this.isPrepCompleted;
     data['days'] = this.days;
     data['note'] = this.note;
+    data['do_dont'] = this.dosDontPdfLink;
     if (this.data != null) {
       data['data'] = this.data!;
     }

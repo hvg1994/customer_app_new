@@ -48,7 +48,8 @@ public class App extends Application {
         PriorityLogger logger = null;
         if (BuildConfig.DEBUG)
             logger = AndroidPriorityLoggerKt.androidPrioryLogger(BaseLogger.ERROR, BandyerSDKLoggerKt.SDK);
-//
+
+        //
 //        UserDetailsProvider userDetailsProvider = null;
 //        if (appConfiguration.getUserDetailsProviderMode() != UserDetailsProviderMode.NONE) {
 //            Log.d("appConfiguration:", appConfiguration.getUserDetailsProviderMode().toString());

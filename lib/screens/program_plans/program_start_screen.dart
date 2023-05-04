@@ -73,8 +73,10 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
     // addUrlToVideoPlayer("https://media.w3.org/2010/05/sintel/trailer.mp4");
   }
 
+
   @override
   void dispose() {
+    print("dispose");
     if(mounted){
       if(videoPlayerController != null) videoPlayerController!.dispose();
       if(_chewieController != null) _chewieController!.dispose();
@@ -106,7 +108,7 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
                     child: buildPlans(),
                   ),
                   (isStarted)
-                      ? Center(child: buildThreeBounceIndicator(),)
+                      ? Center(child: buildThreeBounceIndicator(color: gsecondaryColor),)
                       :
                   ConfirmationSlider(
                       width: 95.w,
@@ -483,37 +485,44 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
         ),
         TextButton(
             onPressed: (){
-              if(videoPlayerController != null) videoPlayerController!.pause();
-              if(_chewieController != null) _chewieController!.pause();
-
               // if(_videoPlayerController != null) _videoPlayerController!.stop();
-              if(widget.from == ProgramMealType.prepratory.name){
-                //get Preparatory day1 meals
-                gotoScreen(PreparatoryPlanScreen(dayNumber: "1", totalDays: '1',viewDay1Details: true,));
+              if(_chewieController != null && _chewieController!.isPlaying == false)
+              {
+                return;
               }
-              else if(widget.from == ProgramMealType.program.name){
-                //get Normal Program day1 meals
-                final mealUrl = _pref!.getString(AppConfig().receipeVideoUrl);
-                final trackerUrl = _pref!.getString(AppConfig().trackerVideoUrl);
+              else{
+                if(videoPlayerController != null) videoPlayerController!.pause();
+                if(_chewieController != null) _chewieController!.pause();
 
-                gotoScreen( MealPlanScreen(
-                  receipeVideoLink: mealUrl,
-                  trackerVideoLink: trackerUrl,
-                  viewDay1Details: true,
-                ),);
-              }
-              else if(widget.from == ProgramMealType.transition.name){
-                //get Transition day1 meals
-                final trackerUrl = _pref!.getString(AppConfig().trackerVideoUrl);
+                if(widget.from == ProgramMealType.prepratory.name){
+                  //get Preparatory day1 meals
+                  print("isPlaying: ${_chewieController!.isPlaying}");
+                  gotoScreen(PreparatoryPlanScreen(dayNumber: "1", totalDays: '1',viewDay1Details: true,));
+                }
+                else if(widget.from == ProgramMealType.program.name){
+                  //get Normal Program day1 meals
+                  final mealUrl = _pref!.getString(AppConfig().receipeVideoUrl);
+                  final trackerUrl = _pref!.getString(AppConfig().trackerVideoUrl);
 
-                gotoScreen(NewTransitionDesign(
+                  gotoScreen( MealPlanScreen(
+                    receipeVideoLink: mealUrl,
+                    trackerVideoLink: trackerUrl,
+                    viewDay1Details: true,
+                  ),);
+                }
+                else if(widget.from == ProgramMealType.transition.name){
+                  //get Transition day1 meals
+                  final trackerUrl = _pref!.getString(AppConfig().trackerVideoUrl);
+
+                  gotoScreen(NewTransitionDesign(
                     totalDays: '1',
                     dayNumber: '1',
-                  trackerVideoLink: trackerUrl
-                  ,viewDay1Details: true,));
-                //old screen
-                // gotoScreen(TransitionMealPlanScreen(dayNumber: "1",
-                //   totalDays: "1",trackerVideoLink: trackerUrl,viewDay1Details: true,));
+                    trackerVideoLink: trackerUrl
+                    ,viewDay1Details: true,));
+                  //old screen
+                  // gotoScreen(TransitionMealPlanScreen(dayNumber: "1",
+                  //   totalDays: "1",trackerVideoLink: trackerUrl,viewDay1Details: true,));
+                }
               }
             },
             //Preparatory Meal Plan
@@ -575,6 +584,7 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
+              maintainState: false,
               builder: (context) => PreparatoryPlanScreen(dayNumber: "1", totalDays: '1',),
             ),
           );

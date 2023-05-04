@@ -17,6 +17,7 @@ class AppConfig{
   final String BASE_URL = "https://gwc.disol.in";
 
   // final String BASE_URL = "https://gutandhealth.com";
+
   final String shipRocket_AWB_URL = 'https://apiv2.shiprocket.in/v1/external';
   final String UUID = 'uuid';
 
@@ -101,6 +102,8 @@ class AppConfig{
   static String networkErrorText = "Network Error! Please Retry..";
   static String oopsMessage = "OOps ! Something went wrong.";
 
+  static String numberNotFound = "Mobile Number not found";
+
   static const String isSmallMode = "isShrunk";
 
   String emptyStringMsg = 'Please mention atleast 2 characters';
@@ -134,6 +137,7 @@ class AppConfig{
       ),
     );
   }
+
   fixedSnackbar(BuildContext context, String message,String btnName, onPress, {Duration? duration, bool? isError}){
     ScaffoldMessenger.of(context).showMaterialBanner(
       MaterialBanner(

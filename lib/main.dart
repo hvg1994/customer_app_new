@@ -223,10 +223,11 @@ class _MyAppState extends State<MyApp> {
     }
     else{
       int date = _pref!.getInt(AppConfig.last_login)!;
+      print(date);
       DateTime prev = DateTime.fromMillisecondsSinceEpoch(date);
       print(prev);
       print('difference time: ${calculateDifference(prev)}');
-      if(calculateDifference(prev).isNegative){
+      if(calculateDifference(prev) == -7){
         _pref!.setBool(AppConfig.isLogin, false);
       }
     }

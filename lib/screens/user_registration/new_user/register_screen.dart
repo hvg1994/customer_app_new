@@ -101,424 +101,440 @@ class _RegisterScreenState extends State<RegisterScreen> {
           child: SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
             child: Padding(
-              padding: EdgeInsets.only(left: 4.w, right: 4.w, top: 1.h, bottom: 5.h),
+              padding: EdgeInsets.only(left: 1.w, right: 1.w, top: 1.h),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  buildAppBar(() {
-                    Navigator.pop(context);
-                  }),
-                  SizedBox(
-                    height: 2.h,
+                  Padding(
+                    padding: EdgeInsets.only(left: 1.5.w, right: 1.5.w),
+                    child: buildAppBar(() {
+                      Navigator.pop(context);
+                    })
                   ),
-                  Text(
-                    "Heal Your Gut Now",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        fontFamily: eUser().mainHeadingFont,
-                        fontSize: eUser().mainHeadingFontSize,
-                        color: eUser().mainHeadingColor
-                    ),
-                  ),
-                  SizedBox(
-                    height: 3.h,
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Full Name',
-                        style: TextStyle(
-                            fontFamily: eUser().userFieldLabelFont,
-                            fontSize: eUser().userFieldLabelFontSize,
-                            color: eUser().userFieldLabelColor
-                        ),
-                      ),
-                      SizedBox(height: 0.5.h),
-                      Form(
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        key: nameFormKey,
-                        child: TextFormField(
-                          textCapitalization: TextCapitalization.words,
-                          controller: nameController,
-                          cursorColor: gPrimaryColor,
-                          validator: (value) {
-                            if (value!.isEmpty ||
-                                !RegExp(r"^[a-z A-Z]").hasMatch(value)) {
-                              return 'Please enter your Name';
-                            } else {
-                              return null;
-                            }
-                          },
-                          focusNode: _nameFocus,
-                          decoration:
-                              CommonDecoration.buildTextInputDecoration(
-                                  "Name", nameController,
-                                enabledBorder: (nameController.text.isEmpty) ? null : UnderlineInputBorder(
-                                    borderSide: BorderSide(
-                                        color: eUser().focusedBorderColor,
-                                        width: eUser().focusedBorderWidth
-                                    )
-                                ),
-                                focusBoder: UnderlineInputBorder(
-                                    borderSide: BorderSide(
-                                        color: eUser().focusedBorderColor,
-                                        width: eUser().focusedBorderWidth
-                                    )
-                                  // borderRadius: BorderRadius.circular(25.0),
-                                ),
-                              ),
-                          style: TextStyle(
-                              fontFamily: eUser().userTextFieldFont,
-                              fontSize: eUser().userTextFieldFontSize,
-                              color: eUser().userTextFieldColor
-                          ),
-                          textInputAction: TextInputAction.next,
-                          textAlign: TextAlign.start,
-                          keyboardType: TextInputType.name,
-                          inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[a-zA-Z ]"))],
-                        ),
-                      ),
-                      SizedBox(
-                        height: 2.5.h,
-                      ),
-                      Text(
-                        'Age',
-                        style: TextStyle(
-                            fontFamily: eUser().userFieldLabelFont,
-                            fontSize: eUser().userFieldLabelFontSize,
-                            color: eUser().userFieldLabelColor
-                        ),
-                      ),
-                      SizedBox(height: 0.5.h),
-                      Form(
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        key: ageFormKey,
-                        child: TextFormField(
-                          controller: ageController,
-                          cursorColor: gPrimaryColor,
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return 'Please enter your Age';
-                            }
-                            else if(int.parse(value) < 10){
-                              return 'Age should be Greater than 10';
-                            }
-                            else if(int.parse(value) >= 100){
-                              return 'Age should be Lesser than 100';
-                            }
-                            else {
-                              return null;
-                            }
-                          },
-                          decoration:
-                              CommonDecoration.buildTextInputDecoration(
-                                  "Age", ageController,
-                                enabledBorder: (ageController.text.isEmpty) ? null : UnderlineInputBorder(
-                                    borderSide: BorderSide(
-                                        color: eUser().focusedBorderColor,
-                                        width: eUser().focusedBorderWidth
-                                    )
-                                ),
-                                focusBoder: UnderlineInputBorder(
-                                    borderSide: BorderSide(
-                                        color: eUser().focusedBorderColor,
-                                        width: eUser().focusedBorderWidth
-                                    )
-                                  // borderRadius: BorderRadius.circular(25.0),
-                                ),
-                              ),
-                          style: TextStyle(
-                              fontFamily: eUser().userTextFieldFont,
-                              fontSize: eUser().userTextFieldFontSize,
-                              color: eUser().userTextFieldColor
-                          ),
-                          textInputAction: TextInputAction.next,
-                          textAlign: TextAlign.start,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.digitsOnly,FilteringTextInputFormatter.allow(RegExp(r'^[1-9][0-9]*'))
-                          ],
-                          keyboardType: TextInputType.number,
-                          maxLength: 2,
-                        ),
-                      ),
-                      SizedBox(
-                        height: 2.5.h,
-                      ),
-                      Text(
-                        'Gender',
-                        style: TextStyle(
-                            fontFamily: eUser().userFieldLabelFont,
-                            fontSize: eUser().userFieldLabelFontSize,
-                            color: eUser().userFieldLabelColor
-                        ),
-                      ),
-                      SizedBox(height: 0.5.h),
-                      Form(
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        child: genderSelection(),
-                      ),
-                      SizedBox(
-                        height: 1.0.h,
-                      ),
-                      Text(
-                        'Email',
-                        style: TextStyle(
-                            fontFamily: eUser().userFieldLabelFont,
-                            fontSize: eUser().userFieldLabelFontSize,
-                            color: eUser().userFieldLabelColor
-                        ),
-                      ),
-                      SizedBox(height: 0.5.h),
-                      Form(
-                        autovalidateMode: AutovalidateMode.disabled,
-                        key: emailFormKey,
-                        child: TextFormField(
-                          controller: emailController,
-                          cursorColor: gPrimaryColor,
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return 'Please enter your Email Address';
-                            } else if (!validEmail(value)) {
-                              return 'Please enter valid Email Address';
-                            }
-                          },
-                          decoration:
-                              CommonDecoration.buildTextInputDecoration(
-                                  "Email", emailController,
-                                enabledBorder: (emailController.text.isEmpty) ? null : UnderlineInputBorder(
-                                    borderSide: BorderSide(
-                                        color: eUser().focusedBorderColor,
-                                        width: eUser().focusedBorderWidth
-                                    )
-                                ),
-                                focusBoder: UnderlineInputBorder(
-                                    borderSide: BorderSide(
-                                        color: eUser().focusedBorderColor,
-                                        width: eUser().focusedBorderWidth
-                                    )
-                                  // borderRadius: BorderRadius.circular(25.0),
-                                ),
-                              ),
-                          style: TextStyle(
-                              fontFamily: eUser().userTextFieldFont,
-                              fontSize: eUser().userTextFieldFontSize,
-                              color: eUser().userTextFieldColor
-                          ),
-                          textInputAction: TextInputAction.next,
-                          textAlign: TextAlign.start,
-                          keyboardType: TextInputType.emailAddress,
-                        ),
-                      ),
-                      SizedBox(
-                        height: 2.5.h,
-                      ),
-                      Text(
-                        'Mobile Number',
-                        style: TextStyle(
-                            fontFamily: eUser().userFieldLabelFont,
-                            fontSize: eUser().userFieldLabelFontSize,
-                            color: eUser().userFieldLabelColor
-                        ),
-                      ),
-                      SizedBox(height: 0.5.h),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // CountryListPick(
-                          //   useSafeArea: true,
-                          //   appBar: PreferredSize(
-                          //     preferredSize: Size(double.infinity, 60),
-                          //     child: Padding(
-                          //       padding: EdgeInsets.only(
-                          //           left: 4.w,
-                          //           right: 4.w,
-                          //           top: 1.h,
-                          //           bottom: 1.h),
-                          //       child: buildAppBar(() {
-                          //         Navigator.pop(context);
-                          //       }),
-                          //     ),
-                          //   ),
-                          //   theme: CountryTheme(
-                          //     isShowFlag: false,
-                          //     isShowTitle: false,
-                          //     isShowCode: true,
-                          //     isDownIcon: true,
-                          //     showEnglishName: true,
-                          //   ),
-                          //   // Set default value
-                          //   initialSelection: countryCode,
-                          //   useUiOverlay: false,
-                          //   // or
-                          //   // initialSelection: 'US'
-                          //   onChanged: (CountryCode? code) {
-                          //     print(code!.name);
-                          //     print(code.code);
-                          //     print(code.dialCode);
-                          //     print(code.flagUri);
-                          //     setState(() {
-                          //       countryCode = code.dialCode ?? '+91';
-                          //     });
-                          //   },
-                          //   // pickerBuilder: (_, countryCode){
-                          //   //   return Container(
-                          //   //     decoration: BoxDecoration(
-                          //   //       border: Border(
-                          //   //         bottom: BorderSide(
-                          //   //             color: kPrimaryColor, width: 1.0, style: BorderStyle.solid)
-                          //   //       ),
-                          //   //     ),
-                          //   //     child: Text(countryCode?.dialCode ?? '',
-                          //   //     style: TextStyle(
-                          //   //         fontFamily: "GothamBook",
-                          //   //         color: gMainColor,
-                          //   //         fontSize: 11.sp),),
-                          //   //   );
-                          //   // },
-                          // ),
-                          Expanded(
-                            child: CountryCodePicker(
-                              // flagDecoration: BoxDecoration(
-                              //   borderRadius: BorderRadius.circular(7),
-                              // ),
-                              showDropDownButton: false,
-                              showFlagDialog: true,
-                              hideMainText: false,
-                              showFlagMain: false,
-                              showCountryOnly: false,
-                              textStyle: TextStyle(
-                                  fontFamily: eUser().userTextFieldFont,
-                                  fontSize: eUser().userTextFieldFontSize,
-                                  color: eUser().userTextFieldColor
-                              ),
-                              padding: EdgeInsets.zero,
-                              favorite: ['+91','IN'],
-                              initialSelection: countryCode,
-                              onChanged: (val){
-                                print(val.code);
-                                setState(() {
-                                  countryCode = val.dialCode.toString();
-                                });
-                              },
-                            ),
-                          ),
-                          Expanded(
-                            flex: 7,
-                            child: Form(
-                              autovalidateMode:
-                                  AutovalidateMode.disabled,
-                              key: mobileFormKey,
-                              child: TextFormField(
-                                controller: mobileController,
-                                cursorColor: gPrimaryColor,
-                                maxLength: 10,
-                                validator: (value) {
-                                  if (value!.isEmpty) {
-                                    return 'Please enter your Mobile Number';
-                                  } else if (!isPhone(value)) {
-                                    return 'Please enter valid Mobile Number';
-                                  }
-                                },
-                                decoration:
-                                    CommonDecoration.buildTextInputDecoration(
-                                        "Mobile Number", mobileController,
-                                      enabledBorder: (mobileController.text.isEmpty) ? null : UnderlineInputBorder(
-                                          borderSide: BorderSide(
-                                              color: eUser().focusedBorderColor,
-                                              width: eUser().focusedBorderWidth
-                                          )
-                                      ),
-                                      focusBoder: UnderlineInputBorder(
-                                          borderSide: BorderSide(
-                                              color: eUser().focusedBorderColor,
-                                              width: eUser().focusedBorderWidth
-                                          )
-                                        // borderRadius: BorderRadius.circular(25.0),
-                                      ),
-                                    ),
-                                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                                style: TextStyle(
-                                    fontFamily: eUser().userTextFieldFont,
-                                    fontSize: eUser().userTextFieldFontSize,
-                                    color: eUser().userTextFieldColor
-                                ),
-                                textInputAction: TextInputAction.next,
-                                textAlign: TextAlign.start,
-                                keyboardType: TextInputType.number,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: 2.5.h,
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 5.h,
-                  ),
-                  Center(
-                    child: GestureDetector(
-                      onTap: isLoading ? null : () {
-                        if (nameFormKey.currentState!.validate() &&
-                            ageFormKey.currentState!.validate() &&
-                            emailFormKey.currentState!.validate() &&
-                            mobileFormKey.currentState!.validate()) {
-                          if (nameController.text.isNotEmpty &&
-                              ageController.text.isNotEmpty &&
-                              emailController.text.isNotEmpty &&
-                              mobileController.text.isNotEmpty) {
-                            if (_selectedGender != -1) {
-                              // testingMethod();
-                              submitEnquiryForm(
-                                  nameController.text,
-                                  ageController.text,
-                                  _selectedGender == 0 ? 'male' : 'female',
-                                  emailController.text,
-                                  mobileController.text);
-                            } else {
-                              AppConfig().showSnackbar(
-                                  context, 'Please Select Gender',
-                                  isError: true);
-                            }
-                          }
-                        }
-                      },
-                      child: Container(
-                        width: 40.w,
-                        height: 5.h,
-                        // padding: EdgeInsets.symmetric(
-                        //     vertical: 1.h, horizontal: 10.w),
-                        decoration: BoxDecoration(
-                          color: eUser().buttonColor,
-                          borderRadius: BorderRadius.circular(eUser().buttonBorderRadius),
-                          // border: Border.all(
-                          //     width: eUser().buttonBorderWidth
-                          // ),
-                        ),
-                        child: (isLoading) ? buildThreeBounceIndicator(color: eUser().threeBounceIndicatorColor)
-                            : Center(
-                              child: Text(
-                          'Next',
-                          style: TextStyle(
-                            fontFamily: eUser().buttonTextFont,
-                            color: eUser().buttonTextColor,
-                            fontSize: eUser().buttonTextSize,
-                          ),
-                        ),
-                            ),
-                      ),
-                    ),
-                  ),
+                  _mainView()
                 ],
               ),
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  _mainView(){
+    return Padding(
+      padding: EdgeInsets.only(left: 4.w, right: 4.w),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            height: 2.h,
+          ),
+          Text(
+            "Heal Your Gut Now",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+                fontFamily: eUser().mainHeadingFont,
+                fontSize: eUser().mainHeadingFontSize,
+                color: eUser().mainHeadingColor
+            ),
+          ),
+          SizedBox(
+            height: 3.h,
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Full Name',
+                style: TextStyle(
+                    fontFamily: eUser().userFieldLabelFont,
+                    fontSize: eUser().userFieldLabelFontSize,
+                    color: eUser().userFieldLabelColor
+                ),
+              ),
+              SizedBox(height: 0.5.h),
+              Form(
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                key: nameFormKey,
+                child: TextFormField(
+                  textCapitalization: TextCapitalization.words,
+                  controller: nameController,
+                  cursorColor: gPrimaryColor,
+                  validator: (value) {
+                    if (value!.isEmpty ||
+                        !RegExp(r"^[a-z A-Z]").hasMatch(value)) {
+                      return 'Please enter your Name';
+                    } else {
+                      return null;
+                    }
+                  },
+                  focusNode: _nameFocus,
+                  decoration:
+                  CommonDecoration.buildTextInputDecoration(
+                    "Name", nameController,
+                    enabledBorder: (nameController.text.isEmpty) ? null : UnderlineInputBorder(
+                        borderSide: BorderSide(
+                            color: eUser().focusedBorderColor,
+                            width: eUser().focusedBorderWidth
+                        )
+                    ),
+                    focusBoder: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                            color: eUser().focusedBorderColor,
+                            width: eUser().focusedBorderWidth
+                        )
+                      // borderRadius: BorderRadius.circular(25.0),
+                    ),
+                  ),
+                  style: TextStyle(
+                      fontFamily: eUser().userTextFieldFont,
+                      fontSize: eUser().userTextFieldFontSize,
+                      color: eUser().userTextFieldColor
+                  ),
+                  textInputAction: TextInputAction.next,
+                  textAlign: TextAlign.start,
+                  keyboardType: TextInputType.name,
+                  inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[a-zA-Z ]"))],
+                ),
+              ),
+              SizedBox(
+                height: 2.5.h,
+              ),
+              Text(
+                'Age',
+                style: TextStyle(
+                    fontFamily: eUser().userFieldLabelFont,
+                    fontSize: eUser().userFieldLabelFontSize,
+                    color: eUser().userFieldLabelColor
+                ),
+              ),
+              SizedBox(height: 0.5.h),
+              Form(
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                key: ageFormKey,
+                child: TextFormField(
+                  controller: ageController,
+                  cursorColor: gPrimaryColor,
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return 'Please enter your Age';
+                    }
+                    else if(int.parse(value) < 10){
+                      return 'Age should be Greater than 10';
+                    }
+                    else if(int.parse(value) >= 100){
+                      return 'Age should be Lesser than 100';
+                    }
+                    else {
+                      return null;
+                    }
+                  },
+                  decoration:
+                  CommonDecoration.buildTextInputDecoration(
+                    "Age", ageController,
+                    enabledBorder: (ageController.text.isEmpty) ? null : UnderlineInputBorder(
+                        borderSide: BorderSide(
+                            color: eUser().focusedBorderColor,
+                            width: eUser().focusedBorderWidth
+                        )
+                    ),
+                    focusBoder: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                            color: eUser().focusedBorderColor,
+                            width: eUser().focusedBorderWidth
+                        )
+                      // borderRadius: BorderRadius.circular(25.0),
+                    ),
+                  ),
+                  style: TextStyle(
+                      fontFamily: eUser().userTextFieldFont,
+                      fontSize: eUser().userTextFieldFontSize,
+                      color: eUser().userTextFieldColor
+                  ),
+                  textInputAction: TextInputAction.next,
+                  textAlign: TextAlign.start,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,FilteringTextInputFormatter.allow(RegExp(r'^[1-9][0-9]*'))
+                  ],
+                  keyboardType: TextInputType.number,
+                  maxLength: 2,
+                ),
+              ),
+              SizedBox(
+                height: 2.5.h,
+              ),
+              Text(
+                'Gender',
+                style: TextStyle(
+                    fontFamily: eUser().userFieldLabelFont,
+                    fontSize: eUser().userFieldLabelFontSize,
+                    color: eUser().userFieldLabelColor
+                ),
+              ),
+              SizedBox(height: 0.5.h),
+              Form(
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                child: genderSelection(),
+              ),
+              SizedBox(
+                height: 1.0.h,
+              ),
+              Text(
+                'Email',
+                style: TextStyle(
+                    fontFamily: eUser().userFieldLabelFont,
+                    fontSize: eUser().userFieldLabelFontSize,
+                    color: eUser().userFieldLabelColor
+                ),
+              ),
+              SizedBox(height: 0.5.h),
+              Form(
+                autovalidateMode: AutovalidateMode.disabled,
+                key: emailFormKey,
+                child: TextFormField(
+                  controller: emailController,
+                  cursorColor: gPrimaryColor,
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return 'Please enter your Email Address';
+                    } else if (!validEmail(value)) {
+                      return 'Please enter valid Email Address';
+                    }
+                  },
+                  decoration:
+                  CommonDecoration.buildTextInputDecoration(
+                    "Email", emailController,
+                    enabledBorder: (emailController.text.isEmpty) ? null : UnderlineInputBorder(
+                        borderSide: BorderSide(
+                            color: eUser().focusedBorderColor,
+                            width: eUser().focusedBorderWidth
+                        )
+                    ),
+                    focusBoder: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                            color: eUser().focusedBorderColor,
+                            width: eUser().focusedBorderWidth
+                        )
+                      // borderRadius: BorderRadius.circular(25.0),
+                    ),
+                  ),
+                  style: TextStyle(
+                      fontFamily: eUser().userTextFieldFont,
+                      fontSize: eUser().userTextFieldFontSize,
+                      color: eUser().userTextFieldColor
+                  ),
+                  textInputAction: TextInputAction.next,
+                  textAlign: TextAlign.start,
+                  keyboardType: TextInputType.emailAddress,
+                ),
+              ),
+              SizedBox(
+                height: 2.5.h,
+              ),
+              Text(
+                'Mobile Number',
+                style: TextStyle(
+                    fontFamily: eUser().userFieldLabelFont,
+                    fontSize: eUser().userFieldLabelFontSize,
+                    color: eUser().userFieldLabelColor
+                ),
+              ),
+              SizedBox(height: 0.5.h),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // CountryListPick(
+                  //   useSafeArea: true,
+                  //   appBar: PreferredSize(
+                  //     preferredSize: Size(double.infinity, 60),
+                  //     child: Padding(
+                  //       padding: EdgeInsets.only(
+                  //           left: 4.w,
+                  //           right: 4.w,
+                  //           top: 1.h,
+                  //           bottom: 1.h),
+                  //       child: buildAppBar(() {
+                  //         Navigator.pop(context);
+                  //       }),
+                  //     ),
+                  //   ),
+                  //   theme: CountryTheme(
+                  //     isShowFlag: false,
+                  //     isShowTitle: false,
+                  //     isShowCode: true,
+                  //     isDownIcon: true,
+                  //     showEnglishName: true,
+                  //   ),
+                  //   // Set default value
+                  //   initialSelection: countryCode,
+                  //   useUiOverlay: false,
+                  //   // or
+                  //   // initialSelection: 'US'
+                  //   onChanged: (CountryCode? code) {
+                  //     print(code!.name);
+                  //     print(code.code);
+                  //     print(code.dialCode);
+                  //     print(code.flagUri);
+                  //     setState(() {
+                  //       countryCode = code.dialCode ?? '+91';
+                  //     });
+                  //   },
+                  //   // pickerBuilder: (_, countryCode){
+                  //   //   return Container(
+                  //   //     decoration: BoxDecoration(
+                  //   //       border: Border(
+                  //   //         bottom: BorderSide(
+                  //   //             color: kPrimaryColor, width: 1.0, style: BorderStyle.solid)
+                  //   //       ),
+                  //   //     ),
+                  //   //     child: Text(countryCode?.dialCode ?? '',
+                  //   //     style: TextStyle(
+                  //   //         fontFamily: "GothamBook",
+                  //   //         color: gMainColor,
+                  //   //         fontSize: 11.sp),),
+                  //   //   );
+                  //   // },
+                  // ),
+                  Expanded(
+                    child: CountryCodePicker(
+                      // flagDecoration: BoxDecoration(
+                      //   borderRadius: BorderRadius.circular(7),
+                      // ),
+                      showDropDownButton: false,
+                      showFlagDialog: true,
+                      hideMainText: false,
+                      showFlagMain: false,
+                      showCountryOnly: false,
+                      textStyle: TextStyle(
+                          fontFamily: eUser().userTextFieldFont,
+                          fontSize: eUser().userTextFieldFontSize,
+                          color: eUser().userTextFieldColor
+                      ),
+                      padding: EdgeInsets.zero,
+                      favorite: ['+91','IN'],
+                      initialSelection: countryCode,
+                      onChanged: (val){
+                        print(val.code);
+                        setState(() {
+                          countryCode = val.dialCode.toString();
+                        });
+                      },
+                    ),
+                  ),
+                  Expanded(
+                    flex: 7,
+                    child: Form(
+                      autovalidateMode:
+                      AutovalidateMode.disabled,
+                      key: mobileFormKey,
+                      child: TextFormField(
+                        controller: mobileController,
+                        cursorColor: gPrimaryColor,
+                        maxLength: 10,
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Please enter your Mobile Number';
+                          } else if (!isPhone(value)) {
+                            return 'Please enter valid Mobile Number';
+                          }
+                        },
+                        decoration:
+                        CommonDecoration.buildTextInputDecoration(
+                          "Mobile Number", mobileController,
+                          enabledBorder: (mobileController.text.isEmpty) ? null : UnderlineInputBorder(
+                              borderSide: BorderSide(
+                                  color: eUser().focusedBorderColor,
+                                  width: eUser().focusedBorderWidth
+                              )
+                          ),
+                          focusBoder: UnderlineInputBorder(
+                              borderSide: BorderSide(
+                                  color: eUser().focusedBorderColor,
+                                  width: eUser().focusedBorderWidth
+                              )
+                            // borderRadius: BorderRadius.circular(25.0),
+                          ),
+                        ),
+                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                        style: TextStyle(
+                            fontFamily: eUser().userTextFieldFont,
+                            fontSize: eUser().userTextFieldFontSize,
+                            color: eUser().userTextFieldColor
+                        ),
+                        textInputAction: TextInputAction.done,
+                        textAlign: TextAlign.start,
+                        keyboardType: TextInputType.number,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: 2.5.h,
+              ),
+            ],
+          ),
+          SizedBox(
+            height: 5.h,
+          ),
+          Center(
+            child: GestureDetector(
+              onTap: isLoading ? null : () {
+                if (nameFormKey.currentState!.validate() &&
+                    ageFormKey.currentState!.validate() &&
+                    emailFormKey.currentState!.validate() &&
+                    mobileFormKey.currentState!.validate()) {
+                  if (nameController.text.isNotEmpty &&
+                      ageController.text.isNotEmpty &&
+                      emailController.text.isNotEmpty &&
+                      mobileController.text.isNotEmpty) {
+                    if (_selectedGender != -1) {
+                      // testingMethod();
+                      submitEnquiryForm(
+                          nameController.text,
+                          ageController.text,
+                          _selectedGender == 0 ? 'male' : 'female',
+                          emailController.text,
+                          mobileController.text);
+                    } else {
+                      AppConfig().showSnackbar(
+                          context, 'Please Select Gender',
+                          isError: true);
+                    }
+                  }
+                }
+              },
+              child: Container(
+                width: 40.w,
+                height: 5.h,
+                // padding: EdgeInsets.symmetric(
+                //     vertical: 1.h, horizontal: 10.w),
+                decoration: BoxDecoration(
+                  color: eUser().buttonColor,
+                  borderRadius: BorderRadius.circular(eUser().buttonBorderRadius),
+                  // border: Border.all(
+                  //     width: eUser().buttonBorderWidth
+                  // ),
+                ),
+                child: (isLoading) ? buildThreeBounceIndicator(color: eUser().threeBounceIndicatorColor)
+                    : Center(
+                  child: Text(
+                    'Next',
+                    style: TextStyle(
+                      fontFamily: eUser().buttonTextFont,
+                      color: eUser().buttonTextColor,
+                      fontSize: eUser().buttonTextSize,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
