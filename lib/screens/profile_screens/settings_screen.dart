@@ -349,7 +349,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               title,
               style: TextStyle(
                 color: kTextColor,
-                fontFamily: 'GothamBook',
+                fontFamily: kFontBook,
                 fontSize: 11.sp,
               ),
             ),

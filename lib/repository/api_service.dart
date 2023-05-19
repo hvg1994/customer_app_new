@@ -407,6 +407,7 @@ class ApiClient {
       if (response.statusCode == 200) {
         if (res['status'] == 200) {
           result = LogoutModel.fromJson(res);
+          inMemoryStorage.cache.clear();
         } else {
           result = ErrorModel.fromJson(res);
         }

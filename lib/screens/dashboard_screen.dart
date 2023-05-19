@@ -16,7 +16,9 @@ import '../widgets/constants.dart';
 import '../widgets/video/normal_video.dart';
 import 'evalution_form/evaluation_upload_report.dart';
 import 'feed_screens/feeds_list.dart';
+import 'gut_list_screens/dashboard_stacked_card.dart';
 import 'gut_list_screens/new_dashboard_stages2.dart';
+import 'gut_list_screens/new_list_stages_screen.dart';
 import 'profile_screens/call_support_method.dart';
 import 'program_plans/widget/radial/pizza.dart';
 import 'program_plans/widget/radial/syncf_pie.dart';
@@ -72,7 +74,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
     switch (index) {
       case 0:
         {
-          // return GutListOld();
           // this one
           return const LevelStatus();
 
@@ -86,7 +87,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
         }
       case 2:
         {
-          return GutList();
+          // this one
+          return NewDsPage();
+          // butterfly design
+          // return GutList();
           // return const NewDashboardLevelsScreen();
         }
       case 3:

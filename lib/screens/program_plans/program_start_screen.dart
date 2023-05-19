@@ -590,15 +590,15 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
           );
         }
         else if(widget.from == ProgramMealType.program.name){
-          if(widget.isPrepCompleted != null && widget.isPrepCompleted == true){
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const PrepratoryMealCompletedScreen(),
-              ),
-            );
-          }
-          else{
+          // if(widget.isPrepCompleted != null && widget.isPrepCompleted == true){
+          //   Navigator.pushReplacement(
+          //     context,
+          //     MaterialPageRoute(
+          //       builder: (context) => const PrepratoryMealCompletedScreen(),
+          //     ),
+          //   );
+          // }
+          // else{
             final mealUrl = _pref!.getString(AppConfig().receipeVideoUrl);
             final trackerUrl = _pref!.getString(AppConfig().trackerVideoUrl);
 
@@ -611,7 +611,7 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
                 ),
               ),
             );
-          }
+          // }
         }
         else if(widget.from == ProgramMealType.transition.name){
           final trackerUrl = _pref!.getString(AppConfig().trackerVideoUrl);

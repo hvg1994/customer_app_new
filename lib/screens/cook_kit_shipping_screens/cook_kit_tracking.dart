@@ -687,7 +687,7 @@ class _CookKitTrackingState extends State<CookKitTracking> {
               child: Stack(
                 children: [
                   Padding(
-                    padding: EdgeInsets.only(top: 3.h, left: 1.5.w),
+                    padding: EdgeInsets.only(top: 3.h, left: 2.w),
                     child: Text(
                       "Ready to cook Kit Shipping",
                       style: TextStyle(
@@ -735,7 +735,7 @@ class _CookKitTrackingState extends State<CookKitTracking> {
                           barThickness: 5,
                           titleTextStyle: TextStyle(
                             fontSize: 10.sp,
-                            fontFamily: "GothamMedium",
+                            fontFamily: kFontMedium,
                           ),
                           subtitleTextStyle: TextStyle(
                             fontSize: 8.sp,
@@ -747,12 +747,15 @@ class _CookKitTrackingState extends State<CookKitTracking> {
                 ),
                 // trackingField(),
                 SizedBox(height: 5.h),
-                Text(
-                  "Delivery Address",
-                  style: TextStyle(
-                    fontFamily: kFontBold,
-                    fontSize: 12.sp,
-                    color: gPrimaryColor,
+                Padding(
+                  padding: const EdgeInsets.only(left: 8.0),
+                  child: Text(
+                    "Delivery Address",
+                    style: TextStyle(
+                      fontFamily: kFontBold,
+                      fontSize: 12.sp,
+                      color: gPrimaryColor,
+                    ),
                   ),
                 ),
                 SizedBox(height: 1.h),

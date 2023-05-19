@@ -31,13 +31,13 @@ class ChildTeamPatientsAppointment {
 
   ChildTeamPatientsAppointment.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    teamId = json['team_id'];
-    patientId = json['patient_id'];
-    programId = json['program_id'];
+    teamId = json['team_id'].toString();
+    patientId = json['patient_id'].toString();
+    programId = json['program_id'].toString();
     assignedDate = json['assigned_date'];
     uploadTime = json['upload_time'];
     status = json['status'];
-    isArchieved = json['is_archieved'];
+    isArchieved = json['is_archieved'].toString();
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
     patient =
@@ -93,12 +93,12 @@ class ChildPatientAppointment {
 
   ChildPatientAppointment.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    userId = json['user_id'];
+    userId = json['user_id'].toString();
     maritalStatus = json['marital_status'];
     pincode = json['pincode'];
-    weight = json['weight'];
+    weight = json['weight'].toString();
     status = json['status'];
-    isArchieved = json['is_archieved'];
+    isArchieved = json['is_archieved'].toString();
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
     user = json['user'] != null ? new ChildUserAppointment.fromJson(json['user']) : null;

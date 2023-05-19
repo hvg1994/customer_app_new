@@ -15,6 +15,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' hide ModalBottomSheetRoute;
 import 'package:flutter/services.dart';
 import 'package:flutter_sim_country_code/flutter_sim_country_code.dart';
+import 'package:gwc_customer/repository/in_memory_cache.dart';
 import 'package:gwc_customer/services/local_notification_service.dart';
 import 'package:gwc_customer/splash_screen.dart';
 import 'package:provider/provider.dart';
@@ -228,6 +229,8 @@ class _MyAppState extends State<MyApp> {
       print(prev);
       print('difference time: ${calculateDifference(prev)}');
       if(calculateDifference(prev) == -7){
+        final inMemoryCache = InMemoryCache();
+        inMemoryCache.cache.clear();
         _pref!.setBool(AppConfig.isLogin, false);
       }
     }

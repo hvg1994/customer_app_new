@@ -190,12 +190,13 @@ class GetPrePostMealvalue{
   bool? isPrepratoryStarted;
   String? startVideo;
   bool? isPrepCompleted;
+  bool? isPrepTrackerCompleted;
   bool? isTransMealStarted;
   bool? isTransMealCompleted;
   String? currentDay;
 
 
-  GetPrePostMealvalue({this.prep_days, this.trans_days,this.isPrepratoryStarted, this.isTransMealCompleted,this.isPrepCompleted, this.isTransMealStarted, this.currentDay,
+  GetPrePostMealvalue({this.prep_days, this.trans_days,this.isPrepratoryStarted, this.isTransMealCompleted,this.isPrepCompleted,this.isPrepTrackerCompleted, this.isTransMealStarted, this.currentDay,
   this.startVideo
   });
 
@@ -203,16 +204,18 @@ class GetPrePostMealvalue{
     print("json['days']===> ${json['days']}");
     print("json['days']===> ${json['trans_days']}");
 
-    prep_days = json['days'];
-    trans_days = json['days'];
+    prep_days = json['days'].toString();
+    trans_days = json['days'].toString();
     startVideo = json['video'];
 
     isPrepratoryStarted = json['is_prep_program_started'].toString().contains("0") ? false : true;
-    isPrepCompleted = json['is_prep_program_completed'].toString().contains("0") ? false : true;
+    isPrepCompleted = (json['is_prep_program_completed'] != null) ? json['is_prep_program_completed'].toString().contains("0") ? false : true : false;
+    isPrepTrackerCompleted = json['is_prep_tracker_completed'].toString().contains("0") ? false : true;
+
     isTransMealStarted = json['is_trans_program_started'].toString().contains("0") ? false : true;
     isTransMealCompleted = json['is_trans_completed'].toString().contains("0") ? false : true;
 
-    currentDay = json['current_day'];
+    currentDay = json['current_day'].toString();
   }
 
   Map<String, dynamic> toJson(){
@@ -220,6 +223,8 @@ class GetPrePostMealvalue{
     data['days'] = this.prep_days;
     data['trans_days'] = this.trans_days;
     data['is_prep_program_started'] = this.isPrepratoryStarted;
+    data['is_prep_tracker_completed'] = this.isPrepTrackerCompleted;
+
     data['is_trans_program_started'] = this.isTransMealStarted;
     data['current_day'] = this.currentDay;
     data['video'] = this.startVideo;

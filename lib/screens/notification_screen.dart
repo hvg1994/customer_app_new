@@ -294,7 +294,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
         //           children: [
         //             Text(title,
         //               style: TextStyle(
-        //                   fontFamily: 'GothamBold',
+        //                   fontFamily: kFontBold,
         //                   color: gMainColor,
         //                   fontSize: 11.sp
         //               ),
@@ -302,7 +302,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
         //             Expanded(
         //               child: Text(subTitle,
         //                 style: TextStyle(
-        //                     fontFamily: 'GothamBold',
+        //                     fontFamily: kFontBold,
         //                     color: gMainColor,
         //                     fontSize: 10.sp
         //                 ),
@@ -310,7 +310,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
         //             ),
         //             Text(lastTitle,
         //               style: TextStyle(
-        //                   fontFamily: 'GothamBold',
+        //                   fontFamily: kFontBold,
         //                   color: gMainColor,
         //                   fontSize: 9.5.sp
         //               ),

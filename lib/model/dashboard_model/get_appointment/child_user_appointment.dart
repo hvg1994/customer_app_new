@@ -52,7 +52,7 @@ class ChildUserAppointment {
 
   ChildUserAppointment.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    roleId = json['role_id'];
+    roleId = json['role_id'].toString();
     name = json['name'];
     fname = json['fname'];
     lname = json['lname'];
@@ -70,7 +70,7 @@ class ChildUserAppointment {
     deviceId = json['device_id'];
     age = json['age'];
     pincode = json['pincode'];
-    isActive = json['is_active'];
+    isActive = json['is_active'].toString();
     addedBy = json['added_by'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];

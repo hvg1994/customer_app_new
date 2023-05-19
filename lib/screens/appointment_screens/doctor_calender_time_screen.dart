@@ -79,7 +79,7 @@ class _DoctorCalenderTimeScreenState extends State<DoctorCalenderTimeScreen> {
     });
     String appointment_id = '';
     if(widget.isReschedule) appointment_id = _pref.getString(AppConfig.appointmentId)!;
-    print(appointment_id);
+    // print(appointment_id);
     final res = await (() => ConsultationService(repository: repository).getAppointmentSlotListService(DateFormat('yyyy-MM-dd').format(selectedDate), appointmentId: (widget.isReschedule) ? appointment_id : null)).withRetries(3);
     print("getSlotlist" + res.runtimeType.toString());
 

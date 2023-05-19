@@ -334,7 +334,7 @@ class _PPLevelsDemoState extends State<PPLevelsDemo> {
             center: Center(child: Text(
                 (calender.day.toString().length == 1) ? "Day\n 0${calender.day.toString()}" : "Day\n  ${calender.day.toString()}",
               style: TextStyle(
-                  fontFamily: 'GothamBold',
+                  fontFamily: kFontBold,
                   color: gPrimaryColor,
                   fontSize: 10.sp),
             )

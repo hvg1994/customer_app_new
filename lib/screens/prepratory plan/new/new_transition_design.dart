@@ -470,6 +470,7 @@ class _NewTransitionDesignState extends State<NewTransitionDesign>
                   );
                 }),
           ),
+          // btn()
           if(currentDayStatus == "0" && !widget.viewDay1Details) btn(),
         ],
       ),
@@ -1012,7 +1013,13 @@ class _NewTransitionDesignState extends State<NewTransitionDesign>
             ),
             onWillPop: () => Future.value(false)),
         circleIcon: bsHeadPinIcon,
-        bottomSheetHeight: 60.h);
+        bottomSheetHeight: 60.h,
+      isSheetCloseNeeded: true,
+        sheetCloseOnTap: (){
+          Navigator.pop(context);
+          Navigator.pop(context);
+        }
+    );
   }
 
   startPostProgram() async {

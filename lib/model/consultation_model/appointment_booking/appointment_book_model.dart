@@ -47,7 +47,7 @@ class AppointmentBookingModel {
     zoomId = json['zoom_id'].toString();
     zoomPassword = json['zoom_password'];
     kaleyraJoinurl = json['kaleyra_user_url'];
-    kaleyraUserId = json['kaleyra_user_id'];
+    kaleyraUserId = json['kaleyra_user_id'].toString();
     kaleyraSuccessId = json['kaleyra_success_team_id'];
     patientName = json['patient_name'];
   }

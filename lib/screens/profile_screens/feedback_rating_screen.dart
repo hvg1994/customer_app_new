@@ -334,7 +334,7 @@ class _FeedbackRatingScreenState extends State<FeedbackRatingScreen> {
                         Icon(Icons.folder),
                         Text('Upload File',
                           style: TextStyle(
-                              fontFamily: 'GothamBold',
+                              fontFamily: kFontBold,
                               decoration: TextDecoration.underline,
                               color: gPrimaryColor
                           ),

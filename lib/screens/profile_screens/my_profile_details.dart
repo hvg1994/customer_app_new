@@ -721,7 +721,7 @@ class _MyProfileDetailsState extends State<MyProfileDetails> {
             title,
             style: TextStyle(
               color: gTextColor,
-              fontFamily: 'GothamMedium',
+              fontFamily: kFontMedium,
               fontSize: 10.sp,
             ),
           ),
@@ -744,7 +744,7 @@ class _MyProfileDetailsState extends State<MyProfileDetails> {
             title,
             style: TextStyle(
               color: gHintTextColor,
-              fontFamily: 'GothamBook',
+              fontFamily: kFontBook,
               fontSize: 10.sp,
             ),
           ),
@@ -779,7 +779,7 @@ class _MyProfileDetailsState extends State<MyProfileDetails> {
                 subTitle,
                 style: TextStyle(
                   color: gBlackColor,
-                  fontFamily: 'GothamBold',
+                  fontFamily: kFontBold,
                   fontSize: 11.sp,
                 ),
               ),
@@ -935,7 +935,7 @@ class _MyProfileDetailsState extends State<MyProfileDetails> {
                         'Choose Profile Pic',
                         style: TextStyle(
                           color: gTextColor,
-                          fontFamily: 'GothamMedium',
+                          fontFamily: kFontMedium,
                           fontSize: 12.sp,
                         ),
                       ),
@@ -966,7 +966,7 @@ class _MyProfileDetailsState extends State<MyProfileDetails> {
                                   'Camera',
                                   style: TextStyle(
                                     color: gTextColor,
-                                    fontFamily: 'GothamMedium',
+                                    fontFamily: kFontMedium,
                                     fontSize: 10.sp,
                                   ),
                                 ),
@@ -999,7 +999,7 @@ class _MyProfileDetailsState extends State<MyProfileDetails> {
                                   'Gallery',
                                   style: TextStyle(
                                     color: gTextColor,
-                                    fontFamily: 'GothamMedium',
+                                    fontFamily: kFontMedium,
                                     fontSize: 10.sp,
                                   ),
                                 ),

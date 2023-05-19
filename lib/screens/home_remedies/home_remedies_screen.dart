@@ -119,8 +119,8 @@ class _HomeRemediesScreenState extends State<HomeRemediesScreen> {
                         // gridDelegate:SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4),
                         itemCount: problemList.length,
                         itemBuilder: (context, index) {
-                          print("thumbnail : ${problemList[index].thumbnail}");
-                          return problemList[index].isGeneral == "1"
+                          // print("thumbnail : ${problemList[index].thumbnail}");
+                          return problemList[index].isGeneral == "0"
                               ? Column(
                                   children: [
                                     OutlinedButton(
@@ -205,7 +205,14 @@ class _HomeRemediesScreenState extends State<HomeRemediesScreen> {
                   if (snapshot.data.runtimeType == HomeRemediesModel) {
                     HomeRemediesModel model =
                         snapshot.data as HomeRemediesModel;
-                    List<HomeRemedy>? problemList = model.data.homeRemedies;
+                    List<HomeRemedy>? totalList = model.data.homeRemedies;
+                    List<HomeRemedy> problemList = [];
+                    totalList.forEach((element) {
+                      if(element.isGeneral == "1"){
+                        problemList.add(element);
+                      }
+                    });
+
                     return GridView.builder(
                         scrollDirection: Axis.vertical,
                         physics: const ScrollPhysics(),
@@ -221,7 +228,7 @@ class _HomeRemediesScreenState extends State<HomeRemediesScreen> {
                         // gridDelegate:SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4),
                         itemCount: problemList.length,
                         itemBuilder: (context, index) {
-                          return problemList[index].isGeneral != "1"
+                          return problemList[index].isGeneral == "1"
                               ? Column(
                                   children: [
                                     Expanded(child: OutlinedButton(

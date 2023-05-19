@@ -148,7 +148,7 @@ class AddedBy {
 
   AddedBy.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    roleId = json['role_id'];
+    roleId = json['role_id'].toString();
     name = json['name'];
     fname = json['fname'];
     lname = json['lname'];
@@ -167,7 +167,7 @@ class AddedBy {
     chatId = json['chat_id'];
     loginUsername = json['login_username'];
     pincode = json['pincode'];
-    isActive = json['is_active'];
+    isActive = json['is_active'].toString();
     addedBy = json['added_by'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];

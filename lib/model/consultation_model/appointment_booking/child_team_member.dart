@@ -19,8 +19,8 @@ class TeamMember {
 
   TeamMember.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    teamId = json['team_id'];
-    userId = json['user_id'];
+    teamId = json['team_id'].toString();
+    userId = json['user_id'].toString();
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
     user = json['user'] != null ? new ChildUser.fromJson(json['user']) : null;

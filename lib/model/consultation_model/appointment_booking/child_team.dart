@@ -23,9 +23,9 @@ class Team {
   Team.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     teamName = json['team_name'];
-    shiftId = json['shift_id'];
+    shiftId = json['shift_id'].toString();
     slotsPerDay = json['slots_per_day'];
-    isArchieved = json['is_archieved'];
+    isArchieved = json['is_archieved'].toString();
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
     if (json['team_member'] != null) {

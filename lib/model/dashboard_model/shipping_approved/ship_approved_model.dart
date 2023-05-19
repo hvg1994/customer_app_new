@@ -60,9 +60,9 @@ class Value {
 
   Value.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    teamPatientId = json['team_patient_id'];
-    orderId = json['order_id'];
-    shippingId = json['shipping_id'];
+    teamPatientId = json['team_patient_id'].toString();
+    orderId = json['order_id'].toString();
+    shippingId = json['shipping_id'].toString();
     awbCode = json['awb_code'];
     courierName = json['courier_name'];
     courierCompanyId = json['courier_company_id'];

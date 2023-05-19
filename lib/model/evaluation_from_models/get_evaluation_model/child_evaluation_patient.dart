@@ -43,7 +43,7 @@ class ChildEvalPatient {
     country = json['country'] ?? '';
     weight = json['weight'] ?? '';
     status = json['status'] ?? '';
-    isArchieved = json['is_archieved'] ?? '';
+    isArchieved = json['is_archieved'].toString() ?? '';
     createdAt = json['created_at'] ?? '';
     updatedAt = json['updated_at'] ?? '';
     user = json['user'] != null ? new ChildEvalUser.fromJson(json['user']) : null;

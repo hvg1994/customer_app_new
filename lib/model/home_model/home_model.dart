@@ -384,7 +384,7 @@ class ConsultationDetails {
 
   ConsultationDetails.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    teamPatientId = json['team_patient_id'];
+    teamPatientId = json['team_patient_id'].toString();
     date = json['date'];
     slotStartTime = json['slot_start_time'];
     slotEndTime = json['slot_end_time'];
@@ -477,7 +477,7 @@ class TeamPatients {
     assignedDate = json['assigned_date'];
     uploadTime = json['upload_time'];
     status = json['status'];
-    isArchieved = json['is_archieved'];
+    isArchieved = json['is_archieved'].toString();
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
     appointmentDate = json['appointment_date'];
@@ -564,7 +564,7 @@ class Patient {
     country = json['country'];
     weight = json['weight'];
     status = json['status'];
-    isArchieved = json['is_archieved'];
+    isArchieved = json['is_archieved'].toString();
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
     user = json['user'] != null ? new User.fromJson(json['user']) : null;
@@ -647,7 +647,7 @@ class User {
 
   User.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    roleId = json['role_id'];
+    roleId = json['role_id'].toString();
     name = json['name'];
     fname = json['fname'];
     lname = json['lname'];
@@ -666,7 +666,7 @@ class User {
     chatId = json['chat_id'];
     loginUsername = json['login_username'];
     pincode = json['pincode'];
-    isActive = json['is_active'];
+    isActive = json['is_active'].toString();
     addedBy = json['added_by'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];

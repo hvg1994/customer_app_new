@@ -455,7 +455,7 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
                       Text(data.message ?? '',
                         style: TextStyle(
                             fontSize: 10.sp,
-                            fontFamily: 'GothamMedium'
+                            fontFamily: kFontMedium
                         ),
                       ),
                       TextButton(
@@ -465,7 +465,7 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
                           child: Text("Retry",
                             style: TextStyle(
                                 fontSize: 10.sp,
-                                fontFamily: 'GothamMedium'
+                                fontFamily: kFontMedium
                             ),
                           )
                       )

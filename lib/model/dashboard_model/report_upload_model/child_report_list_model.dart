@@ -27,13 +27,13 @@ class ChildReportListModel {
   ChildReportListModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     doctorId = json['doctor_id'];
-    patientId = json['patient_id'];
-    appointmentId = json['appointment_id'];
+    patientId = json['patient_id'].toString();
+    appointmentId = json['appointment_id'].toString();
     report = json['report'];
     reportType = json['report_type'];
     reportId = json['report_id'];
     type = json['type'];
-    isArchieved = json['is_archieved'];
+    isArchieved = json['is_archieved'].toString();
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
   }

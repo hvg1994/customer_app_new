@@ -219,7 +219,7 @@ class _FaqAnswerScreenState extends State<FaqAnswerScreen> {
   //                   children: [
   //                     Text(this.question,
   //                       style: TextStyle(
-  //                           fontFamily: 'GothamBold',
+  //                           fontFamily: kFontBold,
   //                           fontSize: 12.sp,
   //                           height: 1.5
   //                       ),
@@ -237,7 +237,7 @@ class _FaqAnswerScreenState extends State<FaqAnswerScreen> {
   //                     Text(this.answer,
   //                       style: TextStyle(
   //                           height: 1.5,
-  //                           fontFamily: 'GothamMedium',
+  //                           fontFamily: kFontMedium,
   //                           fontSize: 10.sp
   //                       ),
   //                     ),

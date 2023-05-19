@@ -51,7 +51,7 @@ class _EvaluationFormScreenState extends State<EvaluationFormScreen> {
                       isBackEnable: false),
                   const Center(
                     child: Image(
-                      image: AssetImage("assets/images/Evalutation.png"),
+                      image: AssetImage("assets/images/eval.png"),
                     ),
                   ),
                   SizedBox(

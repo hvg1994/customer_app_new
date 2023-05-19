@@ -20,7 +20,10 @@ class DosDontsProgramScreen extends StatelessWidget {
     return SafeArea(
       child: Scaffold(
         body: Column(
-          children: [topView(context), Expanded(child: pdfBottomView())],
+          children: [
+            topView(context),
+            Expanded(child: customizedBottomView())
+          ],
         ),
       ),
     );

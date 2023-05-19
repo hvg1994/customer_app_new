@@ -49,12 +49,12 @@ class Value {
   Value.fromJson(Map<String, dynamic> json) {
     print("value from json: $json");
     id = json['id'];
-    userId = json['user_id'];
+    userId = json['user_id'].toString();
     startVideoUrl = json['video'];
     tracker_video_url = json['tracker_video'];
     recipeVideo = json['recipe_video'];
     programId = json['program_id'];
-    isActive = json['is_active'];
+    isActive = json['is_active'].toString();
     startProgram = json['start_program'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
@@ -105,7 +105,7 @@ class Program {
   Program.fromJson(Map<String, dynamic> json) {
     print("program from json: $json");
     id = json['id'];
-    issueId = json['issue_id'];
+    issueId = json['issue_id'].toString();
     name = json['name'];
     noOfDays = json['no_of_days'];
     desc = json['desc'];

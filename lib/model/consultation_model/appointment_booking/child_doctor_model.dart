@@ -33,17 +33,17 @@ class ChildDoctorModel {
 
   ChildDoctorModel.fromJson(Map<String, dynamic> json) {
     doctorId = json['id'].toString();
-    userId = json['user_id'];
+    userId = json['user_id'].toString();
     signupDate = json['signup_date'];
     experience = json['experience'];
-    weekoff = json['weekoff'];
+    weekoff = json['weekoff'].toString();
     desc = json['desc'];
-    programAssociated = json['program_associated'];
+    programAssociated = json['program_associated'].toString();
     occupation = json['occupation'];
     specialization = json['specialization'] != null
         ? new ChildSpecialization.fromJson(json['specialization'])
         : null;
-    isArchieved = json['is_archieved'];
+    isArchieved = json['is_archieved'].toString();
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
     user = json['user'] != null ? new ChildUser.fromJson(json['user']) : null;

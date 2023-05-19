@@ -63,11 +63,11 @@ class ChildAppointmentDetails {
 
     // post consultation
     id = json['id'];
-    teamPatientId = json['team_patient_id'];
+    teamPatientId = json['team_patient_id'].toString();
     date = json['date'];
     slotStartTime = json['slot_start_time'];
     slotEndTime = json['slot_end_time'];
-    type = json['type'];
+    type = json['type'].toString();
     status = json['status'];
     zoomJoinUrl = json['zoom_join_url'];
     zoomStartUrl = json['zoom_start_url'];
@@ -76,7 +76,7 @@ class ChildAppointmentDetails {
     kaleyraJoinurl = json['kaleyra_user_url'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
-    kaleyraSuccessTeamId = json['kaleyra_success_team_id'];
+    kaleyraSuccessTeamId = json['kaleyra_success_team_id'].toString();
     appointmentDate = json['appointment_date'];
     appointmentStartTime = json['slot_start_time'] ?? json['appointment_start_time'];
     teamPatients = json['team_patients'] != null

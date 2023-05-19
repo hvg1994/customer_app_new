@@ -212,7 +212,7 @@ class _TCardPageState extends State<TCardPage> {
   }
 
   buildLabelTextField(String name,
-      {double? fontSize, double textScleFactor = 0.9}) {
+      {double? fontSize, double textScleFactor = 0.9, bool isMandatory = true}) {
     return RichText(
         textScaleFactor: textScleFactor,
         textAlign: TextAlign.center,
@@ -226,7 +226,7 @@ class _TCardPageState extends State<TCardPage> {
             ),
             children: [
               TextSpan(
-                text: ' *',
+                text: (isMandatory) ? ' *' : '',
                 style: TextStyle(
                   fontSize: 9.sp,
                   color: kPrimaryColor,
@@ -296,155 +296,157 @@ class _TCardPageState extends State<TCardPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Padding(
-        padding: EdgeInsets.only(left: 3.w, right: 3.w, top: 1.h),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              buildAppBar(() {
-                Navigator.pop(context);
-              }),
-              SizedBox(
-                height: 1.h,
-              ),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    "Gut Wellness Club Program Feedback ",
-                    textAlign: TextAlign.start,
-                    style: TextStyle(
-                        fontFamily: kFontBold,
-                        color: gBlackColor,
-                        height: 1.5,
-                        fontSize: headingFont),
-                  ),
-                  SizedBox(
-                    width: 2.w,
-                  ),
-                  Expanded(
-                    child: Container(
-                      height: 1,
-                      color: kLineColor,
-                    ),
-                  ),
-                ],
-              ),
-              Text(
-                "We'd Love To Know How We Made You Feel",
-                textAlign: TextAlign.start,
-                style: TextStyle(
-                    fontFamily: kFontMedium,
-                    color: gHintTextColor,
-                    height: 1.3,
-                    fontSize: subHeadingFont),
-              ),
-              SizedBox(
-                height: 1.h,
-              ),
-              // (programContinuesdStatus == null) ?  Container(
-              //   height: 60.h,
-              //   width: double.maxFinite,
-              //   padding: EdgeInsets.symmetric(vertical: 2.h, horizontal: 3.w),
-              //   decoration: BoxDecoration(
-              //     color: colors[0].withOpacity(1),
-              //     borderRadius: BorderRadius.circular(16.0),
-              //     boxShadow: [
-              //       BoxShadow(
-              //         offset: const Offset(0, 17),
-              //         blurRadius: 10.0,
-              //         color: gWhiteColor.withOpacity(0.3),
-              //       )
-              //     ],
-              //   ),
-              //   child: Center(
-              //     child: Column(
-              //       crossAxisAlignment: CrossAxisAlignment.center,
-              //       mainAxisAlignment: MainAxisAlignment.center,
-              //       children: [
-              //         buildLabelTextField('Tell us about your program status ',
-              //             fontSize: headingFont),
-              //         SizedBox(height: 3.h),
-              //         buildButtonText(list[0], 0),
-              //         buildButtonText(list[1], 0),
-              //         SizedBox(height: 2.h),
-              //       ],
-              //     ),
-              //   ),
-              // ):
-              TCard(
-                cards: cards,
-                lockYAxis: true,
-                size: const Size(500, 600),
-                delaySlideFor: 300,
-                controller: _controller,
-                onForward: (index, info) {
-                  print("onForward");
-                  print("${submittedIndex+1}  $index");
-
-                  if(submittedIndex+1 != index && (submittedIndex+1 < index)){
-                    _controller.back();
-
-                  }
-                  else{
-                    _index = index;
-                    print("index: $index");
-                    print("Direction : ${info.direction}");
-                  }
-                  setState(() {});
-                },
-                onBack: (index, info) {
-                  print("onBack");
-                  _index = index;
-                  setState(() {});
-                },
-                onEnd: () {
-                  print('end');
-                },
-              ),
-              SizedBox(height: 1.h),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 30.w),
-                child: Row(
-                  children: <Widget>[
-                    GestureDetector(
-                      onTap: () {
-                        _controller.back();
-                      },
-                      child: const Icon(
-                        Icons.arrow_back_ios,
-                      ),
-                    ),
-                    SizedBox(width: 5.w),
+    return SafeArea(
+      child: Scaffold(
+        body: Padding(
+          padding: EdgeInsets.only(left: 3.w, right: 3.w, top: 1.h),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                buildAppBar(() {
+                  Navigator.pop(context);
+                }),
+                SizedBox(
+                  height: 1.h,
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
                     Text(
-                      "${_index + 1} of ${colors.length}",
+                      "Gut Wellness Club Program Feedback ",
+                      textAlign: TextAlign.start,
                       style: TextStyle(
-                        fontSize: 9.sp,
-                        color: gHintTextColor,
-                        height: 1.35,
-                        fontFamily: kFontMedium,
-                      ),
+                          fontFamily: kFontBold,
+                          color: gBlackColor,
+                          height: 1.5,
+                          fontSize: headingFont),
                     ),
-                    SizedBox(width: 5.w),
-                    GestureDetector(
-                      onTap: () {
-                        print(_index);
-                        print(submittedIndex);
-                        print(_index == colors.length-1);
-                        if (submittedIndex == _index && _index != colors.length-1) {
-                          _controller.forward();
-                        } else {}
-                      },
-                      child: Icon(Icons.arrow_forward_ios,
-                        color: (submittedIndex == _index && _index != colors.length-1) ? gBlackColor : gGreyColor,
+                    SizedBox(
+                      width: 2.w,
+                    ),
+                    Expanded(
+                      child: Container(
+                        height: 1,
+                        color: kLineColor,
                       ),
                     ),
                   ],
                 ),
-              ),
-            ],
+                Text(
+                  "We'd Love To Know How We Made You Feel",
+                  textAlign: TextAlign.start,
+                  style: TextStyle(
+                      fontFamily: kFontMedium,
+                      color: gHintTextColor,
+                      height: 1.3,
+                      fontSize: subHeadingFont),
+                ),
+                SizedBox(
+                  height: 1.h,
+                ),
+                // (programContinuesdStatus == null) ?  Container(
+                //   height: 60.h,
+                //   width: double.maxFinite,
+                //   padding: EdgeInsets.symmetric(vertical: 2.h, horizontal: 3.w),
+                //   decoration: BoxDecoration(
+                //     color: colors[0].withOpacity(1),
+                //     borderRadius: BorderRadius.circular(16.0),
+                //     boxShadow: [
+                //       BoxShadow(
+                //         offset: const Offset(0, 17),
+                //         blurRadius: 10.0,
+                //         color: gWhiteColor.withOpacity(0.3),
+                //       )
+                //     ],
+                //   ),
+                //   child: Center(
+                //     child: Column(
+                //       crossAxisAlignment: CrossAxisAlignment.center,
+                //       mainAxisAlignment: MainAxisAlignment.center,
+                //       children: [
+                //         buildLabelTextField('Tell us about your program status ',
+                //             fontSize: headingFont),
+                //         SizedBox(height: 3.h),
+                //         buildButtonText(list[0], 0),
+                //         buildButtonText(list[1], 0),
+                //         SizedBox(height: 2.h),
+                //       ],
+                //     ),
+                //   ),
+                // ):
+                TCard(
+                  cards: cards,
+                  lockYAxis: true,
+                  size: const Size(500, 600),
+                  delaySlideFor: 300,
+                  controller: _controller,
+                  onForward: (index, info) {
+                    print("onForward");
+                    print("${submittedIndex+1}  $index");
+
+                    if(submittedIndex+1 != index && (submittedIndex+1 < index)){
+                      _controller.back();
+
+                    }
+                    else{
+                      _index = index;
+                      print("index: $index");
+                      print("Direction : ${info.direction}");
+                    }
+                    setState(() {});
+                  },
+                  onBack: (index, info) {
+                    print("onBack");
+                    _index = index;
+                    setState(() {});
+                  },
+                  onEnd: () {
+                    print('end');
+                  },
+                ),
+                SizedBox(height: 1.h),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 30.w),
+                  child: Row(
+                    children: <Widget>[
+                      GestureDetector(
+                        onTap: () {
+                          _controller.back();
+                        },
+                        child: const Icon(
+                          Icons.arrow_back_ios,
+                        ),
+                      ),
+                      SizedBox(width: 5.w),
+                      Text(
+                        "${_index + 1} of ${colors.length}",
+                        style: TextStyle(
+                          fontSize: 9.sp,
+                          color: gHintTextColor,
+                          height: 1.35,
+                          fontFamily: kFontMedium,
+                        ),
+                      ),
+                      SizedBox(width: 5.w),
+                      GestureDetector(
+                        onTap: () {
+                          print(_index);
+                          print(submittedIndex);
+                          print(_index == colors.length-1);
+                          if (submittedIndex == _index && _index != colors.length-1) {
+                            _controller.forward();
+                          } else {}
+                        },
+                        child: Icon(Icons.arrow_forward_ios,
+                          color: (submittedIndex == _index && _index != colors.length-1) ? gBlackColor : gGreyColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -2023,7 +2025,7 @@ class _TCardPageState extends State<TCardPage> {
             children: [
               buildLabelTextField(
                   "Can We Get A Picture Of You To Put A Face To This Feedback?",
-                  fontSize: headingFont),
+                  fontSize: headingFont, isMandatory: false),
               SizedBox(height: 3.h),
               GestureDetector(
                 onTap: () async {

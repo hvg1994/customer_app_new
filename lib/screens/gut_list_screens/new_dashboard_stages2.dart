@@ -1,3 +1,4 @@
+
 import 'dart:convert';
 import 'package:flutter/gestures.dart';
 import 'package:gwc_customer/screens/prepratory%20plan/new/dos_donts_program_screen.dart';
@@ -178,7 +179,8 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
     if (_pref!.getString(AppConfig().shipRocketBearer) == null ||
         _pref!.getString(AppConfig().shipRocketBearer)!.isEmpty) {
       getShipRocketToken();
-    } else {
+    }
+    else {
       String token = _pref!.getString(AppConfig().shipRocketBearer)!;
       Map<String, dynamic> payload = Jwt.parseJwt(token);
       print('shiprocketToken : $payload');
@@ -188,6 +190,12 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
       }
     }
 
+  }
+
+  @override
+  void didChangeDependencies() {
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
     getData();
   }
 
@@ -298,6 +306,7 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
         } else {
           _postConsultationAppointment =
               _getDashboardDataModel.postprogram_consultation;
+          _pref!.setString(AppConfig.appointmentId,_postConsultationAppointment?.value?.id.toString() ?? '');
           print(
               "RESCHEDULE : ${_getDashboardDataModel.postprogram_consultation?.data}");
           postProgramStage = _postConsultationAppointment?.data;
@@ -663,16 +672,43 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
                     onTap: () {
                       handleTrackerRemedyOnTap();
                     },
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Image.asset(
-                          "assets/images/home_remedies.png",
-                          width: 38,
-                          height: 38,
-                          fit: BoxFit.scaleDown,
+                    child: IntrinsicWidth(
+                      child: Container(
+                        padding: EdgeInsets.all(8),
+                        margin: EdgeInsets.symmetric(vertical: 2.h),
+                        // width: 60.w,
+                        // height: 5.h,
+                        decoration: BoxDecoration(
+                          color: kNumberCircleAmber,
+                          borderRadius: BorderRadius.circular(eUser().buttonBorderRadius),
+                          // border: Border.all(color: eUser().buttonBorderColor,
+                          //     width: eUser().buttonBorderWidth),
                         ),
-                      ],
+                        child: Center(
+                          child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Image.asset(
+                                  "assets/images/home_remedies.png",
+                                  width: 18,
+                                  height: 18,
+                                  fit: BoxFit.scaleDown,
+                                ),
+                                SizedBox(width: 10,),
+                                Text(
+                                  'Home Remedies',
+                                  // 'Proceed to Day $proceedToDay',
+                                  style: TextStyle(
+                                    fontFamily: kFontMedium,
+                                    color: gTextColor,
+                                    // color: (statusList.length != lst.length) ? gPrimaryColor : gMainColor,
+                                    fontSize: subHeadingFont,
+                                  ),
+                                ),
+                              ]
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 )),
@@ -1183,7 +1219,8 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
                 AppConfig().showSnackbar(context, "Can't access Locked Stage",
                     isError: true);
               }
-            } else if (btnId == 2) {
+            }
+            else if (btnId == 2) {
               if (postProgramStage == "protocol_guide") {
                 // if(_postConsultationAppointment!.value != null){
                 //   if(_postConsultationAppointment!.value!.programEndReportUser != null){
@@ -1204,7 +1241,8 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
                 AppConfig().showSnackbar(context, "Can't access Locked Stage",
                     isError: true);
               }
-            } else {
+            }
+            else {
               showPostProgramScreen();
             }
             break;
@@ -1217,13 +1255,15 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
                 } else {
                   goToScreen(MedicalFeedbackForm());
                 }
-              } else {
+              }
+              else {
                 // goToScreen(FinalFeedbackForm());
 
                 AppConfig().showSnackbar(context, "Can't access Locked Stage",
                     isError: true);
               }
-            } else if (btnId == 2) {
+            }
+            else if (btnId == 2) {
               if (postProgramStage == "post_program") {
                 if (_gutPostProgramModel!.isProgramFeedbackSubmitted == "1") {
                   Navigator.of(context)
@@ -1241,8 +1281,9 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
                       context, "Please complete the Feedback",
                       isError: true);
                 }
-              } else if (postProgramStage == "post_appointment_booked") {
-                final model = _getAppointmentDetailsModel;
+              }
+              else if (postProgramStage == "post_appointment_booked") {
+                final model = _postConsultationAppointment;
                 print(model!.value!.date);
                 List<String> doctorNames = [];
                 String? doctorName;
@@ -1269,13 +1310,51 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
                   doctorName: doctorName,
                   doctorPic: doctorImage,
                 ));
-              } else if (postProgramStage == "protocol_guide") {
+              }
+              else if (postProgramStage == "post_appointment_reschedule") {
+                final model = _postConsultationAppointment;
+                print(model);
+                // if(model.value != null){
+                //   print(model!.value!.date);
+                // }
+                List<String> doctorNames = [];
+                String? doctorName;
+                String? doctorImage;
+
+                model?.value?.teamMember?.forEach((element) {
+                  if (element.user != null) {
+                    if (element.user!.roleId == "2") {
+                      doctorNames.add('Dr. ${element.user!.name}' ?? '');
+                      doctorName = 'Dr. ${element.user!.name}';
+                      doctorImage = element.user?.profile ?? '';
+                    }
+                  }
+                });
+
+                _pref!.setString(AppConfig.appointmentId,model?.value?.id.toString() ?? '');
+
+
+                // add this before calling calendertimescreen for reschedule
+                // _pref!.setString(AppConfig.appointmentId , '');
+                goToScreen(DoctorCalenderTimeScreen(
+                  isReschedule: true,
+                  isPostProgram: true,
+                  prevBookingDate: model?.value!.date,
+                  prevBookingTime: model?.value!.appointmentStartTime,
+                  doctorDetails: model?.value!.doctor,
+                  doctorName: doctorName,
+                  doctorPic: doctorImage,
+                ));
+              }
+              else if (postProgramStage == "protocol_guide") {
                 // when protocolo guide need to show completed ui
-              } else {
+              }
+              else {
                 AppConfig().showSnackbar(context, "Can't access Locked Stage",
                     isError: true);
               }
-            } else {
+            }
+            else {
               if (postProgramStage == "post_appointment_booked") {
                 Navigator.of(context)
                     .push(
@@ -2509,7 +2588,8 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
           mealBtn1Color = newDashboardGreenButtonColor;
           showMealLockIcon = true;
           bg4 = currentBgColor;
-        } else {
+        }
+        else {
           mealBtn2Color = newDashboardLightGreyButtonColor;
           showMealLockIcon = false;
           bg4 = lockedBgColor;
@@ -2636,7 +2716,7 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
           showMealLockIcon = true;
         }
 
-        postBtn1Color = newDashboardGreenButtonColor;
+        postBtn1Color = newDashboardLightGreyButtonColor;
         postBtn1Name = "Feedback";
         postBtn2Color = newDashboardGreenButtonColor;
         postBtn2Name = "ReSchedule";
@@ -2681,6 +2761,43 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
         postBtn3Color = newDashboardLightGreyButtonColor;
         postBtn3Name = "Join";
 
+        break;
+      case 'post_appointment_reschedule':
+        changeToggle();
+        bg1 = completedBgColor;
+        evalBtnColor = newDashboardGreenButtonColor;
+        evalBtnName = "View Files";
+
+        bg2 = completedBgColor;
+        consBtn1Color = newDashboardGreenButtonColor;
+        consBtn1Name = "Completed";
+        consBtn2Color = newDashboardGreenButtonColor;
+        consBtn2Name = "View MR";
+        showConsLockIcon = false;
+
+        if ((_transModel?.value!.isTransMealCompleted != null) &&
+            _transModel?.value?.isTransMealCompleted == true) {
+          bg4 = currentBgColor;
+          mealBtn1Color = newDashboardGreenButtonColor;
+          mealBtn1Name = "View Plan";
+          mealBtn2Color = newDashboardGreenButtonColor;
+          mealBtn2Name = "Transition";
+          showMealLockIcon = false;
+        } else {
+          bg4 = currentBgColor;
+          mealBtn1Color = newDashboardGreenButtonColor;
+          mealBtn1Name = "View Plan";
+          mealBtn2Color = newDashboardGreenButtonColor;
+          mealBtn2Name = "Transition";
+          showMealLockIcon = true;
+        }
+
+        postBtn1Color = newDashboardLightGreyButtonColor;
+        postBtn1Name = "Feedback";
+        postBtn2Color = newDashboardGreenButtonColor;
+        postBtn2Name = "Reschedule";
+        postBtn3Color = newDashboardLightGreyButtonColor;
+        postBtn3Name = "Join";
         break;
       case 'protocol_guide':
         changeToggle();
@@ -2816,7 +2933,8 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
             default:
               goToScreen(const ConsultationSuccess());
           }
-        } else {
+        }
+        else {
           print(consultationStage);
           switch (consultationStage) {
             case 'check_user_reports':
@@ -2904,7 +3022,8 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
             AppConfig().showSnackbar(context, "Can't access Locked Stage",
                 isError: true);
           }
-        } else {
+        }
+        else {
           if (transStage != null && transStage!.isNotEmpty) {
             // showProgramScreen();
             showTransitionMealScreen();
@@ -2946,7 +3065,8 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
           ),
         )
             .then((value) => reloadUI());
-      } else {
+      }
+      else {
         Navigator.push(
           context,
           MaterialPageRoute(

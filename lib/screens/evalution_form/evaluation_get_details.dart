@@ -351,46 +351,45 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
                       ColorFilter.mode(kPrimaryColor, BlendMode.lighten)),
             ),
       child: SafeArea(
-        child: SafeArea(
-          child: Scaffold(
-            body: LayoutBuilder(builder: (context, constraints) {
-              return Stack(
-                fit: StackFit.expand,
-                children: [
-                  const Opacity(
-                    opacity: 0.075,
-                    child: Image(
-                      image: AssetImage("assets/images/Group 10082.png"),
-                      fit: BoxFit.fill,
-                    ),
+        child: Scaffold(
+          body:
+          LayoutBuilder(builder: (context, constraints) {
+            return Stack(
+              fit: StackFit.expand,
+              children: [
+                const Opacity(
+                  opacity: 0.075,
+                  child: Image(
+                    image: AssetImage("assets/images/Group 10082.png"),
+                    fit: BoxFit.fill,
                   ),
-                  FutureBuilder(
-                      future: _getEvaluationDataFuture,
-                      builder: (_, snapshot) {
-                        if (snapshot.hasData) {
-                          print(snapshot.data);
-                          print(snapshot.data.runtimeType);
-                          if (snapshot.data.runtimeType ==
-                              GetEvaluationDataModel) {
-                            GetEvaluationDataModel model =
-                                snapshot.data as GetEvaluationDataModel;
-                            ChildGetEvaluationDataModel? model1 = model.data;
-                            getDetails(model1);
-                            //storeDetails(model1!);
-                            return buildEvaluationForm(model: model1);
-                          } else {
-                            ErrorModel model = snapshot.data as ErrorModel;
-                            print(model.message);
-                          }
-                        } else if (snapshot.hasError) {
-                          print("snapshot.error: ${snapshot.error}");
+                ),
+                FutureBuilder(
+                    future: _getEvaluationDataFuture,
+                    builder: (_, snapshot) {
+                      if (snapshot.hasData) {
+                        print(snapshot.data);
+                        print(snapshot.data.runtimeType);
+                        if (snapshot.data.runtimeType ==
+                            GetEvaluationDataModel) {
+                          GetEvaluationDataModel model =
+                              snapshot.data as GetEvaluationDataModel;
+                          ChildGetEvaluationDataModel? model1 = model.data;
+                          getDetails(model1);
+                          //storeDetails(model1!);
+                          return buildEvaluationForm(model: model1);
+                        } else {
+                          ErrorModel model = snapshot.data as ErrorModel;
+                          print(model.message);
                         }
-                        return buildCircularIndicator();
-                      }),
-                ],
-              );
-            }),
-          ),
+                      } else if (snapshot.hasError) {
+                        print("snapshot.error: ${snapshot.error}");
+                      }
+                      return buildCircularIndicator();
+                    }),
+              ],
+            );
+          }),
         ),
       ),
     );

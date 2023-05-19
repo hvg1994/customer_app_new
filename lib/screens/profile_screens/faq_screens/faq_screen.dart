@@ -212,7 +212,7 @@ List<GridTileItems>  faqGridList = [
             faq.questions,
             style: TextStyle(
               color: gTextColor,
-              fontFamily: 'GothamMedium',
+              fontFamily: kFontMedium,
               fontSize: 9.sp,
             ),
           ),
@@ -783,7 +783,7 @@ List<GridTileItems>  faqGridList = [
             faq.question ?? '',
             style: TextStyle(
               color: gTextColor,
-              fontFamily: 'GothamMedium',
+              fontFamily: kFontMedium,
               fontSize: 9.sp,
             ),
           ),

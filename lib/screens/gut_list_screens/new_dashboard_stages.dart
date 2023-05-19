@@ -233,6 +233,7 @@ class GutListState extends State<GutList> {
         }
         else{
           _postConsultationAppointment = _getDashboardDataModel.postprogram_consultation;
+          _pref!.setString(AppConfig.appointmentId,_postConsultationAppointment?.value?.id.toString() ?? '');
           print("RESCHEDULE : ${_getDashboardDataModel.postprogram_consultation?.data}");
           postProgramStage = _postConsultationAppointment?.data;
         }

@@ -7,6 +7,7 @@ import '../../model/ship_track_model/shopping_model/get_shopping_model.dart';
 import '../../repository/api_service.dart';
 import '../../repository/shipping_repository/ship_track_repo.dart';
 import '../../services/shipping_service/ship_track_service.dart';
+import '../../utils/app_config.dart';
 import '../../widgets/constants.dart';
 import 'package:http/http.dart' as http;
 
@@ -45,6 +46,12 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
         showShoppingLoading = false;
       });
     }
+    else{
+      setState(() {
+        showShoppingLoading = false;
+        isFetchError = true;
+      });
+    }
   }
 
   @override
@@ -60,11 +67,14 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
     super.dispose();
   }
 
+  bool isFetchError = false;
+
   @override
   Widget build(BuildContext context) {
     return (showShoppingLoading)
         ? buildCircularIndicator()
-        : (shoppingList.isNotEmpty) ? Column(
+        : (shoppingList.isNotEmpty)
+        ? Column(
             children: [
               SizedBox(height: 1.h),
               Padding(
@@ -279,6 +289,11 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
   );
 
   noData() {
+    Future.delayed(Duration.zero).whenComplete(() {
+      if(isFetchError){
+        AppConfig().showSnackbar(context, AppConfig.oopsMessage, isError: true);
+      }
+    });
     return const Center(
       child: Image(
         image: AssetImage("assets/images/no_data_found.png"),

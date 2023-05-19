@@ -177,7 +177,7 @@ class _PPRewardsPopupState extends State<PPRewardsPopup> {
                 children: [
                   Text(name,
                     style: TextStyle(
-                        fontFamily: 'GothamMedium',
+                        fontFamily: kFontMedium,
                         fontSize: 11.sp,
                         color: gTextColor
                     ),
@@ -188,7 +188,7 @@ class _PPRewardsPopupState extends State<PPRewardsPopup> {
                   Expanded(
                     child: Text(subTitle,
                       style: TextStyle(
-                          fontFamily: 'GothamMedium',
+                          fontFamily: kFontMedium,
                           fontSize: 10.sp,
                           color: gTextColor
                       ),
@@ -199,7 +199,7 @@ class _PPRewardsPopupState extends State<PPRewardsPopup> {
           ),
           Text(trailingText,
             style: TextStyle(
-                fontFamily: 'GothamMedium',
+                fontFamily: kFontMedium,
                 fontSize: 8.sp,
                 color: gTextColor,
                 decoration: TextDecoration.underline
@@ -228,7 +228,7 @@ class _PPRewardsPopupState extends State<PPRewardsPopup> {
       minLeadingWidth: 30,
       title: Text(name,
         style: TextStyle(
-            fontFamily: 'GothamMedium',
+            fontFamily: kFontMedium,
             fontSize: 11.sp,
             color: gTextColor
         ),
@@ -237,7 +237,7 @@ class _PPRewardsPopupState extends State<PPRewardsPopup> {
         children: [
           Text(subTitle,
             style: TextStyle(
-                fontFamily: 'GothamMedium',
+                fontFamily: kFontMedium,
                 fontSize: 10.sp,
                 color: gTextColor
             ),
@@ -246,7 +246,7 @@ class _PPRewardsPopupState extends State<PPRewardsPopup> {
       ),
       trailing: Text(subTitle,
         style: TextStyle(
-            fontFamily: 'GothamMedium',
+            fontFamily: kFontMedium,
             fontSize: 8.sp,
             color: gTextColor,
           decoration: TextDecoration.underline
@@ -305,7 +305,7 @@ class _PPRewardsPopupState extends State<PPRewardsPopup> {
                 child: Text('What is the Refer and Earn program?',
                   style: TextStyle(
                       fontSize: 10.5.sp,
-                      fontFamily: 'GothamMedium'
+                      fontFamily: kFontMedium
                   ),
                 ),
               ),

@@ -67,7 +67,7 @@ class ChildEvalUser {
     deviceId = json['device_id'] ?? '';
     age = json['age'] ?? '';
     pincode = json['pincode'] ?? '';
-    isActive = json['is_active'] ?? '';
+    isActive = json['is_active'].toString() ?? '';
     addedBy = json['added_by'] ?? '';
     createdAt = json['created_at'] ?? '';
     updatedAt = json['updated_at'] ?? '';
