@@ -11,6 +11,7 @@ import 'package:gwc_customer/widgets/exit_widget.dart';
 import 'package:sizer/sizer.dart';
 import 'package:gwc_customer/screens/home_screens/level_status.dart';
 import '../model/evaluation_from_models/evaluation_model_format1.dart';
+import '../table_view.dart';
 import '../utils/app_config.dart';
 import '../widgets/constants.dart';
 import '../widgets/video/normal_video.dart';
@@ -81,7 +82,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
         }
       case 1:
         {
-          // return DemoSlice();
           // return RadialSliderExample();
           return const FeedsList();
         }

@@ -8,6 +8,9 @@ class GutDataModel {
 
   GutDataModel.fromJson(Map<String, dynamic> json) {
     print("json['value'].runtimeType: ${json['value'].runtimeType}");
+    if(json['value'].runtimeType == String){
+      print(json['value']);
+    }
     data = json['data'];
     value = (json['value'].runtimeType == String) ? json['value'] ??'' : '';
     isProgramFeedbackSubmitted = json['is_program_feedback_submitted'].toString() ?? '';

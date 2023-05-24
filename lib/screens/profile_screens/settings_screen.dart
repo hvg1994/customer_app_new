@@ -33,8 +33,10 @@ import '../../splash_screen.dart';
 import '../../utils/app_config.dart';
 import '../../widgets/widgets.dart';
 import '../evalution_form/evaluation_form_screen.dart';
+import '../gut_list_screens/new_stages_data.dart';
 import 'feedback_rating_screen.dart';
 import 'my_profile_details.dart';
+
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({Key? key}) : super(key: key);
@@ -413,6 +415,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     _pref.remove(AppConfig.User_Profile);
     _pref.remove(AppConfig.User_Number);
 
+    updateStageData();
   }
 
 

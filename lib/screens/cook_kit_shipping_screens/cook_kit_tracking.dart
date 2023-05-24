@@ -819,7 +819,7 @@ class _CookKitTrackingState extends State<CookKitTracking> {
           height: 1.5.h,
         ),
         Text(
-          "Hey, Your Gut Rhytam Reset Kit,\nIs Placed & Will Soon Be Picked Up\nBy Our Courier Partner.",
+          "Your kit is being dispatched.\nThis page will be updated soon with live tracking details.",
           style: TextStyle(
               fontFamily: kFontBold,
               color: gTextColor,

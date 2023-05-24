@@ -461,8 +461,13 @@ class _SplashScreenState extends State<SplashScreen> {
         isSingleButton: true,
         positiveButtonName: 'Retry',
         positiveButton: (){
-          getEnquiryStatus(deviceId!);
-          Navigator.pop(context);
+          if(deviceId != null){
+            getEnquiryStatus(deviceId!);
+            Navigator.pop(context);
+          }
+          else{
+            getDeviceId();
+          }
         }
     );
   }

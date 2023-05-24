@@ -223,6 +223,7 @@ class GetPrePostMealvalue{
     data['days'] = this.prep_days;
     data['trans_days'] = this.trans_days;
     data['is_prep_program_started'] = this.isPrepratoryStarted;
+    data['is_prep_program_completed'] = this.isPrepCompleted;
     data['is_prep_tracker_completed'] = this.isPrepTrackerCompleted;
 
     data['is_trans_program_started'] = this.isTransMealStarted;

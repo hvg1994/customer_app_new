@@ -1057,7 +1057,7 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
               color: gsecondaryColor,
             ),
             title: Text(
-              model?.vegNonVegVegan.toString().toTitleCase() ?? "",
+              model?.vegNonVegVegan.toString().trim().toTitleCase() ?? "",
               style: TextStyle(
                 fontSize: 10.sp,
                 height: 1.3,
@@ -1502,7 +1502,7 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
         .addAll(List.from(jsonDecode(anyUrinationIssue ?? '')));
     selectedUrinationList = List.from(
         (selectedUrinationList[0].split(',') as List).map((e) => e).toList());
-    urineColorValue = selectedUrinationList.first.toString().toTitleCase();
+    urineColorValue = selectedUrinationList.first.toString().trim().toTitleCase();
 
     return ListView.builder(
       shrinkWrap: true,
@@ -1521,7 +1521,7 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
             color: gsecondaryColor,
           ),
           title: Text(
-            selectedUrinationList[index].toString().toTitleCase() ?? "",
+            selectedUrinationList[index].toString().trim().toTitleCase() ?? "",
             style: TextStyle(
               fontSize: 10.sp,
               height: 1.3,
@@ -1696,7 +1696,7 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
             color: gsecondaryColor,
           ),
           title: Text(
-            selectedMaritalStatus[index].toString().toTitleCase() ?? "",
+            selectedMaritalStatus[index].toString().trim().toTitleCase() ?? "",
             style: TextStyle(
               fontSize: 10.sp,
               height: 1.3,
@@ -1813,7 +1813,7 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
             color: gsecondaryColor,
           ),
           title: Text(
-            selectedGender[index].toString().toTitleCase() ?? "",
+            selectedGender[index].toString().trim().toTitleCase() ?? "",
             style: TextStyle(
               fontSize: 10.sp,
               height: 1.3,
@@ -1930,7 +1930,7 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
             color: gsecondaryColor,
           ),
           title: Text(
-            selectedTongueCoatingList[index].toString().toTitleCase() ?? "",
+            selectedTongueCoatingList[index].toString().trim().toTitleCase() ?? "",
             style: TextStyle(
               fontSize: 10.sp,
               height: 1.3,
@@ -2047,7 +2047,7 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
             color: gsecondaryColor,
           ),
           title: Text(
-            selectedStoolTypeList[index].toString().toTitleCase() ?? "",
+            selectedStoolTypeList[index].toString().trim().toTitleCase() ?? "",
             style: TextStyle(
               fontSize: 10.sp,
               height: 1.3,
@@ -2164,7 +2164,7 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
             color: gsecondaryColor,
           ),
           title: Text(
-            selectedGlassesDayList[index].toString().toTitleCase() ?? "",
+            selectedGlassesDayList[index].toString().trim().toTitleCase() ?? "",
             style: TextStyle(
               fontSize: 10.sp,
               height: 1.3,
@@ -2281,7 +2281,7 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
             color: gsecondaryColor,
           ),
           title: Text(
-            selectedMealPreferenceList[index].toString().toTitleCase() ?? "",
+            selectedMealPreferenceList[index].toString().trim().toTitleCase() ?? "",
             style: TextStyle(
               fontSize: 10.sp,
               height: 1.3,
@@ -2398,7 +2398,7 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
             color: gsecondaryColor,
           ),
           title: Text(
-            selectedHungerPatternList[index].toString().toTitleCase() ?? "",
+            selectedHungerPatternList[index].toString().trim().toTitleCase() ?? "",
             style: TextStyle(
               fontSize: 10.sp,
               height: 1.3,
@@ -2438,7 +2438,7 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
             color: gsecondaryColor,
           ),
           title: Text(
-            selectedBowelPatternList[index].toString().toTitleCase() ?? "",
+            selectedBowelPatternList[index].toString().trim().toTitleCase() ?? "",
             style: TextStyle(
               fontSize: 10.sp,
               height: 1.3,
@@ -2533,7 +2533,7 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
     selectedUrinColorList.addAll(List.from(jsonDecode(title ?? '')));
     selectedUrinColorList = List.from(
         (selectedUrinColorList[0].split(',') as List).map((e) => e).toList());
-    urineColorValue = selectedUrinColorList.first.toString().toTitleCase();
+    urineColorValue = selectedUrinColorList.first.toString().trim().toTitleCase();
 
     return ListView.builder(
       shrinkWrap: true,
@@ -2552,7 +2552,7 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
             color: gsecondaryColor,
           ),
           title: Text(
-            selectedUrinColorList[index].toString().toTitleCase() ?? "",
+            selectedUrinColorList[index].toString().trim().toTitleCase() ?? "",
             style: TextStyle(
               fontSize: 10.sp,
               height: 1.3,
@@ -2666,7 +2666,7 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
             color: gsecondaryColor,
           ),
           title: Text(
-            selectedUrinLooksList[index].toString().toTitleCase() ?? "",
+            selectedUrinLooksList[index].toString().trim().toTitleCase() ?? "",
             style: TextStyle(
               fontSize: 10.sp,
               height: 1.3,
@@ -2840,15 +2840,36 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
     );
   }
 
+  List<String> splitString(String input) {
+    List<String> splitStrings = [];
+
+    // Regular expression pattern to match commas outside of parentheses
+    RegExp pattern = RegExp(r',(?![^(]*\))');
+
+    // Split the string using the regex pattern
+    Iterable<Match> matches = pattern.allMatches(input);
+    int start = 0;
+    for (Match match in matches) {
+      String substring = input.substring(start, match.end).trim();
+      splitStrings.add(substring);
+      start = match.end;
+    }
+
+    // Add the remaining part of the string
+    String remaining = input.substring(start).trim();
+    splitStrings.add(remaining);
+
+    return splitStrings;
+  }
+
+
   void getDetails(ChildGetEvaluationDataModel? model) {
     //---- health checkbox1 ----//
     print(model?.listProblems);
-    List lifeStyle = jsonDecode("${model?.listProblems}")
-        .toString()
-        .replaceAll('[', '')
-        .replaceAll(']', '')
-        .split(',');
-    print(lifeStyle);
+    print("health1");
+    List lifeStyle = splitString(jsonDecode("${model?.listProblems}")
+        .toString().replaceAll('[', '').replaceAll(']', ''));
+    print("lifeStyle: $lifeStyle");
     selectedHealthCheckBox1 = lifeStyle;
     print("selectedHealthCheckBox1: $selectedHealthCheckBox1");
 
@@ -2925,5 +2946,16 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
       font = kFontBook;
     }
     return font;
+  }
+
+
+  String totTitle(String input) {
+    final List<String> splitStr = input.split(' ');
+    for (int i = 0; i < splitStr.length; i++) {
+      splitStr[i] =
+      '${splitStr[i][0].toUpperCase()}${splitStr[i].substring(1)}';
+    }
+    final output = splitStr.join(' ');
+    return output;
   }
 }

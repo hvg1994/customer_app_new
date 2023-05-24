@@ -110,7 +110,43 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
                   (isStarted)
                       ? Center(child: buildThreeBounceIndicator(color: gsecondaryColor),)
                       :
-                  ConfirmationSlider(
+                  (widget.from == ProgramMealType.prepratory.name)
+                      ? Center(
+                    child: MediaQuery(
+                      data: MediaQuery.of(context).copyWith(textScaleFactor: 0.8),
+                      child: GestureDetector(
+                        onTap: () {
+                          if(videoPlayerController != null) videoPlayerController!.pause();
+                          if(_chewieController != null) _chewieController!.pause();
+
+                          startProgram();
+                        },
+                        child: Container(
+                          width: 40.w,
+                          height: 5.h,
+                          padding:
+                          EdgeInsets.symmetric(vertical: 1.h, horizontal: 15.w),
+                          decoration: BoxDecoration(
+                            color: eUser().buttonColor,
+                            borderRadius: BorderRadius.circular(eUser().buttonBorderRadius),
+                            // border: Border.all(
+                            //     color: eUser().buttonBorderColor,
+                            //     width: eUser().buttonBorderWidth
+                            // ),
+                          ),
+                          child: Center(child: Text(
+                            'Start',
+                            style: TextStyle(
+                              fontFamily: eUser().buttonTextFont,
+                              color: eUser().buttonTextColor,
+                              fontSize: eUser().buttonTextSize,
+                            ),
+                          )),
+                        ),
+                      ),
+                    ),
+                  )
+                      : ConfirmationSlider(
                       width: 95.w,
                       text: "Slide To Start",
                       sliderButtonContent: const Image(

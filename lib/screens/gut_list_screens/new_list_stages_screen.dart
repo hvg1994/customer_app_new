@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
+import 'package:gwc_customer/screens/evalution_form/personal_details_screen2.dart';
 import 'package:gwc_customer/screens/prepratory%20plan/schedule_screen.dart';
 import 'package:gwc_customer/screens/profile_screens/call_support_method.dart';
 import 'package:jwt_decode/jwt_decode.dart';
@@ -51,6 +52,7 @@ import '../prepratory plan/new/preparatory_new_screen.dart';
 import '../prepratory plan/prepratory_meal_completed_screen.dart';
 import '../program_plans/meal_plan_screen.dart';
 import '../program_plans/program_start_screen.dart';
+import '../program_plans/program_start_screen.dart';
 import 'new_stages_data.dart';
 import 'package:http/http.dart' as http;
 
@@ -64,10 +66,13 @@ class NewDsPage extends StatefulWidget {
 }
 
 class _NewDsPageState extends State<NewDsPage> {
+
+  final _scrollController = ScrollController();
   static const newCompletedStageColor = Color(0xff68B881);
   static const newCompletedStageBtnColor = Color(0xFF93C2A2);
   static const newCurrentStageColor = Color(0xffFFD23F);
-  static const newCurrentStageButtonColor = Color(0xffFD8B7B);
+  // static const newCurrentStageButtonColor = Color(0xffFD8B7B);
+  static const newCurrentStageButtonColor = Color(0xffFd10034);
 
 
   final _pref = AppConfig().preferences;
@@ -549,7 +554,11 @@ class _NewDsPageState extends State<NewDsPage> {
                           btn2Name: stageData[index].btn2Name,
                           btn3Name: stageData[index].btn3Name,
                           type: stageData[index].type,
-                          bgColor: stageData[index].bgColor
+                          bgColor: stageData[index].bgColor,
+                        btn1Color: stageData[index].btn1Color,
+                        btn2Color: stageData[index].btn2Color,
+                        btn3Color: stageData[index].btn3Color,
+
                       ),
                     );
                   }
@@ -623,7 +632,10 @@ class _NewDsPageState extends State<NewDsPage> {
                           btn2Name: stageData[index].btn2Name,
                           btn3Name: stageData[index].btn3Name,
                           type: stageData[index].type,
-                          bgColor: stageData[index].bgColor
+                          bgColor: stageData[index].bgColor,
+                        btn1Color: stageData[index].btn1Color,
+                        btn2Color: stageData[index].btn2Color,
+                        btn3Color: stageData[index].btn3Color,
                       ),
                     );
                   }
@@ -830,6 +842,7 @@ class _NewDsPageState extends State<NewDsPage> {
   }
 
   int selected = -1;
+
   bigCard({
     required String title,
     required String subText,
@@ -840,13 +853,18 @@ class _NewDsPageState extends State<NewDsPage> {
     String? btn2Name,
     String? btn3Name,
     required StageType type,
-    Color? bgColor
+    Color? bgColor,
+    Color? btn1Color,
+    Color? btn2Color,
+    Color? btn3Color,
   }) {
     print("INDEX : $index == $current");
     return Stack(
       children: [
         GestureDetector(
-          onTap: (heightFactor == 1.0) ? null :  () {
+          onTap: (heightFactor == 1.0)
+              ? null
+              : () {
             print("tap $index");
             setState(() {
               selected = index;
@@ -863,70 +881,104 @@ class _NewDsPageState extends State<NewDsPage> {
             setState(() {});
           },
           child: Container(
-            constraints: BoxConstraints(
-                minHeight: 180),
-            // height: 180,
+            // constraints: BoxConstraints(
+            //   minHeight: 180,
+            // ),
+            width: double.maxFinite,
+            height: 180,
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
-                color: (bgColor != null) ? bgColor : index == current - 1
+                color: (bgColor != null)
+                    ? bgColor
+                    : index == current - 1
                     ? newCurrentStageColor
-                    // : (index == 0 || index <=2)
-                    // ? newCompletedStageColor.withOpacity(0.6) :
-                : newCompletedStageColor,
+                    : (index == 0 || index <= 2)
+                    ? newCompletedStageColor.withOpacity(0.6)
+                    : newCompletedStageColor,
                 boxShadow: [
                   BoxShadow(color: Colors.black.withAlpha(100), blurRadius: 10)
                 ]),
             margin: EdgeInsets.symmetric(horizontal: 3.w, vertical: 2.h),
-            padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 1.5.h),
+            padding: EdgeInsets.only(left: 3.w, right: 3.w,top: 1.h),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
+                    // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      SizedBox(height: 1.5.h),
-                      Text(
-                        title,
-                        style: TextStyle(
-                            height: 1.2,
-                            fontFamily: eUser().mainHeadingFont,
-                            color: eUser().mainHeadingColor,
-                            fontSize: 11.sp),
-                      ),
-                      SizedBox(height: 1.h),
-                      Text(
-                        subText,
-                        style: TextStyle(
-                            height: 1.3,
-                            fontFamily: kFontBook,
-                            color: eUser().mainHeadingColor,
-                            fontSize: bottomSheetSubHeadingSFontSize),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(height: 1.5.h),
+                            Text(
+                              title,
+                              style: TextStyle(
+                                  height: 1.2,
+                                  fontFamily: eUser().mainHeadingFont,
+                                  color: eUser().mainHeadingColor,
+                                  fontSize: 11.sp),
+                            ),
+                            SizedBox(height: 0.5.h),
+                            Flexible(
+                              child: Text(
+                                subText,
+                                style: TextStyle(
+                                    height: 1.3,
+                                    fontFamily: kFontBook,
+                                    color: eUser().mainHeadingColor,
+                                    fontSize: bottomSheetSubHeadingSFontSize),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                       Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          if(btn1Name != null)
-                          buildButton(
-                              btn1Name ?? '', index == current - 1
-                              ? newCurrentStageButtonColor
-                              : newCompletedStageBtnColor, 1, type),
-                          SizedBox(width: 8,),
-                          if(btn2Name != null)
+                          if (btn1Name != null)
                             buildButton(
-                              btn2Name, index == current - 1
-                              ? newCurrentStageButtonColor
-                              : newCompletedStageBtnColor, 2, type),
-                          SizedBox(width: 8,),
-                          if(btn3Name != null)
+                                btn1Name ?? '',
+                                (btn1Color != null)
+                                    ? btn1Color
+                                    : index == current - 1
+                                    ? newCurrentStageButtonColor
+                                    : newCompletedStageBtnColor,
+                                1,
+                                type),
+                          SizedBox(
+
+                            width: 8,
+                          ),
+                          if (btn2Name != null)
                             buildButton(
-                              btn3Name, index == current - 1
-                              ? newCurrentStageButtonColor
-                              : newCompletedStageBtnColor, 3, type)
+                                btn2Name,
+                                (btn2Color != null)
+                                    ? btn2Color
+                                    : index == current - 1
+                                    ? newCurrentStageButtonColor
+                                    : newCompletedStageBtnColor,
+                                2,
+                                type),
+                          SizedBox(
+
+                            width: 8,
+                          ),
+                          if (btn3Name != null)
+                            buildButton(
+                                btn3Name,
+                                (btn3Color != null)
+                                    ? btn3Color
+                                    : index == current - 1
+                                    ? newCurrentStageButtonColor
+                                    : newCompletedStageBtnColor,
+                                3,
+                                type)
                         ],
-                      )
+                      ),
                     ],
                   ),
                 ),
@@ -959,7 +1011,9 @@ class _NewDsPageState extends State<NewDsPage> {
               child: Text(
                 "Step $steps",
                 style: TextStyle(
-                  fontFamily: (index == current - 1) ? kFontSensaBrush : eUser().userFieldLabelFont,
+                  fontFamily: (index == current - 1)
+                      ? kFontSensaBrush
+                      : eUser().userFieldLabelFont,
                   color: eUser().threeBounceIndicatorColor,
                   fontSize: (index == current - 1) ? 10.sp : 7.sp,
                 ),
@@ -1138,7 +1192,7 @@ class _NewDsPageState extends State<NewDsPage> {
           height: 3.h,
           padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 0.7.h),
           margin: EdgeInsets.symmetric(
-            vertical: 2.h,
+            vertical: 1.4.h,
           ),
           decoration: BoxDecoration(
             borderRadius: const BorderRadius.all(Radius.circular(20.0)),
@@ -1538,16 +1592,24 @@ class _NewDsPageState extends State<NewDsPage> {
 
         stageData[1].btn1Name = "Join";
         stageData[1].btn2Name = "Reschedule";
+        final model = _getAppointmentDetailsModel;
+
+        final bookingDate = model!.value!.date!;
+        final bookingTime = model.value!.slotStartTime!;
+        stageData[1].subTitle = "Your consultation is booked for $bookingDate @ $bookingTime." +"\n"+ consultationStage2SubText;
+
         break;
       case 'consultation_done':
         current = 2;
 
         stageData[1].btn1Name = "Completed";
         stageData[1].btn2Name = null;
+        stageData[1].subTitle = consultationStage3SubText;
+
         break;
       case 'consultation_accepted':
         // no button for accepted and rejected
-        current = 3;
+        current = 4;
         stageData[1].btn1Name = null;
         stageData[2].btn1Name = "View User Reports";
         stageData[2].bgColor = newCompletedStageColor;
@@ -1563,153 +1625,198 @@ class _NewDsPageState extends State<NewDsPage> {
         break;
       case 'check_user_reports':
         current = 3;
-        stageData[1].btn1Name = "Completed";
+        stageData[1].btn1Name = "Consultation History";
+        stageData[1].subTitle = "Congrats on completing your consultation, hope you had an insightful chat with your doctor.";
 
-        stageData[2].btn1Name = "Awaiting";
+
+        //awaiting-> status
+        stageData[2].btn1Name = "Status";
         stageData[2].bgColor = newCurrentStageColor;
 
         break;
       case 'consultation_rejected':
       // no button for accepted and rejected
         stageData[1].btn1Name = "Completed";
-        current = 4;
+        current = 5;
 
         stageData[2].btn1Name = null;
         stageData[2].bgColor = gsecondaryColor;
         stageData[2].subTitle =_gutDataModel?.rejectedCase?.reason ?? '';
 
-        stageData[3].btn1Name = "View MR";
+        stageData[4].btn1Name = "View MR";
         break;
       case 'report_upload':
-        current = 4;
+        current = 5;
+        print("stageData: ${stageData[2].subTitle}");
         stageData[1].btn1Name = null;
         stageData[2].btn1Name = "View User Reports";
-        stageData[3].btn1Name = "View MR";
+        stageData[4].btn1Name = "View MR";
         stageData[2].bgColor = newCompletedStageColor;
 
         break;
 
       case 'prep_meal_plan_completed':
-        current = 5;
+        current = 6;
         stageData[1].btn1Name = null;
         stageData[2].btn1Name = "View User Reports";
-        stageData[3].btn1Name = "View MR";
+        // stageData[4].btn1Name = "View MR";
+
+        if (_prepratoryModel!.value!.isPrepratoryStarted == false) {
+          stageData[5].btn1Name = "Start Prep";
+        }
+        else{
+          stageData[5].subTitle = prepStage2SubText;
+          stageData[5].btn2Color = newCurrentStageButtonColor.withOpacity(0.8);
+        }
 
         break;
       case 'shipping_packed':
-        current = 5;
+        current = 6;
         stageData[1].btn1Name = null;
         stageData[2].btn1Name = "View User Reports";
-        stageData[3].btn1Name = "View MR";
+        // stageData[4].btn1Name = "View MR";
+
+        stageData[5].subTitle = prepStage3SubText;
+        stageData[5].btn2Color = newCurrentStageButtonColor;
+
 
         break;
       case 'shipping_paused':
-        current = 5;
+        current = 6;
         stageData[1].btn1Name = null;
         stageData[2].btn1Name = "View User Reports";
-        stageData[3].btn1Name = "View MR";
+        // stageData[4].btn1Name = "View MR";
+
+        stageData[5].subTitle = prepStage3SubText;
+        stageData[5].btn2Color = newCurrentStageButtonColor;
+
 
         break;
       case 'shipping_delivered':
-        current = 5;
+        current = 6;
         stageData[1].btn1Name = null;
         stageData[2].btn1Name = "View User Reports";
-        stageData[3].btn1Name = "View MR";
+        // stageData[4].btn1Name = "View MR";
+
+        stageData[5].subTitle = prepStage3SubText;
+        stageData[5].btn2Color = newCurrentStageButtonColor;
+
 
         break;
       case 'shipping_approved':
-        current = 5;
+        current = 7;
         stageData[1].btn1Name = null;
         stageData[2].btn1Name = "View User Reports";
-        stageData[3].btn1Name = "View MR";
+        // stageData[4].btn1Name = "View MR";
+
+        stageData[5].subTitle = prepStage3SubText;
+        stageData[5].btn2Color = newCurrentStageButtonColor;
+
 
         break;
       case 'start_program':
 
         stageData[1].btn1Name = null;
         stageData[2].btn1Name = "View User Reports";
-        stageData[3].btn1Name = "View MR";
+        // stageData[4].btn1Name = "View MR";
 
         if (_prepratoryModel!.value!.isPrepTrackerCompleted != null &&
             _prepratoryModel!.value!.isPrepTrackerCompleted == true) {
-          current = 6;
+          current = 7;
         }
         else {
-          current = 5;
+          current = 6;
         }
+        stageData[5].btn2Color = null;
+
 
         break;
       case 'trans_program':
         print("case : trans_program");
         if (_prepratoryModel!.value!.isPrepTrackerCompleted != null &&
             _prepratoryModel!.value!.isPrepTrackerCompleted == true) {
-          current = 6;
+          current = 7;
+          stageData[6].btn1Name = "Transition Plan";
         }
         else {
-          current = 5;
+          current = 6;
+          stageData[5].btn1Name = "Submit Prep Tracker";
         }
         stageData[1].btn1Name = null;
         stageData[2].btn1Name = "View User Reports";
-        stageData[3].btn1Name = "View MR";
+        // stageData[4].btn1Name = "View MR";
 
-        stageData[5].btn1Name = "Transition Plan";
+        stageData[5].btn2Color = null;
+
+
 
         break;
       case 'post_program':
-        current = 7;
+        current = 8;
         stageData[1].btn1Name = null;
         stageData[2].btn1Name = "View User Reports";
-        stageData[3].btn1Name = "View MR";
+        // stageData[4].btn1Name = "View MR";
 
-        stageData[5].btn1Name = "Completed";
+        stageData[7].btn1Name = "Trans Completed";
+
+        stageData[5].btn2Color = null;
+
         break;
       case 'post_appointment_booked':
 
-        current = 7;
+        current = 8;
         stageData[1].btn1Name = null;
         stageData[2].btn1Name = "View User Reports";
-        stageData[3].btn1Name = "View MR";
+        stageData[4].btn1Name = "View MR";
 
         stageData[5].btn1Name = "Completed";
 
         stageData[6].btn1Name = "Join";
         stageData[6].btn2Name = "ReSchedule";
 
+        stageData[5].btn2Color = null;
+
+
         break;
       case 'post_appointment_done':
-        current = 7;
+        current = 9;
         stageData[1].btn1Name = null;
         stageData[2].btn1Name = "View User Reports";
-        stageData[3].btn1Name = "View MR";
+        stageData[4].btn1Name = "View MR";
 
-        stageData[5].btn1Name = "Completed";
+        stageData[6].btn1Name = "Completed";
 
-        stageData[6].btn1Name = null;
-        stageData[6].btn2Name = null;
+        stageData[7].btn1Name = null;
+        stageData[7].btn2Name = null;
+
+        stageData[5].btn2Color = null;
+
 
         break;
       case 'post_appointment_reschedule':
-        current = 7;
-        stageData[1].btn1Name = null;
-        stageData[2].btn1Name = "View User Reports";
-        stageData[3].btn1Name = "View MR";
-
-        stageData[5].btn1Name = "Completed";
-
-        stageData[6].btn1Name = null;
-        stageData[6].btn2Name = "Reschedule";
-
-        break;
-      case 'protocol_guide':
         current = 8;
         stageData[1].btn1Name = null;
         stageData[2].btn1Name = "View User Reports";
-        stageData[3].btn1Name = "View MR";
+        stageData[4].btn1Name = "View MR";
 
-        stageData[5].btn1Name = "Completed";
+        stageData[6].btn1Name = "Completed";
 
-        stageData[6].btn1Name = null;
-        stageData[6].btn2Name = null;
+        stageData[7].btn1Name = null;
+        stageData[7].btn2Name = "Reschedule";
+
+        break;
+      case 'protocol_guide':
+        current = 9;
+        stageData[1].btn1Name = null;
+        stageData[2].btn1Name = "View User Reports";
+        stageData[4].btn1Name = "View MR";
+
+        stageData[6].btn1Name = "Completed";
+        stageData[5].btn2Color = null;
+
+
+        stageData[7].btn1Name = null;
+        stageData[7].btn2Name = null;
 
 
 
@@ -1723,7 +1830,7 @@ class _NewDsPageState extends State<NewDsPage> {
   handleButtonOnTapByType(StageType type, int buttonId) {
     switch (type) {
       case StageType.evaluation:
-      // goToScreen(DosDontsProgramScreen(pdfLink: '',));
+        // goToScreen(PersonalDetailsScreen2());
         goToScreen(EvaluationGetDetails());
         break;
       case StageType.med_consultation:
@@ -1867,13 +1974,7 @@ class _NewDsPageState extends State<NewDsPage> {
           case 'report_upload':
             print(_gutDataModel!.toJson());
             print(_gutDataModel!.value);
-            // goToScreen(ConsultationRejected(reason: '',));
-
-            // goToScreen(ConsultationSuccess());
-
-            // goToScreen(DoctorSlotsDetailsScreen(bookingDate: "2023-02-21", bookingTime: "11:34:00", dashboardValueMap: {},isFromDashboard: true,));
-
-            // goToScreen(DoctorCalenderTimeScreen(isReschedule: true,prevBookingTime: '23-09-2022', prevBookingDate: '10AM',));
+            // goToScreen(goToScreen(UploadFiles()));
             goToScreen(MedicalReportScreen(
               pdfLink: _gutDataModel!.value!,
             ));
@@ -2128,6 +2229,9 @@ class _NewDsPageState extends State<NewDsPage> {
         else {
           showPostProgramScreen();
         }
+        break;
+      case StageType.analysis:
+        // TODO: Handle this case.
         break;
     }
   }

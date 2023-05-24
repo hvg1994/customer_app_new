@@ -193,7 +193,9 @@ class _EvaluationUploadReportState extends State<EvaluationUploadReport> {
                 if (result == null) return;
                 if (result.files.first.extension!.contains("pdf") ||
                     result.files.first.extension!.contains("png") ||
-                    result.files.first.extension!.contains("jpg")) {
+                    result.files.first.extension!.contains("jpg") ||
+                    result.files.first.extension!.contains("jpeg")
+                ) {
                   medicalRecords.add(result.files.first);
                 } else {
                   AppConfig().showSnackbar(
