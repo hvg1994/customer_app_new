@@ -18,6 +18,7 @@ import '../../model/dashboard_model/shipping_approved/ship_approved_model.dart';
 import '../../model/error_model.dart';
 import '../../model/local_storage_dashboard_model.dart';
 import '../../model/profile_model/user_profile/user_profile_model.dart';
+import '../../model/program_model/proceed_model/send_proceed_program_model.dart';
 import '../../model/ship_track_model/sipping_approve_model.dart';
 import '../../repository/api_service.dart';
 import '../../repository/dashboard_repo/gut_repository/dashboard_repository.dart';
@@ -33,6 +34,7 @@ import '../../widgets/constants.dart';
 import '../../widgets/video/normal_video.dart';
 import '../../widgets/widgets.dart';
 import '../appointment_screens/consultation_screens/check_user_report_screen.dart';
+import '../appointment_screens/consultation_screens/consultation_history.dart';
 import '../appointment_screens/consultation_screens/consultation_rejected.dart';
 import '../appointment_screens/consultation_screens/consultation_success.dart';
 import '../appointment_screens/consultation_screens/medical_report_screen.dart';
@@ -41,8 +43,10 @@ import '../appointment_screens/doctor_calender_time_screen.dart';
 import '../appointment_screens/doctor_slots_details_screen.dart';
 import '../cook_kit_shipping_screens/cook_kit_tracking.dart';
 import '../evalution_form/evaluation_get_details.dart';
+import '../evalution_form/personal_details_screen.dart';
 import '../help_screens/help_screen.dart';
 import '../home_remedies/home_remedies_screen.dart';
+import '../medical_program_feedback_screen/final_feedback_form.dart';
 import '../medical_program_feedback_screen/medical_feedback_form.dart';
 import '../notification_screen.dart';
 import '../post_program_screens/new_post_program/pp_levels_demo.dart';
@@ -50,6 +54,7 @@ import '../post_program_screens/protcol_guide_details.dart';
 import '../prepratory plan/new/new_transition_design.dart';
 import '../prepratory plan/new/preparatory_new_screen.dart';
 import '../prepratory plan/prepratory_meal_completed_screen.dart';
+import '../program_plans/day_tracker_ui/day_tracker.dart';
 import '../program_plans/meal_plan_screen.dart';
 import '../program_plans/program_start_screen.dart';
 import '../program_plans/program_start_screen.dart';
@@ -88,6 +93,7 @@ class _NewDsPageState extends State<NewDsPage> {
   bool closeTopContainer = false;
   double topContainer = 0;
 
+  String? badgeNotification;
 
   late GutDataService _gutDataService;
 
@@ -197,11 +203,14 @@ class _NewDsPageState extends State<NewDsPage> {
                   getData();
                 },
               )));
-    } else {
+    }
+    else {
       isProgressDialogOpened = false;
       print("isProgressDialogOpened: $isProgressDialogOpened");
       GetDashboardDataModel _getDashboardDataModel =
       _getData as GetDashboardDataModel;
+      badgeNotification = _getDashboardDataModel.notification;
+
       print(
           "_getDashboardDataModel.app_consulation: ${_getDashboardDataModel.app_consulation}");
       // checking for the consultation data if data = appointment_booked
@@ -233,7 +242,6 @@ class _NewDsPageState extends State<NewDsPage> {
         } else {
           _gutShipDataModel = _getDashboardDataModel.normal_shipping;
           shippingStage = _gutShipDataModel?.data ?? '';
-          // abc();
         }
         updateNewStage(shippingStage);
 
@@ -245,7 +253,7 @@ class _NewDsPageState extends State<NewDsPage> {
           _gutNormalProgramModel = _getDashboardDataModel.normal_program;
           print("programOptionStage else: ${programOptionStage}");
           programOptionStage = _gutNormalProgramModel!.data;
-          abc();
+          // abc();
         }
         updateNewStage(programOptionStage);
 
@@ -281,7 +289,7 @@ class _NewDsPageState extends State<NewDsPage> {
         appointmentModel: jsonEncode(_getAppointmentDetailsModel),
         consultStringModel: jsonEncode(_gutDataModel),
         mrReport: (consultationStage == "report_upload")
-            ? _gutDataModel?.value ?? ''
+            ? _gutDataModel?.historyWithMrValue?.mr ?? ''
             : "",
         prepStage: prepratoryMealStage,
         prepMealModel: jsonEncode(_prepratoryModel),
@@ -402,207 +410,268 @@ class _NewDsPageState extends State<NewDsPage> {
   cards(){
     return Column(
       children: <Widget>[
-        Container(
-          decoration: const BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage(
-                  "assets/images/dashboard_stages/Mask Group 43505.png"),
-              fit: BoxFit.fill,
-            ),
-          ),
-          child: Column(
-            children: [
-              Padding(
-                padding: EdgeInsets.only(
-                    left: 1.w, right: 2.5.w, bottom: 1.w, top: 1.h),
-                child: buildAppBar(
-                      () {
-                    Navigator.pop(context);
-                  },
-                  isBackEnable: false,
-                  showNotificationIcon: true,
-                  notificationOnTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => const NotificationScreen()));
-                  },
-                  showHelpIcon: true,
-                  helpOnTap: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (_) => HelpScreen()));
-                  },
-                  showSupportIcon: true,
-                  supportOnTap: () {
-                    showSupportCallSheet(context);
-
-                  },
-                ),
-              ),
-              SizedBox(height: 2.h),
-
-              SizedBox(height: 1.h),
-              GestureDetector(
-                onTap: handleTrackerRemedyOnTap,
-                child: IntrinsicWidth(
-                  child: Container(
-                    // height: 3.h,
-                    padding: EdgeInsets.symmetric(
-                        horizontal: 3.w, vertical: 0.7.h),
-                    margin: EdgeInsets.symmetric(
-                      vertical: 2.h,
-                    ),
-                    decoration: BoxDecoration(
-                      borderRadius:
-                      const BorderRadius.all(Radius.circular(20.0)),
-                      color: Colors.white,
-                      boxShadow: [
-                        BoxShadow(
-                            color: Colors.black.withAlpha(100),
-                            blurRadius: 10.0),
-                      ],
-                    ),
-                    child: Row(
-                      children: [
-                        Image.asset(
-                          "assets/images/home_remedies.png",
-                          height: 2.5.h,
-                          fit: BoxFit.scaleDown,
-                        ),
-                        SizedBox(width: 2.w),
-                        Text(
-                          "Home Remedies",
-                          style: TextStyle(
-                            height: 1.3,
-                            fontFamily: eUser().userFieldLabelFont,
-                            color: eUser().mainHeadingColor,
-                            fontSize: bottomSheetSubHeadingSFontSize,
-                          ),
-                        ),
-                        // Icon(
-                        //   Icons.arrow_forward,
-                        //   color: gMainColor,
-                        //   size: 10.sp,
-                        // )
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ],
+        Padding(
+          padding:
+          EdgeInsets.only(left: 1.w, right: 2.5.w, bottom: 1.w, top: 1.h),
+          child: buildAppBar(
+                () {
+              Navigator.pop(context);
+            },
+            badgeNotification: badgeNotification,
+            isBackEnable: false,
+            showNotificationIcon: true,
+            notificationOnTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) => const NotificationScreen()));
+            },
+            showHelpIcon: false,
+            helpOnTap: () {
+              Navigator.push(
+                  context, MaterialPageRoute(builder: (_) => HelpScreen()));
+            },
+            showSupportIcon: true,
+            supportOnTap: () {
+              showSupportCallSheet(context);
+            },
           ),
         ),
-        Align(
-          alignment: Alignment.topRight,
-          child: Padding(
-            padding: const EdgeInsets.only(right: 8.0),
-            child: InkWell(
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (_) => const NewScheduleScreen()));
-              },
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  ImageIcon(
-                    const AssetImage(
-                        "assets/images/new_ds/follow_up.png"),
-                    size: 11.sp,
-                    color: gHintTextColor,
-                  ),
-                  const SizedBox(
-                    width: 3,
-                  ),
-                  Text(
-                    'Follow-up call',
-                    style: TextStyle(
-                      color: gHintTextColor,
-                      fontSize: headingFont,
-                      decoration: TextDecoration.underline,
-                    ),
-                  )
-                ],
-              ),
-            ),
-          ),
-        ),
-
-        SizedBox(height: 1.h),
         Expanded(
           child: SingleChildScrollView(
-            physics: physics,
-            child: ListView.builder(
-                physics: const NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                itemCount: stageData.length,
-                itemBuilder: (_, index) {
-                  if (index < current && selected != index) {
-                    print("if");
-                    return AnimatedAlign(
-                      duration: const Duration(milliseconds: 800),
-                      heightFactor: heightFactor,
-                      alignment: Alignment.topCenter,
-                      child: bigCard(
-                          title: stageData[index].title,
-                          subText: stageData[index].subTitle,
-                          image: stageData[index].rightImage,
-                          steps: stageData[index].step,
-                          index: index,
-                          btn1Name: stageData[index].btn1Name,
-                          btn2Name: stageData[index].btn2Name,
-                          btn3Name: stageData[index].btn3Name,
-                          type: stageData[index].type,
-                          bgColor: stageData[index].bgColor,
-                        btn1Color: stageData[index].btn1Color,
-                        btn2Color: stageData[index].btn2Color,
-                        btn3Color: stageData[index].btn3Color,
-
+            child: Column(
+              children: [
+                Container(
+                  decoration: const BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage(
+                            "assets/images/dashboard_stages/Mask Group 43505.png"),
+                        opacity: 0.5,
+                        fit: BoxFit.fill,
                       ),
-                    );
-                  }
-                  else if (index == current) {
-                    print("else if1");
-                    return Column(
-                      children: [
-                        AnimatedSize(
-                          duration: const Duration(milliseconds: 500),
-                          child: SizedBox(
-                            height: (selected == current-1 && heightFactor == 0.15) ? 0 : 200,
-                            child: Visibility(
-                              visible: heightFactor != 0.15,
-                              child: Center(
-                                child: GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      heightFactor = 0.15;
-                                    });
-                                  },
-                                  child: Container(
-                                    width: 50,
-                                    height: 50,
-                                    decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: Colors.amber),
-                                    child: Center(
-                                      child: SizedBox(
-                                          width: 30,
-                                          height: 30,
-                                          child: Image.asset(
-                                            "assets/images/dashboard_stages/up_arrow.png",
-                                            fit: BoxFit.scaleDown,
-                                          )),
+                  ),
+                  child: Column(
+                    children: [
+                      SizedBox(height: 2.h),
+
+                      SizedBox(height: 1.h),
+                      GestureDetector(
+                        onTap: handleTrackerRemedyOnTap,
+                        child: IntrinsicWidth(
+                          child: Container(
+                            // height: 3.h,
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 3.w, vertical: 0.7.h),
+                            margin: EdgeInsets.symmetric(
+                              vertical: 2.h,
+                            ),
+                            decoration: BoxDecoration(
+                              borderRadius:
+                              const BorderRadius.all(Radius.circular(20.0)),
+                              color: Colors.white,
+                              boxShadow: [
+                                BoxShadow(
+                                    color: Colors.black.withAlpha(100),
+                                    blurRadius: 10.0),
+                              ],
+                            ),
+                            child: Row(
+                              children: [
+                                Image.asset(
+                                  "assets/images/home_remedies.png",
+                                  height: 2.5.h,
+                                  fit: BoxFit.scaleDown,
+                                ),
+                                SizedBox(width: 2.w),
+                                Text(
+                                  "Instant Remedies",
+                                  style: TextStyle(
+                                    height: 1.3,
+                                    fontFamily: eUser().userFieldLabelFont,
+                                    color: eUser().mainHeadingColor,
+                                    fontSize: bottomSheetSubHeadingSFontSize,
+                                  ),
+                                ),
+                                // Icon(
+                                //   Icons.arrow_forward,
+                                //   color: gMainColor,
+                                //   size: 10.sp,
+                                // )
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      Align(
+                        alignment: Alignment.topRight,
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 8.0),
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (_) => const NewScheduleScreen()));
+                            },
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                ImageIcon(
+                                  const AssetImage(
+                                      "assets/images/new_ds/follow_up.png"),
+                                  size: 11.sp,
+                                  color: gHintTextColor,
+                                ),
+                                const SizedBox(
+                                  width: 3,
+                                ),
+                                Text(
+                                  'Follow-up call',
+                                  style: TextStyle(
+                                    color: gHintTextColor,
+                                    fontSize: headingFont,
+                                    decoration: TextDecoration.underline,
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 1.h),
+                ListView.builder(
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: stageData.length,
+                    itemBuilder: (_, index) {
+                      if (index < current && selected != index) {
+                        print("if");
+                        return AnimatedAlign(
+                          duration: const Duration(milliseconds: 800),
+                          heightFactor: heightFactor,
+                          alignment: Alignment.topCenter,
+                          child: bigCard(
+                            title: stageData[index].title,
+                            subText: stageData[index].subTitle,
+                            image: stageData[index].rightImage,
+                            steps: stageData[index].step,
+                            index: index,
+                            btn1Name: stageData[index].btn1Name,
+                            btn2Name: stageData[index].btn2Name,
+                            btn3Name: stageData[index].btn3Name,
+                            type: stageData[index].type,
+                            bgColor: stageData[index].bgColor,
+                            btn1Color: stageData[index].btn1Color,
+                            btn2Color: stageData[index].btn2Color,
+                            btn3Color: stageData[index].btn3Color,
+
+                          ),
+                        );
+                      }
+                      else if (index == current) {
+                        print("else if1");
+                        return Column(
+                          children: [
+                            AnimatedSize(
+                              duration: const Duration(milliseconds: 500),
+                              child: SizedBox(
+                                height: (selected == current-1 && heightFactor == 0.15) ? 0 : 200,
+                                child: Visibility(
+                                  visible: heightFactor != 0.15,
+                                  child: Center(
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          heightFactor = 0.15;
+                                        });
+                                      },
+                                      child: Container(
+                                        width: 50,
+                                        height: 50,
+                                        decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: Colors.amber),
+                                        child: Center(
+                                          child: SizedBox(
+                                              width: 30,
+                                              height: 30,
+                                              child: Image.asset(
+                                                "assets/images/dashboard_stages/up_arrow.png",
+                                                fit: BoxFit.scaleDown,
+                                              )),
+                                        ),
+                                      ),
                                     ),
                                   ),
                                 ),
                               ),
                             ),
+                            Visibility(
+                              visible: heightFactor != 1.0,
+                              child: Align(
+                                heightFactor: 0.7,
+                                alignment: Alignment.topRight,
+                                child: smallCard(
+                                  stageData[index].title,
+                                  stageData[index].subTitle,
+                                  stageData[index].rightImage,
+                                  stageData[index].step,
+                                ),
+                              ),
+                            )
+                          ],
+                        );
+                      }
+                      else if (index == selected){
+                        print("else if2");
+                        return AnimatedAlign(
+                          duration: const Duration(milliseconds: 800),
+                          heightFactor: 1,
+                          alignment: Alignment.topCenter,
+                          child: bigCard(
+                            title: stageData[index].title,
+                            subText: stageData[index].subTitle,
+                            image: stageData[index].rightImage,
+                            steps: stageData[index].step,
+                            index: index,
+                            btn1Name: stageData[index].btn1Name,
+                            btn2Name: stageData[index].btn2Name,
+                            btn3Name: stageData[index].btn3Name,
+                            type: stageData[index].type,
+                            bgColor: stageData[index].bgColor,
+                            btn1Color: stageData[index].btn1Color,
+                            btn2Color: stageData[index].btn2Color,
+                            btn3Color: stageData[index].btn3Color,
                           ),
-                        ),
-                        Visibility(
+                        );
+                      }
+                      else if(index > selected && index <= current){
+                        print("else if3");
+                        return AnimatedAlign(
+                          duration: const Duration(milliseconds: 800),
+                          heightFactor: 0.7,
+                          alignment: Alignment.topRight,
+                          child: bigCard(
+                              title: stageData[index].title,
+                              subText: stageData[index].subTitle,
+                              image: stageData[index].rightImage,
+                              steps: stageData[index].step,
+                              index: index,
+                              btn1Name: stageData[index].btn1Name,
+                              btn2Name: stageData[index].btn2Name,
+                              btn3Name: stageData[index].btn3Name,
+                              type: stageData[index].type
+                          ),
+                        );
+                      }
+                      else {
+                        return Visibility(
                           visible: heightFactor != 1.0,
-                          child: Align(
+                          child: AnimatedAlign(
+                            duration: const Duration(milliseconds: 800),
                             heightFactor: 0.7,
                             alignment: Alignment.topRight,
                             child: smallCard(
@@ -612,69 +681,11 @@ class _NewDsPageState extends State<NewDsPage> {
                               stageData[index].step,
                             ),
                           ),
-                        )
-                      ],
-                    );
-                  }
-                  else if (index == selected){
-                    print("else if2");
-                    return AnimatedAlign(
-                      duration: const Duration(milliseconds: 800),
-                      heightFactor: 1,
-                      alignment: Alignment.topCenter,
-                      child: bigCard(
-                          title: stageData[index].title,
-                          subText: stageData[index].subTitle,
-                          image: stageData[index].rightImage,
-                          steps: stageData[index].step,
-                          index: index,
-                          btn1Name: stageData[index].btn1Name,
-                          btn2Name: stageData[index].btn2Name,
-                          btn3Name: stageData[index].btn3Name,
-                          type: stageData[index].type,
-                          bgColor: stageData[index].bgColor,
-                        btn1Color: stageData[index].btn1Color,
-                        btn2Color: stageData[index].btn2Color,
-                        btn3Color: stageData[index].btn3Color,
-                      ),
-                    );
-                  }
-                  else if(index > selected && index <= current){
-                    print("else if3");
-                    return AnimatedAlign(
-                      duration: const Duration(milliseconds: 800),
-                      heightFactor: 0.7,
-                      alignment: Alignment.topRight,
-                      child: bigCard(
-                          title: stageData[index].title,
-                          subText: stageData[index].subTitle,
-                          image: stageData[index].rightImage,
-                          steps: stageData[index].step,
-                          index: index,
-                          btn1Name: stageData[index].btn1Name,
-                          btn2Name: stageData[index].btn2Name,
-                          btn3Name: stageData[index].btn3Name,
-                          type: stageData[index].type
-                      ),
-                    );
-                  }
-                  else {
-                    return Visibility(
-                      visible: heightFactor != 1.0,
-                      child: AnimatedAlign(
-                        duration: const Duration(milliseconds: 800),
-                        heightFactor: 0.7,
-                        alignment: Alignment.topRight,
-                        child: smallCard(
-                          stageData[index].title,
-                          stageData[index].subTitle,
-                          stageData[index].rightImage,
-                          stageData[index].step,
-                        ),
-                      ),
-                    );
-                  }
-                }),
+                        );
+                      }
+                    })
+              ],
+            )
           ),
         ),
       ],
@@ -805,6 +816,7 @@ class _NewDsPageState extends State<NewDsPage> {
           );
         }),
         bottomSheetHeight: 40.h,
+        isDismissible: true,
         isSheetCloseNeeded: true, sheetCloseOnTap: () {
       Navigator.pop(context);
     });
@@ -836,6 +848,7 @@ class _NewDsPageState extends State<NewDsPage> {
         ),
         bottomSheetHeight: 40.h,
         circleIcon: bsHeadBulbIcon,
+        isDismissible: true,
         isSheetCloseNeeded: true, sheetCloseOnTap: () {
       Navigator.pop(context);
     });
@@ -859,200 +872,200 @@ class _NewDsPageState extends State<NewDsPage> {
     Color? btn3Color,
   }) {
     print("INDEX : $index == $current");
-    return Stack(
-      children: [
-        GestureDetector(
-          onTap: (heightFactor == 1.0)
-              ? null
-              : () {
-            print("tap $index");
-            setState(() {
-              selected = index;
-            });
-          },
-          onVerticalDragUpdate: (heightFactor == 1.0)
-              ? null
-              : (details) {
-            print("drag");
-            print(details.delta);
-            print(details.localPosition);
-
-            heightFactor = 1.0;
-            setState(() {});
-          },
-          child: Container(
-            // constraints: BoxConstraints(
-            //   minHeight: 180,
-            // ),
-            width: double.maxFinite,
-            height: 180,
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                color: (bgColor != null)
-                    ? bgColor
-                    : index == current - 1
-                    ? newCurrentStageColor
-                    : (index == 0 || index <= 2)
-                    ? newCompletedStageColor.withOpacity(0.6)
-                    : newCompletedStageColor,
-                boxShadow: [
-                  BoxShadow(color: Colors.black.withAlpha(100), blurRadius: 10)
-                ]),
-            margin: EdgeInsets.symmetric(horizontal: 3.w, vertical: 2.h),
-            padding: EdgeInsets.only(left: 3.w, right: 3.w,top: 1.h),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Column(
-                    // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(height: 1.5.h),
-                            Text(
-                              title,
-                              style: TextStyle(
-                                  height: 1.2,
-                                  fontFamily: eUser().mainHeadingFont,
-                                  color: eUser().mainHeadingColor,
-                                  fontSize: 11.sp),
-                            ),
-                            SizedBox(height: 0.5.h),
-                            Flexible(
-                              child: Text(
-                                subText,
+    return GestureDetector(
+      onTap: (heightFactor == 1.0)
+          ? null
+          : () {
+        print("ontap $index");
+        setState(() {
+          selected = index;
+        });
+      },
+      child: Stack(
+        children: [
+          GestureDetector(
+            // onVerticalDragUpdate: (heightFactor == 1.0)
+            //     ? null
+            //     : (details) {
+            //   print("drag");
+            //   print(details.delta);
+            //   print(details.localPosition);
+            //
+            //   heightFactor = 1.0;
+            //   setState(() {});
+            // },
+            child: Container(
+              // constraints: BoxConstraints(
+              //   minHeight: 180,
+              // ),
+              width: double.maxFinite,
+              height: MediaQuery.of(context).size.width <= 400 ? 180 : 220,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  color: (bgColor != null)
+                      ? bgColor
+                      : index == current - 1
+                      ? newCurrentStageColor
+                      : newCompletedStageColor,
+                  boxShadow: [
+                    BoxShadow(color: Colors.black.withAlpha(100), blurRadius: 10)
+                  ]),
+              margin: EdgeInsets.symmetric(horizontal: 3.w, vertical: 2.h),
+              padding: EdgeInsets.only(left: 3.w, right: 3.w,top: 1.h),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Column(
+                      // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(height: 1.5.h),
+                              Text(
+                                title,
                                 style: TextStyle(
-                                    height: 1.3,
-                                    fontFamily: kFontBook,
+                                    height: 1.2,
+                                    fontFamily: eUser().mainHeadingFont,
                                     color: eUser().mainHeadingColor,
-                                    fontSize: bottomSheetSubHeadingSFontSize),
+                                    fontSize: 11.sp),
                               ),
+                              SizedBox(height: 0.5.h),
+                              Flexible(
+                                child: Text(
+                                  subText,
+                                  style: TextStyle(
+                                      height: 1.3,
+                                      fontFamily: kFontBook,
+                                      color: eUser().mainHeadingColor,
+                                      fontSize: bottomSheetSubHeadingSFontSize),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            if (btn1Name != null)
+                              buildButton(
+                                  btn1Name ?? '',
+                                  (btn1Color != null)
+                                      ? btn1Color
+                                      : index == current - 1
+                                      ? newCurrentStageButtonColor
+                                      : newCompletedStageBtnColor,
+                                  1,
+                                  type),
+                            SizedBox(
+
+                              width: 8,
                             ),
+                            if (btn2Name != null)
+                              buildButton(
+                                  btn2Name,
+                                  (btn2Color != null)
+                                      ? btn2Color
+                                      : index == current - 1
+                                      ? newCurrentStageButtonColor
+                                      : newCompletedStageBtnColor,
+                                  2,
+                                  type),
+                            SizedBox(
+
+                              width: 8,
+                            ),
+                            if (btn3Name != null)
+                              buildButton(
+                                  btn3Name,
+                                  (btn3Color != null)
+                                      ? btn3Color
+                                      : index == current - 1
+                                      ? newCurrentStageButtonColor
+                                      : newCompletedStageBtnColor,
+                                  3,
+                                  type)
                           ],
                         ),
-                      ),
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          if (btn1Name != null)
-                            buildButton(
-                                btn1Name ?? '',
-                                (btn1Color != null)
-                                    ? btn1Color
-                                    : index == current - 1
-                                    ? newCurrentStageButtonColor
-                                    : newCompletedStageBtnColor,
-                                1,
-                                type),
-                          SizedBox(
-
-                            width: 8,
-                          ),
-                          if (btn2Name != null)
-                            buildButton(
-                                btn2Name,
-                                (btn2Color != null)
-                                    ? btn2Color
-                                    : index == current - 1
-                                    ? newCurrentStageButtonColor
-                                    : newCompletedStageBtnColor,
-                                2,
-                                type),
-                          SizedBox(
-
-                            width: 8,
-                          ),
-                          if (btn3Name != null)
-                            buildButton(
-                                btn3Name,
-                                (btn3Color != null)
-                                    ? btn3Color
-                                    : index == current - 1
-                                    ? newCurrentStageButtonColor
-                                    : newCompletedStageBtnColor,
-                                3,
-                                type)
-                        ],
-                      ),
-                    ],
+                      ],
+                    ),
+                  ),
+                  SizedBox(width: 3.w),
+                  Image.asset(
+                    image,
+                    height: 7.h,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Positioned(
+            left: 8.w,
+            top: 1.1.h,
+            child: Container(
+              height: 3.h,
+              width: 15.w,
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: index == current - 1
+                      ? const AssetImage(
+                      "assets/images/dashboard_stages/Group 76451.png")
+                      : const AssetImage(
+                      "assets/images/dashboard_stages/Group 76452.png"),
+                  fit: BoxFit.fill,
+                ),
+              ),
+              child: Center(
+                child: Text(
+                  "Step $steps",
+                  style: TextStyle(
+                    fontFamily: (index == current - 1)
+                        ? kFontSensaBrush
+                        : eUser().userFieldLabelFont,
+                    color: eUser().threeBounceIndicatorColor,
+                    fontSize: (index == current - 1) ? 10.sp : 7.sp,
                   ),
                 ),
-                SizedBox(width: 3.w),
-                Image.asset(
-                  image,
-                  height: 7.h,
-                ),
-              ],
-            ),
-          ),
-        ),
-        Positioned(
-          left: 8.w,
-          top: 1.1.h,
-          child: Container(
-            height: 3.h,
-            width: 15.w,
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: index == current - 1
-                    ? const AssetImage(
-                    "assets/images/dashboard_stages/Group 76451.png")
-                    : const AssetImage(
-                    "assets/images/dashboard_stages/Group 76452.png"),
-                fit: BoxFit.fill,
-              ),
-            ),
-            child: Center(
-              child: Text(
-                "Step $steps",
-                style: TextStyle(
-                  fontFamily: (index == current - 1)
-                      ? kFontSensaBrush
-                      : eUser().userFieldLabelFont,
-                  color: eUser().threeBounceIndicatorColor,
-                  fontSize: (index == current - 1) ? 10.sp : 7.sp,
-                ),
               ),
             ),
           ),
-        ),
-        index == current - 1
-            ? Positioned(
-          left: 35.w,
-          right: 35.w,
-          top: 1.2.h,
-          child: Container(
-            height: 3.h,
-            // width: 2.w,
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: index == current - 1
-                    ? const AssetImage(
-                    "assets/images/dashboard_stages/Group 76450.png")
-                    : const AssetImage(
-                    "assets/images/dashboard_stages/Group 76453.png"),
-                fit: BoxFit.fill,
+          index == current - 1
+              ? Positioned(
+            left: 35.w,
+            right: 35.w,
+            top: 1.2.h,
+            child: Container(
+              height: 3.h,
+              // width: 2.w,
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: index == current - 1
+                      ? const AssetImage(
+                      "assets/images/dashboard_stages/Group 76450.png")
+                      : const AssetImage(
+                      "assets/images/dashboard_stages/Group 76453.png"),
+                  fit: BoxFit.fill,
+                ),
               ),
-            ),
-            child: Center(
-              child: Text(
-                "Your Current Stage",
-                style: TextStyle(
-                  fontFamily: eUser().userFieldLabelFont,
-                  color: eUser().threeBounceIndicatorColor,
-                  fontSize: 7.sp,
+              child: Center(
+                child: Text(
+                  "Your Current Stage",
+                  style: TextStyle(
+                    fontFamily: eUser().userFieldLabelFont,
+                    color: eUser().threeBounceIndicatorColor,
+                    fontSize: 7.sp,
+                  ),
                 ),
               ),
             ),
-          ),
-        )
-            : const SizedBox(),
-      ],
+          )
+              : const SizedBox(),
+        ],
+      ),
     );
   }
 
@@ -1240,7 +1253,8 @@ class _NewDsPageState extends State<NewDsPage> {
 
   bool isSendApproveStatus = false;
   bool isPressed = false;
-  sendApproveStatus(String status, {bool fromNull = false}) async {
+
+  sendApproveStatus(String status) async {
     if (!isSendApproveStatus) {
       setState(() {
         isSendApproveStatus = true;
@@ -1323,7 +1337,7 @@ class _NewDsPageState extends State<NewDsPage> {
 
   mealReadySheet() {
     // addUrlToVideoPlayer(_gutShipDataModel?.value ?? '');
-    addUrlToVideoPlayerChewie(_gutShipDataModel?.value ?? '');
+    addUrlToVideoPlayerChewie(_gutShipDataModel?.stringValue ?? '');
     return AppConfig().showSheet(
         context,
         WillPopScope(
@@ -1449,6 +1463,7 @@ class _NewDsPageState extends State<NewDsPage> {
               disposePlayer();
               return Future.value(true);
             }),
+        isDismissible: true,
         bottomSheetHeight: 75.h);
   }
 
@@ -1617,21 +1632,25 @@ class _NewDsPageState extends State<NewDsPage> {
         break;
       case 'consultation_waiting':
         current = 3;
-        stageData[1].btn1Name = "Completed";
+        stageData[1].btn1Name = "Consultation History";
+        stageData[1].subTitle = consultationStage3SubText;
+        stageData[1].btn2Name = null;
 
         stageData[2].btn1Name = "Upload Report";
+        stageData[2].subTitle = requestedReportStage1SubText;
         stageData[2].bgColor = newCurrentStageColor;
 
         break;
       case 'check_user_reports':
         current = 3;
         stageData[1].btn1Name = "Consultation History";
-        stageData[1].subTitle = "Congrats on completing your consultation, hope you had an insightful chat with your doctor.";
+        stageData[1].subTitle = consultationStage3SubText;
 
 
         //awaiting-> status
         stageData[2].btn1Name = "Status";
         stageData[2].bgColor = newCurrentStageColor;
+        stageData[2].subTitle = requestedReportStage2SubText;
 
         break;
       case 'consultation_rejected':
@@ -1648,7 +1667,11 @@ class _NewDsPageState extends State<NewDsPage> {
       case 'report_upload':
         current = 5;
         print("stageData: ${stageData[2].subTitle}");
-        stageData[1].btn1Name = null;
+        // stageData[0].btn1Name = null;
+
+
+        stageData[1].btn1Name = "View History";
+
         stageData[2].btn1Name = "View User Reports";
         stageData[4].btn1Name = "View MR";
         stageData[2].bgColor = newCompletedStageColor;
@@ -1657,77 +1680,125 @@ class _NewDsPageState extends State<NewDsPage> {
 
       case 'prep_meal_plan_completed':
         current = 6;
-        stageData[1].btn1Name = null;
+        stageData[1].btn1Name = "View History";
         stageData[2].btn1Name = "View User Reports";
         // stageData[4].btn1Name = "View MR";
+
+        if (_prepratoryModel!.value!.isPrepratoryStarted == false) {
+          stageData[5].btn1Name = "Start Prep";
+          stageData[5].btn2Name = null;
+        }
+        else{
+          stageData[5].btn1Name = "Prep";
+          stageData[5].subTitle = prepStage2SubText;
+          stageData[5].btn2Color = newCurrentStageButtonColor.withOpacity(0.6);
+        }
+
+        if(stage == "shipping_delivered"){
+          stageData[5].btn1Name = null;
+        }
+
+        break;
+      case 'meal_plan_completed':
+        current = 6;
+        stageData[1].btn1Name = "View History";
+        stageData[2].btn1Name = "View User Reports";
 
         if (_prepratoryModel!.value!.isPrepratoryStarted == false) {
           stageData[5].btn1Name = "Start Prep";
         }
         else{
           stageData[5].subTitle = prepStage2SubText;
-          stageData[5].btn2Color = newCurrentStageButtonColor.withOpacity(0.8);
+          stageData[5].btn2Color = newCurrentStageButtonColor;
+          stageData[5].btn2Name = "Ship Now";
         }
-
         break;
+
       case 'shipping_packed':
         current = 6;
-        stageData[1].btn1Name = null;
+        stageData[1].btn1Name = "View History";
         stageData[2].btn1Name = "View User Reports";
         // stageData[4].btn1Name = "View MR";
 
         stageData[5].subTitle = prepStage3SubText;
         stageData[5].btn2Color = newCurrentStageButtonColor;
-
+        stageData[5].btn2Name = "Track Kit";
 
         break;
       case 'shipping_paused':
         current = 6;
-        stageData[1].btn1Name = null;
+        stageData[1].btn1Name = "View History";
         stageData[2].btn1Name = "View User Reports";
         // stageData[4].btn1Name = "View MR";
 
         stageData[5].subTitle = prepStage3SubText;
         stageData[5].btn2Color = newCurrentStageButtonColor;
+        stageData[5].btn2Name = "Track Kit";
 
-
-        break;
-      case 'shipping_delivered':
-        current = 6;
-        stageData[1].btn1Name = null;
-        stageData[2].btn1Name = "View User Reports";
-        // stageData[4].btn1Name = "View MR";
-
-        stageData[5].subTitle = prepStage3SubText;
-        stageData[5].btn2Color = newCurrentStageButtonColor;
 
 
         break;
       case 'shipping_approved':
-        current = 7;
-        stageData[1].btn1Name = null;
+        current = 6;
+        stageData[1].btn1Name = "View History";
         stageData[2].btn1Name = "View User Reports";
         // stageData[4].btn1Name = "View MR";
 
         stageData[5].subTitle = prepStage3SubText;
         stageData[5].btn2Color = newCurrentStageButtonColor;
+        stageData[5].btn2Name = "Track Kit";
+
 
 
         break;
-      case 'start_program':
-
-        stageData[1].btn1Name = null;
+      case 'shipping_delivered':
+        current = 7;
+        stageData[1].btn1Name = "View History";
         stageData[2].btn1Name = "View User Reports";
         // stageData[4].btn1Name = "View MR";
 
-        if (_prepratoryModel!.value!.isPrepTrackerCompleted != null &&
-            _prepratoryModel!.value!.isPrepTrackerCompleted == true) {
-          current = 7;
+        stageData[5].btn1Name = null;
+        stageData[5].subTitle = prepStage3SubText;
+        stageData[5].btn2Color = newCurrentStageButtonColor;
+        stageData[5].btn2Name = "Track Kit";
+
+
+        if(_prepratoryModel!.value!.isPrepratoryStarted == false){
+          stageData[6].btn1Name = "Activate";
         }
-        else {
-          current = 6;
+        else if(_prepratoryModel!.value!.isPrepratoryStarted == true){
+          stageData[6].btn1Name = "Prep";
         }
+        stageData[6].btn2Name = "Start Program";
+        stageData[6].btn1Color = newCurrentStageButtonColor;
+        stageData[6].btn2Color = newCurrentStageButtonColor.withOpacity(0.6);
+
+        break;
+      case 'start_program':
+        current = 7;
+
+        stageData[1].btn1Name = "View History";
+        stageData[2].btn1Name = "View User Reports";
+
+        stageData[5].btn1Name = null;
+
+        // stageData[4].btn1Name = "View MR";
+
         stageData[5].btn2Color = null;
+        if(_prepratoryModel!.value!.isPrepCompleted == true){
+          stageData[6].btn1Name = null;
+          stageData[6].btn2Name = "Start Program";
+          stageData[6].btn2Color = newCurrentStageButtonColor;
+        }
+
+        /// start program text will come 1st time
+        /// once started start day1, day2, day3......
+        if (_gutProgramModel!.value!.startProgram != '0'){
+          final currentday = _gutProgramModel?.value?.mealCurrentDay;
+          stageData[6].btn1Name = "Continue To Day $currentday";
+          stageData[6].btn2Name = null;
+          stageData[6].subTitle = mealStartText;
+        }
 
 
         break;
@@ -1737,13 +1808,22 @@ class _NewDsPageState extends State<NewDsPage> {
             _prepratoryModel!.value!.isPrepTrackerCompleted == true) {
           current = 7;
           stageData[6].btn1Name = "Transition Plan";
+          stageData[6].btn2Name = null;
+          stageData[6].subTitle = mealTransText;
         }
-        else {
-          current = 6;
-          stageData[5].btn1Name = "Submit Prep Tracker";
-        }
-        stageData[1].btn1Name = null;
+        // else {
+        //   current = 6;
+        //   stageData[5].btn1Name = "Submit Prep Tracker";
+        // }
+        stageData[1].btn1Name = "View History";
         stageData[2].btn1Name = "View User Reports";
+
+        stageData[5].btn1Name = null;
+
+        stageData[6].subTitle = mealTransText;
+
+
+
         // stageData[4].btn1Name = "View MR";
 
         stageData[5].btn2Color = null;
@@ -1753,66 +1833,97 @@ class _NewDsPageState extends State<NewDsPage> {
         break;
       case 'post_program':
         current = 8;
-        stageData[1].btn1Name = null;
+        stageData[1].btn1Name = "View History";
         stageData[2].btn1Name = "View User Reports";
         // stageData[4].btn1Name = "View MR";
 
-        stageData[7].btn1Name = "Trans Completed";
+        stageData[6].btn1Name = "Trans Completed";
+
+        if (_gutPostProgramModel!.isProgramFeedbackSubmitted != "1") {
+          stageData[7].btn2Color = newCurrentStageButtonColor.withOpacity(0.6);
+        }
+        else{
+          stageData[7].btn1Name = null;
+          stageData[7].btn2Color = newCurrentStageButtonColor;
+          stageData[7].subTitle = PpcScheduleText;
+        }
 
         stageData[5].btn2Color = null;
+        stageData[5].btn1Name = null;
+
 
         break;
       case 'post_appointment_booked':
 
         current = 8;
-        stageData[1].btn1Name = null;
+        stageData[1].btn1Name = "View History";
         stageData[2].btn1Name = "View User Reports";
         stageData[4].btn1Name = "View MR";
 
         stageData[5].btn1Name = "Completed";
 
-        stageData[6].btn1Name = "Join";
-        stageData[6].btn2Name = "ReSchedule";
-
-        stageData[5].btn2Color = null;
-
-
-        break;
-      case 'post_appointment_done':
-        current = 9;
-        stageData[1].btn1Name = null;
-        stageData[2].btn1Name = "View User Reports";
-        stageData[4].btn1Name = "View MR";
-
         stageData[6].btn1Name = "Completed";
+        stageData[6].btn1Color = newCompletedStageBtnColor;
 
-        stageData[7].btn1Name = null;
-        stageData[7].btn2Name = null;
+        stageData[7].btn1Name = "Join";
+        stageData[7].btn2Name = "ReSchedule";
 
         stageData[5].btn2Color = null;
+        stageData[5].btn1Name = null;
+
+        final slotDate = _postConsultationAppointment!.value!.date!;
+        final slotTime = _postConsultationAppointment!.value!.slotStartTime!;
+        stageData[7].subTitle = "Your consultation has been booked for $slotDate $slotTime.\n"+PpcBookedText;
 
 
         break;
       case 'post_appointment_reschedule':
         current = 8;
-        stageData[1].btn1Name = null;
+        stageData[1].btn1Name = "View History";
         stageData[2].btn1Name = "View User Reports";
         stageData[4].btn1Name = "View MR";
 
+        stageData[5].btn1Name = null;
+
         stageData[6].btn1Name = "Completed";
+        stageData[6].btn1Color = newCompletedStageBtnColor;
+
 
         stageData[7].btn1Name = null;
         stageData[7].btn2Name = "Reschedule";
 
         break;
-      case 'protocol_guide':
+      case 'post_appointment_done':
         current = 9;
-        stageData[1].btn1Name = null;
+        stageData[1].btn1Name = "View History";
         stageData[2].btn1Name = "View User Reports";
         stageData[4].btn1Name = "View MR";
 
         stageData[6].btn1Name = "Completed";
+        stageData[6].btn1Color = newCompletedStageBtnColor;
+
+
+        stageData[7].btn1Name = null;
+        stageData[7].btn2Name = null;
+        stageData[5].btn1Name = null;
+
+
         stageData[5].btn2Color = null;
+
+
+        break;
+      case 'protocol_guide':
+        current = 9;
+        stageData[1].btn1Name = "View History";
+        stageData[2].btn1Name = "View User Reports";
+        stageData[4].btn1Name = "View MR";
+
+        stageData[6].btn1Name = "Completed";
+        stageData[6].btn1Color = newCompletedStageBtnColor;
+
+        stageData[5].btn2Color = null;
+        stageData[5].btn1Name = null;
+
 
 
         stageData[7].btn1Name = null;
@@ -1828,13 +1939,18 @@ class _NewDsPageState extends State<NewDsPage> {
   }
 
   handleButtonOnTapByType(StageType type, int buttonId) {
+    print(type);
     switch (type) {
       case StageType.evaluation:
-        // goToScreen(PersonalDetailsScreen2());
+        // goToScreen(Scaffold(body: SingleChildScrollView(child: TrackerUI(
+        //   proceedProgramDayModel: null,
+        //   from: ProgramMealType.program.name,
+        // )),));
         goToScreen(EvaluationGetDetails());
         break;
+
       case StageType.med_consultation:
-        print("Medical consultation ${buttonId}");
+        print("Medical consultation ${buttonId} $consultationStage");
         if (buttonId == 1) {
           switch (consultationStage) {
             case 'evaluation_done':
@@ -1866,7 +1982,8 @@ class _NewDsPageState extends State<NewDsPage> {
               goToScreen(const ConsultationSuccess());
               break;
             case 'consultation_waiting':
-              goToScreen(const ConsultationSuccess());
+              final _consultationHistory = _gutDataModel!.historyWithMrValue!.consultationHistory;
+              goToScreen(ConsultationHistoryScreen(consultationHistory: _consultationHistory,));
               break;
             case 'consultation_rejected':
               goToScreen(ConsultationRejected(
@@ -1874,11 +1991,15 @@ class _NewDsPageState extends State<NewDsPage> {
               ));
               break;
             case 'check_user_reports':
-            // print(_gutDataModel!.value);
-              goToScreen(const ConsultationSuccess());
+            //   goToScreen(const ConsultationSuccess());
+              final _consultationHistory = _gutDataModel!.historyWithMrValue!.consultationHistory;
+              goToScreen(ConsultationHistoryScreen(consultationHistory: _consultationHistory,));
               break;
-            default:
-              goToScreen(const ConsultationSuccess());
+            case 'report_upload':
+              // show history screen
+            final _consultationHistory = _gutDataModel!.historyWithMrValue!.consultationHistory;
+            goToScreen(ConsultationHistoryScreen(consultationHistory: _consultationHistory,));
+              break;
           }
         }
         else {
@@ -1949,6 +2070,8 @@ class _NewDsPageState extends State<NewDsPage> {
         }
         break;
       case StageType.requested_report:
+        print(consultationStage);
+
         switch(consultationStage){
           case 'consultation_waiting':
             goToScreen(UploadFiles());
@@ -1956,11 +2079,13 @@ class _NewDsPageState extends State<NewDsPage> {
           case 'check_user_reports':
             goToScreen(CheckUserReportsScreen());
             break;
-          default:
-            // need to add show uploaded reports
-            goToScreen(UploadFiles(
-              isFromSettings: true,
-            ));
+          case 'report_upload':
+            // new ui need to add here
+
+          // // show history screen
+          //   final _consultationHistory = _gutDataModel!.historyWithMrValue!.consultationHistory;
+          //   goToScreen(ConsultationHistoryScreen(consultationHistory: _consultationHistory,));
+          //   break;
         }
         break;
 
@@ -1968,20 +2093,19 @@ class _NewDsPageState extends State<NewDsPage> {
         switch(consultationStage){
           case 'consultation_rejected':
             goToScreen(MedicalReportScreen(
-              pdfLink: _gutDataModel?.rejectedCase?.mr ?? '',
+              pdfLink: _gutDataModel?.rejectedCase?.historyWithMrValue?.mr ?? '',
             ));
             break;
           case 'report_upload':
-            print(_gutDataModel!.toJson());
-            print(_gutDataModel!.value);
+            // print(_gutDataModel!.toJson());
+            // print(_gutDataModel!.value);
             // goToScreen(goToScreen(UploadFiles()));
             goToScreen(MedicalReportScreen(
-              pdfLink: _gutDataModel!.value!,
+              pdfLink: _gutDataModel!.historyWithMrValue!.mr!,
             ));
             break;
         }
         print(consultationStage);
-        print(_gutDataModel!.value!);
         // goToScreen(MedicalReportScreen(
         //   pdfLink: _gutDataModel!.value!,
         // ));
@@ -1989,11 +2113,22 @@ class _NewDsPageState extends State<NewDsPage> {
 
       case StageType.prep_meal:
         if (buttonId == 1) {
-          showPrepratoryMealScreen();
+          showPrepratoryMealScreen(isFromPrepCard: true);
         }
         else {
           if (shippingStage != null && shippingStage!.isNotEmpty) {
-            if (_shippingApprovedModel != null) {
+            if(shippingStage == 'meal_plan_completed'){
+              Navigator.of(context)
+                  .push(
+                MaterialPageRoute(
+                  builder: (context) =>
+                      CookKitTracking(currentStage: shippingStage ?? ''),
+                ),
+              )
+                  .then((value) => reloadUI());
+            }
+            else if (_shippingApprovedModel != null) {
+              print("else if");
               Navigator.of(context)
                   .push(
                 MaterialPageRoute(
@@ -2005,7 +2140,8 @@ class _NewDsPageState extends State<NewDsPage> {
                 ),
               )
                   .then((value) => reloadUI());
-            } else {
+            }
+            else {
               Navigator.of(context)
                   .push(
                 MaterialPageRoute(
@@ -2024,20 +2160,34 @@ class _NewDsPageState extends State<NewDsPage> {
 
       case StageType.normal_meal:
         if (buttonId == 1) {
+          if(shippingStage == "shipping_delivered" && _prepratoryModel!.value!.isPrepTrackerCompleted == false){
+            return showPrepratoryMealScreen();
+          }
           if (transStage != null && transStage!.isNotEmpty) {
             // showProgramScreen();
-            showTransitionMealScreen();
+            return showTransitionMealScreen();
           }
           else if (programOptionStage != null &&
               programOptionStage!.isNotEmpty &&
               (_prepratoryModel!.value!.isPrepTrackerCompleted != null &&
                   _prepratoryModel!.value!.isPrepTrackerCompleted == true)) {
             print("called");
-            showProgramScreen();
+            return showProgramScreen();
           }
           else {
             AppConfig().showSnackbar(context, "Can't access Locked Stage",
                 isError: true);
+          }
+        }
+        else {
+          if (programOptionStage != null &&
+              programOptionStage!.isNotEmpty
+          // &&
+              // (_prepratoryModel!.value!.isPrepTrackerCompleted != null &&
+              //     _prepratoryModel!.value!.isPrepTrackerCompleted == true)
+          ) {
+            print("called");
+            return showProgramScreen();
           }
         }
         break;
@@ -2080,6 +2230,9 @@ class _NewDsPageState extends State<NewDsPage> {
               }
             }
 
+            break;
+          case 'check_user_reports':
+            goToScreen(CheckUserReportsScreen());
             break;
           case 'post_appointment_booked':
             if(buttonId == 1){
@@ -2236,12 +2389,12 @@ class _NewDsPageState extends State<NewDsPage> {
     }
   }
 
-  showPrepratoryMealScreen() {
+  showPrepratoryMealScreen({bool isFromPrepCard = false}) {
     if (_prepratoryModel != null) {
       print("BOOL : ${_prepratoryModel!.value!.isPrepratoryStarted}");
 
       // slide to program  if not started
-      if (_prepratoryModel!.value!.isPrepratoryStarted == false) {
+      if (_prepratoryModel!.value!.isPrepratoryStarted == false && !isFromPrepCard) {
         Navigator.of(context)
             .push(
           MaterialPageRoute(

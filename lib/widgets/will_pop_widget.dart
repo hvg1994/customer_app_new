@@ -29,7 +29,7 @@ class _WillPopWidgetState extends State<WillPopWidget> {
   Future<bool> _onWillPop() async {
     // ignore: avoid_print
     print('back pressed splash');
-    return AppConfig().showSheet(context, ExitWidget(), bottomSheetHeight: 45.h) ??
+    return AppConfig().showSheet(context, ExitWidget(), bottomSheetHeight: 45.h, isDismissible: true,) ??
     // return await showDialog(
     //         context: context,
     //         builder: (context) => AlertDialog(

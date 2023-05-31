@@ -180,12 +180,13 @@ SnackbarController buildSnackBar(String title, String subTitle) {
 
 buildAppBar(VoidCallback func,
     {bool isBackEnable = true,
-    bool showNotificationIcon = false,
-    VoidCallback? notificationOnTap,
-    bool showHelpIcon = false,
-    VoidCallback? helpOnTap,
-    bool showSupportIcon = false,
-    VoidCallback? supportOnTap, Color? helpIconColor}) {
+      bool showNotificationIcon = false,
+      VoidCallback? notificationOnTap,
+      bool showHelpIcon = false,
+      VoidCallback? helpOnTap,
+      bool showSupportIcon = false,
+      VoidCallback? supportOnTap,
+      Color? helpIconColor, String? badgeNotification}) {
   return Row(
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
     children: [
@@ -196,6 +197,7 @@ buildAppBar(VoidCallback func,
             child: GestureDetector(
               onTap: func,
               child: SizedBox(
+
                 width: 2.h,
                 child: Icon(
                   Icons.arrow_back_ios,
@@ -205,9 +207,11 @@ buildAppBar(VoidCallback func,
             ),
           ),
           SizedBox(
+
             width: 15,
           ),
           SizedBox(
+
             height: 6.h,
             child: const Image(
               image: AssetImage("assets/images/Gut welness logo.png"),
@@ -222,14 +226,28 @@ buildAppBar(VoidCallback func,
           Visibility(
             visible: showNotificationIcon,
             child: GestureDetector(
-              child: ImageIcon(
-                AssetImage("assets/images/new_ds/notification.png"),
+              child: badgeNotification == "1"
+                  ? buildCustomBadge(
+                child: Icon(
+                  Icons.notifications,
+                  color: gHintTextColor,
+                ),
+                  // child: Icon(Icons.notifications,color: gHintTextColor,)
+                // SvgPicture.asset(
+                //   "assets/images/Notification.svg",
+                //   height: 2.5.h,
+                //   color: gHintTextColor,
+                // ),
+              )
+                  : Icon(
+                Icons.notifications,
                 color: gHintTextColor,
               ),
               onTap: notificationOnTap,
             ),
           ),
           SizedBox(
+
             width: 3.25.w,
           ),
           Visibility(
@@ -243,6 +261,7 @@ buildAppBar(VoidCallback func,
             ),
           ),
           SizedBox(
+
             width: 3.25.w,
           ),
           Visibility(
@@ -262,8 +281,9 @@ buildAppBar(VoidCallback func,
 }
 
 buildLabelTextField(String name,
-    {double? fontSize, double textScleFactor = 0.9}) {
+    {double? fontSize, double textScleFactor = 0.9, Key? key}) {
   return RichText(
+    key: key,
       textScaleFactor: textScleFactor,
       text: TextSpan(
           text: name,
@@ -598,4 +618,39 @@ writePdfFile(PdfDocumentLoadedDetails details, String url) async{
       .writeAsBytes(await details.document.save());
 
   print(_temp.exists());
+}
+
+
+String getDayOfMonthSuffix(int dayNum) {
+  if(!(dayNum >= 1 && dayNum <= 31)) {
+    throw Exception('Invalid day of month');
+  }
+
+  if(dayNum >= 11 && dayNum <= 13) {
+    return 'th';
+  }
+
+  switch(dayNum % 10) {
+    case 1: return 'st';
+    case 2: return 'nd';
+    case 3: return 'rd';
+    default: return 'th';
+  }
+}
+
+buildCustomBadge({required Widget child}) {
+  return Stack(
+    clipBehavior: Clip.none,
+    children: [
+      child,
+      const Positioned(
+        top: 2,
+        right: 2,
+        child: CircleAvatar(
+          radius: 4,
+          backgroundColor: Colors.red,
+        ),
+      ),
+    ],
+  );
 }

@@ -705,7 +705,7 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
       if (res.runtimeType == ShippingApproveModel) {
         ShippingApproveModel model = res as ShippingApproveModel;
         print('success: ${model.message}');
-        AppConfig().showSnackbar(context, model.message!);
+        // AppConfig().showSnackbar(context, model.message!);
         getData();
       } else {
         ErrorModel model = res as ErrorModel;
@@ -849,7 +849,9 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
             ),
           ],
         ),
-        bottomSheetHeight: 65.h, sheetCloseOnTap: () {
+        bottomSheetHeight: 65.h,
+        isDismissible: true,
+        sheetCloseOnTap: () {
       Navigator.pop(context);
       disposePlayer();
     }, isSheetCloseNeeded: true);
@@ -1004,7 +1006,7 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
   }
 
   mealReadySheet() {
-    addUrlToVideoPlayerChewie(_gutShipDataModel?.value ?? '');
+    addUrlToVideoPlayerChewie(_gutShipDataModel?.stringValue ?? '');
     return AppConfig().showSheet(
         context,
         Column(
@@ -1125,6 +1127,7 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
             ),
           ],
         ),
+        isDismissible: true,
         bottomSheetHeight: 75.h);
   }
 
@@ -1423,7 +1426,7 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
               break;
             case 'consultation_rejected':
               goToScreen(ConsultationRejected(
-                reason: _gutDataModel?.value ?? '',
+                reason: _gutDataModel?.stringValue ?? '',
               ));
               break;
             case 'check_user_reports':
@@ -1453,7 +1456,6 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
               break;
             case 'report_upload':
               print(_gutDataModel!.toJson());
-              print(_gutDataModel!.value);
               // goToScreen(ConsultationRejected(reason: '',));
 
               // goToScreen(ConsultationSuccess());
@@ -1462,7 +1464,7 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
 
               // goToScreen(DoctorCalenderTimeScreen(isReschedule: true,prevBookingTime: '23-09-2022', prevBookingDate: '10AM',));
               goToScreen(MedicalReportScreen(
-                pdfLink: _gutDataModel!.value!,
+                pdfLink: _gutDataModel!.historyWithMrValue!.mr!,
               ));
               break;
             default:
@@ -1592,12 +1594,12 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
         break;
       case 'consultation_rejected':
         goToScreen(ConsultationRejected(
-          reason: _gutDataModel?.value ?? '',
+          reason: _gutDataModel?.stringValue ?? '',
         ));
         break;
       case 'report_upload':
         print(_gutDataModel!.toJson());
-        print(_gutDataModel!.value);
+        print(_gutDataModel!.historyWithMrValue!.mr);
         goToScreen(ConsultationRejected(
           reason: '',
         ));

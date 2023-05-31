@@ -29,6 +29,7 @@ class Value {
   String? programId;
   String? isActive;
   String? startProgram;
+  String? mealCurrentDay;
   String? createdAt;
   String? updatedAt;
   Program? program;
@@ -42,6 +43,7 @@ class Value {
         this.programId,
         this.isActive,
         this.startProgram,
+        this.mealCurrentDay,
         this.createdAt,
         this.updatedAt,
         this.program});
@@ -56,9 +58,12 @@ class Value {
     programId = json['program_id'];
     isActive = json['is_active'].toString();
     startProgram = json['start_program'];
+    mealCurrentDay = json['sp_current_day'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
-    program = json['program'] != null ? new Program.fromJson(json['program']) : null;
+    program = json['program'] != null ? new Program.fromJson(json['program'])
+        : json['program_days'] != null
+        ? new Program.fromJson(json['program_days']) : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -71,6 +76,7 @@ class Value {
     data['program_id'] = this.programId;
     data['is_active'] = this.isActive;
     data['start_program'] = this.startProgram;
+    data['sp_current_day'] = this.mealCurrentDay;
     data['created_at'] = this.createdAt;
     data['updated_at'] = this.updatedAt;
     if (this.program != null) {

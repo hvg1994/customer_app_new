@@ -950,6 +950,7 @@ class ApiClient {
 
     try {
       var request = http.MultipartRequest('POST', Uri.parse(path));
+
       var headers = {
         // "Authorization": "Bearer ${AppConfig().bearerToken}",
         "Authorization": getHeaderToken(),
@@ -961,6 +962,7 @@ class ApiClient {
       //   request.files.add(await http.MultipartFile.fromPath('files[]', element));
       // });
       request.headers.addAll(headers);
+
 
       var response = await http.Response.fromStream(await request.send())
           .timeout(Duration(seconds: 50));
@@ -1196,11 +1198,16 @@ class ApiClient {
     return result;
   }
 
-  Future shippingApproveApi(String approveStatus) async {
+  Future shippingApproveApi(String approveStatus, String selectedDate) async {
     final String path = shoppingApproveApiUrl;
     dynamic result;
 
-    Map bodyParam = {'status': approveStatus};
+    /// new parameter added as date:
+    /// by default status should be yes
+    Map bodyParam = {
+      'status': 'yes',
+      'date': selectedDate
+    };
 
     try {
       final response = await httpClient
@@ -1829,12 +1836,15 @@ class ApiClient {
       //   request.files.add(await http.MultipartFile.fromPath('files[]', element));
       // });
 
+
       var response = await http.Response.fromStream(await request.send())
           .timeout(Duration(seconds: 45));
 
-      print("uploadReportApi response code:" + path);
-      print("uploadReportApi response code:" + response.statusCode.toString());
-      print("uploadReportApi response body:" + response.body);
+
+
+      print("submitDoctorRequestedReportApi response code:" + path);
+      print("submitDoctorRequestedReportApi response code:" + response.statusCode.toString());
+      print("submitDoctorRequestedReportApi response body:" + response.body);
       var totalTime = DateTime.now().millisecondsSinceEpoch - startTime;
       print(
           "start: $startTime end: ${DateTime.now().millisecondsSinceEpoch}  total: $totalTime");
@@ -1852,6 +1862,7 @@ class ApiClient {
       else {
         result = ErrorModel.fromJson(res);
       }
+
     } catch (e) {
       print("catch error: ${e}");
       result = ErrorModel(status: "0", message: e.toString());

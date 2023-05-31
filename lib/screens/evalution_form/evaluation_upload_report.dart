@@ -151,6 +151,7 @@ class _EvaluationUploadReportState extends State<EvaluationUploadReport> {
 
   buildUI(BuildContext context){
     return SingleChildScrollView(
+      physics: NeverScrollableScrollPhysics(),
       child: Column(
         mainAxisSize: MainAxisSize.max,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -247,8 +248,8 @@ class _EvaluationUploadReportState extends State<EvaluationUploadReport> {
           if(medicalRecords.isNotEmpty)
             SizedBox(
               width: double.maxFinite,
+              height: 40.w,
               child: ListView.builder(
-                physics: NeverScrollableScrollPhysics(),
                 itemCount: medicalRecords.length,
                 shrinkWrap: true,
                 itemBuilder: (context, index) {
@@ -257,9 +258,9 @@ class _EvaluationUploadReportState extends State<EvaluationUploadReport> {
                 },
               ),
             ),
-          SizedBox(
-            height: 5.h,
-          ),
+            // SizedBox(
+            //   height: 5.h,
+            // ),
           //submit button
           Visibility(
             visible: medicalRecords.isNotEmpty,

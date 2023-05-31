@@ -322,7 +322,7 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
         appointmentModel: jsonEncode(_getAppointmentDetailsModel),
         consultStringModel: jsonEncode(_gutDataModel),
         mrReport: (consultationStage == "report_upload")
-            ? _gutDataModel?.value ?? ''
+            ? _gutDataModel?.historyWithMrValue!.mr ?? ''
             : "",
         prepStage: prepratoryMealStage,
         prepMealModel: jsonEncode(_prepratoryModel),
@@ -656,7 +656,9 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
           );
         }),
         bottomSheetHeight: 40.h,
-        isSheetCloseNeeded: true, sheetCloseOnTap: () {
+        isSheetCloseNeeded: true,
+        isDismissible: true,
+        sheetCloseOnTap: () {
       Navigator.pop(context);
     });
   }
@@ -1251,7 +1253,7 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
               if (postProgramStage == "post_program") {
                 if (_gutPostProgramModel!.isProgramFeedbackSubmitted == "1") {
                   AppConfig()
-                      .showSnackbar(context, "Feedback Already Submitted");
+                      .showSnackbar(context, "Feedback Already Submitted", isError: true);
                 } else {
                   goToScreen(MedicalFeedbackForm());
                 }
@@ -1773,12 +1775,12 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
       if (res.runtimeType == ShippingApproveModel) {
         ShippingApproveModel model = res as ShippingApproveModel;
         print('success: ${model.message}');
-        AppConfig().showSnackbar(context, model.message!);
+        // AppConfig().showSnackbar(context, model.message!);
         getData();
       } else {
         ErrorModel model = res as ErrorModel;
         print('error: ${model.message}');
-        AppConfig().showSnackbar(context, model.message!);
+        AppConfig().showSnackbar(context, model.message!, isError: true);
       }
       setState(() {
         isPressed = false;
@@ -1891,7 +1893,7 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
 
   mealReadySheet() {
     // addUrlToVideoPlayer(_gutShipDataModel?.value ?? '');
-    addUrlToVideoPlayerChewie(_gutShipDataModel?.value ?? '');
+    addUrlToVideoPlayerChewie(_gutShipDataModel?.stringValue ?? '');
     return AppConfig().showSheet(
         context,
         WillPopScope(
@@ -2378,8 +2380,8 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
         consBtn1Color = gsecondaryColor;
         consBtn1Name = "Rejected";
         if (_gutDataModel?.rejectedCase != null) {
-          if (_gutDataModel!.rejectedCase!.mr != null &&
-              _gutDataModel!.rejectedCase!.mr!.isNotEmpty) {
+          if (_gutDataModel!.rejectedCase!.historyWithMrValue!.mr != null &&
+              _gutDataModel!.rejectedCase!.historyWithMrValue!.mr!.isNotEmpty) {
             consBtn2Color = newDashboardGreenButtonColor;
           } else {
             consBtn2Color = newDashboardLightGreyButtonColor;
@@ -2954,12 +2956,11 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
               break;
             case 'consultation_rejected':
               goToScreen(MedicalReportScreen(
-                pdfLink: _gutDataModel?.rejectedCase?.mr ?? '',
+                pdfLink: _gutDataModel?.rejectedCase?.historyWithMrValue?.mr ?? '',
               ));
               break;
             case 'report_upload':
               print(_gutDataModel!.toJson());
-              print(_gutDataModel!.value);
               // goToScreen(ConsultationRejected(reason: '',));
 
               // goToScreen(ConsultationSuccess());
@@ -2968,7 +2969,7 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
 
               // goToScreen(DoctorCalenderTimeScreen(isReschedule: true,prevBookingTime: '23-09-2022', prevBookingDate: '10AM',));
               goToScreen(MedicalReportScreen(
-                pdfLink: _gutDataModel!.value!,
+                pdfLink: _gutDataModel!.historyWithMrValue!.mr!,
               ));
               break;
             default:

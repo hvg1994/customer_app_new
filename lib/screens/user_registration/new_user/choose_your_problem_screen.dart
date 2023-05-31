@@ -77,15 +77,20 @@ class _ChooseYourProblemScreenState extends State<ChooseYourProblemScreen> {
 
   getDeviceId() async{
     _prefs = await SharedPreferences.getInstance();
-    await AppConfig().getDeviceId().then((id) {
-      print("deviceId: $id");
-      if(id != null){
-        _prefs!.setString(AppConfig().deviceId, id);
-      }
-      setState(() {
-        deviceId = id;
+    if(_prefs!.getString(AppConfig().deviceId) == null || _prefs!.getString(AppConfig().deviceId) != ""){
+      await AppConfig().getDeviceId().then((id) {
+        print("deviceId: $id");
+        if(id != null){
+          _prefs!.setString(AppConfig().deviceId, id);
+        }
+        setState(() {
+          deviceId = id;
+        });
       });
-    });
+    }
+    else{
+      deviceId = _prefs!.getString(AppConfig().deviceId);
+    }
   }
 
 

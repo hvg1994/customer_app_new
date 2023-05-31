@@ -102,8 +102,14 @@ class _HomeRemediesScreenState extends State<HomeRemediesScreen> {
                 if (snapshot.hasData) {
                   if (snapshot.data.runtimeType == HomeRemediesModel) {
                     HomeRemediesModel model =
-                        snapshot.data as HomeRemediesModel;
-                    List<HomeRemedy>? problemList = model.data.homeRemedies;
+                    snapshot.data as HomeRemediesModel;
+                    List<HomeRemedy>? totalList = model.data.homeRemedies;
+                    List<HomeRemedy> problemList = [];
+                    totalList.forEach((element) {
+                      if(element.isGeneral == "0"){
+                        problemList.add(element);
+                      }
+                    });
                     return GridView.builder(
                         scrollDirection: Axis.vertical,
                         physics: const ScrollPhysics(),
@@ -122,58 +128,58 @@ class _HomeRemediesScreenState extends State<HomeRemediesScreen> {
                           // print("thumbnail : ${problemList[index].thumbnail}");
                           return problemList[index].isGeneral == "0"
                               ? Column(
-                                  children: [
-                                    OutlinedButton(
-                                      onPressed: () {
-                                        Get.to(
-                                          () => NewKnowMoreScreen(
-                                            knowMore:
-                                                problemList[index].knowMore,
-                                            healAtHome:
-                                                problemList[index].healAtHome,
-                                            healAnywhere:
-                                                problemList[index].healAnywhere,
-                                            whenToReachUs: problemList[index]
-                                                .whenToReachUs,
-                                          ),
-                                        );
-                                      },
-                                      style: ButtonStyle(
-                                        overlayColor: getColor(Colors.white,
-                                            newDashboardGreenButtonColor),
-                                        backgroundColor: getColor(Colors.white,
-                                            newDashboardGreenButtonColor),
-                                        shape: MaterialStateProperty.all(
-                                          RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(10.0),
-                                          ),
-                                        ),
-                                      ),
-                                      child: CachedNetworkImage(
-                                        height: 15.h,
-                                        width: 30.w,
-                                        imageUrl: "${Uri.parse(problemList[index].thumbnail)}",
-                                        placeholder: (_,__){
-                                          return Image.asset("assets/images/placeholder.png");
-                                        },
-                                        errorWidget: (_,__, ___){
-                                          return Image.asset("assets/images/placeholder.png");
-                                        },
-                                      ),
+                            children: [
+                              OutlinedButton(
+                                onPressed: () {
+                                  Get.to(
+                                        () => NewKnowMoreScreen(
+                                      knowMore:
+                                      problemList[index].knowMore,
+                                      healAtHome:
+                                      problemList[index].healAtHome,
+                                      healAnywhere:
+                                      problemList[index].healAnywhere,
+                                      whenToReachUs: problemList[index]
+                                          .whenToReachUs,
                                     ),
-                                    SizedBox(height: 1.h),
-                                    Text(
-                                      problemList[index].name.toString(),
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        fontFamily: kFontBold,
-                                        color: gBlackColor,
-                                        fontSize: 9.sp,
-                                      ),
+                                  );
+                                },
+                                style: ButtonStyle(
+                                  overlayColor: getColor(Colors.white,
+                                      newDashboardGreenButtonColor),
+                                  backgroundColor: getColor(Colors.white,
+                                      newDashboardGreenButtonColor),
+                                  shape: MaterialStateProperty.all(
+                                    RoundedRectangleBorder(
+                                      borderRadius:
+                                      BorderRadius.circular(10.0),
                                     ),
-                                  ],
-                                )
+                                  ),
+                                ),
+                                child: CachedNetworkImage(
+                                  height: 15.h,
+                                  width: 30.w,
+                                  imageUrl: "${Uri.parse(problemList[index].thumbnail)}",
+                                  placeholder: (__,_){
+                                return Image.asset("assets/images/placeholder.png");
+                                },
+                                  errorWidget: (_,__, ___){
+                                return Image.asset("assets/images/placeholder.png");
+                                },
+                                ),
+                              ),
+                              SizedBox(height: 1.h),
+                              Text(
+                                problemList[index].name.toString(),
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontFamily: kFontBold,
+                                  color: gBlackColor,
+                                  fontSize: 9.sp,
+                                ),
+                              ),
+                            ],
+                          )
                               : const SizedBox();
                         });
                   }

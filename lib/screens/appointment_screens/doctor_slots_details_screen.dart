@@ -429,47 +429,48 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen>with
 
                                     print(curTime.difference(res));
                                     print(res.difference(curTime));
+                                    print(res.difference(curTime).inMinutes);
 
-                                    if(kDebugMode){
-                                      ChildAppointmentDetails? model;
-                                      String? kaleyraurl;
-
-                                      if(widget.isFromDashboard || widget.isPostProgram){
-                                        if(widget.isPostProgram){
-                                          if(widget.dashboardValueMap != null){
-                                            model = ChildAppointmentDetails.fromJson(Map.from(widget.dashboardValueMap!));
-                                            kaleyraurl = model.kaleyraJoinurl;
-                                          }
-                                          else{
-                                            kaleyraurl = widget.data?.kaleyraJoinurl;
-                                          }
-                                        }
-                                        else{
-                                          model = ChildAppointmentDetails.fromJson(Map.from(widget.dashboardValueMap!));
-                                          kaleyraurl = model.kaleyraJoinurl;
-                                        }
-                                      }
-                                      else{
-                                        kaleyraurl = widget.data?.kaleyraJoinurl;
-                                      }
-                                      // String zoomUrl = model.;
-
-                                      //(widget.isFromDashboard || widget.isPostProgram) ? model?.kaleyraJoinurl : widget.data?.kaleyraJoinurl
-                                      print(_pref!.getString(AppConfig.KALEYRA_USER_ID));
-                                      kaleyraUID = _pref!.getString(AppConfig.KALEYRA_USER_ID) ?? '';
-                                      print("kaleyraurl:=>$kaleyraurl");
-                                      print('token: $accessToken');
-                                      print("kaleyraID: $kaleyraUID");
-                                      // send kaleyra id to native
-                                      if(kaleyraUID.isNotEmpty || kaleyraurl != null || accessToken.isNotEmpty){
-                                        Provider.of<ConsultationService>(context, listen: false).joinWithKaleyra(kaleyraUID, kaleyraurl!, accessToken);
-                                      }
-                                      else{
-                                        AppConfig().showSnackbar(context, "Uid/accessToken/join url not found");
-                                      }
-                                    }
-                                    else{
-                                      if(res.difference(curTime).inMinutes > 5){
+                                    // if(kDebugMode){
+                                    //   ChildAppointmentDetails? model;
+                                    //   String? kaleyraurl;
+                                    //
+                                    //   if(widget.isFromDashboard || widget.isPostProgram){
+                                    //     if(widget.isPostProgram){
+                                    //       if(widget.dashboardValueMap != null){
+                                    //         model = ChildAppointmentDetails.fromJson(Map.from(widget.dashboardValueMap!));
+                                    //         kaleyraurl = model.kaleyraJoinurl;
+                                    //       }
+                                    //       else{
+                                    //         kaleyraurl = widget.data?.kaleyraJoinurl;
+                                    //       }
+                                    //     }
+                                    //     else{
+                                    //       model = ChildAppointmentDetails.fromJson(Map.from(widget.dashboardValueMap!));
+                                    //       kaleyraurl = model.kaleyraJoinurl;
+                                    //     }
+                                    //   }
+                                    //   else{
+                                    //     kaleyraurl = widget.data?.kaleyraJoinurl;
+                                    //   }
+                                    //   // String zoomUrl = model.;
+                                    //
+                                    //   //(widget.isFromDashboard || widget.isPostProgram) ? model?.kaleyraJoinurl : widget.data?.kaleyraJoinurl
+                                    //   print(_pref!.getString(AppConfig.KALEYRA_USER_ID));
+                                    //   kaleyraUID = _pref!.getString(AppConfig.KALEYRA_USER_ID) ?? '';
+                                    //   print("kaleyraurl:=>$kaleyraurl");
+                                    //   print('token: $accessToken');
+                                    //   print("kaleyraID: $kaleyraUID");
+                                    //   // send kaleyra id to native
+                                    //   if(kaleyraUID.isNotEmpty || kaleyraurl != null || accessToken.isNotEmpty){
+                                    //     Provider.of<ConsultationService>(context, listen: false).joinWithKaleyra(kaleyraUID, kaleyraurl!, accessToken);
+                                    //   }
+                                    //   else{
+                                    //     AppConfig().showSnackbar(context, "Uid/accessToken/join url not found");
+                                    //   }
+                                    // }
+                                    // else{
+                                      if(res.difference(curTime).inMinutes > 5 || res.difference(curTime).inMinutes < -10){
                                         showJoinPopup();
                                       }
                                       else{
@@ -511,7 +512,7 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen>with
                                           AppConfig().showSnackbar(context, "Uid/accessToken/join url not found");
                                         }
                                       }
-                                    }
+                                    // }
 
                                   },
                                   child: Container(
@@ -719,7 +720,8 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen>with
         ],
       ),
     ),
-      bottomSheetHeight: 45.h
+      bottomSheetHeight: 45.h,
+      isDismissible: true,
     );
     return showDialog(
         context: context,

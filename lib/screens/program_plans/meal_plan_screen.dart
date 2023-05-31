@@ -58,10 +58,10 @@ class MealPlanScreen extends StatefulWidget {
   final bool viewDay1Details;
   const MealPlanScreen(
       {Key? key,
-      this.transStage,
-      this.receipeVideoLink,
-      this.trackerVideoLink,
-      this.viewDay1Details = false})
+        this.transStage,
+        this.receipeVideoLink,
+        this.trackerVideoLink,
+        this.viewDay1Details = false})
       : super(key: key);
 
   @override
@@ -80,7 +80,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
   bool showToolTip = true;
   bool shoppingToolTip = true;
 
-  String btnText = 'Proceed to Symptoms Tracker';
+  String btnText = "Next"; //'Proceed to Symptoms Tracker';
 
   bool isLoading = false;
 
@@ -156,22 +156,19 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
   VideoPlayerController? _sheetVideoController, _yogaVideoController;
   ChewieController? _sheetChewieController, _yogaChewieController;
 
-
-
   initChewieView(String? url) {
     print("init url: $url");
-    _yogaVideoController = VideoPlayerController.network(Uri.parse(url!).toString());
+    _yogaVideoController =
+        VideoPlayerController.network(Uri.parse(url!).toString());
     _yogaChewieController = ChewieController(
         videoPlayerController: _yogaVideoController!,
-        aspectRatio: 16/9,
+        aspectRatio: 16 / 9,
         autoInitialize: true,
         showOptions: false,
         autoPlay: true,
         allowedScreenSleep: false,
         hideControlsTimer: Duration(seconds: 3),
-        showControls: true
-
-    );
+        showControls: true);
 
     final _ori = MediaQuery.of(context).orientation;
     print(_ori.name);
@@ -181,11 +178,8 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
     }
   }
 
-
   // for tracker video player
   // final _trackerKey = GlobalKey<VlcPlayerWithControlsState>();
-
-
 
   var checkState;
 
@@ -227,7 +221,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
         .getMealProgramDaysService();
     if (res.runtimeType == ProgramDayModel) {
       final model = res as ProgramDayModel;
-      print(model.toJson());
+      print("model.toJson(): ${model.toJson()}");
       // model.data!.forEach((element) {
       //   print('${element.dayNumber} -- ${element.color}');
       // });
@@ -270,14 +264,14 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
         });
         showAlert(context, model.status!,
             isSingleButton: !(model.status != '401'), positiveButton: () {
-          if (model.status == '401') {
-            Navigator.pop(context);
-            Navigator.pop(context);
-          } else {
-            Navigator.pop(context);
-            getProgramDays();
-          }
-        });
+              if (model.status == '401') {
+                Navigator.pop(context);
+                Navigator.pop(context);
+              } else {
+                Navigator.pop(context);
+                getProgramDays();
+              }
+            });
       });
     }
   }
@@ -424,11 +418,11 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                     Navigator.pushAndRemoveUntil(
                         context,
                         MaterialPageRoute(builder: (_) => DashboardScreen()),
-                        (route) => true);
+                            (route) => true);
                   },
                   child: Container(
                     padding:
-                        EdgeInsets.symmetric(vertical: 1.h, horizontal: 10.w),
+                    EdgeInsets.symmetric(vertical: 1.h, horizontal: 10.w),
                     decoration: BoxDecoration(
                       color: gsecondaryColor,
                       borderRadius: BorderRadius.circular(8),
@@ -469,7 +463,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
           Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(builder: (_) => DashboardScreen()),
-              (route) => true);
+                  (route) => true);
         });
       }
     }
@@ -574,25 +568,25 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
         });
         showAlert(context, model.status!,
             isSingleButton: !(model.status != '401'), positiveButton: () {
-          if (model.status == '401') {
-            Navigator.pop(context);
-            Navigator.pop(context);
-          } else {
-            getMeals();
-            Navigator.pop(context);
-          }
-        });
+              if (model.status == '401') {
+                Navigator.pop(context);
+                Navigator.pop(context);
+              } else {
+                getMeals();
+                Navigator.pop(context);
+              }
+            });
       });
     }
     print(result);
   }
 
   showAlert(
-    BuildContext context,
-    String status, {
-    bool isSingleButton = true,
-    required VoidCallback positiveButton,
-  }) {
+      BuildContext context,
+      String status, {
+        bool isSingleButton = true,
+        required VoidCallback positiveButton,
+      }) {
     return openAlertBox(
         context: context,
         barrierDismissible: false,
@@ -604,20 +598,19 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
         negativeButton: isSingleButton
             ? null
             : () {
-                Navigator.pop(context);
-                Navigator.pop(context);
-              },
+          Navigator.pop(context);
+          Navigator.pop(context);
+        },
         negativeButtonName: isSingleButton ? null : 'Go Back');
   }
-
 
   @override
   void dispose() async {
     super.dispose();
     commentController.dispose();
 
-    if(_sheetVideoController != null) _sheetVideoController!.dispose();
-    if(_sheetChewieController != null) _sheetChewieController!.dispose();
+    if (_sheetVideoController != null) _sheetVideoController!.dispose();
+    if (_sheetChewieController != null) _sheetChewieController!.dispose();
 
     // if (_trackerVideoPlayerController != null) _trackerVideoPlayerController!.dispose();
   }
@@ -657,32 +650,33 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
     return GestureDetector(
       onTap: checkOnTapCondition(index, listData)
           ? () {
-              print(index);
-              setState(() {
-                showShimmer = true;
-                selectedDay = int.parse(listData[index].dayNumber!);
-                isDayCompleted = listData[index].isCompleted == 1;
-              });
-              print("isDayCompleted: $isDayCompleted");
-              getMeals();
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(
-              //     builder: (context) => MealPlanScreen(
-              //       // day: dayPlansData[index]["day"],
-              //       isCompleted: listData[index].isCompleted == 1 ? true : null,
-              //       day: listData[index].dayNumber!,
-              //       presentDay: model.presentDay.toString(),
-              //       nextDay: nextDay.toString() ?? "-1",
-              //     ),
-              //   ),
-              // );
-            }
+        print(index);
+        setState(() {
+          showShimmer = true;
+          selectedDay = int.parse(listData[index].dayNumber!);
+          isDayCompleted = listData[index].isCompleted == 1;
+          commentController.clear();
+        });
+        print("isDayCompleted: $isDayCompleted");
+        getMeals();
+        // Navigator.push(
+        //   context,
+        //   MaterialPageRoute(
+        //     builder: (context) => MealPlanScreen(
+        //       // day: dayPlansData[index]["day"],
+        //       isCompleted: listData[index].isCompleted == 1 ? true : null,
+        //       day: listData[index].dayNumber!,
+        //       presentDay: model.presentDay.toString(),
+        //       nextDay: nextDay.toString() ?? "-1",
+        //     ),
+        //   ),
+        // );
+      }
           : null,
       child: Opacity(
         opacity: getOpacity(index, listData),
         child: Container(
-            // height: 5.h,
+          // height: 5.h,
             decoration: BoxDecoration(
                 border: Border.all(
                     width: 1, color: MealPlanConstants().dayBorderColor),
@@ -690,12 +684,14 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                   topRight: Radius.circular(15),
                   bottomLeft: Radius.circular(15),
                 ),
-                color: (listData[index].isCompleted == 1)
+                color: (listData[index].dayNumber == selectedDay.toString())
+                    ? kNumberCircleAmber
+                    : (listData[index].isCompleted == 1)
                     ? MealPlanConstants().dayBgSelectedColor
                     : (listData[index].dayNumber == presentDay.toString())
-                        ? MealPlanConstants().dayBgPresentdayColor
-                        : MealPlanConstants().dayBgNormalColor),
-            margin: const EdgeInsets.only(left: 4,top: 5,right: 4),
+                    ? MealPlanConstants().dayBgPresentdayColor
+                    : MealPlanConstants().dayBgNormalColor),
+            margin: const EdgeInsets.only(left: 4, top: 5, right: 4),
             padding: EdgeInsets.symmetric(horizontal: 3.w),
             child: Center(
               child: Text(
@@ -703,17 +699,17 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                     fontSize:
-                        (listData[index].dayNumber == presentDay.toString() ||
-                                listData[index].dayNumber == nextDay.toString())
-                            ? MealPlanConstants().presentDayTextSize
-                            : MealPlanConstants().DisableDayTextSize,
+                    (listData[index].dayNumber == presentDay.toString() ||
+                        listData[index].dayNumber == nextDay.toString())
+                        ? MealPlanConstants().presentDayTextSize
+                        : MealPlanConstants().DisableDayTextSize,
                     fontFamily:
-                        (listData[index].dayNumber == presentDay.toString() ||
-                                listData[index].dayNumber == nextDay.toString())
-                            ? MealPlanConstants().dayTextFontFamily
-                            : MealPlanConstants().dayUnSelectedTextFontFamily,
+                    (listData[index].dayNumber == presentDay.toString() ||
+                        listData[index].dayNumber == nextDay.toString())
+                        ? MealPlanConstants().dayTextFontFamily
+                        : MealPlanConstants().dayUnSelectedTextFontFamily,
                     color: (listData[index].isCompleted == 1 ||
-                            listData[index].dayNumber == presentDay.toString())
+                        listData[index].dayNumber == presentDay.toString())
                         ? MealPlanConstants().dayTextSelectedColor
                         : MealPlanConstants().dayTextColor),
               ),
@@ -809,7 +805,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: EdgeInsets.only(top: 1.h, left: 4.w, right: 4.w),
+          padding: EdgeInsets.only(top: 1.h, left: 3.w, right: 3.w),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -838,7 +834,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                         height: 6.h,
                         child: const Image(
                           image:
-                              AssetImage("assets/images/Gut welness logo.png"),
+                          AssetImage("assets/images/Gut welness logo.png"),
                         ),
                         //SvgPicture.asset("assets/images/splash_screen/Inside Logo.svg"),
                       ),
@@ -905,18 +901,17 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (ctx) => MealPdf(
-                                          pdfLink: planNotePdfLink!,
-                                          heading: "Note",
-                                          isVideoWidgetVisible: false,
-                                          headCircleIcon: bsHeadPinIcon,
-                                          topHeadColor: kBottomSheetHeadGreen,
-                                          isSheetCloseNeeded: true,
-                                          sheetCloseOnTap: () {
-                                            Navigator.pop(context);
-                                          },
-                                        )));
-                          }
-                          else {
+                                      pdfLink: planNotePdfLink!,
+                                      heading: "Note",
+                                      isVideoWidgetVisible: false,
+                                      headCircleIcon: bsHeadPinIcon,
+                                      topHeadColor: kBottomSheetHeadGreen,
+                                      isSheetCloseNeeded: true,
+                                      sheetCloseOnTap: () {
+                                        Navigator.pop(context);
+                                      },
+                                    )));
+                          } else {
                             AppConfig().showSnackbar(
                                 context, "Note Link Not available",
                                 isError: true);
@@ -928,359 +923,243 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                 ],
               ),
               SizedBox(height: 1.h),
-              Text(
-                // "Day ${widget.day} Meal Plan",
-                (selectedDay == null)
-                    ? "Day Meal & Yoga Plan"
-                    : "Day ${selectedDay} Meal & Yoga Plan",
-                style: TextStyle(
-                    fontFamily: eUser().mainHeadingFont,
-                    color: eUser().mainHeadingColor,
-                    fontSize: eUser().mainHeadingFontSize),
-              ),
-              // not showing these when we came from slide screen
               Visibility(
                 visible: !widget.viewDay1Details,
                 child: SizedBox(
-                  height: 1.h,
+                  height: 4.h,
+                  child: EasyScrollToIndex(
+                    controller: _scrollController, // ScrollToIndexController
+                    itemCount: listData.length,
+                    itemWidth: 50,
+                    itemHeight: 4.h,
+                    scrollDirection: Axis.horizontal,
+                    itemBuilder: (BuildContext context, int index) {
+                      return dayItems(index);
+                    },
+                  ),
                 ),
-              ),
-              Visibility(
-                visible: !widget.viewDay1Details,
-                child: SizedBox(
-                    height: 4.h,
-                    child: EasyScrollToIndex(
-                      controller: _scrollController, // ScrollToIndexController
-                      itemCount: listData.length,
-                      itemWidth: 50,
-                      itemHeight: 4.h,
-                      scrollDirection: Axis.horizontal,
-                      itemBuilder: (BuildContext context, int index) {
-                        return dayItems(index);
-                      },
-                    )),
               ),
             ],
           ),
         ),
-        SizedBox(height: 1.h),
+        // SizedBox(height: 1.h),
         Expanded(
           child: (isLoading)
               ? Center(
-                  child: buildCircularIndicator(),
-                )
+            child: buildCircularIndicator(),
+          )
               : (mealPlanData1 != null)
-                  ? SizedBox(
-                      child: SingleChildScrollView(
-                        child: (showShimmer)
-                            ? Shimmer.fromColors(
-                                baseColor: Colors.grey.withOpacity(0.3),
-                                highlightColor: Colors.grey.withOpacity(0.7),
-                                child: IgnorePointer(
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      SizedBox(
-                                        height: 8,
-                                      ),
-                                      // buildNewItemList(),
-                                      // buildNewItemList(),
-                                      // buildNewItemList(),
-                                      // buildNewItemList(),
-                                      // buildNewItemList(),
-                                      //                buildMealPlan(),
-                                      ...groupList(),
-                                      Visibility(
-                                        visible: (statusList.isNotEmpty &&
-                                            statusList.values.any((element) =>
-                                                element
-                                                    .toString()
-                                                    .toLowerCase()
-                                                    .contains('unfollowed'))),
-                                        child: IgnorePointer(
-                                          ignoring: isDayCompleted == true,
-                                          child: Container(
-                                            height: 15.h,
-                                            margin: EdgeInsets.symmetric(
-                                                horizontal: 4.w, vertical: 1.h),
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 3.w),
-                                            decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              borderRadius:
-                                                  BorderRadius.circular(5),
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: Colors.grey
-                                                      .withOpacity(0.3),
-                                                  blurRadius: 20,
-                                                  offset: const Offset(2, 10),
-                                                ),
-                                              ],
-                                            ),
-                                            child: TextFormField(
-                                              controller: commentController,
-                                              cursorColor: gPrimaryColor,
-                                              style: TextStyle(
-                                                  fontFamily: "GothamBook",
-                                                  color: gTextColor,
-                                                  fontSize: 11.sp),
-                                              decoration: InputDecoration(
-                                                suffixIcon: commentController
-                                                            .text.isEmpty ||
-                                                        isDayCompleted != null
-                                                    ? SizedBox()
-                                                    : InkWell(
-                                                        onTap: () {
-                                                          commentController
-                                                              .clear();
-                                                        },
-                                                        child: const Icon(
-                                                          Icons.close,
-                                                          color: gTextColor,
-                                                        ),
-                                                      ),
-                                                hintText: "Comments",
-                                                border: InputBorder.none,
-                                                hintStyle: TextStyle(
-                                                  fontFamily: "GothamBook",
-                                                  color: gTextColor,
-                                                  fontSize: 9.sp,
-                                                ),
-                                              ),
-                                              textInputAction:
-                                                  TextInputAction.next,
-                                              textAlign: TextAlign.start,
-                                              keyboardType:
-                                                  TextInputType.emailAddress,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      Visibility(
-                                        visible: buttonVisibility(),
-                                        child: Center(
-                                          child: GestureDetector(
-                                            onTap: () {
-                                              print(
-                                                  "statusList.length: ${statusList.length}");
-                                              print("lst.length ${lst.length}");
-                                              print('..............');
-                                            },
-                                            child: Container(
-                                              margin: EdgeInsets.symmetric(
-                                                  vertical: 2.h),
-                                              width: btnText.length > 22
-                                                  ? 75.w
-                                                  : 60.w,
-                                              height: 5.h,
-                                              decoration: BoxDecoration(
-                                                color: (statusList.length ==
-                                                        lst.length)
-                                                    ? eUser().buttonColor
-                                                    : tableHeadingBg,
-                                                borderRadius:
-                                                    BorderRadius.circular(eUser()
-                                                        .buttonBorderRadius),
-                                                // border: Border.all(color: eUser().buttonBorderColor,
-                                                //     width: eUser().buttonBorderWidth),
-                                              ),
-                                              child: Center(
-                                                child: Text(
-                                                  btnText,
-                                                  // 'Proceed to Day $proceedToDay',
-                                                  style: TextStyle(
-                                                    fontFamily:
-                                                        eUser().buttonTextFont,
-                                                    color:
-                                                        eUser().buttonTextColor,
-                                                    // color: (statusList.length != lst.length) ? gPrimaryColor : gMainColor,
-                                                    fontSize:
-                                                        eUser().buttonTextSize,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              )
-                            : Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  SizedBox(
-                                    height: 8,
-                                  ),
-                                  // buildNewItemList(),
-                                  // buildNewItemList(),
-                                  // buildNewItemList(),
-                                  // buildNewItemList(),
-                                  // buildNewItemList(),
-                                  //                buildMealPlan(),
-                                  ...groupList(),
-                                  Visibility(
-                                    visible: (statusList.isNotEmpty &&
-                                            statusList.values.any((element) =>
-                                                element
-                                                    .toString()
-                                                    .toLowerCase()
-                                                    .contains('unfollowed'))) ||
-                                        !widget.viewDay1Details,
-                                    child: IgnorePointer(
-                                      ignoring: isDayCompleted == true,
-                                      child: Container(
-                                        height: 15.h,
-                                        margin: EdgeInsets.symmetric(
-                                            horizontal: 4.w, vertical: 1.h),
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 3.w),
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius:
-                                              BorderRadius.circular(5),
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color:
-                                                  Colors.grey.withOpacity(0.3),
-                                              blurRadius: 20,
-                                              offset: const Offset(2, 10),
-                                            ),
-                                          ],
-                                        ),
-                                        child: TextFormField(
-                                          controller: commentController,
-                                          cursorColor: gPrimaryColor,
-                                          style: TextStyle(
-                                              fontFamily: "GothamBook",
-                                              color: gTextColor,
-                                              fontSize: 11.sp),
-                                          decoration: InputDecoration(
-                                            suffixIcon: commentController
-                                                        .text.isEmpty ||
-                                                    isDayCompleted != null
-                                                ? SizedBox()
-                                                : InkWell(
-                                                    onTap: () {
-                                                      commentController.clear();
-                                                    },
-                                                    child: const Icon(
-                                                      Icons.close,
-                                                      color: gTextColor,
-                                                    ),
-                                                  ),
-                                            hintText: "Comments",
-                                            border: InputBorder.none,
-                                            hintStyle: TextStyle(
-                                              fontFamily: "GothamBook",
-                                              color: gTextColor,
-                                              fontSize: 9.sp,
-                                            ),
-                                          ),
-                                          textInputAction: TextInputAction.next,
-                                          textAlign: TextAlign.start,
-                                          keyboardType:
-                                              TextInputType.emailAddress,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  Visibility(
-                                    visible: buttonVisibility(),
-                                    child: Center(
-                                      child: GestureDetector(
-                                        onTap:
-                                            // (){
-                                            //   print("statusList.length: ${statusList.length}");
-                                            //   print("lst.length ${lst.length}");
-                                            //
-                                            // },
-                                            (statusList.length != lst.length)
-                                                ? () => AppConfig().showSnackbar(
-                                                    context,
-                                                    "Please complete the Meal Plan Status",
-                                                    isError: true)
-                                                // : (statusList.values.any((element) => element.toString().toLowerCase() == 'unfollowed') && commentController.text.isEmpty)
-                                                // ? () => AppConfig().showSnackbar(context, "Please Mention the comments why you unfollowed?", isError: true)
-                                                : () {
-                                                    print(
-                                                        "this one $presentDay");
-                                                    for (int i = 0;
-                                                        i < presentDay!;
-                                                        i++) {
-                                                      print(presentDay);
-                                                      if (listData[i]
-                                                                  .isCompleted ==
-                                                              0 &&
-                                                          i + 1 !=
-                                                              selectedDay!) {
-                                                        AppConfig().showSnackbar(
-                                                            context,
-                                                            "Please Complete Day ${listData[i].dayNumber}",
-                                                            isError: true);
-                                                        break;
-                                                      } else if (listData[i]
-                                                              .isCompleted ==
-                                                          1) {
-                                                        print(
-                                                            "completed already");
-                                                      } else if (i + 1 ==
-                                                              presentDay ||
-                                                          i + 1 ==
-                                                              selectedDay) {
-                                                        print(
-                                                            "u can access $presentDay");
-                                                        sendData();
-                                                        break;
-                                                      } else {
-                                                        print(
-                                                            "u r trying else");
-                                                      }
-                                                    }
-                                                  },
-                                        child: Container(
-                                          margin: EdgeInsets.symmetric(
-                                              vertical: 2.h),
-                                          width:
-                                              btnText.length > 22 ? 75.w : 60.w,
-                                          height: 5.h,
-                                          decoration: BoxDecoration(
-                                            color: (statusList.length ==
-                                                    lst.length)
-                                                ? eUser().buttonColor
-                                                : tableHeadingBg,
-                                            borderRadius: BorderRadius.circular(
-                                                eUser().buttonBorderRadius),
-                                            // border: Border.all(color: eUser().buttonBorderColor,
-                                            //     width: eUser().buttonBorderWidth),
-                                          ),
-                                          child: Center(
-                                            child: Text(
-                                              btnText,
-                                              // 'Proceed to Day $proceedToDay',
-                                              style: TextStyle(
-                                                fontFamily:
-                                                    eUser().buttonTextFont,
-                                                color: eUser().buttonTextColor,
-                                                // color: (statusList.length != lst.length) ? gPrimaryColor : gMainColor,
-                                                fontSize:
-                                                    eUser().buttonTextSize,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                      ),
-                    )
-                  : SizedBox.shrink(),
+              ? SizedBox(
+            child: SingleChildScrollView(
+              child: (showShimmer)
+                  ? IgnorePointer(
+                child: mainView()
+              )
+                  : mainView(),
+            ),
+          )
+              : SizedBox.shrink(),
         ),
       ],
+    );
+  }
+
+  mainView(){
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 3.w),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox(height: 2.h),
+          Text(
+            // "Day ${widget.day} Meal Plan",
+            (selectedDay == null)
+                ? "Day Meal & Yoga Plan"
+                : "Day ${selectedDay} Meal & Yoga Plan",
+            style: TextStyle(
+                fontFamily: eUser().mainHeadingFont,
+                color: eUser().mainHeadingColor,
+                fontSize:
+                eUser().mainHeadingFontSize),
+          ),
+          // not showing these when we came from slide screen
+          // Visibility(
+          //   visible: !widget.viewDay1Details,
+          //   child: SizedBox(
+          //     height: 1.h,
+          //   ),
+          // ),
+          SizedBox(height: 1.h),
+          ...groupList(),
+          Visibility(
+            visible: (statusList.isNotEmpty &&
+                statusList.values.any((element) =>
+                    element
+                        .toString()
+                        .toLowerCase()
+                        .contains(
+                        'unfollowed'))) ||
+                !widget.viewDay1Details,
+            child: IgnorePointer(
+              ignoring: isDayCompleted == true,
+              child: Container(
+                height: 15.h,
+                margin: EdgeInsets.symmetric(
+                    horizontal: 0.w, vertical: 1.h),
+                padding: EdgeInsets.symmetric(
+                    horizontal: 3.w),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius:
+                  BorderRadius.circular(5),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey
+                          .withOpacity(0.3),
+                      blurRadius: 20,
+                      offset: const Offset(2, 10),
+                    ),
+                  ],
+                ),
+                child: TextFormField(
+                  controller: commentController,
+                  cursorColor: gPrimaryColor,
+                  style: TextStyle(
+                      fontFamily: "GothamBook",
+                      color: gTextColor,
+                      fontSize: 11.sp),
+                  decoration: InputDecoration(
+                    suffixIcon: commentController
+                        .text.isEmpty ||
+                        isDayCompleted != null
+                        ? SizedBox()
+                        : InkWell(
+                      onTap: () {
+                        commentController
+                            .clear();
+                      },
+                      child: const Icon(
+                        Icons.close,
+                        color: gTextColor,
+                      ),
+                    ),
+                    hintText: "Comments",
+                    border: InputBorder.none,
+                    hintStyle: TextStyle(
+                      fontFamily: "GothamBook",
+                      color: gTextColor,
+                      fontSize: 9.sp,
+                    ),
+                  ),
+                  textInputAction:
+                  TextInputAction.next,
+                  textAlign: TextAlign.start,
+                  keyboardType:
+                  TextInputType.emailAddress,
+                ),
+              ),
+            ),
+          ),
+          Visibility(
+            visible: buttonVisibility(),
+            child: Center(
+              child: IntrinsicWidth(
+                child: GestureDetector(
+                  onTap:
+                  // (){
+                  //   print("statusList.length: ${statusList.length}");
+                  //   print("lst.length ${lst.length}");
+                  //
+                  // },
+                  (statusList.length !=
+                      lst.length)
+                      ? () => AppConfig()
+                      .showSnackbar(context,
+                      "Please complete the Meal Plan Status",
+                      isError: true)
+                  // : (statusList.values.any((element) => element.toString().toLowerCase() == 'unfollowed') && commentController.text.isEmpty)
+                  // ? () => AppConfig().showSnackbar(context, "Please Mention the comments why you unfollowed?", isError: true)
+                      : () {
+                    print(
+                        "this one $presentDay");
+                    for (int i = 0;
+                    i < presentDay!;
+                    i++) {
+                      print(presentDay);
+                      if (listData[i]
+                          .isCompleted ==
+                          0 &&
+                          i + 1 !=
+                              selectedDay!) {
+                        AppConfig()
+                            .showSnackbar(
+                            context,
+                            "Please Complete Day ${listData[i].dayNumber}",
+                            isError:
+                            true);
+                        break;
+                      } else if (listData[i]
+                          .isCompleted ==
+                          1) {
+                        print(
+                            "completed already");
+                      } else if (i + 1 ==
+                          presentDay ||
+                          i + 1 ==
+                              selectedDay) {
+                        print(
+                            "u can access $presentDay");
+                        sendData();
+                        break;
+                      } else {
+                        print(
+                            "u r trying else");
+                      }
+                    }
+                  },
+                  child: Container(
+                    margin: EdgeInsets.symmetric(
+                        vertical: 2.h),
+                    padding: EdgeInsets.symmetric(
+                        horizontal: 10.w,
+                        vertical: 1.h),
+                    // width:
+                    //     btnText.length > 22 ? 75.w : 60.w,
+                    // height: 5.h,
+                    decoration: BoxDecoration(
+                      color: (statusList.length ==
+                          lst.length)
+                          ? eUser().buttonColor
+                          : tableHeadingBg,
+                      borderRadius: BorderRadius
+                          .circular(eUser()
+                          .buttonBorderRadius),
+                      // border: Border.all(color: eUser().buttonBorderColor,
+                      //     width: eUser().buttonBorderWidth),
+                    ),
+                    child: Center(
+                      child: Text(
+                        btnText,
+                        // 'Proceed to Day $proceedToDay',
+                        style: TextStyle(
+                          fontFamily:
+                          eUser().buttonTextFont,
+                          color:
+                          eUser().buttonTextColor,
+                          // color: (statusList.length != lst.length) ? gPrimaryColor : gMainColor,
+                          fontSize:
+                          eUser().buttonTextSize,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -1290,50 +1169,52 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
       backgroundWidget: backgroundWidgetForPIP(),
       pipWidget: isEnabled
           ? Consumer<CheckState>(
-              builder: (_, model, __) {
-                Wakelock.enable();
-                print("model.isChanged: ${model.isChanged} $isEnabled");
-                if (model.isChanged) {}
-                return Container(
-                  color: Colors.black,
-                  child: Center(child: Chewie(controller: _yogaChewieController!,
-                  )),
-                );
-                // return VlcPlayerWithControls(
-                //   key: _key,
-                //   controller: _controller!,
-                //   showVolume: false,
-                //   showVideoProgress: !model.isChanged,
-                //   seekButtonIconSize: 10.sp,
-                //   playButtonIconSize: 14.sp,
-                //   replayButtonSize: 14.sp,
-                //   showFullscreenBtn: true,
-                // );
-              },
-            )
-          //     ? FutureBuilder(
-          //   future: _initializeVideoPlayerFuture,
-          //   builder: (context, snapshot) {
-          //     if (snapshot.connectionState == ConnectionState.done) {
-          //       // If the VideoPlayerController has finished initialization, use
-          //       // the data it provides to limit the aspect ratio of the video.
-          //       return VlcPlayer(
-          //         controller: _videoPlayerController,
-          //         aspectRatio: 16 / 9,
-          //         placeholder: Center(child: CircularProgressIndicator()),
-          //       );
-          //     } else {
-          //       // If the VideoPlayerController is still initializing, show a
-          //       // loading spinner.
-          //       return const Center(
-          //         child: CircularProgressIndicator(),
-          //       );
-          //     }
-          //   },
-          // )
-          //     ? Container(
-          //   color: Colors.pink,
-          // )
+        builder: (_, model, __) {
+          Wakelock.enable();
+          print("model.isChanged: ${model.isChanged} $isEnabled");
+          if (model.isChanged) {}
+          return Container(
+            color: Colors.black,
+            child: Center(
+                child: Chewie(
+                  controller: _yogaChewieController!,
+                )),
+          );
+          // return VlcPlayerWithControls(
+          //   key: _key,
+          //   controller: _controller!,
+          //   showVolume: false,
+          //   showVideoProgress: !model.isChanged,
+          //   seekButtonIconSize: 10.sp,
+          //   playButtonIconSize: 14.sp,
+          //   replayButtonSize: 14.sp,
+          //   showFullscreenBtn: true,
+          // );
+        },
+      )
+      //     ? FutureBuilder(
+      //   future: _initializeVideoPlayerFuture,
+      //   builder: (context, snapshot) {
+      //     if (snapshot.connectionState == ConnectionState.done) {
+      //       // If the VideoPlayerController has finished initialization, use
+      //       // the data it provides to limit the aspect ratio of the video.
+      //       return VlcPlayer(
+      //         controller: _videoPlayerController,
+      //         aspectRatio: 16 / 9,
+      //         placeholder: Center(child: CircularProgressIndicator()),
+      //       );
+      //     } else {
+      //       // If the VideoPlayerController is still initializing, show a
+      //       // loading spinner.
+      //       return const Center(
+      //         child: CircularProgressIndicator(),
+      //       );
+      //     }
+      //   },
+      // )
+      //     ? Container(
+      //   color: Colors.pink,
+      // )
           : const SizedBox(),
       pipEnabled: isEnabled,
       pipExpandedHeight: double.infinity,
@@ -1346,8 +1227,8 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
         if (await Wakelock.enabled) {
           Wakelock.disable();
         }
-        if(_yogaVideoController != null) _yogaVideoController!.dispose();
-        if(_yogaChewieController != null) _yogaChewieController!.dispose();
+        if (_yogaVideoController != null) _yogaVideoController!.dispose();
+        if (_yogaChewieController != null) _yogaChewieController!.dispose();
 
         // if (_trackerVideoPlayerController != null) _trackerVideoPlayerController!.stop();
       },
@@ -1387,8 +1268,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(8), topRight: Radius.circular(8)),
-                color: tableHeadingBg
-                ),
+                color: tableHeadingBg),
             // child: Row(
             //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
             //   children: [
@@ -1488,7 +1368,9 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+            padding: const EdgeInsets.symmetric(
+              vertical: 8,
+            ),
             child: Text(
               dayTime,
               style: TextStyle(
@@ -1500,386 +1382,374 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
             ),
           ),
           ...value
-              .map((e) => Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: Column(
+              .map((e) => Column(
+            children: [
+              Container(
+                height: 120,
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 6, vertical: 2),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Stack(
+                      clipBehavior: Clip.none,
                       children: [
-                        Container(
-                          height: 120,
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 6, vertical: 2),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Stack(
-                                clipBehavior: Clip.none,
-                                children: [
-                                  (value.indexOf(e) == 0) &&
-                                          mealPlanData1.values
-                                                  .toList()
-                                                  .indexWhere((element) =>
-                                                      element == value) ==
-                                              1
-                                      ? SimpleTooltip(
-                                          borderColor: gWhiteColor,
-                                          maxWidth: 50.w,
-                                          ballonPadding: EdgeInsets.symmetric(
-                                              horizontal: 1.w, vertical: 0.5.h),
-                                          arrowTipDistance: -10,
-                                          arrowLength: 10,
-                                          arrowBaseWidth: 10,
-                                          // targetCenter: const Offset(3,4),
-                                          tooltipTap: () {
-                                            setState(() {
-                                              showToolTip = false;
-                                            });
-                                          },
-                                          animationDuration:
-                                              const Duration(seconds: 3),
-                                          show: showToolTip,
-                                          tooltipDirection: TooltipDirection.up,
-                                          child: Align(
-                                            alignment: Alignment.center,
-                                            child: GestureDetector(
-                                              onTap:
-                                                  // e.url == null
-                                                  //     ? null
-                                                  //     :
-                                                  e.type == 'item'
-                                                      ? (e.howToPrepare == null)
-                                                          ? () {
-                                                              AppConfig().showSnackbar(
-                                                                  context,
-                                                                  "No Recipe Found",
-                                                                  isError: true,
-                                                                  bottomPadding:
-                                                                      10);
-                                                            }
-                                                          : () {
-                                                              setState(() {
-                                                                showToolTip =
-                                                                    false;
-                                                              });
-                                                              Navigator.push(
-                                                                context,
-                                                                MaterialPageRoute(
-                                                                  builder:
-                                                                      (context) =>
-                                                                          MealPlanRecipeDetails(
-                                                                    mealPlanRecipe:
-                                                                        e,
-                                                                    isFromProgram:
-                                                                        true,
-                                                                  ),
-                                                                ),
-                                                              );
-                                                            }
-                                                      : () => showVideo(e),
-                                              child: Container(
-                                                height: 90,
-                                                width: 90,
-                                                decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(15),
-                                                ),
-                                                child: (e.itemImage != null &&
-                                                        e.itemImage!.isNotEmpty)
-                                                    ? ClipRRect(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(15),
-                                                        child:
-                                                            CachedNetworkImage(
-                                                          imageUrl:
-                                                              e.itemImage!,
-                                                          errorWidget:
-                                                              (ctx, _, __) {
-                                                            return Image.asset(
-                                                              'assets/images/meal_placeholder.png',
-                                                              fit: BoxFit.fill,
-                                                            );
-                                                          },
-                                                          fit: BoxFit.fill,
-                                                        ),
-                                                      )
-                                                    : ClipRRect(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(15),
-                                                        child: Image.asset(
-                                                          'assets/images/meal_placeholder.png',
-                                                          fit: BoxFit.fill,
-                                                        ),
-                                                      ),
-                                              ),
-                                            ),
-                                          ),
-                                          content: Text(
-                                            "Tap here for Recipe",
-                                            style: TextStyle(
-                                                fontSize: PPConstants()
-                                                    .topViewSubFontSize,
-                                                fontFamily: MealPlanConstants()
-                                                    .mealNameFont,
-                                                color: gHintTextColor),
-                                          ),
-                                        )
-                                      : Align(
-                                          alignment: Alignment.center,
-                                          child: GestureDetector(
-                                            onTap: e.type == 'item'
-                                                ? (e.howToPrepare == null)
-                                                    ? () {
-                                              AppConfig().showSnackbar(
-                                                  context,
-                                                  "No Recipe Found",
-                                                  isError: true,
-                                                  bottomPadding:
-                                                  10);
-                                            }
-                                                    : () {
-                                                        setState(() {
-                                                          showToolTip = false;
-                                                        });
-                                                        Navigator.push(
-                                                          context,
-                                                          MaterialPageRoute(
-                                                            builder: (context) =>
-                                                                MealPlanRecipeDetails(
-                                                              mealPlanRecipe: e,
-                                                              isFromProgram:
-                                                                  true,
-                                                            ),
-                                                          ),
-                                                        );
-                                                      }
-                                                : () => showVideo(e),
-                                            child: Container(
-                                              height: 90,
-                                              width: 90,
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(15),
-                                              ),
-                                              child: (e.itemImage != null &&
-                                                      e.itemImage!.isNotEmpty)
-                                                  ? ClipRRect(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              15),
-                                                      child: CachedNetworkImage(
-                                                        imageUrl: e.itemImage!,
-                                                        errorWidget:
-                                                            (ctx, _, __) {
-                                                          return Image.asset(
-                                                            'assets/images/meal_placeholder.png',
-                                                            fit: BoxFit.fill,
-                                                          );
-                                                        },
-                                                        fit: BoxFit.fill,
-                                                      ),
-                                                    )
-                                                  : ClipRRect(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              15),
-                                                      child: Image.asset(
-                                                        'assets/images/meal_placeholder.png',
-                                                        fit: BoxFit.fill,
-                                                      ),
-                                                    ),
-                                            ),
-                                          ),
+                        (value.indexOf(e) == 0) &&
+                            mealPlanData1.values
+                                .toList()
+                                .indexWhere((element) =>
+                            element == value) ==
+                                1
+                            ? SimpleTooltip(
+                          borderColor: gWhiteColor,
+                          maxWidth: 50.w,
+                          ballonPadding: EdgeInsets.symmetric(
+                              horizontal: 1.w, vertical: 0.5.h),
+                          arrowTipDistance: -10,
+                          arrowLength: 10,
+                          arrowBaseWidth: 10,
+                          // targetCenter: const Offset(3,4),
+                          tooltipTap: () {
+                            setState(() {
+                              showToolTip = false;
+                            });
+                          },
+                          animationDuration:
+                          const Duration(seconds: 3),
+                          show: showToolTip,
+                          tooltipDirection: TooltipDirection.up,
+                          child: Align(
+                            alignment: Alignment.center,
+                            child: GestureDetector(
+                              onTap:
+                              // e.url == null
+                              //     ? null
+                              //     :
+                              e.type == 'item'
+                                  ? (e.howToPrepare == null)
+                                  ? () {
+                                AppConfig().showSnackbar(
+                                    context,
+                                    "No Recipe Found",
+                                    isError: true,
+                                    bottomPadding:
+                                    10);
+                              }
+                                  : () {
+                                setState(() {
+                                  showToolTip =
+                                  false;
+                                });
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder:
+                                        (context) =>
+                                        MealPlanRecipeDetails(
+                                          mealPlanRecipe:
+                                          e,
+                                          isFromProgram:
+                                          true,
                                         ),
-                                ],
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Column(
-                                  // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Visibility(
-                                      visible: e.subTitle != null ||
-                                          e.subTitle!.isNotEmpty,
-                                      child: Text(
-                                        e.subTitle ?? "* Must Have",
-                                        style: TextStyle(
-                                          fontSize: MealPlanConstants()
-                                              .mustHaveFontSize,
-                                          fontFamily:
-                                              MealPlanConstants().mustHaveFont,
-                                          color: MealPlanConstants()
-                                              .mustHaveTextColor,
-                                        ),
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      height: 5,
-                                    ),
-                                    Text(
-                                      e.name ?? 'Morning Yoga',
-                                      style: TextStyle(
-                                          fontSize: MealPlanConstants()
-                                              .mealNameFontSize,
-                                          fontFamily:
-                                              MealPlanConstants().mealNameFont,
-                                          color: gHintTextColor),
-                                    ),
-                                    // Text(e.mealTime ?? "B/W 6-8am",
-                                    //   style: TextStyle(
-                                    //       fontSize: 9.sp,
-                                    //       fontFamily: kFontMedium
-                                    //   ),
-                                    // ),
-                                    // SizedBox(
-                                    //   height: 8,
-                                    // ),
-                                    Expanded(
-                                      child: Text(
-                                        e.benefits!.replaceAll("* ", '\n') ??
-                                            '',
-                                        // "- Good for Health and super food\n\n- Good for Health and super food\n\n- Good for Health and super food\n\n- Very Effective and quick recipe,\n\n- Ready To Cook",
-                                        style: TextStyle(
-                                            fontSize: MealPlanConstants()
-                                                .benifitsFontSize,
-                                            fontFamily: MealPlanConstants()
-                                                .benifitsFont),
-                                        overflow: TextOverflow.visible,
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      height: 4,
-                                    ),
-                                  ],
+                                  ),
+                                );
+                              }
+                                  : () => showVideo(e),
+                              child: Container(
+                                height: 90,
+                                width: 90,
+                                decoration: BoxDecoration(
+                                  borderRadius:
+                                  BorderRadius.circular(15),
+                                ),
+                                child: (e.itemImage != null &&
+                                    e.itemImage!.isNotEmpty)
+                                    ? ClipRRect(
+                                  borderRadius:
+                                  BorderRadius.circular(
+                                      15),
+                                  child: CachedNetworkImage(
+                                    imageUrl: e.itemImage!,
+                                    errorWidget:
+                                        (ctx, _, __) {
+                                      return Image.asset(
+                                        'assets/images/meal_placeholder.png',
+                                        fit: BoxFit.fill,
+                                      );
+                                    },
+                                    fit: BoxFit.fill,
+                                  ),
+                                )
+                                    : ClipRRect(
+                                  borderRadius:
+                                  BorderRadius.circular(
+                                      15),
+                                  child: Image.asset(
+                                    'assets/images/meal_placeholder.png',
+                                    fit: BoxFit.fill,
+                                  ),
                                 ),
                               ),
-                              Visibility(
-                                visible: !widget.viewDay1Details,
-                                child: GestureDetector(
-                                  onTap: () {
-                                    print(
-                                      value.indexWhere((element) {
-                                        print(element.name);
-                                        print(e.name);
-                                        return element.name == e.name;
-                                      }),
+                            ),
+                          ),
+                          content: Text(
+                            "Tap here for Recipe",
+                            style: TextStyle(
+                                fontSize: PPConstants()
+                                    .topViewSubFontSize,
+                                fontFamily: MealPlanConstants()
+                                    .mealNameFont,
+                                color: gHintTextColor),
+                          ),
+                        )
+                            : Align(
+                          alignment: Alignment.center,
+                          child: GestureDetector(
+                            onTap: e.type == 'item'
+                                ? (e.howToPrepare == null)
+                                ? () {
+                              AppConfig().showSnackbar(
+                                  context,
+                                  "No Recipe Found",
+                                  isError: true,
+                                  bottomPadding: 10);
+                            }
+                                : () {
+                              setState(() {
+                                showToolTip = false;
+                              });
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      MealPlanRecipeDetails(
+                                        mealPlanRecipe: e,
+                                        isFromProgram: true,
+                                      ),
+                                ),
+                              );
+                            }
+                                : () => showVideo(e),
+                            child: Container(
+                              height: 90,
+                              width: 90,
+                              decoration: BoxDecoration(
+                                borderRadius:
+                                BorderRadius.circular(15),
+                              ),
+                              child: (e.itemImage != null &&
+                                  e.itemImage!.isNotEmpty)
+                                  ? ClipRRect(
+                                borderRadius:
+                                BorderRadius.circular(
+                                    15),
+                                child: CachedNetworkImage(
+                                  imageUrl: e.itemImage!,
+                                  errorWidget:
+                                      (ctx, _, __) {
+                                    return Image.asset(
+                                      'assets/images/meal_placeholder.png',
+                                      fit: BoxFit.fill,
                                     );
-                                    showFollowedSheet(e);
-                                    // openAlertBox(
-                                    //     title: 'Did you Follow this?',
-                                    //     titleNeeded: true,
-                                    //     context: context,
-                                    //     isContentNeeded: false,
-                                    //     positiveButtonName: 'Followed',
-                                    //     positiveButton: () {
-                                    //       onChangedTab(0,
-                                    //           id: e.itemId, title: list[0]);
-                                    //       Navigator.pop(context);
-                                    //     },
-                                    //     negativeButtonName: 'Missed It',
-                                    //     negativeButton: () {
-                                    //       onChangedTab(0,
-                                    //           id: e.itemId, title: list[1]);
-                                    //       Navigator.pop(context);
-                                    //     });
                                   },
-                                  child: (statusList.isNotEmpty &&
-                                          statusList.containsKey(e.itemId) &&
-                                          statusList[e.itemId] == list[0])
-                                      ? Align(
-                                          alignment: Alignment.topCenter,
-                                          child: Container(
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 6, vertical: 4),
-                                            decoration: BoxDecoration(
-                                                borderRadius: BorderRadius
-                                                    .circular(eUser()
-                                                        .buttonBorderRadius),
-                                                color: gPrimaryColor),
-                                            child: Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                Text(
-                                                  'Followed',
-                                                  style: TextStyle(
-                                                      fontSize: 8.sp,
-                                                      fontFamily: kFontMedium,
-                                                      color: gWhiteColor),
-                                                ),
-                                                Image.asset(
-                                                  'assets/images/followed2.png',
-                                                  width: 20,
-                                                  height: 20,
-                                                )
-                                              ],
-                                            ),
-                                          ),
-                                        )
-                                      : (statusList.isNotEmpty &&
-                                              statusList
-                                                  .containsKey(e.itemId) &&
-                                              statusList[e.itemId] == list[1])
-                                          ? Align(
-                                              alignment: Alignment.topCenter,
-                                              child: Container(
-                                                padding: EdgeInsets.symmetric(
-                                                    horizontal: 6, vertical: 4),
-                                                decoration: BoxDecoration(
-                                                    borderRadius: BorderRadius
-                                                        .circular(eUser()
-                                                            .buttonBorderRadius),
-                                                    color: gsecondaryColor),
-                                                child: Row(
-                                                  mainAxisSize:
-                                                      MainAxisSize.min,
-                                                  children: [
-                                                    Text(
-                                                      'Missed It',
-                                                      style: TextStyle(
-                                                          fontSize: 8.sp,
-                                                          fontFamily:
-                                                              kFontMedium,
-                                                          color: gWhiteColor),
-                                                    ),
-                                                    Image.asset(
-                                                      'assets/images/unfollowed.png',
-                                                      width: 20,
-                                                      height: 20,
-                                                    )
-                                                  ],
-                                                ),
-                                              ),
-                                            )
-                                          : Align(
-                                              alignment: Alignment.bottomCenter,
-                                              child: Container(
-                                                padding: EdgeInsets.symmetric(
-                                                    horizontal: 10,
-                                                    vertical: 8),
-                                                decoration: BoxDecoration(
-                                                    borderRadius: BorderRadius
-                                                        .circular(eUser()
-                                                            .buttonBorderRadius),
-                                                    color: Colors.grey),
-                                                child: Text(
-                                                  'Status',
-                                                  style: TextStyle(
-                                                      fontSize: 8.sp,
-                                                      fontFamily: kFontMedium,
-                                                      color: gWhiteColor),
-                                                ),
-                                              ),
-                                            ),
+                                  fit: BoxFit.fill,
+                                ),
+                              )
+                                  : ClipRRect(
+                                borderRadius:
+                                BorderRadius.circular(
+                                    15),
+                                child: Image.asset(
+                                  'assets/images/meal_placeholder.png',
+                                  fit: BoxFit.fill,
                                 ),
                               ),
-                            ],
+                            ),
                           ),
                         ),
-                        Divider()
                       ],
                     ),
-                  ))
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Column(
+                        // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Visibility(
+                            visible: e.subTitle != null ||
+                                e.subTitle!.isNotEmpty,
+                            child: Text(
+                              e.subTitle ?? "* Must Have",
+                              style: TextStyle(
+                                fontSize: MealPlanConstants()
+                                    .mustHaveFontSize,
+                                fontFamily:
+                                MealPlanConstants().mustHaveFont,
+                                color: MealPlanConstants()
+                                    .mustHaveTextColor,
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 5,
+                          ),
+                          Text(
+                            e.name ?? 'Morning Yoga',
+                            style: TextStyle(
+                                fontSize: MealPlanConstants()
+                                    .mealNameFontSize,
+                                fontFamily:
+                                MealPlanConstants().mealNameFont,
+                                color: gHintTextColor),
+                          ),
+                          // Text(e.mealTime ?? "B/W 6-8am",
+                          //   style: TextStyle(
+                          //       fontSize: 9.sp,
+                          //       fontFamily: kFontMedium
+                          //   ),
+                          // ),
+                          // SizedBox(
+                          //   height: 8,
+                          // ),
+                          Expanded(
+                            child: Text(
+                              e.benefits!.replaceAll("* ", '\n') ?? '',
+                              // "- Good for Health and super food\n\n- Good for Health and super food\n\n- Good for Health and super food\n\n- Very Effective and quick recipe,\n\n- Ready To Cook",
+                              style: TextStyle(
+                                  fontSize: MealPlanConstants()
+                                      .benifitsFontSize,
+                                  fontFamily:
+                                  MealPlanConstants().benifitsFont),
+                              overflow: TextOverflow.visible,
+                            ),
+                          ),
+                          SizedBox(
+                            height: 4,
+                          ),
+                        ],
+                      ),
+                    ),
+                    Visibility(
+                      visible: !widget.viewDay1Details,
+                      child: GestureDetector(
+                        onTap: (isDayCompleted != null && isDayCompleted == true) ? null : () {
+                          print(
+                            value.indexWhere((element) {
+                              print(element.name);
+                              print(e.name);
+                              return element.name == e.name;
+                            }),
+                          );
+                          showFollowedSheet(e);
+                          // openAlertBox(
+                          //     title: 'Did you Follow this?',
+                          //     titleNeeded: true,
+                          //     context: context,
+                          //     isContentNeeded: false,
+                          //     positiveButtonName: 'Followed',
+                          //     positiveButton: () {
+                          //       onChangedTab(0,
+                          //           id: e.itemId, title: list[0]);
+                          //       Navigator.pop(context);
+                          //     },
+                          //     negativeButtonName: 'Missed It',
+                          //     negativeButton: () {
+                          //       onChangedTab(0,
+                          //           id: e.itemId, title: list[1]);
+                          //       Navigator.pop(context);
+                          //     });
+                        },
+                        child: (statusList.isNotEmpty &&
+                            statusList.containsKey(e.itemId) &&
+                            statusList[e.itemId] == list[0])
+                            ? Align(
+                          alignment: Alignment.topCenter,
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 6, vertical: 4),
+                            decoration: BoxDecoration(
+                                borderRadius:
+                                BorderRadius.circular(eUser()
+                                    .buttonBorderRadius),
+                                color: gPrimaryColor),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  'Followed',
+                                  style: TextStyle(
+                                      fontSize: 8.sp,
+                                      fontFamily: kFontMedium,
+                                      color: gWhiteColor),
+                                ),
+                                Image.asset(
+                                  'assets/images/followed2.png',
+                                  width: 20,
+                                  height: 20,
+                                )
+                              ],
+                            ),
+                          ),
+                        )
+                            : (statusList.isNotEmpty &&
+                            statusList.containsKey(e.itemId) &&
+                            statusList[e.itemId] == list[1])
+                            ? Align(
+                          alignment: Alignment.topCenter,
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 6, vertical: 4),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius
+                                    .circular(eUser()
+                                    .buttonBorderRadius),
+                                color: gsecondaryColor),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  'Missed It',
+                                  style: TextStyle(
+                                      fontSize: 8.sp,
+                                      fontFamily: kFontMedium,
+                                      color: gWhiteColor),
+                                ),
+                                Image.asset(
+                                  'assets/images/unfollowed.png',
+                                  width: 20,
+                                  height: 20,
+                                )
+                              ],
+                            ),
+                          ),
+                        )
+                            : Align(
+                          alignment: Alignment.bottomCenter,
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 8),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius
+                                    .circular(eUser()
+                                    .buttonBorderRadius),
+                                color: Colors.grey),
+                            child: Text(
+                              'Status',
+                              style: TextStyle(
+                                  fontSize: 8.sp,
+                                  fontFamily: kFontMedium,
+                                  color: gWhiteColor),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Divider()
+            ],
+          ))
               .toList(),
         ],
       ));
@@ -1893,8 +1763,8 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
         bottomSheetHeight: 45.h,
         circleIcon: bsHeadPinIcon,
         isSheetCloseNeeded: true, sheetCloseOnTap: () {
-      Navigator.pop(context);
-    });
+          Navigator.pop(context);
+        });
   }
 
   showFollowWidget(ChildMealPlanDetailsModel e) {
@@ -1944,7 +1814,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
               },
               child: Container(
                 padding:
-                    EdgeInsets.symmetric(vertical: 1.2.h, horizontal: 10.w),
+                EdgeInsets.symmetric(vertical: 1.2.h, horizontal: 10.w),
                 decoration: BoxDecoration(
                     color: gsecondaryColor,
                     border: Border.all(color: kLineColor, width: 0.5),
@@ -1967,7 +1837,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
               },
               child: Container(
                 padding:
-                    EdgeInsets.symmetric(vertical: 1.2.h, horizontal: 10.w),
+                EdgeInsets.symmetric(vertical: 1.2.h, horizontal: 10.w),
                 decoration: BoxDecoration(
                     color: gPrimaryColor,
                     border: Border.all(color: kLineColor, width: 0.5),
@@ -2010,13 +1880,13 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
               children: [
                 'e.type' == 'yoga'
                     ? GestureDetector(
-                        onTap: () {},
-                        child: Image(
-                          image: const AssetImage(
-                              "assets/images/noun-play-1832840.png"),
-                          height: 2.h,
-                        ),
-                      )
+                  onTap: () {},
+                  child: Image(
+                    image: const AssetImage(
+                        "assets/images/noun-play-1832840.png"),
+                    height: 2.h,
+                  ),
+                )
                     : const SizedBox(),
                 if ('e.type ' == 'yoga') SizedBox(width: 2.w),
                 Expanded(
@@ -2039,23 +1909,23 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
           placeholder: true,
         ),
         DataCell(
-            // (widget.isCompleted == null) ?
+          // (widget.isCompleted == null) ?
             Theme(
-          data: Theme.of(context).copyWith(
-            highlightColor: Colors.transparent,
-            splashColor: Colors.transparent,
-          ),
-          child: oldPopup(e.value.first),
-        )
-            // : Text(e.status ?? '',
-            //     textAlign: TextAlign.start,
-            //     style: TextStyle(
-            //       fontFamily: "GothamBook",
-            //       color: gTextColor,
-            //       fontSize: 8.sp,
-            //     ),
-            //   ),
-            ),
+              data: Theme.of(context).copyWith(
+                highlightColor: Colors.transparent,
+                splashColor: Colors.transparent,
+              ),
+              child: oldPopup(e.value.first),
+            )
+          // : Text(e.status ?? '',
+          //     textAlign: TextAlign.start,
+          //     style: TextStyle(
+          //       fontFamily: "GothamBook",
+          //       color: gTextColor,
+          //       fontSize: 8.sp,
+          //     ),
+          //   ),
+        ),
         // DataCell(
         //   Text(
         //     e.key.toString(),
@@ -2138,77 +2008,77 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
     });
     return shoppingData!
         .map((e) => DataRow(
-              cells: [
-                DataCell(
-                  Text(
-                    e.mealTime.toString(),
+      cells: [
+        DataCell(
+          Text(
+            e.mealTime.toString(),
+            style: TextStyle(
+              height: 1.5,
+              color: gTextColor,
+              fontSize: 8.sp,
+              fontFamily: "GothamBold",
+            ),
+          ),
+        ),
+        DataCell(
+          GestureDetector(
+            onTap: e.url == null
+                ? null
+                : e.type == 'item'
+                ? () => showPdf(e.url!, e.name)
+                : () => showVideo(e),
+            child: Row(
+              children: [
+                e.type == 'yoga'
+                    ? GestureDetector(
+                  onTap: () {},
+                  child: Image(
+                    image: const AssetImage(
+                        "assets/images/noun-play-1832840.png"),
+                    height: 2.h,
+                  ),
+                )
+                    : const SizedBox(),
+                if (e.type == 'yoga') SizedBox(width: 2.w),
+                Expanded(
+                  child: Text(
+                    " ${e.name.toString()}",
+                    maxLines: 3,
+                    textAlign: TextAlign.start,
+                    overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       height: 1.5,
                       color: gTextColor,
                       fontSize: 8.sp,
-                      fontFamily: "GothamBold",
+                      fontFamily: "GothamBook",
                     ),
                   ),
                 ),
-                DataCell(
-                  GestureDetector(
-                    onTap: e.url == null
-                        ? null
-                        : e.type == 'item'
-                            ? () => showPdf(e.url!, e.name)
-                            : () => showVideo(e),
-                    child: Row(
-                      children: [
-                        e.type == 'yoga'
-                            ? GestureDetector(
-                                onTap: () {},
-                                child: Image(
-                                  image: const AssetImage(
-                                      "assets/images/noun-play-1832840.png"),
-                                  height: 2.h,
-                                ),
-                              )
-                            : const SizedBox(),
-                        if (e.type == 'yoga') SizedBox(width: 2.w),
-                        Expanded(
-                          child: Text(
-                            " ${e.name.toString()}",
-                            maxLines: 3,
-                            textAlign: TextAlign.start,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              height: 1.5,
-                              color: gTextColor,
-                              fontSize: 8.sp,
-                              fontFamily: "GothamBook",
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  placeholder: true,
-                ),
-                DataCell(
-                    // (widget.isCompleted == null) ?
-                    Theme(
-                  data: Theme.of(context).copyWith(
-                    highlightColor: Colors.transparent,
-                    splashColor: Colors.transparent,
-                  ),
-                  child: oldPopup(e),
-                )
-                    // : Text(e.status ?? '',
-                    //     textAlign: TextAlign.start,
-                    //     style: TextStyle(
-                    //       fontFamily: "GothamBook",
-                    //       color: gTextColor,
-                    //       fontSize: 8.sp,
-                    //     ),
-                    //   ),
-                    ),
               ],
-            ))
+            ),
+          ),
+          placeholder: true,
+        ),
+        DataCell(
+          // (widget.isCompleted == null) ?
+            Theme(
+              data: Theme.of(context).copyWith(
+                highlightColor: Colors.transparent,
+                splashColor: Colors.transparent,
+              ),
+              child: oldPopup(e),
+            )
+          // : Text(e.status ?? '',
+          //     textAlign: TextAlign.start,
+          //     style: TextStyle(
+          //       fontFamily: "GothamBook",
+          //       color: gTextColor,
+          //       fontSize: 8.sp,
+          //     ),
+          //   ),
+        ),
+      ],
+    ))
         .toList();
   }
 
@@ -2235,73 +2105,73 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
             children: [
               ...value
                   .map((e) => GestureDetector(
-                        onTap: e.url == null
-                            ? null
-                            : e.type == 'item'
-                                ? () => showPdf(e.url!, e.name)
-                                : () => showVideo(e),
-                        child: Row(
-                          children: [
-                            e.type == 'yoga'
-                                ? GestureDetector(
-                                    onTap: () {},
-                                    child: Image(
-                                      image: const AssetImage(
-                                          "assets/images/noun-play-1832840.png"),
-                                      height: 2.h,
-                                    ),
-                                  )
-                                : const SizedBox(),
-                            if (e.type == 'yoga') SizedBox(width: 2.w),
-                            Expanded(
-                              child: Text(
-                                " ${e.name.toString()}",
-                                maxLines: 3,
-                                textAlign: TextAlign.start,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  height: 1.5,
-                                  color: gTextColor,
-                                  fontSize: 8.sp,
-                                  fontFamily: kFontMedium,
-                                ),
-                              ),
-                            ),
-                          ],
+                onTap: e.url == null
+                    ? null
+                    : e.type == 'item'
+                    ? () => showPdf(e.url!, e.name)
+                    : () => showVideo(e),
+                child: Row(
+                  children: [
+                    e.type == 'yoga'
+                        ? GestureDetector(
+                      onTap: () {},
+                      child: Image(
+                        image: const AssetImage(
+                            "assets/images/noun-play-1832840.png"),
+                        height: 2.h,
+                      ),
+                    )
+                        : const SizedBox(),
+                    if (e.type == 'yoga') SizedBox(width: 2.w),
+                    Expanded(
+                      child: Text(
+                        " ${e.name.toString()}",
+                        maxLines: 3,
+                        textAlign: TextAlign.start,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          height: 1.5,
+                          color: gTextColor,
+                          fontSize: 8.sp,
+                          fontFamily: kFontMedium,
                         ),
-                      ))
+                      ),
+                    ),
+                  ],
+                ),
+              ))
                   .toList()
             ],
           ),
           placeholder: true,
         ),
         DataCell(
-            // (widget.isCompleted == null) ?
+          // (widget.isCompleted == null) ?
             Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          // shrinkWrap: true,
-          children: [
-            ...value.map((e) {
-              return Theme(
-                data: Theme.of(context).copyWith(
-                  highlightColor: Colors.transparent,
-                  splashColor: Colors.transparent,
-                ),
-                child: oldPopup(e),
-              );
-            }).toList()
-          ],
-        )
-            // : Text(e.status ?? '',
-            //     textAlign: TextAlign.start,
-            //     style: TextStyle(
-            //       fontFamily: "GothamBook",
-            //       color: gTextColor,
-            //       fontSize: 8.sp,
-            //     ),
-            //   ),
-            ),
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              // shrinkWrap: true,
+              children: [
+                ...value.map((e) {
+                  return Theme(
+                    data: Theme.of(context).copyWith(
+                      highlightColor: Colors.transparent,
+                      splashColor: Colors.transparent,
+                    ),
+                    child: oldPopup(e),
+                  );
+                }).toList()
+              ],
+            )
+          // : Text(e.status ?? '',
+          //     textAlign: TextAlign.start,
+          //     style: TextStyle(
+          //       fontFamily: "GothamBook",
+          //       color: gTextColor,
+          //       fontSize: 8.sp,
+          //     ),
+          //   ),
+        ),
       ]));
     });
     return _data;
@@ -2310,77 +2180,77 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
   showDataRow1() {
     return shoppingData!
         .map((e) => DataRow(
-              cells: [
-                DataCell(
-                  Text(
-                    e.mealTime.toString(),
+      cells: [
+        DataCell(
+          Text(
+            e.mealTime.toString(),
+            style: TextStyle(
+              height: 1.5,
+              color: gTextColor,
+              fontSize: 8.sp,
+              fontFamily: "GothamBold",
+            ),
+          ),
+        ),
+        DataCell(
+          GestureDetector(
+            onTap: e.url == null
+                ? null
+                : e.type == 'item'
+                ? () => showPdf(e.url!, e.name)
+                : () => showVideo(e),
+            child: Row(
+              children: [
+                e.type == 'yoga'
+                    ? GestureDetector(
+                  onTap: () {},
+                  child: Image(
+                    image: const AssetImage(
+                        "assets/images/noun-play-1832840.png"),
+                    height: 2.h,
+                  ),
+                )
+                    : const SizedBox(),
+                if (e.type == 'yoga') SizedBox(width: 2.w),
+                Expanded(
+                  child: Text(
+                    " ${e.name.toString()}",
+                    maxLines: 3,
+                    textAlign: TextAlign.start,
+                    overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       height: 1.5,
                       color: gTextColor,
                       fontSize: 8.sp,
-                      fontFamily: "GothamBold",
+                      fontFamily: "GothamBook",
                     ),
                   ),
                 ),
-                DataCell(
-                  GestureDetector(
-                    onTap: e.url == null
-                        ? null
-                        : e.type == 'item'
-                            ? () => showPdf(e.url!, e.name)
-                            : () => showVideo(e),
-                    child: Row(
-                      children: [
-                        e.type == 'yoga'
-                            ? GestureDetector(
-                                onTap: () {},
-                                child: Image(
-                                  image: const AssetImage(
-                                      "assets/images/noun-play-1832840.png"),
-                                  height: 2.h,
-                                ),
-                              )
-                            : const SizedBox(),
-                        if (e.type == 'yoga') SizedBox(width: 2.w),
-                        Expanded(
-                          child: Text(
-                            " ${e.name.toString()}",
-                            maxLines: 3,
-                            textAlign: TextAlign.start,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              height: 1.5,
-                              color: gTextColor,
-                              fontSize: 8.sp,
-                              fontFamily: "GothamBook",
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  placeholder: true,
-                ),
-                DataCell(
-                    // (widget.isCompleted == null) ?
-                    Theme(
-                  data: Theme.of(context).copyWith(
-                    highlightColor: Colors.transparent,
-                    splashColor: Colors.transparent,
-                  ),
-                  child: oldPopup(e),
-                )
-                    // : Text(e.status ?? '',
-                    //     textAlign: TextAlign.start,
-                    //     style: TextStyle(
-                    //       fontFamily: "GothamBook",
-                    //       color: gTextColor,
-                    //       fontSize: 8.sp,
-                    //     ),
-                    //   ),
-                    ),
               ],
-            ))
+            ),
+          ),
+          placeholder: true,
+        ),
+        DataCell(
+          // (widget.isCompleted == null) ?
+            Theme(
+              data: Theme.of(context).copyWith(
+                highlightColor: Colors.transparent,
+                splashColor: Colors.transparent,
+              ),
+              child: oldPopup(e),
+            )
+          // : Text(e.status ?? '',
+          //     textAlign: TextAlign.start,
+          //     style: TextStyle(
+          //       fontFamily: "GothamBook",
+          //       color: gTextColor,
+          //       fontSize: 8.sp,
+          //     ),
+          //   ),
+        ),
+      ],
+    ))
         .toList();
   }
 
@@ -2392,116 +2262,116 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
     return mealPlanData
         .map(
           (s) => DataRow(
-            cells: [
-              DataCell(
-                Text(
-                  s["time"].toString(),
-                  style: TextStyle(
-                    height: 1.5,
-                    color: gTextColor,
-                    fontSize: 8.sp,
-                    fontFamily: "GothamBold",
+        cells: [
+          DataCell(
+            Text(
+              s["time"].toString(),
+              style: TextStyle(
+                height: 1.5,
+                color: gTextColor,
+                fontSize: 8.sp,
+                fontFamily: "GothamBold",
+              ),
+            ),
+          ),
+          DataCell(
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                s["id"] == 1
+                    ? GestureDetector(
+                  onTap: () {},
+                  child: Image(
+                    image: const AssetImage(
+                        "assets/images/noun-play-1832840.png"),
+                    height: 2.h,
+                  ),
+                )
+                    : const SizedBox(),
+                SizedBox(width: 2.w),
+                Expanded(
+                  child: Text(
+                    " ${s["title"].toString()}",
+                    maxLines: 3,
+                    textAlign: TextAlign.start,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      height: 1.5,
+                      color: gTextColor,
+                      fontSize: 8.sp,
+                      fontFamily: "GothamBook",
+                    ),
                   ),
                 ),
-              ),
-              DataCell(
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
+              ],
+            ),
+            placeholder: true,
+          ),
+          DataCell(
+            PopupMenuButton(
+              offset: const Offset(0, 30),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(5)),
+              itemBuilder: (context) => [
+                PopupMenuItem(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: 0.6.h),
+                      buildDummyTabView(
+                          index: 1, title: list[0], color: gPrimaryColor),
+                      Container(
+                        margin: EdgeInsets.symmetric(vertical: 1.h),
+                        height: 1,
+                        color: gHintTextColor.withOpacity(0.3),
+                      ),
+                      buildDummyTabView(
+                          index: 2, title: list[1], color: gsecondaryColor),
+                      Container(
+                        margin: EdgeInsets.symmetric(vertical: 1.h),
+                        height: 1,
+                        color: gHintTextColor.withOpacity(0.3),
+                      ),
+                      SizedBox(height: 0.6.h),
+                    ],
+                  ),
+                ),
+              ],
+              child: Container(
+                width: 20.w,
+                padding:
+                EdgeInsets.symmetric(horizontal: 2.w, vertical: 0.2.h),
+                decoration: BoxDecoration(
+                  color: gWhiteColor,
+                  borderRadius: BorderRadius.circular(5),
+                  border: Border.all(color: gMainColor, width: 1),
+                ),
+                child: Row(
                   children: [
-                    s["id"] == 1
-                        ? GestureDetector(
-                            onTap: () {},
-                            child: Image(
-                              image: const AssetImage(
-                                  "assets/images/noun-play-1832840.png"),
-                              height: 2.h,
-                            ),
-                          )
-                        : const SizedBox(),
-                    SizedBox(width: 2.w),
                     Expanded(
                       child: Text(
-                        " ${s["title"].toString()}",
-                        maxLines: 3,
+                        buildDummyHeaderText(),
                         textAlign: TextAlign.start,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                          height: 1.5,
-                          color: gTextColor,
-                          fontSize: 8.sp,
-                          fontFamily: "GothamBook",
-                        ),
+                            fontFamily: kFontBook,
+                            color: buildDummyTextColor(),
+                            fontSize: 8.sp),
                       ),
+                    ),
+                    Icon(
+                      Icons.expand_more,
+                      color: gHintTextColor,
+                      size: 2.h,
                     ),
                   ],
                 ),
-                placeholder: true,
               ),
-              DataCell(
-                PopupMenuButton(
-                  offset: const Offset(0, 30),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(5)),
-                  itemBuilder: (context) => [
-                    PopupMenuItem(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(height: 0.6.h),
-                          buildDummyTabView(
-                              index: 1, title: list[0], color: gPrimaryColor),
-                          Container(
-                            margin: EdgeInsets.symmetric(vertical: 1.h),
-                            height: 1,
-                            color: gHintTextColor.withOpacity(0.3),
-                          ),
-                          buildDummyTabView(
-                              index: 2, title: list[1], color: gsecondaryColor),
-                          Container(
-                            margin: EdgeInsets.symmetric(vertical: 1.h),
-                            height: 1,
-                            color: gHintTextColor.withOpacity(0.3),
-                          ),
-                          SizedBox(height: 0.6.h),
-                        ],
-                      ),
-                    ),
-                  ],
-                  child: Container(
-                    width: 20.w,
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 2.w, vertical: 0.2.h),
-                    decoration: BoxDecoration(
-                      color: gWhiteColor,
-                      borderRadius: BorderRadius.circular(5),
-                      border: Border.all(color: gMainColor, width: 1),
-                    ),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            buildDummyHeaderText(),
-                            textAlign: TextAlign.start,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                                fontFamily: kFontBook,
-                                color: buildDummyTextColor(),
-                                fontSize: 8.sp),
-                          ),
-                        ),
-                        Icon(
-                          Icons.expand_more,
-                          color: gHintTextColor,
-                          size: 2.h,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ],
+            ),
           ),
-        )
+        ],
+      ),
+    )
         .toList();
   }
 
@@ -2549,9 +2419,9 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
 
   Widget buildTabView(
       {required int index,
-      required String title,
-      required Color color,
-      int? itemId}) {
+        required String title,
+        required Color color,
+        int? itemId}) {
     return GestureDetector(
       onTap: () {
         onChangedTab(index, id: itemId, title: title);
@@ -2575,9 +2445,9 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
 
   Widget buildDummyTabView(
       {required int index,
-      required String title,
-      required Color color,
-      int? itemId}) {
+        required String title,
+        required Color color,
+        int? itemId}) {
     return GestureDetector(
       onTap: () {
         onChangedDummyTab(index);
@@ -2810,48 +2680,50 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
   showSymptomsTrackerSheet(BuildContext context, ProceedProgramDayModel model) {
     return AppConfig().showSheet(context,
         StatefulBuilder(builder: (_, setState) {
-      return SizedBox(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            videoMp4Widget(
-                videoName: "Know more about Symptoms Tracker",
-                onTap: () {
-                  addTrackerUrlToChewiePlayer(widget.trackerVideoLink ?? '');
-                  // addTrackerUrlToVideoPlayer(widget.trackerVideoLink ?? '');
-                  setState(() {
-                    showMealVideo = true;
-                  });
-                }),
-            Stack(
+          return SizedBox(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                TrackerUI(
-                  proceedProgramDayModel: model,
-                  from: ProgramMealType.program.name,
-                ),
-                Visibility(
-                  visible: showMealVideo,
-                  child: Positioned(
-                      child: Center(child: buildMealVideo(onTap: () async {
-                    setState(() {
-                      showMealVideo = false;
-                    });
-                    if (await Wakelock.enabled == true) {
-                      Wakelock.disable();
-                    }
-                    if(_sheetVideoController != null) _sheetVideoController!.dispose();
-                    if(_sheetChewieController != null) _sheetChewieController!.dispose();
+                videoMp4Widget(
+                    videoName: "Know more about Symptoms Tracker",
+                    onTap: () {
+                      addTrackerUrlToChewiePlayer(widget.trackerVideoLink ?? '');
+                      // addTrackerUrlToVideoPlayer(widget.trackerVideoLink ?? '');
+                      setState(() {
+                        showMealVideo = true;
+                      });
+                    }),
+                Stack(
+                  children: [
+                    TrackerUI(
+                      proceedProgramDayModel: model,
+                      from: ProgramMealType.program.name,
+                    ),
+                    Visibility(
+                      visible: showMealVideo,
+                      child: Positioned(
+                          child: Center(child: buildMealVideo(onTap: () async {
+                            setState(() {
+                              showMealVideo = false;
+                            });
+                            if (await Wakelock.enabled == true) {
+                              Wakelock.disable();
+                            }
+                            if (_sheetVideoController != null)
+                              _sheetVideoController!.dispose();
+                            if (_sheetChewieController != null)
+                              _sheetChewieController!.dispose();
 
-                    // if (_trackerVideoPlayerController != null) _trackerVideoPlayerController!.dispose();
-                      }))),
+                            // if (_trackerVideoPlayerController != null) _trackerVideoPlayerController!.dispose();
+                          }))),
+                    )
+                  ],
                 )
               ],
-            )
-          ],
-        ),
-      );
-    }), circleIcon: bsHeadPinIcon, bottomSheetHeight: 90.h);
+            ),
+          );
+        }), circleIcon: bsHeadPinIcon, bottomSheetHeight: 90.h);
 
     return showModalBottomSheet(
         isDismissible: false,
@@ -2879,24 +2751,24 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
       onTap: onTap,
       child: Card(
           child: Row(children: [
-        Image.asset(
-          "assets/images/meal_placeholder.png",
-          height: 35,
-          width: 40,
-        ),
-        Expanded(
-            child: Text(
-          videoName ?? "Symptom Tracker.mp4",
-          style: TextStyle(fontFamily: kFontBook),
-        )),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Image.asset(
-            "assets/images/arrow_for_video.png",
-            height: 35,
-          ),
-        )
-      ])),
+            Image.asset(
+              "assets/images/meal_placeholder.png",
+              height: 35,
+              width: 40,
+            ),
+            Expanded(
+                child: Text(
+                  videoName ?? "Symptom Tracker.mp4",
+                  style: TextStyle(fontFamily: kFontBook),
+                )),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Image.asset(
+                "assets/images/arrow_for_video.png",
+                height: 35,
+              ),
+            )
+          ])),
     );
   }
 
@@ -2936,23 +2808,21 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
   // }
   addTrackerUrlToChewiePlayer(String url) async {
     print("url" + url);
-    _sheetVideoController = VideoPlayerController.network(Uri.parse(url).toString());
+    _sheetVideoController =
+        VideoPlayerController.network(Uri.parse(url).toString());
     _sheetChewieController = ChewieController(
         videoPlayerController: _sheetVideoController!,
-        aspectRatio: 16/9,
+        aspectRatio: 16 / 9,
         autoInitialize: true,
         showOptions: false,
         autoPlay: true,
         allowedScreenSleep: false,
         hideControlsTimer: Duration(seconds: 3),
-        showControls: false
-
-    );
+        showControls: false);
     if (await Wakelock.enabled == false) {
       Wakelock.enable();
     }
   }
-
 
   buildMealVideo({required VoidCallback onTap}) {
     if (_sheetChewieController != null) {
@@ -2971,8 +2841,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                     child: OverlayVideo(
                       controller: _sheetChewieController!,
                       isControlsVisible: false,
-                    )
-                ),
+                    )),
               ),
             ),
           ),

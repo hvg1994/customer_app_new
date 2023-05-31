@@ -932,6 +932,7 @@ class _FeedsListState extends State<FeedsList> {
         ),
         bottomSheetHeight: 40.h,
         circleIcon: bsHeadBulbIcon,
+        isDismissible: true,
         isSheetCloseNeeded: true, sheetCloseOnTap: () {
       Navigator.pop(context);
     });

@@ -291,7 +291,7 @@ class _PrepratoryMealCompletedScreenState extends State<PrepratoryMealCompletedS
         showProgress = false;
       });
       final result = res as SuccessMessageModel;
-      AppConfig().showSnackbar(context, result.errorMsg ?? '');
+      // AppConfig().showSnackbar(context, result.errorMsg ?? '');
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(

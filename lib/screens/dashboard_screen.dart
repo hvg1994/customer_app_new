@@ -105,6 +105,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   bool showProgress = false;
+  final _pref = AppConfig().preferences!;
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -116,7 +118,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
             setState(() {
               showProgress = true;
             });
-            final _pref = AppConfig().preferences!;
             final uId =
             _pref.getString(AppConfig.KALEYRA_USER_ID);
             final res = await getAccessToken(uId!);
@@ -127,6 +128,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
               final chatSuccessId = _pref.getString(
                   AppConfig.KALEYRA_CHAT_SUCCESS_ID);
+              print("chatSuccessId: $chatSuccessId");
+              if(chatSuccessId == ""){
+                setState(() {
+                  showFab = false;
+                });
+                print("showFab: $showFab");
+              }
               // chat
               openKaleyraChat(
                   uId, chatSuccessId!, accessToken!);
@@ -218,9 +226,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   void onChangedTab(int index) {
+    final chatSuccessId = _pref.getString(
+        AppConfig.KALEYRA_CHAT_SUCCESS_ID);
+    print("chatSuccessId: $chatSuccessId");
     setState(() {
       _bottomNavIndex = index;
-      if(_bottomNavIndex == 4){
+      if(_bottomNavIndex == 4 || chatSuccessId == ""){
         showFab = false;
       }
       else{
@@ -247,7 +258,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         }
       } else {
         AppConfig()
-            .showSheet(context, const ExitWidget(), bottomSheetHeight: 45.h);
+            .showSheet(context, const ExitWidget(), bottomSheetHeight: 45.h, isDismissible: true,);
       }
     });
     return Future.value(false);

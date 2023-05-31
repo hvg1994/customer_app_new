@@ -820,41 +820,85 @@ class _UploadFilesState extends State<UploadFiles> {
     final result = await FilePicker.platform.pickFiles(
       withReadStream: true,
       type: FileType.any,
-      // allowedExtensions: ['pdf', 'jpg', 'png'],
-      allowMultiple: false,
+      // allowedExtensions: ['pdf', 'jpg', 'png', 'jpeg'],
+      allowMultiple: true,
     );
     if (result == null) return;
 
-    if (result.files.first.extension!.contains("pdf") ||
-        result.files.first.extension!.contains("png") ||
-        result.files.first.extension!.contains("jpg") ||
-        result.files.first.extension!.contains("jpeg")) {
-      if (getFileSize(File(result.paths.first!)) <= 12) {
-        print("filesize: ${getFileSize(File(result.paths.first!))}Mb");
-        files.add(result.files.first);
-        // addFilesToList(File(result.paths.first!));
-        if (type != null) {
-          if (reportsObject.isNotEmpty) {
-            reportsObject.forEach((element) {
-              if (element.id.toString().contains(type)) {
-                element.path.add(result.paths.first!);
+    /// if allowMultiple: true
+    List<File> _files = result.paths.map((path) => File(path!)).toList();
+
+    _files.forEach((element) {
+      print(element.path.split('.').last);
+      if (element.path.split('.').last.contains("pdf") ||
+          element.path.split('.').last.contains("png") ||
+          element.path.split('.').last.contains("jpg") ||
+          element.path.split('.').last.contains("jpeg")) {
+        if (getFileSize(element) <= 12) {
+          print("filesize: ${getFileSize(File(result.paths.first!))}Mb");
+          // files.add(result.files.first);
+          // addFilesToList(File(result.paths.first!));
+          if (type != null) {
+            if (reportsObject.isNotEmpty) {
+              reportsObject.forEach((ele) {
+                if (ele.id.toString().contains(type)) {
+                  if(!ele.path.contains(element.path)){
+                    ele.path.add(element.path);
+                  }
+                }
+              });
+            }
+            if (type == "others") {
+              if(!otherFilesObject.contains(element.path)){
+                otherFilesObject.add(element.path ?? '');
               }
-            });
+            }
+            print("otherFilesObject: $otherFilesObject");
           }
-          if (type == "others") {
-            otherFilesObject.add(result.paths.first ?? '');
-          }
-          print("otherFilesObject: $otherFilesObject");
+        }
+        else {
+          AppConfig()
+              .showSnackbar(context, "File size must be <12Mb", isError: true);
         }
       }
       else {
-        AppConfig()
-            .showSnackbar(context, "File size must be <12Mb", isError: true);
+        AppConfig().showSnackbar(context, "Please select png/jpg/Pdf files",
+            isError: true);
       }
-    } else {
-      AppConfig().showSnackbar(context, "Please select png/jpg/Pdf files",
-          isError: true);
-    }
+    });
+
+    /// single file select for this  allowMultiple should be false allowMultiple: false
+    // if (result.files.first.extension!.contains("pdf") ||
+    //     result.files.first.extension!.contains("png") ||
+    //     result.files.first.extension!.contains("jpg") ||
+    //     result.files.first.extension!.contains("jpeg")) {
+    //   if (getFileSize(File(result.paths.first!)) <= 12) {
+    //     print("filesize: ${getFileSize(File(result.paths.first!))}Mb");
+    //     files.add(result.files.first);
+    //     // addFilesToList(File(result.paths.first!));
+    //     if (type != null) {
+    //       if (reportsObject.isNotEmpty) {
+    //         reportsObject.forEach((element) {
+    //           if (element.id.toString().contains(type)) {
+    //             element.path.add(result.paths.first!);
+    //           }
+    //         });
+    //       }
+    //       if (type == "others") {
+    //         otherFilesObject.add(result.paths.first ?? '');
+    //       }
+    //       print("otherFilesObject: $otherFilesObject");
+    //     }
+    //   }
+    //   else {
+    //     AppConfig()
+    //         .showSnackbar(context, "File size must be <12Mb", isError: true);
+    //   }
+    // }
+    // else {
+    //   AppConfig().showSnackbar(context, "Please select png/jpg/Pdf files",
+    //       isError: true);
+    // }
     setState(() {});
   }
 
@@ -1009,7 +1053,7 @@ class _UploadFilesState extends State<UploadFiles> {
     } else {
       final result = res as ReportUploadModel;
       print(result.errorMsg);
-      AppConfig().showSnackbar(context, result.errorMsg ?? '');
+      // AppConfig().showSnackbar(context, result.errorMsg ?? '');
       reportsObject.forEach((element) {
         element.isSubmited = true;
         element.path = [];
@@ -1105,8 +1149,8 @@ class _UploadFilesState extends State<UploadFiles> {
   List otherFilesObject = [];
 
   showRequestedReports(BuildContext context) {
-    return LimitedBox(
-      maxHeight: 40.h,
+    return Flexible(
+      // maxHeight: 40.h,
       child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -1119,71 +1163,87 @@ class _UploadFilesState extends State<UploadFiles> {
                 ? const SizedBox()
                 : Padding(
               padding: padding,
-              child: Container(
-                child: ListView.builder(
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    itemCount: doctorRequestedReports.length,
-                    itemBuilder: (_, index) {
-                      print("reportsObject: $reportsObject");
-                      // print(reportsObject[reportsObject.indexWhere((element) => element.name == doctorRequestedReports[index].reportType)].isSubmited);
-                      return buildReportList(
-                          doctorRequestedReports[index].reportType ?? '',
-                          id: doctorRequestedReports[index].id.toString() ?? '',
-                          isSingleIcon:
-                          (doctorRequestedReports[index].reportType! !=
-                              "prescription"),
-                          onTap: () {
-                            if (doctorRequestedReports[index].reportType ==
-                                "prescription") {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (ctx) => MealPdf(
-                                        pdfLink: doctorRequestedReports[index]
-                                            .report!,
-                                        heading: "Prescription",
-                                        isVideoWidgetVisible: false,
-                                        headCircleIcon: bsHeadPinIcon,
-                                        isSheetCloseNeeded: true,
-                                        sheetCloseOnTap: (){
-                                          Navigator.pop(context);
-                                        },
-                                      )));
-                            }
-                            else {
-                              reportsObject.forEach((element) {
-                                print(element.id);
-                                print('${element.id} ${doctorRequestedReports[index].id}');
-                                print(element.id.toString() == doctorRequestedReports[index].id.toString());
-                                if (element.id.toString() == doctorRequestedReports[index].id.toString()) {
-                                  showChooserSheet(
-                                      type: doctorRequestedReports[index]
-                                          .id
-                                          .toString());
-                                } else if (element.name == doctorRequestedReports[index]
-                                    .reportType &&
-                                    element.path.isEmpty) {
-                                  return;
-                                }
-                                // else{
-                                //   if(element.path .isNotEmpty){
-                                //     submitDoctorRequestedReport(element.path, element.id);
-                                //   }
-                                // }
-                              });
-                            }
-
-                          },
-                          onSecondaryIconTap: (){
-                            if (doctorRequestedReports[index].reportType ==
-                                "prescription") {
-                              _createFolder(url: doctorRequestedReports[index].report!);
-                            }
+              child: ListView.builder(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemCount: doctorRequestedReports.length,
+                  itemBuilder: (_, index) {
+                    print("reportsObject: $reportsObject");
+                    // print(reportsObject[reportsObject.indexWhere((element) => element.name == doctorRequestedReports[index].reportType)].isSubmited);
+                    return (doctorRequestedReports[index].isUploaded != null && doctorRequestedReports[index].isUploaded =="1")
+                        ? ListTile(
+                      onTap: null,
+                      minVerticalPadding: 0,
+                      dense: true,
+                      // contentPadding: EdgeInsets.only(left: 0.0, right: 0.0),
+                      title: Text(
+                        doctorRequestedReports[index].reportType ?? '',
+                        style: TextStyle(
+                            fontSize: 10.sp,
+                            fontFamily: kFontBold,
+                            color: eUser().mainHeadingColor),
+                      ),
+                      trailing: Icon(
+                        Icons.done,
+                        color: gPrimaryColor,
+                      )
+                    )
+                        :buildReportList(
+                        doctorRequestedReports[index].reportType ?? '',
+                        id: doctorRequestedReports[index].id.toString() ?? '',
+                        isSingleIcon:
+                        (doctorRequestedReports[index].reportType! !=
+                            "prescription"),
+                        onTap: () {
+                          if (doctorRequestedReports[index].reportType ==
+                              "prescription") {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (ctx) => MealPdf(
+                                      pdfLink: doctorRequestedReports[index]
+                                          .report!,
+                                      heading: "Prescription",
+                                      isVideoWidgetVisible: false,
+                                      headCircleIcon: bsHeadPinIcon,
+                                      isSheetCloseNeeded: true,
+                                      sheetCloseOnTap: (){
+                                        Navigator.pop(context);
+                                      },
+                                    )));
                           }
-                      );
-                    }),
-              ),
+                          else {
+                            reportsObject.forEach((element) {
+                              print(element.id);
+                              print('${element.id} ${doctorRequestedReports[index].id}');
+                              print(element.id.toString() == doctorRequestedReports[index].id.toString());
+                              if (element.id.toString() == doctorRequestedReports[index].id.toString()) {
+                                showChooserSheet(
+                                    type: doctorRequestedReports[index]
+                                        .id
+                                        .toString());
+                              } else if (element.name == doctorRequestedReports[index]
+                                  .reportType &&
+                                  element.path.isEmpty) {
+                                return;
+                              }
+                              // else{
+                              //   if(element.path .isNotEmpty){
+                              //     submitDoctorRequestedReport(element.path, element.id);
+                              //   }
+                              // }
+                            });
+                          }
+
+                        },
+                        onSecondaryIconTap: (){
+                          if (doctorRequestedReports[index].reportType ==
+                              "prescription") {
+                            _createFolder(url: doctorRequestedReports[index].report!);
+                          }
+                        }
+                    );
+                  }),
             ),
             SizedBox(
               height: 1.8.h,

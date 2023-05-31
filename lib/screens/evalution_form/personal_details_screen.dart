@@ -319,6 +319,8 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
     pinCodeController.addListener(() {
       setState(() {});
     });
+
+    scrollController = ScrollController();
   }
 
   @override
@@ -357,47 +359,59 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
 
   /// for showData ChildGetEvaluationDataModel? model this is mandatory
   showUI(BuildContext context, {ChildGetEvaluationDataModel? model}) {
-    return Column(
-            children: [
-              SizedBox(height: 1.h),
-              Padding(
-                padding: EdgeInsets.only(left: 4.w, right: 4.w, top: 3.h),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    buildAppBar(() {
-                      Navigator.pop(context);
-                    }),
-                  ],
+    return GestureDetector(
+      onPanDown: (_) {
+        hideKeyboard();
+      },
+      child: Column(
+              children: [
+                SizedBox(height: 1.h),
+                Padding(
+                  padding: EdgeInsets.only(left: 4.w, right: 4.w, top: 3.h),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      buildAppBar(() {
+                        Navigator.pop(context);
+                      }),
+                    ],
+                  ),
                 ),
-              ),
-              SizedBox(
-                height: 4.h,
-              ),
-              Expanded(
-                child: Container(
-                    width: double.maxFinite,
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 3.w, vertical: 3.h),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      boxShadow: [
-                        BoxShadow(
-                            blurRadius: 2, color: Colors.grey.withOpacity(0.5))
-                      ],
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(30),
-                        topRight: Radius.circular(30),
+                SizedBox(
+                  height: 4.h,
+                ),
+                Expanded(
+                  child: Container(
+                      width: double.maxFinite,
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 3.w, vertical: 3.h),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                              blurRadius: 2, color: Colors.grey.withOpacity(0.5))
+                        ],
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(30),
+                          topRight: Radius.circular(30),
+                        ),
                       ),
-                    ),
-                    child: buildEvaluationForm()),
-              ),
-            ],
-          );
+                      child: buildEvaluationForm()),
+                ),
+              ],
+            ),
+    );
+  }
+
+  ScrollController? scrollController;
+
+  hideKeyboard() {
+    FocusScope.of(context).unfocus();
   }
 
   buildEvaluationForm({ChildGetEvaluationDataModel? model}) {
     return SingleChildScrollView(
+      controller: scrollController!,
       physics: const BouncingScrollPhysics(),
       child: Container(
         padding: (widget.padding != null) ? widget.padding : EdgeInsets.zero,
@@ -1121,6 +1135,8 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                     if (value!.isEmpty &&
                         selectedHealthCheckBox1
                             .any((element) => element.contains("Other:"))) {
+                      AppConfig().showSnackbar(context, "Please Mention Other Details with minimum 2 characters", bottomPadding: 100);
+
                       return 'Please Mention Other Details with minimum 2 characters';
                     } else {
                       return null;
@@ -1549,12 +1565,13 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                     setState(() {
                       urinSmellOtherSelected = v!;
                       if (urinSmellOtherSelected) {
-                        selectedUrinSmellList.clear();
-                        urinSmellList.forEach((element) {
-                          element.value = false;
-                        });
+                        // selectedUrinSmellList.clear();
+                        // urinSmellList.forEach((element) {
+                        //   element.value = false;
+                        // });
                         selectedUrinSmellList.add(otherText);
-                      } else {
+                      } else
+                      {
                         selectedUrinSmellList.remove(otherText);
                       }
                       print(selectedUrinSmellList);
@@ -1572,6 +1589,8 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                     cursorColor: kPrimaryColor,
                     validator: (value) {
                       if (value!.isEmpty && urinSmellOtherSelected) {
+                        AppConfig().showSnackbar(context, "Please select the details about urine smell", bottomPadding: 100);
+
                         return 'Please select the details about urine smell';
                       } else {
                         return null;
@@ -1827,6 +1846,32 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                   GestureDetector(
                     onTap: (){
                       setState(() {
+                        selectedStoolMatch = "Mostly consistency with ragged edges";
+                      });
+                    },
+                    child: Row(
+                      children: [
+                        Radio(
+                            value: "Mostly consistency with ragged edges",
+                            groupValue: selectedStoolMatch,
+                            activeColor: kPrimaryColor,
+                            onChanged: (value) {
+                              setState(() {
+                                selectedStoolMatch = value as String;
+                              });
+                            }),
+                        Text(
+                          "Mostly consistency with ragged edges",
+                          style: buildTextStyle(color: selectedStoolMatch == "Mostly consistency with ragged edges" ? kTextColor : gHintTextColor,
+                              fontFamily: selectedStoolMatch == "Mostly consistency with ragged edges" ? kFontMedium : kFontBook
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: (){
+                      setState(() {
                         selectedStoolMatch = "Liquid consistency with no solid pieces";
                       });
                     },
@@ -1889,13 +1934,20 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                     setState(() {
                       medicalInterventionsOtherSelected = v!;
                       if (medicalInterventionsOtherSelected) {
-                        selectedmedicalInterventionsDoneBeforeList
-                            .add(otherText);
-                        selectedmedicalInterventionsDoneBeforeList.clear();
-                        medicalInterventionsDoneBeforeList
-                            .forEach((element) {
-                          element.value = false;
-                        });
+                        // new code
+                        if(medicalInterventionsDoneBeforeList.last.value == true){
+                          selectedmedicalInterventionsDoneBeforeList.clear();
+                          medicalInterventionsDoneBeforeList.last.value = false;
+                        }
+
+                        // old code
+                        // selectedmedicalInterventionsDoneBeforeList
+                        //     .add(otherText);
+                        // selectedmedicalInterventionsDoneBeforeList.clear();
+                        // medicalInterventionsDoneBeforeList
+                        //     .forEach((element) {
+                        //   element.value = false;
+                        // });
                         selectedmedicalInterventionsDoneBeforeList
                             .add(otherText);
                       }
@@ -1903,6 +1955,8 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                         selectedmedicalInterventionsDoneBeforeList
                             .remove(otherText);
                       }
+
+                      print(selectedmedicalInterventionsDoneBeforeList);
                     });
                   },
                 ),
@@ -2341,19 +2395,20 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
         value: healthCheckBox.value,
         onChanged: (v) {
           if (from == 'health1') {
-            if (healthCheckBox.title == healthCheckBox1[13].title)
-            {
-              print("if");
-              setState(() {
-                selectedHealthCheckBox1.clear();
-                healthCheckBox1.forEach((element) {
-                  element.value = false;
-                });
-                selectedHealthCheckBox1.add(healthCheckBox.title!);
-                healthCheckBox.value = v;
-              });
-            }
-            else if (healthCheckBox.title == healthCheckBox1[12].title) {
+            // if (healthCheckBox.title == healthCheckBox1[13].title)
+            // {
+            //   print("if");
+            //   setState(() {
+            //     selectedHealthCheckBox1.clear();
+            //     healthCheckBox1.forEach((element) {
+            //       element.value = false;
+            //     });
+            //     selectedHealthCheckBox1.add(healthCheckBox.title!);
+            //     healthCheckBox.value = v;
+            //   });
+            // }
+            // else
+              if (healthCheckBox.title == healthCheckBox1[12].title) {
               print(" else if");
               setState(() {
                 selectedHealthCheckBox1.clear();
@@ -2366,15 +2421,16 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
             }
             else {
               print("else");
-              if (selectedHealthCheckBox1
-                  .contains(healthCheckBox1[13].title)) {
-                print("if");
-                setState(() {
-                  selectedHealthCheckBox1.clear();
-                  healthCheckBox1[13].value = false;
-                });
-              }
-              else if (selectedHealthCheckBox1
+              // if (selectedHealthCheckBox1
+              //     .contains(healthCheckBox1[13].title)) {
+              //   print("if");
+              //   setState(() {
+              //     selectedHealthCheckBox1.clear();
+              //     healthCheckBox1[13].value = false;
+              //   });
+              // }
+              // else
+                if (selectedHealthCheckBox1
                   .contains(healthCheckBox1[12].title)) {
                 print("else if");
 
@@ -2447,17 +2503,18 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
             print(selectedHealthCheckBox2);
           }
           else if (from == 'smell') {
-            if (urinSmellOtherSelected) {
-              if (v == true) {
-                setState(() {
-                  urinSmellOtherSelected = false;
-                  selectedUrinSmellList.clear();
-                  selectedUrinSmellList.add(healthCheckBox.title);
-                  healthCheckBox.value = v;
-                });
-              }
-            }
-            else {
+            // if (urinSmellOtherSelected) {
+            //   if (v == true) {
+            //     setState(() {
+            //       urinSmellOtherSelected = false;
+            //       selectedUrinSmellList.clear();
+            //       selectedUrinSmellList.add(healthCheckBox.title);
+            //       healthCheckBox.value = v;
+            //     });
+            //   }
+            // }
+            // else
+            // {
               if (v == true) {
                 setState(() {
                   selectedUrinSmellList.add(healthCheckBox.title);
@@ -2470,25 +2527,27 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                   healthCheckBox.value = v;
                 });
               }
-            }
+            // }
             print(selectedUrinSmellList);
           }
           else if (from == 'interventions') {
-            if (medicalInterventionsOtherSelected) {
-              if (v == true) {
-                setState(() {
-                  medicalInterventionsOtherSelected = false;
-                  selectedmedicalInterventionsDoneBeforeList.clear();
-                  selectedmedicalInterventionsDoneBeforeList
-                      .add(healthCheckBox.title);
-                  healthCheckBox.value = v;
-                });
-              }
-            }
-            else if (healthCheckBox.title == medicalInterventionsDoneBeforeList.last.title) {
+            // if (medicalInterventionsOtherSelected) {
+            //   if (v == true) {
+            //     setState(() {
+            //       medicalInterventionsOtherSelected = false;
+            //       selectedmedicalInterventionsDoneBeforeList.clear();
+            //       selectedmedicalInterventionsDoneBeforeList
+            //           .add(healthCheckBox.title);
+            //       healthCheckBox.value = v;
+            //     });
+            //   }
+            // }
+            // else
+              if (healthCheckBox.title == medicalInterventionsDoneBeforeList.last.title) {
               print("if");
               setState(() {
                 selectedmedicalInterventionsDoneBeforeList.clear();
+                medicalInterventionsOtherSelected = false;
                 medicalInterventionsDoneBeforeList.forEach((element) {
                   if (element.title != medicalInterventionsDoneBeforeList.last.title) {
                     element.value = false;

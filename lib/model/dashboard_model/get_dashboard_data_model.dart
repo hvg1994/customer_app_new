@@ -11,6 +11,7 @@ class GetDashboardDataModel {
   String? key;
   String? evaluationVideo;
   String? consultationVideo;
+  String? notification;
   String? prepVideo;
   String? programVideo;
   String? gmgVideo;
@@ -53,6 +54,7 @@ class GetDashboardDataModel {
         this.prepVideo,
         this.programVideo,
         this.gmgVideo,
+        this.notification
         // this.postprogram
       });
 
@@ -66,6 +68,8 @@ class GetDashboardDataModel {
     prepVideo = json['prep_video'].toString();
     programVideo = json['program_video'].toString();
     gmgVideo = json['gmg_video'].toString();
+    notification = json['notification'].toString();
+
 
     print(json['Consulation']['value'].runtimeType);
     print(json['Shipping']['value'].runtimeType);
@@ -73,7 +77,11 @@ class GetDashboardDataModel {
 
 
     if(json['Consulation'] != null){
-      if(json['Consulation']['value'].runtimeType == String || json['Consulation']['data'] == 'consultation_rejected'){
+      if(json['Consulation']['value'].runtimeType == String
+          || json['Consulation']['data'] == 'consultation_rejected'
+          || json['Consulation']['data'] == 'consultation_waiting'
+          || json['Consulation']['data'] =='check_user_reports'
+          || json['Consulation']['data'] == 'report_upload'){
         normal_consultation = GutDataModel.fromJson(json['Consulation']);
       }
       else{
@@ -161,6 +169,7 @@ class GetDashboardDataModel {
     if (this.normal_postprogram != null) {
       data['PostProgram'] = this.normal_postprogram!.toJson();
     }
+    data['notification'] = this.notification;
     return data;
   }
 }

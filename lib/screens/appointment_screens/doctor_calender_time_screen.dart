@@ -60,7 +60,7 @@ class _DoctorCalenderTimeScreenState extends State<DoctorCalenderTimeScreen> {
 
   Map<String, ChildSlotModel>? slotList = {};
 
-  DateTime selectedDate = DateTime.now();
+  DateTime selectedDate = DateTime.now().add(const Duration(days: 1));
 
   bool isLoading = false;
   bool showBookingProgress = false;
@@ -96,7 +96,7 @@ class _DoctorCalenderTimeScreenState extends State<DoctorCalenderTimeScreen> {
     else{
       ErrorModel result = res;
       slotList!.clear();
-      AppConfig().showSnackbar(context, result.message ?? '', isError: true);
+      // AppConfig().showSnackbar(context, result.message ?? '', isError: true);
       setState(() {
         isLoading = false;
         if(result.message!.toLowerCase().contains("no doctor")){
@@ -485,7 +485,7 @@ class _DoctorCalenderTimeScreenState extends State<DoctorCalenderTimeScreen> {
         ],
       ),
       child: DatePicker(
-        DateTime.now(),
+        DateTime.now().add(const Duration(days: 1)),
         controller: dateController,
         height: 10.h,
         width: 14.w,
@@ -497,7 +497,7 @@ class _DoctorCalenderTimeScreenState extends State<DoctorCalenderTimeScreen> {
         dayTextStyle: TextStyle(
             fontFamily: kFontBook,
             fontSize: 8.sp, color: eUser().mainHeadingColor),
-        initialSelectedDate: DateTime.now(),
+        initialSelectedDate: DateTime.now().add(const Duration(days: 1)),
         selectionColor: gsecondaryColor,
         selectedTextColor: gWhiteColor,
         onDateChange: (date) {

@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gwc_customer/model/error_model.dart';
 import 'package:gwc_customer/model/ship_track_model/shopping_model/get_shopping_model.dart';
+import 'package:gwc_customer/screens/cook_kit_shipping_screens/meal_plan_completed_stage_screen.dart';
 import 'package:gwc_customer/screens/cook_kit_shipping_screens/shopping_list_screen.dart';
 import 'package:gwc_customer/screens/gut_list_screens/new_dashboard_stages.dart';
 import 'package:intl/intl.dart';
@@ -79,6 +80,12 @@ class _CookKitTrackingState extends State<CookKitTracking> {
           widget.currentStage == 'shipping_packed') &&
           widget.awb_number != null) {
         shippingTracker();
+      }
+      else{
+        print("init else");
+        setState(() {
+          showErrorText = true;
+        });
       }
     }
   }
@@ -789,18 +796,14 @@ class _CookKitTrackingState extends State<CookKitTracking> {
         ),
       )
           : Center(child: showProductgifWhenTrackerSideError()
-        // Text(
-        //   errorTextResponse,
-        //   style: TextStyle(
-        //     height: 1.5,
-        //     color: gTextColor,
-        //     fontSize: 11.sp,
-        //     fontFamily: kFontBold,
-        //   ),
-        // ),
       );
-    } else {
-      return const Center(
+    }
+    else if(widget.currentStage == 'meal_plan_completed'){
+      return NewMealPopupScreen();
+    }
+    else {
+      return (showErrorText) ?
+      Center(child: showProductgifWhenTrackerSideError()) : const Center(
         child: Image(
           image: AssetImage("assets/images/no_data_found.png"),
           fit: BoxFit.scaleDown,
@@ -1022,6 +1025,7 @@ class _CookKitTrackingState extends State<CookKitTracking> {
   String errorTextResponse = '';
 
   bool showTrackingProgress = false;
+
   void shippingTracker() async {
     setState(() {
       showTrackingProgress = true;

@@ -125,13 +125,19 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future getDeviceId() async{
     final _pref = AppConfig().preferences;
-    await AppConfig().getDeviceId().then((id) {
-      print("deviceId: $id");
-      if(id != null){
-        _pref!.setString(AppConfig().deviceId, id);
-        getEnquiryStatus(id);
-      }
-    });
+    if(_pref!.getString(AppConfig().deviceId) == null || _pref.getString(AppConfig().deviceId) != ""){
+      await AppConfig().getDeviceId().then((id) {
+        print("deviceId: $id");
+        if(id != null){
+          _pref!.setString(AppConfig().deviceId, id);
+          getEnquiryStatus(id);
+        }
+      });
+    }
+    else{
+      deviceId = _pref.getString(AppConfig().deviceId);
+      getEnquiryStatus(deviceId!);
+    }
 
     // this is for getting the state and city name
     // this was not using currently
@@ -377,7 +383,7 @@ class _SplashScreenState extends State<SplashScreen> {
           errorMsg = AppConfig.networkErrorText;
         }
         else{
-          errorMsg = model.message ?? AppConfig.oopsMessage;
+          errorMsg = AppConfig.oopsMessage;
         }
       });
     }
@@ -467,6 +473,7 @@ class _SplashScreenState extends State<SplashScreen> {
           }
           else{
             getDeviceId();
+            Navigator.pop(context);
           }
         }
     );

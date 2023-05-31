@@ -101,7 +101,7 @@ class _TCardPageState extends State<TCardPage> {
   final afterTheProgram = [
     CheckBoxSettings(
         title:
-            "My energy levels are fairly high and stable as compared to earlier"),
+        "My energy levels are fairly high and stable as compared to earlier"),
     CheckBoxSettings(title: "I experience adequate sleep"),
     CheckBoxSettings(
         title: "My hunger and appetite is better as compared to earlier"),
@@ -166,53 +166,55 @@ class _TCardPageState extends State<TCardPage> {
   buildCards() {
     return cards = List.generate(
       colors.length,
-      (int index) {
+          (int index) {
         return index == 0
             ? slider2(index)
             : index == 1
-                ? slider3(index)
-                : index == 2
-                    ? slider4(index)
-                    : index == 3
-                        ? slider5(index)
-                        : index == 4
-                            ? slider6(index)
-                            : index == 5
-                                ? slider7(index)
-                                : index == 6
-                                    ? slider8(index)
-                                    : index == 7
-                                        ? slider9(index)
-                                        : index == 8
-                                            ? slider10(index)
-                                            : index == 9
-                                                ? slider11(index)
-                                                : index == 10
-                                                    ? slider12(index)
-                                                    : index == 11
-                                                        ? slider13(index)
-                                                        : index == 12
-                                                            ? slider14(index)
-                                                            : index == 13
-                                                                ? slider15(
-                                                                    index)
-                                                                : index == 14
-                                                                    ? slider16(
-                                                                        index)
-                                                                    : index ==
-                                                                            15
-                                                                        ? slider17(
-                                                                            index)
-                                                                        : index ==
-                                                                                16
-                                                                            ? slider18(index)
-                                                                            : Container();
+            ? slider3(index)
+            : index == 2
+            ? slider4(index)
+            : index == 3
+            ? slider5(index)
+            : index == 4
+            ? slider6(index)
+            : index == 5
+            ? slider7(index)
+            : index == 6
+            ? slider8(index)
+            : index == 7
+            ? slider9(index)
+            : index == 8
+            ? slider10(index)
+            : index == 9
+            ? slider11(index)
+            : index == 10
+            ? slider12(index)
+            : index == 11
+            ? slider13(index)
+            : index == 12
+            ? slider14(index)
+            : index == 13
+            ? slider15(
+            index)
+            : index == 14
+            ? slider16(
+            index)
+            : index ==
+            15
+            ? slider17(
+            index)
+            : index ==
+            16
+            ? slider18(index)
+            : Container();
       },
     );
   }
 
   buildLabelTextField(String name,
-      {double? fontSize, double textScleFactor = 0.9, bool isMandatory = true}) {
+      {double? fontSize,
+        double textScleFactor = 0.9,
+        bool isMandatory = true}) {
     return RichText(
         textScaleFactor: textScleFactor,
         textAlign: TextAlign.center,
@@ -266,7 +268,7 @@ class _TCardPageState extends State<TCardPage> {
         padding: EdgeInsets.symmetric(horizontal: 2.w),
         decoration: BoxDecoration(
           color:
-              (selectedProgramStatus == title) ? gsecondaryColor : gWhiteColor,
+          (selectedProgramStatus == title) ? gsecondaryColor : gWhiteColor,
           borderRadius: BorderRadius.circular(10),
           boxShadow: [
             BoxShadow(
@@ -282,10 +284,10 @@ class _TCardPageState extends State<TCardPage> {
             textAlign: TextAlign.center,
             style: TextStyle(
               color:
-                  (selectedProgramStatus == title) ? gWhiteColor : gBlackColor,
+              (selectedProgramStatus == title) ? gWhiteColor : gBlackColor,
               height: 1.3,
               fontFamily:
-                  (selectedProgramStatus == title) ? kFontMedium : kFontBook,
+              (selectedProgramStatus == title) ? kFontMedium : kFontBook,
               fontSize: subHeadingFont,
             ),
           ),
@@ -378,18 +380,17 @@ class _TCardPageState extends State<TCardPage> {
                 TCard(
                   cards: cards,
                   lockYAxis: true,
-                  size: const Size(500, 600),
+                  size:  Size(double.maxFinite, 70.h),
                   delaySlideFor: 300,
                   controller: _controller,
                   onForward: (index, info) {
                     print("onForward");
-                    print("${submittedIndex+1}  $index");
+                    print("${submittedIndex + 1}  $index");
 
-                    if(submittedIndex+1 != index && (submittedIndex+1 < index)){
+                    if (submittedIndex + 1 != index &&
+                        (submittedIndex + 1 < index)) {
                       _controller.back();
-
-                    }
-                    else{
+                    } else {
                       _index = index;
                       print("index: $index");
                       print("Direction : ${info.direction}");
@@ -433,13 +434,18 @@ class _TCardPageState extends State<TCardPage> {
                         onTap: () {
                           print(_index);
                           print(submittedIndex);
-                          print(_index == colors.length-1);
-                          if (submittedIndex == _index && _index != colors.length-1) {
+                          print(_index == colors.length - 1);
+                          if (submittedIndex == _index &&
+                              _index != colors.length - 1) {
                             _controller.forward();
                           } else {}
                         },
-                        child: Icon(Icons.arrow_forward_ios,
-                          color: (submittedIndex == _index && _index != colors.length-1) ? gBlackColor : gGreyColor,
+                        child: Icon(
+                          Icons.arrow_forward_ios,
+                          color: (submittedIndex == _index &&
+                              _index != colors.length - 1)
+                              ? gBlackColor
+                              : gGreyColor,
                         ),
                       ),
                     ],
@@ -453,7 +459,8 @@ class _TCardPageState extends State<TCardPage> {
     );
   }
 
-  buildHealthCheckBox(CheckBoxSettings healthCheckBox, String from, Function setstate) {
+  buildHealthCheckBox(
+      CheckBoxSettings healthCheckBox, String from, Function setstate) {
     return IntrinsicWidth(
       child: Theme(
         data: ThemeData(unselectedWidgetColor: Colors.white),
@@ -465,9 +472,8 @@ class _TCardPageState extends State<TCardPage> {
             child: Text(
               healthCheckBox.title.toString(),
               style: buildTextStyle(
-                  color: healthCheckBox.value == true
-                      ? gWhiteColor
-                      : gWhiteColor,
+                  color:
+                  healthCheckBox.value == true ? gWhiteColor : gWhiteColor,
                   fontFamily:
                   healthCheckBox.value == true ? kFontMedium : kFontBook),
             ),
@@ -497,8 +503,7 @@ class _TCardPageState extends State<TCardPage> {
                     healthCheckBox.value = v;
                   }
                 });
-              }
-              else {
+              } else {
                 print("else");
                 if (selectedAfterTheProgram
                     .contains(afterTheProgram.last.title)) {
@@ -566,31 +571,34 @@ class _TCardPageState extends State<TCardPage> {
   buildPercentageButton(String title, Color color, func) {
     return GestureDetector(
       onTap: func,
-      child: Container(
-        margin: EdgeInsets.symmetric(vertical: 1.h, horizontal: 10.w),
-        padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 2.h),
-        decoration: BoxDecoration(
-          color: color,
-          borderRadius: BorderRadius.circular(10),
-          boxShadow: [
-            BoxShadow(
-              color: kLineColor.withOpacity(0.3),
-              offset: const Offset(2, 3),
-              blurRadius: 5,
-            ),
-          ],
-        ),
-        child: Center(
-          child: Text(
-            title,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color:
-                  (selectedProgramStatus == title) ? gWhiteColor : gBlackColor,
-              height: 1.3,
-              fontFamily:
-                  (selectedProgramStatus == title) ? kFontMedium : kFontBook,
-              fontSize: subHeadingFont,
+      child: IntrinsicWidth(
+        child: Container(
+          margin: EdgeInsets.symmetric(vertical: 1.h),
+          padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 1.5.h),
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(10),
+            boxShadow: [
+              BoxShadow(
+                color: kLineColor.withOpacity(0.3),
+                offset: const Offset(2, 3),
+                blurRadius: 5,
+              ),
+            ],
+          ),
+          child: Center(
+            child: Text(
+              title,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: (selectedProgramStatus == title)
+                    ? gWhiteColor
+                    : gBlackColor,
+                height: 1.3,
+                fontFamily:
+                (selectedProgramStatus == title) ? kFontMedium : kFontBook,
+                fontSize: subHeadingFont,
+              ),
             ),
           ),
         ),
@@ -632,7 +640,7 @@ class _TCardPageState extends State<TCardPage> {
   // }
 
   slider2(int index) {
-    return StatefulBuilder(builder: (_, setstate){
+    return StatefulBuilder(builder: (_, setstate) {
       return Container(
         padding: EdgeInsets.symmetric(vertical: 2.h, horizontal: 3.w),
         decoration: BoxDecoration(
@@ -652,7 +660,8 @@ class _TCardPageState extends State<TCardPage> {
             // mainAxisAlignment: MainAxisAlignment.center,
             children: [
               SizedBox(height: 2.h),
-              buildLabelTextField('Changes I see after the program ',
+              buildLabelTextField(
+                  'Changes I see after the program\n(Pick all that apply)',
                   fontSize: headingFont),
               SizedBox(height: 1.h),
               ListView(
@@ -660,10 +669,12 @@ class _TCardPageState extends State<TCardPage> {
                 physics: const BouncingScrollPhysics(),
                 children: [
                   ...afterTheProgram
-                      .map((e) => buildHealthCheckBox(e, 'afterProgram', setstate))
+                      .map((e) =>
+                      buildHealthCheckBox(e, 'afterProgram', setstate))
                       .toList(),
                   Visibility(
-                    visible: selectedAfterTheProgram.any((element) => element == afterTheProgram.last.title),
+                    visible: selectedAfterTheProgram.any(
+                            (element) => element == afterTheProgram.last.title),
                     child: TextFormField(
                       textCapitalization: TextCapitalization.sentences,
                       controller: afterTheProgramController,
@@ -710,8 +721,10 @@ class _TCardPageState extends State<TCardPage> {
                     AppConfig().showSnackbar(context, "Please Select Any One !",
                         isError: true, bottomPadding: 10);
                   } else if (selectedAfterTheProgram
-                      .any((element) => element.contains("Other:")) && afterTheProgramController.text.isEmpty) {
-                    AppConfig().showSnackbar(context, "Please Enter your answer",
+                      .any((element) => element.contains("Other:")) &&
+                      afterTheProgramController.text.isEmpty) {
+                    AppConfig().showSnackbar(
+                        context, "Please Enter your answer",
                         isError: true, bottomPadding: 10);
                   } else {
                     submittedIndex = 0;
@@ -721,8 +734,8 @@ class _TCardPageState extends State<TCardPage> {
                 child: Center(
                   child: Container(
                     padding: EdgeInsets.all(5),
-                    decoration:
-                    BoxDecoration(color: gWhiteColor, shape: BoxShape.circle),
+                    decoration: BoxDecoration(
+                        color: gWhiteColor, shape: BoxShape.circle),
                     child: Center(
                       child: Icon(
                         Icons.done_outlined,
@@ -763,7 +776,7 @@ class _TCardPageState extends State<TCardPage> {
               buildLabelTextField(
                   'To What Extent Did The Program Heal Your Gut Issues',
                   fontSize: headingFont),
-              SizedBox(height: 3.h),
+              SizedBox(height: 1.h),
               buildPercentageButton(
                   gutIssuesList[0],
                   selectedPercentage == gutIssuesList[0]
@@ -774,7 +787,7 @@ class _TCardPageState extends State<TCardPage> {
                   changedIndex1(
                     gutIssuesList[0],
                   );
-                  _controller.forward();
+                  // _controller.forward();
                 });
               }),
               buildPercentageButton(
@@ -787,7 +800,7 @@ class _TCardPageState extends State<TCardPage> {
                   changedIndex1(
                     gutIssuesList[1],
                   );
-                  _controller.forward();
+                  // _controller.forward();
                 });
               }),
               buildPercentageButton(
@@ -800,7 +813,7 @@ class _TCardPageState extends State<TCardPage> {
                   changedIndex1(
                     gutIssuesList[2],
                   );
-                  _controller.forward();
+                  // _controller.forward();
                 });
               }),
               buildPercentageButton(
@@ -813,7 +826,7 @@ class _TCardPageState extends State<TCardPage> {
                   changedIndex1(
                     gutIssuesList[3],
                   );
-                  _controller.forward();
+                  // _controller.forward();
                 });
               }),
               buildPercentageButton(
@@ -826,7 +839,7 @@ class _TCardPageState extends State<TCardPage> {
                   changedIndex1(
                     gutIssuesList[4],
                   );
-                  _controller.forward();
+                  // _controller.forward();
                 });
               }),
               buildPercentageButton(
@@ -839,9 +852,36 @@ class _TCardPageState extends State<TCardPage> {
                   changedIndex1(
                     gutIssuesList[5],
                   );
-                  _controller.forward();
+                  // _controller.forward();
                 });
               }),
+              SizedBox(height: 2.h),
+              GestureDetector(
+                onTap: () {
+                  if (selectedPercentage.isEmpty) {
+                    AppConfig().showSnackbar(
+                        context, "Please Select Gut Issues",
+                        isError: true, bottomPadding: 10);
+                  } else {
+                    submittedIndex = 1;
+                    _controller.forward();
+                  }
+                },
+                child: Center(
+                  child: Container(
+                    padding: EdgeInsets.all(5),
+                    decoration: BoxDecoration(
+                        color: gWhiteColor, shape: BoxShape.circle),
+                    child: Center(
+                      child: Icon(
+                        Icons.done_outlined,
+                        color: gsecondaryColor,
+                        size: 3.h,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
         ),
@@ -872,7 +912,7 @@ class _TCardPageState extends State<TCardPage> {
               buildLabelTextField(
                   'How well did you stick to the plan given to you (meal plan / yoga plan / breathing exercises)? ',
                   fontSize: headingFont),
-              SizedBox(height: 3.h),
+              SizedBox(height: 1.h),
               buildPercentageButton(
                   breathingList[0],
                   selectedBreathing == breathingList[0]
@@ -883,7 +923,7 @@ class _TCardPageState extends State<TCardPage> {
                   changedIndex2(
                     breathingList[0],
                   );
-                  _controller.forward();
+                  // _controller.forward();
                 });
               }),
               buildPercentageButton(
@@ -896,7 +936,7 @@ class _TCardPageState extends State<TCardPage> {
                   changedIndex2(
                     breathingList[1],
                   );
-                  _controller.forward();
+                  // _controller.forward();
                 });
               }),
               buildPercentageButton(
@@ -909,7 +949,7 @@ class _TCardPageState extends State<TCardPage> {
                   changedIndex2(
                     breathingList[2],
                   );
-                  _controller.forward();
+                  // _controller.forward();
                 });
               }),
               buildPercentageButton(
@@ -922,7 +962,7 @@ class _TCardPageState extends State<TCardPage> {
                   changedIndex2(
                     breathingList[3],
                   );
-                  _controller.forward();
+                  // _controller.forward();
                 });
               }),
               buildPercentageButton(
@@ -935,7 +975,7 @@ class _TCardPageState extends State<TCardPage> {
                   changedIndex2(
                     breathingList[4],
                   );
-                  _controller.forward();
+                  // _controller.forward();
                 });
               }),
               buildPercentageButton(
@@ -948,9 +988,36 @@ class _TCardPageState extends State<TCardPage> {
                   changedIndex2(
                     breathingList[5],
                   );
-                  _controller.forward();
+                  // _controller.forward();
                 });
               }),
+              SizedBox(height: 2.h),
+              GestureDetector(
+                onTap: () {
+                  if (selectedBreathing.isEmpty) {
+                    AppConfig().showSnackbar(
+                        context, "Please Select Plan Given to you.",
+                        isError: true, bottomPadding: 10);
+                  } else {
+                    submittedIndex = 2;
+                    _controller.forward();
+                  }
+                },
+                child: Center(
+                  child: Container(
+                    padding: EdgeInsets.all(5),
+                    decoration: BoxDecoration(
+                        color: gWhiteColor, shape: BoxShape.circle),
+                    child: Center(
+                      child: Icon(
+                        Icons.done_outlined,
+                        color: gsecondaryColor,
+                        size: 3.h,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
         ),
@@ -983,25 +1050,51 @@ class _TCardPageState extends State<TCardPage> {
               SizedBox(height: 3.h),
               buildPercentageButton(yesNo[0],
                   mealyesno == yesNo[0] ? gsecondaryColor : gWhiteColor, () {
-                setState(() {
-                  changedIndex3(
-                    yesNo[0],
-                  );
-                  submittedIndex = 3;
-                  _controller.forward();
-                });
-              }),
+                    setState(() {
+                      changedIndex3(
+                        yesNo[0],
+                      );
+                      submittedIndex = 3;
+                      // _controller.forward();
+                    });
+                  }),
               buildPercentageButton(yesNo[1],
                   mealyesno == yesNo[1] ? gsecondaryColor : gWhiteColor, () {
-                setState(() {
-                  changedIndex3(
-                    yesNo[1],
-                  );
-                  submittedIndex = 3;
-                  _controller.forward();
-                });
-              }),
-              SizedBox(height: 2.h),
+                    setState(() {
+                      changedIndex3(
+                        yesNo[1],
+                      );
+                      submittedIndex = 3;
+                      // _controller.forward();
+                    });
+                  }),
+              SizedBox(height: 4.h),
+              GestureDetector(
+                onTap: () {
+                  if (mealyesno.isEmpty) {
+                    AppConfig().showSnackbar(
+                        context, "Please Select Meal Plan Easy To Follow.",
+                        isError: true, bottomPadding: 10);
+                  } else {
+                    submittedIndex = 3;
+                    _controller.forward();
+                  }
+                },
+                child: Center(
+                  child: Container(
+                    padding: EdgeInsets.all(5),
+                    decoration: BoxDecoration(
+                        color: gWhiteColor, shape: BoxShape.circle),
+                    child: Center(
+                      child: Icon(
+                        Icons.done_outlined,
+                        color: gsecondaryColor,
+                        size: 3.h,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
         ),
@@ -1034,25 +1127,51 @@ class _TCardPageState extends State<TCardPage> {
               SizedBox(height: 3.h),
               buildPercentageButton(yesNo[0],
                   yogayesno == yesNo[0] ? gsecondaryColor : gWhiteColor, () {
-                setState(() {
-                  changedIndex4(
-                    yesNo[0],
-                  );
-                  submittedIndex = 4;
-                  _controller.forward();
-                });
-              }),
+                    setState(() {
+                      changedIndex4(
+                        yesNo[0],
+                      );
+                      submittedIndex = 4;
+                      // _controller.forward();
+                    });
+                  }),
               buildPercentageButton(yesNo[1],
                   yogayesno == yesNo[1] ? gsecondaryColor : gWhiteColor, () {
-                setState(() {
-                  changedIndex4(
-                    yesNo[1],
-                  );
-                  submittedIndex = 4;
-                  _controller.forward();
-                });
-              }),
-              SizedBox(height: 2.h),
+                    setState(() {
+                      changedIndex4(
+                        yesNo[1],
+                      );
+                      submittedIndex = 4;
+                      // _controller.forward();
+                    });
+                  }),
+              SizedBox(height: 4.h),
+              GestureDetector(
+                onTap: () {
+                  if (yogayesno.isEmpty) {
+                    AppConfig().showSnackbar(
+                        context, "Please Select Yoga Plan Easy To Follow.",
+                        isError: true, bottomPadding: 10);
+                  } else {
+                    submittedIndex = 4;
+                    _controller.forward();
+                  }
+                },
+                child: Center(
+                  child: Container(
+                    padding: EdgeInsets.all(5),
+                    decoration: BoxDecoration(
+                        color: gWhiteColor, shape: BoxShape.circle),
+                    child: Center(
+                      child: Icon(
+                        Icons.done_outlined,
+                        color: gsecondaryColor,
+                        size: 3.h,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
         ),
@@ -1090,7 +1209,7 @@ class _TCardPageState extends State<TCardPage> {
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(5),
                   border:
-                      Border.all(color: Colors.grey.withOpacity(0.3), width: 1),
+                  Border.all(color: Colors.grey.withOpacity(0.3), width: 1),
                 ),
                 child: TextFormField(
                   maxLines: null, // Set this
@@ -1132,7 +1251,7 @@ class _TCardPageState extends State<TCardPage> {
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(5),
                   border:
-                      Border.all(color: Colors.grey.withOpacity(0.3), width: 1),
+                  Border.all(color: Colors.grey.withOpacity(0.3), width: 1),
                 ),
                 child: TextFormField(
                   maxLines: null, // Set this
@@ -1228,7 +1347,7 @@ class _TCardPageState extends State<TCardPage> {
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(5),
                   border:
-                      Border.all(color: Colors.grey.withOpacity(0.3), width: 1),
+                  Border.all(color: Colors.grey.withOpacity(0.3), width: 1),
                 ),
                 child: TextFormField(
                   maxLines: null, // Set this
@@ -1270,7 +1389,7 @@ class _TCardPageState extends State<TCardPage> {
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(5),
                   border:
-                      Border.all(color: Colors.grey.withOpacity(0.3), width: 1),
+                  Border.all(color: Colors.grey.withOpacity(0.3), width: 1),
                 ),
                 child: TextFormField(
                   maxLines: null, // Set this
@@ -1356,7 +1475,8 @@ class _TCardPageState extends State<TCardPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              buildLabelTextField("Feedback on Infusions",
+              buildLabelTextField(
+                  "Feedback on Infusions\n(Pick all that apply)",
                   fontSize: headingFont),
               SizedBox(height: 3.h),
               ListView(
@@ -1365,7 +1485,7 @@ class _TCardPageState extends State<TCardPage> {
                 children: [
                   ...feedbackOnKitItems
                       .map((e) => buildKitItemsListButton(
-                          e, 'influsions', selectedInfusions))
+                      e, 'influsions', selectedInfusions))
                       .toList(),
                 ],
               ),
@@ -1422,7 +1542,8 @@ class _TCardPageState extends State<TCardPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              buildLabelTextField("Feedback on Soups", fontSize: headingFont),
+              buildLabelTextField("Feedback on Soups\n(Pick all that apply)",
+                  fontSize: headingFont),
               SizedBox(height: 3.h),
               ListView(
                 shrinkWrap: true,
@@ -1430,7 +1551,7 @@ class _TCardPageState extends State<TCardPage> {
                 children: [
                   ...feedbackOnKitItems
                       .map((e) =>
-                          buildKitItemsListButton(e, 'soups', selectedSoups))
+                      buildKitItemsListButton(e, 'soups', selectedSoups))
                       .toList(),
                 ],
               ),
@@ -1487,7 +1608,8 @@ class _TCardPageState extends State<TCardPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              buildLabelTextField("Feedback on Porridges",
+              buildLabelTextField(
+                  "Feedback on Porridges\n(Pick all that apply)",
                   fontSize: headingFont),
               SizedBox(height: 3.h),
               ListView(
@@ -1496,7 +1618,7 @@ class _TCardPageState extends State<TCardPage> {
                 children: [
                   ...feedbackOnKitItems
                       .map((e) => buildKitItemsListButton(
-                          e, 'porridges', selectedPorridges))
+                      e, 'porridges', selectedPorridges))
                       .toList(),
                 ],
               ),
@@ -1553,7 +1675,8 @@ class _TCardPageState extends State<TCardPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              buildLabelTextField("Feedback on Podi", fontSize: headingFont),
+              buildLabelTextField("Feedback on Podi\n(Pick all that apply)",
+                  fontSize: headingFont),
               SizedBox(height: 3.h),
               ListView(
                 shrinkWrap: true,
@@ -1561,7 +1684,7 @@ class _TCardPageState extends State<TCardPage> {
                 children: [
                   ...feedbackOnKitItems
                       .map((e) =>
-                          buildKitItemsListButton(e, 'podi', selectedPodi))
+                      buildKitItemsListButton(e, 'podi', selectedPodi))
                       .toList(),
                 ],
               ),
@@ -1618,7 +1741,8 @@ class _TCardPageState extends State<TCardPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              buildLabelTextField("Feedback on Kheer", fontSize: headingFont),
+              buildLabelTextField("Feedback on Kheer\n(Pick all that apply)",
+                  fontSize: headingFont),
               SizedBox(height: 3.h),
               ListView(
                 shrinkWrap: true,
@@ -1626,7 +1750,7 @@ class _TCardPageState extends State<TCardPage> {
                 children: [
                   ...feedbackOnKitItems
                       .map((e) =>
-                          buildKitItemsListButton(e, 'kheer', selectedKheer))
+                      buildKitItemsListButton(e, 'kheer', selectedKheer))
                       .toList(),
                 ],
               ),
@@ -1694,7 +1818,7 @@ class _TCardPageState extends State<TCardPage> {
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(5),
                   border:
-                      Border.all(color: Colors.grey.withOpacity(0.3), width: 1),
+                  Border.all(color: Colors.grey.withOpacity(0.3), width: 1),
                 ),
                 child: TextFormField(
                   maxLines: null, // Set this
@@ -1736,7 +1860,7 @@ class _TCardPageState extends State<TCardPage> {
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(5),
                   border:
-                      Border.all(color: Colors.grey.withOpacity(0.3), width: 1),
+                  Border.all(color: Colors.grey.withOpacity(0.3), width: 1),
                 ),
                 child: TextFormField(
                   maxLines: null, // Set this
@@ -1833,7 +1957,7 @@ class _TCardPageState extends State<TCardPage> {
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(5),
                   border:
-                      Border.all(color: Colors.grey.withOpacity(0.3), width: 1),
+                  Border.all(color: Colors.grey.withOpacity(0.3), width: 1),
                 ),
                 child: TextFormField(
                   maxLines: null, // Set this
@@ -1875,7 +1999,7 @@ class _TCardPageState extends State<TCardPage> {
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(5),
                   border:
-                      Border.all(color: Colors.grey.withOpacity(0.3), width: 1),
+                  Border.all(color: Colors.grey.withOpacity(0.3), width: 1),
                 ),
                 child: TextFormField(
                   maxLines: null, // Set this
@@ -1967,35 +2091,61 @@ class _TCardPageState extends State<TCardPage> {
               SizedBox(height: 3.h),
               buildPercentageButton(yesNo[0],
                   supportPlans == yesNo[0] ? gsecondaryColor : gWhiteColor, () {
-                setState(() {
-                  changedIndex5(
-                    yesNo[0],
-                  );
-                  submittedIndex = 14;
-                  _controller.forward();
-                });
-              }),
+                    setState(() {
+                      changedIndex5(
+                        yesNo[0],
+                      );
+                      submittedIndex = 14;
+                      // _controller.forward();
+                    });
+                  }),
               buildPercentageButton(yesNo[1],
                   supportPlans == yesNo[1] ? gsecondaryColor : gWhiteColor, () {
-                setState(() {
-                  changedIndex5(
-                    yesNo[1],
-                  );
-                  submittedIndex = 14;
-                  _controller.forward();
-                });
-              }),
+                    setState(() {
+                      changedIndex5(
+                        yesNo[1],
+                      );
+                      submittedIndex = 14;
+                      // _controller.forward();
+                    });
+                  }),
               buildPercentageButton(yesNo[2],
                   supportPlans == yesNo[2] ? gsecondaryColor : gWhiteColor, () {
-                setState(() {
-                  changedIndex5(
-                    yesNo[2],
-                  );
-                  submittedIndex = 14;
-                  _controller.forward();
-                });
-              }),
-              SizedBox(height: 2.h),
+                    setState(() {
+                      changedIndex5(
+                        yesNo[2],
+                      );
+                      submittedIndex = 14;
+                      // _controller.forward();
+                    });
+                  }),
+              SizedBox(height: 4.h),
+              GestureDetector(
+                onTap: () {
+                  if (supportPlans.isEmpty) {
+                    AppConfig().showSnackbar(
+                        context, "Please Select Support Plan.",
+                        isError: true, bottomPadding: 10);
+                  } else {
+                    submittedIndex = 14;
+                    _controller.forward();
+                  }
+                },
+                child: Center(
+                  child: Container(
+                    padding: EdgeInsets.all(5),
+                    decoration: BoxDecoration(
+                        color: gWhiteColor, shape: BoxShape.circle),
+                    child: Center(
+                      child: Icon(
+                        Icons.done_outlined,
+                        color: gsecondaryColor,
+                        size: 3.h,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
         ),
@@ -2025,7 +2175,8 @@ class _TCardPageState extends State<TCardPage> {
             children: [
               buildLabelTextField(
                   "Can We Get A Picture Of You To Put A Face To This Feedback?",
-                  fontSize: headingFont, isMandatory: false),
+                  fontSize: headingFont,
+                  isMandatory: false),
               SizedBox(height: 3.h),
               GestureDetector(
                 onTap: () async {
@@ -2034,13 +2185,13 @@ class _TCardPageState extends State<TCardPage> {
 
                   if (result == null) return;
                   if (result.files.first.extension!.contains("png") ||
-                      result.files.first.extension!.contains("jpg")) {
+                      result.files.first.extension!.contains("jpg") ||
+                      result.files.first.extension!.contains("jpeg")) {
                     medicalRecords.add(result.files.first);
                     addFilesToList(File(result.paths.first!));
-
                   } else {
                     AppConfig().showSnackbar(
-                        context, "Please select png/jpg files",
+                        context, "Please select png/jpg/jpeg files",
                         isError: true);
                   }
 
@@ -2053,7 +2204,7 @@ class _TCardPageState extends State<TCardPage> {
                         color: gHintTextColor.withOpacity(0.3), width: 1),
                   ),
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -2080,18 +2231,18 @@ class _TCardPageState extends State<TCardPage> {
               (medicalRecords.isEmpty)
                   ? SizedBox()
                   : Center(
-                    child: SizedBox(
-                      height: 27.h,
-                      child: ListView.builder(
-                        itemCount: medicalRecords.length,
-                        shrinkWrap: true,
-                        itemBuilder: (context, index) {
-                          final file = medicalRecords[index];
-                          return buildFile(file, index);
-                        },
-                      ),
-                    ),
+                child: SizedBox(
+                  height: 27.h,
+                  child: ListView.builder(
+                    itemCount: medicalRecords.length,
+                    shrinkWrap: true,
+                    itemBuilder: (context, index) {
+                      final file = medicalRecords[index];
+                      return buildFile(file, index);
+                    },
                   ),
+                ),
+              ),
               SizedBox(height: 2.h),
               GestureDetector(
                 onTap: () {
@@ -2218,7 +2369,7 @@ class _TCardPageState extends State<TCardPage> {
               Center(
                 child: GestureDetector(
                   onTap: () {
-                    if(!isLoading){
+                    if (!isLoading) {
                       submitProgramFeedbackForm(
                         setstate,
                         widget.programContinuesdStatus,
@@ -2255,7 +2406,7 @@ class _TCardPageState extends State<TCardPage> {
                     decoration: BoxDecoration(
                       color: eUser().buttonColor,
                       borderRadius:
-                          BorderRadius.circular(eUser().buttonBorderRadius),
+                      BorderRadius.circular(eUser().buttonBorderRadius),
                       // border: Border.all(
                       //     color: eUser().buttonBorderColor,
                       //     width: eUser().buttonBorderWidth
@@ -2263,16 +2414,16 @@ class _TCardPageState extends State<TCardPage> {
                     ),
                     child: (isLoading)
                         ? buildThreeBounceIndicator(
-                            color: eUser().threeBounceIndicatorColor)
+                        color: eUser().threeBounceIndicatorColor)
                         : Center(
-                            child: Text(
-                            'Submit',
-                            style: TextStyle(
-                              fontFamily: eUser().buttonTextFont,
-                              color: eUser().buttonTextColor,
-                              fontSize: eUser().buttonTextSize,
-                            ),
-                          )),
+                        child: Text(
+                          'Submit',
+                          style: TextStyle(
+                            fontFamily: eUser().buttonTextFont,
+                            color: eUser().buttonTextColor,
+                            fontSize: eUser().buttonTextSize,
+                          ),
+                        )),
                   ),
                 ),
               ),
@@ -2295,31 +2446,31 @@ class _TCardPageState extends State<TCardPage> {
             switch (index) {
               case 0:
                 return Icon(
-                  Icons.sentiment_very_dissatisfied_sharp,
+                  Icons.star,
                   color: gsecondaryColor,
                   size: 3.h,
                 );
               case 1:
                 return Icon(
-                  Icons.sentiment_very_dissatisfied_sharp,
+                  Icons.star,
                   color: gsecondaryColor,
                   size: 3.h,
                 );
               case 2:
                 return Icon(
-                  Icons.sentiment_neutral,
+                  Icons.star,
                   color: gMainColor,
                   size: 3.h,
                 );
               case 3:
                 return Icon(
-                  Icons.sentiment_satisfied,
+                  Icons.star,
                   color: newDashboardGreenButtonColor,
                   size: 3.h,
                 );
               case 4:
                 return Icon(
-                  Icons.sentiment_very_satisfied,
+                  Icons.star,
                   color: newDashboardGreenButtonColor,
                   size: 3.h,
                 );
@@ -2362,31 +2513,31 @@ class _TCardPageState extends State<TCardPage> {
             switch (index) {
               case 0:
                 return Icon(
-                  Icons.sentiment_very_dissatisfied_sharp,
+                  Icons.star,
                   color: gsecondaryColor,
                   size: 3.h,
                 );
               case 1:
                 return Icon(
-                  Icons.sentiment_very_dissatisfied_sharp,
+                  Icons.star,
                   color: gsecondaryColor,
                   size: 3.h,
                 );
               case 2:
                 return Icon(
-                  Icons.sentiment_neutral,
+                  Icons.star,
                   color: gMainColor,
                   size: 3.h,
                 );
               case 3:
                 return Icon(
-                  Icons.sentiment_satisfied,
+                  Icons.star,
                   color: newDashboardGreenButtonColor,
                   size: 3.h,
                 );
               case 4:
                 return Icon(
-                  Icons.sentiment_very_satisfied,
+                  Icons.star,
                   color: newDashboardGreenButtonColor,
                   size: 3.h,
                 );
@@ -2429,31 +2580,31 @@ class _TCardPageState extends State<TCardPage> {
             switch (index) {
               case 0:
                 return Icon(
-                  Icons.sentiment_very_dissatisfied_sharp,
+                  Icons.star,
                   color: gsecondaryColor,
                   size: 3.h,
                 );
               case 1:
                 return Icon(
-                  Icons.sentiment_very_dissatisfied_sharp,
+                  Icons.star,
                   color: gsecondaryColor,
                   size: 3.h,
                 );
               case 2:
                 return Icon(
-                  Icons.sentiment_neutral,
+                  Icons.star,
                   color: gMainColor,
                   size: 3.h,
                 );
               case 3:
                 return Icon(
-                  Icons.sentiment_satisfied,
+                  Icons.star,
                   color: newDashboardGreenButtonColor,
                   size: 3.h,
                 );
               case 4:
                 return Icon(
-                  Icons.sentiment_very_satisfied,
+                  Icons.star,
                   color: newDashboardGreenButtonColor,
                   size: 3.h,
                 );
@@ -2599,14 +2750,15 @@ class _TCardPageState extends State<TCardPage> {
     });
   }
 
-  addFilesToList(File file) async{
+  addFilesToList(File file) async {
     newList.clear();
     setState(() {
       fileFormatList.add(file);
     });
 
     for (int i = 0; i < fileFormatList.length; i++) {
-      var stream = http.ByteStream(DelegatingStream.typed(fileFormatList[i].openRead()));
+      var stream =
+      http.ByteStream(DelegatingStream.typed(fileFormatList[i].openRead()));
       var length = await fileFormatList[i].length();
       var multipartFile = http.MultipartFile("face_to_feedback", stream, length,
           filename: fileFormatList[i].path);
@@ -2641,32 +2793,32 @@ class _TCardPageState extends State<TCardPage> {
 
   submitProgramFeedbackForm(
       Function setstate,
-    int programStatus,
-    String changesAfterProgram,
-    String otherChangesAfterProgram,
-    String didProgramHeal,
-    String stickToPlan,
-    String mealPlanEasyToFollow,
-    String yogaPlanEasyToFollow,
-    String commentsOnMealYogaPlans,
-    String programPositiveHighlights,
-    String programNegativeHighlights,
-    String infusions,
-    String soups,
-    String porridges,
-    String podi,
-    String kheer,
-    String kitItemsImproveSuggestions,
-    String supportFromDoctors,
-    String supportInWhatsappGroup,
-    String homeRemediesDuringProgram,
-    String improvementAndSuggestions,
-    String programImproveHealthAnotherWay,
-    String briefTestimonial,
-    String referProgram,
-    String membership,
-    String reasonOfProgramDiscontinue,
-  ) async {
+      int programStatus,
+      String changesAfterProgram,
+      String otherChangesAfterProgram,
+      String didProgramHeal,
+      String stickToPlan,
+      String mealPlanEasyToFollow,
+      String yogaPlanEasyToFollow,
+      String commentsOnMealYogaPlans,
+      String programPositiveHighlights,
+      String programNegativeHighlights,
+      String infusions,
+      String soups,
+      String porridges,
+      String podi,
+      String kheer,
+      String kitItemsImproveSuggestions,
+      String supportFromDoctors,
+      String supportInWhatsappGroup,
+      String homeRemediesDuringProgram,
+      String improvementAndSuggestions,
+      String programImproveHealthAnotherWay,
+      String briefTestimonial,
+      String referProgram,
+      String membership,
+      String reasonOfProgramDiscontinue,
+      ) async {
     setstate(() {
       isLoading = true;
     });
@@ -2712,13 +2864,13 @@ class _TCardPageState extends State<TCardPage> {
       //     (route) => false);
     } else {
       String result = (res as ErrorModel).message ?? '';
-      AppConfig().showSnackbar(context, result, isError: true, duration: 4);
+      // AppConfig().showSnackbar(context, result, isError: true, duration: 4);
 
       Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(
             builder: (context) => const DashboardScreen(),
           ),
-          (route) => route.isFirst);
+              (route) => route.isFirst);
     }
     setstate(() {
       isLoading = false;

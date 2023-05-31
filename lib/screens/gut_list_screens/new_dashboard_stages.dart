@@ -243,7 +243,7 @@ class GutListState extends State<GutList> {
         consultStage: consultationStage,
         appointmentModel: jsonEncode(_getAppointmentDetailsModel),
         consultStringModel: jsonEncode(_gutDataModel),
-        mrReport: (consultationStage == "report_upload") ? _gutDataModel!.value :"",
+        mrReport: (consultationStage == "report_upload") ? _gutDataModel!.historyWithMrValue!.mr :"",
         prepStage: prepratoryMealStage,
         prepMealModel: jsonEncode(_prepratoryModel),
         prepStringModel: jsonEncode(_prepProgramModel),
@@ -423,7 +423,8 @@ class GutListState extends State<GutList> {
   }
 
   showSupportCallSheet(BuildContext context){
-    return AppConfig().showSheet(context, Column(
+    return AppConfig().showSheet(context,
+        Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -526,6 +527,7 @@ class GutListState extends State<GutList> {
       ],
     ), bottomSheetHeight: 40.h,
       isSheetCloseNeeded: true,
+        isDismissible: true,
       sheetCloseOnTap: (){
       Navigator.pop(context);
       }
@@ -640,11 +642,11 @@ class GutListState extends State<GutList> {
                           onTap: (){
                             if(consultationStage == "report_upload" || consultationStage =="consultation_rejected"){
                               if(consultationStage == "consultation_rejected"){
-                                print(_gutDataModel!.rejectedCase!.mr!);
-                                goToScreen(MedicalReportScreen(pdfLink: _gutDataModel!.rejectedCase!.mr!,));
+                                print(_gutDataModel!.rejectedCase!.historyWithMrValue!.mr!);
+                                goToScreen(MedicalReportScreen(pdfLink: _gutDataModel!.rejectedCase!.historyWithMrValue!.mr!,));
                               }
                               else{
-                                goToScreen(MedicalReportScreen(pdfLink: _gutDataModel!.value!,));
+                                goToScreen(MedicalReportScreen(pdfLink: _gutDataModel!.historyWithMrValue!.mr!,));
                               }
                             }
                             else{
@@ -1048,7 +1050,7 @@ class GutListState extends State<GutList> {
       if(res.runtimeType == ShippingApproveModel){
         ShippingApproveModel model = res as ShippingApproveModel;
         print('success: ${model.message}');
-        AppConfig().showSnackbar(context, model.message!);
+        // AppConfig().showSnackbar(context, model.message!);
         getData();
       }
       else{
@@ -1169,8 +1171,9 @@ class GutListState extends State<GutList> {
   }
 
   mealReadySheet(){
-    addUrlToVideoPlayerChewie(_gutShipDataModel?.value ?? '');
-    return AppConfig().showSheet(context, Column(
+    addUrlToVideoPlayerChewie(_gutShipDataModel?.stringValue ?? '');
+    return AppConfig().showSheet(context,
+        Column(
       children: [
         Text('Hooray!\nYour food prescription is ready',
           textAlign: TextAlign.center,
@@ -1276,7 +1279,7 @@ class GutListState extends State<GutList> {
         ),
         SizedBox(height: 5.h,),
       ],
-    ), bottomSheetHeight: 75.h);
+    ), bottomSheetHeight: 75.h, isDismissible: true,);
   }
 
   buildMealVideo() {
@@ -1401,7 +1404,6 @@ class GutListState extends State<GutList> {
       case 'report_upload':
         // need to show consultation completed screen, "You can now View Your Medical Report !!"
         print(_gutDataModel!.toJson());
-        print(_gutDataModel!.value);
         // goToScreen(ConsultationRejected(reason: '',));
 
         goToScreen(ConsultationSuccess());

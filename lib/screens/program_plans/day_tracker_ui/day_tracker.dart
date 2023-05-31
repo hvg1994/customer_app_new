@@ -716,6 +716,7 @@ import '../../prepratory plan/new/new_transition_design.dart';
 
 class TrackerUI extends StatefulWidget {
   final ProceedProgramDayModel? proceedProgramDayModel;
+
   /// from is used for maintaining api url for meal and transition
   final String from;
   const TrackerUI({Key? key, this.proceedProgramDayModel, required this.from})
@@ -727,6 +728,8 @@ class TrackerUI extends StatefulWidget {
 
 class _TrackerUIState extends State<TrackerUI> {
   final formKey = GlobalKey<FormState>();
+  final question2 = GlobalKey<FormState>();
+  final question3 = GlobalKey<FormState>();
   List missedAnything = ["Yes, I have", "No, I've Done It All"];
 
   String selectedMissedAnything = '';
@@ -771,14 +774,14 @@ class _TrackerUIState extends State<TrackerUI> {
   final symptomsCheckBox2 = <CheckBoxSettings>[
     CheckBoxSettings(
         title:
-            "Satisfactory release of Solid waste matter / Gas from stomach and or Urine"),
+        "Satisfactory release of Solid waste matter / Gas from stomach and or Urine"),
     CheckBoxSettings(title: "Lightness in the Chest / Abdomen"),
     CheckBoxSettings(title: "Odour free burps"),
     CheckBoxSettings(title: "Freshness in the Mouth"),
     CheckBoxSettings(title: "Easily getting hungry, thirsty, or both"),
     CheckBoxSettings(
         title:
-            "Clear tongue/Sense (absence of discharges from sense organs such as the skin's sweat or perspiration, the ears, the nose, the tongue, and the eyes)"),
+        "Clear tongue/Sense (absence of discharges from sense organs such as the skin's sweat or perspiration, the ears, the nose, the tongue, and the eyes)"),
     CheckBoxSettings(title: "Odour free breath"),
     CheckBoxSettings(title: "No Body odour"),
     CheckBoxSettings(title: "Weight loss"),
@@ -789,7 +792,7 @@ class _TrackerUIState extends State<TrackerUI> {
     CheckBoxSettings(title: "Feeling of internal wellbeing and happiness"),
     CheckBoxSettings(
         title:
-            "Reduced / Absence of Detox related Recovery symptoms as mentioned in the previous question"),
+        "Reduced / Absence of Detox related Recovery symptoms as mentioned in the previous question"),
     CheckBoxSettings(title: "None of the above"),
   ];
 
@@ -828,6 +831,7 @@ class _TrackerUIState extends State<TrackerUI> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    buttonCarouselController = CarouselController();
     mealPlanMissedController.addListener(() {
       setState(() {});
     });
@@ -848,97 +852,55 @@ class _TrackerUIState extends State<TrackerUI> {
   Widget build(BuildContext context) {
     return UnfocusWidget(
         child: Container(
-      width: double.maxFinite,
-      // height: 85.h,
-      // padding: EdgeInsets.fromLTRB(12,15, 12, 0),
-      padding: EdgeInsets.fromLTRB(
-          12, 15, 12, MediaQuery.of(context).viewInsets.bottom),
-      // padding: EdgeInsets.only(
-      //     bottom: MediaQuery.of(context).viewInsets.bottom),
-      // decoration: BoxDecoration(
-      //   color: Colors.white,
-      //   boxShadow: [
-      //     BoxShadow(
-      //         blurRadius: 2, color: Colors.grey.withOpacity(0.5))
-      //   ],
-      //   borderRadius: const BorderRadius.only(
-      //     topLeft: Radius.circular(30),
-      //     topRight: Radius.circular(30),
-      //   ),
-      // ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Column(
+          width: double.maxFinite,
+          // height: 85.h,
+          // padding: EdgeInsets.fromLTRB(12,15, 12, 0),
+          padding: EdgeInsets.fromLTRB(
+              12, 15, 12, MediaQuery.of(context).viewInsets.bottom),
+          // padding: EdgeInsets.only(
+          //     bottom: MediaQuery.of(context).viewInsets.bottom),
+          // decoration: BoxDecoration(
+          //   color: Colors.white,
+          //   boxShadow: [
+          //     BoxShadow(
+          //         blurRadius: 2, color: Colors.grey.withOpacity(0.5))
+          //   ],
+          //   borderRadius: const BorderRadius.only(
+          //     topLeft: Radius.circular(30),
+          //     topRight: Radius.circular(30),
+          //   ),
+          // ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    "Gut Detox Program Status Tracker",
-                    textAlign: TextAlign.start,
-                    style: TextStyle(
-                        fontFamily: kFontMedium,
-                        color: gBlackColor,
-                        fontSize: headingFont),
-                  ),
-                  SizedBox(
-                    width: 2.w,
-                  ),
-                  Expanded(
-                    child: Container(
-                      height: 1,
-                      color: kLineColor,
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Text(
-                "Your detox & healing program tracker that takes less than 1 minute to fill but essential for your doctors to track, manage & intervene effectively.",
-                textAlign: TextAlign.start,
-                style: TextStyle(
-                    fontFamily: kFontMedium,
-                    height: 1.4,
-                    color: gHintTextColor,
-                    fontSize: subHeadingFont),
-              ),
+              // buildLabelTextField("Have You Missed Anything In Your Meal Or Yoga Plan Today?"),
+              // SizedBox(
+              //   height: 1.h,
+              // ),
+              // ...missedAnything.map((e) => Row(
+              //   children: [
+              //     Radio<String>(
+              //       value: e,
+              //       activeColor: kPrimaryColor,
+              //       groupValue: selectedMissedAnything,
+              //       onChanged: (value) {
+              //         setState(() {
+              //           selectedMissedAnything = value as String;
+              //         });
+              //       },
+              //     ),
+              //     Text(
+              //       e,
+              //       style: buildTextStyle(),
+              //     ),
+              //   ],
+              // )),
+              // showRespectiveWidget()
+              symptomsTracker1()
             ],
           ),
-          SizedBox(
-            height: 2.5.h,
-          ),
-          // buildLabelTextField("Have You Missed Anything In Your Meal Or Yoga Plan Today?"),
-          // SizedBox(
-          //   height: 1.h,
-          // ),
-          // ...missedAnything.map((e) => Row(
-          //   children: [
-          //     Radio<String>(
-          //       value: e,
-          //       activeColor: kPrimaryColor,
-          //       groupValue: selectedMissedAnything,
-          //       onChanged: (value) {
-          //         setState(() {
-          //           selectedMissedAnything = value as String;
-          //         });
-          //       },
-          //     ),
-          //     Text(
-          //       e,
-          //       style: buildTextStyle(),
-          //     ),
-          //   ],
-          // )),
-          // showRespectiveWidget()
-          symptomsTracker1()
-        ],
-      ),
-    ));
+        ));
   }
 
   showRespectiveWidget() {
@@ -1019,15 +981,59 @@ class _TrackerUIState extends State<TrackerUI> {
 
   symptomsTracker1() {
     final double height = MediaQuery.of(context).size.height;
-    double sliderHeight = height * 1.5;
+    double sliderHeight = height * 1.7;
     return Form(
       key: formKey,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+      child: CarouselSlider(
+        carouselController: buttonCarouselController,
+        options: CarouselOptions(
+          enableInfiniteScroll: false,
+          // scrollDirection: Axis.vertical,
+          scrollPhysics: const NeverScrollableScrollPhysics(),
+          height: sliderHeight,
+          viewportFraction: 1.0,
+          enlargeCenterPage: false,
+          reverse: false,
+          clipBehavior: Clip.antiAlias,
+          autoPlay: false,
+        ),
+        items: [
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    "Gut Detox Program Status Tracker",
+                    textAlign: TextAlign.start,
+                    style: TextStyle(
+                        fontFamily: kFontMedium,
+                        color: gBlackColor,
+                        fontSize: headingFont),
+                  ),
+                  SizedBox(
+                    width: 2.w,
+                  ),
+                  Expanded(
+                    child: Container(
+                      height: 1,
+                      color: kLineColor,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 0.5.h),
+              Text(
+                "Your detox & healing program tracker that takes less than 1 minute to fill but essential for your doctors to track, manage & intervene effectively.",
+                textAlign: TextAlign.start,
+                style: TextStyle(
+                    fontFamily: kFontMedium,
+                    height: 1.4,
+                    color: gHintTextColor,
+                    fontSize: subHeadingFont),
+              ),
+              SizedBox(height: 2.h),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -1048,7 +1054,7 @@ class _TrackerUIState extends State<TrackerUI> {
                   ),
                 ],
               ),
-              SizedBox(height: 1.h),
+              SizedBox(height: 0.5.h),
               Text(
                 "For your doctor to know if you are on track :)",
                 textAlign: TextAlign.start,
@@ -1057,439 +1063,301 @@ class _TrackerUIState extends State<TrackerUI> {
                     color: gHintTextColor,
                     fontSize: subHeadingFont),
               ),
+              SizedBox(height: 2.h),
+              buildLabelTextField(
+                  'Did you deal with any of the following withdrawal symptoms from detox today? If "Yes," then choose all that apply. If no, choose none of the above.',
+                  fontSize: questionFont),
+              SizedBox(
+                height: 1.h,
+              ),
+              ...symptomsCheckBox1
+                  .map((e) => buildHealthCheckBox(e, '1'))
+                  .toList(),
+              buildNextButton("01/06", () {
+                if (selectedSymptoms1.isNotEmpty) {
+                  buttonCarouselController
+                      .nextPage(
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.linear)
+                      .then((value) {
+                    Scrollable.ensureVisible(question2.currentContext!,
+                        duration: const Duration(milliseconds: 200));
+                  });
+                } else {
+                  Get.snackbar(
+                    "",
+                    'Please select withdrawal symptoms',
+                    titleText: const SizedBox.shrink(),
+                    colorText: gWhiteColor,
+                    snackPosition: SnackPosition.BOTTOM,
+                    backgroundColor: gsecondaryColor.withOpacity(0.55),
+                  );
+                }
+              }),
+              SizedBox(height: 2.h),
             ],
           ),
-          SizedBox(height: 3.h),
-          CarouselSlider(
-            carouselController: buttonCarouselController,
-            options: CarouselOptions(
-                scrollPhysics: const NeverScrollableScrollPhysics(),
-                height: sliderHeight,
-                viewportFraction: 1.0,
-                enlargeCenterPage: false,
-                reverse: false
-                // autoPlay: false,
-                ),
-            items: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  buildLabelTextField(
-                      'Did you deal with any of the following withdrawal symptoms from detox today? If "Yes," then choose all that apply. If no, choose none of the above.',
-                      fontSize: questionFont),
-                  SizedBox(
-                    height: 1.h,
-                  ),
-                  ...symptomsCheckBox1
-                      .map((e) => buildHealthCheckBox(e, '1'))
-                      .toList(),
-                  buildNextButton("01/06", () {
-                    if (selectedSymptoms1.isNotEmpty) {
-                      buttonCarouselController.nextPage(
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.linear);
-                    }
-                    else {
-                      Get.snackbar(
-                        "",
-                        'Please select withdrawal symptoms',
-                        titleText: SizedBox.shrink(),
-                        colorText: gWhiteColor,
-                        snackPosition: SnackPosition.BOTTOM,
-                        backgroundColor: gsecondaryColor.withOpacity(0.55),
-                      );
-                    }
-                  }),
-                ],
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              buildLabelTextField(
+                  'Did any of the following (adequate) detoxification / healing signs and symptoms happen to you today? If "Yes," then choose all that apply. If no, choose none of the above.',
+                  fontSize: questionFont,
+                  key: question2),
+              SizedBox(
+                height: 2.h,
               ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  buildLabelTextField(
-                      'Did any of the following (adequate) detoxification / healing signs and symptoms happen to you today? If "Yes," then choose all that apply. If no, choose none of the above.',
-                      fontSize: questionFont),
-                  SizedBox(
-                    height: 2.h,
-                  ),
-                  ...symptomsCheckBox2
-                      .map((e) => buildHealthCheckBox(e, '2'))
-                      .toList(),
-                  buildNextButton("02/06", () {
-                    if (selectedSymptoms2.isNotEmpty) {
-                      buttonCarouselController.nextPage(
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.linear);
-                    } else {
-                      Get.snackbar(
-                        "",
-                        'Please select Detoxification/healing signs',
-                        titleText: SizedBox.shrink(),
-                        colorText: gWhiteColor,
-                        snackPosition: SnackPosition.BOTTOM,
-                        backgroundColor: gsecondaryColor.withOpacity(0.55),
-                      );
-                    }
-                  }),
-                ],
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  buildLabelTextField(
-                      'Please let us know if you notice any other signs or have any other worries. If none, enter "No."',
-                      fontSize: questionFont),
-                  TextFormField(
-                    controller: worriesController,
-                    cursorColor: kPrimaryColor,
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return 'Please let us know if you notice any other signs or have any other worries.';
-                      } else {
-                        return null;
-                      }
-                    },
-                    decoration: CommonDecoration.buildTextInputDecoration(
-                        "Your answer", worriesController),
-                    textInputAction: TextInputAction.next,
-                    textAlign: TextAlign.start,
-                    keyboardType: TextInputType.name,
-                  ),
-                  buildNextButton("03/06", () {
-                    if (worriesController.text.isNotEmpty) {
-                      buttonCarouselController.nextPage(
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.linear);
-                    } else {
-                      Get.snackbar(
-                        "",
-                        'Please Enter Your Answer',
-                        titleText: SizedBox.shrink(),
-                        colorText: gWhiteColor,
-                        snackPosition: SnackPosition.BOTTOM,
-                        backgroundColor: gsecondaryColor.withOpacity(0.55),
-                      );
-                    }
-                  }),
-                ],
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  buildLabelTextField(
-                      'Did you eat something other than what was on your meal plan? If "Yes", please give more information? If not, type "No."',
-                      fontSize: questionFont),
-                  TextFormField(
-                    controller: eatSomethingController,
-                    cursorColor: kPrimaryColor,
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return 'Did you eat something other than what was on your meal plan?';
-                      } else {
-                        return null;
-                      }
-                    },
-                    decoration: CommonDecoration.buildTextInputDecoration(
-                        "Your answer", eatSomethingController),
-                    textInputAction: TextInputAction.next,
-                    textAlign: TextAlign.start,
-                    keyboardType: TextInputType.name,
-                  ),
-                  buildNextButton("04/06", () {
-                    if (eatSomethingController.text.isNotEmpty) {
-                      buttonCarouselController.nextPage(
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.linear);
-                    } else {
-                      Get.snackbar(
-                        "",
-                        'Please Enter Your Answer',
-                        titleText: SizedBox.shrink(),
-                        colorText: gWhiteColor,
-                        snackPosition: SnackPosition.BOTTOM,
-                        backgroundColor: gsecondaryColor.withOpacity(0.55),
-                      );
-                    }
-                  }),
-                ],
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  buildLabelTextField(
-                      'Did you complete the Calm and Move modules suggested today?',
-                      fontSize: questionFont),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            selectedCalmModule = "Yes";
-                          });
-                        },
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            SizedBox(
-                              width: 25,
-                              child: Radio(
-                                value: "Yes",
-                                activeColor: kPrimaryColor,
-                                groupValue: selectedCalmModule,
-                                onChanged: (value) {
-                                  setState(() {
-                                    selectedCalmModule = value as String;
-                                  });
-                                },
-                              ),
-                            ),
-                            Text(
-                              'Yes',
-                              style: buildTextStyle(
-                                  color: selectedCalmModule == 'Yes'
-                                      ? kTextColor
-                                      : gHintTextColor,
-                                  fontFamily: selectedCalmModule == 'Yes'
-                                      ? kFontMedium
-                                      : kFontBook),
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(
-                        width: 10.w,
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            selectedCalmModule = "No";
-                          });
-                        },
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            SizedBox(
-                              width: 25,
-                              child: Radio(
-                                value: "No",
-                                activeColor: kPrimaryColor,
-                                groupValue: selectedCalmModule,
-                                onChanged: (value) {
-                                  setState(() {
-                                    selectedCalmModule = value as String;
-                                  });
-                                },
-                              ),
-                            ),
-                            Text(
-                              'No',
-                              style: buildTextStyle(
-                                  color: selectedCalmModule == 'No'
-                                      ? kTextColor
-                                      : gHintTextColor,
-                                  fontFamily: selectedCalmModule == 'No'
-                                      ? kFontMedium
-                                      : kFontBook),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  buildNextButton("05/06", () {
-                    if (selectedCalmModule.isNotEmpty) {
-                      buttonCarouselController.nextPage(
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.linear);
-                    } else {
-                      Get.snackbar(
-                        "",
-                        'Please select Calm & Move Modules',
-                        titleText: const SizedBox.shrink(),
-                        colorText: gWhiteColor,
-                        snackPosition: SnackPosition.BOTTOM,
-                        backgroundColor: gsecondaryColor.withOpacity(0.55),
-                      );
-                    }
-                  }),
-                ],
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  buildLabelTextField(
-                      'Have you had a medical exam or taken any medications during the program? If "Yes", please give more information. Type "No" if not.',
-                      fontSize: questionFont),
-                  TextFormField(
-                    controller: anyMedicationsController,
-                    cursorColor: kPrimaryColor,
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return 'Have you had a medical exam or taken any medications during the program?';
-                      } else {
-                        return null;
-                      }
-                    },
-                    decoration: CommonDecoration.buildTextInputDecoration(
-                        "Your answer", anyMedicationsController),
-                    textInputAction: TextInputAction.done,
-                    textAlign: TextAlign.start,
-                    keyboardType: TextInputType.name,
-                  ),
-                  buildNextButton("Submit", () {
-                    if (anyMedicationsController.text.isNotEmpty) {
-                      proceed();
-                    } else {
-                      Get.snackbar(
-                        "",
-                        'Please Enter Your Answer',
-                        titleText: const SizedBox.shrink(),
-                        colorText: gWhiteColor,
-                        snackPosition: SnackPosition.BOTTOM,
-                        backgroundColor: gsecondaryColor.withOpacity(0.55),
-                      );
-                    }
-                  }),
-                ],
-              ),
+              ...symptomsCheckBox2
+                  .map((e) => buildHealthCheckBox(e, '2'))
+                  .toList(),
+              buildNextButton("02/06", () {
+                if (selectedSymptoms2.isNotEmpty) {
+                  buttonCarouselController
+                      .nextPage(
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.linear)
+                      .then((value) {
+                    Scrollable.ensureVisible(question3.currentContext!,
+                        duration: const Duration(milliseconds: 200));
+                  });
+                } else {
+                  Get.snackbar(
+                    "",
+                    'Please select Detoxification/healing signs',
+                    titleText: const SizedBox.shrink(),
+                    colorText: gWhiteColor,
+                    snackPosition: SnackPosition.BOTTOM,
+                    backgroundColor: gsecondaryColor.withOpacity(0.55),
+                  );
+                }
+              }),
+              SizedBox(height: 2.h),
             ],
           ),
-          // SizedBox(height: 200.h,
-          //   child: PageView.builder(
-          //     controller: _controller!,
-          //     onPageChanged: (page) {
-          //       if (page == 10 - 1) {
-          //         setState(() {
-          //           btnText = "See Results";
-          //         });
-          //       }
-          //       setState(() {
-          //         answered = false;
-          //       });
-          //     },
-          //     physics:  const NeverScrollableScrollPhysics(),
-          //     itemBuilder: (context, index) {
-          //       return Column(
-          //         mainAxisAlignment: MainAxisAlignment.center,
-          //         crossAxisAlignment: CrossAxisAlignment.center,
-          //         children: [
-          //           // SizedBox(
-          //           //   width: double.infinity,
-          //           //   height: 200.0,
-          //           //   child: Text(
-          //           //     "${questions[index].question}",
-          //           //     style: TextStyle(
-          //           //       color: Colors.white,
-          //           //       fontSize: 22.0,
-          //           //     ),
-          //           //   ),
-          //           // ),
-          //           // for (int i = 0; i < questions[index].answers!.length; i++)
-          //           //   Container(
-          //           //     width: double.infinity,
-          //           //     height: 50.0,
-          //           //     margin: EdgeInsets.only(
-          //           //         bottom: 20.0, left: 12.0, right: 12.0),
-          //           //     child: RawMaterialButton(
-          //           //       shape: RoundedRectangleBorder(
-          //           //         borderRadius: BorderRadius.circular(8.0),
-          //           //       ),
-          //           //       fillColor: btnPressed
-          //           //           ? questions[index].answers!.values.toList()[i]
-          //           //           ? Colors.green
-          //           //           : Colors.red
-          //           //           : AppColor.secondaryColor,
-          //           //       onPressed: !answered
-          //           //           ? () {
-          //           //         if (questions[index]
-          //           //             .answers!
-          //           //             .values
-          //           //             .toList()[i]) {
-          //           //           score++;
-          //           //           print("yes");
-          //           //         } else {
-          //           //           print("no");
-          //           //         }
-          //           //         setState(() {
-          //           //           btnPressed = true;
-          //           //           answered = true;
-          //           //         });
-          //           //       }
-          //           //           : null,
-          //           //       child: Text(questions[index].answers!.keys.toList()[i],
-          //           //           style: TextStyle(
-          //           //             color: Colors.white,
-          //           //             fontSize: 18.0,
-          //           //           )),
-          //           //     ),
-          //           //   ),
-          //           buildLabelTextField(
-          //               'Did you deal with any of the following withdrawal symptoms from detox today? If "Yes," then choose all that apply. If no, choose none of the above.',
-          //               fontSize: questionFont),
-          //           SizedBox(height: 1.h),
-          //           ...symptomsCheckBox1.map((e) => buildHealthCheckBox(e, '1')).toList(),
-          //           SizedBox(height: 1.h),
-          //           Align(
-          //             alignment: Alignment.topRight,
-          //             child: IntrinsicWidth(
-          //               child: ElevatedButton(
-          //                 style: ElevatedButton.styleFrom(
-          //                   primary: eUser().buttonColor,
-          //                   onSurface: eUser().buttonTextColor,
-          //                   padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 5.w),
-          //                   shape: RoundedRectangleBorder(
-          //                       borderRadius:
-          //                       BorderRadius.circular(eUser().buttonBorderRadius)),
-          //                 ),
-          //                 onPressed: () {
-          // buttonCarouselController.nextPage(
-          //     duration: Duration(milliseconds: 300), curve: Curves.linear);
-          //             },
-          //                 child: Center(
-          //                   child: Text(
-          //                     '01/10',
-          //                     style: TextStyle(
-          //                       fontFamily: eUser().buttonTextFont,
-          //                       color: eUser().buttonTextColor,
-          //                       fontSize: eUser().buttonTextSize,
-          //                     ),
-          //                   ),
-          //                 ),
-          //               ),
-          //             ),
-          //           ),
-          //           // RawMaterialButton(
-          //           //   onPressed: () {
-          //           //     if (_controller!.page?.toInt() == questions.length - 1) {
-          //           //       Navigator.push(
-          //           //           context,
-          //           //           MaterialPageRoute(
-          //           //               builder: (context) => ResultScreen(score)));
-          //           //     } else {
-          //           //       _controller!.nextPage(
-          //           //           duration: Duration(milliseconds: 250),
-          //           //           curve: Curves.easeInExpo);
-          //           //
-          //           //       setState(() {
-          //           //         btnPressed = false;
-          //           //       });
-          //           //     }
-          //           //   },
-          //           //   shape: StadiumBorder(),
-          //           //   fillColor: Colors.blue,
-          //           //   padding: EdgeInsets.all(18.0),
-          //           //   elevation: 0.0,
-          //           //   child: Text(
-          //           //     btnText,
-          //           //     style: TextStyle(color: Colors.white),
-          //           //   ),
-          //           // )
-          //         ],
-          //       );
-          //     },
-          //     itemCount: 10,
-          //   ),
-          // ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              buildLabelTextField(
+                  'Please let us know if you notice any other signs or have any other worries. If none, enter "No."',
+                  fontSize: questionFont,key: question3),
+              TextFormField(
+                controller: worriesController,
+                cursorColor: kPrimaryColor,
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return 'Please let us know if you notice any other signs or have any other worries.';
+                  } else {
+                    return null;
+                  }
+                },
+                decoration: CommonDecoration.buildTextInputDecoration(
+                    "Your answer", worriesController),
+                textInputAction: TextInputAction.next,
+                textAlign: TextAlign.start,
+                keyboardType: TextInputType.name,
+              ),
+              buildNextButton("03/06", () {
+                if (worriesController.text.isNotEmpty) {
+                  buttonCarouselController.nextPage(
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.linear);
+                } else {
+                  Get.snackbar(
+                    "",
+                    'Please Enter Your Answer',
+                    titleText: SizedBox.shrink(),
+                    colorText: gWhiteColor,
+                    snackPosition: SnackPosition.BOTTOM,
+                    backgroundColor: gsecondaryColor.withOpacity(0.55),
+                  );
+                }
+              }),
+              SizedBox(height: 2.h),
+            ],
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              buildLabelTextField(
+                  'Did you eat something other than what was on your meal plan? If "Yes", please give more information? If not, type "No."',
+                  fontSize: questionFont),
+              TextFormField(
+                controller: eatSomethingController,
+                cursorColor: kPrimaryColor,
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return 'Did you eat something other than what was on your meal plan?';
+                  } else {
+                    return null;
+                  }
+                },
+                decoration: CommonDecoration.buildTextInputDecoration(
+                    "Your answer", eatSomethingController),
+                textInputAction: TextInputAction.next,
+                textAlign: TextAlign.start,
+                keyboardType: TextInputType.name,
+              ),
+              buildNextButton("04/06", () {
+                if (eatSomethingController.text.isNotEmpty) {
+                  buttonCarouselController.nextPage(
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.linear);
+                } else {
+                  Get.snackbar(
+                    "",
+                    'Please Enter Your Answer',
+                    titleText: SizedBox.shrink(),
+                    colorText: gWhiteColor,
+                    snackPosition: SnackPosition.BOTTOM,
+                    backgroundColor: gsecondaryColor.withOpacity(0.55),
+                  );
+                }
+              }),
+              SizedBox(height: 2.h),
+            ],
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              buildLabelTextField(
+                  'Did you complete the Calm and Move modules suggested today?',
+                  fontSize: questionFont),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        selectedCalmModule = "Yes";
+                      });
+                    },
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        SizedBox(
+                          width: 25,
+                          child: Radio(
+                            value: "Yes",
+                            activeColor: kPrimaryColor,
+                            groupValue: selectedCalmModule,
+                            onChanged: (value) {
+                              setState(() {
+                                selectedCalmModule = value as String;
+                              });
+                            },
+                          ),
+                        ),
+                        Text(
+                          'Yes',
+                          style: buildTextStyle(
+                              color: selectedCalmModule == 'Yes'
+                                  ? kTextColor
+                                  : gHintTextColor,
+                              fontFamily: selectedCalmModule == 'Yes'
+                                  ? kFontMedium
+                                  : kFontBook),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    width: 10.w,
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        selectedCalmModule = "No";
+                      });
+                    },
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        SizedBox(
+                          width: 25,
+                          child: Radio(
+                            value: "No",
+                            activeColor: kPrimaryColor,
+                            groupValue: selectedCalmModule,
+                            onChanged: (value) {
+                              setState(() {
+                                selectedCalmModule = value as String;
+                              });
+                            },
+                          ),
+                        ),
+                        Text(
+                          'No',
+                          style: buildTextStyle(
+                              color: selectedCalmModule == 'No'
+                                  ? kTextColor
+                                  : gHintTextColor,
+                              fontFamily: selectedCalmModule == 'No'
+                                  ? kFontMedium
+                                  : kFontBook),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              buildNextButton("05/06", () {
+                if (selectedCalmModule.isNotEmpty) {
+                  buttonCarouselController.nextPage(
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.linear);
+                } else {
+                  Get.snackbar(
+                    "",
+                    'Please select Calm & Move Modules',
+                    titleText: const SizedBox.shrink(),
+                    colorText: gWhiteColor,
+                    snackPosition: SnackPosition.BOTTOM,
+                    backgroundColor: gsecondaryColor.withOpacity(0.55),
+                  );
+                }
+              }),
+              SizedBox(height: 2.h),
+            ],
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              buildLabelTextField(
+                  'Have you had a medical exam or taken any medications during the program? If "Yes", please give more information. Type "No" if not.',
+                  fontSize: questionFont),
+              TextFormField(
+                controller: anyMedicationsController,
+                cursorColor: kPrimaryColor,
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return 'Have you had a medical exam or taken any medications during the program?';
+                  } else {
+                    return null;
+                  }
+                },
+                decoration: CommonDecoration.buildTextInputDecoration(
+                    "Your answer", anyMedicationsController),
+                textInputAction: TextInputAction.done,
+                textAlign: TextAlign.start,
+                keyboardType: TextInputType.name,
+              ),
+              buildNextButton("Submit", () {
+                if (anyMedicationsController.text.isNotEmpty) {
+                  proceed();
+                } else {
+                  Get.snackbar(
+                    "",
+                    'Please Enter Your Answer',
+                    titleText: const SizedBox.shrink(),
+                    colorText: gWhiteColor,
+                    snackPosition: SnackPosition.BOTTOM,
+                    backgroundColor: gsecondaryColor.withOpacity(0.55),
+                  );
+                }
+              }),
+              SizedBox(height: 2.h),
+            ],
+          ),
         ],
       ),
     );
@@ -1508,7 +1376,7 @@ class _TrackerUIState extends State<TrackerUI> {
               padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 5.w),
               shape: RoundedRectangleBorder(
                   borderRadius:
-                      BorderRadius.circular(eUser().buttonBorderRadius)),
+                  BorderRadius.circular(eUser().buttonBorderRadius)),
             ),
             onPressed: func,
             child: Center(
@@ -1752,10 +1620,10 @@ class _TrackerUIState extends State<TrackerUI> {
                   primary: eUser().buttonColor,
                   onSurface: eUser().buttonTextColor,
                   padding:
-                      EdgeInsets.symmetric(vertical: 1.h, horizontal: 10.w),
+                  EdgeInsets.symmetric(vertical: 1.h, horizontal: 10.w),
                   shape: RoundedRectangleBorder(
                       borderRadius:
-                          BorderRadius.circular(eUser().buttonBorderRadius)),
+                      BorderRadius.circular(eUser().buttonBorderRadius)),
                 ),
                 onPressed: () {
                   if (formKey.currentState!.validate()) {
@@ -1831,9 +1699,9 @@ class _TrackerUIState extends State<TrackerUI> {
             healthCheckBox.title.toString(),
             style: buildTextStyle(
                 color:
-                    healthCheckBox.value == true ? kTextColor : gHintTextColor,
+                healthCheckBox.value == true ? kTextColor : gHintTextColor,
                 fontFamily:
-                    healthCheckBox.value == true ? kFontMedium : kFontBook),
+                healthCheckBox.value == true ? kFontMedium : kFontBook),
           ),
         ),
         dense: true,
@@ -1873,8 +1741,7 @@ class _TrackerUIState extends State<TrackerUI> {
               }
             }
             print(selectedSymptoms1);
-          }
-          else if (from == '2') {
+          } else if (from == '2') {
             if (healthCheckBox.title == symptomsCheckBox2.last.title) {
               print("if");
               setState(() {
@@ -1901,7 +1768,7 @@ class _TrackerUIState extends State<TrackerUI> {
                       .contains(symptomsCheckBox2.last.title)) {
                     // print("if");
                     selectedSymptoms2.removeWhere(
-                        (element) => element == symptomsCheckBox2.last.title);
+                            (element) => element == symptomsCheckBox2.last.title);
                     symptomsCheckBox2.forEach((element) {
                       element.value = false;
                     });
@@ -1996,7 +1863,7 @@ class _TrackerUIState extends State<TrackerUI> {
                         .contains(symptomsCheckBox2.last.title)) {
                       // print("if");
                       selectedSymptoms2.removeWhere(
-                          (element) => element == symptomsCheckBox2.last.title);
+                              (element) => element == symptomsCheckBox2.last.title);
                       symptomsCheckBox2.forEach((element) {
                         element.value = false;
                       });
@@ -2030,42 +1897,42 @@ class _TrackerUIState extends State<TrackerUI> {
     ProceedProgramDayModel? model;
     model = (ProgramMealType.program.name == widget.from)
         ? ProceedProgramDayModel(
-            patientMealTracking:
-                widget.proceedProgramDayModel!.patientMealTracking,
-            comment: widget.proceedProgramDayModel!.comment,
-            userProgramStatusTracking: '1',
-            day: widget.proceedProgramDayModel!.day,
-            missedAnyThingRadio: widget
-                    .proceedProgramDayModel!.patientMealTracking!
-                    .any((element) => element.status == 'unfollowed')
-                ? missedAnything[0]
-                : missedAnything[1],
-            // didUMiss: mealPlanMissedController.text,
-            didUMiss: widget.proceedProgramDayModel!.comment,
-            withdrawalSymptoms: selectedSymptoms1.join(','),
-            detoxification: selectedSymptoms2.join(','),
-            haveAnyOtherWorries: worriesController.text,
-            eatSomthingOther: eatSomethingController.text,
-            completedCalmMoveModules: selectedCalmModule,
-            hadAMedicalExamMedications: anyMedicationsController.text)
+        patientMealTracking:
+        widget.proceedProgramDayModel!.patientMealTracking,
+        comment: widget.proceedProgramDayModel!.comment,
+        userProgramStatusTracking: '1',
+        day: widget.proceedProgramDayModel!.day,
+        missedAnyThingRadio: widget
+            .proceedProgramDayModel!.patientMealTracking!
+            .any((element) => element.status == 'unfollowed')
+            ? missedAnything[0]
+            : missedAnything[1],
+        // didUMiss: mealPlanMissedController.text,
+        didUMiss: widget.proceedProgramDayModel!.comment,
+        withdrawalSymptoms: selectedSymptoms1.join(','),
+        detoxification: selectedSymptoms2.join(','),
+        haveAnyOtherWorries: worriesController.text,
+        eatSomthingOther: eatSomethingController.text,
+        completedCalmMoveModules: selectedCalmModule,
+        hadAMedicalExamMedications: anyMedicationsController.text)
         : ProceedProgramDayModel(
-            day: widget.proceedProgramDayModel!.day,
-            userProgramStatusTracking: '1',
+        day: widget.proceedProgramDayModel!.day,
+        userProgramStatusTracking: '1',
 
-            //missedAnyThingRadio: selectedMissedAnything,
-            // didUMiss: mealPlanMissedController.text,
-            //didUMiss: "",
-            withdrawalSymptoms: selectedSymptoms1.join(','),
-            detoxification: selectedSymptoms2.join(','),
-            haveAnyOtherWorries: worriesController.text,
-            eatSomthingOther: eatSomethingController.text,
-            completedCalmMoveModules: selectedCalmModule,
-            hadAMedicalExamMedications: anyMedicationsController.text);
+        //missedAnyThingRadio: selectedMissedAnything,
+        // didUMiss: mealPlanMissedController.text,
+        //didUMiss: "",
+        withdrawalSymptoms: selectedSymptoms1.join(','),
+        detoxification: selectedSymptoms2.join(','),
+        haveAnyOtherWorries: worriesController.text,
+        eatSomthingOther: eatSomethingController.text,
+        completedCalmMoveModules: selectedCalmModule,
+        hadAMedicalExamMedications: anyMedicationsController.text);
     final result = (ProgramMealType.program.name == widget.from)
         ? await ProgramService(repository: repository)
-            .proceedDayMealDetailsService(model)
+        .proceedDayMealDetailsService(model)
         : await PrepratoryMealService(repository: prepRepository)
-            .proceedDayMealDetailsService(model);
+        .proceedDayMealDetailsService(model);
 
     print("result: $result");
 
@@ -2075,15 +1942,15 @@ class _TrackerUIState extends State<TrackerUI> {
 
       (ProgramMealType.program.name == widget.from)
           ? Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (_) => MealPlanScreen()),
+          context,
+          MaterialPageRoute(builder: (_) => MealPlanScreen()),
               (route) => route.isFirst)
           : Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(
-                builder: (context) => NewTransitionDesign(
-                    totalDays: '', dayNumber: '', trackerVideoLink: trackerUrl),
-              ),
+          context,
+          MaterialPageRoute(
+            builder: (context) => NewTransitionDesign(
+                totalDays: '', dayNumber: '', trackerVideoLink: trackerUrl),
+          ),
               (route) => route.isFirst);
     } else {
       ErrorModel model = result as ErrorModel;
@@ -2104,8 +1971,7 @@ class _TrackerUIState extends State<TrackerUI> {
   );
 }
 
-
-class Question{
+class Question {
   String text;
   Question(this.text);
 }

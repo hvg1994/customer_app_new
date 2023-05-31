@@ -277,7 +277,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       GestureDetector(
                         onTap: () => AppConfig().showSheet(
                             context, logoutWidget(),
-                            bottomSheetHeight: 45.h),
+                            bottomSheetHeight: 45.h, isDismissible: true,),
                         child: Container(
                           margin:  EdgeInsets.symmetric(horizontal: 30.w),
                           padding: EdgeInsets.symmetric(vertical: 1.h,horizontal: 3.w),

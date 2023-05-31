@@ -109,75 +109,88 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
                   ),
                   (isStarted)
                       ? Center(child: buildThreeBounceIndicator(color: gsecondaryColor),)
-                      :
-                  (widget.from == ProgramMealType.prepratory.name)
-                      ? Center(
-                    child: MediaQuery(
-                      data: MediaQuery.of(context).copyWith(textScaleFactor: 0.8),
-                      child: GestureDetector(
-                        onTap: () {
-                          if(videoPlayerController != null) videoPlayerController!.pause();
-                          if(_chewieController != null) _chewieController!.pause();
-
-                          startProgram();
-                        },
-                        child: Container(
-                          width: 40.w,
-                          height: 5.h,
-                          padding:
-                          EdgeInsets.symmetric(vertical: 1.h, horizontal: 15.w),
-                          decoration: BoxDecoration(
-                            color: eUser().buttonColor,
-                            borderRadius: BorderRadius.circular(eUser().buttonBorderRadius),
-                            // border: Border.all(
-                            //     color: eUser().buttonBorderColor,
-                            //     width: eUser().buttonBorderWidth
-                            // ),
-                          ),
-                          child: Center(child: Text(
-                            'Start',
-                            style: TextStyle(
-                              fontFamily: eUser().buttonTextFont,
-                              color: eUser().buttonTextColor,
-                              fontSize: eUser().buttonTextSize,
-                            ),
-                          )),
-                        ),
-                      ),
-                    ),
-                  )
-                      : ConfirmationSlider(
-                      width: 95.w,
-                      text: "Slide To Start",
-                      sliderButtonContent: const Image(
-                        image: AssetImage(
-                            "assets/images/noun-arrow-1921075.png"),
-                      ),
-                      foregroundColor: kPrimaryColor,
-                      foregroundShape: BorderRadius.zero,
-                      backgroundShape: BorderRadius.zero,
-                      shadow: BoxShadow(
-                        color: Colors.grey.withOpacity(0.3),
-                        blurRadius: 20,
-                        offset: const Offset(2, 10),
-                      ),
-                      textStyle: TextStyle(
-                          fontFamily: kFontMedium,
-                          color: gTextColor,
-                          fontSize: 10.sp),
-                      onConfirmation: () {
-                        if(videoPlayerController != null) videoPlayerController!.pause();
-                        if(_chewieController != null) _chewieController!.pause();
-
-                        showConfirmSheet();
-
-                      })
+                  //     :
+                  // (widget.from == ProgramMealType.prepratory.name)
+                  //     ? startButtonWidget()
+                      : startButtonWidget()
                 ],
               ),
             )
         ),
       ),
     );
+  }
+
+  startButtonWidget(){
+    return Center(
+      child: MediaQuery(
+        data: MediaQuery.of(context).copyWith(textScaleFactor: 0.8),
+        child: GestureDetector(
+          onTap: () {
+            if(videoPlayerController != null) videoPlayerController!.pause();
+            if(_chewieController != null) _chewieController!.pause();
+
+            if (widget.from == ProgramMealType.prepratory.name){
+              startProgram();
+            }
+            else{
+              showConfirmSheet();
+            }
+          },
+          child: Container(
+            width: 40.w,
+            height: 5.h,
+            padding:
+            EdgeInsets.symmetric(vertical: 1.h, horizontal: 15.w),
+            decoration: BoxDecoration(
+              color: eUser().buttonColor,
+              borderRadius: BorderRadius.circular(eUser().buttonBorderRadius),
+              // border: Border.all(
+              //     color: eUser().buttonBorderColor,
+              //     width: eUser().buttonBorderWidth
+              // ),
+            ),
+            child: Center(child: Text(
+              'Start',
+              style: TextStyle(
+                fontFamily: eUser().buttonTextFont,
+                color: eUser().buttonTextColor,
+                fontSize: eUser().buttonTextSize,
+              ),
+            )),
+          ),
+        ),
+      ),
+    );
+  }
+  /// instead of slider we r showing button for all stages
+  sliderWidget(){
+    return ConfirmationSlider(
+        width: 95.w,
+        text: "Slide To Start",
+        sliderButtonContent: const Image(
+          image: AssetImage(
+              "assets/images/noun-arrow-1921075.png"),
+        ),
+        foregroundColor: kPrimaryColor,
+        foregroundShape: BorderRadius.zero,
+        backgroundShape: BorderRadius.zero,
+        shadow: BoxShadow(
+          color: Colors.grey.withOpacity(0.3),
+          blurRadius: 20,
+          offset: const Offset(2, 10),
+        ),
+        textStyle: TextStyle(
+            fontFamily: kFontMedium,
+            color: gTextColor,
+            fontSize: 10.sp),
+        onConfirmation: () {
+          if(videoPlayerController != null) videoPlayerController!.pause();
+          if(_chewieController != null) _chewieController!.pause();
+
+          showConfirmSheet();
+
+        });
   }
 
   // **  *add url to video on initstate *************************
@@ -498,6 +511,7 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
 // **********************************************************************
 
   buildPlans() {
+    final double height = MediaQuery.of(context).size.height;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -505,75 +519,88 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
         //   image: AssetImage("assets/images/Group 4852.png"),
         // ),
         buildAboutStartSlideVideo(),
-        SizedBox(height: 4.h),
-        Text(
-          (widget.from == ProgramMealType.prepratory.name)
-              ? prepText
-              : widget.from == ProgramMealType.program.name
-              ? mealText
-              : transText,
-          textAlign: TextAlign.justify,
-          style: TextStyle(
-              height: 1.5,
-              fontFamily: kFontMedium,
-              color: gTextColor,
-              fontSize: 10.sp),
-        ),
-        TextButton(
-            onPressed: (){
-              // if(_videoPlayerController != null) _videoPlayerController!.stop();
-              if(_chewieController != null && _chewieController!.isPlaying == false)
-              {
-                return;
-              }
-              else{
-                if(videoPlayerController != null) videoPlayerController!.pause();
-                if(_chewieController != null) _chewieController!.pause();
+        (height <= 600) ? SizedBox(height: 1.5.h) : SizedBox(height: 4.h),
+        Flexible(
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                Text(
+                  (widget.from == ProgramMealType.prepratory.name)
+                      ? prepText
+                      : widget.from == ProgramMealType.program.name
+                      ? mealText
+                      : transText,
+                  textAlign: TextAlign.justify,
+                  style: TextStyle(
+                      height: 1.5,
+                      fontFamily: kFontMedium,
+                      color: gTextColor,
+                      fontSize: 10.sp),
+                ),
+                Visibility(
+                  visible: !(widget.from == ProgramMealType.prepratory.name),
+                  child: TextButton(
+                      onPressed: (){
+                        // if(_videoPlayerController != null) _videoPlayerController!.stop();
+                        if(_chewieController != null && _chewieController!.isPlaying == true)
+                        {
+                          if(videoPlayerController != null) videoPlayerController!.pause();
+                          if(_chewieController != null) _chewieController!.pause();
+                          return;
+                        }
+                        else{
+                          if(videoPlayerController != null) videoPlayerController!.pause();
+                          if(_chewieController != null) _chewieController!.pause();
 
-                if(widget.from == ProgramMealType.prepratory.name){
-                  //get Preparatory day1 meals
-                  print("isPlaying: ${_chewieController!.isPlaying}");
-                  gotoScreen(PreparatoryPlanScreen(dayNumber: "1", totalDays: '1',viewDay1Details: true,));
-                }
-                else if(widget.from == ProgramMealType.program.name){
-                  //get Normal Program day1 meals
-                  final mealUrl = _pref!.getString(AppConfig().receipeVideoUrl);
-                  final trackerUrl = _pref!.getString(AppConfig().trackerVideoUrl);
+                          if(widget.from == ProgramMealType.prepratory.name){
+                            //get Preparatory day1 meals
+                            print("isPlaying: ${_chewieController!.isPlaying}");
+                            gotoScreen(PreparatoryPlanScreen(dayNumber: "1", totalDays: '1',viewDay1Details: true,));
+                          }
+                          else if(widget.from == ProgramMealType.program.name){
+                            //get Normal Program day1 meals
+                            final mealUrl = _pref!.getString(AppConfig().receipeVideoUrl);
+                            final trackerUrl = _pref!.getString(AppConfig().trackerVideoUrl);
 
-                  gotoScreen( MealPlanScreen(
-                    receipeVideoLink: mealUrl,
-                    trackerVideoLink: trackerUrl,
-                    viewDay1Details: true,
-                  ),);
-                }
-                else if(widget.from == ProgramMealType.transition.name){
-                  //get Transition day1 meals
-                  final trackerUrl = _pref!.getString(AppConfig().trackerVideoUrl);
+                            gotoScreen( MealPlanScreen(
+                              receipeVideoLink: mealUrl,
+                              trackerVideoLink: trackerUrl,
+                              viewDay1Details: true,
+                            ),);
+                          }
+                          else if(widget.from == ProgramMealType.transition.name){
+                            //get Transition day1 meals
+                            final trackerUrl = _pref!.getString(AppConfig().trackerVideoUrl);
 
-                  gotoScreen(NewTransitionDesign(
-                    totalDays: '1',
-                    dayNumber: '1',
-                    trackerVideoLink: trackerUrl
-                    ,viewDay1Details: true,));
-                  //old screen
-                  // gotoScreen(TransitionMealPlanScreen(dayNumber: "1",
-                  //   totalDays: "1",trackerVideoLink: trackerUrl,viewDay1Details: true,));
-                }
-              }
-            },
-            //Preparatory Meal Plan
-            child: Text("View Day1 "
-                "${(widget.from == ProgramMealType.prepratory.name) ? 'Prepratory Meal Plan'
-                : (widget.from == ProgramMealType.transition.name) ? 'Transition Meal Plan'
-                : 'Meal Plan'} >",
-              style: TextStyle(
-                  height: 1.5,
-                  fontFamily: kFontBold,
-                  color: gsecondaryColor,
-                  fontSize: 11.sp
-              ),
-            )
-        ),
+                            gotoScreen(NewTransitionDesign(
+                              totalDays: '1',
+                              dayNumber: '1',
+                              trackerVideoLink: trackerUrl
+                              ,viewDay1Details: true,));
+                            //old screen
+                            // gotoScreen(TransitionMealPlanScreen(dayNumber: "1",
+                            //   totalDays: "1",trackerVideoLink: trackerUrl,viewDay1Details: true,));
+                          }
+                        }
+                      },
+                      //Preparatory Meal Plan
+                      child: Text("View Day1 "
+                          "${(widget.from == ProgramMealType.prepratory.name) ? 'Prepratory Meal Plan'
+                          : (widget.from == ProgramMealType.transition.name) ? 'Transition Meal Plan'
+                          : 'Meal Plan'} >",
+                        style: TextStyle(
+                            height: 1.5,
+                            fontFamily: kFontBold,
+                            color: gsecondaryColor,
+                            fontSize: 11.sp
+                        ),
+                      )
+                  ),
+                ),
+              ],
+            ),
+          )
+        )
       ],
     );
   }
@@ -822,7 +849,8 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
       ],
     ),
         bottomSheetHeight: 60.h,
-      circleIcon: bsHeadPinIcon
+      circleIcon: bsHeadPinIcon,
+      isDismissible: true,
     );
   }
 

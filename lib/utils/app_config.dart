@@ -153,10 +153,13 @@ class AppConfig{
     );
   }
 
-  showSheet(BuildContext context, Widget widget, {bool sheetForLogin = false,double? bottomSheetHeight, String? circleIcon, Color? topColor, bool isSheetCloseNeeded = false, VoidCallback? sheetCloseOnTap}){
+  showSheet(BuildContext context, Widget widget,
+      {bool sheetForLogin = false,double? bottomSheetHeight,
+        String? circleIcon, Color? topColor, bool isSheetCloseNeeded = false,
+        VoidCallback? sheetCloseOnTap, bool isDismissible = false}){
     return showModalBottomSheet(
         isScrollControlled: true,
-        isDismissible: false,
+        isDismissible: isDismissible,
         enableDrag: false,
         context: context,
         backgroundColor: Colors.transparent,

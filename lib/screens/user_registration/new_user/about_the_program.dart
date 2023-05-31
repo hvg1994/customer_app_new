@@ -248,6 +248,70 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
               Expanded(
                 child: _mainView(),
               ),
+              Visibility(
+                visible: !widget.isFromSitBackScreen,
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: GestureDetector(
+                      onTap: () async{
+                        if(_chewieController != null){
+                          final show = _chewieController!.videoPlayerController.value.isPlaying;
+                          if(show != null && show == true){
+                            _chewieController!.pause();
+                          }
+                        }
+                        if(_testimonialChewieController != null){
+                          final show = _testimonialChewieController!.videoPlayerController.value.isPlaying;
+                          if(show != null && show == true){
+                            _testimonialChewieController!.pause();
+                          }
+                        }
+
+                        print("tap");
+                        final res;
+                        if(_chewieController != null){
+                          if(_testimonialChewieController != null){
+
+                          }
+                        }
+                        if(!_testimonialChewieController!.isPlaying && !_chewieController!.isPlaying){
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => const RegisterScreen(),
+                            ),
+                          );
+                        }
+
+                      },
+                      child: Container(
+                        width: 40.w,
+                        height: 5.h,
+                        padding:
+                        EdgeInsets.symmetric(vertical: 1.h, horizontal: 15.w),
+                        decoration: BoxDecoration(
+                          color: eUser().buttonColor,
+                          borderRadius: BorderRadius.circular(eUser().buttonBorderRadius),
+                          // border: Border.all(
+                          //     color: eUser().buttonBorderColor,
+                          //     width: eUser().buttonBorderWidth
+                          // ),
+                        ),
+                        child: Center(
+                          child: Text(
+                            'Next',
+                            style: TextStyle(
+                              fontFamily: eUser().buttonTextFont,
+                              color: eUser().buttonTextColor,
+                              fontSize: eUser().buttonTextSize,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              )
             ],
           ),
         ),
@@ -386,59 +450,6 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
                     // buildFeedback(feedbackList),
                     buildReviews(reviewList),
                     SizedBox(height: 2.h),
-                    Visibility(
-                      visible: !widget.isFromSitBackScreen,
-                      child: Center(
-                        child: GestureDetector(
-                          onTap: () async{
-                            if(_chewieController != null){
-                              final show = _chewieController!.videoPlayerController.value.isPlaying;
-                              if(show != null && show == true){
-                                _chewieController!.pause();
-                              }
-                            }
-                            if(_testimonialChewieController != null){
-                              final show = _testimonialChewieController!.videoPlayerController.value.isPlaying;
-                              if(show != null && show == true){
-                                _testimonialChewieController!.pause();
-                              }
-                            }
-
-                            print("tap");
-                            final res;
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => const RegisterScreen(),
-                              ),
-                            );
-                          },
-                          child: Container(
-                            width: 40.w,
-                            height: 5.h,
-                            padding:
-                            EdgeInsets.symmetric(vertical: 1.h, horizontal: 15.w),
-                            decoration: BoxDecoration(
-                              color: eUser().buttonColor,
-                              borderRadius: BorderRadius.circular(eUser().buttonBorderRadius),
-                              // border: Border.all(
-                              //     color: eUser().buttonBorderColor,
-                              //     width: eUser().buttonBorderWidth
-                              // ),
-                            ),
-                            child: Center(
-                              child: Text(
-                                'Next',
-                                style: TextStyle(
-                                  fontFamily: eUser().buttonTextFont,
-                                  color: eUser().buttonTextColor,
-                                  fontSize: eUser().buttonTextSize,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
                   ],
                 ),
               );

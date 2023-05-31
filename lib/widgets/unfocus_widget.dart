@@ -14,6 +14,11 @@ class _UnfocusWidgetState extends State<UnfocusWidget> {
     return GestureDetector(
       child: this.widget.child,
       onTap: _onTap,
+      behavior: HitTestBehavior.opaque,
+
+      // onPanDown: (_) {
+      //   FocusScope.of(context).requestFocus(FocusNode());
+      // },
     );
   }
 

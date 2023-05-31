@@ -100,6 +100,10 @@ dependencies:
   chewie: any
   permission_handler: any
   carousel_slider: ^4.2.1
+  flutter_horizontal_date_picker: any
+
+
+
 
 #  change_app_package_name: ^1.1.0
 

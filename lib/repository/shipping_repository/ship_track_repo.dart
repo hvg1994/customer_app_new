@@ -17,7 +17,7 @@ class ShipTrackRepository{
     return await apiClient.shoppingDetailsListApi();
   }
 
-  Future sendSippingApproveStatusRepo(String approveStatus) async{
-    return await apiClient.shippingApproveApi(approveStatus);
+  Future sendSippingApproveStatusRepo(String approveStatus, String selectedDate) async{
+    return await apiClient.shippingApproveApi(approveStatus, selectedDate);
   }
 }

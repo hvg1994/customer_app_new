@@ -38,6 +38,15 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
   final formKey3 = GlobalKey<FormState>();
   final formKey4 = GlobalKey<FormState>();
 
+  final glassWaterKey = GlobalKey<FormState>();
+
+  final habbitsKey = GlobalKey<FormState>();
+  final bowelMealKey = GlobalKey<FormState>();
+  final hungerKey = GlobalKey<FormState>();
+  final bowelPatternKey = GlobalKey<FormState>();
+
+
+
 
   final String otherText = "Other";
   TextEditingController digestionController = TextEditingController();
@@ -214,18 +223,33 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
                           child: GestureDetector(
                             onTap: () {
                               if(glassesOfWater.isEmpty){
+                                Scrollable.ensureVisible(glassWaterKey.currentContext!,
+                                    duration: const Duration(milliseconds: 1000)
+                                );
                                 showCustomSnack("Please select How Many glass of water do you drink a day");
                               }
                               else if(selectedHabitCheckBoxList.isEmpty && !habitOtherSelected){
+                                Scrollable.ensureVisible(habbitsKey.currentContext!,
+                                    duration: const Duration(milliseconds: 1000)
+                                );
                                 showCustomSnack("Please select Habits or Addiction");
                               }
                               else if(mealPreferenceSelected.isEmpty){
+                                Scrollable.ensureVisible(bowelMealKey.currentContext!,
+                                    duration: const Duration(milliseconds: 1000)
+                                );
                                 showCustomSnack("Please select What is your meal preference");
                               }
                               else if(hungerPatternSelected.isEmpty){
+                                Scrollable.ensureVisible(hungerKey.currentContext!,
+                                    duration: const Duration(milliseconds: 1000)
+                                );
                                 showCustomSnack("Please select Hunger Pattern");
                               }
                               else if(bowelPatternSelected.isEmpty){
+                                Scrollable.ensureVisible(bowelPatternKey.currentContext!,
+                                    duration: const Duration(milliseconds: 1000)
+                                );
                                 showCustomSnack("Please select Bowel Pattern");
                               }
                               else{
@@ -235,8 +259,28 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
                                       if(formKey4.currentState!.validate()){
                                         submitFormDetails();
                                       }
+                                      else{
+                                        Scrollable.ensureVisible(formKey4.currentContext!,
+                                            duration: const Duration(milliseconds: 1000)
+                                        );
+                                      }
+                                    }
+                                    else{
+                                      Scrollable.ensureVisible(formKey3.currentContext!,
+                                          duration: const Duration(milliseconds: 1000)
+                                      );
                                     }
                                   }
+                                  else{
+                                    Scrollable.ensureVisible(formKey2.currentContext!,
+                                        duration: const Duration(milliseconds: 1000)
+                                    );
+                                  }
+                                }
+                                else{
+                                  Scrollable.ensureVisible(formKey1.currentContext!,
+                                      duration: const Duration(milliseconds: 1000)
+                                  );
                                 }
                               }
                             },
@@ -509,7 +553,7 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
             cursorColor: kPrimaryColor,
             validator: (value) {
               if (value!.isEmpty ) {
-                return 'Please enter your Changed';
+                return 'Please Provide Details';
               } else if (value.length < 2) {
                 return emptyStringMsg;
               } else {
@@ -532,7 +576,7 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
             cursorColor: kPrimaryColor,
             validator: (value) {
               if (value!.isEmpty) {
-                return 'Please enter your Changed';
+                return 'Please Provide Details';
               } else if (value.length < 2) {
                 return emptyStringMsg;
               } else {
@@ -555,7 +599,7 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
             cursorColor: kPrimaryColor,
             validator: (value) {
               if (value!.isEmpty ) {
-                return 'Please enter your Changed';
+                return 'Please Provide Details';
               }else if (value.length < 2) {
                 return emptyStringMsg;
               }else {
@@ -578,7 +622,7 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
             cursorColor: kPrimaryColor,
             validator: (value) {
               if (value!.isEmpty ) {
-                return 'Please enter your Changed';
+                return 'Please Provide Details';
               } else if (value.length < 2) {
                 return emptyStringMsg;
               } else {
@@ -601,7 +645,7 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
             cursorColor: kPrimaryColor,
             validator: (value) {
               if (value!.isEmpty ) {
-                return 'Please enter your Changed';
+                return 'Please Provide Details';
               }else if (value.length < 2) {
                 return emptyStringMsg;
               }else {
@@ -624,7 +668,7 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
             cursorColor: kPrimaryColor,
             validator: (value) {
               if (value!.isEmpty ) {
-                return 'Please enter your Changed';
+                return 'Please Provide Details';
               } else if (value.length < 2) {
                 return emptyStringMsg;
               } else {
@@ -647,7 +691,7 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
             cursorColor: kPrimaryColor,
             validator: (value) {
               if (value!.isEmpty ) {
-                return 'Please enter your Changed';
+                return 'Please Provide Details';
               } else if (value.length < 2) {
                 return emptyStringMsg;
               } else {
@@ -721,7 +765,7 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
             cursorColor: kPrimaryColor,
             validator: (value) {
               if (value!.isEmpty ) {
-                return 'Please enter your Changed';
+                return 'Please Provide Details';
               } else if (value.length < 2) {
                 return emptyStringMsg;
               } else {
@@ -744,7 +788,7 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
             cursorColor: kPrimaryColor,
             validator: (value) {
               if (value!.isEmpty) {
-                return 'Please enter your Changed';
+                return 'Please Provide Details';
               } else if (value.length < 2) {
                 return emptyStringMsg;
               } else {
@@ -767,7 +811,7 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
             cursorColor: kPrimaryColor,
             validator: (value) {
               if (value!.isEmpty ) {
-                return 'Please enter your Changed';
+                return 'Please Provide Details';
               }else if (value.length < 2) {
                 return emptyStringMsg;
               }else {
@@ -790,7 +834,7 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
             cursorColor: kPrimaryColor,
             validator: (value) {
               if (value!.isEmpty ) {
-                return 'Please enter your Changed';
+                return 'Please Provide Details';
               } else if (value.length < 2) {
                 return emptyStringMsg;
               } else {
@@ -814,7 +858,7 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
             cursorColor: kPrimaryColor,
             validator: (value) {
               if (value!.isEmpty ) {
-                return 'Please enter your Changed';
+                return 'Please Provide Details';
               }else if (value.length < 2) {
                 return emptyStringMsg;
               }else {
@@ -837,7 +881,7 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
             cursorColor: kPrimaryColor,
             validator: (value) {
               if (value!.isEmpty ) {
-                return 'Please enter your Changed';
+                return 'Please Provide Details';
               } else if (value.length < 2) {
                 return emptyStringMsg;
               } else {
@@ -853,7 +897,7 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
           SizedBox(
             height: 2.h,
           ),
-          buildLabelTextField("How Many Glasses Of Water Do You Drink A Day?", fontSize: questionFont),
+          buildLabelTextField("How Many Glasses Of Water Do You Drink A Day?", fontSize: questionFont, key: glassWaterKey,),
           Row(
             children: [
               GestureDetector(
@@ -1018,7 +1062,7 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
           SizedBox(
             height: 3.h,
           ),
-          buildLabelTextField("Habits Or Addiction", fontSize: questionFont),
+          buildLabelTextField("Habits Or Addiction", fontSize: questionFont, key: habbitsKey),
           SizedBox(
             height: 1.h,
           ),
@@ -1051,11 +1095,17 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
                     setState(() {
                       habitOtherSelected = v!;
                       if (habitOtherSelected) {
-                        selectedHabitCheckBoxList.clear();
-                        habitCheckBox
-                            .forEach((element) {
-                          element.value = false;
-                        });
+                        // new code to remove the none if selected
+                        if(selectedHabitCheckBoxList.contains(habitCheckBox.last.title)){
+                          selectedHabitCheckBoxList.clear();
+                          habitCheckBox.last.value = false;
+                        }
+                        // old code
+                        // selectedHabitCheckBoxList.clear();
+                        // habitCheckBox
+                        //     .forEach((element) {
+                        //   element.value = false;
+                        // });
                         selectedHabitCheckBoxList
                             .add(otherText);
                       }
@@ -1063,6 +1113,7 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
                         selectedHabitCheckBoxList
                             .remove(otherText);
                       }
+                      print(selectedHabitCheckBoxList);
                     });
                   },
                 ),
@@ -1134,7 +1185,7 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
           SizedBox(
             height: 3.h,
           ),
-          buildLabelTextField("What is your after meal preference?", fontSize: questionFont),
+          buildLabelTextField("What is your after meal preference?", fontSize: questionFont, key: bowelMealKey),
           ListView(
             shrinkWrap: true,
             physics: const BouncingScrollPhysics(),
@@ -1232,7 +1283,7 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
                   cursorColor: kPrimaryColor,
                   validator: (value) {
                     if (value!.isEmpty && mealPreferenceSelected.contains(mealPreferenceList[2])) {
-                      return 'Please enter Medical Interventions';
+                      return 'Please Provide Details';
                     } else {
                       return null;
                     }
@@ -1249,7 +1300,7 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
           SizedBox(
             height: 2.h,
           ),
-          buildLabelTextField("Hunger Pattern", fontSize: questionFont),
+          buildLabelTextField("Hunger Pattern", fontSize: questionFont, key: hungerKey),
           ListView(
             shrinkWrap: true,
             physics: const BouncingScrollPhysics(),
@@ -1395,7 +1446,7 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
           SizedBox(
             height: 2.h,
           ),
-          buildLabelTextField("Bowel Pattern", fontSize: questionFont),
+          buildLabelTextField("Bowel Pattern", fontSize: questionFont, key: bowelPatternKey),
           ListView(
             shrinkWrap: true,
             physics: const BouncingScrollPhysics(),
@@ -1587,18 +1638,22 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
         value: healthCheckBox.value,
         onChanged: (v) {
           print("v==> $v  ${healthCheckBox.title}");
-          if(habitOtherSelected){
-            if(v == true){
-             setState(() {
-               habitOtherSelected = false;
-               selectedHabitCheckBoxList.clear();
-               selectedHabitCheckBoxList.add(healthCheckBox.title);
-               healthCheckBox.value = v;
-             });
-            }
-          }
-          else if (healthCheckBox.title == habitCheckBox.last.title) {
+          // if(habitOtherSelected){
+          //   if(v == true){
+          //    setState(() {
+          //      habitOtherSelected = false;
+          //      selectedHabitCheckBoxList.clear();
+          //      selectedHabitCheckBoxList.add(healthCheckBox.title);
+          //      healthCheckBox.value = v;
+          //    });
+          //   }
+          // }
+          // else
+            if (healthCheckBox.title == habitCheckBox.last.title) {
             setState(() {
+              // new code for removing other
+              habitOtherSelected = false;
+              // old
               selectedHabitCheckBoxList.clear();
               habitCheckBox.forEach((element) {
                 if (element.title != habitCheckBox.last.title) {

@@ -3,10 +3,17 @@ import 'dart:ui';
 const String consultationStage2SubText = "Make sure to join your consultation within 5 minutes of your consultation time.";
 const String consultationStage3SubText = "Congrats on completing your consultation, hope you had an insightful chat with your doctor.";
 
+const String requestedReportStage1SubText = "Your doctor has requested for a few reports. Do upload them here to proceed further.";
 const String requestedReportStage2SubText = "Thanks for uploading your reports.\nYou doctor is now analyzing your case, allow us 2 working days to proceed to the next step.";
 
 const String prepStage2SubText = "Prep your gut while your doctors finalizing your plan & ready your kit.";
 const String prepStage3SubText = "Keep prepping your gut until your kit arrives.\nYour plan & kit are now ready, Ship your kit now!";
+
+const String PpcScheduleText = "Thanks for your feedback. Now please schedule your post program consultation with your doctor for a review.";
+const String PpcBookedText = "Please ensure to join within 10 minutes of your consultation time.";
+
+const String mealStartText = "You are now ready to start your main gut reset program.";
+const String mealTransText = "Congrats on completing your primary program. We now have to transition you back to regular food you are used to via the transition phase. Start now.";
 
 
 List<DashboardStagesData> stageData = [
@@ -14,7 +21,7 @@ List<DashboardStagesData> stageData = [
     "Congrats on completing your evaluation. This will help us select the right doctor for you based on the details you have entered & will give us preliminary analysis on the direction in which must start your treatment.",
     rightImage: "assets/images/dashboard_stages/Evalutation.png",
     step: "1",
-    btn1Name: "View File",
+    btn1Name: "View",
     type: StageType.evaluation
   ),
   DashboardStagesData(title:"Consultation", subTitle:
@@ -55,28 +62,29 @@ List<DashboardStagesData> stageData = [
       btn2Name: "Ship Kit",
       type: StageType.prep_meal
   ),
-  DashboardStagesData(title:"Gut Reset Program Start", subTitle:
-  "Lorem lpsum is simply dummy text of the printing and typesetting industry.Lorem lpsum has been the industry\'s standard dummy text ever since the 1500s,when an unknown printer took a gallery of type and scrambled it to make a type specimen book.",
+  DashboardStagesData(title:"Gut Reset Program", subTitle:
+  "Start your main gut reset program with a 2-3 day activation period to ensure your gut is all set to accept the detox, healing & rebalancing.",
     rightImage: "assets/images/dashboard_stages/Mask Group 43511.png",
     step: "7",
-    btn1Name: "View Plan",
+    btn1Name: "Start Program",
       type: StageType.normal_meal
   ),
   DashboardStagesData(title:"Post Program Consultation", subTitle:
-  "Lorem lpsum is simply dummy text of the printing and typesetting industry.Lorem lpsum has been the industry\'s standard dummy text ever since the 1500s,when an unknown printer took a gallery of type and scrambled it to make a type specimen book.",
+  "Congrats on completing your gut reset program. We now have to reflect on your improvements, please do fill up your feedback form to initiate your post program consultation.",
     rightImage: "assets/images/dashboard_stages/Mask Group 43506.png",
     step: "8",
     btn1Name: "Feedback",
     btn2Name: "Schedule",
       type: StageType.post_consultation
   ),
-  DashboardStagesData(title:"GMG Program", subTitle:
+  DashboardStagesData(title:"GMG Program",
+      subTitle:
   "Lorem lpsum is simply dummy text of the printing and typesetting industry.Lorem lpsum has been the industry\'s standard dummy text ever since the 1500s,when an unknown printer took a gallery of type and scrambled it to make a type specimen book.",
     rightImage: "assets/images/dashboard_stages/Mask Group 43511.png",
     step: "9",
     btn1Name: "View GMG",
     btn2Name: "End report",
-    btn3Name: "Track & Earn",
+    // btn3Name: "Track & Earn",
       type: StageType.gmg
   ),
 
@@ -87,7 +95,7 @@ List<DashboardStagesData> defaultStageData = [
   "Congrats on completing your evaluation. This will help us select the right doctor for you based on the details you have entered & will give us preliminary analysis on the direction in which must start your treatment.",
       rightImage: "assets/images/dashboard_stages/Evalutation.png",
       step: "1",
-      btn1Name: "View File",
+      btn1Name: "View",
       type: StageType.evaluation
   ),
   DashboardStagesData(title:"Consultation", subTitle:
@@ -128,28 +136,29 @@ List<DashboardStagesData> defaultStageData = [
       btn2Name: "Ship Kit",
       type: StageType.prep_meal
   ),
-  DashboardStagesData(title:"Gut Reset Program Start", subTitle:
-  "Lorem lpsum is simply dummy text of the printing and typesetting industry.Lorem lpsum has been the industry\'s standard dummy text ever since the 1500s,when an unknown printer took a gallery of type and scrambled it to make a type specimen book.",
+  DashboardStagesData(title:"Gut Reset Program", subTitle:
+  "Start your main gut reset program with a 2-3 day activation period to ensure your gut is all set to accept the detox, healing & rebalancing.",
       rightImage: "assets/images/dashboard_stages/Mask Group 43511.png",
       step: "7",
-      btn1Name: "View Plan",
+      btn1Name: "Start Program",
       type: StageType.normal_meal
   ),
   DashboardStagesData(title:"Post Program Consultation", subTitle:
-  "Lorem lpsum is simply dummy text of the printing and typesetting industry.Lorem lpsum has been the industry\'s standard dummy text ever since the 1500s,when an unknown printer took a gallery of type and scrambled it to make a type specimen book.",
+  "Congrats on completing your gut reset program. We now have to reflect on your improvements, please do fill up your feedback form to initiate your post program consultation.",
       rightImage: "assets/images/dashboard_stages/Mask Group 43506.png",
       step: "8",
       btn1Name: "Feedback",
       btn2Name: "Schedule",
       type: StageType.post_consultation
   ),
-  DashboardStagesData(title:"GMG Program", subTitle:
-  "Lorem lpsum is simply dummy text of the printing and typesetting industry.Lorem lpsum has been the industry\'s standard dummy text ever since the 1500s,when an unknown printer took a gallery of type and scrambled it to make a type specimen book.",
+  DashboardStagesData(title:"GMG Program",
+      subTitle:
+      "Lorem lpsum is simply dummy text of the printing and typesetting industry.Lorem lpsum has been the industry\'s standard dummy text ever since the 1500s,when an unknown printer took a gallery of type and scrambled it to make a type specimen book.",
       rightImage: "assets/images/dashboard_stages/Mask Group 43511.png",
       step: "9",
       btn1Name: "View GMG",
       btn2Name: "End report",
-      btn3Name: "Track & Earn",
+      // btn3Name: "Track & Earn",
       type: StageType.gmg
   ),
 
@@ -160,59 +169,6 @@ List<DashboardStagesData> defaultStageData = [
 updateStageData(){
  stageData = defaultStageData;
 }
-
-
-const stagesData = [
-  {
-    "title": "Evaluation",
-    "subText":
-        "Lorem lpsum is simply dummy text of the printing and typesetting industry.Lorem lpsum has been the industry\'s standard dummy text ever since the 1500s,when an unknown printer took a gallery of type and scrambled it to make a type specimen book.",
-    "image": "assets/images/dashboard_stages/Evalutation.png",
-    "step": "1",
-  },
-  {
-    "title": "Consultation",
-    "subText":
-        "Lorem lpsum is simply dummy text of the printing and typesetting industry.Lorem lpsum has been the industry\'s standard dummy text ever since the 1500s,when an unknown printer took a gallery of type and scrambled it to make a type specimen book.",
-    "image": "assets/images/dashboard_stages/Mask Group 43506.png",
-    "step": "2",
-  },
-  {
-    "title": "Upload Reports",
-    "subText":
-        "Lorem lpsum is simply dummy text of the printing and typesetting industry.Lorem lpsum has been the industry\'s standard dummy text ever since the 1500s,when an unknown printer took a gallery of type and scrambled it to make a type specimen book.",
-    "image": "assets/images/dashboard_stages/Mask Group 43510.png",
-    "step": "3",
-  },
-  {
-    "title": "Begin Gut Preparation",
-    "subText":
-        "Lorem lpsum is simply dummy text of the printing and typesetting industry.Lorem lpsum has been the industry\'s standard dummy text ever since the 1500s,when an unknown printer took a gallery of type and scrambled it to make a type specimen book.",
-    "image": "assets/images/dashboard_stages/Mask Group 43509.png",
-    "step": "4",
-  },
-  {
-    "title": "Gut Reset Program Start",
-    "subText":
-        "Lorem lpsum is simply dummy text of the printing and typesetting industry.Lorem lpsum has been the industry\'s standard dummy text ever since the 1500s,when an unknown printer took a gallery of type and scrambled it to make a type specimen book.",
-    "image": "assets/images/dashboard_stages/Mask Group 43511.png",
-    "step": "5",
-  },
-  {
-    "title": "Post Program Consultation",
-    "subText":
-        "Lorem lpsum is simply dummy text of the printing and typesetting industry.Lorem lpsum has been the industry\'s standard dummy text ever since the 1500s,when an unknown printer took a gallery of type and scrambled it to make a type specimen book.",
-    "image": "assets/images/dashboard_stages/Mask Group 43506.png",
-    "step": "6",
-  },
-  {
-    "title": "GMG Program",
-    "subText":
-        "Lorem lpsum is simply dummy text of the printing and typesetting industry.Lorem lpsum has been the industry\'s standard dummy text ever since the 1500s,when an unknown printer took a gallery of type and scrambled it to make a type specimen book.",
-    "image": "assets/images/dashboard_stages/Mask Group 43511.png",
-    "step": "7",
-  },
-];
 
 
 class DashboardStagesData{
