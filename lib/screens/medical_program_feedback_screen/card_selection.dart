@@ -2370,34 +2370,40 @@ class _TCardPageState extends State<TCardPage> {
                 child: GestureDetector(
                   onTap: () {
                     if (!isLoading) {
-                      submitProgramFeedbackForm(
-                        setstate,
-                        widget.programContinuesdStatus,
-                        selectedAfterTheProgram.toString(),
-                        afterTheProgramController.text.toString(),
-                        selectedPercentage.toString(),
-                        selectedBreathing.toString(),
-                        mealyesno.toString(),
-                        yogayesno.toString(),
-                        mealHighLightController.text.toString(),
-                        positiveController.text.toString(),
-                        negativeController.text.toString(),
-                        selectedInfusions.toString(),
-                        selectedSoups.toString(),
-                        selectedPorridges.toString(),
-                        selectedPodi.toString(),
-                        selectedKheer.toString(),
-                        kitItemsController.text.toString(),
-                        rating1.toString(),
-                        rating2.toString(),
-                        rating3.toString(),
-                        improvedHealthController.text.toString(),
-                        suggestionsController.text.toString(),
-                        testimonialController.text.toString(),
-                        referenceController.text.toString(),
-                        supportPlans.toString(),
-                        ifDiscontinuedController.text.toString(),
-                      );
+                      if(rating1.isEmpty || rating2.isEmpty || rating3.isEmpty){
+                        AppConfig().showSnackbar(context, "Please Select All Rating",
+                            isError: true, bottomPadding: 10);
+                      }
+                      else{
+                        submitProgramFeedbackForm(
+                          setstate,
+                          widget.programContinuesdStatus,
+                          selectedAfterTheProgram.toString(),
+                          afterTheProgramController.text.toString(),
+                          selectedPercentage.toString(),
+                          selectedBreathing.toString(),
+                          mealyesno.toString(),
+                          yogayesno.toString(),
+                          mealHighLightController.text.toString(),
+                          positiveController.text.toString(),
+                          negativeController.text.toString(),
+                          selectedInfusions.toString(),
+                          selectedSoups.toString(),
+                          selectedPorridges.toString(),
+                          selectedPodi.toString(),
+                          selectedKheer.toString(),
+                          kitItemsController.text.toString(),
+                          rating1.toString(),
+                          rating2.toString(),
+                          rating3.toString(),
+                          improvedHealthController.text.toString(),
+                          suggestionsController.text.toString(),
+                          testimonialController.text.toString(),
+                          referenceController.text.toString(),
+                          supportPlans.toString(),
+                          ifDiscontinuedController.text.toString(),
+                        );
+                      }
                     }
                   },
                   child: Container(

@@ -35,7 +35,7 @@ class _EvaluationUploadReportState extends State<EvaluationUploadReport> {
   dynamic padding = EdgeInsets.symmetric(vertical: 1.h, horizontal: 5.w);
 
   List<PlatformFile> medicalRecords = [];
-
+  List item = [];
 
   @override
   void initState() {
@@ -151,7 +151,7 @@ class _EvaluationUploadReportState extends State<EvaluationUploadReport> {
 
   buildUI(BuildContext context){
     return SingleChildScrollView(
-      physics: NeverScrollableScrollPhysics(),
+      // physics: NeverScrollableScrollPhysics(),
       child: Column(
         mainAxisSize: MainAxisSize.max,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -197,7 +197,19 @@ class _EvaluationUploadReportState extends State<EvaluationUploadReport> {
                     result.files.first.extension!.contains("jpg") ||
                     result.files.first.extension!.contains("jpeg")
                 ) {
-                  medicalRecords.add(result.files.first);
+                  var path2 = result.files.single.path;
+                  if (!item.contains(path2)) {
+                    item.add(path2);
+                    File file = File(path2 ?? "");
+                    setState(() {
+                      medicalRecords.add(result.files.first);
+
+                    });
+                  } else {
+                    // Scaffold.of(globalkey2.currentContext??context)
+                    AppConfig().showSnackbar(context,"File Already Exist",isError: true);
+
+                  }
                 } else {
                   AppConfig().showSnackbar(
                       context, "Please select png/jpg/Pdf files",
@@ -246,21 +258,17 @@ class _EvaluationUploadReportState extends State<EvaluationUploadReport> {
             height: 0.5.h,
           ),
           if(medicalRecords.isNotEmpty)
-            SizedBox(
-              width: double.maxFinite,
-              height: 40.w,
-              child: ListView.builder(
-                itemCount: medicalRecords.length,
-                shrinkWrap: true,
-                itemBuilder: (context, index) {
-                  final file = medicalRecords[index];
-                  return buildFile(file, index);
-                },
-              ),
+            ListView.builder(
+              itemCount: medicalRecords.length,
+              shrinkWrap: true,
+              itemBuilder: (context, index) {
+                final file = medicalRecords[index];
+                return buildFile(file, index);
+              },
             ),
-            // SizedBox(
-            //   height: 5.h,
-            // ),
+          // SizedBox(
+          //   height: 5.h,
+          // ),
           //submit button
           Visibility(
             visible: medicalRecords.isNotEmpty,
@@ -315,62 +323,64 @@ class _EvaluationUploadReportState extends State<EvaluationUploadReport> {
               ),
             ),
           ),
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Center(
-                child: Text("Don't have any reports?",
-                  style: TextStyle(
-                    fontFamily: kFontBook,
-                    color: gHintTextColor,
+          Visibility(
+            visible: medicalRecords.isEmpty,
+            child:  Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Center(
+                  child: Text("Don't have any reports?",
+                    style: TextStyle(
+                      fontFamily: kFontBook,
+                      color: gHintTextColor,
+                    ),
                   ),
                 ),
-              ),
-              MediaQuery(
-                data: MediaQuery.of(context).copyWith(textScaleFactor: 0.8),
-                child: Center(child:  GestureDetector(
-                    onTap: (){
-                      // if(_videoPlayerController != null){
-                      //   _videoPlayerController!.stop();
-                      // }
-                      if(videoPlayerController != null) videoPlayerController!.pause();
-                      if(_chewieController != null) _chewieController!.pause();
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (ctx) => PersonalDetailsScreen2(
-                                  evaluationModelFormat1: widget.evaluationModelFormat1,
-                                  medicalReportList: null)
-                          ));
-                    },
-                    child: Container(
-                      width: 30.w,
-                      height: 4.h,
-                      margin: EdgeInsets.symmetric(vertical: 2.h),
-                      padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 10.w),
-                      decoration: BoxDecoration(
-                        color: eUser().buttonColor,
-                        borderRadius: BorderRadius.circular(eUser().buttonBorderRadius),
-                        // border: Border.all(
-                        //     color: eUser().buttonBorderColor,
-                        //     width: eUser().buttonBorderWidth
-                        // ),
-                      ),
-                      child: Center(
-                        child: Text(
-                          'Skip',
-                          style: TextStyle(
-                            fontFamily: eUser().buttonTextFont,
-                            color: eUser().buttonTextColor,
-                            fontSize: eUser().buttonTextSize,
+                MediaQuery(
+                  data: MediaQuery.of(context).copyWith(textScaleFactor: 0.8),
+                  child: Center(child:  GestureDetector(
+                      onTap: (){
+                        // if(_videoPlayerController != null){
+                        //   _videoPlayerController!.stop();
+                        // }
+                        if(videoPlayerController != null) videoPlayerController!.pause();
+                        if(_chewieController != null) _chewieController!.pause();
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (ctx) => PersonalDetailsScreen2(
+                                    evaluationModelFormat1: widget.evaluationModelFormat1,
+                                    medicalReportList: null)
+                            ));
+                      },
+                      child: Container(
+                        width: 30.w,
+                        height: 4.h,
+                        margin: EdgeInsets.symmetric(vertical: 2.h),
+                        padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 10.w),
+                        decoration: BoxDecoration(
+                          color: eUser().buttonColor,
+                          borderRadius: BorderRadius.circular(eUser().buttonBorderRadius),
+                          // border: Border.all(
+                          //     color: eUser().buttonBorderColor,
+                          //     width: eUser().buttonBorderWidth
+                          // ),
+                        ),
+                        child: Center(
+                          child: Text(
+                            'Skip',
+                            style: TextStyle(
+                              fontFamily: eUser().buttonTextFont,
+                              color: eUser().buttonTextColor,
+                              fontSize: eUser().buttonTextSize,
+                            ),
                           ),
                         ),
-                      ),
-                    )
-                ),),
-              ),
-            ],
-          ),
+                      )
+                  ),),
+                ),
+              ],
+            ),),
         ],
       ),
     );
@@ -405,7 +415,7 @@ class _EvaluationUploadReportState extends State<EvaluationUploadReport> {
   buildRecordList(PlatformFile filename, {int? index}) {
     return ListTile(
       shape: Border(
-        bottom: BorderSide()
+          bottom: BorderSide()
       ),
       leading: SizedBox(
           width: 50,

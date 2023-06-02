@@ -40,6 +40,7 @@ import '../../widgets/constants.dart';
 import '../../widgets/mp3/mp3_widget.dart';
 import '../../widgets/pip_package.dart';
 import '../../widgets/widgets.dart';
+import '../home_remedies/home_remedies_screen.dart';
 import '../prepratory plan/new/meal_plan_recipe_details.dart';
 import 'day_program_plans.dart';
 import 'meal_pdf.dart';
@@ -262,7 +263,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
         setState(() {
           isLoading = false;
         });
-        showAlert(context, model.status!,
+        showAlert(context, AppConfig.networkErrorText,
             isSingleButton: !(model.status != '401'), positiveButton: () {
               if (model.status == '401') {
                 Navigator.pop(context);
@@ -484,6 +485,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
   @override
   void initState() {
     super.initState();
+
     if (!widget.viewDay1Details) getProgramDays();
     if (widget.viewDay1Details) {
       selectedDay = 1;
@@ -545,19 +547,29 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                 element.itemId, () => element.status.toString().capitalize);
           });
         });
-        // mealPlanData1.forEach((element) {
-        //   print(element.toJson());
-        //   statusList.putIfAbsent(element.itemId, () => element.status.toString().capitalize);
-        // });
         commentController.text = model.comment ?? '';
       }
+      // for showing already selected data from local storage for present day
+    //   else{
+    // //     if(isDayCompleted != null && isDayCompleted == false && presentDay == selectedDay){
+    // //       if(_pref!.getString(AppConfig.STORE_MEAL_DATA) != null){
+    // // //         'selected_meal': statusList,
+    // // //          'comments': commentController.text
+    // //
+    // //         final localMealData = jsonDecode(_pref!.getString(AppConfig.STORE_MEAL_DATA)!);
+    // //         print("selected_meal: ${localMealData['selected_meal']}");
+    // //         statusList = jsonDecode(localMealData['selected_meal']);
+    // //         commentController.text = localMealData['comments'];
+    // //       }
+    // //     }
+    //   }
       mealPlanData1.values.forEach((element) {
         element.forEach((item) {
           lst.add(item);
         });
       });
-      print(
-          'mealPlanData1.values.length:${mealPlanData1.values.length}, ${lst.length}');
+
+      print('mealPlanData1.values.length:${mealPlanData1.values.length}, ${lst.length}');
     } else {
       ErrorModel model = result as ErrorModel;
       errorMsg = model.message ?? '';
@@ -895,27 +907,32 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                           color: gMainColor,
                         ),
                         onPressed: () {
-                          if (planNotePdfLink != null ||
-                              planNotePdfLink!.isNotEmpty) {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (ctx) => MealPdf(
-                                      pdfLink: planNotePdfLink!,
-                                      heading: "Note",
-                                      isVideoWidgetVisible: false,
-                                      headCircleIcon: bsHeadPinIcon,
-                                      topHeadColor: kBottomSheetHeadGreen,
-                                      isSheetCloseNeeded: true,
-                                      sheetCloseOnTap: () {
-                                        Navigator.pop(context);
-                                      },
-                                    )));
-                          } else {
-                            AppConfig().showSnackbar(
-                                context, "Note Link Not available",
-                                isError: true);
-                          }
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (ctx) => HomeRemediesScreen()));
+
+                          // if (planNotePdfLink != null ||
+                          //     planNotePdfLink!.isNotEmpty) {
+                          //   Navigator.push(
+                          //       context,
+                          //       MaterialPageRoute(
+                          //           builder: (ctx) => MealPdf(
+                          //             pdfLink: planNotePdfLink!,
+                          //             heading: "Note",
+                          //             isVideoWidgetVisible: false,
+                          //             headCircleIcon: bsHeadPinIcon,
+                          //             topHeadColor: kBottomSheetHeadGreen,
+                          //             isSheetCloseNeeded: true,
+                          //             sheetCloseOnTap: () {
+                          //               Navigator.pop(context);
+                          //             },
+                          //           )));
+                          // } else {
+                          //   AppConfig().showSnackbar(
+                          //       context, "Note Link Not available",
+                          //       isError: true);
+                          // }
                         },
                       ),
                     ],
@@ -1158,6 +1175,47 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
               ),
             ),
           ),
+          Visibility(
+            visible: (!buttonVisibility() && presentDay == selectedDay),
+            child: Center(
+              child: IntrinsicWidth(
+                child: Container(
+                  padding: EdgeInsets.all(8),
+                  margin: EdgeInsets.symmetric(vertical: 5),
+                  child: Center(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          padding: EdgeInsets.all(5),
+                          decoration: BoxDecoration(
+                              color: gPrimaryColor, shape: BoxShape.circle),
+                          child: Center(
+                            child: Icon(
+                              Icons.done_outlined,
+                              color: gWhiteColor,
+                              size: 3.h,
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 8,),
+                        Text(
+                          // "Day ${widget.day} Meal Plan",
+                          "Day ${selectedDay} Submitted",
+                          style: TextStyle(
+                              fontFamily: eUser().mainHeadingFont,
+                              color: gTextColor,
+                              fontSize:
+                              eUser().mainHeadingFontSize),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          )
+
         ],
       ),
     );
@@ -1760,7 +1818,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
   showFollowedSheet(ChildMealPlanDetailsModel e) {
     print("eeeee:$e");
     return AppConfig().showSheet(context, showFollowWidget(e),
-        bottomSheetHeight: 45.h,
+        bottomSheetHeight: 50.h,
         circleIcon: bsHeadPinIcon,
         isSheetCloseNeeded: true, sheetCloseOnTap: () {
           Navigator.pop(context);
@@ -2388,6 +2446,11 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
         }
       }
       print(statusList);
+      final storeMealDataLocally = {
+        'selected_meal': statusList.toString(),
+        'comments': commentController.text
+      };
+      _pref!.setString(AppConfig.STORE_MEAL_DATA, jsonEncode(storeMealDataLocally));
       print(statusList[id].runtimeType);
     });
   }

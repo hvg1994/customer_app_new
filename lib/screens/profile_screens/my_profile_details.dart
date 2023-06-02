@@ -9,6 +9,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gwc_customer/model/profile_model/user_profile/send_user_model.dart';
 import 'package:gwc_customer/screens/profile_screens/user_details_tap.dart';
 import 'package:gwc_customer/widgets/constants.dart';
+import 'package:gwc_customer/widgets/dart_extensions.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sizer/sizer.dart';
 import 'package:http/http.dart' as http;
@@ -38,9 +39,10 @@ class _MyProfileDetailsState extends State<MyProfileDetails> {
   TextEditingController fnameController = TextEditingController();
   TextEditingController lnameController = TextEditingController();
   TextEditingController ageController = TextEditingController();
-  TextEditingController genderController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController mobileController = TextEditingController();
+
+  String genderSelected = "";
 
   Future? getProfileDetails;
 
@@ -139,8 +141,7 @@ class _MyProfileDetailsState extends State<MyProfileDetails> {
                                                 data.lname ?? '';
                                             ageController.text =
                                                 data.age ?? '';
-                                            genderController.text =
-                                            data.gender!;
+                                            genderSelected = data.gender!.toTitleCase() ?? '';
                                             emailController.text =
                                             data.email!;
                                             mobileController.text =
@@ -205,8 +206,7 @@ class _MyProfileDetailsState extends State<MyProfileDetails> {
                                                     age: ageController
                                                         .text,
                                                     gender:
-                                                    genderController
-                                                        .text,
+                                                    genderSelected.toLowerCase(),
                                                     email:
                                                     subData!.email,
                                                     phone:
@@ -392,8 +392,7 @@ class _MyProfileDetailsState extends State<MyProfileDetails> {
                                 controller: lnameController),
                             profileTile("Age: ", subData?.age ?? '',
                                 controller: ageController, maxLength: 2),
-                            profileTile("Gender: ", subData?.gender ?? "",
-                                controller: genderController),
+                            genderTile('Gender', subData?.gender ?? "")
                             // profileTile("Email: ", subData?.email ?? ''),
                             // profileTile("Mobile Number: ", subData?.phone ?? ''),
                           ],
@@ -777,6 +776,128 @@ class _MyProfileDetailsState extends State<MyProfileDetails> {
             children: [
               Text(
                 subTitle,
+                style: TextStyle(
+                  color: gBlackColor,
+                  fontFamily: kFontBold,
+                  fontSize: 11.sp,
+                ),
+              ),
+              Container(
+                height: 1,
+                margin: EdgeInsets.only(top: 1.h, right: 5.w),
+                color: Colors.grey.withOpacity(0.5),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  genderTile(String title, String selectedGender){
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 5.w),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        // mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+              color: gHintTextColor,
+              fontFamily: kFontBook,
+              fontSize: 10.sp,
+            ),
+          ),
+          SizedBox(height: 1.h),
+          (isEdit)
+              ? Row(
+            children: [
+              GestureDetector(
+                  onTap: (){
+                    setState(() => genderSelected = "Male");
+                  },
+                  child: Row(
+                    children: [
+                      Radio(
+                        value: "Male",
+                        activeColor: kPrimaryColor,
+                        groupValue: genderSelected,
+                        onChanged: (value) {
+                          setState(() {
+                            genderSelected = value as String;
+                          });
+                        },
+                      ),
+                      Text('Male',
+                        style: buildTextStyle(color: genderSelected == "Male" ? kTextColor : gHintTextColor,
+                            fontFamily: genderSelected == "Male" ? kFontMedium : kFontBook
+                        ),
+                      ),
+                    ],
+                  )),
+              SizedBox(
+                width: 3.w,
+              ),
+              GestureDetector(
+                onTap: (){
+                  setState(() => genderSelected = "Female");
+                },
+                child: Row(
+                  children: [
+                    Radio(
+                      value: "Female",
+                      activeColor: kPrimaryColor,
+                      groupValue: genderSelected,
+                      onChanged: (value) {
+                        setState(() {
+                          genderSelected = value as String;
+                        });
+                      },
+                    ),
+                    Text(
+                      'Female',
+                      style: buildTextStyle(color: genderSelected == "Female" ? kTextColor : gHintTextColor,
+                          fontFamily: genderSelected == "Female" ? kFontMedium : kFontBook
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(
+                width: 3.w,
+              ),
+              GestureDetector(
+                onTap: (){
+                  setState(() => genderSelected = "Other");
+                },
+                child: Row(
+                  children: [
+                    Radio(
+                        value: "Other",
+                        groupValue: genderSelected,
+                        activeColor: kPrimaryColor,
+                        onChanged: (value) {
+                          setState(() {
+                            genderSelected = value as String;
+                          });
+                        }),
+                    Text(
+                      "Other",
+                      style: buildTextStyle(color: genderSelected == "Other" ? kTextColor : gHintTextColor,
+                          fontFamily: genderSelected == "Other" ? kFontMedium : kFontBook
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          )
+              : Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                selectedGender,
                 style: TextStyle(
                   color: gBlackColor,
                   fontFamily: kFontBold,

@@ -470,7 +470,7 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen>with
                                     //   }
                                     // }
                                     // else{
-                                      if(res.difference(curTime).inMinutes > 5 || res.difference(curTime).inMinutes < -10){
+                                      if(res.difference(curTime).inMinutes > 5 || res.difference(curTime).inMinutes < -15){
                                         showJoinPopup();
                                       }
                                       else{

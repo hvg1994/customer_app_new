@@ -397,12 +397,12 @@ class _SplashScreenState extends State<SplashScreen> {
     });
     print("_pref.getBool(AppConfig.isLogin): ${_pref.getBool(AppConfig.isLogin)}");
     print("isLogin: $isLogin");
-    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
-      if(isError){
-        showAlert();
-        _timer!.cancel();
-      }
-    });
+    // WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+    //   if(isError){
+    //     showAlert();
+    //     _timer!.cancel();
+    //   }
+    // });
   }
 
 

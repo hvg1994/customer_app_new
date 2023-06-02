@@ -15,6 +15,7 @@ class GetDashboardDataModel {
   String? prepVideo;
   String? programVideo;
   String? gmgVideo;
+  String? isMrRead;
   // these 2 for consultation
   GetAppointmentDetailsModel? app_consulation;
   GutDataModel? normal_consultation;
@@ -54,7 +55,8 @@ class GetDashboardDataModel {
         this.prepVideo,
         this.programVideo,
         this.gmgVideo,
-        this.notification
+        this.notification,
+        this.isMrRead
         // this.postprogram
       });
 
@@ -68,6 +70,7 @@ class GetDashboardDataModel {
     prepVideo = json['prep_video'].toString();
     programVideo = json['program_video'].toString();
     gmgVideo = json['gmg_video'].toString();
+    isMrRead = json['is_mr_report_read'].toString();
     notification = json['notification'].toString();
 
 
@@ -78,6 +81,8 @@ class GetDashboardDataModel {
 
     if(json['Consulation'] != null){
       if(json['Consulation']['value'].runtimeType == String
+          || json['Consulation']['data'] == 'consultation_done'
+          || json['Consulation']['data'] == 'consultation_accepted'
           || json['Consulation']['data'] == 'consultation_rejected'
           || json['Consulation']['data'] == 'consultation_waiting'
           || json['Consulation']['data'] =='check_user_reports'
@@ -153,6 +158,7 @@ class GetDashboardDataModel {
     data['prep_video'] = this.prepVideo;
     data['program_video'] = this.programVideo;
     data['gmg_video'] = this.gmgVideo;
+    data['is_mr_report_read '] = this.isMrRead;
 
     if (this.app_consulation != null) {
       data['Consulation'] = this.app_consulation!.toJson();

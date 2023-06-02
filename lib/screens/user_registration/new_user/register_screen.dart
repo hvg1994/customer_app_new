@@ -17,6 +17,7 @@ import '../../../services/new_user_service/register_screen_service/register_serv
 import '../../../utils/app_config.dart';
 import '../../../widgets/constants.dart';
 import '../../../widgets/unfocus_widget.dart';
+import 'about_the_program.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key}) : super(key: key);
@@ -92,28 +93,37 @@ class _RegisterScreenState extends State<RegisterScreen> {
     super.dispose();
   }
 
+  Future<bool> onBack() async{
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => AboutTheProgram()));
+    return true;
+  }
+
+
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: gBackgroundColor,
-        body: UnfocusWidget(
-          child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            child: Padding(
-              padding: EdgeInsets.only(left: 1.w, right: 1.w, top: 1.h),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.only(left: 1.5.w, right: 1.5.w),
-                    child: buildAppBar(() {
-                      Navigator.pop(context);
-                    })
-                  ),
-                  _mainView()
-                ],
+    return WillPopScope(
+      onWillPop: onBack,
+      child: SafeArea(
+        child: Scaffold(
+          backgroundColor: gBackgroundColor,
+          body: UnfocusWidget(
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: Padding(
+                padding: EdgeInsets.only(left: 1.w, right: 1.w, top: 1.h),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(left: 1.5.w, right: 1.5.w),
+                      child: buildAppBar(() {
+                        onBack();
+                      })
+                    ),
+                    _mainView()
+                  ],
+                ),
               ),
             ),
           ),

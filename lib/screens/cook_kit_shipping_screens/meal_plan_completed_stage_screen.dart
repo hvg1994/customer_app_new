@@ -191,10 +191,8 @@ class _NewMealPopupScreenState extends State<NewMealPopupScreen> {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 3.5.w, vertical: 2.h),
       child: HorizontalDatePicker(
-        begin: DateTime.now(),
-        end: DateTime.now().add(
-          const Duration(days: 5),
-        ),
+        begin: DateTime.now().add(Duration(days: 4)),
+        end: DateTime.now().add(Duration(days: 4)).add(Duration(days: 30)),
         selected: selectedDate,
         onSelected: (item) {
           setState(() {

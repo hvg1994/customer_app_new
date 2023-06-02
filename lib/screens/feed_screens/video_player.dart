@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:auto_orientation/auto_orientation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:sizer/sizer.dart';
 // import 'package:flutter_vlc_player/flutter_vlc_player.dart';
 import 'package:wakelock/wakelock.dart';
 
@@ -21,7 +21,6 @@ class VideoPlayerMeedu extends StatefulWidget {
 }
 
 class _VideoPlayerMeeduState extends State<VideoPlayerMeedu> {
-
   // VlcPlayerController? _controller;
   // final _key = GlobalKey<VlcPlayerWithControlsState>();
   //
@@ -72,7 +71,6 @@ class _VideoPlayerMeeduState extends State<VideoPlayerMeedu> {
   //
   // }
 
-
   @override
   void initState() {
     super.initState();
@@ -93,9 +91,8 @@ class _VideoPlayerMeeduState extends State<VideoPlayerMeedu> {
     });
   }
 
-
   VideoPlayerController? videoPlayerController;
-  ChewieController ? _chewieController;
+  ChewieController? _chewieController;
 
   initVideoChewieView(String url) {
     print("init url: $url");
@@ -103,44 +100,41 @@ class _VideoPlayerMeeduState extends State<VideoPlayerMeedu> {
     videoPlayerController = VideoPlayerController.network(url);
     _chewieController = ChewieController(
         videoPlayerController: videoPlayerController!,
-        aspectRatio: 16/9,
+        aspectRatio: 16 / 9,
         autoInitialize: true,
         showOptions: false,
         autoPlay: true,
         fullScreenByDefault: true,
         hideControlsTimer: Duration(seconds: 3),
-        showControls: true
-
-    );
+        showControls: true);
 
     final _ori = MediaQuery.of(context).orientation;
     print(_ori.name);
     bool isPortrait = _ori == Orientation.portrait;
-    if(isPortrait){
-      AutoOrientation.landscapeAutoMode();
+    if (isPortrait) {
+      SystemChrome.setPreferredOrientations(
+          [DeviceOrientation.landscapeRight, DeviceOrientation.landscapeLeft]);
+
+      // AutoOrientation.landscapeAutoMode();
     }
 
-    setState(() {
-
-    });
+    setState(() {});
   }
 
-
-  wake() async{
-    if(!await Wakelock.enabled){
+  wake() async {
+    if (!await Wakelock.enabled) {
       Wakelock.enable();
     }
   }
 
-
   @override
-  void dispose() async{
+  void dispose() async {
     // if(_controller != null ) _controller!.dispose();
-    if(await Wakelock.enabled){
+    if (await Wakelock.enabled) {
       Wakelock.disable();
     }
-    if(_chewieController != null ) _chewieController!.dispose();
-    if(videoPlayerController != null ) videoPlayerController!.dispose();
+    if (_chewieController != null) _chewieController!.dispose();
+    if (videoPlayerController != null) videoPlayerController!.dispose();
 
     super.dispose();
   }
@@ -159,9 +153,36 @@ class _VideoPlayerMeeduState extends State<VideoPlayerMeedu> {
   Widget build(BuildContext context) {
     return WillPopScope(
         child: Scaffold(
+          appBar: AppBar(
+            backgroundColor: gWhiteColor,
+            centerTitle: false,
+            automaticallyImplyLeading: false,
+            elevation: 0,
+            title: Row(
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  child: Icon(
+                    Icons.arrow_back_ios_new_sharp,
+                    color: gsecondaryColor,
+                    size: 2.h,
+                  ),
+                ),
+                SizedBox(width: 2.w),
+                SizedBox(
+                  height: 5.h,
+                  child: const Image(
+                    image: AssetImage("assets/images/Gut welness logo.png"),
+                  ),
+                ),
+              ],
+            ),
+          ),
           body: SafeArea(
             child: LayoutBuilder(
-              builder: (_, constraints){
+              builder: (_, constraints) {
                 print("_chewieController: $_chewieController");
                 return Container(
                   color: Colors.black,
@@ -169,23 +190,25 @@ class _VideoPlayerMeeduState extends State<VideoPlayerMeedu> {
                   width: constraints.maxWidth,
                   child: Center(
                     child: AspectRatio(
-                        aspectRatio: constraints.maxWidth/constraints.maxHeight,
-                        child: (_chewieController == null)
-                            ? Center(child: buildCircularIndicator(),)
-                            : Chewie(
-                          controller: _chewieController!,
-                        ),
-                        // child: VlcPlayerWithControls(
-                        //   key: _key,
-                        //   controller: _controller!,
-                        //   virtualDisplay: true,
-                        //   showVolume: false,
-                        //   showVideoProgress: true,
-                        //   seekButtonIconSize: 10.sp,
-                        //   playButtonIconSize: 14.sp,
-                        //   replayButtonSize: 14.sp,
-                        //   showFullscreenBtn: true,
-                        // )
+                      aspectRatio: constraints.maxWidth / constraints.maxHeight,
+                      child: (_chewieController == null)
+                          ? Center(
+                        child: buildCircularIndicator(),
+                      )
+                          : Chewie(
+                        controller: _chewieController!,
+                      ),
+                      // child: VlcPlayerWithControls(
+                      //   key: _key,
+                      //   controller: _controller!,
+                      //   virtualDisplay: true,
+                      //   showVolume: false,
+                      //   showVideoProgress: true,
+                      //   seekButtonIconSize: 10.sp,
+                      //   playButtonIconSize: 14.sp,
+                      //   replayButtonSize: 14.sp,
+                      //   showFullscreenBtn: true,
+                      // )
                     ),
                   ),
                 );
@@ -196,12 +219,14 @@ class _VideoPlayerMeeduState extends State<VideoPlayerMeedu> {
         onWillPop: () {
           final _ori = MediaQuery.of(context).orientation;
           bool isPortrait = _ori == Orientation.portrait;
-          if(!isPortrait){
-            AutoOrientation.portraitUpMode();
+          if (!isPortrait) {
+            SystemChrome.setPreferredOrientations(
+              [DeviceOrientation.portraitUp],
+            );
+            // AutoOrientation.portraitUpMode();
           }
           print("isPortrait: $isPortrait");
-          return (isPortrait) ?  Future.value(true) : Future.value(false);
-        }
-    );
+          return (isPortrait) ? Future.value(true) : Future.value(false);
+        });
   }
 }

@@ -1,18 +1,35 @@
 import 'package:flutter/material.dart';
+import 'package:gwc_customer/model/error_model.dart';
 import 'package:sizer/sizer.dart';
 
+import '../../../repository/api_service.dart';
+import '../../../repository/dashboard_repo/gut_repository/dashboard_repository.dart';
+import '../../../services/dashboard_service/gut_service/dashboard_data_service.dart';
 import '../../../widgets/constants.dart';
 import '../../../widgets/widgets.dart';
 import 'medical_report_details.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
-
+import 'package:http/http.dart' as http;
 
 class MedicalReportScreen extends StatelessWidget {
+  final String isMrRead;
   final String pdfLink;
-  const MedicalReportScreen({Key? key, required this.pdfLink}) : super(key: key);
+  MedicalReportScreen({Key? key, required this.pdfLink, this.isMrRead = "1"}) : super(key: key);
+  late GutDataService _gutDataService;
 
+  submitIsMrRead() async{
+    _gutDataService = GutDataService(repository: repository);
+    final res = await _gutDataService.submitIsMrReadService();
+    if(res.runtimeType == ErrorModel){
+
+    }
+  }
   @override
   Widget build(BuildContext context) {
+    if(isMrRead == "0"){
+      submitIsMrRead();
+    }
+
     print(pdfLink);
     return SafeArea(
       child: Scaffold(
@@ -50,5 +67,11 @@ class MedicalReportScreen extends StatelessWidget {
       ),
     );
   }
+
+  final GutDataRepository repository = GutDataRepository(
+    apiClient: ApiClient(
+      httpClient: http.Client(),
+    ),
+  );
 
 }

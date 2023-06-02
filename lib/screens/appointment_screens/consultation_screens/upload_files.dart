@@ -10,6 +10,7 @@ import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sizer/sizer.dart';
+import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:io';
 import '../../../model/dashboard_model/report_upload_model/child_report_list_model.dart';
@@ -57,6 +58,7 @@ class _UploadFilesState extends State<UploadFiles> {
   dynamic padding = EdgeInsets.symmetric(vertical: 1.h, horizontal: 5.w);
 
   List<File> selectedFiles = [];
+
   /// for others id should be 0
   List selectedFilesId = [];
 
@@ -175,19 +177,22 @@ class _UploadFilesState extends State<UploadFiles> {
               SizedBox(
                 height: 1.8.h,
               ),
-              if(!widget.isFromSettings) Padding(
-                padding: padding,
-                child: Align(
-                  alignment: Alignment.topLeft,
-                  child: Text(
-                    // "Uploaded Report",
-                    'Requested Reports',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        fontFamily: kFontBold, color: gTextColor, fontSize: 11.sp),
+              if (!widget.isFromSettings)
+                Padding(
+                  padding: padding,
+                  child: Align(
+                    alignment: Alignment.topLeft,
+                    child: Text(
+                      // "Uploaded Report",
+                      'Requested Reports',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          fontFamily: kFontBold,
+                          color: gTextColor,
+                          fontSize: 11.sp),
+                    ),
                   ),
                 ),
-              ),
               (widget.isFromSettings)
                   ? showNormalReportList(context)
                   : showRequestedReports(context),
@@ -492,8 +497,7 @@ class _UploadFilesState extends State<UploadFiles> {
         showUploadProgress = false;
       });
       // AppConfig().showSnackbar(context, result.message ?? '');
-    }
-    else {
+    } else {
       ErrorModel result = res;
       AppConfig().showSnackbar(context, result.message ?? '', isError: true);
       setState(() {
@@ -501,165 +505,6 @@ class _UploadFilesState extends State<UploadFiles> {
       });
     }
     Navigator.pop(context);
-  }
-
-  showUserReports() {
-    return SafeArea(
-      child: Scaffold(
-        body: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 3.w),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: 1.h),
-                Align(
-                  alignment: Alignment.topLeft,
-                  child: buildAppBar(() {
-                    Navigator.pop(context);
-                  }),
-                ),
-                SizedBox(height: 2.h),
-                Text(
-                  "User Reports",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      fontFamily: kFontBold,
-                      color: gBlackColor,
-                      fontSize: 12.sp),
-                ),
-                SizedBox(height: 2.h),
-                (showUploadProgress) ? const SizedBox()
-                    : (doctorRequestedReports.isEmpty)
-                    ? Padding(
-                  padding: EdgeInsets.symmetric(vertical: 15.h),
-                  child: const Center(
-                    child: Image(
-                      image: AssetImage("assets/images/no_data_found.png"),
-                    ),
-                  ),
-                )
-                    : ListView.builder(
-                  scrollDirection: Axis.vertical,
-                  physics: const NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  itemCount: doctorRequestedReports.length,
-                  itemBuilder: ((context, index) {
-                    return GestureDetector(
-                      onTap: () async {
-                        final url =
-                        doctorRequestedReports[index].report.toString();
-                        if (url != null || url.isNotEmpty) {
-                          print("URL : $url");
-                          if (url.toLowerCase().contains(".jpg") ||
-                              url.toLowerCase().contains(".png") ||
-                              url.toLowerCase().contains(".jpeg") ) {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (ctx) =>
-                                        CustomPhotoViewer(url: url)));
-                          } else {
-
-                            Navigator.push(context, MaterialPageRoute(builder: (ctx)=> MealPdf(
-                                isVideoWidgetVisible: false,
-                                pdfLink: url ,
-                                isSheetCloseNeeded: true,
-                                sheetCloseOnTap: (){
-                                  Navigator.pop(context);
-                                },
-                                heading: doctorRequestedReports[index]
-                                    .report
-                                    .toString()
-                                    .split("/")
-                                    .last
-                            )));
-                            print("URL : $url");
-                          }
-
-                        }
-                        // if (await canLaunch(url)) {
-                        //   await launch(
-                        //     url,
-                        //     //forceSafariVC: true,
-                        //     // forceWebView: true,
-                        //     // enableJavaScript: true,
-                        //   );
-                        // }
-                      },
-                      child: Container(
-                        margin: EdgeInsets.symmetric(
-                            vertical: 1.h, horizontal: 2.w),
-                        padding: EdgeInsets.symmetric(
-                            vertical: 2.h, horizontal: 3.w),
-                        decoration: BoxDecoration(
-                          color: gWhiteColor,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.3),
-                              blurRadius: 10,
-                              offset: const Offset(2, 3),
-                            ),
-                          ],
-                        ),
-                        child: Row(
-                          children: [
-                            Image(
-                              height: 4.h,
-                              image: const AssetImage(
-                                  "assets/images/Group 2722.png"),
-                            ),
-                            SizedBox(width: 3.w),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment:
-                                CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    doctorRequestedReports[index]
-                                        .report
-                                        .toString()
-                                        .split("/")
-                                        .last,
-                                    overflow: TextOverflow.ellipsis,
-                                    textAlign: TextAlign.start,
-                                    maxLines: 2,
-                                    style: TextStyle(
-                                        height: 1.2,
-                                        fontFamily: kFontMedium,
-                                        color: gBlackColor,
-                                        fontSize: 9.sp),
-                                  ),
-                                  // SizedBox(height: 1.h),
-                                  // Text(
-                                  //   "2 MB",
-                                  //   style: TextStyle(
-                                  //       fontFamily: "GothamBook",
-                                  //       color: gMainColor,
-                                  //       fontSize: 9.sp),
-                                  // ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(width: 3.w),
-                            Icon(
-                              Icons.arrow_forward_ios_outlined,
-                              color: gsecondaryColor,
-                              size: 2.h,
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  }),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
   }
 
   void uploadReport() async {
@@ -842,26 +687,24 @@ class _UploadFilesState extends State<UploadFiles> {
             if (reportsObject.isNotEmpty) {
               reportsObject.forEach((ele) {
                 if (ele.id.toString().contains(type)) {
-                  if(!ele.path.contains(element.path)){
+                  if (!ele.path.contains(element.path)) {
                     ele.path.add(element.path);
                   }
                 }
               });
             }
             if (type == "others") {
-              if(!otherFilesObject.contains(element.path)){
+              if (!otherFilesObject.contains(element.path)) {
                 otherFilesObject.add(element.path ?? '');
               }
             }
             print("otherFilesObject: $otherFilesObject");
           }
-        }
-        else {
+        } else {
           AppConfig()
               .showSnackbar(context, "File size must be <12Mb", isError: true);
         }
-      }
-      else {
+      } else {
         AppConfig().showSnackbar(context, "Please select png/jpg/Pdf files",
             isError: true);
       }
@@ -942,8 +785,7 @@ class _UploadFilesState extends State<UploadFiles> {
           }
           print("otherFilesObject: $otherFilesObject");
         }
-      }
-      else {
+      } else {
         print("filesize: ${getFileSize(_image!)}Mb");
 
         AppConfig()
@@ -1019,33 +861,36 @@ class _UploadFilesState extends State<UploadFiles> {
                 visible: reportsObject[index].id == id &&
                     reportsObject[index].path.isNotEmpty,
                 child: ListView.builder(
-                  physics: NeverScrollableScrollPhysics(),
-                  itemCount: reportsObject[index].path.length,
+                    physics: NeverScrollableScrollPhysics(),
+                    itemCount: reportsObject[index].path.length,
                     shrinkWrap: true,
-                    itemBuilder: (_, i){
-                  final file = File(reportsObject[index].path[i]);
-                  return buildFile(file, index, secondaryIndex: i);
-                })
-            );
+                    itemBuilder: (_, i) {
+                      final file = File(reportsObject[index].path[i]);
+                      return buildFile(file, index, secondaryIndex: i);
+                    }));
           },
         )
             : const Divider(),
       ],
     );
   }
+
   List<MultipartFile> multipartFileList = [];
 
-  submitDoctorRequestedReport(List<File> selectedFilesList, List selectedFilesIds) async{
+  submitDoctorRequestedReport(
+      List<File> selectedFilesList, List selectedFilesIds) async {
     multipartFileList.clear();
-      openProgressDialog(context);
+    openProgressDialog(context);
     for (var element in selectedFilesList) {
-      multipartFileList.add(await http.MultipartFile.fromPath("files[]", element.path));
+      multipartFileList
+          .add(await http.MultipartFile.fromPath("files[]", element.path));
     }
 
     print("multipartFile: $multipartFileList");
 
     final res = await ReportService(repository: repository)
-        .submitDoctorRequestedReportService(selectedFilesIds, multipartFileList);
+        .submitDoctorRequestedReportService(
+        selectedFilesIds, multipartFileList);
     print("submitDoctorRequestedReport res: $res");
     if (res.runtimeType == ErrorModel) {
       final result = res as ErrorModel;
@@ -1064,7 +909,6 @@ class _UploadFilesState extends State<UploadFiles> {
 
     Navigator.pop(context);
     Navigator.pop(context);
-
   }
   // Future submitDoctorRequestedReport(String filePath, String reportId) async {
   //   openProgressDialog(context);
@@ -1091,46 +935,44 @@ class _UploadFilesState extends State<UploadFiles> {
   //   Navigator.pop(context);
   // }
 
-
-  _createFolder({String? url})async{
+  _createFolder({String? url}) async {
     final permissionStatus = await Permission.storage.status;
-    if(!permissionStatus.isGranted){
+    if (!permissionStatus.isGranted) {
       Permission.storage.request();
     }
-    const folderName="GWC";
+    const folderName = "GWC";
 
     final path = Directory("/storage/emulated/0/Download/$folderName");
 
-    if ((await path.exists())){
+    if ((await path.exists())) {
       print("exist");
-      if(url!= null) storeToFolder(path.path, url);
-    }
-    else{
+      if (url != null) storeToFolder(path.path, url);
+    } else {
       print("not exist");
       path.create().then((value) {
-        if(url!= null) storeToFolder(path.path, url);
+        if (url != null) storeToFolder(path.path, url);
       });
     }
     print(permissionStatus.isGranted);
   }
 
-  storeToFolder(String path, String url) async{
-    final res = await ReportService(repository: repository).downloadPrescriptionService(url, url.split('/').last, path);
+  storeToFolder(String path, String url) async {
+    final res = await ReportService(repository: repository)
+        .downloadPrescriptionService(url, url.split('/').last, path);
 
     print(res.runtimeType);
     print(res.runtimeType.toString() == "_File");
-    if(res.runtimeType.toString() == "_File"){
+    if (res.runtimeType.toString() == "_File") {
       File f = res;
       AppConfig().showSnackbar(context, "File Saved to ${f.path}");
-    }
-    else{
+    } else {
       AppConfig().showSnackbar(context, "File Download Error");
     }
   }
 
   Future downloadFile(String url, String filename) async {
     var httpClient = new HttpClient();
-    try{
+    try {
       var request = await httpClient.getUrl(Uri.parse(url));
       var response = await request.close();
       var bytes = await consolidateHttpClientResponseBytes(response);
@@ -1140,7 +982,7 @@ class _UploadFilesState extends State<UploadFiles> {
       await file.writeAsBytes(bytes);
       print('downloaded file path = ${file.path}');
       return file;
-    }catch(error){
+    } catch (error) {
       print('pdf downloading error = $error');
       return error;
     }
@@ -1170,79 +1012,95 @@ class _UploadFilesState extends State<UploadFiles> {
                   itemBuilder: (_, index) {
                     print("reportsObject: $reportsObject");
                     // print(reportsObject[reportsObject.indexWhere((element) => element.name == doctorRequestedReports[index].reportType)].isSubmited);
-                    return (doctorRequestedReports[index].isUploaded != null && doctorRequestedReports[index].isUploaded =="1")
+                    return (doctorRequestedReports[index].isUploaded !=
+                        null &&
+                        doctorRequestedReports[index].isUploaded ==
+                            "1")
                         ? ListTile(
-                      onTap: null,
-                      minVerticalPadding: 0,
-                      dense: true,
-                      // contentPadding: EdgeInsets.only(left: 0.0, right: 0.0),
-                      title: Text(
-                        doctorRequestedReports[index].reportType ?? '',
-                        style: TextStyle(
-                            fontSize: 10.sp,
-                            fontFamily: kFontBold,
-                            color: eUser().mainHeadingColor),
-                      ),
-                      trailing: Icon(
-                        Icons.done,
-                        color: gPrimaryColor,
-                      )
-                    )
-                        :buildReportList(
-                        doctorRequestedReports[index].reportType ?? '',
-                        id: doctorRequestedReports[index].id.toString() ?? '',
-                        isSingleIcon:
-                        (doctorRequestedReports[index].reportType! !=
-                            "prescription"),
-                        onTap: () {
-                          if (doctorRequestedReports[index].reportType ==
-                              "prescription") {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (ctx) => MealPdf(
-                                      pdfLink: doctorRequestedReports[index]
-                                          .report!,
-                                      heading: "Prescription",
-                                      isVideoWidgetVisible: false,
-                                      headCircleIcon: bsHeadPinIcon,
-                                      isSheetCloseNeeded: true,
-                                      sheetCloseOnTap: (){
-                                        Navigator.pop(context);
-                                      },
-                                    )));
-                          }
-                          else {
-                            reportsObject.forEach((element) {
-                              print(element.id);
-                              print('${element.id} ${doctorRequestedReports[index].id}');
-                              print(element.id.toString() == doctorRequestedReports[index].id.toString());
-                              if (element.id.toString() == doctorRequestedReports[index].id.toString()) {
-                                showChooserSheet(
-                                    type: doctorRequestedReports[index]
-                                        .id
-                                        .toString());
-                              } else if (element.name == doctorRequestedReports[index]
+                        onTap: null,
+                        minVerticalPadding: 0,
+                        dense: true,
+                        // contentPadding: EdgeInsets.only(left: 0.0, right: 0.0),
+                        title: Text(
+                          doctorRequestedReports[index].reportType ??
+                              '',
+                          style: TextStyle(
+                              fontSize: 10.sp,
+                              fontFamily: kFontBold,
+                              color: eUser().mainHeadingColor),
+                        ),
+                        trailing: Icon(
+                          Icons.done,
+                          color: gPrimaryColor,
+                        ))
+                        : buildReportList(
+                        doctorRequestedReports[index].reportType ??
+                            '',
+                        id: doctorRequestedReports[index]
+                            .id
+                            .toString() ??
+                            '',
+                        isSingleIcon: (doctorRequestedReports[index]
+                            .reportType! !=
+                            "prescription"), onTap: () {
+                      if (doctorRequestedReports[index]
+                          .reportType ==
+                          "prescription") {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (ctx) => MealPdf(
+                                  pdfLink:
+                                  doctorRequestedReports[
+                                  index]
+                                      .report!,
+                                  heading: "Prescription",
+                                  isVideoWidgetVisible: false,
+                                  headCircleIcon: bsHeadPinIcon,
+                                  isSheetCloseNeeded: true,
+                                  sheetCloseOnTap: () {
+                                    Navigator.pop(context);
+                                  },
+                                )));
+                      } else {
+                        reportsObject.forEach((element) {
+                          print(element.id);
+                          print(
+                              '${element.id} ${doctorRequestedReports[index].id}');
+                          print(element.id.toString() ==
+                              doctorRequestedReports[index]
+                                  .id
+                                  .toString());
+                          if (element.id.toString() ==
+                              doctorRequestedReports[index]
+                                  .id
+                                  .toString()) {
+                            showChooserSheet(
+                                type: doctorRequestedReports[index]
+                                    .id
+                                    .toString());
+                          } else if (element.name ==
+                              doctorRequestedReports[index]
                                   .reportType &&
-                                  element.path.isEmpty) {
-                                return;
-                              }
-                              // else{
-                              //   if(element.path .isNotEmpty){
-                              //     submitDoctorRequestedReport(element.path, element.id);
-                              //   }
-                              // }
-                            });
+                              element.path.isEmpty) {
+                            return;
                           }
-
-                        },
-                        onSecondaryIconTap: (){
-                          if (doctorRequestedReports[index].reportType ==
-                              "prescription") {
-                            _createFolder(url: doctorRequestedReports[index].report!);
-                          }
-                        }
-                    );
+                          // else{
+                          //   if(element.path .isNotEmpty){
+                          //     submitDoctorRequestedReport(element.path, element.id);
+                          //   }
+                          // }
+                        });
+                      }
+                    }, onSecondaryIconTap: () {
+                      if (doctorRequestedReports[index]
+                          .reportType ==
+                          "prescription") {
+                        _createFolder(
+                            url: doctorRequestedReports[index]
+                                .report!);
+                      }
+                    });
                   }),
             ),
             SizedBox(
@@ -1318,11 +1176,11 @@ class _UploadFilesState extends State<UploadFiles> {
     );
   }
 
-  sendAllFiles(){
+  sendAllFiles() {
     selectedFiles.clear();
     selectedFilesId.clear();
     reportsObject.forEach((element) {
-      if(element.path.isNotEmpty){
+      if (element.path.isNotEmpty) {
         element.path.forEach((paths) {
           selectedFiles.add(File(paths));
           selectedFilesId.add(element.id);
@@ -1338,7 +1196,6 @@ class _UploadFilesState extends State<UploadFiles> {
     print("selectedFiles: $selectedFiles");
     print("selectedFilesId: $selectedFilesId");
     submitDoctorRequestedReport(selectedFiles, selectedFilesId);
-
   }
   // Stream sendStream() async* {
   //   for (int i = 0; i < reportsObject.length; i++) {
@@ -1362,16 +1219,14 @@ class _UploadFilesState extends State<UploadFiles> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            buildReportList(
-                'Prescription',
+            buildReportList('Prescription',
                 id: 'pres',
                 isSingleIcon: false,
-                onTap: () {},
-                onSecondaryIconTap: (){
-                    _createFolder(url: "https://gwc.disol.in/storage/uploads/users/medical_report/Gc_Kiran-mr_report.pdf");
-
-                }
-            ),
+                onTap: () {}, onSecondaryIconTap: () {
+                  _createFolder(
+                      url:
+                      "https://gwc.disol.in/storage/uploads/users/medical_report/Gc_Kiran-mr_report.pdf");
+                }),
             buildReportList('Blood Report', onTap: () {
               showChooserSheet();
             }),
@@ -1392,6 +1247,574 @@ class _UploadFilesState extends State<UploadFiles> {
       ),
     );
   }
+
+  showUserReports() {
+    return DefaultTabController(
+      length: 5,
+      child: SafeArea(
+        child: Scaffold(
+          body: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 3.w),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(height: 1.h),
+                Align(
+                  alignment: Alignment.topLeft,
+                  child: buildAppBar(() {
+                    Navigator.pop(context);
+                  }),
+                ),
+                SizedBox(height: 2.h),
+                TabBar(
+                    labelColor: eUser().userFieldLabelColor,
+                    unselectedLabelColor: eUser().userTextFieldColor,
+                    padding: EdgeInsets.symmetric(horizontal: 3.w),
+                    isScrollable: true,
+                    indicatorColor: gsecondaryColor,
+                    labelStyle: TextStyle(
+                        fontFamily: kFontMedium,
+                        color: gPrimaryColor,
+                        fontSize: 12.sp),
+                    unselectedLabelStyle: TextStyle(
+                        fontFamily: kFontBook,
+                        color: gHintTextColor,
+                        fontSize: 10.sp),
+                    labelPadding: EdgeInsets.only(
+                        right: 10.w, left: 2.w, top: 1.h, bottom: 1.h),
+                    indicatorPadding: EdgeInsets.only(right: 7.w),
+                    tabs: const [
+                      Text('User Uploaded'),
+                      Text('Prescription'),
+                      Text('Medical Report'),
+                      Text('GMG'),
+                      Text('End Report'),
+                    ]),
+
+                Expanded(
+                  child: TabBarView(
+                    children: [
+                      buildUserUploaded(),
+                      buildPrescription(),
+                      buildMedicalReport(),
+                      buildGMG(),
+                      buildEndReport(),
+                    ],
+                  ),
+                ),
+                // Text(
+                //   "User Reports",
+                //   textAlign: TextAlign.center,
+                //   style: TextStyle(
+                //       fontFamily: kFontBold,
+                //       color: gBlackColor,
+                //       fontSize: 12.sp),
+                // ),
+                // SizedBox(height: 2.h),
+                // (showUploadProgress) ? const SizedBox()
+                //     : (doctorRequestedReports.isEmpty)
+                //     ? Padding(
+                //   padding: EdgeInsets.symmetric(vertical: 15.h),
+                //   child: const Center(
+                //     child: Image(
+                //       image: AssetImage("assets/images/no_data_found.png"),
+                //     ),
+                //   ),
+                // )
+                //     : ListView.builder(
+                //   scrollDirection: Axis.vertical,
+                //   physics: const NeverScrollableScrollPhysics(),
+                //   shrinkWrap: true,
+                //   itemCount: doctorRequestedReports.length,
+                //   itemBuilder: ((context, index) {
+                //     return GestureDetector(
+                //       onTap: () async {
+                //         final url =
+                //         doctorRequestedReports[index].report.toString();
+                //         if (url != null || url.isNotEmpty) {
+                //           print("URL : $url");
+                //           if (url.toLowerCase().contains(".jpg") ||
+                //               url.toLowerCase().contains(".png") ||
+                //               url.toLowerCase().contains(".jpeg") ) {
+                //             Navigator.push(
+                //                 context,
+                //                 MaterialPageRoute(
+                //                     builder: (ctx) =>
+                //                         CustomPhotoViewer(url: url)));
+                //           } else {
+                //
+                //             Navigator.push(context, MaterialPageRoute(builder: (ctx)=> MealPdf(
+                //                 isVideoWidgetVisible: false,
+                //                 pdfLink: url ,
+                //                 isSheetCloseNeeded: true,
+                //                 sheetCloseOnTap: (){
+                //                   Navigator.pop(context);
+                //                 },
+                //                 heading: doctorRequestedReports[index]
+                //                     .report
+                //                     .toString()
+                //                     .split("/")
+                //                     .last
+                //             )));
+                //             print("URL : $url");
+                //           }
+                //
+                //         }
+                //         // if (await canLaunch(url)) {
+                //         //   await launch(
+                //         //     url,
+                //         //     //forceSafariVC: true,
+                //         //     // forceWebView: true,
+                //         //     // enableJavaScript: true,
+                //         //   );
+                //         // }
+                //       },
+                //       child: Container(
+                //         margin: EdgeInsets.symmetric(
+                //             vertical: 1.h, horizontal: 2.w),
+                //         padding: EdgeInsets.symmetric(
+                //             vertical: 2.h, horizontal: 3.w),
+                //         decoration: BoxDecoration(
+                //           color: gWhiteColor,
+                //           boxShadow: [
+                //             BoxShadow(
+                //               color: Colors.grey.withOpacity(0.3),
+                //               blurRadius: 10,
+                //               offset: const Offset(2, 3),
+                //             ),
+                //           ],
+                //         ),
+                //         child: Row(
+                //           children: [
+                //             Image(
+                //               height: 4.h,
+                //               image: const AssetImage(
+                //                   "assets/images/Group 2722.png"),
+                //             ),
+                //             SizedBox(width: 3.w),
+                //             Expanded(
+                //               child: Column(
+                //                 crossAxisAlignment:
+                //                 CrossAxisAlignment.start,
+                //                 children: [
+                //                   Text(
+                //                     doctorRequestedReports[index]
+                //                         .report
+                //                         .toString()
+                //                         .split("/")
+                //                         .last,
+                //                     overflow: TextOverflow.ellipsis,
+                //                     textAlign: TextAlign.start,
+                //                     maxLines: 2,
+                //                     style: TextStyle(
+                //                         height: 1.2,
+                //                         fontFamily: kFontMedium,
+                //                         color: gBlackColor,
+                //                         fontSize: 9.sp),
+                //                   ),
+                //                   // SizedBox(height: 1.h),
+                //                   // Text(
+                //                   //   "2 MB",
+                //                   //   style: TextStyle(
+                //                   //       fontFamily: "GothamBook",
+                //                   //       color: gMainColor,
+                //                   //       fontSize: 9.sp),
+                //                   // ),
+                //                 ],
+                //               ),
+                //             ),
+                //             SizedBox(width: 3.w),
+                //             Icon(
+                //               Icons.arrow_forward_ios_outlined,
+                //               color: gsecondaryColor,
+                //               size: 2.h,
+                //             ),
+                //           ],
+                //         ),
+                //       ),
+                //     );
+                //   }),
+                // ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  buildUserUploaded() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          height: 1,
+          color: kLineColor.withOpacity(0.3),
+          width: double.maxFinite,
+        ),
+        Expanded(
+          child: SingleChildScrollView(
+            child: ListView.builder(
+              scrollDirection: Axis.vertical,
+              physics: const NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              itemCount: doctorRequestedReports.length,
+              itemBuilder: ((context, index) {
+                return (doctorRequestedReports[index].reportType !=
+                    "prescription" &&
+                    doctorRequestedReports[index].reportType !=
+                        "mr_report" &&
+                    doctorRequestedReports[index].reportType !=
+                        "gut_guide" &&
+                    doctorRequestedReports[index].reportType !=
+                        "program_end_report_user")
+                    ? GestureDetector(
+                  onTap: () async {
+                    final url =
+                    doctorRequestedReports[index].report.toString();
+                    if (url != null || url.isNotEmpty) {
+                      print("URL : $url");
+                      if (url.toLowerCase().contains(".jpg") ||
+                          url.toLowerCase().contains(".png") ||
+                          url.toLowerCase().contains(".jpeg")) {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (ctx) =>
+                                    CustomPhotoViewer(url: url)));
+                      } else {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (ctx) => MealPdf(
+                                    isVideoWidgetVisible: false,
+                                    pdfLink: url,
+                                    isSheetCloseNeeded: true,
+                                    sheetCloseOnTap: () {
+                                      Navigator.pop(context);
+                                    },
+                                    heading: doctorRequestedReports[index]
+                                        .report
+                                        .toString()
+                                        .split("/")
+                                        .last)));
+                        print("URL : $url");
+                      }
+                    }
+                    // if (await canLaunch(url)) {
+                    //   await launch(
+                    //     url,
+                    //     //forceSafariVC: true,
+                    //     // forceWebView: true,
+                    //     // enableJavaScript: true,
+                    //   );
+                    // }
+                  },
+                  child: Container(
+                    margin: EdgeInsets.symmetric(
+                        vertical: 1.h, horizontal: 2.w),
+                    padding: EdgeInsets.symmetric(
+                        vertical: 2.h, horizontal: 3.w),
+                    decoration: BoxDecoration(
+                      color: gWhiteColor,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.3),
+                          blurRadius: 10,
+                          offset: const Offset(2, 3),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      children: [
+                        Image(
+                          height: 4.h,
+                          image: const AssetImage(
+                              "assets/images/Group 2722.png"),
+                        ),
+                        SizedBox(width: 3.w),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                doctorRequestedReports[index]
+                                    .report
+                                    .toString()
+                                    .split("/")
+                                    .last,
+                                overflow: TextOverflow.ellipsis,
+                                textAlign: TextAlign.start,
+                                maxLines: 2,
+                                style: TextStyle(
+                                    height: 1.2,
+                                    fontFamily: kFontMedium,
+                                    color: gBlackColor,
+                                    fontSize: 9.sp),
+                              ),
+                              // SizedBox(height: 1.h),
+                              // Text(
+                              //   "2 MB",
+                              //   style: TextStyle(
+                              //       fontFamily: "GothamBook",
+                              //       color: gMainColor,
+                              //       fontSize: 9.sp),
+                              // ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(width: 3.w),
+                        Icon(
+                          Icons.arrow_forward_ios_outlined,
+                          color: gsecondaryColor,
+                          size: 2.h,
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+                    : const SizedBox();
+              }),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  buildPrescription() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          height: 1,
+          color: kLineColor.withOpacity(0.3),
+          width: double.maxFinite,
+        ),
+        SizedBox(height: 1.h),
+        Expanded(
+          child: SingleChildScrollView(
+            child: SingleChildScrollView(
+              child: (showUploadProgress)
+                  ? const SizedBox()
+                  : (doctorRequestedReports.isEmpty)
+                  ? Padding(
+                padding: EdgeInsets.symmetric(vertical: 15.h),
+                child: const Center(
+                  child: Image(
+                    image:
+                    AssetImage("assets/images/no_data_found.png"),
+                  ),
+                ),
+              )
+                  : ListView.builder(
+                scrollDirection: Axis.vertical,
+                physics: const NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                itemCount: doctorRequestedReports.length,
+                itemBuilder: ((context, index) {
+                  return doctorRequestedReports[index].reportType ==
+                      "prescription"
+                      ? SizedBox(
+                    height: 80.h,
+                    width: double.maxFinite,
+                    child: SfPdfViewer.network(
+                        doctorRequestedReports[index]
+                            .report
+                            .toString()),
+                  )
+                      : Padding(
+                    padding: EdgeInsets.symmetric(vertical: 15.h),
+                    child: const Center(
+                      child: Image(
+                        image:
+                        AssetImage("assets/images/no_data_found.png"),
+                      ),
+                    ),
+                  );
+                }),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  buildMedicalReport() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          height: 1,
+          color: kLineColor.withOpacity(0.3),
+          width: double.maxFinite,
+        ),
+        SizedBox(height: 1.h),
+        Expanded(
+          child: SingleChildScrollView(
+            child: (showUploadProgress)
+                ? const SizedBox()
+                : (doctorRequestedReports.isEmpty)
+                ? Padding(
+              padding: EdgeInsets.symmetric(vertical: 15.h),
+              child: const Center(
+                child: Image(
+                  image:
+                  AssetImage("assets/images/no_data_found.png"),
+                ),
+              ),
+            )
+                : ListView.builder(
+              scrollDirection: Axis.vertical,
+              physics: const NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              itemCount: doctorRequestedReports.length,
+              itemBuilder: ((context, index) {
+                return doctorRequestedReports[index].reportType ==
+                    "mr_report"
+                    ? SizedBox(
+                  height: 80.h,
+                  width: double.maxFinite,
+                  child: SfPdfViewer.network(
+                      doctorRequestedReports[index]
+                          .report
+                          .toString()),
+                )
+                    : Padding(
+                  padding: EdgeInsets.symmetric(vertical: 15.h),
+                  child: const Center(
+                    child: Image(
+                      image:
+                      AssetImage("assets/images/no_data_found.png"),
+                    ),
+                  ),
+                );
+              }),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  buildGMG() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          height: 1,
+          color: kLineColor.withOpacity(0.3),
+          width: double.maxFinite,
+        ),
+        SizedBox(height: 1.h),
+        Expanded(
+          child: SingleChildScrollView(
+            child: SingleChildScrollView(
+              child: (showUploadProgress)
+                  ? const SizedBox()
+                  : (doctorRequestedReports.isEmpty)
+                  ? Padding(
+                padding: EdgeInsets.symmetric(vertical: 15.h),
+                child: const Center(
+                  child: Image(
+                    image:
+                    AssetImage("assets/images/no_data_found.png"),
+                  ),
+                ),
+              )
+                  : ListView.builder(
+                scrollDirection: Axis.vertical,
+                physics: const NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                itemCount: doctorRequestedReports.length,
+                itemBuilder: ((context, index) {
+                  return doctorRequestedReports[index].reportType ==
+                      "gut_guide"
+                      ? SizedBox(
+                    height: 80.h,
+                    width: double.maxFinite,
+                    child: SfPdfViewer.network(
+                        doctorRequestedReports[index]
+                            .report
+                            .toString()),
+                  )
+                      : Padding(
+                    padding: EdgeInsets.symmetric(vertical: 15.h),
+                    child: const Center(
+                      child: Image(
+                        image:
+                        AssetImage("assets/images/no_data_found.png"),
+                      ),
+                    ),
+                  );
+                }),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  buildEndReport() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          height: 1,
+          color: kLineColor.withOpacity(0.3),
+          width: double.maxFinite,
+        ),
+        SizedBox(height: 1.h),
+        Expanded(
+          child: SingleChildScrollView(
+            child: SingleChildScrollView(
+              child: (showUploadProgress)
+                  ? const SizedBox()
+                  : (doctorRequestedReports.isEmpty)
+                  ? Padding(
+                padding: EdgeInsets.symmetric(vertical: 15.h),
+                child: const Center(
+                  child: Image(
+                    image:
+                    AssetImage("assets/images/no_data_found.png"),
+                  ),
+                ),
+              )
+                  : ListView.builder(
+                scrollDirection: Axis.vertical,
+                physics: const NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                itemCount: doctorRequestedReports.length,
+                itemBuilder: ((context, index) {
+                  return doctorRequestedReports[index].reportType ==
+                      "program_end_report_user"
+                      ? SizedBox(
+                    height: 80.h,
+                    width: double.maxFinite,
+                    child: SfPdfViewer.network(
+                        doctorRequestedReports[index]
+                            .report
+                            .toString()),
+                  )
+                      : Padding(
+                    padding: EdgeInsets.symmetric(vertical: 15.h),
+                    child: const Center(
+                      child: Image(
+                        image:
+                        AssetImage("assets/images/no_data_found.png"),
+                      ),
+                    ),
+                  );
+                }),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 }
 
 class ReportObject {
@@ -1401,9 +1824,6 @@ class ReportObject {
   bool isSubmited;
   ReportObject(this.name, this.id, this.path, this.isSubmited);
 }
-
-
-
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 

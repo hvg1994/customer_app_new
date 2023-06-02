@@ -297,7 +297,7 @@ class _NewTransitionDesignState extends State<NewTransitionDesign>
                     ),
                     SizedBox(height: 1.h),
                     Text(
-                      'Day ${currentDay} Transition Meal Plan',
+                      'Transition Meal Plan',
                       style: TextStyle(
                           fontFamily: eUser().mainHeadingFont,
                           color: eUser().buttonTextColor,
@@ -307,7 +307,8 @@ class _NewTransitionDesignState extends State<NewTransitionDesign>
                     Visibility(
                       visible: !widget.viewDay1Details,
                       child: Text(
-                        '${(int.parse(totalDays ?? '0') - int.parse(currentDay ?? '0')).abs()} Days Remaining',
+                        "Day ${currentDay} of Day ${(int.parse(totalDays ?? '0'))}",
+                        // '${(int.parse(totalDays ?? '0') - int.parse(currentDay ?? '0')).abs()} Days Remaining',
                         style: TextStyle(
                             fontFamily: eUser().userTextFieldFont,
                             color: eUser().buttonTextColor,
@@ -739,7 +740,7 @@ class _NewTransitionDesignState extends State<NewTransitionDesign>
           ),
           child: Center(
             child: Text(
-              'Proceed to Symptoms Tracker',
+              'Next',
               // 'Proceed to Day $proceedToDay',
               style: TextStyle(
                 fontFamily: eUser().buttonTextFont,
@@ -1085,7 +1086,7 @@ class _NewTransitionDesignState extends State<NewTransitionDesign>
       if (res.runtimeType == StartPostProgramModel) {
         StartPostProgramModel model = res as StartPostProgramModel;
         print("start program: ${model.response}");
-        AppConfig().showSnackbar(context, "Post Program started" ?? '');
+        // AppConfig().showSnackbar(context, "Post Program started" ?? '');
         Future.delayed(Duration(seconds: 2)).then((value) {
           Navigator.pushAndRemoveUntil(
               context,

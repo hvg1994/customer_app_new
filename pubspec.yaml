@@ -102,6 +102,11 @@ dependencies:
   carousel_slider: ^4.2.1
   flutter_horizontal_date_picker: any
 
+# internet checking
+  internet_connection_checker: any
+  connectivity_plus: any
+  data_connection_checker_nulls: ^0.0.2
+
 
 
 
@@ -157,11 +162,11 @@ flutter:
 
     - family: GothamMedium
       fonts:
-        - asset: assets/font/GothamMedium.ttf
+        - asset: assets/font/Gotham Medium.otf
 
     - family: GothamBook
       fonts:
-        - asset: assets/font/GothamBook.ttf
+        - asset: assets/font/Gotham Book.otf
 
     - family: GothamLight
       fonts:
@@ -173,7 +178,7 @@ flutter:
 
     - family: GothamBold
       fonts:
-        - asset: assets/font/GothamBold.ttf
+        - asset: assets/font/Gotham-Bold.otf
 
     - family: GothamRoundedBold_21016
       fonts:

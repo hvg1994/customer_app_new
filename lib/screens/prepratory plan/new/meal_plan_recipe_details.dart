@@ -527,26 +527,30 @@ class _MealPlanRecipeDetailsState extends State<MealPlanRecipeDetails>
                     height: 5.h,
                   ),
                   SizedBox(height: 1.h),
-                  Text(
-                    ingredient?[index].ingredientName ?? '',
-                    //   ingredientColor[index].title,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: gBlackColor,
-                      fontFamily: kFontBold,
-                      fontSize: 9.sp,
+                  Expanded(
+                    child: Text(
+                      ingredient?[index].ingredientName ?? '',
+                      //   ingredientColor[index].title,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: gBlackColor,
+                        fontFamily: kFontBold,
+                        fontSize: 9.sp,
+                      ),
                     ),
                   ),
                   SizedBox(height: 0.5.h),
-                  Text(
-                    '${ingredient?[index].qty} ${ingredient?[index].unit}',
-                    // ingredientColor[index].subTitle,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: gHintTextColor,
-                      height: 1,
-                      fontFamily: kFontBook,
-                      fontSize: 8.sp,
+                  Expanded(
+                    child: Text(
+                      '${ingredient?[index].qty} ${ingredient?[index].unit}',
+                      // ingredientColor[index].subTitle,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: gHintTextColor,
+                        height: 1,
+                        fontFamily: kFontBook,
+                        fontSize: 8.sp,
+                      ),
                     ),
                   ),
                 ],

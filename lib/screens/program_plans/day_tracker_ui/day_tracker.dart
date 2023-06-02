@@ -1688,104 +1688,106 @@ class _TrackerUIState extends State<TrackerUI> {
   }
 
   buildHealthCheckBox(CheckBoxSettings healthCheckBox, String from) {
-    return IntrinsicWidth(
-      child: CheckboxListTile(
-        visualDensity: VisualDensity(vertical: -3), // to compact
-        contentPadding: EdgeInsets.symmetric(horizontal: 5),
-        controlAffinity: ListTileControlAffinity.leading,
-        title: Transform.translate(
-          offset: const Offset(-10, 0),
-          child: Text(
-            healthCheckBox.title.toString(),
-            style: buildTextStyle(
-                color:
-                healthCheckBox.value == true ? kTextColor : gHintTextColor,
-                fontFamily:
-                healthCheckBox.value == true ? kFontMedium : kFontBook),
+    return Expanded(
+      child: IntrinsicWidth(
+        child: CheckboxListTile(
+          visualDensity: VisualDensity(vertical: -3), // to compact
+          contentPadding: EdgeInsets.symmetric(horizontal: 5),
+          controlAffinity: ListTileControlAffinity.leading,
+          title: Transform.translate(
+            offset: const Offset(-10, 0),
+            child: Text(
+              healthCheckBox.title.toString(),
+              style: buildTextStyle(
+                  color:
+                  healthCheckBox.value == true ? kTextColor : gHintTextColor,
+                  fontFamily:
+                  healthCheckBox.value == true ? kFontMedium : kFontBook),
+            ),
           ),
-        ),
-        dense: true,
-        activeColor: kPrimaryColor,
-        value: healthCheckBox.value,
-        onChanged: (v) {
-          if (from == '1') {
-            if (healthCheckBox.title == symptomsCheckBox1.last.title) {
-              print("if");
-              setState(() {
-                selectedSymptoms1.clear();
-                symptomsCheckBox1.forEach((element) {
-                  element.value = false;
-                });
-                selectedSymptoms1.add(healthCheckBox.title!);
-                healthCheckBox.value = v;
-              });
-            } else {
-              print("else");
-              if (selectedSymptoms1.contains(symptomsCheckBox1.last.title)) {
+          dense: true,
+          activeColor: kPrimaryColor,
+          value: healthCheckBox.value,
+          onChanged: (v) {
+            if (from == '1') {
+              if (healthCheckBox.title == symptomsCheckBox1.last.title) {
                 print("if");
                 setState(() {
                   selectedSymptoms1.clear();
-                  symptomsCheckBox1.last.value = false;
-                });
-              }
-              if (v == true) {
-                setState(() {
+                  symptomsCheckBox1.forEach((element) {
+                    element.value = false;
+                  });
                   selectedSymptoms1.add(healthCheckBox.title!);
                   healthCheckBox.value = v;
                 });
               } else {
-                setState(() {
-                  selectedSymptoms1.remove(healthCheckBox.title!);
-                  healthCheckBox.value = v;
-                });
-              }
-            }
-            print(selectedSymptoms1);
-          } else if (from == '2') {
-            if (healthCheckBox.title == symptomsCheckBox2.last.title) {
-              print("if");
-              setState(() {
-                selectedSymptoms2.clear();
-                symptomsCheckBox2.forEach((element) {
-                  element.value = false;
-                  // if(element.title != symptomsCheckBox2.last.title){
-                  // }
-                });
-                if (v == true) {
-                  selectedSymptoms2.add(healthCheckBox.title);
-                  healthCheckBox.value = v;
-                } else {
-                  selectedSymptoms2.remove(healthCheckBox.title!);
-                  healthCheckBox.value = v;
+                print("else");
+                if (selectedSymptoms1.contains(symptomsCheckBox1.last.title)) {
+                  print("if");
+                  setState(() {
+                    selectedSymptoms1.clear();
+                    symptomsCheckBox1.last.value = false;
+                  });
                 }
-              });
-            } else {
-              // print("else");
-              if (v == true) {
-                // print("if");
+                if (v == true) {
+                  setState(() {
+                    selectedSymptoms1.add(healthCheckBox.title!);
+                    healthCheckBox.value = v;
+                  });
+                } else {
+                  setState(() {
+                    selectedSymptoms1.remove(healthCheckBox.title!);
+                    healthCheckBox.value = v;
+                  });
+                }
+              }
+              print(selectedSymptoms1);
+            } else if (from == '2') {
+              if (healthCheckBox.title == symptomsCheckBox2.last.title) {
+                print("if");
                 setState(() {
-                  if (selectedSymptoms2
-                      .contains(symptomsCheckBox2.last.title)) {
-                    // print("if");
-                    selectedSymptoms2.removeWhere(
-                            (element) => element == symptomsCheckBox2.last.title);
-                    symptomsCheckBox2.forEach((element) {
-                      element.value = false;
-                    });
+                  selectedSymptoms2.clear();
+                  symptomsCheckBox2.forEach((element) {
+                    element.value = false;
+                    // if(element.title != symptomsCheckBox2.last.title){
+                    // }
+                  });
+                  if (v == true) {
+                    selectedSymptoms2.add(healthCheckBox.title);
+                    healthCheckBox.value = v;
+                  } else {
+                    selectedSymptoms2.remove(healthCheckBox.title!);
+                    healthCheckBox.value = v;
                   }
-                  selectedSymptoms2.add(healthCheckBox.title!);
-                  healthCheckBox.value = v;
                 });
               } else {
-                setState(() {
-                  selectedSymptoms2.remove(healthCheckBox.title!);
-                  healthCheckBox.value = v;
-                });
+                // print("else");
+                if (v == true) {
+                  // print("if");
+                  setState(() {
+                    if (selectedSymptoms2
+                        .contains(symptomsCheckBox2.last.title)) {
+                      // print("if");
+                      selectedSymptoms2.removeWhere(
+                              (element) => element == symptomsCheckBox2.last.title);
+                      symptomsCheckBox2.forEach((element) {
+                        element.value = false;
+                      });
+                    }
+                    selectedSymptoms2.add(healthCheckBox.title!);
+                    healthCheckBox.value = v;
+                  });
+                } else {
+                  setState(() {
+                    selectedSymptoms2.remove(healthCheckBox.title!);
+                    healthCheckBox.value = v;
+                  });
+                }
               }
+              print(selectedSymptoms2);
             }
-            print(selectedSymptoms2);
-          }
-        },
+          },
+        ),
       ),
     );
     return ListTile(

@@ -3,26 +3,26 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-// import 'package:flutter_vlc_player/flutter_vlc_player.dart';
 import 'package:gwc_customer/widgets/constants.dart';
 import 'package:gwc_customer/widgets/video/normal_video.dart';
 import 'package:gwc_customer/widgets/widgets.dart';
 import 'package:sizer/sizer.dart';
 
-import '../../widgets/vlc_player/vlc_player_with_controls.dart';
 import 'package:video_player/video_player.dart';
 
 class NewKnowMoreScreen extends StatefulWidget {
+  final String title;
   final String knowMore;
   final String healAtHome;
   final String healAnywhere;
   final String whenToReachUs;
   const NewKnowMoreScreen(
       {Key? key,
-      required this.knowMore,
-      required this.healAtHome,
-      required this.healAnywhere,
-      required this.whenToReachUs})
+        required this.knowMore,
+        required this.healAtHome,
+        required this.healAnywhere,
+        required this.whenToReachUs,
+        required this.title})
       : super(key: key);
 
   @override
@@ -30,16 +30,15 @@ class NewKnowMoreScreen extends StatefulWidget {
 }
 
 class _NewKnowMoreScreenState extends State<NewKnowMoreScreen> {
-
   VideoPlayerController? videoPlayerController;
-  ChewieController ? _chewieController;
+  ChewieController? _chewieController;
 
   addUrlToVideoPlayerChewie(String url) {
     print("url" + url);
     videoPlayerController = VideoPlayerController.network(url);
     _chewieController = ChewieController(
         videoPlayerController: videoPlayerController!,
-        aspectRatio: 16/9,
+        aspectRatio: 16 / 9,
         autoInitialize: true,
         showOptions: false,
         autoPlay: true,
@@ -82,10 +81,7 @@ class _NewKnowMoreScreenState extends State<NewKnowMoreScreen> {
         //   ),
         // ),
         hideControlsTimer: Duration(seconds: 3),
-        showControls: false
-
-    );
-
+        showControls: false);
   }
 
   // final _key = GlobalKey<VlcPlayerWithControlsState>();
@@ -125,8 +121,8 @@ class _NewKnowMoreScreenState extends State<NewKnowMoreScreen> {
   void dispose() async {
     super.dispose();
     print('dispose');
-    if(videoPlayerController != null) videoPlayerController!.dispose();
-    if(_chewieController != null) _chewieController!.dispose();
+    if (videoPlayerController != null) videoPlayerController!.dispose();
+    if (_chewieController != null) _chewieController!.dispose();
     // if(_videoPlayerController != null){
     //   await _videoPlayerController!.stop();
     //   await _videoPlayerController!.stopRendererScanning();
@@ -159,17 +155,20 @@ class _NewKnowMoreScreenState extends State<NewKnowMoreScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(height: 1.h),
-                buildAppBar(() {
-                  Navigator.pop(context);
-                }),
+                buildAppBar(
+                      () {
+                    Navigator.pop(context);
+                  },
+                ),
+                SizedBox(height: 1.h),
                 TabBar(
-                    // padding: EdgeInsets.symmetric(horizontal: 3.w),
+                  // padding: EdgeInsets.symmetric(horizontal: 3.w),
                     labelColor: gBlackColor,
                     unselectedLabelColor: gHintTextColor,
                     isScrollable: true,
                     indicatorColor: gsecondaryColor,
                     labelPadding:
-                        EdgeInsets.only(right: 8.w, top: 1.h, bottom: 1.h),
+                    EdgeInsets.only(right: 8.w, top: 1.h, bottom: 1.h),
                     indicatorPadding: EdgeInsets.only(right: 5.w),
                     unselectedLabelStyle: TextStyle(
                         fontFamily: kFontBook,
@@ -185,6 +184,30 @@ class _NewKnowMoreScreenState extends State<NewKnowMoreScreen> {
                       // Text('Heal Anywhere'),
                       Text("When To Reach Us?"),
                     ]),
+                Container(
+                  height: 1,
+                  color: Colors.grey.withOpacity(0.3),
+                ),
+                Center(
+                  child: IntrinsicWidth(
+                    child: Container(
+                      margin: EdgeInsets.symmetric(vertical: 2.h),
+                      padding:
+                      EdgeInsets.symmetric(vertical: 1.h, horizontal: 3.w),
+                      decoration: BoxDecoration(
+                        color: gsecondaryColor,
+                        borderRadius: BorderRadius.circular(50),
+                      ),
+                      child: Text(
+                        widget.title,
+                        style: TextStyle(
+                            fontFamily: eUser().mainHeadingFont,
+                            color: eUser().buttonTextColor,
+                            fontSize: eUser().mainHeadingFontSize),
+                      ),
+                    ),
+                  ),
+                ),
                 Expanded(
                   child: TabBarView(
                       physics: const NeverScrollableScrollPhysics(),
@@ -211,19 +234,9 @@ class _NewKnowMoreScreenState extends State<NewKnowMoreScreen> {
       addUrlToVideoPlayerChewie(a);
       // addUrlToVideoPlayer(a);
     }
-    return SingleChildScrollView(
-      physics: const BouncingScrollPhysics(),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            height: 1,
-            color: Colors.grey.withOpacity(0.3),
-          ),
-          // buildTestimonial(),
-          buildZoomImage(widget.knowMore),
-        ],
-      ),
+    print("KnowMore : ${widget.knowMore}");
+    return Expanded(
+      child: buildZoomImage(widget.knowMore),
     );
   }
 
@@ -234,29 +247,8 @@ class _NewKnowMoreScreenState extends State<NewKnowMoreScreen> {
     if (format == "mp4") {
       addUrlToVideoPlayerChewie(a);
     }
-    return SingleChildScrollView(
-      physics: const BouncingScrollPhysics(),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            height: 1,
-            color: Colors.grey.withOpacity(0.3),
-          ),
-          buildZoomImage(widget.healAtHome),
-          // Container(
-          //   height: 65.h,
-          //   width: 100.w,
-          //   margin: EdgeInsets.symmetric(vertical: 10.h),
-          //   child: Center(
-          //     child: PhotoView(
-          //       imageProvider: CachedNetworkImageProvider(
-          //           "${Uri.parse(widget.healAtHome)}"),
-          //     ),
-          //   ),
-          // ),
-        ],
-      ),
+    return Expanded(
+      child: buildZoomImage(widget.healAtHome),
     );
   }
 
@@ -267,29 +259,8 @@ class _NewKnowMoreScreenState extends State<NewKnowMoreScreen> {
     if (format == "mp4") {
       addUrlToVideoPlayerChewie(a);
     }
-    return SingleChildScrollView(
-      physics: const BouncingScrollPhysics(),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            height: 1,
-            color: Colors.grey.withOpacity(0.3),
-          ),
-          buildZoomImage(widget.healAnywhere),
-          // Container(
-          //   height: 65.h,
-          //   width: 100.w,
-          //   margin: EdgeInsets.symmetric(vertical: 10.h),
-          //   child: Center(
-          //     child: PhotoView(
-          //       imageProvider: CachedNetworkImageProvider(
-          //           "${Uri.parse(widget.healAnywhere)}"),
-          //     ),
-          //   ),
-          // ),
-        ],
-      ),
+    return  Expanded(
+      child: buildZoomImage(widget.healAnywhere),
     );
   }
 
@@ -300,29 +271,8 @@ class _NewKnowMoreScreenState extends State<NewKnowMoreScreen> {
     if (format == "mp4") {
       addUrlToVideoPlayerChewie(a);
     }
-    return SingleChildScrollView(
-      physics: const BouncingScrollPhysics(),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            height: 1,
-            color: Colors.grey.withOpacity(0.3),
-          ),
-          buildZoomImage(widget.whenToReachUs),
-          // Container(
-          //   height: 65.h,
-          //   width: 100.w,
-          //   margin: EdgeInsets.symmetric(vertical: 10.h),
-          //   child: Center(
-          //     child: PhotoView(
-          //       imageProvider: CachedNetworkImageProvider(
-          //           "${Uri.parse(widget.whenToReachUs)}"),
-          //     ),
-          //   ),
-          // ),
-        ],
-      ),
+    return  Expanded(
+      child: buildZoomImage(widget.whenToReachUs),
     );
   }
 
@@ -331,14 +281,14 @@ class _NewKnowMoreScreenState extends State<NewKnowMoreScreen> {
     String format = file.toString();
     if (format == "mp4") {
       return Padding(
-        padding: EdgeInsets.symmetric(vertical: 10.h),
+        padding: EdgeInsets.symmetric(vertical: 5.h),
         child: Center(
           child: buildTestimonial(),
         ),
       );
     } else {
       return Padding(
-        padding: EdgeInsets.symmetric(vertical: 10.h),
+        padding: EdgeInsets.only(bottom: 5.h,top: 1.h),
         child: InteractiveViewer(
           panEnabled: false, // Set it to false
           boundaryMargin: const EdgeInsets.all(100),
@@ -348,7 +298,7 @@ class _NewKnowMoreScreenState extends State<NewKnowMoreScreen> {
             child: FadeInImage(
               placeholder: AssetImage("assets/images/placeholder.png"),
               image: CachedNetworkImageProvider("${Uri.parse(knowMore)}"),
-              imageErrorBuilder: (_,__, ___){
+              imageErrorBuilder: (_, __, ___) {
                 return Image.asset("assets/images/placeholder.png");
               },
             ),
@@ -372,8 +322,7 @@ class _NewKnowMoreScreenState extends State<NewKnowMoreScreen> {
   }
 
   buildTestimonial() {
-    if (_chewieController != null)
-    {
+    if (_chewieController != null) {
       return AspectRatio(
         aspectRatio: 16 / 9,
         child: Container(
@@ -394,7 +343,6 @@ class _NewKnowMoreScreenState extends State<NewKnowMoreScreen> {
               child: OverlayVideo(
                 controller: _chewieController!,
               ),
-
             ),
           ),
           // child: Stack(
@@ -474,5 +422,4 @@ class _NewKnowMoreScreenState extends State<NewKnowMoreScreen> {
       return const SizedBox.shrink();
     }
   }
-
 }

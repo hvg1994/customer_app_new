@@ -255,33 +255,30 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: GestureDetector(
                       onTap: () async{
+                        // pauseAllVideo();
                         if(_chewieController != null){
-                          final show = _chewieController!.videoPlayerController.value.isPlaying;
-                          if(show != null && show == true){
-                            _chewieController!.pause();
-                          }
+                          _chewieController!.dispose();
+                          // final show = _chewieController!.videoPlayerController.value.isPlaying;
+                          // if(show != null && show == true){
+                          //   _chewieController!.pause();
+                          // }
                         }
                         if(_testimonialChewieController != null){
-                          final show = _testimonialChewieController!.videoPlayerController.value.isPlaying;
-                          if(show != null && show == true){
-                            _testimonialChewieController!.pause();
-                          }
+                          _testimonialChewieController!.dispose();
+
+                          // final show = _testimonialChewieController!.videoPlayerController.value.isPlaying;
+                          // if(show != null && show == true){
+                          //   _testimonialChewieController!.pause();
+                          // }
                         }
 
                         print("tap");
                         final res;
-                        if(_chewieController != null){
-                          if(_testimonialChewieController != null){
-
-                          }
-                        }
-                        if(!_testimonialChewieController!.isPlaying && !_chewieController!.isPlaying){
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => const RegisterScreen(),
-                            ),
-                          );
-                        }
+                        Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(
+                            builder: (context) => const RegisterScreen(),
+                          ),
+                        );
 
                       },
                       child: Container(
@@ -318,6 +315,8 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
       ),
     );
   }
+
+  bool isAllVideoPause = false;
 
   _mainView(){
     return Padding(

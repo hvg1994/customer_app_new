@@ -198,7 +198,7 @@ buildAppBar(VoidCallback func,
               onTap: func,
               child: SizedBox(
 
-                width: 2.h,
+                // width: 2.h,
                 child: Icon(
                   Icons.arrow_back_ios,
                   color: gMainColor,

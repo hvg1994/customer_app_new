@@ -16,6 +16,7 @@ import 'package:flutter/material.dart' hide ModalBottomSheetRoute;
 import 'package:flutter/services.dart';
 import 'package:flutter_sim_country_code/flutter_sim_country_code.dart';
 import 'package:gwc_customer/repository/in_memory_cache.dart';
+import 'package:gwc_customer/services/internet_service/dependency_injecion.dart';
 import 'package:gwc_customer/services/local_notification_service.dart';
 import 'package:gwc_customer/splash_screen.dart';
 import 'package:provider/provider.dart';
@@ -49,6 +50,8 @@ cacheManager(){
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  DependencyInjection.init();
 
   AssetsAudioPlayer.addNotificationOpenAction((notification) {
     //custom action

@@ -48,7 +48,11 @@ class _ProtocolGuideDetailsState extends State<ProtocolGuideDetails> {
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    SizedBox(height: 10.h),
+                    GestureDetector(
+                        onTap: (){
+                          Navigator.pop(context);
+                        },
+                        child: SizedBox(height: 10.h)),
                     Expanded(
                       child: Container(
                         width: double.maxFinite,

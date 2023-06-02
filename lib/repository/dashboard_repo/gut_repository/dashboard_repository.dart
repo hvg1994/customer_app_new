@@ -8,4 +8,8 @@ class GutDataRepository{
   Future getGutDataRepo() async{
     return await apiClient.serverGetGutData();
   }
+  Future submitIsMrReadRepo() async{
+    return await apiClient.submitIsMrReadApi()();
+  }
+
 }

@@ -130,11 +130,11 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
             if(videoPlayerController != null) videoPlayerController!.pause();
             if(_chewieController != null) _chewieController!.pause();
 
-            if (widget.from == ProgramMealType.prepratory.name){
-              startProgram();
+            if (widget.from == ProgramMealType.program.name){
+              showConfirmSheet();
             }
             else{
-              showConfirmSheet();
+              startProgram();
             }
           },
           child: Container(
@@ -679,11 +679,17 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
         else if(widget.from == ProgramMealType.transition.name){
           final trackerUrl = _pref!.getString(AppConfig().trackerVideoUrl);
 
-          gotoScreen(NewTransitionDesign(
-            totalDays: '1',
-            dayNumber: '1',
-            trackerVideoLink: trackerUrl
-          ));
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              maintainState: false,
+              builder: (context) => NewTransitionDesign(
+                  totalDays: '1',
+                  dayNumber: '1',
+                  trackerVideoLink: trackerUrl
+              ),
+            ),
+          );
 
           // Navigator.pushReplacement(
           //   context,
@@ -848,7 +854,7 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
         SizedBox(height: 1.h)
       ],
     ),
-        bottomSheetHeight: 60.h,
+        bottomSheetHeight: 70.h,
       circleIcon: bsHeadPinIcon,
       isDismissible: true,
     );

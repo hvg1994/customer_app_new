@@ -6,10 +6,13 @@ import '../../../widgets/constants.dart';
 import '../../../widgets/widgets.dart';
 import 'package:intl/intl.dart';
 
+import '../../gut_list_screens/new_stages_data.dart';
+
 
 class ConsultationHistoryScreen extends StatelessWidget {
   final ConsultationHistory? consultationHistory;
-  ConsultationHistoryScreen({Key? key, this.consultationHistory}) : super(key: key);
+  final StageType? stageType;
+  ConsultationHistoryScreen({Key? key, this.consultationHistory, this.stageType}) : super(key: key);
 
   String? consultationDateAndTime;
 
@@ -33,19 +36,24 @@ class ConsultationHistoryScreen extends StatelessWidget {
     final formatedDateString = "$date$formattedDate $month";
     consultationDateAndTime = "$formatedDateString, ${getTime(consultationHistory!.consultationStartTime!)} - ${getTime(consultationHistory!.consultationEndTime!)}";
 
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: gBackgroundColor,
-        body: Column(
-          children: [
-            Expanded(child: buildUserDetails(context),),
-          ],
+    return MediaQuery(
+      data: MediaQuery.of(context).copyWith(textScaleFactor: 0.95),
+      child: SafeArea(
+        child: Scaffold(
+          backgroundColor: gBackgroundColor,
+          body: Column(
+            children: [
+              Expanded(child: buildUserDetails(context),),
+            ],
+          ),
         ),
       ),
     );
   }
 
   buildUserDetails(BuildContext context) {
+    double height = MediaQuery.of(context).size.height;
+    print(MediaQuery.of(context).size.height);
     String? doctorName = consultationHistory!.appointDoctor!.name;
     String? designation = consultationHistory!.appointDoctor!.doctor!.specialization!.name;
     String? profilePic = consultationHistory!.appointDoctor!.profile;
@@ -67,17 +75,9 @@ class ConsultationHistoryScreen extends StatelessWidget {
                   topLeft: Radius.circular(15),
                   topRight: Radius.circular(15),
                 ),
-                image: (profilePic == null)
-                    ? DecorationImage(
-                    image: AssetImage(
-                      "assets/images/new_ds/history_doctor.png",
-                    ),
-                    fit: BoxFit.fill)
-                    : DecorationImage(
-                    image: CachedNetworkImageProvider(
-                      profilePic!,
-                    ),
-                    fit: BoxFit.fill),
+                image: DecorationImage(
+                    image: AssetImage("assets/images/consultation_completed.png"),
+                    fit: BoxFit.scaleDown),
               ),
             ),
           ),
@@ -97,18 +97,18 @@ class ConsultationHistoryScreen extends StatelessWidget {
               ),
               child: SingleChildScrollView(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     SizedBox(height: 10.h),
-                    Text(
-                      "Consultation History",
-                      style: TextStyle(
-                        color: gBlackColor,
-                        fontFamily: kFontBold,
-                        fontSize: 13.sp,
-                      ),
-                    ),
-                    SizedBox(height: 6.h),
+                    // Text(
+                    //   "Consultation History",
+                    //   style: TextStyle(
+                    //     color: gBlackColor,
+                    //     fontFamily: kFontBold,
+                    //     fontSize: 13.sp,
+                    //   ),
+                    // ),
+                    // SizedBox(height: 6.h),
                     Text(
                       "About",
                       style: TextStyle(
@@ -118,21 +118,27 @@ class ConsultationHistoryScreen extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: 1.5.h),
-                    Text(
-                      "${consultationHistory?.appointDoctor?.doctor?.experience}Yrs of Experience\n""${consultationHistory?.appointDoctor?.doctor?.desc}" ?? '',
-                      style: TextStyle(
-                        color: gBlackColor,
-                        fontFamily: kFontBook,
-                        fontSize: 10.sp,
+                    Center(
+                      child: Text(
+                        "${consultationHistory?.appointDoctor?.doctor?.experience}Yrs of Experience\t""${consultationHistory?.appointDoctor?.doctor?.desc}" ?? '',
+                        style: TextStyle(
+                          color: gBlackColor,
+                          fontFamily: kFontBook,
+                          fontSize: 10.sp,
+                          height: 1.5
+                        ),
+                        textAlign: TextAlign.justify,
                       ),
                     ),
-                    SizedBox(height: 6.h),
+                    SizedBox(height: 3.h),
                     Text(
+                      (stageType!= null && stageType == StageType.analysis) ? "Your Last Consultation Date & Time" :
                       "Consultation Date & Time",
                       style: TextStyle(
                         color: gBlackColor,
                         fontFamily: kFontBold,
                         fontSize: 12.sp,
+                          height: 1.5
                       ),
                     ),
                     SizedBox(height: 1.5.h),
@@ -148,11 +154,23 @@ class ConsultationHistoryScreen extends StatelessWidget {
                             color: gBlackColor,
                             fontFamily: kFontBook,
                             fontSize: 10.sp,
+                              height: 1.5
                           ),
                         )
                       ],
                     ),
-                    SizedBox(height: 5.h,),
+                    (height <= 600) ? SizedBox(height: 5.h) : (height > 600 && height < 800) ? SizedBox(height: 12.h) : SizedBox(height: 14.h),
+                    Center(
+                      child: Text((stageType!= null && stageType == StageType.analysis) ? consultationStage3SubText :"Your doctor is analysing your case. Check back in a few hours for an update.",
+                        style: TextStyle(
+                          color: gBlackColor,
+                          fontFamily: kFontBook,
+                          fontSize: 10.sp,
+                          height: 1.6
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
                     Center(
                       child: GestureDetector(
                         // onTap: (showLoginProgress) ? null : () {

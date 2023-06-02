@@ -168,16 +168,16 @@ class _PreparatoryPlanScreenState extends State<PreparatoryPlanScreen>
                             fontSize: eUser().mainHeadingFontSize),
                       ),
                     ),
-                    // Padding(
-                    //   padding: EdgeInsets.only(left: 3.w),
-                    //   child: Text(
-                    //     'Day ${1} Preparatory Meal Plan',
-                    //     style: TextStyle(
-                    //         fontFamily: eUser().mainHeadingFont,
-                    //         color: eUser().mainHeadingColor,
-                    //         fontSize: eUser().mainHeadingFontSize),
-                    //   ),
-                    // ),
+                    Padding(
+                      padding: EdgeInsets.only(left: 3.w),
+                      child: Text(
+                        'Day ${widget.dayNumber} of Day ${widget.totalDays}',
+                        style: TextStyle(
+                            fontFamily: kFontMedium,
+                            color: eUser().mainHeadingColor,
+                            fontSize: 10.sp),
+                      ),
+                    ),
                     // SizedBox(height: 1.h),
                     // Padding(
                     //   padding: EdgeInsets.only(left: 3.w),

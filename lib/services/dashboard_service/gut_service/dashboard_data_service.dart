@@ -10,4 +10,7 @@ class GutDataService extends ChangeNotifier{
   Future getGutDataService() async{
     return await repository.getGutDataRepo();
   }
+  Future submitIsMrReadService() async{
+    return await repository.submitIsMrReadRepo();
+  }
 }

@@ -1,13 +1,15 @@
 import 'dart:ui';
 
+const String consultationRescheduleStageSubText = "Please reschedule to another date & time that suits you.";
 const String consultationStage2SubText = "Make sure to join your consultation within 5 minutes of your consultation time.";
-const String consultationStage3SubText = "Congrats on completing your consultation, hope you had an insightful chat with your doctor.";
+const String consultationStage3SubText = "Congrats on completing your consultation and formalities.\nYour doctor is analysing your case. Check back within 24-48 hrs for an update.";
 
 const String requestedReportStage1SubText = "Your doctor has requested for a few reports. Do upload them here to proceed further.";
-const String requestedReportStage2SubText = "Thanks for uploading your reports.\nYou doctor is now analyzing your case, allow us 2 working days to proceed to the next step.";
+const String requestedReportStage2SubText = "Thanks for uploading your reports.\nYour doctor is now analyzing your case, allow us 2 working days to proceed to the next step.";
 
-const String prepStage2SubText = "Prep your gut while your doctors finalizing your plan & ready your kit.";
-const String prepStage3SubText = "Keep prepping your gut until your kit arrives.\nYour plan & kit are now ready, Ship your kit now!";
+
+const String prepStage2SubText = "Your kit is now ready to be shipped, schedule a date to have it delivered.";
+const String prepStage3SubText = "Your kit will be dispatched soon. Keep prepping your gut until your kit arrives.\n";
 
 const String PpcScheduleText = "Thanks for your feedback. Now please schedule your post program consultation with your doctor for a review.";
 const String PpcBookedText = "Please ensure to join within 10 minutes of your consultation time.";
@@ -44,10 +46,10 @@ List<DashboardStagesData> stageData = [
       subTitle: "Your doctor is now analyzing your case, allow us 2 working days to proceed to the next step. We'll send you a notification when ready.",
       rightImage: "assets/images/dashboard_stages/Mask Group 43510.png",
       step: "4",
-      type: StageType.requested_report
+      type: StageType.analysis
   ),
   DashboardStagesData(title:"Medical Report", subTitle:
-  "Lorem lpsum is simply dummy text of the printing and typesetting industry.Lorem lpsum has been the industry\'s standard dummy text ever since the 1500s,when an unknown printer took a gallery of type and scrambled it to make a type specimen book.",
+  "Your doctor has completed the case analysis. Here is your medical report from your doctor",
       rightImage: "assets/images/dashboard_stages/Mask Group 43510.png",
       step: "5",
       btn1Name: "Medical Report",
@@ -55,7 +57,7 @@ List<DashboardStagesData> stageData = [
   ),
   DashboardStagesData(title:"Gut Preparation",
       subTitle:
-  "Before you program starts we must prime your gut for the detox & healing it will undergo, Start preparing your gut now.",
+  "Before your program starts we must prime your gut for the detox & healing it will undergo, Start preparing your gut now\nWhile we customize your plan & kit for your program over the next 2-3 days.",
     rightImage: "assets/images/dashboard_stages/Mask Group 43509.png",
     step: "6",
     btn1Name: "Prep",
@@ -118,10 +120,10 @@ List<DashboardStagesData> defaultStageData = [
       subTitle: "Your doctor is now analyzing your case, allow us 2 working days to proceed to the next step. We'll send you a notification when ready.",
       rightImage: "assets/images/dashboard_stages/Mask Group 43510.png",
       step: "4",
-      type: StageType.requested_report
+      type: StageType.analysis
   ),
   DashboardStagesData(title:"Medical Report", subTitle:
-  "Lorem lpsum is simply dummy text of the printing and typesetting industry.Lorem lpsum has been the industry\'s standard dummy text ever since the 1500s,when an unknown printer took a gallery of type and scrambled it to make a type specimen book.",
+  "Your doctor has completed the case analysis. Here is your medical report from your doctor",
       rightImage: "assets/images/dashboard_stages/Mask Group 43510.png",
       step: "5",
       btn1Name: "Medical Report",
@@ -129,7 +131,7 @@ List<DashboardStagesData> defaultStageData = [
   ),
   DashboardStagesData(title:"Gut Preparation",
       subTitle:
-      "Before you program starts we must prime your gut for the detox & healing it will undergo, Start preparing your gut now.",
+      "Before your program starts we must prime your gut for the detox & healing it will undergo, Start preparing your gut now\nWhile we customize your plan & kit for your program over the next 2-3 days.",
       rightImage: "assets/images/dashboard_stages/Mask Group 43509.png",
       step: "6",
       btn1Name: "Prep",

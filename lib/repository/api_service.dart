@@ -712,10 +712,10 @@ class ApiClient {
     dynamic result;
     print(inMemoryStorage.cache.containsKey(path));
 
-    if(inMemoryStorage.cache.containsKey(path)){
-      print("from cache");
-      return result = GetEvaluationDataModel.fromJson(inMemoryStorage.get(path));
-    }
+    // if(inMemoryStorage.cache.containsKey(path)){
+    //   print("from cache");
+    //   return result = GetEvaluationDataModel.fromJson(inMemoryStorage.get(path));
+    // }
 
     var headers = {
       // "Authorization": "Bearer ${AppConfig().bearerToken}",
@@ -1912,6 +1912,7 @@ class ApiClient {
     return result;
   }
 
+
   getNotificationListApi() async{
     String url = notificationListUrl;
     print(url);
@@ -2767,6 +2768,30 @@ class ApiClient {
       print('pdf downloading error = $error');
       return error;
     }
+  }
+
+
+  submitIsMrReadApi() async{
+    String path = mrReadUrl;
+
+    dynamic result;
+
+    try{
+      final response = await http.get(Uri.parse(path),
+        headers: {
+          "Authorization": getHeaderToken(),
+        },
+      );
+
+      if(response.statusCode != 200){
+        final json = jsonDecode(response.body);
+        result = ErrorModel.fromJson(json);
+      }
+    }
+    catch(e){
+      result = ErrorModel(status: "0", message: e.toString());
+    }
+    return result;
   }
 
 

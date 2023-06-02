@@ -97,7 +97,7 @@ var rewardPointsStagesUrl = "${AppConfig().BASE_URL}/api/getDataList/user_stages
 
 var faqListUrl = "${AppConfig().BASE_URL}/api/getDataList/faq_list";
 
-var submitStatusTrackerUrl = "${AppConfig().BASE_URL}/api/submitData/patient_meal_tracking";
+// var submitStatusTrackerUrl = "${AppConfig().BASE_URL}/api/submitData/patient_meal_tracking";
 
 var getHomeDetailsUrl = "${AppConfig().BASE_URL}/api/getDataList/user_stages_data";
 
@@ -129,6 +129,8 @@ var homeRemediesUrl = "${AppConfig().BASE_URL}/api/list/home_remedies";
 var submitMedicalFeedbackFormUrl = "${AppConfig().BASE_URL}/api/submitForm/medical_feedback";
 
 var submitProgramFeedbackFormUrl = "${AppConfig().BASE_URL}/api/submitForm/program_feedback";
+
+var mrReadUrl = "${AppConfig().BASE_URL}/api/getData/is_mr_report_read";
 
 
 
