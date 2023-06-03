@@ -49,6 +49,7 @@ import '../model/dashboard_model/shipping_approved/ship_approved_model.dart';
 import '../model/error_model.dart';
 import '../model/evaluation_from_models/get_country_details_model.dart';
 import '../model/faq_model/faq_list_model.dart';
+import '../model/medical_feedback_answer_model.dart';
 import '../model/new_user_model/choose_your_problem/choose_your_problem_model.dart';
 import '../model/new_user_model/choose_your_problem/submit_problem_response.dart';
 import '../model/new_user_model/register/register_model.dart';
@@ -131,14 +132,15 @@ class ApiClient {
 
     Map param = {
       "device_id": deviceId,
+      "problems[]": problemList.toString()
     };
-    if(problemList != null){
-      problemList.forEach((element) {
-        param.putIfAbsent(
-            "problems[${problemList.indexWhere((ele) => ele == element)}]",
-                () => element.toString());
-      });
-    }
+    // if(problemList != null){
+    //   problemList.forEach((element) {
+    //     param.putIfAbsent(
+    //         "problems[${problemList.indexWhere((ele) => ele == element)}]",
+    //             () => element.toString());
+    //   });
+    // }
     if(otherProblem != null){
       param.putIfAbsent("other_problem", () => otherProblem);
     }
@@ -2793,6 +2795,59 @@ class ApiClient {
     }
     return result;
   }
+
+
+  Future serverGetMedicalFeedbackDetails() async {
+    final String path = getMedicalFeedbackDataUrl;
+
+    dynamic result;
+    print(inMemoryStorage.cache.containsKey(path));
+
+    if(inMemoryStorage.cache.containsKey(path)){
+      print("from cache");
+      return result = MedicalFeedbackModel.fromJson(inMemoryStorage.get(path));
+    }
+
+    var headers = {
+      // "Authorization": "Bearer ${AppConfig().bearerToken}",
+      "Authorization": getHeaderToken(),
+    };
+    try {
+      final response = await httpClient
+          .get(
+        Uri.parse(path),
+        headers: headers,
+      )
+          .timeout(const Duration(seconds: 45));
+
+      print('serverMedicalFeedbackDetails Response header: $path');
+      print(
+          'serverMedicalFeedbackDetails Response status: ${response.statusCode}');
+      print('serverMedicalFeedbackDetails Response body: ${response.body}');
+      final json = jsonDecode(response.body);
+
+      print('serverMedicalFeedbackDetails result: $json');
+
+      if (response.statusCode == 200) {
+        if (json['status'].toString() != '200') {
+          result = ErrorModel.fromJson(json);
+        } else {
+          inMemoryStorage.set(path, json);
+          result = MedicalFeedbackModel.fromJson(json);
+        }
+      }
+      else if(response.statusCode == 500){
+        result = ErrorModel(status: "0", message: AppConfig.oopsMessage);
+      }else {
+        result = ErrorModel(
+            status: response.statusCode.toString(), message: response.body);
+      }
+    } catch (e) {
+      result = ErrorModel(status: "0", message: e.toString());
+    }
+    return result;
+  }
+
 
 
 

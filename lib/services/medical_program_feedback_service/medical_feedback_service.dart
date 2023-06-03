@@ -83,4 +83,9 @@ class MedicalFeedbackService extends ChangeNotifier {
       reasonOfProgramDiscontinue: reasonOfProgramDiscontinue,
     );
   }
+
+
+  Future getMedicalFeedbackService() async{
+    return await feedbackRepo.getMedicalFeedbackRepo();
+  }
 }

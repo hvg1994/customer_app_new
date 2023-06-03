@@ -1652,8 +1652,12 @@ class _NewDsPageState extends State<NewDsPage> {
           stageData[1].btn1Color = newCurrentStageButtonColor.withOpacity(0.6);
           print("res.difference(curTime).inMinutes: ${res.difference(curTime).inMinutes}");
           print(res.difference(curTime).inMinutes < -15);
+
           if(res.difference(curTime).inMinutes < -15){
             stageData[1].subTitle = "You missed your scheduled slot at $bookingDate:$bookingTime  \n$consultationRescheduleStageSubText";
+          }
+          else if(res.difference(curTime).inMinutes > 5){
+            stageData[1].subTitle = "Your consultation has been booked for $bookingDate:$bookingTime \n$consultationStage2SubText";
           }
         }
         else{
@@ -1861,7 +1865,14 @@ class _NewDsPageState extends State<NewDsPage> {
         // stageData[4].btn1Name = "View MR";
 
         stageData[5].btn2Color = null;
+
         if(_prepratoryModel!.value!.isPrepCompleted == true){
+          stageData[6].btn1Name = null;
+          stageData[6].btn2Name = "Prep Tracker";
+          stageData[6].btn2Color = newCurrentStageButtonColor;
+        }
+
+        if(_prepratoryModel!.value!.isPrepTrackerCompleted == true){
           stageData[6].btn1Name = null;
           stageData[6].btn2Name = "Start Program";
           stageData[6].btn2Color = newCurrentStageButtonColor;

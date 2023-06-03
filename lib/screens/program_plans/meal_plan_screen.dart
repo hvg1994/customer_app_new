@@ -550,24 +550,40 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
         commentController.text = model.comment ?? '';
       }
       // for showing already selected data from local storage for present day
-    //   else{
-    // //     if(isDayCompleted != null && isDayCompleted == false && presentDay == selectedDay){
-    // //       if(_pref!.getString(AppConfig.STORE_MEAL_DATA) != null){
-    // // //         'selected_meal': statusList,
-    // // //          'comments': commentController.text
-    // //
-    // //         final localMealData = jsonDecode(_pref!.getString(AppConfig.STORE_MEAL_DATA)!);
-    // //         print("selected_meal: ${localMealData['selected_meal']}");
-    // //         statusList = jsonDecode(localMealData['selected_meal']);
-    // //         commentController.text = localMealData['comments'];
-    // //       }
-    // //     }
-    //   }
+      else{
+        if(isDayCompleted != null && isDayCompleted == false && presentDay == selectedDay){
+          if(_pref!.getString(AppConfig.STORE_MEAL_DATA) != null){
+    //         'selected_meal': statusList,
+    //          'comments': commentController.text
+
+            final localMealData = json.decode(_pref!.getString(AppConfig.STORE_MEAL_DATA)!);
+            // (localMealData['selected_meal'] as Map).forEach((key, value) {
+            //   print("$key -- $value");
+            // });
+
+            if(localMealData['selected_meal'] != null){
+              String m = localMealData['selected_meal'];
+              final l = m.replaceAll("{", '').replaceAll('}', '').split(',');
+              Map _m = {};
+              l.forEach((element) {
+                _m.putIfAbsent(int.parse(element.split(':').first.trim()), () => element.split(':').last.trim());
+              });
+              statusList.addAll(_m);
+            }
+            commentController.text = localMealData['comments'];
+
+          }
+        }
+      }
+
+
+
       mealPlanData1.values.forEach((element) {
         element.forEach((item) {
           lst.add(item);
         });
       });
+      print(statusList);
 
       print('mealPlanData1.values.length:${mealPlanData1.values.length}, ${lst.length}');
     } else {
@@ -1042,6 +1058,13 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                 child: TextFormField(
                   controller: commentController,
                   cursorColor: gPrimaryColor,
+                  onEditingComplete: (){
+                    Map<String,dynamic> storeMealDataLocally = {
+                      "selected_meal": statusList.toString(),
+                      "comments": commentController.text
+                    };
+                    _pref!.setString(AppConfig.STORE_MEAL_DATA, json.encode(storeMealDataLocally));
+                  },
                   style: TextStyle(
                       fontFamily: "GothamBook",
                       color: gTextColor,
@@ -1820,6 +1843,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
     return AppConfig().showSheet(context, showFollowWidget(e),
         bottomSheetHeight: 50.h,
         circleIcon: bsHeadPinIcon,
+        isDismissible: true,
         isSheetCloseNeeded: true, sheetCloseOnTap: () {
           Navigator.pop(context);
         });
@@ -2446,11 +2470,11 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
         }
       }
       print(statusList);
-      final storeMealDataLocally = {
-        'selected_meal': statusList.toString(),
-        'comments': commentController.text
+      Map<String,dynamic> storeMealDataLocally = {
+        "selected_meal": statusList.toString(),
+        "comments": commentController.text
       };
-      _pref!.setString(AppConfig.STORE_MEAL_DATA, jsonEncode(storeMealDataLocally));
+      _pref!.setString(AppConfig.STORE_MEAL_DATA, json.encode(storeMealDataLocally));
       print(statusList[id].runtimeType);
     });
   }
@@ -2588,7 +2612,15 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
     });
     print('dummy: $dummy');
 
-    showSymptomsTrackerSheet(context, model);
+    // showSymptomsTrackerSheet(context, model);
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (ctx) => TrackerUI(
+            proceedProgramDayModel: model,
+            from: ProgramMealType.program.name,
+            trackerVideoLink: widget.trackerVideoLink
+        ),),);
   }
 
   showPdf(String itemUrl, String? receipeName) {

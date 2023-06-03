@@ -1,13 +1,19 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:gwc_customer/screens/evalution_form/personal_details_screen2.dart';
 import 'package:gwc_customer/utils/app_config.dart';
 import 'package:gwc_customer/widgets/exit_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
 
+import '../../model/evaluation_from_models/evaluation_model_format1.dart';
+import '../../model/evaluation_from_models/evaluation_model_format2.dart';
 import '../../widgets/constants.dart';
 import '../../widgets/widgets.dart';
+import 'evaluation_upload_report.dart';
 import 'personal_details_screen.dart';
 
 class EvaluationFormScreen extends StatefulWidget {
@@ -147,6 +153,38 @@ class _EvaluationFormScreenState extends State<EvaluationFormScreen> {
                             builder: (context) => const PersonalDetailsScreen(),
                           ),
                         );
+                        /// local storage details
+                        // _pref.remove(AppConfig.eval1);
+                        // if(_pref.getString(AppConfig.eval1) != null && _pref.getString(AppConfig.eval1) != ""){
+                        //   final jsonEval1 = _pref.getString(AppConfig.eval1);
+                        //   if(_pref.getString(AppConfig.eval2) != null && _pref.getString(AppConfig.eval2) != ""){
+                        //
+                        //     final jsonEval2 = _pref.getString(AppConfig.eval2);
+                        //
+                        //     Navigator.push(context, MaterialPageRoute(
+                        //         builder: (ctx) => EvaluationUploadReport(
+                        //           evaluationModelFormat1: EvaluationModelFormat1.fromMap(json.decode(jsonEval1!)),
+                        //           evaluationModelFormat2: EvaluationModelFormat2.fromMap(json.decode(jsonEval2!)),
+                        //         )
+                        //     ));
+                        //   }
+                        //   else{
+                        //     Navigator.push(
+                        //         context,
+                        //         MaterialPageRoute(
+                        //             builder: (ctx) => PersonalDetailsScreen2(
+                        //               evaluationModelFormat1: EvaluationModelFormat1.fromMap(json.decode(jsonEval1!)),
+                        //             )
+                        //         ));
+                        //   }
+                        // }
+                        // else{
+                        //   Navigator.of(context).push(
+                        //     MaterialPageRoute(
+                        //       builder: (context) => const PersonalDetailsScreen(),
+                        //     ),
+                        //   );
+                        // }
                       },
                       child: Container(
                         width: 40.w,

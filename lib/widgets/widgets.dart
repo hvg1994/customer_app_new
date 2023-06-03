@@ -194,12 +194,12 @@ buildAppBar(VoidCallback func,
         children: [
           Visibility(
             visible: isBackEnable,
-            child: GestureDetector(
-              onTap: func,
-              child: SizedBox(
+            child: SizedBox(
+              width: 2.h,
+              child: IconButton(
+                onPressed: func,
 
-                // width: 2.h,
-                child: Icon(
+                icon: Icon(
                   Icons.arrow_back_ios,
                   color: gMainColor,
                 ),
@@ -207,11 +207,9 @@ buildAppBar(VoidCallback func,
             ),
           ),
           SizedBox(
-
             width: 15,
           ),
           SizedBox(
-
             height: 6.h,
             child: const Image(
               image: AssetImage("assets/images/Gut welness logo.png"),

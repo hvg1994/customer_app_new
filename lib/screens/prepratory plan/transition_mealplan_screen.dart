@@ -612,7 +612,9 @@ class _TransitionMealPlanScreenState extends State<TransitionMealPlanScreen> {
                       )
                     ],
                   ),
-                  onWillPop: () => isPreviousDaySheet ? Future.value(false) : Future.value(false)
+                  onWillPop: () => isPreviousDaySheet
+                      ? Future.value(false)
+                      : Future.value(false)
               );
             }
         ),

@@ -540,7 +540,7 @@ class _MealPlanRecipeDetailsState extends State<MealPlanRecipeDetails>
                     ),
                   ),
                   SizedBox(height: 0.5.h),
-                  Expanded(
+                  Flexible(
                     child: Text(
                       '${ingredient?[index].qty} ${ingredient?[index].unit}',
                       // ingredientColor[index].subTitle,

@@ -13,6 +13,7 @@ class ProceedProgramDayModel {
   String? eatSomthingOther;
   String? completedCalmMoveModules;
   String? hadAMedicalExamMedications;
+  String? trackingAttachment;
 
   ProceedProgramDayModel({this.patientMealTracking, this.comment,
     this.day,
@@ -24,7 +25,8 @@ class ProceedProgramDayModel {
     this.haveAnyOtherWorries,
     this.eatSomthingOther,
     this.completedCalmMoveModules,
-    this.hadAMedicalExamMedications
+    this.hadAMedicalExamMedications,
+    this.trackingAttachment
   });
 
   ProceedProgramDayModel.fromJson(Map<String, dynamic> json) {
@@ -67,6 +69,9 @@ class ProceedProgramDayModel {
     if(json['had_a_medical_exam_medications'] != null){
       hadAMedicalExamMedications = json['had_a_medical_exam_medications'];
     }
+    if(json['tracking_attachment'] != null){
+      trackingAttachment = json['tracking_attachment'];
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -106,6 +111,9 @@ class ProceedProgramDayModel {
     }
     if(this.hadAMedicalExamMedications != null){
       data['had_a_medical_exam_medications'] = this.hadAMedicalExamMedications;
+    }
+    if(this.trackingAttachment != null){
+      data['tracking_attachment'] = this.trackingAttachment;
     }
     return data;
   }

@@ -1,7 +1,10 @@
-import 'dart:convert';
+import 'dart:io';
 
+import 'package:auto_orientation/auto_orientation.dart';
 import 'package:carousel_slider/carousel_controller.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:chewie/chewie.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:gwc_customer/model/error_model.dart';
@@ -10,21 +13,26 @@ import 'package:gwc_customer/model/program_model/proceed_model/send_proceed_prog
 import 'package:gwc_customer/repository/api_service.dart';
 import 'package:gwc_customer/repository/program_repository/program_repository.dart';
 import 'package:gwc_customer/screens/evalution_form/check_box_settings.dart';
-import 'package:gwc_customer/screens/prepratory%20plan/transition_mealplan_screen.dart';
-import 'package:gwc_customer/screens/program_plans/day_program_plans.dart';
 import 'package:gwc_customer/screens/program_plans/meal_plan_screen.dart';
 import 'package:gwc_customer/screens/program_plans/program_start_screen.dart';
 import 'package:gwc_customer/services/prepratory_service/prepratory_service.dart';
 import 'package:gwc_customer/services/program_service/program_service.dart';
 import 'package:gwc_customer/utils/app_config.dart';
 import 'package:gwc_customer/widgets/constants.dart';
-import 'package:gwc_customer/widgets/unfocus_widget.dart';
 import 'package:gwc_customer/widgets/widgets.dart';
+import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 import 'package:http/http.dart' as http;
-
+import 'package:async/async.dart';
 import '../../../repository/prepratory_repository/prep_repository.dart';
+import '../../../services/vlc_service/check_state.dart';
+import '../../../widgets/pip_package.dart';
+import '../../../widgets/video/normal_video.dart';
 import '../../prepratory plan/new/new_transition_design.dart';
+import 'package:video_player/video_player.dart';
+import 'package:wakelock/wakelock.dart';
+
+import '../meal_pdf.dart';
 
 // class DayMealTracerUI extends StatefulWidget {
 //   final ProceedProgramDayModel proceedProgramDayModel;
@@ -715,11 +723,16 @@ import '../../prepratory plan/new/new_transition_design.dart';
 // }
 
 class TrackerUI extends StatefulWidget {
+  final String? trackerVideoLink;
   final ProceedProgramDayModel? proceedProgramDayModel;
 
   /// from is used for maintaining api url for meal and transition
   final String from;
-  const TrackerUI({Key? key, this.proceedProgramDayModel, required this.from})
+  const TrackerUI(
+      {Key? key,
+        this.proceedProgramDayModel,
+        required this.from,
+        this.trackerVideoLink})
       : super(key: key);
 
   @override
@@ -735,6 +748,70 @@ class _TrackerUIState extends State<TrackerUI> {
   String selectedMissedAnything = '';
 
   final mealPlanMissedController = TextEditingController();
+  bool showMealVideo = false;
+  VideoPlayerController? _sheetVideoController, _yogaVideoController;
+  ChewieController? _sheetChewieController, _yogaChewieController;
+  bool isEnabled = false;
+  String? planNotePdfLink;
+  VideoPlayerController? mealPlayerController;
+  ChewieController? _chewieController;
+
+  addUrlToVideoPlayerChewie(String url) async{
+    print("url"+ url);
+    mealPlayerController = VideoPlayerController.network(url);
+    _chewieController = ChewieController(
+        videoPlayerController: mealPlayerController!,
+        aspectRatio: 16/9,
+        autoInitialize: true,
+        showOptions: false,
+        autoPlay: true,
+        hideControlsTimer: Duration(seconds: 3),
+        showControls: true
+
+    );
+    if(await Wakelock.enabled == false){
+      Wakelock.enable();
+    }
+  }
+
+
+  initChewieView(String? url) {
+    print("init url: $url");
+    _yogaVideoController =
+        VideoPlayerController.network(Uri.parse(url!).toString());
+    _yogaChewieController = ChewieController(
+        videoPlayerController: _yogaVideoController!,
+        aspectRatio: 16 / 9,
+        autoInitialize: true,
+        showOptions: false,
+        autoPlay: true,
+        allowedScreenSleep: false,
+        hideControlsTimer: Duration(seconds: 3),
+        showControls: true);
+
+    final _ori = MediaQuery.of(context).orientation;
+    print(_ori.name);
+    bool isPortrait = _ori == Orientation.portrait;
+    if (isPortrait) {
+      AutoOrientation.landscapeAutoMode();
+    }
+  }
+
+  final PageController _pageController = PageController(initialPage: 0);
+
+  late List<Widget> pages = [
+    buildQuestion1(),
+    buildQuestion2(),
+    buildQuestion3(),
+    buildQuestion4(),
+    buildQuestion5(),
+    buildQuestion6(),
+    buildQuestion7(),
+  ];
+
+  List<PlatformFile> medicalRecords = [];
+  List<File> fileFormatList = [];
+  List<MultipartFile> newList = <MultipartFile>[];
 
   final symptomsCheckBox1 = <CheckBoxSettings>[
     CheckBoxSettings(title: "Aches, pain, and soreness"),
@@ -804,8 +881,6 @@ class _TrackerUIState extends State<TrackerUI> {
   final eatSomethingController = TextEditingController();
   final anyMedicationsController = TextEditingController();
 
-  CarouselController buttonCarouselController = CarouselController();
-
   final List<Question> questions = [
     Question(
       'Did you deal with any of the following withdrawal symptoms from detox today? If "Yes," then choose all that apply. If no, choose none of the above.',
@@ -831,7 +906,6 @@ class _TrackerUIState extends State<TrackerUI> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    buttonCarouselController = CarouselController();
     mealPlanMissedController.addListener(() {
       setState(() {});
     });
@@ -850,57 +924,244 @@ class _TrackerUIState extends State<TrackerUI> {
 
   @override
   Widget build(BuildContext context) {
-    return UnfocusWidget(
-        child: Container(
-          width: double.maxFinite,
-          // height: 85.h,
-          // padding: EdgeInsets.fromLTRB(12,15, 12, 0),
-          padding: EdgeInsets.fromLTRB(
-              12, 15, 12, MediaQuery.of(context).viewInsets.bottom),
-          // padding: EdgeInsets.only(
-          //     bottom: MediaQuery.of(context).viewInsets.bottom),
-          // decoration: BoxDecoration(
-          //   color: Colors.white,
-          //   boxShadow: [
-          //     BoxShadow(
-          //         blurRadius: 2, color: Colors.grey.withOpacity(0.5))
-          //   ],
-          //   borderRadius: const BorderRadius.only(
-          //     topLeft: Radius.circular(30),
-          //     topRight: Radius.circular(30),
-          //   ),
-          // ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // buildLabelTextField("Have You Missed Anything In Your Meal Or Yoga Plan Today?"),
-              // SizedBox(
-              //   height: 1.h,
-              // ),
-              // ...missedAnything.map((e) => Row(
-              //   children: [
-              //     Radio<String>(
-              //       value: e,
-              //       activeColor: kPrimaryColor,
-              //       groupValue: selectedMissedAnything,
-              //       onChanged: (value) {
-              //         setState(() {
-              //           selectedMissedAnything = value as String;
-              //         });
-              //       },
-              //     ),
-              //     Text(
-              //       e,
-              //       style: buildTextStyle(),
-              //     ),
-              //   ],
-              // )),
-              // showRespectiveWidget()
-              symptomsTracker1()
-            ],
-          ),
-        ));
+    print("Video Player : ${widget.trackerVideoLink}");
+    return SafeArea(
+      child: Scaffold(
+        body: mainView(),
+      ),
+    );
+  }
+
+  mainView() {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Stack(
+          fit: StackFit.expand,
+          children: [
+            Positioned(
+              top: 0,
+              left: 0,
+              child: SafeArea(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 3.w),
+                  child: buildAppBar(() {}, isBackEnable: true),
+                ),
+              ),
+            ),
+            Container(
+              color: Colors.black.withOpacity(0.5),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(height: 20.h),
+                  Container(
+                    height: 15.h,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(22),
+                          topRight: Radius.circular(22)),
+                      color: kBottomSheetHeadYellow,
+                    ),
+                    child: Center(
+                      child: Image.asset(
+                        bsHeadStarsIcon,
+                        alignment: Alignment.topRight,
+                        fit: BoxFit.scaleDown,
+                        width: 30.w,
+                        height: 10.h,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Container(
+                      width: double.maxFinite,
+                      padding:
+                      EdgeInsets.symmetric(vertical: 2.h, horizontal: 5.w),
+                      decoration: const BoxDecoration(
+                        color: gBackgroundColor,
+                        // borderRadius: BorderRadius.only(
+                        //     topLeft: Radius.circular(22),
+                        //     topRight: Radius.circular(22)),
+                      ),
+                      child: Column(
+                        children: [
+                          videoMp4Widget(
+                              videoName: "Know more about Symptoms Tracker",
+                              onTap: () {
+                                addTrackerUrlToChewiePlayer(
+                                    widget.trackerVideoLink ?? '');
+                                // addTrackerUrlToVideoPlayer(widget.trackerVideoLink ?? '');
+                                setState(() {
+                                  showMealVideo = true;
+                                });
+                              }),
+                          SizedBox(height: 1.h),
+                          Expanded(
+                              child: Stack(
+                                children: [
+                                  PageView.builder(
+                                      itemCount: 7,
+                                      physics: NeverScrollableScrollPhysics(),
+                                      controller: _pageController,
+                                      itemBuilder: (context, index) {
+                                        return pages[index];
+                                      }),
+                                  Visibility(
+                                    visible: showMealVideo,
+                                    child: Positioned(child: Center(
+                                        child: buildMealVideo(onTap: () async {
+                                          setState(() {
+                                            showMealVideo = false;
+                                          });
+                                          if (await Wakelock.enabled == true) {
+                                            Wakelock.disable();
+                                          }
+                                          if (mealPlayerController != null)
+                                            mealPlayerController!.dispose();
+                                          if (_chewieController != null)
+                                            _chewieController!.dispose();
+
+                                          // await _mealPlayerController!.stopRendererScanning();
+                                          // await _mealPlayerController!.dispose();
+                                        }))),
+                                  )
+                                ],
+                              )),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Positioned(
+                top: 15.h,
+                left: 5,
+                right: 5,
+                child: Container(
+                    decoration: BoxDecoration(
+                      // color: Colors.white,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                            blurRadius: 5,
+                            color: gHintTextColor.withOpacity(0.8))
+                      ],
+                    ),
+                    child: CircleAvatar(
+                      maxRadius: 40.sp,
+                      backgroundColor: kBottomSheetHeadCircleColor,
+                      child: Image.asset(
+                        bsHeadBellIcon,
+                        fit: BoxFit.scaleDown,
+                        width: 45,
+                        height: 45,
+                      ),
+                    ))),
+            Positioned(
+                top: 21.h,
+                right: 3.w,
+                child: GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: Icon(
+                      Icons.cancel_outlined,
+                      color: gsecondaryColor,
+                      size: 28,
+                    ))),
+          ],
+        );
+      },
+    );
+  }
+
+  videoPlayerView() {
+    return PIPStack(
+      shrinkAlignment: Alignment.bottomRight,
+      backgroundWidget: backgroundWidgetForPIP(),
+      pipWidget: isEnabled
+          ? Consumer<CheckState>(
+        builder: (_, model, __) {
+          Wakelock.enable();
+          print("model.isChanged: ${model.isChanged} $isEnabled");
+          if (model.isChanged) {}
+          return Container(
+            color: Colors.black,
+            child: Center(
+                child: Chewie(
+                  controller: _yogaChewieController!,
+                )),
+          );
+          // return VlcPlayerWithControls(
+          //   key: _key,
+          //   controller: _controller!,
+          //   showVolume: false,
+          //   showVideoProgress: !model.isChanged,
+          //   seekButtonIconSize: 10.sp,
+          //   playButtonIconSize: 14.sp,
+          //   replayButtonSize: 14.sp,
+          //   showFullscreenBtn: true,
+          // );
+        },
+      )
+      //     ? FutureBuilder(
+      //   future: _initializeVideoPlayerFuture,
+      //   builder: (context, snapshot) {
+      //     if (snapshot.connectionState == ConnectionState.done) {
+      //       // If the VideoPlayerController has finished initialization, use
+      //       // the data it provides to limit the aspect ratio of the video.
+      //       return VlcPlayer(
+      //         controller: _videoPlayerController,
+      //         aspectRatio: 16 / 9,
+      //         placeholder: Center(child: CircularProgressIndicator()),
+      //       );
+      //     } else {
+      //       // If the VideoPlayerController is still initializing, show a
+      //       // loading spinner.
+      //       return const Center(
+      //         child: CircularProgressIndicator(),
+      //       );
+      //     }
+      //   },
+      // )
+      //     ? Container(
+      //   color: Colors.pink,
+      // )
+          : const SizedBox(),
+      pipEnabled: isEnabled,
+      pipExpandedHeight: double.infinity,
+      onClosed: () async {
+        // await _controller.stop();
+        // await _controller.dispose();
+        setState(() {
+          isEnabled = !isEnabled;
+        });
+        if (await Wakelock.enabled) {
+          Wakelock.disable();
+        }
+        if (_yogaVideoController != null) _yogaVideoController!.dispose();
+        if (_yogaChewieController != null) _yogaChewieController!.dispose();
+
+        // if (_trackerVideoPlayerController != null) _trackerVideoPlayerController!.stop();
+      },
+      onPip: () async {
+        setState(() {
+          isEnabled = true;
+        });
+        final _ori = MediaQuery.of(context).orientation;
+        print(_ori.name);
+        bool isPortrait = _ori == Orientation.portrait;
+        if (!isPortrait) {
+          AutoOrientation.portraitUpMode();
+        }
+      },
+    );
+  }
+
+  backgroundWidgetForPIP() {
+    return mainView();
   }
 
   showRespectiveWidget() {
@@ -977,390 +1238,6 @@ class _TrackerUIState extends State<TrackerUI> {
       return symptomsTracker();
     } else
       return SizedBox.shrink();
-  }
-
-  symptomsTracker1() {
-    final double height = MediaQuery.of(context).size.height;
-    double sliderHeight = height * 1.7;
-    return Form(
-      key: formKey,
-      child: CarouselSlider(
-        carouselController: buttonCarouselController,
-        options: CarouselOptions(
-          enableInfiniteScroll: false,
-          // scrollDirection: Axis.vertical,
-          scrollPhysics: const NeverScrollableScrollPhysics(),
-          height: sliderHeight,
-          viewportFraction: 1.0,
-          enlargeCenterPage: false,
-          reverse: false,
-          clipBehavior: Clip.antiAlias,
-          autoPlay: false,
-        ),
-        items: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    "Gut Detox Program Status Tracker",
-                    textAlign: TextAlign.start,
-                    style: TextStyle(
-                        fontFamily: kFontMedium,
-                        color: gBlackColor,
-                        fontSize: headingFont),
-                  ),
-                  SizedBox(
-                    width: 2.w,
-                  ),
-                  Expanded(
-                    child: Container(
-                      height: 1,
-                      color: kLineColor,
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 0.5.h),
-              Text(
-                "Your detox & healing program tracker that takes less than 1 minute to fill but essential for your doctors to track, manage & intervene effectively.",
-                textAlign: TextAlign.start,
-                style: TextStyle(
-                    fontFamily: kFontMedium,
-                    height: 1.4,
-                    color: gHintTextColor,
-                    fontSize: subHeadingFont),
-              ),
-              SizedBox(height: 2.h),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    "Symptom Tracker",
-                    textAlign: TextAlign.start,
-                    style: TextStyle(
-                        fontFamily: kFontMedium,
-                        color: gBlackColor,
-                        fontSize: headingFont),
-                  ),
-                  SizedBox(width: 2.w),
-                  Expanded(
-                    child: Container(
-                      height: 1,
-                      color: kLineColor,
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 0.5.h),
-              Text(
-                "For your doctor to know if you are on track :)",
-                textAlign: TextAlign.start,
-                style: TextStyle(
-                    fontFamily: kFontMedium,
-                    color: gHintTextColor,
-                    fontSize: subHeadingFont),
-              ),
-              SizedBox(height: 2.h),
-              buildLabelTextField(
-                  'Did you deal with any of the following withdrawal symptoms from detox today? If "Yes," then choose all that apply. If no, choose none of the above.',
-                  fontSize: questionFont),
-              SizedBox(
-                height: 1.h,
-              ),
-              ...symptomsCheckBox1
-                  .map((e) => buildHealthCheckBox(e, '1'))
-                  .toList(),
-              buildNextButton("01/06", () {
-                if (selectedSymptoms1.isNotEmpty) {
-                  buttonCarouselController
-                      .nextPage(
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.linear)
-                      .then((value) {
-                    Scrollable.ensureVisible(question2.currentContext!,
-                        duration: const Duration(milliseconds: 200));
-                  });
-                } else {
-                  Get.snackbar(
-                    "",
-                    'Please select withdrawal symptoms',
-                    titleText: const SizedBox.shrink(),
-                    colorText: gWhiteColor,
-                    snackPosition: SnackPosition.BOTTOM,
-                    backgroundColor: gsecondaryColor.withOpacity(0.55),
-                  );
-                }
-              }),
-              SizedBox(height: 2.h),
-            ],
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              buildLabelTextField(
-                  'Did any of the following (adequate) detoxification / healing signs and symptoms happen to you today? If "Yes," then choose all that apply. If no, choose none of the above.',
-                  fontSize: questionFont,
-                  key: question2),
-              SizedBox(
-                height: 2.h,
-              ),
-              ...symptomsCheckBox2
-                  .map((e) => buildHealthCheckBox(e, '2'))
-                  .toList(),
-              buildNextButton("02/06", () {
-                if (selectedSymptoms2.isNotEmpty) {
-                  buttonCarouselController
-                      .nextPage(
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.linear)
-                      .then((value) {
-                    Scrollable.ensureVisible(question3.currentContext!,
-                        duration: const Duration(milliseconds: 200));
-                  });
-                } else {
-                  Get.snackbar(
-                    "",
-                    'Please select Detoxification/healing signs',
-                    titleText: const SizedBox.shrink(),
-                    colorText: gWhiteColor,
-                    snackPosition: SnackPosition.BOTTOM,
-                    backgroundColor: gsecondaryColor.withOpacity(0.55),
-                  );
-                }
-              }),
-              SizedBox(height: 2.h),
-            ],
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              buildLabelTextField(
-                  'Please let us know if you notice any other signs or have any other worries. If none, enter "No."',
-                  fontSize: questionFont,key: question3),
-              TextFormField(
-                controller: worriesController,
-                cursorColor: kPrimaryColor,
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Please let us know if you notice any other signs or have any other worries.';
-                  } else {
-                    return null;
-                  }
-                },
-                decoration: CommonDecoration.buildTextInputDecoration(
-                    "Your answer", worriesController),
-                textInputAction: TextInputAction.next,
-                textAlign: TextAlign.start,
-                keyboardType: TextInputType.name,
-              ),
-              buildNextButton("03/06", () {
-                if (worriesController.text.isNotEmpty) {
-                  buttonCarouselController.nextPage(
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.linear);
-                } else {
-                  Get.snackbar(
-                    "",
-                    'Please Enter Your Answer',
-                    titleText: SizedBox.shrink(),
-                    colorText: gWhiteColor,
-                    snackPosition: SnackPosition.BOTTOM,
-                    backgroundColor: gsecondaryColor.withOpacity(0.55),
-                  );
-                }
-              }),
-              SizedBox(height: 2.h),
-            ],
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              buildLabelTextField(
-                  'Did you eat something other than what was on your meal plan? If "Yes", please give more information? If not, type "No."',
-                  fontSize: questionFont),
-              TextFormField(
-                controller: eatSomethingController,
-                cursorColor: kPrimaryColor,
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Did you eat something other than what was on your meal plan?';
-                  } else {
-                    return null;
-                  }
-                },
-                decoration: CommonDecoration.buildTextInputDecoration(
-                    "Your answer", eatSomethingController),
-                textInputAction: TextInputAction.next,
-                textAlign: TextAlign.start,
-                keyboardType: TextInputType.name,
-              ),
-              buildNextButton("04/06", () {
-                if (eatSomethingController.text.isNotEmpty) {
-                  buttonCarouselController.nextPage(
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.linear);
-                } else {
-                  Get.snackbar(
-                    "",
-                    'Please Enter Your Answer',
-                    titleText: SizedBox.shrink(),
-                    colorText: gWhiteColor,
-                    snackPosition: SnackPosition.BOTTOM,
-                    backgroundColor: gsecondaryColor.withOpacity(0.55),
-                  );
-                }
-              }),
-              SizedBox(height: 2.h),
-            ],
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              buildLabelTextField(
-                  'Did you complete the Calm and Move modules suggested today?',
-                  fontSize: questionFont),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        selectedCalmModule = "Yes";
-                      });
-                    },
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        SizedBox(
-                          width: 25,
-                          child: Radio(
-                            value: "Yes",
-                            activeColor: kPrimaryColor,
-                            groupValue: selectedCalmModule,
-                            onChanged: (value) {
-                              setState(() {
-                                selectedCalmModule = value as String;
-                              });
-                            },
-                          ),
-                        ),
-                        Text(
-                          'Yes',
-                          style: buildTextStyle(
-                              color: selectedCalmModule == 'Yes'
-                                  ? kTextColor
-                                  : gHintTextColor,
-                              fontFamily: selectedCalmModule == 'Yes'
-                                  ? kFontMedium
-                                  : kFontBook),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(
-                    width: 10.w,
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        selectedCalmModule = "No";
-                      });
-                    },
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        SizedBox(
-                          width: 25,
-                          child: Radio(
-                            value: "No",
-                            activeColor: kPrimaryColor,
-                            groupValue: selectedCalmModule,
-                            onChanged: (value) {
-                              setState(() {
-                                selectedCalmModule = value as String;
-                              });
-                            },
-                          ),
-                        ),
-                        Text(
-                          'No',
-                          style: buildTextStyle(
-                              color: selectedCalmModule == 'No'
-                                  ? kTextColor
-                                  : gHintTextColor,
-                              fontFamily: selectedCalmModule == 'No'
-                                  ? kFontMedium
-                                  : kFontBook),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              buildNextButton("05/06", () {
-                if (selectedCalmModule.isNotEmpty) {
-                  buttonCarouselController.nextPage(
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.linear);
-                } else {
-                  Get.snackbar(
-                    "",
-                    'Please select Calm & Move Modules',
-                    titleText: const SizedBox.shrink(),
-                    colorText: gWhiteColor,
-                    snackPosition: SnackPosition.BOTTOM,
-                    backgroundColor: gsecondaryColor.withOpacity(0.55),
-                  );
-                }
-              }),
-              SizedBox(height: 2.h),
-            ],
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              buildLabelTextField(
-                  'Have you had a medical exam or taken any medications during the program? If "Yes", please give more information. Type "No" if not.',
-                  fontSize: questionFont),
-              TextFormField(
-                controller: anyMedicationsController,
-                cursorColor: kPrimaryColor,
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Have you had a medical exam or taken any medications during the program?';
-                  } else {
-                    return null;
-                  }
-                },
-                decoration: CommonDecoration.buildTextInputDecoration(
-                    "Your answer", anyMedicationsController),
-                textInputAction: TextInputAction.done,
-                textAlign: TextAlign.start,
-                keyboardType: TextInputType.name,
-              ),
-              buildNextButton("Submit", () {
-                if (anyMedicationsController.text.isNotEmpty) {
-                  proceed();
-                } else {
-                  Get.snackbar(
-                    "",
-                    'Please Enter Your Answer',
-                    titleText: const SizedBox.shrink(),
-                    colorText: gWhiteColor,
-                    snackPosition: SnackPosition.BOTTOM,
-                    backgroundColor: gsecondaryColor.withOpacity(0.55),
-                  );
-                }
-              }),
-              SizedBox(height: 2.h),
-            ],
-          ),
-        ],
-      ),
-    );
   }
 
   buildNextButton(String pageNo, VoidCallback func) {
@@ -1688,8 +1565,8 @@ class _TrackerUIState extends State<TrackerUI> {
   }
 
   buildHealthCheckBox(CheckBoxSettings healthCheckBox, String from) {
-    return Expanded(
-      child: IntrinsicWidth(
+    return StatefulBuilder(builder: (_, setState) {
+      return IntrinsicWidth(
         child: CheckboxListTile(
           visualDensity: VisualDensity(vertical: -3), // to compact
           contentPadding: EdgeInsets.symmetric(horizontal: 5),
@@ -1699,8 +1576,9 @@ class _TrackerUIState extends State<TrackerUI> {
             child: Text(
               healthCheckBox.title.toString(),
               style: buildTextStyle(
-                  color:
-                  healthCheckBox.value == true ? kTextColor : gHintTextColor,
+                  color: healthCheckBox.value == true
+                      ? kTextColor
+                      : gHintTextColor,
                   fontFamily:
                   healthCheckBox.value == true ? kFontMedium : kFontBook),
             ),
@@ -1788,8 +1666,8 @@ class _TrackerUIState extends State<TrackerUI> {
             }
           },
         ),
-      ),
-    );
+      );
+    });
     return ListTile(
       visualDensity: VisualDensity(vertical: -3), // to compact
       minVerticalPadding: 0,
@@ -1929,7 +1807,9 @@ class _TrackerUIState extends State<TrackerUI> {
         haveAnyOtherWorries: worriesController.text,
         eatSomthingOther: eatSomethingController.text,
         completedCalmMoveModules: selectedCalmModule,
-        hadAMedicalExamMedications: anyMedicationsController.text);
+        hadAMedicalExamMedications: anyMedicationsController.text,
+      trackingAttachment: newList.join(",")
+    );
     final result = (ProgramMealType.program.name == widget.from)
         ? await ProgramService(repository: repository)
         .proceedDayMealDetailsService(model)
@@ -1971,6 +1851,731 @@ class _TrackerUIState extends State<TrackerUI> {
       httpClient: http.Client(),
     ),
   );
+
+  Widget buildQuestion1() {
+    return StatefulBuilder(builder: (_, setstate) {
+      return SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  "Gut Detox Program Status Tracker",
+                  textAlign: TextAlign.start,
+                  style: TextStyle(
+                      fontFamily: kFontMedium,
+                      color: gBlackColor,
+                      fontSize: headingFont),
+                ),
+                SizedBox(
+                  width: 2.w,
+                ),
+                Expanded(
+                  child: Container(
+                    height: 1,
+                    color: kLineColor,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 0.5.h),
+            Text(
+              "Your detox & healing program tracker that takes less than 1 minute to fill but essential for your doctors to track, manage & intervene effectively.",
+              textAlign: TextAlign.start,
+              style: TextStyle(
+                  fontFamily: kFontMedium,
+                  height: 1.4,
+                  color: gHintTextColor,
+                  fontSize: subHeadingFont),
+            ),
+            SizedBox(height: 2.h),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  "Symptom Tracker",
+                  textAlign: TextAlign.start,
+                  style: TextStyle(
+                      fontFamily: kFontMedium,
+                      color: gBlackColor,
+                      fontSize: headingFont),
+                ),
+                SizedBox(width: 2.w),
+                Expanded(
+                  child: Container(
+                    height: 1,
+                    color: kLineColor,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 0.5.h),
+            Text(
+              "For your doctor to know if you are on track :)",
+              textAlign: TextAlign.start,
+              style: TextStyle(
+                  fontFamily: kFontMedium,
+                  color: gHintTextColor,
+                  fontSize: subHeadingFont),
+            ),
+            SizedBox(height: 2.h),
+            buildLabelTextField(
+                'Did you deal with any of the following withdrawal symptoms from detox today? If "Yes," then choose all that apply. If no, choose none of the above.',
+                fontSize: questionFont),
+            SizedBox(
+              height: 1.h,
+            ),
+            ...symptomsCheckBox1
+                .map((e) => buildHealthCheckBox(e, '1'))
+                .toList(),
+            buildNextButton("01/07", () {
+              if (selectedSymptoms1.isNotEmpty) {
+                _pageController
+                    .nextPage(
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.linear)
+                    .then((value) {
+                  Scrollable.ensureVisible(question2.currentContext!,
+                      duration: const Duration(milliseconds: 200));
+                });
+              } else {
+                Get.snackbar(
+                  "",
+                  'Please select withdrawal symptoms',
+                  titleText: const SizedBox.shrink(),
+                  colorText: gWhiteColor,
+                  snackPosition: SnackPosition.BOTTOM,
+                  backgroundColor: gsecondaryColor.withOpacity(0.55),
+                );
+              }
+            }),
+            SizedBox(height: 2.h),
+          ],
+        ),
+      );
+    });
+  }
+
+  Widget buildQuestion2() {
+    return StatefulBuilder(builder: (_, setstate) {
+      return SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            buildLabelTextField(
+                'Did any of the following (adequate) detoxification / healing signs and symptoms happen to you today? If "Yes," then choose all that apply. If no, choose none of the above.',
+                fontSize: questionFont,
+                key: question2),
+            SizedBox(
+              height: 2.h,
+            ),
+            ...symptomsCheckBox2
+                .map((e) => buildHealthCheckBox(e, '2'))
+                .toList(),
+            buildNextButton("02/07", () {
+              if (selectedSymptoms2.isNotEmpty) {
+                _pageController
+                    .nextPage(
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.linear)
+                    .then((value) {
+                  Scrollable.ensureVisible(question3.currentContext!,
+                      duration: const Duration(milliseconds: 200));
+                });
+              } else {
+                Get.snackbar(
+                  "",
+                  'Please select Detoxification/healing signs',
+                  titleText: const SizedBox.shrink(),
+                  colorText: gWhiteColor,
+                  snackPosition: SnackPosition.BOTTOM,
+                  backgroundColor: gsecondaryColor.withOpacity(0.55),
+                );
+              }
+            }),
+            SizedBox(height: 2.h),
+          ],
+        ),
+      );
+    });
+  }
+
+  Widget buildQuestion3() {
+    return StatefulBuilder(builder: (_, setstate) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          buildLabelTextField(
+              'Please let us know if you notice any other signs or have any other worries. If none, enter "No."',
+              fontSize: questionFont,
+              key: question3),
+          TextFormField(
+            controller: worriesController,
+            cursorColor: kPrimaryColor,
+            validator: (value) {
+              if (value!.isEmpty) {
+                return 'Please let us know if you notice any other signs or have any other worries.';
+              } else {
+                return null;
+              }
+            },
+            decoration: CommonDecoration.buildTextInputDecoration(
+                "Your answer", worriesController),
+            textInputAction: TextInputAction.next,
+            textAlign: TextAlign.start,
+            keyboardType: TextInputType.name,
+          ),
+          buildNextButton("03/07", () {
+            if (worriesController.text.isNotEmpty) {
+              _pageController.nextPage(
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.linear);
+            } else {
+              Get.snackbar(
+                "",
+                'Please Enter Your Answer',
+                titleText: SizedBox.shrink(),
+                colorText: gWhiteColor,
+                snackPosition: SnackPosition.BOTTOM,
+                backgroundColor: gsecondaryColor.withOpacity(0.55),
+              );
+            }
+          }),
+          SizedBox(height: 2.h),
+        ],
+      );
+    });
+  }
+
+  Widget buildQuestion4() {
+    return StatefulBuilder(builder: (_, setstate) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          buildLabelTextField(
+              'Did you eat something other than what was on your meal plan? If "Yes", please give more information? If not, type "No."',
+              fontSize: questionFont),
+          TextFormField(
+            controller: eatSomethingController,
+            cursorColor: kPrimaryColor,
+            validator: (value) {
+              if (value!.isEmpty) {
+                return 'Did you eat something other than what was on your meal plan?';
+              } else {
+                return null;
+              }
+            },
+            decoration: CommonDecoration.buildTextInputDecoration(
+                "Your answer", eatSomethingController),
+            textInputAction: TextInputAction.next,
+            textAlign: TextAlign.start,
+            keyboardType: TextInputType.name,
+          ),
+          buildNextButton("04/07", () {
+            if (eatSomethingController.text.isNotEmpty) {
+              _pageController.nextPage(
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.linear);
+            } else {
+              Get.snackbar(
+                "",
+                'Please Enter Your Answer',
+                titleText: SizedBox.shrink(),
+                colorText: gWhiteColor,
+                snackPosition: SnackPosition.BOTTOM,
+                backgroundColor: gsecondaryColor.withOpacity(0.55),
+              );
+            }
+          }),
+          SizedBox(height: 2.h),
+        ],
+      );
+    });
+  }
+
+  Widget buildQuestion5() {
+    return StatefulBuilder(builder: (_, setstate) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          buildLabelTextField(
+              'Did you complete the Calm and Move modules suggested today?',
+              fontSize: questionFont),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              GestureDetector(
+                onTap: () {
+                  setstate(() {
+                    selectedCalmModule = "Yes";
+                  });
+                },
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SizedBox(
+                      width: 25,
+                      child: Radio(
+                        value: "Yes",
+                        activeColor: kPrimaryColor,
+                        groupValue: selectedCalmModule,
+                        onChanged: (value) {
+                          setstate(() {
+                            selectedCalmModule = value as String;
+                          });
+                        },
+                      ),
+                    ),
+                    Text(
+                      'Yes',
+                      style: buildTextStyle(
+                          color: selectedCalmModule == 'Yes'
+                              ? kTextColor
+                              : gHintTextColor,
+                          fontFamily: selectedCalmModule == 'Yes'
+                              ? kFontMedium
+                              : kFontBook),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(
+                width: 10.w,
+              ),
+              GestureDetector(
+                onTap: () {
+                  setstate(() {
+                    selectedCalmModule = "No";
+                  });
+                },
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SizedBox(
+                      width: 25,
+                      child: Radio(
+                        value: "No",
+                        activeColor: kPrimaryColor,
+                        groupValue: selectedCalmModule,
+                        onChanged: (value) {
+                          setstate(() {
+                            selectedCalmModule = value as String;
+                          });
+                        },
+                      ),
+                    ),
+                    Text(
+                      'No',
+                      style: buildTextStyle(
+                          color: selectedCalmModule == 'No'
+                              ? kTextColor
+                              : gHintTextColor,
+                          fontFamily: selectedCalmModule == 'No'
+                              ? kFontMedium
+                              : kFontBook),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          buildNextButton("05/07", () {
+            if (selectedCalmModule.isNotEmpty) {
+              _pageController.nextPage(
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.linear);
+            } else {
+              Get.snackbar(
+                "",
+                'Please select Calm & Move Modules',
+                titleText: const SizedBox.shrink(),
+                colorText: gWhiteColor,
+                snackPosition: SnackPosition.BOTTOM,
+                backgroundColor: gsecondaryColor.withOpacity(0.55),
+              );
+            }
+          }),
+          SizedBox(height: 2.h),
+        ],
+      );
+    });
+  }
+
+  Widget buildQuestion6() {
+    return StatefulBuilder(builder: (_, setstate) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          buildLabelTextField(
+              'Have you had a medical exam or taken any medications during the program? If "Yes", please give more information. Type "No" if not.',
+              fontSize: questionFont),
+          TextFormField(
+            controller: anyMedicationsController,
+            cursorColor: kPrimaryColor,
+            validator: (value) {
+              if (value!.isEmpty) {
+                return 'Have you had a medical exam or taken any medications during the program?';
+              } else {
+                return null;
+              }
+            },
+            decoration: CommonDecoration.buildTextInputDecoration(
+                "Your answer", anyMedicationsController),
+            textInputAction: TextInputAction.done,
+            textAlign: TextAlign.start,
+            keyboardType: TextInputType.name,
+          ),
+          buildNextButton("06/07", () {
+            if (anyMedicationsController.text.isNotEmpty) {
+              _pageController.nextPage(
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.linear);
+            } else {
+              Get.snackbar(
+                "",
+                'Please Enter Your Answer',
+                titleText: const SizedBox.shrink(),
+                colorText: gWhiteColor,
+                snackPosition: SnackPosition.BOTTOM,
+                backgroundColor: gsecondaryColor.withOpacity(0.55),
+              );
+            }
+          }),
+          SizedBox(height: 2.h),
+        ],
+      );
+    });
+  }
+
+  buildQuestion7() {
+    return StatefulBuilder(builder: (_, setState) {
+      return SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(height: 2.h),
+            Text(
+              "Can We Get A Picture Of You To Put A Face To This Feedback?",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: questionFont,
+                color: gBlackColor,
+                height: 1.35,
+                fontFamily: kFontMedium,
+              ),
+            ),
+            SizedBox(height: 3.h),
+            GestureDetector(
+              onTap: () async {
+                final result = await FilePicker.platform
+                    .pickFiles(withReadStream: true, allowMultiple: false);
+
+                if (result == null) return;
+                if (result.files.first.extension!.contains("png") ||
+                    result.files.first.extension!.contains("jpg") ||
+                    result.files.first.extension!.contains("jpeg")) {
+                  medicalRecords.add(result.files.first);
+                  addFilesToList(File(result.paths.first!));
+                } else {
+                  AppConfig().showSnackbar(
+                      context, "Please select png/jpg/jpeg files",
+                      isError: true);
+                }
+
+                setState(() {});
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(5),
+                  border: Border.all(
+                      color: gHintTextColor.withOpacity(0.3), width: 1),
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.file_upload_outlined,
+                      color: gsecondaryColor,
+                      size: 2.5.h,
+                    ),
+                    const SizedBox(
+                      width: 4,
+                    ),
+                    Text(
+                      'Add File',
+                      style: TextStyle(
+                        fontSize: 10.sp,
+                        color: gsecondaryColor,
+                        fontFamily: "GothamMedium",
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ),
+            (medicalRecords.isEmpty)
+                ? SizedBox()
+                : Center(
+              child: SizedBox(
+                height: 27.h,
+                child: ListView.builder(
+                  itemCount: medicalRecords.length,
+                  shrinkWrap: true,
+                  scrollDirection: Axis.vertical,
+                  itemBuilder: (context, index) {
+                    final file = medicalRecords[index];
+                    return buildFile(file, index);
+                  },
+                ),
+              ),
+            ),
+            SizedBox(height: 2.h),
+            IntrinsicWidth(
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 4.h, horizontal: 2.w),
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    primary: eUser().buttonColor,
+                    onSurface: eUser().buttonTextColor,
+                    padding:
+                    EdgeInsets.symmetric(vertical: 1.h, horizontal: 5.w),
+                    shape: RoundedRectangleBorder(
+                        borderRadius:
+                        BorderRadius.circular(eUser().buttonBorderRadius)),
+                  ),
+                  onPressed: () {
+                    proceed();
+                  },
+                  child: Center(
+                    child: Text(
+                      "Submit",
+                      style: TextStyle(
+                        fontFamily: eUser().buttonTextFont,
+                        color: eUser().buttonTextColor,
+                        fontSize: eUser().buttonTextSize,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    });
+  }
+
+  addFilesToList(File file) async {
+    newList.clear();
+    setState(() {
+      fileFormatList.add(file);
+    });
+
+    for (int i = 0; i < fileFormatList.length; i++) {
+      var stream =
+      http.ByteStream(DelegatingStream.typed(fileFormatList[i].openRead()));
+      var length = await fileFormatList[i].length();
+      var multipartFile = http.MultipartFile("face_to_feedback", stream, length,
+          filename: fileFormatList[i].path);
+      newList.add(multipartFile as MultipartFile);
+      print("newList : $newList");
+    }
+
+    setState(() {});
+  }
+
+  Widget buildFile(PlatformFile file, int index) {
+    final kb = file.size / 1024;
+    final mb = kb / 1024;
+    final size = (mb >= 1)
+        ? '${mb.toStringAsFixed(2)} MB'
+        : '${kb.toStringAsFixed(2)} KB';
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 1.5.h),
+      child: Image.file(
+        File(file.path.toString()),
+        width: 30.w,
+        height: 20.h,
+      ),
+    );
+  }
+
+  videoMp4Widget({required VoidCallback onTap, String? videoName}) {
+    return InkWell(
+      onTap: onTap,
+      child: Card(
+          child: Row(children: [
+            Image.asset(
+              "assets/images/meal_placeholder.png",
+              height: 35,
+              width: 40,
+            ),
+            Expanded(
+                child: Text(
+                  videoName ?? "Symptom Tracker.mp4",
+                  style: TextStyle(fontFamily: kFontBook),
+                )),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Image.asset(
+                "assets/images/arrow_for_video.png",
+                height: 35,
+              ),
+            )
+          ])),
+    );
+  }
+
+  // addTrackerUrlToVideoPlayer(String url) async {
+  //   print("url" + url);
+  //   _trackerVideoPlayerController = VlcPlayerController.network(
+  //     Uri.parse(url).toString(),
+  //     // url,
+  //     // 'http://samples.mplayerhq.hu/MPEG-4/embedded_subs/1Video_2Audio_2SUBs_timed_text_streams_.mp4',
+  //     // 'https://media.w3.org/2010/05/sintel/trailer.mp4',
+  //     hwAcc: HwAcc.auto,
+  //     autoPlay: true,
+  //     options: VlcPlayerOptions(
+  //       advanced: VlcAdvancedOptions([
+  //         VlcAdvancedOptions.networkCaching(2000),
+  //       ]),
+  //       subtitle: VlcSubtitleOptions([
+  //         VlcSubtitleOptions.boldStyle(true),
+  //         VlcSubtitleOptions.fontSize(30),
+  //         VlcSubtitleOptions.outlineColor(VlcSubtitleColor.yellow),
+  //         VlcSubtitleOptions.outlineThickness(VlcSubtitleThickness.normal),
+  //         // works only on externally added subtitles
+  //         VlcSubtitleOptions.color(VlcSubtitleColor.navy),
+  //       ]),
+  //       http: VlcHttpOptions([
+  //         VlcHttpOptions.httpReconnect(true),
+  //       ]),
+  //       rtp: VlcRtpOptions([
+  //         VlcRtpOptions.rtpOverRtsp(true),
+  //       ]),
+  //     ),
+  //   );
+  //   _trackerVideoPlayerController!.play();
+  //   if (await Wakelock.enabled == false) {
+  //     Wakelock.enable();
+  //   }
+  // }
+  addTrackerUrlToChewiePlayer(String url) async {
+    print("url" + url);
+    _sheetVideoController =
+        VideoPlayerController.network(Uri.parse(url).toString());
+    _sheetChewieController = ChewieController(
+        videoPlayerController: _sheetVideoController!,
+        aspectRatio: 16 / 9,
+        autoInitialize: true,
+        showOptions: false,
+        autoPlay: true,
+        allowedScreenSleep: false,
+        hideControlsTimer: Duration(seconds: 3),
+        showControls: false);
+    if (await Wakelock.enabled == false) {
+      Wakelock.enable();
+    }
+  }
+
+  buildMealVideo({required VoidCallback onTap}) {
+    if (_sheetChewieController != null) {
+      return Column(
+        children: [
+          AspectRatio(
+            aspectRatio: 16 / 9,
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(5),
+                border: Border.all(color: gPrimaryColor, width: 1),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(5),
+                child: Center(
+                    child: OverlayVideo(
+                      controller: _sheetChewieController!,
+                      isControlsVisible: false,
+                    )),
+              ),
+            ),
+          ),
+          Center(
+              child: IconButton(
+                icon: Icon(
+                  Icons.cancel_outlined,
+                  color: gsecondaryColor,
+                ),
+                onPressed: onTap,
+              ))
+        ],
+      );
+    }
+    // else if (_trackerVideoPlayerController != null) {
+    //   return Column(
+    //     children: [
+    //       AspectRatio(
+    //         aspectRatio: 16 / 9,
+    //         child: Container(
+    //           decoration: BoxDecoration(
+    //             borderRadius: BorderRadius.circular(5),
+    //             border: Border.all(color: gPrimaryColor, width: 1),
+    //             // boxShadow: [
+    //             //   BoxShadow(
+    //             //     color: Colors.grey.withOpacity(0.3),
+    //             //     blurRadius: 20,
+    //             //     offset: const Offset(2, 10),
+    //             //   ),
+    //             // ],
+    //           ),
+    //           child: ClipRRect(
+    //             borderRadius: BorderRadius.circular(5),
+    //             child: Center(
+    //                 child: VlcPlayerWithControls(
+    //                   key: _trackerKey,
+    //                   controller: _trackerVideoPlayerController!,
+    //                   showVolume: false,
+    //                   showVideoProgress: false,
+    //                   seekButtonIconSize: 10.sp,
+    //                   playButtonIconSize: 14.sp,
+    //                   replayButtonSize: 10.sp,
+    //                 )
+    //             ),
+    //           ),
+    //         ),
+    //       ),
+    //       Center(
+    //           child: IconButton(
+    //         icon: Icon(
+    //           Icons.cancel_outlined,
+    //           color: gsecondaryColor,
+    //         ),
+    //         onPressed: onTap,
+    //       ))
+    //     ],
+    //   );
+    // }
+    else {
+      return SizedBox.shrink();
+    }
+  }
+
+  Future<bool> _onWillPop() async {
+    final _ori = MediaQuery.of(context).orientation;
+    bool isPortrait = _ori == Orientation.portrait;
+    if (!isPortrait) {
+      AutoOrientation.portraitUpMode();
+      // setState(() {
+      //   isEnabled = false;
+      // });
+    }
+    print(isEnabled);
+    return !isEnabled ? true : false;
+    // return false;
+  }
 }
 
 class Question {

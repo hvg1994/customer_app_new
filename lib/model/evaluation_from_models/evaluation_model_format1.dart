@@ -111,4 +111,44 @@ class EvaluationModelFormat1{
     return data;
   }
 
+  factory EvaluationModelFormat1.fromMap(Map<String, dynamic> map) {
+    return EvaluationModelFormat1(
+      fname: map['fname'] as String,
+      lname: map['lname'] as String,
+      maritalStatus: map['maritalStatus'] as String,
+      phone: map['phone'] as String,
+      email: map['email'] as String,
+      age: map['age'] as String,
+      gender: map['gender'] as String,
+      address1: map['address1'] as String,
+      address2: map['address2'] as String,
+      state: map['state'] as String,
+      city: map['city'] as String,
+      country: map['country'] as String,
+      pincode: map['pincode'] as String,
+      weight: map['weight'] as String,
+      height: map['height'] as String,
+      looking_to_heal: map['looking_to_heal'] as String,
+      checkList1: map['checkList1'] as String,
+      checkList1Other: map['checkList1Other'] as String,
+      checkList2: map['checkList2'] as String,
+      tongueCoating: map['tongueCoating'] as String,
+      tongueCoating_other: map['tongueCoating_other'] as String,
+      urinationIssue: map['urinationIssue'] as String,
+      urinColor: map['urinColor'] as String,
+      urinColor_other: map['urinColor_other'] as String,
+      urinSmell: map['urinSmell'] as String,
+      urinSmell_other: map['urinSmell_other'] as String,
+      urinLooksLike: map['urinLooksLike'] as String,
+      urinLooksLike_other: map['urinLooksLike_other'] as String,
+      stoolDetails: map['stoolDetails'] as String,
+      medical_interventions: map['medical_interventions'] as String,
+      medical_interventions_other: map['medical_interventions_other'] as String,
+      medication: map['medication'] as String,
+      holistic: map['holistic'] as String,
+      allReportsUploaded: map['allReportsUploaded'] as String,
+    );
+  }
+
+
 }

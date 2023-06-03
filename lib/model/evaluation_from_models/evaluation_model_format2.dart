@@ -80,4 +80,32 @@ class EvaluationModelFormat2{
     return data;
   }
 
+  factory EvaluationModelFormat2.fromMap(Map<String, dynamic> map) {
+    return EvaluationModelFormat2(
+      vegNonVegVegan: map['vegNonVegVegan'] as String,
+      earlyMorning: map['earlyMorning'] as String,
+      breakfast: map['breakfast'] as String,
+      midDay: map['midDay'] as String,
+      lunch: map['lunch'] as String,
+      evening: map['evening'] as String,
+      dinner: map['dinner'] as String,
+      postDinner: map['postDinner'] as String,
+      digesion: map['digesion'] as String,
+      diet: map['diet'] as String,
+      foodAllergy: map['foodAllergy'] as String,
+      intolerance: map['intolerance'] as String,
+      cravings: map['cravings'] as String,
+      dislikeFood: map['dislikeFood'] as String,
+      glasses_per_day: map['glasses_per_day'] as String,
+      habits: map['habits'] as String,
+      habits_other: map['habits_other'] as String,
+      mealPreference: map['mealPreference'] as String,
+      mealPreferenceOther: map['mealPreferenceOther'] as String,
+      hunger: map['hunger'] as String,
+      hungerOther: map['hungerOther'] as String,
+      bowelPattern: map['bowelPattern'] as String,
+      bowelPatterOther: map['bowelPatterOther'] as String,
+    );
+  }
+
 }

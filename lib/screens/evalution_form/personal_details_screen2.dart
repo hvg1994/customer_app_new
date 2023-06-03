@@ -17,16 +17,18 @@ import '../../services/evaluation_fome_service/evaluation_form_service.dart';
 import '../../widgets/constants.dart';
 import '../../widgets/widgets.dart';
 import 'check_box_settings.dart';
+import 'evaluation_upload_report.dart';
 
 class PersonalDetailsScreen2 extends StatefulWidget {
   final EvaluationModelFormat1? evaluationModelFormat1;
-  final List? medicalReportList;
+  // final List? medicalReportList;
   /// this is called when showData is true
   final ChildGetEvaluationDataModel? childGetEvaluationDataModel;
   const PersonalDetailsScreen2({Key? key,
     this.evaluationModelFormat1,
     this.childGetEvaluationDataModel,
-    this.medicalReportList}) : super(key: key);
+    // this.medicalReportList
+  }) : super(key: key);
 
   @override
   State<PersonalDetailsScreen2> createState() => _PersonalDetailsScreenState2();
@@ -299,11 +301,9 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
                                 //     width: eUser().buttonBorderWidth
                                 // ),
                               ),
-                              child:(isSubmitPressed)
-                                  ? buildThreeBounceIndicator(color: eUser().threeBounceIndicatorColor)
-                                  : Center(
+                              child:Center(
                                 child: Text(
-                                  'Submit',
+                                  'Next',
                                   style: TextStyle(
                                     fontFamily: eUser().buttonTextFont,
                                     color: eUser().buttonTextColor,
@@ -1794,7 +1794,23 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
       finalMap.addAll(widget.evaluationModelFormat1!.toMap().cast());
       finalMap.addAll(eval2.toMap().cast());
       print("finalMap: $finalMap");
-      callApi(finalMap, widget.medicalReportList);
+
+      // storeToLocal
+      _pref!.setString(AppConfig.eval2, json.encode(eval2.toMap()));
+
+
+      Navigator.push(context, MaterialPageRoute(
+          builder: (ctx) => EvaluationUploadReport(
+            evaluationModelFormat1: widget.evaluationModelFormat1!,
+            evaluationModelFormat2: eval2,
+          )
+      ));
+
+      /// old flow
+      /// from eval1-> upload report-> eval2
+      // callApi(finalMap,
+      //     // widget.medicalReportList
+      // );
     }
   }
 
@@ -1841,48 +1857,6 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
       }
     }
   }
-
-  bool isSubmitPressed = false;
-
-  void callApi(Map form, List? medicalReports) async{
-    setState(() {
-      isSubmitPressed = true;
-    });
-    final res = await EvaluationFormService(repository: repository).submitEvaluationFormService(form, medicalReports);
-    print("eval form response" + res.runtimeType.toString());
-    if(res.runtimeType == ReportUploadModel){
-      ReportUploadModel result = res;
-      setState(() {
-        isSubmitPressed = false;
-      });
-      _pref!.setString(AppConfig.EVAL_STATUS, "evaluation_done");
-      // AppConfig().showSnackbar(context, result.message ?? '');
-      Get.offAll(DashboardScreen());
-      // Navigator.of(context).pushAndRemoveUntil(
-      //   MaterialPageRoute(
-      //       builder: (context) =>
-      //       const DashboardScreen()
-      //   ), (route) {
-      //     print("route.currentResult:${route.currentResult}");
-      //     print(route.isFirst);
-      //   return route.isFirst;
-      // }
-      // );
-    }
-    else{
-      ErrorModel result = res;
-      AppConfig().showSnackbar(context, result.message ?? '', isError: true);
-      setState(() {
-        isSubmitPressed = false;
-      });
-    }
-  }
-
-  final EvaluationFormRepository repository = EvaluationFormRepository(
-    apiClient: ApiClient(
-      httpClient: http.Client(),
-    ),
-  );
 
   showCustomSnack(String msg){
     AppConfig().showSnackbar(context,

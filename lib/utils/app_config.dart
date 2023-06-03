@@ -116,6 +116,10 @@ class AppConfig{
 
   static String appointmentId = "appoint_id";
 
+  static String eval1 = "eval1";
+  static String eval2 = "eval2";
+
+
   //---Razorpay secret keys -----------------
   static const KEY_ID = "rzp_test_mGdJGjZKpJswFa";
   static const SECRET_KEY = "A9AgMVJOVRe1199AiprO0n7u";

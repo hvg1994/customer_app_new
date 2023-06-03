@@ -132,6 +132,7 @@ var submitProgramFeedbackFormUrl = "${AppConfig().BASE_URL}/api/submitForm/progr
 
 var mrReadUrl = "${AppConfig().BASE_URL}/api/getData/is_mr_report_read";
 
+var getMedicalFeedbackDataUrl = "${AppConfig().BASE_URL}/api/getData/medical_feedback";
 
 
 

@@ -54,6 +54,40 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
   final formKey1 = GlobalKey<FormState>();
   final formKey2 = GlobalKey<FormState>();
 
+  final fnameKey = GlobalKey<FormState>();
+  final lNameKey = GlobalKey<FormState>();
+  final maritalKey = GlobalKey<FormState>();
+  final phoneKey = GlobalKey<FormState>();
+  final emailKey = GlobalKey<FormState>();
+  final ageKey = GlobalKey<FormState>();
+  final genderKey = GlobalKey<FormState>();
+  final flatKey = GlobalKey<FormState>();
+  final addresskey = GlobalKey<FormState>();
+  final pincodeKey = GlobalKey<FormState>();
+
+  final cityKey = GlobalKey<FormState>();
+  final stateKey = GlobalKey<FormState>();
+  final countryKey = GlobalKey<FormState>();
+  final weightKey = GlobalKey<FormState>();
+  final heightKey = GlobalKey<FormState>();
+  final afterHeightKey = GlobalKey<FormState>();
+  final health1Key = GlobalKey<FormState>();
+  final health2Key = GlobalKey<FormState>();
+  final tongueKey = GlobalKey<FormState>();
+
+  final urinIncreasedKey = GlobalKey<FormState>();
+  final urineColorKey = GlobalKey<FormState>();
+
+  final urineSmellkey = GlobalKey<FormState>();
+  final urineLooksKey = GlobalKey<FormState>();
+  final stoolTypeKey = GlobalKey<FormState>();
+  final medicalIntervenKey = GlobalKey<FormState>();
+  final medicationKey = GlobalKey<FormState>();
+  final holisticKey = GlobalKey<FormState>();
+
+
+
+
   TextEditingController fnameController = TextEditingController();
   TextEditingController lnameController = TextEditingController();
   TextEditingController ageController = TextEditingController();
@@ -507,7 +541,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
           SizedBox(
             height: 3.h,
           ),
-          buildLabelTextField("First Name:", fontSize: questionFont),
+          buildLabelTextField("First Name:", fontSize: questionFont, key: fnameKey),
           TextFormField(
             textCapitalization: TextCapitalization.words,
             controller: fnameController,
@@ -531,7 +565,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
           SizedBox(
             height: 2.h,
           ),
-          buildLabelTextField("Last Name:", fontSize: questionFont),
+          buildLabelTextField("Last Name:", fontSize: questionFont, key: lNameKey),
           TextFormField(
             textCapitalization: TextCapitalization.words,
             controller: lnameController,
@@ -552,7 +586,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
           SizedBox(
             height: 2.h,
           ),
-          buildLabelTextField('Marital Status:', fontSize: questionFont),
+          buildLabelTextField('Marital Status:', fontSize: questionFont, key: maritalKey),
           // Text(
           //   'Marital Status:*',
           //   style: TextStyle(
@@ -650,7 +684,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
           SizedBox(
             height: 2.h,
           ),
-          buildLabelTextField('Phone Number', fontSize: questionFont),
+          buildLabelTextField('Phone Number', fontSize: questionFont, key: phoneKey),
           // Text(
           //   'Phone Number*',
           //   style: TextStyle(
@@ -680,7 +714,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
           SizedBox(
             height: 2.h,
           ),
-          buildLabelTextField('Email ID -', fontSize: questionFont),
+          buildLabelTextField('Email ID -', fontSize: questionFont, key: emailKey),
           TextFormField(
             controller: emailController,
             cursorColor: kPrimaryColor,
@@ -702,15 +736,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
           SizedBox(
             height: 2.h,
           ),
-          buildLabelTextField('Age', fontSize: questionFont),
-          // Text(
-          //   'Age*',
-          //   style: TextStyle(
-          //     fontSize: 9.sp,
-          //     color: kTextColor,
-          //     fontFamily: "PoppinsSemiBold",
-          //   ),
-          // ),
+          buildLabelTextField('Age', fontSize: questionFont, key: ageKey),
           TextFormField(
             controller: ageController,
             cursorColor: kPrimaryColor,
@@ -740,7 +766,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
           SizedBox(
             height: 2.h,
           ),
-          buildLabelTextField('Gender:', fontSize: questionFont),
+          buildLabelTextField('Gender:', fontSize: questionFont, key: genderKey),
           Row(
             children: [
               GestureDetector(
@@ -826,7 +852,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
           SizedBox(
             height: 2.h,
           ),
-          buildLabelTextField('Flat/House Number', fontSize: questionFont),
+          buildLabelTextField('Flat/House Number', fontSize: questionFont, key: flatKey),
           TextFormField(
             textCapitalization: TextCapitalization.sentences,
             controller: address1Controller,
@@ -842,14 +868,15 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                 "Flat/House Number", address1Controller),
             textInputAction: TextInputAction.next,
             textAlign: TextAlign.start,
-            keyboardType: TextInputType.number,
-            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            // keyboardType: TextInputType.number,
+            inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[0-9/]")),],
+            // inputFormatters: [FilteringTextInputFormatter.digitsOnly],
           ),
           SizedBox(
             height: 2.h,
           ),
           buildLabelTextField(
-              'Full Postal Address To Deliver Your Ready To Cook Kit', fontSize: questionFont),
+              'Full Postal Address To Deliver Your Ready To Cook Kit', fontSize: questionFont, key: addresskey),
           TextFormField(
             textCapitalization: TextCapitalization.sentences,
             controller: address2Controller,
@@ -874,7 +901,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
           SizedBox(
             height: 2.h,
           ),
-          buildLabelTextField('Pin Code', fontSize: questionFont),
+          buildLabelTextField('Pin Code', fontSize: questionFont, key: pincodeKey),
           FocusScope(
             onFocusChange: (value) {
               print(value);
@@ -950,7 +977,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
           SizedBox(
             height: 2.h,
           ),
-          buildLabelTextField('City', fontSize: questionFont),
+          buildLabelTextField('City', fontSize: questionFont, key: cityKey),
           TextFormField(
             textCapitalization: TextCapitalization.sentences,
             controller: cityController,
@@ -974,7 +1001,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
           SizedBox(
             height: 2.h,
           ),
-          buildLabelTextField('State', fontSize: questionFont),
+          buildLabelTextField('State', fontSize: questionFont, key: stateKey),
           TextFormField(
             textCapitalization: TextCapitalization.sentences,
             controller: stateController,
@@ -998,7 +1025,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
           SizedBox(
             height: 2.h,
           ),
-          buildLabelTextField('Country', fontSize: questionFont),
+          buildLabelTextField('Country', fontSize: questionFont, key: countryKey),
           TextFormField(
             textCapitalization: TextCapitalization.sentences,
             controller: countryController,
@@ -1064,7 +1091,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
           SizedBox(
             height: 3.h,
           ),
-          buildLabelTextField('Weight In Kgs', fontSize: questionFont),
+          buildLabelTextField('Weight In Kgs', fontSize: questionFont, key: weightKey),
           TextFormField(
             controller: weightController,
             cursorColor: kPrimaryColor,
@@ -1084,17 +1111,18 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
             textInputAction: TextInputAction.next,
             textAlign: TextAlign.start,
             keyboardType: TextInputType.number,
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
           ),
           SizedBox(
             height: 2.h,
           ),
-          buildLabelTextField('Height In Feet & Inches', fontSize: questionFont),
+          buildLabelTextField('Height In Feet & Inches', fontSize: questionFont, key: heightKey),
           showDropdown(),
           SizedBox(
             height: 2.h,
           ),
           buildLabelTextField(
-              'Brief Paragraph About Your Current Complaints & What You Are Looking To Heal Here', fontSize: questionFont),
+              'Brief Paragraph About Your Current Complaints & What You Are Looking To Heal Here', fontSize: questionFont, key: afterHeightKey),
           TextFormField(
             textCapitalization: TextCapitalization.sentences,
             controller: healController,
@@ -1117,7 +1145,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
           SizedBox(
             height: 2.h,
           ),
-          buildLabelTextField('Please check all that apply to you.', fontSize: questionFont),
+          buildLabelTextField('Please check all that apply to you.', fontSize: questionFont, key: health1Key),
           ListView(
             shrinkWrap: true,
             physics: const BouncingScrollPhysics(),
@@ -1155,7 +1183,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
             height: 2.h,
           ),
           // health checkbox2
-          buildLabelTextField('Please check all of the boxes that apply to you.', fontSize: questionFont),
+          buildLabelTextField('Please check all of the boxes that apply to you.', fontSize: questionFont, key: health2Key),
           ListView(
             shrinkWrap: true,
             physics: const BouncingScrollPhysics(),
@@ -1166,7 +1194,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
               SizedBox(
                 height: 1.h,
               ),
-              buildLabelTextField('Tongue Coating'),
+              buildLabelTextField('Tongue Coating', key: tongueKey),
               SizedBox(
                 height: 1.h,
               ),
@@ -1332,7 +1360,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
             height: 2.h,
           ),
           buildLabelTextField(
-              "Has Frequency Of Urination Increased Or Decreased In The Recent Past?", fontSize: questionFont),
+              "Has Frequency Of Urination Increased Or Decreased In The Recent Past?", fontSize: questionFont, key: urinIncreasedKey),
           Row(
             children: [
               GestureDetector(
@@ -1434,7 +1462,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
           //     ...urinFrequencyList.map(buildWrapingCheckBox).toList()
           //   ],
           // ),
-          buildLabelTextField("Urine Color", fontSize: questionFont),
+          buildLabelTextField("Urine Color", fontSize: questionFont, key: urineColorKey),
           buildUrineColorRadioButton(),
           // ListView(
           //   shrinkWrap: true,
@@ -1529,7 +1557,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
           SizedBox(
             height: 2.h,
           ),
-          buildLabelTextField("Urine Smell", fontSize: questionFont),
+          buildLabelTextField("Urine Smell", fontSize: questionFont, key: urineSmellkey),
           SizedBox(
             height: 1.h,
           ),
@@ -1609,7 +1637,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
           SizedBox(
             height: 2.h,
           ),
-          buildLabelTextField("What Does Your Urine Look Like?", fontSize: questionFont),
+          buildLabelTextField("What Does Your Urine Look Like?", fontSize: questionFont, key: urineLooksKey),
           buildUrineLookRadioButton(),
           // ListView(
           //   shrinkWrap: true,
@@ -1696,7 +1724,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
           SizedBox(
             height: 2.h,
           ),
-          buildLabelTextField("Which one is the closest match to your stool?", fontSize: questionFont),
+          buildLabelTextField("Which one is the closest match to your stool?", fontSize: questionFont, key: stoolTypeKey),
           ListView(
             shrinkWrap: true,
             physics: const BouncingScrollPhysics(),
@@ -1902,7 +1930,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
           SizedBox(
             height: 2.h,
           ),
-          buildLabelTextField("Medical Interventions Done Before", fontSize: questionFont),
+          buildLabelTextField("Medical Interventions Done Before", fontSize: questionFont, key: medicalIntervenKey),
           ListView(
             shrinkWrap: true,
             physics: const BouncingScrollPhysics(),
@@ -2135,49 +2163,119 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
 
   checkFields(BuildContext context) {
     print(formKey1.currentState!.validate());
+
     if (formKey1.currentState!.validate() &&
         formKey2.currentState!.validate()) {
       if(maritalStatus == ""){
-        AppConfig().showSnackbar(context, "Please Select Marital Status", bottomPadding: 100);
+        Scrollable.ensureVisible(maritalKey.currentContext!,
+            duration: const Duration(milliseconds: 1000)
+        );
+        AppConfig().showSnackbar(context, "Please Select Marital Status", isError: true, bottomPadding: 100);
       }
       else if (address1Controller.text.isEmpty) {
-        AppConfig().showSnackbar(context, "Please Mention Flat Details", isError: true, bottomPadding: 100);
+        Scrollable.ensureVisible(flatKey.currentContext!,
+            duration: const Duration(milliseconds: 1000)
+        );
+        AppConfig().showSnackbar(context, "Please Mention Flat Details",
+            isError: true, bottomPadding: 100);
       } else if (address2Controller.text.isEmpty) {
-        AppConfig().showSnackbar(context, "Please Mention Postal Address", isError: true, bottomPadding: 100);
-      } else if (pinCodeController.text.isEmpty) {
-        AppConfig().showSnackbar(context, "Please Mention Pin code", isError: true, bottomPadding: 100);
-      } else if (ft == -1 || inches == -1) {
-        AppConfig().showSnackbar(context, "Please Select Height", isError: true, bottomPadding: 100);
-      } else if (healthCheckBox1.every((element) => element.value == false)) {
-        AppConfig().showSnackbar(
-            context, "Please Select Atleast 1 option from HealthList1", isError: true, bottomPadding: 100);
-      } else if (healthCheckBox2.every((element) => element.value == false)) {
-        AppConfig().showSnackbar(
-            context, "Please Select Atleast 1 option from HealthList2", isError: true, bottomPadding: 100);
-      } else if (tongueCoatingRadio.isEmpty) {
+        Scrollable.ensureVisible(addresskey.currentContext!,
+            duration: const Duration(milliseconds: 1000)
+        );
         AppConfig()
-            .showSnackbar(context, "Please Select Tongue Coating Details", isError: true, bottomPadding: 100);
+            .showSnackbar(context, "Please Postal Address", isError: true, bottomPadding: 100);
+      } else if (pinCodeController.text.isEmpty) {
+        Scrollable.ensureVisible(pincodeKey.currentContext!,
+            duration: const Duration(milliseconds: 1000)
+        );
+        AppConfig()
+            .showSnackbar(context, "Please Mention Pincode", isError: true, bottomPadding: 100);
+      }
+      else if (int.parse(weightController.text) < 20 ||
+          int.parse(weightController.text) > 120) {
+        Scrollable.ensureVisible(weightKey.currentContext!,
+            duration: const Duration(milliseconds: 1000)
+        );
+    return 'Please enter Valid Weight';
+    }
+      else if (ft == -1 || inches == -1) {
+        Scrollable.ensureVisible(heightKey.currentContext!,
+            duration: const Duration(milliseconds: 1000)
+        );
+        AppConfig()
+            .showSnackbar(context, "Please Select Height", isError: true, bottomPadding: 100);
+      } else if (healController.text.isEmpty) {
+        Scrollable.ensureVisible(afterHeightKey.currentContext!,
+            duration: const Duration(milliseconds: 1000)
+        );
+        AppConfig().showSnackbar(context, "Please Mention your heal complaints",
+            isError: true, bottomPadding: 100);
+      } else if (healthCheckBox1.every((element) => element.value == false)) {
+        Scrollable.ensureVisible(health1Key.currentContext!,
+            duration: const Duration(milliseconds: 1000)
+        );
+        AppConfig().showSnackbar(
+            context, "Please Select Atleast 1 option from HealthList1",
+            isError: true, bottomPadding: 100);
+      } else if (healthCheckBox2.every((element) => element.value == false)) {
+        Scrollable.ensureVisible(health2Key.currentContext!,
+            duration: const Duration(milliseconds: 1000)
+        );
+        AppConfig().showSnackbar(
+            context, "Please Select Atleast 1 option from HealthList2",
+            isError: true, bottomPadding: 100);
+      } else if (tongueCoatingRadio.isEmpty) {
+        Scrollable.ensureVisible(tongueKey.currentContext!,
+            duration: const Duration(milliseconds: 1000)
+        );
+        AppConfig().showSnackbar(
+            context, "Please Select Tongue Coating Details",
+            isError: true, bottomPadding: 100);
       } else if (urinationValue.isEmpty) {
         // else if(urinFrequencyList.every((element) => element.value == false)){
-        AppConfig()
-            .showSnackbar(context, "Please Select Frequency of Urination", isError: true, bottomPadding: 100);
+        Scrollable.ensureVisible(urinIncreasedKey.currentContext!,
+            duration: const Duration(milliseconds: 1000)
+        );
+        AppConfig().showSnackbar(
+            context, "Please Select Frequency of Urination",
+            isError: true, bottomPadding: 100);
       } else if (urineColorValue.isEmpty) {
         // else if(urinColorList.every((element) => element.value == false) && !urinColorOtherSelected){
-        AppConfig().showSnackbar(context, "Please Select Urine Color", bottomPadding: 100);
+        Scrollable.ensureVisible(urineColorKey.currentContext!,
+            duration: const Duration(milliseconds: 1000)
+        );
+        AppConfig()
+            .showSnackbar(context, "Please Select Urine Color", isError: true, bottomPadding: 100);
       } else if (urinSmellList.every((element) => element.value == false) &&
           !urinSmellOtherSelected) {
-        AppConfig().showSnackbar(context, "Please Select Atleast 1 Urine Smell", isError: true, bottomPadding: 100);
+        Scrollable.ensureVisible(urineSmellkey.currentContext!,
+            duration: const Duration(milliseconds: 1000)
+        );
+        AppConfig().showSnackbar(context, "Please Select Atleast 1 Urine Smell",
+            isError: true, bottomPadding: 100);
       } else if (urineLookLikeValue.isEmpty) {
+        Scrollable.ensureVisible(urineLooksKey.currentContext!,
+            duration: const Duration(milliseconds: 1000)
+        );
         // else if(urinLooksList.every((element) => element.value == false) && !urinLooksLikeOtherSelected){
-        AppConfig().showSnackbar(context, "Please Select Urine Looks List", isError: true, bottomPadding: 100);
+        AppConfig().showSnackbar(context, "Please Select Urine Looks List",
+            isError: true, bottomPadding: 100);
       } else if (selectedStoolMatch.isEmpty) {
-        AppConfig()
-            .showSnackbar(context, "Please Select Closest match to your stool", isError: true, bottomPadding: 100);
-      } else if (medicalInterventionsDoneBeforeList
-              .every((element) => element.value == false) &&
-          medicalInterventionsOtherSelected == false) {
+        Scrollable.ensureVisible(stoolTypeKey.currentContext!,
+            duration: const Duration(milliseconds: 1000)
+        );
         AppConfig().showSnackbar(
-            context, "Please Select Atleast 1 Medication Intervention", isError: true, bottomPadding: 100);
+            context, "Please Select Closest match to your stool",
+            isError: true, bottomPadding: 100);
+      } else if (medicalInterventionsDoneBeforeList
+          .every((element) => element.value == false) &&
+          medicalInterventionsOtherSelected == false) {
+        Scrollable.ensureVisible(medicalIntervenKey.currentContext!,
+            duration: const Duration(milliseconds: 1000)
+        );
+        AppConfig().showSnackbar(
+            context, "Please Select Atleast 1 Medication Intervention",
+            isError: true, bottomPadding: 100);
       }
       // else if (medicalRecords.isEmpty) {
       //   AppConfig().showSnackbar(context, "Please Upload Medical Records");
@@ -2191,77 +2289,135 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
         formKey2.currentState!.save();
 
         addSelectedValuesToList();
-        var eval1 = createFormMap();
+        EvaluationModelFormat1 eval1 = createFormMap();
+
+        // storeToLocal
+        _pref!.setString(AppConfig.eval1, json.encode(eval1.toMap()));
+
         print((eval1 as EvaluationModelFormat1).toMap());
         print(urineColorValue);
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (ctx) => EvaluationUploadReport(
-                    evaluationModelFormat1: eval1,
-                )
-                // builder: (ctx) => PersonalDetailsScreen2(
+                // builder: (ctx) => EvaluationUploadReport(
                 //     evaluationModelFormat1: eval1,
-                //     medicalReportList:
-                //         medicalRecords.map((e) => e.path).toList())
+                // )
+                builder: (ctx) => PersonalDetailsScreen2(
+                    evaluationModelFormat1: eval1,
+                    // medicalReportList:
+                    //     medicalRecords.map((e) => e.path).toList()
+                )
             ));
       }
     }
     else {
       if(maritalStatus == ""){
+        Scrollable.ensureVisible(maritalKey.currentContext!,
+            duration: const Duration(milliseconds: 1000)
+        );
         AppConfig().showSnackbar(context, "Please Select Marital Status", isError: true, bottomPadding: 100);
       }
       else if (address1Controller.text.isEmpty) {
+        Scrollable.ensureVisible(flatKey.currentContext!,
+            duration: const Duration(milliseconds: 1000)
+        );
         AppConfig().showSnackbar(context, "Please Mention Flat Details",
             isError: true, bottomPadding: 100);
       } else if (address2Controller.text.isEmpty) {
+        Scrollable.ensureVisible(addresskey.currentContext!,
+            duration: const Duration(milliseconds: 1000)
+        );
         AppConfig()
             .showSnackbar(context, "Please Postal Address", isError: true, bottomPadding: 100);
       } else if (pinCodeController.text.isEmpty) {
+        Scrollable.ensureVisible(pincodeKey.currentContext!,
+            duration: const Duration(milliseconds: 1000)
+        );
         AppConfig()
             .showSnackbar(context, "Please Mention Pincode", isError: true, bottomPadding: 100);
-      } else if (ft == -1 || inches == -1) {
+      }
+      else if (int.parse(weightController.text) < 20 ||
+          int.parse(weightController.text) > 120) {
+        Scrollable.ensureVisible(weightKey.currentContext!,
+            duration: const Duration(milliseconds: 1000)
+        );
+        return 'Please enter Valid Weight';
+      }
+      else if (ft == -1 || inches == -1) {
+        Scrollable.ensureVisible(heightKey.currentContext!,
+            duration: const Duration(milliseconds: 1000)
+        );
         AppConfig()
             .showSnackbar(context, "Please Select Height", isError: true, bottomPadding: 100);
       } else if (healController.text.isEmpty) {
+        Scrollable.ensureVisible(afterHeightKey.currentContext!,
+            duration: const Duration(milliseconds: 1000)
+        );
         AppConfig().showSnackbar(context, "Please Mention your heal complaints",
             isError: true, bottomPadding: 100);
       } else if (healthCheckBox1.every((element) => element.value == false)) {
+        Scrollable.ensureVisible(health1Key.currentContext!,
+            duration: const Duration(milliseconds: 1000)
+        );
         AppConfig().showSnackbar(
             context, "Please Select Atleast 1 option from HealthList1",
             isError: true, bottomPadding: 100);
       } else if (healthCheckBox2.every((element) => element.value == false)) {
+        Scrollable.ensureVisible(health2Key.currentContext!,
+            duration: const Duration(milliseconds: 1000)
+        );
         AppConfig().showSnackbar(
             context, "Please Select Atleast 1 option from HealthList2",
             isError: true, bottomPadding: 100);
       } else if (tongueCoatingRadio.isEmpty) {
+        Scrollable.ensureVisible(tongueKey.currentContext!,
+            duration: const Duration(milliseconds: 1000)
+        );
         AppConfig().showSnackbar(
             context, "Please Select Tongue Coating Details",
             isError: true, bottomPadding: 100);
       } else if (urinationValue.isEmpty) {
         // else if(urinFrequencyList.every((element) => element.value == false)){
+        Scrollable.ensureVisible(urinIncreasedKey.currentContext!,
+            duration: const Duration(milliseconds: 1000)
+        );
         AppConfig().showSnackbar(
             context, "Please Select Frequency of Urination",
             isError: true, bottomPadding: 100);
       } else if (urineColorValue.isEmpty) {
         // else if(urinColorList.every((element) => element.value == false) && !urinColorOtherSelected){
+        Scrollable.ensureVisible(urineColorKey.currentContext!,
+            duration: const Duration(milliseconds: 1000)
+        );
         AppConfig()
             .showSnackbar(context, "Please Select Urine Color", isError: true, bottomPadding: 100);
       } else if (urinSmellList.every((element) => element.value == false) &&
           !urinSmellOtherSelected) {
+        Scrollable.ensureVisible(urineSmellkey.currentContext!,
+            duration: const Duration(milliseconds: 1000)
+        );
         AppConfig().showSnackbar(context, "Please Select Atleast 1 Urine Smell",
             isError: true, bottomPadding: 100);
       } else if (urineLookLikeValue.isEmpty) {
+        Scrollable.ensureVisible(urineLooksKey.currentContext!,
+            duration: const Duration(milliseconds: 1000)
+        );
         // else if(urinLooksList.every((element) => element.value == false) && !urinLooksLikeOtherSelected){
         AppConfig().showSnackbar(context, "Please Select Urine Looks List",
             isError: true, bottomPadding: 100);
       } else if (selectedStoolMatch.isEmpty) {
+        Scrollable.ensureVisible(stoolTypeKey.currentContext!,
+            duration: const Duration(milliseconds: 1000)
+        );
         AppConfig().showSnackbar(
             context, "Please Select Closest match to your stool",
             isError: true, bottomPadding: 100);
       } else if (medicalInterventionsDoneBeforeList
               .every((element) => element.value == false) &&
           medicalInterventionsOtherSelected == false) {
+        Scrollable.ensureVisible(medicalIntervenKey.currentContext!,
+            duration: const Duration(milliseconds: 1000)
+        );
         AppConfig().showSnackbar(
             context, "Please Select Atleast 1 Medication Intervention",
             isError: true, bottomPadding: 100);
@@ -3617,6 +3773,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
       ],
     );
   }
+
 }
 
 /*

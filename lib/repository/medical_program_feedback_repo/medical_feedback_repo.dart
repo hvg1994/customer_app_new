@@ -81,4 +81,9 @@ class FeedbackRepo {
       reasonOfProgramDiscontinue: reasonOfProgramDiscontinue,
     );
   }
+
+
+  Future getMedicalFeedbackRepo() async{
+    return await apiClient.serverGetMedicalFeedbackDetails();
+  }
 }
