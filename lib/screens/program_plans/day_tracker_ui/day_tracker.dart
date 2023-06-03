@@ -6,7 +6,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:chewie/chewie.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide MultipartFile;
 import 'package:gwc_customer/model/error_model.dart';
 import 'package:gwc_customer/model/program_model/proceed_model/get_proceed_model.dart';
 import 'package:gwc_customer/model/program_model/proceed_model/send_proceed_program_model.dart';
@@ -20,6 +20,7 @@ import 'package:gwc_customer/services/program_service/program_service.dart';
 import 'package:gwc_customer/utils/app_config.dart';
 import 'package:gwc_customer/widgets/constants.dart';
 import 'package:gwc_customer/widgets/widgets.dart';
+import 'package:http/http.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 import 'package:http/http.dart' as http;
@@ -724,6 +725,7 @@ import '../meal_pdf.dart';
 
 class TrackerUI extends StatefulWidget {
   final String? trackerVideoLink;
+  final bool isPreviousDaySheet;
   final ProceedProgramDayModel? proceedProgramDayModel;
 
   /// from is used for maintaining api url for meal and transition
@@ -732,7 +734,9 @@ class TrackerUI extends StatefulWidget {
       {Key? key,
         this.proceedProgramDayModel,
         required this.from,
-        this.trackerVideoLink})
+        this.trackerVideoLink,
+        this.isPreviousDaySheet = false,
+      })
       : super(key: key);
 
   @override
@@ -756,24 +760,23 @@ class _TrackerUIState extends State<TrackerUI> {
   VideoPlayerController? mealPlayerController;
   ChewieController? _chewieController;
 
-  addUrlToVideoPlayerChewie(String url) async{
-    print("url"+ url);
+  bool showProgress = false;
+
+  addUrlToVideoPlayerChewie(String url) async {
+    print("url" + url);
     mealPlayerController = VideoPlayerController.network(url);
     _chewieController = ChewieController(
         videoPlayerController: mealPlayerController!,
-        aspectRatio: 16/9,
+        aspectRatio: 16 / 9,
         autoInitialize: true,
         showOptions: false,
         autoPlay: true,
         hideControlsTimer: Duration(seconds: 3),
-        showControls: true
-
-    );
-    if(await Wakelock.enabled == false){
+        showControls: true);
+    if (await Wakelock.enabled == false) {
       Wakelock.enable();
     }
   }
-
 
   initChewieView(String? url) {
     print("init url: $url");
@@ -1507,7 +1510,7 @@ class _TrackerUIState extends State<TrackerUI> {
                     if (selectedCalmModule.isNotEmpty) {
                       if (selectedSymptoms1.isNotEmpty) {
                         if (selectedSymptoms2.isNotEmpty) {
-                          proceed();
+                          // proceed(set);
                         } else {
                           Get.snackbar(
                             "",
@@ -1773,8 +1776,9 @@ class _TrackerUIState extends State<TrackerUI> {
     );
   }
 
-  void proceed() async {
+  void proceed(setstate) async {
     ProceedProgramDayModel? model;
+    print("day => ${widget.proceedProgramDayModel!.day}");
     model = (ProgramMealType.program.name == widget.from)
         ? ProceedProgramDayModel(
         patientMealTracking:
@@ -1807,18 +1811,22 @@ class _TrackerUIState extends State<TrackerUI> {
         haveAnyOtherWorries: worriesController.text,
         eatSomthingOther: eatSomethingController.text,
         completedCalmMoveModules: selectedCalmModule,
-        hadAMedicalExamMedications: anyMedicationsController.text,
-      trackingAttachment: newList.join(",")
-    );
+        hadAMedicalExamMedications: anyMedicationsController.text,);
+    setstate(() {
+      showProgress = true;
+    });
     final result = (ProgramMealType.program.name == widget.from)
         ? await ProgramService(repository: repository)
-        .proceedDayMealDetailsService(model)
+        .proceedDayMealDetailsService(model, newList)
         : await PrepratoryMealService(repository: prepRepository)
         .proceedDayMealDetailsService(model);
 
     print("result: $result");
 
     if (result.runtimeType == GetProceedModel) {
+      setstate(() {
+        showProgress = false;
+      });
       final _pref = AppConfig().preferences;
       final trackerUrl = _pref!.getString(AppConfig().trackerVideoUrl);
 
@@ -1834,7 +1842,11 @@ class _TrackerUIState extends State<TrackerUI> {
                 totalDays: '', dayNumber: '', trackerVideoLink: trackerUrl),
           ),
               (route) => route.isFirst);
-    } else {
+    }
+    else {
+      setstate(() {
+        showProgress = false;
+      });
       ErrorModel model = result as ErrorModel;
       AppConfig().showSnackbar(context, model.message ?? '', isError: true);
     }
@@ -2258,7 +2270,7 @@ class _TrackerUIState extends State<TrackerUI> {
           children: [
             SizedBox(height: 2.h),
             Text(
-              "Can We Get A Picture Of You To Put A Face To This Feedback?",
+              "Any image you would like to share with your doctor?",
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: questionFont,
@@ -2348,9 +2360,11 @@ class _TrackerUIState extends State<TrackerUI> {
                         BorderRadius.circular(eUser().buttonBorderRadius)),
                   ),
                   onPressed: () {
-                    proceed();
+                    proceed(setState);
                   },
-                  child: Center(
+                  child: showProgress
+                      ? buildThreeBounceIndicator(color: gWhiteColor)
+                      : Center(
                     child: Text(
                       "Submit",
                       style: TextStyle(
@@ -2370,6 +2384,7 @@ class _TrackerUIState extends State<TrackerUI> {
   }
 
   addFilesToList(File file) async {
+    print("file: ${file}");
     newList.clear();
     setState(() {
       fileFormatList.add(file);
@@ -2379,9 +2394,10 @@ class _TrackerUIState extends State<TrackerUI> {
       var stream =
       http.ByteStream(DelegatingStream.typed(fileFormatList[i].openRead()));
       var length = await fileFormatList[i].length();
-      var multipartFile = http.MultipartFile("face_to_feedback", stream, length,
+      var multipartFile = http.MultipartFile(
+          "tracking_attachment", stream, length,
           filename: fileFormatList[i].path);
-      newList.add(multipartFile as MultipartFile);
+      newList.add(multipartFile);
       print("newList : $newList");
     }
 

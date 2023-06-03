@@ -25,6 +25,7 @@ import '../../services/consultation_service/consultation_service.dart';
 import '../../widgets/constants.dart';
 import '../../widgets/widgets.dart';
 import 'package:http/http.dart' as http;
+import '../medical_program_feedback_screen/medical_feedback_answer.dart';
 import 'doctor_calender_time_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -36,26 +37,30 @@ class DoctorSlotsDetailsScreen extends StatefulWidget {
 
   /// this parameter will be called from gutlist screen
   final bool isFromDashboard;
+
   /// this parameter will be called from gutlist screen
   final Map? dashboardValueMap;
+
   /// this is for post program
   /// when this all other parameters will null
   final bool isPostProgram;
-  const DoctorSlotsDetailsScreen({
-    Key? key,
-    this.data,
-    required this.bookingDate,
-    required this.bookingTime,
-    this.isFromDashboard = false,
-    this.dashboardValueMap,
-    this.isPostProgram = false
-  }) : super(key: key);
+  const DoctorSlotsDetailsScreen(
+      {Key? key,
+        this.data,
+        required this.bookingDate,
+        required this.bookingTime,
+        this.isFromDashboard = false,
+        this.dashboardValueMap,
+        this.isPostProgram = false})
+      : super(key: key);
 
   @override
-  State<DoctorSlotsDetailsScreen> createState() => _DoctorSlotsDetailsScreenState();
+  State<DoctorSlotsDetailsScreen> createState() =>
+      _DoctorSlotsDetailsScreenState();
 }
 
-class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen>with WidgetsBindingObserver {
+class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen>
+    with WidgetsBindingObserver {
   Timer? timer;
 
   final _pref = AppConfig().preferences;
@@ -72,7 +77,6 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen>with
   String? doctorName;
   String? doctorImage;
 
-
   @override
   void initState() {
     // TODO: implement initState
@@ -80,87 +84,81 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen>with
     print("initstate");
     WidgetsBinding.instance.addObserver(this);
 
-    if(widget.isFromDashboard){
+    if (widget.isFromDashboard) {
       var splited = widget.bookingTime.split(':');
       int hour = int.parse(splited[0]);
       int minute = int.parse(splited[1]);
       int second = int.parse(splited[2]);
       print('$hour $minute');
     }
-    if(!widget.isPostProgram && !widget.isFromDashboard){
+    if (!widget.isPostProgram && !widget.isFromDashboard) {
       widget.data?.team?.teamMember?.forEach((element) {
-        if(element.user != null){
-          if(element.user!.roleId == "2"){
+        if (element.user != null) {
+          if (element.user!.roleId == "2") {
             doctorNames.add('Dr. ${element.user!.name}' ?? '');
             doctorName = 'Dr. ${element.user!.name}';
             doctorImage = element.user?.profile ?? '';
           }
         }
       });
-      if(widget.data?.kaleyraSuccessId != null){
-
-      }
-      if(widget.data?.kaleyraUserId != null){
+      if (widget.data?.kaleyraSuccessId != null) {}
+      if (widget.data?.kaleyraUserId != null) {
         kaleyraUID = widget.data?.kaleyraUserId ?? '';
         getAccessToken(kaleyraUID);
-      }
-      else if(_pref!.getString(AppConfig.KALEYRA_USER_ID) != null){
+      } else if (_pref!.getString(AppConfig.KALEYRA_USER_ID) != null) {
         kaleyraUID = _pref?.getString(AppConfig.KALEYRA_USER_ID) ?? '';
         getAccessToken(kaleyraUID);
       }
     }
     ChildAppointmentDetails? model;
-    if(widget.isFromDashboard || widget.isPostProgram){
-      if(widget.isPostProgram){
-        if(widget.data?.team?.teamMember == null){
-          model = ChildAppointmentDetails.fromJson(Map.from(widget.dashboardValueMap!));
+    if (widget.isFromDashboard || widget.isPostProgram) {
+      if (widget.isPostProgram) {
+        if (widget.data?.team?.teamMember == null) {
+          model = ChildAppointmentDetails.fromJson(
+              Map.from(widget.dashboardValueMap!));
           _childDoctorModel = model.doctor;
           // print("moddd: ${model.teamPatients!.team!.toJson()}");
           model.teamMember?.forEach((element) {
             print('from appoi: ${element.toJson()}');
-            if(element.user!.roleId == "2"){
+            if (element.user!.roleId == "2") {
               doctorNames.add('Dr. ${element.user!.name}' ?? '');
               doctorName = 'Dr. ${element.user!.name}';
               doctorImage = element.user?.profile ?? '';
             }
           });
-        }
-        else{
+        } else {
           widget.data?.team?.teamMember?.forEach((element) {
-            if(element.user!.roleId == "2"){
+            if (element.user!.roleId == "2") {
               doctorNames.add('Dr. ${element.user!.name}' ?? '');
               doctorName = 'Dr. ${element.user!.name}';
               doctorImage = element.user?.profile ?? '';
-
             }
           });
         }
-        if(widget.data?.kaleyraSuccessId != null){
-
-        }
-        if(widget.data?.kaleyraUserId != null){
+        if (widget.data?.kaleyraSuccessId != null) {}
+        if (widget.data?.kaleyraUserId != null) {
           kaleyraUID = widget.data?.kaleyraUserId ?? '';
           getAccessToken(kaleyraUID);
-        }
-        else if(_pref!.getString(AppConfig.KALEYRA_USER_ID) != null){
+        } else if (_pref!.getString(AppConfig.KALEYRA_USER_ID) != null) {
           kaleyraUID = _pref?.getString(AppConfig.KALEYRA_USER_ID) ?? '';
           getAccessToken(kaleyraUID);
         }
-      }
-      else{
-        model = ChildAppointmentDetails.fromJson(Map.from(widget.dashboardValueMap!));
+      } else {
+        model = ChildAppointmentDetails.fromJson(
+            Map.from(widget.dashboardValueMap!));
         _childDoctorModel = model.doctor;
         // print("moddd: ${model.teamPatients!.team!.toJson()}");
         model.teamMember?.forEach((element) {
           print('from appoi: ${element.toJson()}');
-          if(element.user!.roleId == "2"){
+          if (element.user!.roleId == "2") {
             doctorNames.add('Dr. ${element.user!.name}' ?? '');
             doctorName = 'Dr. ${element.user!.name}';
             doctorImage = element.user?.profile ?? '';
           }
         });
-        if(model.teamPatients?.patient?.user?.kaleyraId != null){
-          String kaleyraUID = model.teamPatients!.patient!.user!.kaleyraId ?? '';
+        if (model.teamPatients?.patient?.user?.kaleyraId != null) {
+          String kaleyraUID =
+              model.teamPatients!.patient!.user!.kaleyraId ?? '';
           getAccessToken(kaleyraUID);
         }
       }
@@ -175,23 +173,23 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen>with
     print("didChangeDependencies");
   }
 
-  Future getAccessToken(String kaleyraId) async{
+  Future getAccessToken(String kaleyraId) async {
     print("getAccessToken: $kaleyraId");
-    final res = await ConsultationService(repository: _consultationRepository).getAccessToken(kaleyraId);
+    final res = await ConsultationService(repository: _consultationRepository)
+        .getAccessToken(kaleyraId);
 
     print(res);
-    if(res.runtimeType == ErrorModel){
+    if (res.runtimeType == ErrorModel) {
       final model = res as ErrorModel;
       print("getAccessToken error: $kaleyraId ${model.message}");
       AppConfig().showSnackbar(context, model.message ?? '', isError: true);
-    }
-    else{
+    } else {
       print("getAccessToken success: $kaleyraId");
       accessToken = res;
     }
   }
 
-  getTime(){
+  getTime() {
     var splited = widget.bookingTime.split(':');
     print("splited:$splited");
     String hour = splited[0];
@@ -212,6 +210,7 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen>with
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     print("build");
@@ -229,17 +228,37 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen>with
                   buildAppBar(() {
                     Navigator.pop(context);
                   }),
-                  Container(
+                  widget.isPostProgram
+                      ?  Container(
                     height: 26.h,
                     width: double.maxFinite,
-                    margin: EdgeInsets.symmetric(vertical: 1.h,horizontal: 1.w),
-                    padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 3.w),
+                    margin: EdgeInsets.symmetric(
+                        vertical: 1.h, horizontal: 1.w),
+                    padding: EdgeInsets.symmetric(
+                        vertical: 1.h, horizontal: 3.w),
                     decoration: BoxDecoration(
-                      image: DecorationImage(
-                          image: AssetImage('assets/images/appointment_top.png'),
+                      image: const DecorationImage(
+                          image: AssetImage(
+                              'assets/images/consultation_completed.png'),
                           fit: BoxFit.contain,
-                          filterQuality: FilterQuality.high
-                      ),
+                          filterQuality: FilterQuality.high),
+                      // color: gsecondaryColor,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                  )
+                      : Container(
+                    height: 26.h,
+                    width: double.maxFinite,
+                    margin: EdgeInsets.symmetric(
+                        vertical: 1.h, horizontal: 1.w),
+                    padding: EdgeInsets.symmetric(
+                        vertical: 1.h, horizontal: 3.w),
+                    decoration: BoxDecoration(
+                      image: const DecorationImage(
+                          image: AssetImage(
+                              'assets/images/appointment_top.png'),
+                          fit: BoxFit.contain,
+                          filterQuality: FilterQuality.high),
                       color: gsecondaryColor,
                       borderRadius: BorderRadius.circular(20),
                     ),
@@ -342,7 +361,9 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen>with
                                           ),
                                         ),
                                         TextSpan(
-                                          text: (widget.isFromDashboard) ? getTime() : widget.bookingTime.toString(),
+                                          text: (widget.isFromDashboard)
+                                              ? getTime()
+                                              : widget.bookingTime.toString(),
                                           style: TextStyle(
                                             height: 1.5,
                                             fontSize: 13.sp,
@@ -360,7 +381,11 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen>with
                                           ),
                                         ),
                                         TextSpan(
-                                          text: DateFormat('dd MMM yyyy').format(DateTime.parse((widget.bookingDate.toString()))).toString(),
+                                          text: DateFormat('dd MMM yyyy')
+                                              .format(DateTime.parse((widget
+                                              .bookingDate
+                                              .toString())))
+                                              .toString(),
                                           style: TextStyle(
                                             height: 1.5,
                                             fontSize: 13.sp,
@@ -391,15 +416,19 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen>with
                                         isJoinPressed = true;
                                       });
                                       ChildAppointmentDetails? model;
-                                      if(widget.isFromDashboard){
-                                        model = ChildAppointmentDetails.fromJson(Map.from(widget.dashboardValueMap!));
+                                      if (widget.isFromDashboard) {
+                                        model =
+                                            ChildAppointmentDetails.fromJson(
+                                                Map.from(
+                                                    widget.dashboardValueMap!));
                                       }
                                       launchZoomUrl();
                                     },
                                     child: Container(
                                       width: 60.w,
                                       height: 5.h,
-                                      padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 10.w),
+                                      padding: EdgeInsets.symmetric(
+                                          vertical: 1.h, horizontal: 10.w),
                                       decoration: BoxDecoration(
                                         color: gWhiteColor,
                                         borderRadius: BorderRadius.circular(10),
@@ -424,8 +453,11 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen>with
                                   onTap: () {
                                     var curTime = DateTime.now();
                                     print(DateTime.now());
-                                    print(widget.bookingDate + widget.bookingTime);
-                                    var res = DateFormat("yyyy-MM-dd HH:mm:ss").parse("${widget.bookingDate} ${widget.bookingTime}:00");
+                                    print(widget.bookingDate +
+                                        widget.bookingTime);
+                                    var res = DateFormat("yyyy-MM-dd HH:mm:ss")
+                                        .parse(
+                                        "${widget.bookingDate} ${widget.bookingTime}:00");
 
                                     print(curTime.difference(res));
                                     print(res.difference(curTime));
@@ -470,55 +502,69 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen>with
                                     //   }
                                     // }
                                     // else{
-                                      if(res.difference(curTime).inMinutes > 5 || res.difference(curTime).inMinutes < -15){
-                                        showJoinPopup();
-                                      }
-                                      else{
+                                    if (res.difference(curTime).inMinutes > 5 ||
+                                        res.difference(curTime).inMinutes <
+                                            -10) {
+                                      showJoinPopup();
+                                    } else {
+                                      ChildAppointmentDetails? model;
+                                      String? kaleyraurl;
 
-                                        ChildAppointmentDetails? model;
-                                        String? kaleyraurl;
-
-                                        if(widget.isFromDashboard || widget.isPostProgram){
-                                          if(widget.isPostProgram){
-                                            if(widget.dashboardValueMap != null){
-                                              model = ChildAppointmentDetails.fromJson(Map.from(widget.dashboardValueMap!));
-                                              kaleyraurl = model.kaleyraJoinurl;
-                                            }
-                                            else{
-                                              kaleyraurl = widget.data?.kaleyraJoinurl;
-                                            }
-                                          }
-                                          else{
-                                            model = ChildAppointmentDetails.fromJson(Map.from(widget.dashboardValueMap!));
+                                      if (widget.isFromDashboard ||
+                                          widget.isPostProgram) {
+                                        if (widget.isPostProgram) {
+                                          if (widget.dashboardValueMap !=
+                                              null) {
+                                            model = ChildAppointmentDetails
+                                                .fromJson(Map.from(
+                                                widget.dashboardValueMap!));
                                             kaleyraurl = model.kaleyraJoinurl;
+                                          } else {
+                                            kaleyraurl =
+                                                widget.data?.kaleyraJoinurl;
                                           }
+                                        } else {
+                                          model = ChildAppointmentDetails
+                                              .fromJson(Map.from(
+                                              widget.dashboardValueMap!));
+                                          kaleyraurl = model.kaleyraJoinurl;
                                         }
-                                        else{
-                                          kaleyraurl = widget.data?.kaleyraJoinurl;
-                                        }
-                                        // String zoomUrl = model.;
-
-                                        //(widget.isFromDashboard || widget.isPostProgram) ? model?.kaleyraJoinurl : widget.data?.kaleyraJoinurl
-                                        print(_pref!.getString(AppConfig.KALEYRA_USER_ID));
-                                        kaleyraUID = _pref!.getString(AppConfig.KALEYRA_USER_ID) ?? '';
-                                        print("kaleyraurl:=>$kaleyraurl");
-                                        print('token: $accessToken');
-                                        print("kaleyraID: $kaleyraUID");
-                                        // send kaleyra id to native
-                                        if(kaleyraUID.isNotEmpty || kaleyraurl != null || accessToken.isNotEmpty){
-                                          Provider.of<ConsultationService>(context, listen: false).joinWithKaleyra(kaleyraUID, kaleyraurl!, accessToken);
-                                        }
-                                        else{
-                                          AppConfig().showSnackbar(context, "Uid/accessToken/join url not found");
-                                        }
+                                      } else {
+                                        kaleyraurl =
+                                            widget.data?.kaleyraJoinurl;
                                       }
-                                    // }
+                                      // String zoomUrl = model.;
 
+                                      //(widget.isFromDashboard || widget.isPostProgram) ? model?.kaleyraJoinurl : widget.data?.kaleyraJoinurl
+                                      print(_pref!.getString(
+                                          AppConfig.KALEYRA_USER_ID));
+                                      kaleyraUID = _pref!.getString(
+                                          AppConfig.KALEYRA_USER_ID) ??
+                                          '';
+                                      print("kaleyraurl:=>$kaleyraurl");
+                                      print('token: $accessToken');
+                                      print("kaleyraID: $kaleyraUID");
+                                      // send kaleyra id to native
+                                      if (kaleyraUID.isNotEmpty ||
+                                          kaleyraurl != null ||
+                                          accessToken.isNotEmpty) {
+                                        Provider.of<ConsultationService>(
+                                            context,
+                                            listen: false)
+                                            .joinWithKaleyra(kaleyraUID,
+                                            kaleyraurl!, accessToken);
+                                      } else {
+                                        AppConfig().showSnackbar(context,
+                                            "Uid/accessToken/join url not found");
+                                      }
+                                    }
+                                    // }
                                   },
                                   child: Container(
                                     width: 60.w,
                                     height: 5.h,
-                                    padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 10.w),
+                                    padding: EdgeInsets.symmetric(
+                                        vertical: 1.h, horizontal: 10.w),
                                     decoration: BoxDecoration(
                                       color: gWhiteColor,
                                       borderRadius: BorderRadius.circular(10),
@@ -550,13 +596,20 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen>with
                                         MaterialPageRoute(
                                             builder: (context) =>
                                                 DoctorCalenderTimeScreen(
-                                                  isPostProgram: widget.isPostProgram,
+                                                  isPostProgram:
+                                                  widget.isPostProgram,
                                                   isReschedule: true,
-                                                  prevBookingDate: widget.bookingDate,
-                                                  prevBookingTime: widget.bookingTime,
+                                                  prevBookingDate:
+                                                  widget.bookingDate,
+                                                  prevBookingTime:
+                                                  widget.bookingTime,
                                                   doctorName: doctorName,
                                                   doctorPic: doctorImage,
-                                                  doctorDetails: (widget.isFromDashboard || widget.isPostProgram) ? _childDoctorModel : widget.data!.doctor,
+                                                  doctorDetails: (widget
+                                                      .isFromDashboard ||
+                                                      widget.isPostProgram)
+                                                      ? _childDoctorModel
+                                                      : widget.data!.doctor,
                                                 )),
                                       );
                                     },
@@ -578,8 +631,57 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen>with
                         Positioned(
                           left: 10.w,
                           right: 10.w,
-                          child: GestureDetector(
-                            onTap:(){
+                          child: widget.isPostProgram
+                              ? GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (c) =>
+                                      const MedicalFeedbackAnswer()));
+                            },
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 3.w, vertical: 1.h),
+                              decoration: BoxDecoration(
+                                color: gWhiteColor,
+                                borderRadius: BorderRadius.circular(20),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.3),
+                                    blurRadius: 20,
+                                    offset: const Offset(8, 10),
+                                  ),
+                                ],
+                              ),
+                              child: Row(
+                                children: [
+                                  Image(
+                                    image: const AssetImage(
+                                        "assets/images/Group 3776.png"),
+                                    height: 8.h,
+                                  ),
+                                  SizedBox(width: 5.w),
+                                  Expanded(
+                                    child: Text(
+                                      "Medical Feedback",
+                                      style: TextStyle(
+                                          fontFamily: kFontMedium,
+                                          color: gTextColor,
+                                          fontSize: 12.sp),
+                                    ),
+                                  ),
+                                  Icon(
+                                    Icons.arrow_forward_ios_sharp,
+                                    color: gMainColor,
+                                    size: 2.h,
+                                  )
+                                ],
+                              ),
+                            ),
+                          )
+                              : GestureDetector(
+                            onTap: () {
                               getEvaluationReport();
                             },
                             child: Container(
@@ -641,13 +743,15 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen>with
     switch (state) {
       case AppLifecycleState.resumed:
         print("app in resumed");
-        if(Provider.of<ConsultationService>(context, listen: false).callEvent == "onCallEnded"){
+        if (Provider.of<ConsultationService>(context, listen: false)
+            .callEvent ==
+            "onCallEnded") {
           Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(
                 builder: (context) => const DashboardScreen(),
-              ), (route)=> route.isFirst
-          );
+              ),
+                  (route) => route.isFirst);
         }
         break;
       case AppLifecycleState.inactive:
@@ -662,112 +766,113 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen>with
     }
   }
 
-
-  showJoinPopup(){
+  showJoinPopup() {
     return AppConfig().showSheet(
-        context,
-        Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text("You're early to the appointment! \nPlease join 5 minutes before the scheduled time for a successful admission.",
-            style: TextStyle(
-                fontFamily: kFontMedium,
-                fontSize: 10.5.sp,
-                height: 1.3,
-                color: gTextColor
+      context,
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              "You're early to the appointment! \nPlease join 5 minutes before the scheduled time for a successful admission.",
+              style: TextStyle(
+                  fontFamily: kFontMedium,
+                  fontSize: 10.5.sp,
+                  height: 1.3,
+                  color: gTextColor),
+              textAlign: TextAlign.center,
             ),
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(
-            height: 1.h,
-          ),
-          MediaQuery(
-            data: MediaQuery.of(context).copyWith(textScaleFactor: 0.75),
-            child: GestureDetector(
-              onTap: (){
-                Navigator.pop(context);
-                // Navigator.pop(context);
-              },
-              child: Container(
-                width: 40.w,
-                height: 4.h,
-                margin: EdgeInsets.symmetric(vertical: 4.h),
-                padding:
-                EdgeInsets.symmetric(vertical: 1.h, horizontal: 10.w),
-                decoration: BoxDecoration(
-                  color: eUser().buttonColor,
-                  borderRadius: BorderRadius.circular(eUser().buttonBorderRadius),
-                  // border: Border.all(
-                  //     color: eUser().buttonBorderColor,
-                  //     width: eUser().buttonBorderWidth
-                  // ),
-                ),
-                child:Center(
-                  child: Text(
-                    'Go Back',
-                    style: TextStyle(
-                      fontFamily: eUser().buttonTextFont,
-                      color: eUser().buttonTextColor,
-                      fontSize: eUser().buttonTextSize,
+            SizedBox(
+              height: 1.h,
+            ),
+            MediaQuery(
+              data: MediaQuery.of(context).copyWith(textScaleFactor: 0.75),
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.pop(context);
+                  // Navigator.pop(context);
+                },
+                child: Container(
+                  width: 40.w,
+                  height: 4.h,
+                  margin: EdgeInsets.symmetric(vertical: 4.h),
+                  padding:
+                  EdgeInsets.symmetric(vertical: 1.h, horizontal: 10.w),
+                  decoration: BoxDecoration(
+                    color: eUser().buttonColor,
+                    borderRadius:
+                    BorderRadius.circular(eUser().buttonBorderRadius),
+                    // border: Border.all(
+                    //     color: eUser().buttonBorderColor,
+                    //     width: eUser().buttonBorderWidth
+                    // ),
+                  ),
+                  child: Center(
+                    child: Text(
+                      'Go Back',
+                      style: TextStyle(
+                        fontFamily: eUser().buttonTextFont,
+                        color: eUser().buttonTextColor,
+                        fontSize: eUser().buttonTextSize,
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-    ),
       bottomSheetHeight: 45.h,
       isDismissible: true,
     );
     return showDialog(
         context: context,
-        builder: (_){
-          return  Dialog(
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20)
-            ),
+        builder: (_) {
+          return Dialog(
+            shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text("You're early to the appointment! \nPlease join 5 minutes before the scheduled time for a successful admission.",
+                  Text(
+                    "You're early to the appointment! \nPlease join 5 minutes before the scheduled time for a successful admission.",
                     style: TextStyle(
                         fontFamily: kFontMedium,
                         fontSize: 10.5.sp,
                         height: 1.3,
-                        color: gTextColor
-                    ),
+                        color: gTextColor),
                     textAlign: TextAlign.center,
                   ),
                   SizedBox(
                     height: 1.h,
                   ),
                   MediaQuery(
-                    data: MediaQuery.of(context).copyWith(textScaleFactor: 0.75),
+                    data:
+                    MediaQuery.of(context).copyWith(textScaleFactor: 0.75),
                     child: GestureDetector(
-                      onTap: (){
+                      onTap: () {
                         Navigator.pop(context);
                       },
                       child: Container(
                         width: 40.w,
                         height: 4.h,
                         margin: EdgeInsets.symmetric(vertical: 4.h),
-                        padding:
-                        EdgeInsets.symmetric(vertical: 1.h, horizontal: 10.w),
+                        padding: EdgeInsets.symmetric(
+                            vertical: 1.h, horizontal: 10.w),
                         decoration: BoxDecoration(
                           color: eUser().buttonColor,
-                          borderRadius: BorderRadius.circular(eUser().buttonBorderRadius),
+                          borderRadius:
+                          BorderRadius.circular(eUser().buttonBorderRadius),
                           // border: Border.all(
                           //     color: eUser().buttonBorderColor,
                           //     width: eUser().buttonBorderWidth
                           // ),
                         ),
-                        child:Center(
+                        child: Center(
                           child: Text(
                             'Go Back',
                             style: TextStyle(
@@ -784,13 +889,12 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen>with
               ),
             ),
           );
-        }
-    );
+        });
   }
 
   void getEvaluationReport() {
-    Navigator.push(context, MaterialPageRoute(builder: (c) =>
-        EvaluationGetDetails()));
+    Navigator.push(
+        context, MaterialPageRoute(builder: (c) => EvaluationGetDetails()));
   }
 
   final MessageRepository chatRepository = MessageRepository(
@@ -805,32 +909,36 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen>with
     ),
   );
 
-  getChatGroupId() async{
-    final res = await ChatService(repository: chatRepository).getChatGroupIdService();
+  getChatGroupId() async {
+    final res =
+    await ChatService(repository: chatRepository).getChatGroupIdService();
     String? chatGroupId;
-    if(res.runtimeType == GetChatGroupIdModel){
+    if (res.runtimeType == GetChatGroupIdModel) {
       GetChatGroupIdModel model = res as GetChatGroupIdModel;
       _pref!.setString(AppConfig.GROUP_ID, model.group ?? '');
-    }
-    else{
+    } else {
       ErrorModel model = res as ErrorModel;
-      AppConfig().showSnackbar(context, model.message.toString(), isError: true);
+      AppConfig()
+          .showSnackbar(context, model.message.toString(), isError: true);
     }
-
   }
 
-  void launchZoomUrl() async{
+  void launchZoomUrl() async {
     if (kDebugMode) {
       print(widget.data?.patientName);
       print(widget.isPostProgram);
     }
     ChildAppointmentDetails? model;
-    if(widget.isFromDashboard || widget.isPostProgram){
-      if(widget.dashboardValueMap != null) model = ChildAppointmentDetails.fromJson(Map.from(widget.dashboardValueMap!));
+    if (widget.isFromDashboard || widget.isPostProgram) {
+      if (widget.dashboardValueMap != null)
+        model = ChildAppointmentDetails.fromJson(
+            Map.from(widget.dashboardValueMap!));
     }
     // String zoomUrl = model.;
 
-    String? zoomUrl = (widget.isFromDashboard || widget.isPostProgram) ? model?.zoomJoinUrl : widget.data?.zoomJoinUrl;
+    String? zoomUrl = (widget.isFromDashboard || widget.isPostProgram)
+        ? model?.zoomJoinUrl
+        : widget.data?.zoomJoinUrl;
 
     print("model: ${zoomUrl}");
 
@@ -839,7 +947,5 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen>with
     else
       // can't launch url, there is some error
       throw "Could not launch ${zoomUrl}";
-
   }
-
 }

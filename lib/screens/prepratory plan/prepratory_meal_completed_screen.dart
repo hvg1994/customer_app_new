@@ -233,7 +233,7 @@ class _PrepratoryMealCompletedScreenState extends State<PrepratoryMealCompletedS
         mainAxisSize: MainAxisSize.min,
         children: [
           SizedBox(
-            width: 15,
+            width: 25,
             child: Radio(
               value: (btnName == "Yes") ? 0 : 1,
               groupValue: selected,
@@ -246,7 +246,7 @@ class _PrepratoryMealCompletedScreenState extends State<PrepratoryMealCompletedS
               activeColor: gsecondaryColor,
             ),
           ),
-          SizedBox( width: 5,),
+          SizedBox( width: 10,),
           Text(btnName,
             style: TextStyle(
                 fontFamily: kFontMedium,

@@ -549,32 +549,32 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
         });
         commentController.text = model.comment ?? '';
       }
-      // for showing already selected data from local storage for present day
-      else{
-        if(isDayCompleted != null && isDayCompleted == false && presentDay == selectedDay){
-          if(_pref!.getString(AppConfig.STORE_MEAL_DATA) != null){
-    //         'selected_meal': statusList,
-    //          'comments': commentController.text
-
-            final localMealData = json.decode(_pref!.getString(AppConfig.STORE_MEAL_DATA)!);
-            // (localMealData['selected_meal'] as Map).forEach((key, value) {
-            //   print("$key -- $value");
-            // });
-
-            if(localMealData['selected_meal'] != null){
-              String m = localMealData['selected_meal'];
-              final l = m.replaceAll("{", '').replaceAll('}', '').split(',');
-              Map _m = {};
-              l.forEach((element) {
-                _m.putIfAbsent(int.parse(element.split(':').first.trim()), () => element.split(':').last.trim());
-              });
-              statusList.addAll(_m);
-            }
-            commentController.text = localMealData['comments'];
-
-          }
-        }
-      }
+    //   // for showing already selected data from local storage for present day
+    //   else{
+    //     if(isDayCompleted != null && isDayCompleted == false && presentDay == selectedDay){
+    //       if(_pref!.getString(AppConfig.STORE_MEAL_DATA) != null){
+    // //         'selected_meal': statusList,
+    // //          'comments': commentController.text
+    //
+    //         final localMealData = json.decode(_pref!.getString(AppConfig.STORE_MEAL_DATA)!);
+    //         // (localMealData['selected_meal'] as Map).forEach((key, value) {
+    //         //   print("$key -- $value");
+    //         // });
+    //
+    //         if(localMealData['selected_meal'] != null){
+    //           String m = localMealData['selected_meal'];
+    //           final l = m.replaceAll("{", '').replaceAll('}', '').split(',');
+    //           Map _m = {};
+    //           l.forEach((element) {
+    //             _m.putIfAbsent(int.parse(element.split(':').first.trim()), () => element.split(':').last.trim());
+    //           });
+    //           statusList.addAll(_m);
+    //         }
+    //         commentController.text = localMealData['comments'];
+    //
+    //       }
+    //     }
+    //   }
 
 
 

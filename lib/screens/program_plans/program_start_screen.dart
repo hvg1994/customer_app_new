@@ -555,7 +555,9 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
                           if(widget.from == ProgramMealType.prepratory.name){
                             //get Preparatory day1 meals
                             print("isPlaying: ${_chewieController!.isPlaying}");
-                            gotoScreen(PreparatoryPlanScreen(dayNumber: "1", totalDays: '1',viewDay1Details: true,));
+                            gotoScreen(PreparatoryPlanScreen(dayNumber: "1", totalDays: '2',viewDay1Details: true,
+                              isPrepStarted: true,
+                            ));
                           }
                           else if(widget.from == ProgramMealType.program.name){
                             //get Normal Program day1 meals

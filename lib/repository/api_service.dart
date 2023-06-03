@@ -1109,7 +1109,7 @@ class ApiClient {
     return result;
   }
 
-  Future proceedDayProgramList(ProceedProgramDayModel model) async {
+  Future proceedDayProgramList(ProceedProgramDayModel model, List<MultipartFile> files) async {
     var url = submitDayPlanDetailsUrl;
 
     dynamic result;
@@ -1123,15 +1123,24 @@ class ApiClient {
     //     "model: ${json.encode(model.toJson()) == jsonEncode(model.toJson())}");
 
     try {
-      final response = await httpClient.post(
-        Uri.parse(url),
-        headers: {
-          // "Content-Type": "application/json",
-          "Authorization": getHeaderToken(),
-        },
-        body: m,
-        // body: staticData
-      );
+      var request = http.MultipartRequest('POST', Uri.parse(url));
+
+      var headers = {
+        // "Authorization": "Bearer ${AppConfig().bearerToken}",
+        "Authorization": getHeaderToken(),
+      };
+
+      request.files.addAll(files);
+      request.fields.addAll(m);
+
+      // reportList.forEach((element) async {
+      //   request.files.add(await http.MultipartFile.fromPath('files[]', element));
+      // });
+      request.headers.addAll(headers);
+
+
+      var response = await http.Response.fromStream(await request.send())
+          .timeout(Duration(seconds: 50));
 
       print('proceedDayProgramList Response status: ${response.statusCode}');
       print('proceedDayProgramList Response body: ${response.body}');
