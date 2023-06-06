@@ -1817,6 +1817,7 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
   createFormMap(){
     return EvaluationModelFormat2(
       vegNonVegVegan: customizedMealPlanSelected,
+      vegNonVegVeganOther: customizedMealPlanOther.text,
       earlyMorning: morningBeverageController.text,
       breakfast: breakfastController.text,
       midDay: midDayBeverageController.text,

@@ -145,7 +145,7 @@ class _NewMealPopupScreenState extends State<NewMealPopupScreen> {
                                   child: IntrinsicWidth(
                                     child: Container(
                                       margin:
-                                          EdgeInsets.symmetric(vertical: 4.h),
+                                      EdgeInsets.symmetric(vertical: 4.h),
                                       padding: EdgeInsets.symmetric(
                                           vertical: 1.5.h, horizontal: 8.w),
                                       decoration: BoxDecoration(
@@ -192,7 +192,9 @@ class _NewMealPopupScreenState extends State<NewMealPopupScreen> {
       padding: EdgeInsets.symmetric(horizontal: 3.5.w, vertical: 2.h),
       child: HorizontalDatePicker(
         begin: DateTime.now().add(Duration(days: 4)),
-        end: DateTime.now().add(Duration(days: 4)).add(Duration(days: 30)),
+        end: DateTime.now().add(Duration(days: 30)),
+        itemCount: 26,
+        itemSpacing: 20,
         selected: selectedDate,
         onSelected: (item) {
           setState(() {
@@ -244,8 +246,8 @@ class _NewMealPopupScreenState extends State<NewMealPopupScreen> {
           }
           else{
             return Container(
-              height: 55,
-              width: 40,
+              height: 9.h,
+              width: 10.w,
               decoration: BoxDecoration(
                 border: Border.all(
                     color: kNumberCircleRed.withOpacity(0.5), width: 1),
@@ -280,8 +282,7 @@ class _NewMealPopupScreenState extends State<NewMealPopupScreen> {
             );
           }
         },
-        itemCount: 5,
-        itemSpacing: 20,
+
       ),
     );
     return DatePicker(
@@ -301,7 +302,7 @@ class _NewMealPopupScreenState extends State<NewMealPopupScreen> {
       initialSelectedDate: DateTime.now(),
       selectionColor: gsecondaryColor,
       selectedTextColor: gWhiteColor,
-        daysCount: 5,
+      daysCount: 5,
       onDateChange: (date) {
         setState(() {
           selectedDate = date;

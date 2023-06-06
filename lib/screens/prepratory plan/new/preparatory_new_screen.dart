@@ -18,11 +18,14 @@ class PreparatoryPlanScreen extends StatefulWidget {
   String? totalDays;
   String? dayNumber;
   bool viewDay1Details;
+  bool isPrepStarted;
   PreparatoryPlanScreen(
       {Key? key,
-      required this.dayNumber,
-      required this.totalDays,
-      this.viewDay1Details = false})
+        required this.dayNumber,
+        required this.totalDays,
+        this.viewDay1Details = false,
+        this.isPrepStarted = false,
+      })
       : super(key: key);
 
   @override
@@ -126,144 +129,144 @@ class _PreparatoryPlanScreenState extends State<PreparatoryPlanScreen>
         backgroundColor: gBackgroundColor,
         body: showLoading
             ? Center(
-                child: buildCircularIndicator(),
-              )
+          child: buildCircularIndicator(),
+        )
             : DefaultTabController(
-                length: tabSize,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Padding(
-                      padding: EdgeInsets.only(top: 0.5.h, left: 3.w),
-                      child: buildAppBar(
+          length: tabSize,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.only(top: 0.5.h, left: 3.w),
+                child: buildAppBar(
                         () {
-                          Navigator.pop(context);
-                        },
-                        showHelpIcon: true,
-                        helpOnTap: (){
-                          // if(doDontPdfLink != null || doDontPdfLink!.isNotEmpty){
-                          //   Navigator.push(context, MaterialPageRoute(builder: (ctx)=>
-                          //       MealPdf(pdfLink: doDontPdfLink! ,
-                          //           heading: doDontPdfLink?.split('/').last ?? '',
-                          //           isVideoWidgetVisible: false,
-                          //           headCircleIcon: bsHeadPinIcon,
-                          //           topHeadColor: kBottomSheetHeadGreen,
-                          //           isSheetCloseNeeded: true,
-                          //           sheetCloseOnTap: (){
-                          //             Navigator.pop(context);
-                          //           }
-                          //       )));
-                          // }
-                          Navigator.push(context, MaterialPageRoute(builder: (_)=> DosDontsProgramScreen(pdfLink: doDontPdfLink!,)));
-                        }
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(left: 3.w,top: 2.h,bottom: 1.h),
-                      child: Text(
-                        'Preparatory Phase',
-                        style: TextStyle(
-                            fontFamily: eUser().mainHeadingFont,
-                            color: eUser().mainHeadingColor,
-                            fontSize: eUser().mainHeadingFontSize),
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(left: 3.w),
-                      child: Text(
-                        'Day ${widget.dayNumber} of Day ${widget.totalDays}',
-                        style: TextStyle(
-                            fontFamily: kFontMedium,
-                            color: eUser().mainHeadingColor,
-                            fontSize: 10.sp),
-                      ),
-                    ),
-                    // SizedBox(height: 1.h),
-                    // Padding(
-                    //   padding: EdgeInsets.only(left: 3.w),
-                    //   child: Text(
-                    //     '2 Days Remaining',
-                    //     style: TextStyle(
-                    //         fontFamily: eUser().userTextFieldFont,
-                    //         color: eUser().userTextFieldColor,
-                    //         fontSize: eUser().userTextFieldHintFontSize),
-                    //   ),
-                    // ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 2.h),
-                      child: SizedBox(
-                        height: 30,
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 50,
-                              decoration: BoxDecoration(
-                                color: Color(0xffC8DE95).withOpacity(0.6),
-                                borderRadius: const BorderRadius.only(
-                                  topRight: Radius.circular(30),
-                                ),
-                              ),
-                            ),
-                            SizedBox(width: 2.w),
-                            Expanded(
-                              child: TabBar(
-                                isScrollable: true,
-                                unselectedLabelColor: Colors.black,
-                                labelColor: gWhiteColor,
-                                controller: _tabController,
-                                unselectedLabelStyle: TextStyle(
-                                    fontFamily: kFontBook,
-                                    color: gHintTextColor,
-                                    fontSize: 9.sp),
-                                labelStyle: TextStyle(
-                                    fontFamily: kFontMedium,
-                                    color: gBlackColor,
-                                    fontSize: 11.sp),
-                                indicator: BoxDecoration(
-                                  color: newDashboardGreenButtonColor,
-                                  borderRadius: const BorderRadius.only(
-                                    topRight: Radius.circular(20),
-                                    bottomLeft: Radius.circular(20),
-                                  ),
-                                ),
-                                onTap: (index) {
-                                  print("ontap: $index");
-                                  // print(slotNamesForTabs.keys.elementAt(index));
-                                  selectedSlot =
-                                      slotNamesForTabs.keys.elementAt(index);
-                                  setState(() {
-                                    selectedItemName = slotNamesForTabs[selectedSlot]!.subItems!.keys.first;
-                                    print(selectedItemName);
-                                  });
-                                  // _buildList(index);
-                                },
-                                tabs: slotNamesForTabs.keys
-                                    .map((e) => Tab(
-                                          text: e,
-                                        ))
-                                    .toList(),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: TabBarView(
-                        controller: _tabController,
-                        physics: const NeverScrollableScrollPhysics(),
-                        children: [
-                          ...slotNamesForTabs.values
-                              .map(
-                                (e) => buildTabView(e),
-                              )
-                              .toList(),
-                        ],
-                      ),
-                    )
-                  ],
+                      Navigator.pop(context);
+                    },
+                    showHelpIcon: true,
+                    helpOnTap: (){
+                      // if(doDontPdfLink != null || doDontPdfLink!.isNotEmpty){
+                      //   Navigator.push(context, MaterialPageRoute(builder: (ctx)=>
+                      //       MealPdf(pdfLink: doDontPdfLink! ,
+                      //           heading: doDontPdfLink?.split('/').last ?? '',
+                      //           isVideoWidgetVisible: false,
+                      //           headCircleIcon: bsHeadPinIcon,
+                      //           topHeadColor: kBottomSheetHeadGreen,
+                      //           isSheetCloseNeeded: true,
+                      //           sheetCloseOnTap: (){
+                      //             Navigator.pop(context);
+                      //           }
+                      //       )));
+                      // }
+                      Navigator.push(context, MaterialPageRoute(builder: (_)=> DosDontsProgramScreen(pdfLink: doDontPdfLink!,)));
+                    }
                 ),
               ),
+              Padding(
+                padding: EdgeInsets.only(left: 3.w,top: 2.h,bottom: 1.h),
+                child: Text(
+                  'Preparatory Phase',
+                  style: TextStyle(
+                      fontFamily: eUser().mainHeadingFont,
+                      color: eUser().mainHeadingColor,
+                      fontSize: eUser().mainHeadingFontSize),
+                ),
+              ),
+              widget.isPrepStarted ?   Padding(
+                padding: EdgeInsets.only(left: 3.w),
+                child: Text(
+                  'Day ${widget.dayNumber} of Day ${widget.totalDays}',
+                  style: TextStyle(
+                      fontFamily: kFontMedium,
+                      color: eUser().mainHeadingColor,
+                      fontSize: 10.sp),
+                ),
+              ) : SizedBox(),
+              // SizedBox(height: 1.h),
+              // Padding(
+              //   padding: EdgeInsets.only(left: 3.w),
+              //   child: Text(
+              //     '2 Days Remaining',
+              //     style: TextStyle(
+              //         fontFamily: eUser().userTextFieldFont,
+              //         color: eUser().userTextFieldColor,
+              //         fontSize: eUser().userTextFieldHintFontSize),
+              //   ),
+              // ),
+              Padding(
+                padding: EdgeInsets.only(top: 2.h),
+                child: SizedBox(
+                  height: 30,
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 50,
+                        decoration: BoxDecoration(
+                          color: Color(0xffC8DE95).withOpacity(0.6),
+                          borderRadius: const BorderRadius.only(
+                            topRight: Radius.circular(30),
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 2.w),
+                      Expanded(
+                        child: TabBar(
+                          isScrollable: true,
+                          unselectedLabelColor: Colors.black,
+                          labelColor: gWhiteColor,
+                          controller: _tabController,
+                          unselectedLabelStyle: TextStyle(
+                              fontFamily: kFontBook,
+                              color: gHintTextColor,
+                              fontSize: 9.sp),
+                          labelStyle: TextStyle(
+                              fontFamily: kFontMedium,
+                              color: gBlackColor,
+                              fontSize: 11.sp),
+                          indicator: BoxDecoration(
+                            color: newDashboardGreenButtonColor,
+                            borderRadius: const BorderRadius.only(
+                              topRight: Radius.circular(20),
+                              bottomLeft: Radius.circular(20),
+                            ),
+                          ),
+                          onTap: (index) {
+                            print("ontap: $index");
+                            // print(slotNamesForTabs.keys.elementAt(index));
+                            selectedSlot =
+                                slotNamesForTabs.keys.elementAt(index);
+                            setState(() {
+                              selectedItemName = slotNamesForTabs[selectedSlot]!.subItems!.keys.first;
+                              print(selectedItemName);
+                            });
+                            // _buildList(index);
+                          },
+                          tabs: slotNamesForTabs.keys
+                              .map((e) => Tab(
+                            text: e,
+                          ))
+                              .toList(),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Expanded(
+                child: TabBarView(
+                  controller: _tabController,
+                  physics: const NeverScrollableScrollPhysics(),
+                  children: [
+                    ...slotNamesForTabs.values
+                        .map(
+                          (e) => buildTabView(e),
+                    )
+                        .toList(),
+                  ],
+                ),
+              )
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -368,17 +371,17 @@ class _PreparatoryPlanScreenState extends State<PreparatoryPlanScreen>
 
   void addAnimation() {
     _animationController =
-        AnimationController(duration: Duration(milliseconds: 300), vsync: this)
-          ..addListener(() {
-            setState(() {
-              animationOffset =
-                  Offset(checkedPositionOffset.dx, _animation.value);
-            });
-          });
+    AnimationController(duration: Duration(milliseconds: 300), vsync: this)
+      ..addListener(() {
+        setState(() {
+          animationOffset =
+              Offset(checkedPositionOffset.dx, _animation.value);
+        });
+      });
 
     _animation = Tween(begin: lastCheckOffset.dy, end: checkedPositionOffset.dy)
         .animate(CurvedAnimation(
-            parent: _animationController!, curve: Curves.easeInOutBack));
+        parent: _animationController!, curve: Curves.easeInOutBack));
     _animationController!.forward();
   }
 
@@ -482,7 +485,7 @@ class _PreparatoryPlanScreenState extends State<PreparatoryPlanScreen>
               color: gWhiteColor,
               borderRadius: BorderRadius.circular(40),
               border:
-                  Border.all(color: kLineColor.withOpacity(0.2), width: 0.9),
+              Border.all(color: kLineColor.withOpacity(0.2), width: 0.9),
               // boxShadow:  [
               //   BoxShadow(
               //     color: gBlackColor.withOpacity(0.1),
@@ -510,77 +513,77 @@ class _PreparatoryPlanScreenState extends State<PreparatoryPlanScreen>
                   ),
                   (meal.benefits != null)
                       ? Column(
-                          mainAxisSize: MainAxisSize.min,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ...meal.benefits!.split('-').map((element) {
+                        if(element.isNotEmpty) return Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            ...meal.benefits!.split('-').map((element) {
-                              if(element.isNotEmpty) return Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.circle_sharp,
-                                    color: gGreyColor,
-                                    size: 1.h,
-                                  ),
-                                  SizedBox(width: 3.w),
-                                  Expanded(
-                                    child: Text(
-                                      element ?? '',
-                                      style: TextStyle(
-                                          fontFamily: eUser().userTextFieldFont,
-                                          height: 1.5,
-                                          color: eUser().userTextFieldColor,
-                                          fontSize: eUser()
-                                              .userTextFieldHintFontSize),
-                                    ),
-                                  ),
-                                ],
-                              );
-                              else return SizedBox();
-
-                            })
+                            Icon(
+                              Icons.circle_sharp,
+                              color: gGreyColor,
+                              size: 1.h,
+                            ),
+                            SizedBox(width: 3.w),
+                            Expanded(
+                              child: Text(
+                                element ?? '',
+                                style: TextStyle(
+                                    fontFamily: eUser().userTextFieldFont,
+                                    height: 1.5,
+                                    color: eUser().userTextFieldColor,
+                                    fontSize: eUser()
+                                        .userTextFieldHintFontSize),
+                              ),
+                            ),
                           ],
-                        )
+                        );
+                        else return SizedBox();
+
+                      })
+                    ],
+                  )
                       : const SizedBox(),
                   SizedBox(height: 5.h),
                   (meal.howToPrepare != null)
                       ? GestureDetector(
-                          onTap: () {
-                            Get.to(
-                              () => MealPlanRecipeDetails(
-                                meal: meal,
-                              ),
-                            );
-                          },
-                          child: Center(
-                            child: Container(
-                              // margin: EdgeInsets.symmetric(horizontal: 5.w),
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 1.h, horizontal: 5.w),
-                              decoration: const BoxDecoration(
-                                color: newDashboardGreenButtonColor,
-                                borderRadius: BorderRadius.only(
-                                  topRight: Radius.circular(15),
-                                  bottomLeft: Radius.circular(15),
-                                ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: kLineColor,
-                                    offset: Offset(2, 3),
-                                    blurRadius: 5,
-                                  )
-                                ],
-                              ),
-                              child: Text(
-                                "Recipe",
-                                style: TextStyle(
-                                  color: gWhiteColor,
-                                  fontFamily: kFontBook,
-                                  fontSize: 11.sp,
-                                ),
-                              ),
-                            ),
+                    onTap: () {
+                      Get.to(
+                            () => MealPlanRecipeDetails(
+                          meal: meal,
+                        ),
+                      );
+                    },
+                    child: Center(
+                      child: Container(
+                        // margin: EdgeInsets.symmetric(horizontal: 5.w),
+                        padding: EdgeInsets.symmetric(
+                            vertical: 1.h, horizontal: 5.w),
+                        decoration: const BoxDecoration(
+                          color: newDashboardGreenButtonColor,
+                          borderRadius: BorderRadius.only(
+                            topRight: Radius.circular(15),
+                            bottomLeft: Radius.circular(15),
                           ),
-                        )
+                          boxShadow: [
+                            BoxShadow(
+                              color: kLineColor,
+                              offset: Offset(2, 3),
+                              blurRadius: 5,
+                            )
+                          ],
+                        ),
+                        child: Text(
+                          "Recipe",
+                          style: TextStyle(
+                            color: gWhiteColor,
+                            fontFamily: kFontBook,
+                            fontSize: 11.sp,
+                          ),
+                        ),
+                      ),
+                    ),
+                  )
                       : const SizedBox(),
                 ],
               ),
@@ -608,9 +611,9 @@ class _PreparatoryPlanScreenState extends State<PreparatoryPlanScreen>
               child: CircleAvatar(
                   radius: 8.h,
                   backgroundImage:
-                      CachedNetworkImageProvider(meal.itemPhoto ?? '')
-                  // AssetImage("assets/images/Group 3252.png"),
-                  ),
+                  CachedNetworkImageProvider(meal.itemPhoto ?? '')
+                // AssetImage("assets/images/Group 3252.png"),
+              ),
             ),
           ),
         ),
@@ -636,8 +639,8 @@ class _PreparatoryPlanScreenState extends State<PreparatoryPlanScreen>
           context,
           MaterialPageRoute(
               builder: (ctx) => MealPdf(
-                    pdfLink: url!,
-                  )));
+                pdfLink: url!,
+              )));
   }
 
   orFiled(int index) {

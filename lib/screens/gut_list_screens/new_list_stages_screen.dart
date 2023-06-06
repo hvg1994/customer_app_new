@@ -354,7 +354,7 @@ class _NewDsPageState extends State<NewDsPage> {
       }
       if (_pref!.getString(AppConfig.KALEYRA_CHAT_SUCCESS_ID) == null ||
           _pref!.getString(AppConfig.KALEYRA_CHAT_SUCCESS_ID) == "") {
-        // _pref!.setString(AppConfig.KALEYRA_CHAT_SUCCESS_ID, model1.associatedSuccessMemberKaleyraId ?? '');
+        _pref!.setString(AppConfig.KALEYRA_CHAT_SUCCESS_ID, model1.associatedSuccessMemberKaleyraId ?? '');
       }
       print(
           "user profile: ${_pref!.getString(AppConfig.KALEYRA_CHAT_SUCCESS_ID)}");
@@ -466,222 +466,121 @@ class _NewDsPageState extends State<NewDsPage> {
         ),
         Expanded(
           child: SingleChildScrollView(
-            child: Column(
-              children: [
-                Container(
-                  decoration: const BoxDecoration(
+              child: Column(
+                children: [
+                  Container(
+                    decoration: const BoxDecoration(
                       image: DecorationImage(
                         image: AssetImage(
                             "assets/images/dashboard_stages/Mask Group 43505.png"),
                         opacity: 0.5,
                         fit: BoxFit.fill,
                       ),
-                  ),
-                  child: Column(
-                    children: [
-                      SizedBox(height: 2.h),
+                    ),
+                    child: Column(
+                      children: [
+                        SizedBox(height: 2.h),
 
-                      SizedBox(height: 1.h),
-                      GestureDetector(
-                        onTap: handleTrackerRemedyOnTap,
-                        child: IntrinsicWidth(
-                          child: Container(
-                            // height: 3.h,
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 3.w, vertical: 0.7.h),
-                            margin: EdgeInsets.symmetric(
-                              vertical: 2.h,
-                            ),
-                            decoration: BoxDecoration(
-                              borderRadius:
-                              const BorderRadius.all(Radius.circular(20.0)),
-                              color: Colors.white,
-                              boxShadow: [
-                                BoxShadow(
-                                    color: Colors.black.withAlpha(100),
-                                    blurRadius: 10.0),
-                              ],
-                            ),
-                            child: Row(
-                              children: [
-                                Image.asset(
-                                  "assets/images/home_remedies.png",
-                                  height: 2.5.h,
-                                  fit: BoxFit.scaleDown,
-                                ),
-                                SizedBox(width: 2.w),
-                                Text(
-                                  "Instant Remedies",
-                                  style: TextStyle(
-                                    height: 1.3,
-                                    fontFamily: eUser().userFieldLabelFont,
-                                    color: eUser().mainHeadingColor,
-                                    fontSize: bottomSheetSubHeadingSFontSize,
+                        SizedBox(height: 1.h),
+                        GestureDetector(
+                          onTap: handleTrackerRemedyOnTap,
+                          child: IntrinsicWidth(
+                            child: Container(
+                              // height: 3.h,
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 3.w, vertical: 0.7.h),
+                              margin: EdgeInsets.symmetric(
+                                vertical: 2.h,
+                              ),
+                              decoration: BoxDecoration(
+                                borderRadius:
+                                const BorderRadius.all(Radius.circular(20.0)),
+                                color: Colors.white,
+                                boxShadow: [
+                                  BoxShadow(
+                                      color: Colors.black.withAlpha(100),
+                                      blurRadius: 10.0),
+                                ],
+                              ),
+                              child: Row(
+                                children: [
+                                  Image.asset(
+                                    "assets/images/home_remedies.png",
+                                    height: 2.5.h,
+                                    fit: BoxFit.scaleDown,
                                   ),
-                                ),
-                                // Icon(
-                                //   Icons.arrow_forward,
-                                //   color: gMainColor,
-                                //   size: 10.sp,
-                                // )
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                      Align(
-                        alignment: Alignment.topRight,
-                        child: Padding(
-                          padding: const EdgeInsets.only(right: 8.0),
-                          child: InkWell(
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (_) => const NewScheduleScreen()));
-                            },
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                ImageIcon(
-                                  const AssetImage(
-                                      "assets/images/new_ds/follow_up.png"),
-                                  size: 11.sp,
-                                  color: gHintTextColor,
-                                ),
-                                const SizedBox(
-                                  width: 3,
-                                ),
-                                Text(
-                                  'Follow-up call',
-                                  style: TextStyle(
-                                    color: gHintTextColor,
-                                    fontSize: headingFont,
-                                    decoration: TextDecoration.underline,
-                                  ),
-                                )
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 1.h),
-                ListView.builder(
-                    physics: const NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    itemCount: stageData.length,
-                    itemBuilder: (_, index) {
-                      if (index < current && selected != index) {
-                        print("if");
-                        return AnimatedAlign(
-                          duration: const Duration(milliseconds: 800),
-                          heightFactor: heightFactor,
-                          alignment: Alignment.topCenter,
-                          child: bigCard(
-                            title: stageData[index].title,
-                            subText: stageData[index].subTitle,
-                            image: stageData[index].rightImage,
-                            steps: stageData[index].step,
-                            index: index,
-                            btn1Name: stageData[index].btn1Name,
-                            btn2Name: stageData[index].btn2Name,
-                            btn3Name: stageData[index].btn3Name,
-                            type: stageData[index].type,
-                            bgColor: stageData[index].bgColor,
-                            btn1Color: stageData[index].btn1Color,
-                            btn2Color: stageData[index].btn2Color,
-                            btn3Color: stageData[index].btn3Color,
-
-                          ),
-                        );
-                      }
-                      else if (index == current) {
-                        print("else if1");
-                        return Column(
-                          children: [
-                            AnimatedSize(
-                              duration: const Duration(milliseconds: 500),
-                              child: SizedBox(
-                                height: (selected == current-1 && heightFactor == 0.15) ? 0 : 200,
-                                child: Visibility(
-                                  visible: heightFactor != 0.15,
-                                  child: Center(
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          heightFactor = 0.15;
-                                        });
-                                      },
-                                      child: Container(
-                                        width: 50,
-                                        height: 50,
-                                        decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            color: Colors.amber),
-                                        child: Center(
-                                          child: SizedBox(
-                                              width: 30,
-                                              height: 30,
-                                              child: Image.asset(
-                                                "assets/images/dashboard_stages/up_arrow.png",
-                                                fit: BoxFit.scaleDown,
-                                              )),
-                                        ),
-                                      ),
+                                  SizedBox(width: 2.w),
+                                  Text(
+                                    "Instant Remedies",
+                                    style: TextStyle(
+                                      height: 1.3,
+                                      fontFamily: eUser().userFieldLabelFont,
+                                      color: eUser().mainHeadingColor,
+                                      fontSize: bottomSheetSubHeadingSFontSize,
                                     ),
                                   ),
-                                ),
+                                  // Icon(
+                                  //   Icons.arrow_forward,
+                                  //   color: gMainColor,
+                                  //   size: 10.sp,
+                                  // )
+                                ],
                               ),
                             ),
-                            Visibility(
-                              visible: heightFactor != 1.0,
-                              child: Align(
-                                heightFactor: 0.7,
-                                alignment: Alignment.topRight,
-                                child: smallCard(
-                                  stageData[index].title,
-                                  stageData[index].subTitle,
-                                  stageData[index].rightImage,
-                                  stageData[index].step,
-                                ),
-                              ),
-                            )
-                          ],
-                        );
-                      }
-                      else if (index == selected){
-                        print("else if2");
-                        return AnimatedAlign(
-                          duration: const Duration(milliseconds: 800),
-                          heightFactor: 1,
-                          alignment: Alignment.topCenter,
-                          child: bigCard(
-                            title: stageData[index].title,
-                            subText: stageData[index].subTitle,
-                            image: stageData[index].rightImage,
-                            steps: stageData[index].step,
-                            index: index,
-                            btn1Name: stageData[index].btn1Name,
-                            btn2Name: stageData[index].btn2Name,
-                            btn3Name: stageData[index].btn3Name,
-                            type: stageData[index].type,
-                            bgColor: stageData[index].bgColor,
-                            btn1Color: stageData[index].btn1Color,
-                            btn2Color: stageData[index].btn2Color,
-                            btn3Color: stageData[index].btn3Color,
                           ),
-                        );
-                      }
-                      else if(index > selected && index <= current){
-                        print("else if3");
-                        return AnimatedAlign(
-                          duration: const Duration(milliseconds: 800),
-                          heightFactor: 0.7,
+                        ),
+                        Align(
                           alignment: Alignment.topRight,
-                          child: bigCard(
+                          child: Padding(
+                            padding: const EdgeInsets.only(right: 8.0),
+                            child: InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (_) => const NewScheduleScreen()));
+                              },
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  ImageIcon(
+                                    const AssetImage(
+                                        "assets/images/new_ds/follow_up.png"),
+                                    size: 11.sp,
+                                    color: gHintTextColor,
+                                  ),
+                                  const SizedBox(
+                                    width: 3,
+                                  ),
+                                  Text(
+                                    'Follow-up call',
+                                    style: TextStyle(
+                                      color: gHintTextColor,
+                                      fontSize: headingFont,
+                                      decoration: TextDecoration.underline,
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 1.h),
+                  ListView.builder(
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: stageData.length,
+                      itemBuilder: (_, index) {
+                        if (index < current && selected != index) {
+                          print("if");
+                          return AnimatedAlign(
+                            duration: const Duration(milliseconds: 800),
+                            heightFactor: heightFactor,
+                            alignment: Alignment.topCenter,
+                            child: bigCard(
                               title: stageData[index].title,
                               subText: stageData[index].subTitle,
                               image: stageData[index].rightImage,
@@ -690,29 +589,130 @@ class _NewDsPageState extends State<NewDsPage> {
                               btn1Name: stageData[index].btn1Name,
                               btn2Name: stageData[index].btn2Name,
                               btn3Name: stageData[index].btn3Name,
-                              type: stageData[index].type
-                          ),
-                        );
-                      }
-                      else {
-                        return Visibility(
-                          visible: heightFactor != 1.0,
-                          child: AnimatedAlign(
+                              type: stageData[index].type,
+                              bgColor: stageData[index].bgColor,
+                              btn1Color: stageData[index].btn1Color,
+                              btn2Color: stageData[index].btn2Color,
+                              btn3Color: stageData[index].btn3Color,
+
+                            ),
+                          );
+                        }
+                        else if (index == current) {
+                          print("else if1");
+                          return Column(
+                            children: [
+                              AnimatedSize(
+                                duration: const Duration(milliseconds: 500),
+                                child: SizedBox(
+                                  height: (selected == current-1 && heightFactor == 0.15) ? 0 : 200,
+                                  child: Visibility(
+                                    visible: heightFactor != 0.15,
+                                    child: Center(
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            heightFactor = 0.15;
+                                          });
+                                        },
+                                        child: Container(
+                                          width: 50,
+                                          height: 50,
+                                          decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              color: Colors.amber),
+                                          child: Center(
+                                            child: SizedBox(
+                                                width: 30,
+                                                height: 30,
+                                                child: Image.asset(
+                                                  "assets/images/dashboard_stages/up_arrow.png",
+                                                  fit: BoxFit.scaleDown,
+                                                )),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Visibility(
+                                visible: heightFactor != 1.0,
+                                child: Align(
+                                  heightFactor: 0.7,
+                                  alignment: Alignment.topRight,
+                                  child: smallCard(
+                                    stageData[index].title,
+                                    stageData[index].subTitle,
+                                    stageData[index].rightImage,
+                                    stageData[index].step,
+                                  ),
+                                ),
+                              )
+                            ],
+                          );
+                        }
+                        else if (index == selected){
+                          print("else if2");
+                          return AnimatedAlign(
+                            duration: const Duration(milliseconds: 800),
+                            heightFactor: 1,
+                            alignment: Alignment.topCenter,
+                            child: bigCard(
+                              title: stageData[index].title,
+                              subText: stageData[index].subTitle,
+                              image: stageData[index].rightImage,
+                              steps: stageData[index].step,
+                              index: index,
+                              btn1Name: stageData[index].btn1Name,
+                              btn2Name: stageData[index].btn2Name,
+                              btn3Name: stageData[index].btn3Name,
+                              type: stageData[index].type,
+                              bgColor: stageData[index].bgColor,
+                              btn1Color: stageData[index].btn1Color,
+                              btn2Color: stageData[index].btn2Color,
+                              btn3Color: stageData[index].btn3Color,
+                            ),
+                          );
+                        }
+                        else if(index > selected && index <= current){
+                          print("else if3");
+                          return AnimatedAlign(
                             duration: const Duration(milliseconds: 800),
                             heightFactor: 0.7,
                             alignment: Alignment.topRight,
-                            child: smallCard(
-                              stageData[index].title,
-                              stageData[index].subTitle,
-                              stageData[index].rightImage,
-                              stageData[index].step,
+                            child: bigCard(
+                                title: stageData[index].title,
+                                subText: stageData[index].subTitle,
+                                image: stageData[index].rightImage,
+                                steps: stageData[index].step,
+                                index: index,
+                                btn1Name: stageData[index].btn1Name,
+                                btn2Name: stageData[index].btn2Name,
+                                btn3Name: stageData[index].btn3Name,
+                                type: stageData[index].type
                             ),
-                          ),
-                        );
-                      }
-                    })
-              ],
-            )
+                          );
+                        }
+                        else {
+                          return Visibility(
+                            visible: heightFactor != 1.0,
+                            child: AnimatedAlign(
+                              duration: const Duration(milliseconds: 800),
+                              heightFactor: 0.7,
+                              alignment: Alignment.topRight,
+                              child: smallCard(
+                                stageData[index].title,
+                                stageData[index].subTitle,
+                                stageData[index].rightImage,
+                                stageData[index].step,
+                              ),
+                            ),
+                          );
+                        }
+                      })
+                ],
+              )
           ),
         ),
       ],
@@ -921,113 +921,115 @@ class _NewDsPageState extends State<NewDsPage> {
             //   heightFactor = 1.0;
             //   setState(() {});
             // },
-            child: Container(
-              // constraints: BoxConstraints(
-              //   minHeight: 180,
-              // ),
-              width: double.maxFinite,
-              height: MediaQuery.of(context).size.width <= 400 ? 180 : 220,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  color: (bgColor != null)
-                      ? bgColor
-                      : index == current - 1
-                      ? newCurrentStageColor
-                      : newCompletedStageColor,
-                  boxShadow: [
-                    BoxShadow(color: Colors.black.withAlpha(100), blurRadius: 10)
-                  ]),
-              margin: EdgeInsets.symmetric(horizontal: 3.w, vertical: 2.h),
-              padding: EdgeInsets.only(left: 3.w, right: 3.w,top: 1.h),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Column(
-                      // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              SizedBox(height: 1.5.h),
-                              Text(
-                                title,
-                                style: TextStyle(
-                                    height: 1.2,
-                                    fontFamily: eUser().mainHeadingFont,
-                                    color: eUser().mainHeadingColor,
-                                    fontSize: 13.sp),
-                              ),
-                              SizedBox(height: 0.5.h),
-                              Flexible(
-                                child: Text(
-                                  subText,
+            child: IntrinsicHeight(
+              child: Container(
+                // constraints: BoxConstraints(
+                //   minHeight: 180,
+                // ),
+                width: double.maxFinite,
+                // height: MediaQuery.of(context).size.width <= 400 ? 180 : 220,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    color: (bgColor != null)
+                        ? bgColor
+                        : index == current - 1
+                        ? newCurrentStageColor
+                        : newCompletedStageColor,
+                    boxShadow: [
+                      BoxShadow(color: Colors.black.withAlpha(100), blurRadius: 10)
+                    ]),
+                margin: EdgeInsets.symmetric(horizontal: 3.w, vertical: 2.h),
+                padding: EdgeInsets.only(left: 3.w, right: 3.w,top: 1.h),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SizedBox(height: 1.5.h),
+                                Text(
+                                  title,
                                   style: TextStyle(
-                                      height: 1.3,
-                                      fontFamily: kFontBook,
+                                      height: 1.2,
+                                      fontFamily: eUser().mainHeadingFont,
                                       color: eUser().mainHeadingColor,
-                                      fontSize: 10.5.sp),
+                                      fontSize: 13.sp),
                                 ),
+                                SizedBox(height: 0.5.h),
+                                Flexible(
+                                  child: Text(
+                                    subText,
+                                    style: TextStyle(
+                                        height: 1.3,
+                                        fontFamily: kFontBook,
+                                        color: eUser().mainHeadingColor,
+                                        fontSize: 10.5.sp),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              if (btn1Name != null)
+                                buildButton(
+                                    btn1Name ?? '',
+                                    (btn1Color != null)
+                                        ? btn1Color
+                                        : index == current - 1
+                                        ? newCurrentStageButtonColor
+                                        : newCompletedStageBtnColor,
+                                    1,
+                                    type),
+                              SizedBox(
+
+                                width: 8,
                               ),
+                              if (btn2Name != null)
+                                buildButton(
+                                    btn2Name,
+                                    (btn2Color != null)
+                                        ? btn2Color
+                                        : index == current - 1
+                                        ? newCurrentStageButtonColor
+                                        : newCompletedStageBtnColor,
+                                    2,
+                                    type),
+                              SizedBox(
+
+                                width: 8,
+                              ),
+                              if (btn3Name != null)
+                                buildButton(
+                                    btn3Name,
+                                    (btn3Color != null)
+                                        ? btn3Color
+                                        : index == current - 1
+                                        ? newCurrentStageButtonColor
+                                        : newCompletedStageBtnColor,
+                                    3,
+                                    type)
                             ],
                           ),
-                        ),
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            if (btn1Name != null)
-                              buildButton(
-                                  btn1Name ?? '',
-                                  (btn1Color != null)
-                                      ? btn1Color
-                                      : index == current - 1
-                                      ? newCurrentStageButtonColor
-                                      : newCompletedStageBtnColor,
-                                  1,
-                                  type),
-                            SizedBox(
-
-                              width: 8,
-                            ),
-                            if (btn2Name != null)
-                              buildButton(
-                                  btn2Name,
-                                  (btn2Color != null)
-                                      ? btn2Color
-                                      : index == current - 1
-                                      ? newCurrentStageButtonColor
-                                      : newCompletedStageBtnColor,
-                                  2,
-                                  type),
-                            SizedBox(
-
-                              width: 8,
-                            ),
-                            if (btn3Name != null)
-                              buildButton(
-                                  btn3Name,
-                                  (btn3Color != null)
-                                      ? btn3Color
-                                      : index == current - 1
-                                      ? newCurrentStageButtonColor
-                                      : newCompletedStageBtnColor,
-                                  3,
-                                  type)
-                          ],
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                  SizedBox(width: 3.w),
-                  Image.asset(
-                    image,
-                    height: 7.h,
-                  ),
-                ],
+                    SizedBox(width: 3.w),
+                    Image.asset(
+                      image,
+                      height: 7.h,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -1234,8 +1236,8 @@ class _NewDsPageState extends State<NewDsPage> {
         },
         child: Container(
           constraints: BoxConstraints(
-            maxWidth: 40.w,
-            minWidth: 28.w
+              maxWidth: 40.w,
+              minWidth: 28.w
           ),
           height: 5.h,
           padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 0.7.h),
@@ -1662,7 +1664,7 @@ class _NewDsPageState extends State<NewDsPage> {
         }
         else{
           stageData[1].btn1Color = newCurrentStageButtonColor;
-          stageData[1].subTitle = consultationStage2SubText;
+          stageData[1].subTitle = "Your consultation has been booked for $bookingDate:$bookingTime \n$consultationStage2SubText";
         }
 
         break;
@@ -1675,7 +1677,7 @@ class _NewDsPageState extends State<NewDsPage> {
 
         break;
       case 'consultation_accepted':
-        // no button for accepted and rejected
+      // no button for accepted and rejected
         current = 4;
         stageData[1].btn1Name = "Status";
         stageData[1].subTitle = consultationStage3SubText;
@@ -1692,6 +1694,7 @@ class _NewDsPageState extends State<NewDsPage> {
         current = 3;
         stageData[1].btn1Name = "Status";
         stageData[1].subTitle = consultationStage3SubText;
+        stageData[1].btn1Color = newCompletedStageBtnColor;
         stageData[1].btn2Name = null;
 
         stageData[2].btn1Name = "Upload Report";
@@ -1778,9 +1781,9 @@ class _NewDsPageState extends State<NewDsPage> {
         //   stageData[5].btn1Name = "Start Prep";
         // }
 
-          stageData[5].subTitle = prepStage2SubText;
-          stageData[5].btn2Color = newCurrentStageButtonColor;
-          stageData[5].btn2Name = "Ship Now";
+        stageData[5].subTitle = prepStage2SubText;
+        stageData[5].btn2Color = newCurrentStageButtonColor;
+        stageData[5].btn2Name = "Ship Now";
 
         break;
 
@@ -2058,10 +2061,10 @@ class _NewDsPageState extends State<NewDsPage> {
     print(type);
     switch (type) {
       case StageType.evaluation:
-        // goToScreen(Scaffold(body: SingleChildScrollView(child: TrackerUI(
-        //   proceedProgramDayModel: null,
-        //   from: ProgramMealType.program.name,
-        // )),));
+      // goToScreen(Scaffold(body: SingleChildScrollView(child: TrackerUI(
+      //   proceedProgramDayModel: null,
+      //   from: ProgramMealType.program.name,
+      // )),));
         goToScreen(EvaluationGetDetails());
         break;
 
@@ -2103,14 +2106,14 @@ class _NewDsPageState extends State<NewDsPage> {
               final _consultationHistory = _gutDataModel!.historyWithMrValue!.consultationHistory;
               goToScreen(ConsultationHistoryScreen(consultationHistory: _consultationHistory,));
               break;
-              // goToScreen(const ConsultationSuccess());
-              // break;
+          // goToScreen(const ConsultationSuccess());
+          // break;
             case 'consultation_accepted':
               final _consultationHistory = _gutDataModel!.historyWithMrValue!.consultationHistory;
               goToScreen(ConsultationHistoryScreen(consultationHistory: _consultationHistory,));
               break;
-              // goToScreen(const ConsultationSuccess());
-              // break;
+          // goToScreen(const ConsultationSuccess());
+          // break;
             case 'consultation_waiting':
               final _consultationHistory = _gutDataModel!.historyWithMrValue!.consultationHistory;
               goToScreen(ConsultationHistoryScreen(consultationHistory: _consultationHistory,));
@@ -2119,19 +2122,19 @@ class _NewDsPageState extends State<NewDsPage> {
               final _consultationHistory = _gutDataModel!.historyWithMrValue!.consultationHistory;
               goToScreen(ConsultationHistoryScreen(consultationHistory: _consultationHistory,));
               break;
-              // goToScreen(ConsultationRejected(
-              //   reason: _gutDataModel?.rejectedCase?.reason ?? '',
-              // ));
-              // break;
+          // goToScreen(ConsultationRejected(
+          //   reason: _gutDataModel?.rejectedCase?.reason ?? '',
+          // ));
+          // break;
             case 'check_user_reports':
             //   goToScreen(const ConsultationSuccess());
               final _consultationHistory = _gutDataModel!.historyWithMrValue!.consultationHistory;
               goToScreen(ConsultationHistoryScreen(consultationHistory: _consultationHistory,));
               break;
             case 'report_upload':
-              // show history screen
-            final _consultationHistory = _gutDataModel!.historyWithMrValue!.consultationHistory;
-            goToScreen(ConsultationHistoryScreen(consultationHistory: _consultationHistory,));
+            // show history screen
+              final _consultationHistory = _gutDataModel!.historyWithMrValue!.consultationHistory;
+              goToScreen(ConsultationHistoryScreen(consultationHistory: _consultationHistory,));
               break;
           }
         }
@@ -2218,13 +2221,13 @@ class _NewDsPageState extends State<NewDsPage> {
             goToScreen(UploadFiles(isFromSettings: true,));
             break;
           case 'report_upload':
-            // new ui need to add here
+          // new ui need to add here
             goToScreen(UploadFiles(isFromSettings: true,));
 
-          // // show history screen
-          //   final _consultationHistory = _gutDataModel!.historyWithMrValue!.consultationHistory;
-          //   goToScreen(ConsultationHistoryScreen(consultationHistory: _consultationHistory,));
-          //   break;
+        // // show history screen
+        //   final _consultationHistory = _gutDataModel!.historyWithMrValue!.consultationHistory;
+        //   goToScreen(ConsultationHistoryScreen(consultationHistory: _consultationHistory,));
+        //   break;
         }
         break;
 
@@ -2236,9 +2239,9 @@ class _NewDsPageState extends State<NewDsPage> {
             ));
             break;
           case 'report_upload':
-            // print(_gutDataModel!.toJson());
-            // print(_gutDataModel!.value);
-            // goToScreen(goToScreen(UploadFiles()));
+          // print(_gutDataModel!.toJson());
+          // print(_gutDataModel!.value);
+          // goToScreen(goToScreen(UploadFiles()));
             goToScreen(MedicalReportScreen(
               isMrRead: isMrRead ?? '1',
               pdfLink: _gutDataModel!.historyWithMrValue!.mr!,
@@ -2320,12 +2323,14 @@ class _NewDsPageState extends State<NewDsPage> {
           }
         }
         else {
-          if (programOptionStage != null &&
-              programOptionStage!.isNotEmpty
-          &&
-              (_prepratoryModel!.value!.isPrepCompleted != null &&
-                  _prepratoryModel!.value!.isPrepCompleted == true)
-          ) {
+          if(shippingStage == "shipping_delivered" && _prepratoryModel!.value!.isPrepTrackerCompleted == false){
+            return showPrepratoryMealScreen();
+          }
+          else if (programOptionStage != null &&
+              programOptionStage!.isNotEmpty &&
+              (_prepratoryModel!.value!.isPrepTrackerCompleted != null &&
+                  _prepratoryModel!.value!.isPrepTrackerCompleted == true))
+          {
             print("called");
             return showProgramScreen();
           }
@@ -2536,7 +2541,7 @@ class _NewDsPageState extends State<NewDsPage> {
         }
         break;
       case StageType.analysis:
-        // TODO: Handle this case.
+      // TODO: Handle this case.
         print(consultationStage);
         if (buttonId == 1) {
           switch (consultationStage) {
@@ -2596,11 +2601,13 @@ class _NewDsPageState extends State<NewDsPage> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => (_prepratoryModel!.value!.isPrepCompleted!)
-                ? PrepratoryMealCompletedScreen()
-                : PreparatoryPlanScreen(
+              builder: (context) => (_prepratoryModel!.value!.isPrepCompleted!)
+                  ? PrepratoryMealCompletedScreen()
+                  : PreparatoryPlanScreen(
                 dayNumber: _prepratoryModel!.value!.currentDay ?? '',
-                totalDays: _prepratoryModel!.value!.prep_days ?? ''),
+                totalDays: _prepratoryModel!.value!.prep_days ?? '',
+                isPrepStarted: _prepratoryModel!.value!.isPrepratoryStarted!,
+              )
             // ProgramPlanScreen(from: ProgramMealType.prepratory.name,)
           ),
         ).then((value) => reloadUI());

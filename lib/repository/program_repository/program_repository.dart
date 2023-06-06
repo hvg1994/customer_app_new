@@ -1,3 +1,6 @@
+
+import 'package:http/http.dart';
+
 import '../../model/program_model/proceed_model/send_proceed_program_model.dart';
 import '../api_service.dart';
 
@@ -15,8 +18,8 @@ class ProgramRepository{
     return await apiClient.getMealPlanDetailsApi(day);
   }
 
-  Future proceedDayMealDetailsRepo(ProceedProgramDayModel model) async{
-    return await apiClient.proceedDayProgramList(model);
+  Future proceedDayMealDetailsRepo(ProceedProgramDayModel model, List<MultipartFile> file) async{
+    return await apiClient.proceedDayProgramList(model, file);
   }
 
   /// pass startProgram=1

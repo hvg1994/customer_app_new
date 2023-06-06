@@ -2,6 +2,7 @@ import 'dart:convert';
 
 class EvaluationModelFormat2{
   String vegNonVegVegan;
+  String? vegNonVegVeganOther;
   String earlyMorning;
   String breakfast;
   String midDay;
@@ -28,6 +29,7 @@ class EvaluationModelFormat2{
   EvaluationModelFormat2(
       {
         required this.vegNonVegVegan,
+        this.vegNonVegVeganOther,
         required this.earlyMorning,
         required this.breakfast,
         required this.midDay,
@@ -54,6 +56,7 @@ class EvaluationModelFormat2{
   Map<String, dynamic> toMap() {
     final Map<String, String> data = new Map<String, String>();
     data['veg_nonveg_vegan'] = this.vegNonVegVegan;
+    if(vegNonVegVeganOther!.isNotEmpty) data['veg_nonveg_vegan_other'] = this.vegNonVegVeganOther!;
     data['early_morning'] = this.earlyMorning;
     data['breakfast'] = this.breakfast;
     data['mid_day'] = this.midDay;
@@ -83,6 +86,7 @@ class EvaluationModelFormat2{
   factory EvaluationModelFormat2.fromMap(Map<String, dynamic> map) {
     return EvaluationModelFormat2(
       vegNonVegVegan: map['vegNonVegVegan'] as String,
+      vegNonVegVeganOther: map['veg_nonveg_vegan_other'] as String,
       earlyMorning: map['earlyMorning'] as String,
       breakfast: map['breakfast'] as String,
       midDay: map['midDay'] as String,

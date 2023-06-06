@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gwc_customer/repository/program_repository/program_repository.dart';
+import 'package:http/http.dart';
 
 import '../../model/program_model/proceed_model/send_proceed_program_model.dart';
 
@@ -17,8 +18,8 @@ class ProgramService extends ChangeNotifier{
     return await repository.getMealPlanDetailsRepo(day);
   }
 
-  Future proceedDayMealDetailsService(ProceedProgramDayModel day) async{
-    return await repository.proceedDayMealDetailsRepo(day);
+  Future proceedDayMealDetailsService(ProceedProgramDayModel day, List<MultipartFile> files) async{
+    return await repository.proceedDayMealDetailsRepo(day, files);
   }
 
   /// pass startProgram=1

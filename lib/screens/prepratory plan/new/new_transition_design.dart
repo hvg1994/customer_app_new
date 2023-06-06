@@ -113,13 +113,24 @@ class _NewTransitionDesignState extends State<NewTransitionDesign>
           if (res.previousDayStatus == "0") {
             Future.delayed(Duration(seconds: 0)).then((value) {
               if (!symptomTrackerSheet) {
-                return showSymptomsTrackerSheet(
-                    context, (int.parse(widget.dayNumber) - 1).toString(),
-                    isPreviousDaySheet: true)
-                    .then((value) {
-                  // when we close bottomsheet from close icon than we r  not calling this
-                  if (!fromBottomSheet) getTransitionMeals();
-                });
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (ctx) => TrackerUI(
+
+                        from: ProgramMealType.transition.name,
+                        isPreviousDaySheet: true,
+                        proceedProgramDayModel: ProceedProgramDayModel(day: (int.parse(widget.dayNumber) - 1).toString()),
+                        trackerVideoLink: widget.trackerVideoLink
+                    ),),);
+
+                // return showSymptomsTrackerSheet(
+                //     context, (int.parse(widget.dayNumber) - 1).toString(),
+                //     isPreviousDaySheet: true)
+                //     .then((value) {
+                //   // when we close bottomsheet from close icon than we r  not calling this
+                //   if (!fromBottomSheet) getTransitionMeals();
+                // });
               }
             });
           }
@@ -179,30 +190,34 @@ class _NewTransitionDesignState extends State<NewTransitionDesign>
   }
 
   getInitialIndex() {
-    if (DateTime.now().hour <= 0) {
+    print("HOur : $selectedIndex");
+    print("HOur : $selectedIndex : ${DateTime.now().hour >= DateTime.now().hour}");
+    if (DateTime.now().hour >= 0 && DateTime.now().hour <= 7) {
       print(
-          "Early Morning : ${DateTime.now().hour <= 0}");
+          "Early Morning : ${DateTime.now().hour >= 7}");
       return selectedIndex = 0;
-    } else if (DateTime.now().hour <= 7) {
+    } else if (DateTime.now().hour >= 7 && DateTime.now().hour <= 10) {
       print(
           "Breakfast : ${DateTime.now().hour <= 7}");
       return selectedIndex = 1;
-    } else if (DateTime.now().hour <= 10) {
+    } else if (DateTime.now().hour >= 10 && DateTime.now().hour <= 12) {
       print(
           "Mid Day : ${DateTime.now().hour <= 10}");
       return selectedIndex = 2;
-    } else if (DateTime.now().hour <= 11) {
+    }
+    else if (DateTime.now().hour >= 12 && DateTime.now().hour <= 14) {
       print("Lunch : ${DateTime.now().hour <= 11}");
       return selectedIndex = 3;
-    } else if (DateTime.now().hour <= 13) {
+    }
+    else if (DateTime.now().hour >= 14 && DateTime.now().hour <= 18) {
       print(
           "Evening : ${DateTime.now().hour <= 13}");
       return selectedIndex = 4;
-    } else if (DateTime.now().hour <= 18) {
+    } else if (DateTime.now().hour >= 18 && DateTime.now().hour == 21) {
       print(
           "Dinner : ${DateTime.now().hour <= 18}");
       return selectedIndex = 5;
-    } else if (DateTime.now().hour <= 21) {
+    } else if (DateTime.now().hour >= 21 && DateTime.now().hour <= 0) {
       print(
           "Post Dinner : ${DateTime.now().hour <= 21}");
       return selectedIndex = 6;
@@ -724,9 +739,17 @@ class _NewTransitionDesignState extends State<NewTransitionDesign>
     return Center(
       child: GestureDetector(
         onTap: () {
-          showSymptomsTrackerSheet(context, widget.dayNumber).then((value) {
-            getTransitionMeals();
-          });
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (ctx) => TrackerUI(
+                  from: ProgramMealType.transition.name,
+                  proceedProgramDayModel: ProceedProgramDayModel(day: widget.dayNumber),
+                  trackerVideoLink: widget.trackerVideoLink
+              ),),);
+          // showSymptomsTrackerSheet(context, widget.dayNumber).then((value) {
+          //   getTransitionMeals();
+          // });
         },
         child: Container(
           margin: EdgeInsets.symmetric(vertical: 2.h),

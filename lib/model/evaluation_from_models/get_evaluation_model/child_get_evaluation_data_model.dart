@@ -27,6 +27,7 @@ class ChildGetEvaluationDataModel {
   String? anyTherapiesHaveDoneBefore;
   String? medicalReport;
   String? vegNonVegVegan;
+  String? vegNonVegVeganOther;
   String? earlyMorning;
   String? breakfast;
   String? midDay;
@@ -78,6 +79,7 @@ class ChildGetEvaluationDataModel {
         this.anyTherapiesHaveDoneBefore,
         this.medicalReport,
         this.vegNonVegVegan,
+        this.vegNonVegVeganOther,
         this.earlyMorning,
         this.breakfast,
         this.midDay,
@@ -131,9 +133,10 @@ class ChildGetEvaluationDataModel {
     anyTherapiesHaveDoneBefore = json['any_therapies_have_done_before'];
     medicalReport = json['medical_report'] ?? '';
 
-
     vegNonVegVegan = json['veg_nonveg_vegan'];
     print("vegNonVegVegan: $vegNonVegVegan");
+    vegNonVegVeganOther = json['veg_nonveg_vegan_other'];
+
     earlyMorning = json['early_morning'];
     breakfast = json['breakfast'];
     midDay = json['mid_day'];
@@ -194,6 +197,8 @@ class ChildGetEvaluationDataModel {
     data['medical_report'] = this.medicalReport;
 
     data['veg_nonveg_vegan'] = this.vegNonVegVegan;
+    data['veg_nonveg_vegan_other'] = this.vegNonVegVeganOther;
+
     data['early_morning'] = this.earlyMorning;
     data['breakfast'] = this.breakfast;
     data['mid_day'] = this.midDay;

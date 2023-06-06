@@ -1067,6 +1067,10 @@ class _EvaluationGetDetailsState extends State<EvaluationGetDetails> {
             ),
           ),
         ),
+        Visibility(
+          visible: model?.vegNonVegVeganOther != null,
+          child: buildContainer(model?.vegNonVegVeganOther ?? ""),
+        ),
         buildLabelTextField("What Do You Usually Have As Your Morning Beverage/Snack", fontSize: questionFont),
         SizedBox(height: 1.h),
         buildContainer(model?.earlyMorning ?? ""),

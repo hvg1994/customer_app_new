@@ -1623,15 +1623,7 @@ class _UploadFilesState extends State<UploadFiles> {
                             .report
                             .toString()),
                   )
-                      : Padding(
-                    padding: EdgeInsets.symmetric(vertical: 15.h),
-                    child: const Center(
-                      child: Image(
-                        image:
-                        AssetImage("assets/images/no_data_found.png"),
-                      ),
-                    ),
-                  );
+                      :const SizedBox();
                 }),
               ),
             ),
@@ -1681,15 +1673,7 @@ class _UploadFilesState extends State<UploadFiles> {
                           .report
                           .toString()),
                 )
-                    : Padding(
-                  padding: EdgeInsets.symmetric(vertical: 15.h),
-                  child: const Center(
-                    child: Image(
-                      image:
-                      AssetImage("assets/images/no_data_found.png"),
-                    ),
-                  ),
-                );
+                    : const SizedBox();
               }),
             ),
           ),
@@ -1739,15 +1723,7 @@ class _UploadFilesState extends State<UploadFiles> {
                             .report
                             .toString()),
                   )
-                      : Padding(
-                    padding: EdgeInsets.symmetric(vertical: 15.h),
-                    child: const Center(
-                      child: Image(
-                        image:
-                        AssetImage("assets/images/no_data_found.png"),
-                      ),
-                    ),
-                  );
+                      : const SizedBox();
                 }),
               ),
             ),
@@ -1798,15 +1774,7 @@ class _UploadFilesState extends State<UploadFiles> {
                             .report
                             .toString()),
                   )
-                      : Padding(
-                    padding: EdgeInsets.symmetric(vertical: 15.h),
-                    child: const Center(
-                      child: Image(
-                        image:
-                        AssetImage("assets/images/no_data_found.png"),
-                      ),
-                    ),
-                  );
+                      : const SizedBox();
                 }),
               ),
             ),

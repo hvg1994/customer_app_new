@@ -1,4 +1,4 @@
-import '../../model/home_remedies_model/home_remedies_model.dart';
+import '../../model/home_remedy_model/home_remedies_model.dart';
 import '../api_service.dart';
 
 class HomeRemediesRepository {
