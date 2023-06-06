@@ -15,16 +15,16 @@ class ChildNotificationModel {
 
 	ChildNotificationModel.fromJsonMap(Map<String, dynamic> map):
 		id = map["id"],
-		user_id = map["user_id"],
-		type = map["type"],
-		subject = map["subject"],
-		message = map["message"],
-		request_id = map["request_id"],
-		notification_type = map["notification_type"],
-		is_read = map["is_read"],
-		added_by = map["added_by"],
-		created_at = map["created_at"],
-		updated_at = map["updated_at"];
+		user_id = map["user_id"].toString(),
+		type = map["type"].toString(),
+		subject = map["subject"].toString(),
+		message = map["message"].toString(),
+		request_id = map["request_id"].toString(),
+		notification_type = map["notification_type"].toString(),
+		is_read = map["is_read"].toString(),
+		added_by = map["added_by"].toString(),
+		created_at = map["created_at"].toString(),
+		updated_at = map["updated_at"].toString();
 
 	Map<String, dynamic> toJson() {
 		final Map<String, dynamic> data = new Map<String, dynamic>();

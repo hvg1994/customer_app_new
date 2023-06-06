@@ -11,7 +11,7 @@ class ProgramDayModel {
   ProgramDayModel.fromJson(Map<String, dynamic> json) {
     status = json['status'];
     errorCode = json['errorCode'];
-    presentDay = json['present_day'];
+    presentDay = json['present_day'].toString();
     if (json['data'] != null) {
       data = <ChildProgramDayModel>[];
       json['data'].forEach((v) {

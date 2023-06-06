@@ -16,7 +16,7 @@ class MealPlanDetailsModel {
     print("run==> ${json['data'].runtimeType}");
     status = json['status'];
     errorCode = json['errorCode'];
-    programDay = json['program_day'];
+    programDay = json['program_day'].toString();
     comment = json['comment'] ?? '';
     note = json['note'] ?? '';
     data = Map.from(json["data"]).map((k, v) => MapEntry<String, List<ChildMealPlanDetailsModel>>(k, List<ChildMealPlanDetailsModel>.from(v.map((x) => ChildMealPlanDetailsModel.fromJson(x)))));

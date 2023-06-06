@@ -74,7 +74,7 @@ class HomeRemedy {
   factory HomeRemedy.fromJson(Map<String, dynamic> json) => HomeRemedy(
     name: json["name"],
     thumbnail: json["thumbnail"],
-    isGeneral: json["is_general"],
+    isGeneral: json["is_general"].toString(),
     knowMore: json["know_more"],
     healAtHome: json["heal_at_home"],
     healAnywhere: json["heal_anywhere"],

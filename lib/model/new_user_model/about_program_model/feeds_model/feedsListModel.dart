@@ -159,7 +159,7 @@ class AddedBy {
     gender = json['gender'];
     profile = json['profile'];
     address = json['address'];
-    otp = json['otp'];
+    otp = json['otp'].toString();
     deviceToken = json['device_token'];
     deviceType = json['device_type'];
     deviceId = json['device_id'];
@@ -223,8 +223,8 @@ class Comments {
 
   Comments.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    feedId = json['feed_id'];
-    type = json['type'];
+    feedId = json['feed_id'].toString();
+    type = json['type'].toString();
     value = json['value'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];

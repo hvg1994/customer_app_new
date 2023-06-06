@@ -16,11 +16,11 @@ class PrepratoryMealModel {
     status = json['status'];
     errorCode = json['errorCode'];
     key = json['key'];
-    currentDay = json['current_day'];
+    currentDay = json['current_day'].toString();
     isPrepCompleted = json['is_prep_completed'];
     note = json['note'];
     dosDontPdfLink = json['do_dont'];
-    days = json['days'];
+    days = json['days'].toString();
 
     if(json['data'] != null){
       data = {};
@@ -86,7 +86,7 @@ class MealSlot {
   int? itemId;
   String? name;
   String? benefits;
-  Null? subtitle;
+  String? subtitle;
   String? itemPhoto;
   String? recipeUrl;
   String? howToStore;
@@ -186,12 +186,12 @@ class Ingredient {
         this.weightTypeId});
 
   Ingredient.fromJson(Map<String, dynamic> json) {
-    ingredientName = json['ingredient_name'];
-    ingredientThumbnail = json['ingredient_thumbnail'];
-    unit = json['unit'];
-    qty = json['qty'];
-    ingredientId = json['ingredient_id'];
-    weightTypeId = json['weight_type_id'];
+    ingredientName = json['ingredient_name'].toString();
+    ingredientThumbnail = json['ingredient_thumbnail'].toString();
+    unit = json['unit'].toString();
+    qty = json['qty'].toString();
+    ingredientId = json['ingredient_id'].toString();
+    weightTypeId = json['weight_type_id'].toString();
   }
 
   Map<String, dynamic> toJson() {
@@ -213,8 +213,8 @@ class Variation {
   Variation({this.variationTitle, this.variationDescription});
 
   Variation.fromJson(Map<String, dynamic> json) {
-    variationTitle = json['variation_title'];
-    variationDescription = json['variation_description'];
+    variationTitle = json['variation_title'].toString();
+    variationDescription = json['variation_description'].toString();
   }
 
   Map<String, dynamic> toJson() {
@@ -232,8 +232,8 @@ class Faq {
   Faq({this.faqQuestion, this.faqAnswer});
 
   Faq.fromJson(Map<String, dynamic> json) {
-    faqQuestion = json['faq_question'];
-    faqAnswer = json['faq_answer'];
+    faqQuestion = json['faq_question'].toString();
+    faqAnswer = json['faq_answer'].toString();
   }
 
   Map<String, dynamic> toJson() {

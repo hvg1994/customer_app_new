@@ -11,7 +11,7 @@ class GutDataModel {
     print("json['value'].runtimeType: ${json['value'].runtimeType}");
     print(json['value']);
     if(json['value'].runtimeType == String){
-      stringValue = (json['value'].runtimeType == String) ? json['value'] ??'' : '';
+      stringValue = (json['value'].runtimeType == String) ? json['value'].toString() ??'' : '';
     }
     else{
       if(json['data'] == 'consultation_rejected'){
@@ -23,7 +23,7 @@ class GutDataModel {
         historyWithMrValue = json['value'] != null ? HistoryWithMrClass.fromJson(json['value']) : null;
       }
     }
-    data = json['data'];
+    data = json['data'].toString();
     isProgramFeedbackSubmitted = json['is_program_feedback_submitted'].toString() ?? '';
   }
 
@@ -44,7 +44,7 @@ class RejectedCaseClass{
 
   RejectedCaseClass.fromJson(Map<String, dynamic> json) {
     print("rejected json $json ");
-    reason = json['rejected_reason'];
+    reason = json['rejected_reason'].toString();
     // mr = json['mr_report'] ?? '';
     historyWithMrValue = json['mr_report'] != null ? HistoryWithMrClass.fromJson(json['mr_report']) : null;
   }
@@ -69,7 +69,7 @@ class HistoryWithMrClass {
     consultationHistory = json['consultation_history'] != null
         ? new ConsultationHistory.fromJson(json['consultation_history'])
         : null;
-    mr = json['report'];
+    mr = json['report'].toString();
   }
 
   Map<String, dynamic> toJson() {
@@ -97,9 +97,9 @@ class ConsultationHistory {
         this.appointDoctor});
 
   ConsultationHistory.fromJson(Map<String, dynamic> json) {
-    consultationDate = json['consultation_date'];
-    consultationStartTime = json['consultation_start_time'];
-    consultationEndTime = json['consultation_end_time'];
+    consultationDate = json['consultation_date'].toString();
+    consultationStartTime = json['consultation_start_time'].toString();
+    consultationEndTime = json['consultation_end_time'].toString();
     if (json['Appoint_Doctor'] != null) {
         appointDoctor = AppointDoctor.fromJson(json['Appoint_Doctor']);
     }
@@ -183,34 +183,34 @@ class AppointDoctor {
 
   AppointDoctor.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    roleId = json['role_id'];
-    name = json['name'];
-    fname = json['fname'];
-    lname = json['lname'];
-    email = json['email'];
-    emailVerifiedAt = json['email_verified_at'];
-    countryCode = json['country_code'];
-    phone = json['phone'];
-    gender = json['gender'];
-    profile = json['profile'];
-    address = json['address'];
-    otp = json['otp'];
-    deviceToken = json['device_token'];
-    webDeviceToken = json['web_device_token'];
-    deviceType = json['device_type'];
-    deviceId = json['device_id'];
-    age = json['age'];
-    kaleyraUserId = json['kaleyra_user_id'];
-    chatId = json['chat_id'];
-    loginUsername = json['login_username'];
-    pincode = json['pincode'];
-    isDoctorAdmin = json['is_doctor_admin'];
-    underAdminDoctor = json['under_admin_doctor'];
-    isActive = json['is_active'];
-    addedBy = json['added_by'];
-    createdAt = json['created_at'];
-    updatedAt = json['updated_at'];
-    signupDate = json['signup_date'];
+    roleId = json['role_id'].toString();
+    name = json['name'].toString();
+    fname = json['fname'].toString();
+    lname = json['lname'].toString();
+    email = json['email'].toString();
+    emailVerifiedAt = json['email_verified_at'].toString();
+    countryCode = json['country_code'].toString();
+    phone = json['phone'].toString();
+    gender = json['gender'].toString();
+    profile = json['profile'].toString();
+    address = json['address'].toString();
+    otp = json['otp'].toString();
+    deviceToken = json['device_token'].toString();
+    webDeviceToken = json['web_device_token'].toString();
+    deviceType = json['device_type'].toString();
+    deviceId = json['device_id'].toString();
+    age = json['age'].toString();
+    kaleyraUserId = json['kaleyra_user_id'].toString();
+    chatId = json['chat_id'].toString();
+    loginUsername = json['login_username'].toString();
+    pincode = json['pincode'].toString();
+    isDoctorAdmin = json['is_doctor_admin'].toString();
+    underAdminDoctor = json['under_admin_doctor'].toString();
+    isActive = json['is_active'].toString();
+    addedBy = json['added_by'].toString();
+    createdAt = json['created_at'].toString();
+    updatedAt = json['updated_at'].toString();
+    signupDate = json['signup_date'].toString();
     doctor =
     json['doctor'] != null ? new Doctor.fromJson(json['doctor']) : null;
   }
@@ -291,23 +291,23 @@ class Doctor {
 
   Doctor.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    userId = json['user_id'];
-    signupDate = json['signup_date'];
-    experience = json['experience'];
-    weekoff = json['weekoff'];
-    desc = json['desc'];
-    programAssociated = json['program_associated'];
-    occupation = json['occupation'];
+    userId = json['user_id'].toString();
+    signupDate = json['signup_date'].toString();
+    experience = json['experience'].toString();
+    weekoff = json['weekoff'].toString();
+    desc = json['desc'].toString();
+    programAssociated = json['program_associated'].toString();
+    occupation = json['occupation'].toString();
     specialization = json['specialization'] != null
         ? new Specialization.fromJson(json['specialization'])
         : null;
-    isArchieved = json['is_archieved'];
-    isDoctorAdmin = json['is_doctor_admin'];
-    asstDoctors = json['asst_doctors'];
-    sign = json['sign'];
-    registerNumber = json['register_number'];
-    createdAt = json['created_at'];
-    updatedAt = json['updated_at'];
+    isArchieved = json['is_archieved'].toString();
+    isDoctorAdmin = json['is_doctor_admin'].toString();
+    asstDoctors = json['asst_doctors'].toString();
+    sign = json['sign'].toString();
+    registerNumber = json['register_number'].toString();
+    createdAt = json['created_at'].toString();
+    updatedAt = json['updated_at'].toString();
   }
 
   Map<String, dynamic> toJson() {
@@ -344,9 +344,9 @@ class Specialization {
 
   Specialization.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    name = json['name'];
-    createdAt = json['created_at'];
-    updatedAt = json['updated_at'];
+    name = json['name'].toString();
+    createdAt = json['created_at'].toString();
+    updatedAt = json['updated_at'].toString();
   }
 
   Map<String, dynamic> toJson() {

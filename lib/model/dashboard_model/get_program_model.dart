@@ -6,7 +6,7 @@ class GetProgramModel {
 
   GetProgramModel.fromJson(Map<String, dynamic> json) {
     print('json:=== $json  ${json['data'].runtimeType} ${json['value'].runtimeType}');
-    data = json['data'];
+    data = json['data'].toString();
     value = (json['value'] != null ? new Value.fromJson(json['value']) : null);
   }
 
@@ -52,15 +52,15 @@ class Value {
     print("value from json: $json");
     id = json['id'];
     userId = json['user_id'].toString();
-    startVideoUrl = json['video'];
-    tracker_video_url = json['tracker_video'];
-    recipeVideo = json['recipe_video'];
-    programId = json['program_id'];
+    startVideoUrl = json['video'].toString();
+    tracker_video_url = json['tracker_video'].toString();
+    recipeVideo = json['recipe_video'].toString();
+    programId = json['program_id'].toString();
     isActive = json['is_active'].toString();
-    startProgram = json['start_program'];
-    mealCurrentDay = json['sp_current_day'];
-    createdAt = json['created_at'];
-    updatedAt = json['updated_at'];
+    startProgram = json['start_program'].toString();
+    mealCurrentDay = json['sp_current_day'].toString();
+    createdAt = json['created_at'].toString();
+    updatedAt = json['updated_at'].toString();
     program = json['program'] != null ? new Program.fromJson(json['program'])
         : json['program_days'] != null
         ? new Program.fromJson(json['program_days']) : null;
@@ -112,13 +112,13 @@ class Program {
     print("program from json: $json");
     id = json['id'];
     issueId = json['issue_id'].toString();
-    name = json['name'];
-    noOfDays = json['no_of_days'];
-    desc = json['desc'];
-    price = json['price'];
-    profile = json['profile'];
-    createdAt = json['created_at'];
-    updatedAt = json['updated_at'];
+    name = json['name'].toString();
+    noOfDays = json['no_of_days'].toString();
+    desc = json['desc'].toString();
+    price = json['price'].toString();
+    profile = json['profile'].toString();
+    createdAt = json['created_at'].toString();
+    updatedAt = json['updated_at'].toString();
   }
 
   Map<String, dynamic> toJson() {

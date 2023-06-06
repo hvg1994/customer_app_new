@@ -9,15 +9,15 @@ MedicalFeedbackModel medicalFeedbackModelFromJson(String str) => MedicalFeedback
 String medicalFeedbackModelToJson(MedicalFeedbackModel data) => json.encode(data.toJson());
 
 class MedicalFeedbackModel {
-  int status;
-  String key;
-  Data data;
-
   MedicalFeedbackModel({
-    required this.status,
-    required this.key,
-    required this.data,
+    this.status,
+    this.key,
+    this.data,
   });
+
+  int? status;
+  String? key;
+  Data? data;
 
   factory MedicalFeedbackModel.fromJson(Map<String, dynamic> json) => MedicalFeedbackModel(
     status: json["status"],
@@ -28,11 +28,24 @@ class MedicalFeedbackModel {
   Map<String, dynamic> toJson() => {
     "status": status,
     "key": key,
-    "data": data.toJson(),
+    "data": data?.toJson(),
   };
 }
 
 class Data {
+  Data({
+    this.id,
+    this.resolvedDigestiveIssue,
+    this.unresolvedDigestiveIssue,
+    this.mealPreferences,
+    this.hungerPattern,
+    this.bowelPattern,
+    this.lifestyleHabits,
+    this.addedBy,
+    this.createdAt,
+    this.updatedAt,
+  });
+
   int? id;
   String? resolvedDigestiveIssue;
   String? unresolvedDigestiveIssue;
@@ -43,19 +56,6 @@ class Data {
   String? addedBy;
   String? createdAt;
   String? updatedAt;
-
-  Data({
-     this.id,
-     this.resolvedDigestiveIssue,
-     this.unresolvedDigestiveIssue,
-     this.mealPreferences,
-     this.hungerPattern,
-     this.bowelPattern,
-     this.lifestyleHabits,
-     this.addedBy,
-     this.createdAt,
-     this.updatedAt,
-  });
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
     id: json["id"],

@@ -63,19 +63,19 @@ class Value {
     teamPatientId = json['team_patient_id'].toString();
     orderId = json['order_id'].toString();
     shippingId = json['shipping_id'].toString();
-    awbCode = json['awb_code'];
-    courierName = json['courier_name'];
-    courierCompanyId = json['courier_company_id'];
-    assignedDateTime = json['assigned_date_time'];
-    labelUrl = json['label_url'];
-    manifestUrl = json['manifest_url'];
-    pickupTokenNumber = json['pickup_token_number'];
-    routingCode = json['routing_code'];
-    pickupScheduledDate = json['pickup_scheduled_date'];
-    status = json['status'];
-    addedBy = json['added_by'];
-    createdAt = json['created_at'];
-    updatedAt = json['updated_at'];
+    awbCode = json['awb_code'].toString();
+    courierName = json['courier_name'].toString();
+    courierCompanyId = json['courier_company_id'].toString();
+    assignedDateTime = json['assigned_date_time'].toString();
+    labelUrl = json['label_url'].toString();
+    manifestUrl = json['manifest_url'].toString();
+    pickupTokenNumber = json['pickup_token_number'].toString();
+    routingCode = json['routing_code'].toString();
+    pickupScheduledDate = json['pickup_scheduled_date'].toString();
+    status = json['status'].toString();
+    addedBy = json['added_by'].toString();
+    createdAt = json['created_at'].toString();
+    updatedAt = json['updated_at'].toString();
   }
 
   Map<String, dynamic> toJson() {

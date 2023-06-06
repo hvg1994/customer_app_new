@@ -41,18 +41,18 @@ class ChildMealPlanDetailsModel {
 
   ChildMealPlanDetailsModel.fromJson(Map<String, dynamic> json) {
     type = json['type'] ?? '';
-    mealTime = json['meal_time'] ?? '';
+    mealTime = json['meal_time'].toString() ?? '';
     itemId = json['item_id'] ?? '';
-    name = json['name'] ?? '';
-    mealWeight = json['meal_weight'] ?? '';
-    weightType = json['weight_type'] ?? '';
-    url = json['url'] ?? '';
-    status = json['status'] ?? '';
+    name = json['name'].toString() ?? '';
+    mealWeight = json['meal_weight'].toString() ?? '';
+    weightType = json['weight_type'].toString() ?? '';
+    url = json['url'].toString() ?? '';
+    status = json['status'].toString() ?? '';
     subTitle = json['subtitle'] ?? '';
-    itemImage = json['item_photo'] ?? '';
-    benefits = json['benefits'] ?? '';
-    howToStore = json['how_to_store'];
-    howToPrepare = json['how_to_prepare'];
+    itemImage = json['item_photo'].toString() ?? '';
+    benefits = json['benefits'].toString() ?? '';
+    howToStore = json['how_to_store'].toString();
+    howToPrepare = json['how_to_prepare'].toString();
     if (json['ingredient'] != null) {
       ingredient = <Ingredient>[];
       json['ingredient'].forEach((v) {
@@ -71,7 +71,7 @@ class ChildMealPlanDetailsModel {
         faq!.add(new Faq.fromJson(v));
       });
     }
-    cookingTime = json['cooking_time'];
+    cookingTime = json['cooking_time'].toString();
   }
 
 

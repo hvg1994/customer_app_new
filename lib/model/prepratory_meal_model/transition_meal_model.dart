@@ -22,8 +22,8 @@ class TransitionMealModel {
     errorCode = json['errorCode'];
     key = json['key'];
     note = json['note'];
-    totalDays = json['days'];
-    currentDay = json['current_day'];
+    totalDays = json['days'].toString();
+    currentDay = json['current_day'].toString();
     currentDayStatus =json['current_day_status'].toString();
     previousDayStatus = json['previous_day_status'].toString();
     isTransMealCompleted = json['is_trans_completed'];
