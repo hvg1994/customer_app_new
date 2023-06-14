@@ -1085,7 +1085,7 @@ class _HealingPlanScreenState extends State<HealingPlanScreen> {
               ),
             ),
             Visibility(
-              // visible: buttonVisibility(),
+              visible: buttonVisibility(),
               child: Center(
                 child: IntrinsicWidth(
                   child: GestureDetector(
@@ -1127,7 +1127,6 @@ class _HealingPlanScreenState extends State<HealingPlanScreen> {
                             1) {
                           print(
                               "completed already");
-                          sendData();
                         } else if (i + 1 ==
                             presentDay ||
                             i + 1 ==
