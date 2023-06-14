@@ -33,15 +33,17 @@ class ChildEvalPatient {
         this.user});
 
   ChildEvalPatient.fromJson(Map<String, dynamic> json) {
+    print("patjson $json");
+    json.forEach((key, value) => print(value.runtimeType));
     id = json['id'];
-    userId = json['user_id'] ?? '';
+    userId = json['user_id'].toString() ?? '';
     maritalStatus = json['marital_status'] ?? '';
     pincode = json['pincode'] ?? '';
     address2 = json['address2'] ?? '';
     city = json['city'] ?? '';
     state = json['state'] ?? '';
     country = json['country'] ?? '';
-    weight = json['weight'] ?? '';
+    weight = json['weight'].toString() ?? '';
     status = json['status'] ?? '';
     isArchieved = json['is_archieved'].toString() ?? '';
     createdAt = json['created_at'] ?? '';

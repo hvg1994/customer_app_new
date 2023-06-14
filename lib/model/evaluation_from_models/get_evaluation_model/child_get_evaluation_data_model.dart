@@ -108,9 +108,9 @@ class ChildGetEvaluationDataModel {
 
   ChildGetEvaluationDataModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    patientId = json['patient_id'];
-    weight = json['weight'];
-    height = json['height'];
+    patientId = json['patient_id'].toString();
+    weight = json['weight'].toString();
+    height = json['height'].toString();
     healthProblem = json['health_problem'];
     listProblems = json['list_problems'];
     listProblemsOther = json['list_problems_other'];

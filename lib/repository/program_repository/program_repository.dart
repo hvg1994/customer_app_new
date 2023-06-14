@@ -18,13 +18,17 @@ class ProgramRepository{
     return await apiClient.getMealPlanDetailsApi(day);
   }
 
-  Future proceedDayMealDetailsRepo(ProceedProgramDayModel model, List<MultipartFile> file) async{
-    return await apiClient.proceedDayProgramList(model, file);
+  Future proceedDayMealDetailsRepo(ProceedProgramDayModel model, List<MultipartFile> file, String from) async{
+    return await apiClient.proceedDayProgramList(model, file, from);
   }
 
   /// pass startProgram=1
   Future startProgramOnSwipeRepo(String startProgram) async{
     return await apiClient.startProgramOnSwipeApi(startProgram);
+  }
+
+  Future getCombinedMealRepo() async{
+    return await apiClient.getCombinedMealApi();
   }
 
 }

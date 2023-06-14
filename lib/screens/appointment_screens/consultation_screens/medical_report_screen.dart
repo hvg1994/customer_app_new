@@ -19,10 +19,7 @@ class MedicalReportScreen extends StatelessWidget {
 
   submitIsMrRead() async{
     _gutDataService = GutDataService(repository: repository);
-    final res = await _gutDataService.submitIsMrReadService();
-    if(res.runtimeType == ErrorModel){
-
-    }
+    await _gutDataService.submitIsMrReadService();
   }
   @override
   Widget build(BuildContext context) {

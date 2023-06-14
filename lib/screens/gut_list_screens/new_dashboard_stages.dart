@@ -1482,7 +1482,7 @@ class GutListState extends State<GutList> {
       if(_gutProgramModel!.value!.startProgram == '0'){
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (context) => ProgramPlanScreen(from: ProgramMealType.program.name, isPrepCompleted: _prepratoryModel!.value!.isPrepCompleted,),
+            builder: (context) => ProgramPlanScreen(from: ProgramMealType.detox.name, isPrepCompleted: _prepratoryModel!.value!.isPrepCompleted,),
           ),
         ).then((value) => reloadUI());
       }

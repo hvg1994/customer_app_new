@@ -7,7 +7,7 @@ const String consultationStage3SubText = "Congrats on completing your consultati
 const String requestedReportStage1SubText = "Your doctor has requested for a few reports. Do upload them here to proceed further.";
 const String requestedReportStage2SubText = "Thanks for uploading your reports.\nYour doctor is now analyzing your case, allow us 2 working days to proceed to the next step.";
 
-
+const String prepstageText = "Before your program starts we must prime your gut for the detox & healing it will undergo, Start preparing your gut now\nWhile we customize your plan & kit for your program over the next 2-3 days.";
 const String prepStage2SubText = "Your kit is now ready to be shipped, schedule a date to have it delivered.";
 const String prepStage3SubText = "Your kit will be dispatched soon. Keep prepping your gut until your kit arrives.\n";
 
@@ -16,6 +16,7 @@ const String PpcBookedText = "Please ensure to join within 10 minutes of your co
 
 const String mealStartText = "You are now ready to start your main gut reset program.";
 const String mealTransText = "Congrats on completing your primary program. We now have to transition you back to regular food you are used to via the transition phase. Start now.";
+const String healingStartText = "You are now ready to start your Healing program.";
 
 
 List<DashboardStagesData> stageData = [
@@ -55,9 +56,8 @@ List<DashboardStagesData> stageData = [
       btn1Name: "Medical Report",
       type: StageType.medical_report
   ),
-  DashboardStagesData(title:"Gut Preparation",
-      subTitle:
-  "Before your program starts we must prime your gut for the detox & healing it will undergo, Start preparing your gut now\nWhile we customize your plan & kit for your program over the next 2-3 days.",
+  DashboardStagesData(title:"Customizing Your Plan",
+      subTitle: "The Plan and kit is being customized for your Program over the next 2-3 days. You can track the kit once Meal Plan is ready.",
     rightImage: "assets/images/dashboard_stages/Mask Group 43509.png",
     step: "6",
     btn1Name: "Prep",
@@ -129,9 +129,8 @@ List<DashboardStagesData> defaultStageData = [
       btn1Name: "Medical Report",
       type: StageType.medical_report
   ),
-  DashboardStagesData(title:"Gut Preparation",
-      subTitle:
-      "Before your program starts we must prime your gut for the detox & healing it will undergo, Start preparing your gut now\nWhile we customize your plan & kit for your program over the next 2-3 days.",
+  DashboardStagesData(title:"Customizing Your Plan",
+      subTitle: "The Plan and kit is being customized for your Program over the next 2-3 days. You can track the kit once Meal Plan is ready.",
       rightImage: "assets/images/dashboard_stages/Mask Group 43509.png",
       step: "6",
       btn1Name: "Prep",

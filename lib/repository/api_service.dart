@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:crypto/crypto.dart';
+import 'package:gwc_customer/model/combined_meal_model/combined_meal_model.dart';
 import 'package:gwc_customer/model/home_remedy_model/home_remedies_model.dart';
 import 'package:gwc_customer/model/prepratory_meal_model/get_prep_meal_track_model.dart';
 import 'package:gwc_customer/model/prepratory_meal_model/prep_meal_model.dart';
@@ -41,6 +42,7 @@ import 'package:gwc_customer/model/ship_track_model/sipping_approve_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:permission_handler/permission_handler.dart';
+import '../meal_json.dart';
 import '../model/consultation_model/appointment_booking/appointment_book_model.dart';
 import '../model/consultation_model/appointment_slot_model.dart';
 import '../model/dashboard_model/report_upload_model/report_list_model.dart';
@@ -1109,16 +1111,22 @@ class ApiClient {
     return result;
   }
 
-  Future proceedDayProgramList(ProceedProgramDayModel model, List<MultipartFile> files) async {
+  Future proceedDayProgramList(ProceedProgramDayModel model, List<MultipartFile> files, String from) async {
     var url = submitDayPlanDetailsUrl;
 
     dynamic result;
 
-    print("proceedDayProgramList path: $url");
+    print("proceedDayProgramList path: $url $from");
 
     print(Map.from(model.toJson()));
-    Map<String, String> m = Map.unmodifiable(model.toJson());
+    Map<String, String> m = Map.from(model.toJson());
 
+    if(from == "detox"){
+      m.putIfAbsent("meal_plan_type", () => 1.toString());
+    }
+    else{
+      m.putIfAbsent("meal_plan_type", () => 2.toString());
+    }
     // print(
     //     "model: ${json.encode(model.toJson()) == jsonEncode(model.toJson())}");
 
@@ -1392,6 +1400,10 @@ class ApiClient {
   }
 
   /// need to send 1 to startProgram
+  /// 1 -- detox
+  /// 2 -- prep
+  /// 3 -- nourish trans
+  /// 4 -- healing
   Future startProgramOnSwipeApi(String startProgram) async {
     final path = startProgramOnSwipeUrl;
 
@@ -2852,6 +2864,54 @@ class ApiClient {
             status: response.statusCode.toString(), message: response.body);
       }
     } catch (e) {
+      result = ErrorModel(status: "0", message: e.toString());
+    }
+    return result;
+  }
+
+  Future getCombinedMealApi() async {
+    final path = getCombinedMealUrl;
+    var result;
+
+    try {
+      final response = await httpClient.get(
+        Uri.parse(path),
+        headers: {
+          // "Authorization": "Bearer ${AppConfig().bearerToken}",
+          "Authorization": getHeaderToken(),
+        },
+      ).timeout(const Duration(seconds: 45));
+
+      print("getCombinedMealApi response url:" +
+          path);
+      print("getCombinedMealApi response code:" +
+          response.statusCode.toString());
+      print("getCombinedMealApi response body:" + response.body);
+
+      if (response.statusCode == 200) {
+        final res = jsonDecode(response.body);
+        print('${res['status'].runtimeType} ${res['status']}');
+        print(res['Detox']);
+
+        if (res['status'].toString() == '200') {
+          // result = CombinedMealModel.fromJson(mealJson);
+
+          result = CombinedMealModel.fromJson(jsonDecode(response.body));
+
+        } else {
+          result = ErrorModel.fromJson(res);
+        }
+      }
+      else if(response.statusCode == 500){
+        result = ErrorModel(status: "0", message: AppConfig.oopsMessage);
+      }
+      else {
+        print('status not equal called');
+        final res = jsonDecode(response.body);
+        result = ErrorModel.fromJson(res);
+      }
+    } catch (e) {
+      print("catch error::> $e");
       result = ErrorModel(status: "0", message: e.toString());
     }
     return result;

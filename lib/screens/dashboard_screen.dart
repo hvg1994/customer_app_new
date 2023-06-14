@@ -1,8 +1,13 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
+import 'package:gwc_customer/model/combined_meal_model/new_prep_model.dart';
 import 'package:gwc_customer/model/error_model.dart';
 import 'package:gwc_customer/screens/appointment_screens/consultation_screens/upload_files.dart';
 import 'package:gwc_customer/screens/gut_list_screens/new_dashboard_levels_screen.dart';
+import 'package:gwc_customer/screens/prepratory%20plan/new/new_transition_design.dart';
+import 'package:gwc_customer/screens/prepratory%20plan/new/preparatory_new_screen.dart';
 import 'package:gwc_customer/screens/profile_screens/settings_screen.dart';
 import 'package:gwc_customer/screens/program_plans/program_start_screen.dart';
 import 'package:gwc_customer/screens/program_plans/widget/radial/radial_meal.dart';
@@ -15,6 +20,8 @@ import '../table_view.dart';
 import '../utils/app_config.dart';
 import '../widgets/constants.dart';
 import '../widgets/video/normal_video.dart';
+import 'combined_meal_plan/combined_meal_screen.dart';
+import 'combined_meal_plan/new_prep_screen.dart';
 import 'evalution_form/evaluation_upload_report.dart';
 import 'feed_screens/feeds_list.dart';
 import 'gut_list_screens/dashboard_stacked_card.dart';
@@ -75,10 +82,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
     switch (index) {
       case 0:
         {
-          // this one
-          return const LevelStatus();
+          // return NewTransitionDesign(
+          //     postProgramStage: "",
+          //     totalDays: '1',
+          //     dayNumber: '0',
+          // );
 
-          // return DayMealTracerUI(proceedProgramDayModel: ProceedProgramDayModel(),);
+          return CombinedPrepMealTransScreen(stage: 1,);
+          // this one
+          // return const LevelStatus();
+
         }
       case 1:
         {

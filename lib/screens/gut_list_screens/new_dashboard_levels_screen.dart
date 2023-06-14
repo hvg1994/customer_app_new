@@ -2370,7 +2370,7 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
             .push(
               MaterialPageRoute(
                 builder: (context) => ProgramPlanScreen(
-                  from: ProgramMealType.program.name,
+                  from: ProgramMealType.detox.name,
                   isPrepCompleted: _prepratoryModel!.value!.isPrepCompleted,
                 ),
               ),

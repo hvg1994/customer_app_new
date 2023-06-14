@@ -49,8 +49,9 @@ class ChildEvalUser {
         this.signupDate});
 
   ChildEvalUser.fromJson(Map<String, dynamic> json) {
+    print("userjson: $json");
     id = json['id'];
-    roleId = json['role_id'] ?? '';
+    roleId = json['role_id'].toString() ?? '';
     name = json['name'] ?? '';
     fname = json['fname'] ?? '';
     lname = json['lname'] ?? '';

@@ -223,12 +223,12 @@ class GetPrePostMealvalue{
     trans_days = json['days'].toString();
     startVideo = json['video'];
 
-    isPrepratoryStarted = json['is_prep_program_started'].toString().contains("0") ? false : true;
+    isPrepratoryStarted = (json['is_prep_program_started'] != null) ? json['is_prep_program_started'].toString().contains("0") ? false : true : false;
     isPrepCompleted = (json['is_prep_program_completed'] != null) ? json['is_prep_program_completed'].toString().contains("0") ? false : true : false;
-    isPrepTrackerCompleted = json['is_prep_tracker_completed'].toString().contains("0") ? false : true;
+    isPrepTrackerCompleted = (json['is_prep_tracker_completed'] != null) ? json['is_prep_tracker_completed'].toString().contains("0") ? false : true : false;
 
-    isTransMealStarted = json['is_trans_program_started'].toString().contains("0") ? false : true;
-    isTransMealCompleted = json['is_trans_completed'].toString().contains("0") ? false : true;
+    isTransMealStarted = (json['is_trans_program_started'] != null) ? json['is_trans_program_started'].toString().contains("1") ? true : false : false;
+    isTransMealCompleted = (json['is_trans_completed'] != null) ? json['is_trans_completed'].toString().contains("1") ? true : false : false;
 
     currentDay = json['current_day'].toString();
   }

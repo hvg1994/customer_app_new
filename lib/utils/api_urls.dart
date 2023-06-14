@@ -134,6 +134,9 @@ var mrReadUrl = "${AppConfig().BASE_URL}/api/getData/is_mr_report_read";
 
 var getMedicalFeedbackDataUrl = "${AppConfig().BASE_URL}/api/getData/medical_feedback";
 
+// Neutri Delight
+var getCombinedMealUrl = "${AppConfig().BASE_URL}/api/getData/NutriDelight";
+
 
 
 

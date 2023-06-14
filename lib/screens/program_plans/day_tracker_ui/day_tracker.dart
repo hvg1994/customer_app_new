@@ -29,6 +29,7 @@ import '../../../repository/prepratory_repository/prep_repository.dart';
 import '../../../services/vlc_service/check_state.dart';
 import '../../../widgets/pip_package.dart';
 import '../../../widgets/video/normal_video.dart';
+import '../../combined_meal_plan/combined_meal_screen.dart';
 import '../../prepratory plan/new/new_transition_design.dart';
 import 'package:video_player/video_player.dart';
 import 'package:wakelock/wakelock.dart';
@@ -1020,10 +1021,10 @@ class _TrackerUIState extends State<TrackerUI> {
                                           if (await Wakelock.enabled == true) {
                                             Wakelock.disable();
                                           }
-                                          if (mealPlayerController != null)
-                                            mealPlayerController!.dispose();
-                                          if (_chewieController != null)
-                                            _chewieController!.dispose();
+                                          if (_sheetVideoController != null)
+                                            _sheetVideoController!.dispose();
+                                          if (_sheetChewieController != null)
+                                            _sheetChewieController!.dispose();
 
                                           // await _mealPlayerController!.stopRendererScanning();
                                           // await _mealPlayerController!.dispose();
@@ -1068,6 +1069,9 @@ class _TrackerUIState extends State<TrackerUI> {
                 child: GestureDetector(
                     onTap: () {
                       Navigator.pop(context);
+                      if(widget.isPreviousDaySheet){
+                        Navigator.pop(context);
+                      }
                     },
                     child: Icon(
                       Icons.cancel_outlined,
@@ -1568,7 +1572,7 @@ class _TrackerUIState extends State<TrackerUI> {
   }
 
   buildHealthCheckBox(CheckBoxSettings healthCheckBox, String from) {
-    return StatefulBuilder(builder: (_, setState) {
+    return StatefulBuilder(builder: (_, setstate) {
       return IntrinsicWidth(
         child: CheckboxListTile(
           visualDensity: VisualDensity(vertical: -3), // to compact
@@ -1590,33 +1594,37 @@ class _TrackerUIState extends State<TrackerUI> {
           activeColor: kPrimaryColor,
           value: healthCheckBox.value,
           onChanged: (v) {
+            print(v);
             if (from == '1') {
               if (healthCheckBox.title == symptomsCheckBox1.last.title) {
                 print("if");
-                setState(() {
+                setstate(() {
                   selectedSymptoms1.clear();
                   symptomsCheckBox1.forEach((element) {
                     element.value = false;
                   });
-                  selectedSymptoms1.add(healthCheckBox.title!);
+                  if(v == true){
+                    selectedSymptoms1.add(healthCheckBox.title!);
+                  }
                   healthCheckBox.value = v;
                 });
-              } else {
+              }
+              else {
                 print("else");
                 if (selectedSymptoms1.contains(symptomsCheckBox1.last.title)) {
                   print("if");
-                  setState(() {
+                  setstate(() {
                     selectedSymptoms1.clear();
                     symptomsCheckBox1.last.value = false;
                   });
                 }
                 if (v == true) {
-                  setState(() {
+                  setstate(() {
                     selectedSymptoms1.add(healthCheckBox.title!);
                     healthCheckBox.value = v;
                   });
                 } else {
-                  setState(() {
+                  setstate(() {
                     selectedSymptoms1.remove(healthCheckBox.title!);
                     healthCheckBox.value = v;
                   });
@@ -1626,7 +1634,7 @@ class _TrackerUIState extends State<TrackerUI> {
             } else if (from == '2') {
               if (healthCheckBox.title == symptomsCheckBox2.last.title) {
                 print("if");
-                setState(() {
+                setstate(() {
                   selectedSymptoms2.clear();
                   symptomsCheckBox2.forEach((element) {
                     element.value = false;
@@ -1645,7 +1653,7 @@ class _TrackerUIState extends State<TrackerUI> {
                 // print("else");
                 if (v == true) {
                   // print("if");
-                  setState(() {
+                  setstate(() {
                     if (selectedSymptoms2
                         .contains(symptomsCheckBox2.last.title)) {
                       // print("if");
@@ -1659,7 +1667,7 @@ class _TrackerUIState extends State<TrackerUI> {
                     healthCheckBox.value = v;
                   });
                 } else {
-                  setState(() {
+                  setstate(() {
                     selectedSymptoms2.remove(healthCheckBox.title!);
                     healthCheckBox.value = v;
                   });
@@ -1779,7 +1787,8 @@ class _TrackerUIState extends State<TrackerUI> {
   void proceed(setstate) async {
     ProceedProgramDayModel? model;
     print("day => ${widget.proceedProgramDayModel!.day}");
-    model = (ProgramMealType.program.name == widget.from)
+    model = (ProgramMealType.detox.name == widget.from
+        || ProgramMealType.healing.name == widget.from)
         ? ProceedProgramDayModel(
         patientMealTracking:
         widget.proceedProgramDayModel!.patientMealTracking,
@@ -1815,9 +1824,12 @@ class _TrackerUIState extends State<TrackerUI> {
     setstate(() {
       showProgress = true;
     });
-    final result = (ProgramMealType.program.name == widget.from)
+    final result = (ProgramMealType.detox.name == widget.from)
         ? await ProgramService(repository: repository)
-        .proceedDayMealDetailsService(model, newList)
+        .proceedDayMealDetailsService(model, newList, "detox")
+        : (ProgramMealType.healing.name == widget.from)
+        ? await ProgramService(repository: repository)
+        .proceedDayMealDetailsService(model, newList, "healing")
         : await PrepratoryMealService(repository: prepRepository)
         .proceedDayMealDetailsService(model);
 
@@ -1830,16 +1842,29 @@ class _TrackerUIState extends State<TrackerUI> {
       final _pref = AppConfig().preferences;
       final trackerUrl = _pref!.getString(AppConfig().trackerVideoUrl);
 
-      (ProgramMealType.program.name == widget.from)
+      (ProgramMealType.detox.name == widget.from)
           ? Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (_) => MealPlanScreen()),
+          MaterialPageRoute(builder: (_) =>
+              CombinedPrepMealTransScreen(stage: 1)
+              // MealPlanScreen()
+          ),
+              (route) => route.isFirst)
+          : (ProgramMealType.healing.name == widget.from)
+          ? Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (_) =>
+              CombinedPrepMealTransScreen(stage: 2)
+            // MealPlanScreen()
+          ),
               (route) => route.isFirst)
           : Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
-            builder: (context) => NewTransitionDesign(
-                totalDays: '', dayNumber: '', trackerVideoLink: trackerUrl),
+            builder: (context) =>
+                CombinedPrepMealTransScreen(stage: 3)
+                // NewTransitionDesign(
+                // totalDays: '', dayNumber: '', trackerVideoLink: trackerUrl),
           ),
               (route) => route.isFirst);
     }
@@ -1952,7 +1977,8 @@ class _TrackerUIState extends State<TrackerUI> {
                   Scrollable.ensureVisible(question2.currentContext!,
                       duration: const Duration(milliseconds: 200));
                 });
-              } else {
+              }
+              else {
                 Get.snackbar(
                   "",
                   'Please select withdrawal symptoms',
@@ -2016,247 +2042,255 @@ class _TrackerUIState extends State<TrackerUI> {
 
   Widget buildQuestion3() {
     return StatefulBuilder(builder: (_, setstate) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          buildLabelTextField(
-              'Please let us know if you notice any other signs or have any other worries. If none, enter "No."',
-              fontSize: questionFont,
-              key: question3),
-          TextFormField(
-            controller: worriesController,
-            cursorColor: kPrimaryColor,
-            validator: (value) {
-              if (value!.isEmpty) {
-                return 'Please let us know if you notice any other signs or have any other worries.';
+      return SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            buildLabelTextField(
+                'Please let us know if you notice any other signs or have any other worries. If none, enter "No."',
+                fontSize: questionFont,
+                key: question3),
+            TextFormField(
+              controller: worriesController,
+              cursorColor: kPrimaryColor,
+              validator: (value) {
+                if (value!.isEmpty) {
+                  return 'Please let us know if you notice any other signs or have any other worries.';
+                } else {
+                  return null;
+                }
+              },
+              decoration: CommonDecoration.buildTextInputDecoration(
+                  "Your answer", worriesController),
+              textInputAction: TextInputAction.next,
+              textAlign: TextAlign.start,
+              keyboardType: TextInputType.name,
+            ),
+            buildNextButton("03/07", () {
+              if (worriesController.text.isNotEmpty) {
+                _pageController.nextPage(
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.linear);
               } else {
-                return null;
+                Get.snackbar(
+                  "",
+                  'Please Enter Your Answer',
+                  titleText: SizedBox.shrink(),
+                  colorText: gWhiteColor,
+                  snackPosition: SnackPosition.BOTTOM,
+                  backgroundColor: gsecondaryColor.withOpacity(0.55),
+                );
               }
-            },
-            decoration: CommonDecoration.buildTextInputDecoration(
-                "Your answer", worriesController),
-            textInputAction: TextInputAction.next,
-            textAlign: TextAlign.start,
-            keyboardType: TextInputType.name,
-          ),
-          buildNextButton("03/07", () {
-            if (worriesController.text.isNotEmpty) {
-              _pageController.nextPage(
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.linear);
-            } else {
-              Get.snackbar(
-                "",
-                'Please Enter Your Answer',
-                titleText: SizedBox.shrink(),
-                colorText: gWhiteColor,
-                snackPosition: SnackPosition.BOTTOM,
-                backgroundColor: gsecondaryColor.withOpacity(0.55),
-              );
-            }
-          }),
-          SizedBox(height: 2.h),
-        ],
+            }),
+            SizedBox(height: 2.h),
+          ],
+        ),
       );
     });
   }
 
   Widget buildQuestion4() {
     return StatefulBuilder(builder: (_, setstate) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          buildLabelTextField(
-              'Did you eat something other than what was on your meal plan? If "Yes", please give more information? If not, type "No."',
-              fontSize: questionFont),
-          TextFormField(
-            controller: eatSomethingController,
-            cursorColor: kPrimaryColor,
-            validator: (value) {
-              if (value!.isEmpty) {
-                return 'Did you eat something other than what was on your meal plan?';
+      return SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            buildLabelTextField(
+                'Did you eat something other than what was on your meal plan? If "Yes", please give more information? If not, type "No."',
+                fontSize: questionFont),
+            TextFormField(
+              controller: eatSomethingController,
+              cursorColor: kPrimaryColor,
+              validator: (value) {
+                if (value!.isEmpty) {
+                  return 'Did you eat something other than what was on your meal plan?';
+                } else {
+                  return null;
+                }
+              },
+              decoration: CommonDecoration.buildTextInputDecoration(
+                  "Your answer", eatSomethingController),
+              textInputAction: TextInputAction.next,
+              textAlign: TextAlign.start,
+              keyboardType: TextInputType.name,
+            ),
+            buildNextButton("04/07", () {
+              if (eatSomethingController.text.isNotEmpty) {
+                _pageController.nextPage(
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.linear);
               } else {
-                return null;
+                Get.snackbar(
+                  "",
+                  'Please Enter Your Answer',
+                  titleText: SizedBox.shrink(),
+                  colorText: gWhiteColor,
+                  snackPosition: SnackPosition.BOTTOM,
+                  backgroundColor: gsecondaryColor.withOpacity(0.55),
+                );
               }
-            },
-            decoration: CommonDecoration.buildTextInputDecoration(
-                "Your answer", eatSomethingController),
-            textInputAction: TextInputAction.next,
-            textAlign: TextAlign.start,
-            keyboardType: TextInputType.name,
-          ),
-          buildNextButton("04/07", () {
-            if (eatSomethingController.text.isNotEmpty) {
-              _pageController.nextPage(
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.linear);
-            } else {
-              Get.snackbar(
-                "",
-                'Please Enter Your Answer',
-                titleText: SizedBox.shrink(),
-                colorText: gWhiteColor,
-                snackPosition: SnackPosition.BOTTOM,
-                backgroundColor: gsecondaryColor.withOpacity(0.55),
-              );
-            }
-          }),
-          SizedBox(height: 2.h),
-        ],
+            }),
+            SizedBox(height: 2.h),
+          ],
+        ),
       );
     });
   }
 
   Widget buildQuestion5() {
     return StatefulBuilder(builder: (_, setstate) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          buildLabelTextField(
-              'Did you complete the Calm and Move modules suggested today?',
-              fontSize: questionFont),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              GestureDetector(
-                onTap: () {
-                  setstate(() {
-                    selectedCalmModule = "Yes";
-                  });
-                },
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    SizedBox(
-                      width: 25,
-                      child: Radio(
-                        value: "Yes",
-                        activeColor: kPrimaryColor,
-                        groupValue: selectedCalmModule,
-                        onChanged: (value) {
-                          setstate(() {
-                            selectedCalmModule = value as String;
-                          });
-                        },
+      return SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            buildLabelTextField(
+                'Did you complete the Calm and Move modules suggested today?',
+                fontSize: questionFont),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    setstate(() {
+                      selectedCalmModule = "Yes";
+                    });
+                  },
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SizedBox(
+                        width: 25,
+                        child: Radio(
+                          value: "Yes",
+                          activeColor: kPrimaryColor,
+                          groupValue: selectedCalmModule,
+                          onChanged: (value) {
+                            setstate(() {
+                              selectedCalmModule = value as String;
+                            });
+                          },
+                        ),
                       ),
-                    ),
-                    Text(
-                      'Yes',
-                      style: buildTextStyle(
-                          color: selectedCalmModule == 'Yes'
-                              ? kTextColor
-                              : gHintTextColor,
-                          fontFamily: selectedCalmModule == 'Yes'
-                              ? kFontMedium
-                              : kFontBook),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(
-                width: 10.w,
-              ),
-              GestureDetector(
-                onTap: () {
-                  setstate(() {
-                    selectedCalmModule = "No";
-                  });
-                },
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    SizedBox(
-                      width: 25,
-                      child: Radio(
-                        value: "No",
-                        activeColor: kPrimaryColor,
-                        groupValue: selectedCalmModule,
-                        onChanged: (value) {
-                          setstate(() {
-                            selectedCalmModule = value as String;
-                          });
-                        },
+                      Text(
+                        'Yes',
+                        style: buildTextStyle(
+                            color: selectedCalmModule == 'Yes'
+                                ? kTextColor
+                                : gHintTextColor,
+                            fontFamily: selectedCalmModule == 'Yes'
+                                ? kFontMedium
+                                : kFontBook),
                       ),
-                    ),
-                    Text(
-                      'No',
-                      style: buildTextStyle(
-                          color: selectedCalmModule == 'No'
-                              ? kTextColor
-                              : gHintTextColor,
-                          fontFamily: selectedCalmModule == 'No'
-                              ? kFontMedium
-                              : kFontBook),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ],
-          ),
-          buildNextButton("05/07", () {
-            if (selectedCalmModule.isNotEmpty) {
-              _pageController.nextPage(
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.linear);
-            } else {
-              Get.snackbar(
-                "",
-                'Please select Calm & Move Modules',
-                titleText: const SizedBox.shrink(),
-                colorText: gWhiteColor,
-                snackPosition: SnackPosition.BOTTOM,
-                backgroundColor: gsecondaryColor.withOpacity(0.55),
-              );
-            }
-          }),
-          SizedBox(height: 2.h),
-        ],
+                SizedBox(
+                  width: 10.w,
+                ),
+                GestureDetector(
+                  onTap: () {
+                    setstate(() {
+                      selectedCalmModule = "No";
+                    });
+                  },
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SizedBox(
+                        width: 25,
+                        child: Radio(
+                          value: "No",
+                          activeColor: kPrimaryColor,
+                          groupValue: selectedCalmModule,
+                          onChanged: (value) {
+                            setstate(() {
+                              selectedCalmModule = value as String;
+                            });
+                          },
+                        ),
+                      ),
+                      Text(
+                        'No',
+                        style: buildTextStyle(
+                            color: selectedCalmModule == 'No'
+                                ? kTextColor
+                                : gHintTextColor,
+                            fontFamily: selectedCalmModule == 'No'
+                                ? kFontMedium
+                                : kFontBook),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            buildNextButton("05/07", () {
+              if (selectedCalmModule.isNotEmpty) {
+                _pageController.nextPage(
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.linear);
+              } else {
+                Get.snackbar(
+                  "",
+                  'Please select Calm & Move Modules',
+                  titleText: const SizedBox.shrink(),
+                  colorText: gWhiteColor,
+                  snackPosition: SnackPosition.BOTTOM,
+                  backgroundColor: gsecondaryColor.withOpacity(0.55),
+                );
+              }
+            }),
+            SizedBox(height: 2.h),
+          ],
+        ),
       );
     });
   }
 
   Widget buildQuestion6() {
     return StatefulBuilder(builder: (_, setstate) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          buildLabelTextField(
-              'Have you had a medical exam or taken any medications during the program? If "Yes", please give more information. Type "No" if not.',
-              fontSize: questionFont),
-          TextFormField(
-            controller: anyMedicationsController,
-            cursorColor: kPrimaryColor,
-            validator: (value) {
-              if (value!.isEmpty) {
-                return 'Have you had a medical exam or taken any medications during the program?';
+      return SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            buildLabelTextField(
+                'Have you had a medical exam or taken any medications during the program? If "Yes", please give more information. Type "No" if not.',
+                fontSize: questionFont),
+            TextFormField(
+              controller: anyMedicationsController,
+              cursorColor: kPrimaryColor,
+              validator: (value) {
+                if (value!.isEmpty) {
+                  return 'Have you had a medical exam or taken any medications during the program?';
+                } else {
+                  return null;
+                }
+              },
+              decoration: CommonDecoration.buildTextInputDecoration(
+                  "Your answer", anyMedicationsController),
+              textInputAction: TextInputAction.done,
+              textAlign: TextAlign.start,
+              keyboardType: TextInputType.name,
+            ),
+            buildNextButton("06/07", () {
+              if (anyMedicationsController.text.isNotEmpty) {
+                _pageController.nextPage(
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.linear);
               } else {
-                return null;
+                Get.snackbar(
+                  "",
+                  'Please Enter Your Answer',
+                  titleText: const SizedBox.shrink(),
+                  colorText: gWhiteColor,
+                  snackPosition: SnackPosition.BOTTOM,
+                  backgroundColor: gsecondaryColor.withOpacity(0.55),
+                );
               }
-            },
-            decoration: CommonDecoration.buildTextInputDecoration(
-                "Your answer", anyMedicationsController),
-            textInputAction: TextInputAction.done,
-            textAlign: TextAlign.start,
-            keyboardType: TextInputType.name,
-          ),
-          buildNextButton("06/07", () {
-            if (anyMedicationsController.text.isNotEmpty) {
-              _pageController.nextPage(
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.linear);
-            } else {
-              Get.snackbar(
-                "",
-                'Please Enter Your Answer',
-                titleText: const SizedBox.shrink(),
-                colorText: gWhiteColor,
-                snackPosition: SnackPosition.BOTTOM,
-                backgroundColor: gsecondaryColor.withOpacity(0.55),
-              );
-            }
-          }),
-          SizedBox(height: 2.h),
-        ],
+            }),
+            SizedBox(height: 2.h),
+          ],
+        ),
       );
     });
   }

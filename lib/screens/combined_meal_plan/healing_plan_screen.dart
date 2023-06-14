@@ -1,76 +1,69 @@
 import 'dart:convert';
-import 'package:assets_audio_player/assets_audio_player.dart';
-import 'package:easy_scroll_to_index/easy_scroll_to_index.dart';
+import 'dart:ui';
+
 import 'package:auto_orientation/auto_orientation.dart';
-import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:easy_scroll_to_index/easy_scroll_to_index.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-// import 'package:flutter_vlc_player/flutter_vlc_player.dart';
-import 'package:gwc_customer/model/error_model.dart';
-import 'package:gwc_customer/model/program_model/proceed_model/send_proceed_program_model.dart';
+import 'package:get/get.dart';
 import 'package:gwc_customer/model/program_model/program_days_model/child_program_day.dart';
-import 'package:gwc_customer/model/program_model/program_days_model/program_day_model.dart';
-import 'package:gwc_customer/model/program_model/start_post_program_model.dart';
-import 'package:gwc_customer/repository/post_program_repo/post_program_repository.dart';
-import 'package:gwc_customer/repository/program_repository/program_repository.dart';
-import 'package:gwc_customer/screens/cook_kit_shipping_screens/cook_kit_tracking.dart';
-import 'package:gwc_customer/screens/dashboard_screen.dart';
-import 'package:gwc_customer/screens/program_plans/day_tracker_ui/day_tracker.dart';
-import 'package:gwc_customer/screens/program_plans/program_start_screen.dart';
-import 'package:gwc_customer/services/post_program_service/post_program_service.dart';
-import 'package:gwc_customer/widgets/open_alert_box.dart';
-import 'package:gwc_customer/widgets/video/normal_video.dart';
-import 'package:gwc_customer/widgets/vlc_player/vlc_player_with_controls.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
-import 'package:readmore/readmore.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:sizer/sizer.dart';
-import 'package:get/get.dart';
-import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
-import '../../model/combined_meal_model/detox_nourish_model/detox_healing_common_model/child_meal_plan_details_model1.dart';
-import '../../model/prepratory_meal_model/prep_meal_model.dart';
-import '../../model/program_model/meal_plan_details_model/child_meal_plan_details_model.dart';
-import '../../model/program_model/meal_plan_details_model/meal_plan_details_model.dart';
-import '../../repository/api_service.dart';
-import '../../services/program_service/program_service.dart';
-import '../../services/vlc_service/check_state.dart';
-import '../../utils/app_config.dart';
-import '../../widgets/constants.dart';
-import '../../widgets/mp3/mp3_widget.dart';
-import '../../widgets/pip_package.dart';
-import '../../widgets/widgets.dart';
-import '../home_remedies/home_remedies_screen.dart';
-import '../prepratory plan/new/meal_plan_recipe_details.dart';
-import 'day_program_plans.dart';
-import 'meal_pdf.dart';
-import 'meal_plan_data.dart';
-import 'package:http/http.dart' as http;
 import 'package:simple_tooltip/simple_tooltip.dart';
+import 'package:sizer/sizer.dart';
+import 'package:http/http.dart' as http;
 import 'package:video_player/video_player.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:wakelock/wakelock.dart';
 import 'package:chewie/chewie.dart';
 
-class MealPlanScreen extends StatefulWidget {
+import '../../model/combined_meal_model/combined_meal_model.dart';
+import '../../model/combined_meal_model/detox_nourish_model/child_detox_model.dart';
+import '../../model/combined_meal_model/detox_nourish_model/detox_healing_common_model/child_meal_plan_details_model1.dart';
+import '../../model/combined_meal_model/detox_nourish_model/detox_healing_common_model/detox_healing_model.dart';
+import '../../model/error_model.dart';
+import '../../model/program_model/proceed_model/send_proceed_program_model.dart';
+import '../../repository/api_service.dart';
+import '../../repository/program_repository/program_repository.dart';
+import '../../services/program_service/program_service.dart';
+import '../../services/vlc_service/check_state.dart';
+import '../../utils/app_config.dart';
+import '../../widgets/constants.dart';
+import '../../widgets/mp3/mp3_widget.dart';
+import '../../widgets/open_alert_box.dart';
+import '../../widgets/pip_package.dart';
+import '../../widgets/unfocus_widget.dart';
+import '../../widgets/video/normal_video.dart';
+import '../../widgets/widgets.dart';
+import '../dashboard_screen.dart';
+import '../home_remedies/home_remedies_screen.dart';
+import '../prepratory plan/new/meal_plan_recipe_details.dart';
+import '../program_plans/day_tracker_ui/day_tracker.dart';
+import '../program_plans/meal_pdf.dart';
+import '../program_plans/program_start_screen.dart';
+
+class HealingPlanScreen extends StatefulWidget {
   final String? transStage;
   final String? receipeVideoLink;
   final String? trackerVideoLink;
   final bool viewDay1Details;
-  const MealPlanScreen(
+  final bool showBlur;
+  const HealingPlanScreen(
       {Key? key,
-        this.transStage,
-        this.receipeVideoLink,
-        this.trackerVideoLink,
-        this.viewDay1Details = false})
+      this.transStage,
+      this.receipeVideoLink,
+      this.trackerVideoLink,
+      this.viewDay1Details = false,
+      this.showBlur = false
+      })
       : super(key: key);
 
   @override
-  State<MealPlanScreen> createState() => _MealPlanScreenState();
+  State<HealingPlanScreen> createState() => _HealingPlanScreenState();
 }
 
-class _MealPlanScreenState extends State<MealPlanScreen> {
+class _HealingPlanScreenState extends State<HealingPlanScreen> {
+
   final _pref = AppConfig().preferences;
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   TextEditingController commentController = TextEditingController();
@@ -86,13 +79,11 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
 
   bool isLoading = false;
 
-  MealSlot? meal;
-
   String errorMsg = 'Something Went Wrong!';
 
-  List<ChildMealPlanDetailsModel>? shoppingData;
+  List<ChildMealPlanDetailsModel1>? shoppingData;
 
-  Map<String, List<ChildMealPlanDetailsModel>> mealPlanData1 = {};
+  Map<String, List<ChildMealPlanDetailsModel1>> mealPlanData1 = {};
 
   final tableHeadingBg = gHintTextColor.withOpacity(0.4);
 
@@ -215,109 +206,33 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
     }
   }
 
-  getProgramDays() async {
-    setState(() {
-      isLoading = true;
-    });
-    final res = await ProgramService(repository: repository)
-        .getMealProgramDaysService();
-    if (res.runtimeType == ProgramDayModel) {
-      final model = res as ProgramDayModel;
-      print("model.toJson(): ${model.toJson()}");
-      // model.data!.forEach((element) {
-      //   print('${element.dayNumber} -- ${element.color}');
-      // });
-      _pref!.setInt(AppConfig.STORE_LENGTH, model.data!.length);
-      if (!widget.viewDay1Details) {
-        presentDay = int.tryParse(model.presentDay!);
-        nextDay = int.tryParse(model.presentDay!)! + 1;
-        selectedDay = int.tryParse(model.presentDay!);
-        model.data!.forEach((element) {
-          if (element.dayNumber == presentDay.toString()) {
-            isDayCompleted = element.isCompleted == 1;
-          }
-        });
-        print("next day: $nextDay");
-        print(isDayCompleted);
-      }
-      Future.delayed(Duration(seconds: 1)).then((value) {
-        _scrollController.easyScrollToIndex(
-            index: model.data!.indexWhere(
-                    (element) => element.dayNumber == presentDay.toString()) +
-                1);
-      });
-      print(
-          "index==> ${model.data!.indexWhere((element) => element.dayNumber == presentDay.toString()).toDouble()}");
-      // _scrollController.jumpTo(
-      //     model.data!.indexWhere((element) => element.dayNumber == presentDay.toString()).toDouble(),
-      //     // duration: const Duration(seconds: 2),
-      //     // curve: Curves.easeIn
-      // );
-      getMeals();
-
-      buildDays(model);
-    } else {
-      ErrorModel model = res as ErrorModel;
-      errorMsg = model.message ?? '';
-      print('get program Days error:${model.message}');
-      Future.delayed(Duration(seconds: 0)).whenComplete(() {
-        setState(() {
-          isLoading = false;
-        });
-        showAlert(context, AppConfig.networkErrorText,
-            isSingleButton: !(model.status != '401'), positiveButton: () {
-              if (model.status == '401') {
-                Navigator.pop(context);
-                Navigator.pop(context);
-              } else {
-                Navigator.pop(context);
-                getProgramDays();
-              }
-            });
-      });
-    }
-  }
-
-  buildDays(ProgramDayModel model) {
-    listData = model.data!;
-    print("listData.last.isCompleted: ${listData.last.isCompleted}");
-    // this is for bottomsheet
-    if (listData.last.isCompleted == 1) {
-      print("widget.postProgramStage: ${widget.transStage}");
-      if (widget.transStage == null || widget.transStage!.isEmpty) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (!isOpened) {
-            setState(() {
-              isOpened = true;
-            });
-            buildDayCompletedClap();
-          }
-        });
-      }
-    }
-    for (int i = 0; i < presentDay!; i++) {
-      print(presentDay);
-      if (listData[i].isCompleted == 0 && i + 1 != selectedDay!) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          showMoreTextSheet(listData[i].dayNumber);
-          // AppConfig().showSnackbar(
-          //     context,
-          //     "Please Complete Day ${listData[i].dayNumber}", isError: true,
-          //     duration: 50000,
-          //     action: SnackBarAction(
-          //       label: 'Go',
-          //       onPressed: (){
-          //         ScaffoldMessenger.of(context).hideCurrentSnackBar();
-          //         selectedDay = 1;
-          //         getMeals();
-          //       },
-          //     )
-          // );
-        });
-        break;
-      }
-    }
-  }
+  // buildDays(ProgramDayModel model) {
+  //   listData = model.data!;
+  //   print("listData.last.isCompleted: ${listData.last.isCompleted}");
+  //   // this is for bottomsheet
+  //   if (listData.last.isCompleted == 1) {
+  //     print("widget.postProgramStage: ${widget.transStage}");
+  //     if (widget.transStage == null || widget.transStage!.isEmpty) {
+  //       WidgetsBinding.instance.addPostFrameCallback((_) {
+  //         if (!isOpened) {
+  //           setState(() {
+  //             isOpened = true;
+  //           });
+  //           buildDayCompletedClap();
+  //         }
+  //       });
+  //     }
+  //   }
+  //   for (int i = 0; i < presentDay!; i++) {
+  //     print(presentDay);
+  //     if (listData[i].isCompleted == 0 && i + 1 != selectedDay!) {
+  //       WidgetsBinding.instance.addPostFrameCallback((_) {
+  //         showMoreTextSheet(listData[i].dayNumber);
+  //       });
+  //       break;
+  //     }
+  //   }
+  // }
 
   showMoreTextSheet(String? dayNumber) {
     return AppConfig().showSheet(
@@ -345,7 +260,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                   GestureDetector(
                     onTap: () {
                       selectedDay = int.parse(dayNumber!);
-                      getMeals();
+                      getMealFromDay(selectedDay!);
                       Navigator.pop(context);
                     },
                     child: Center(
@@ -401,7 +316,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 3.w),
                   child: Text(
-                    "You Have completed the ${listData.length} days Meal Plan, Now you can proceed to Transition",
+                    "You Have completed the ${totalDays} days Healing Plan, Now you can proceed to Nourish",
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       height: 1.2,
@@ -447,35 +362,35 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
         bottomSheetHeight: 60.h);
   }
 
-  startPostProgram() async {
-    final res = await PostProgramService(repository: _postProgramRepository)
-        .startPostProgramService();
-
-    if (res.runtimeType == ErrorModel) {
-      ErrorModel model = res as ErrorModel;
-      Navigator.pop(context);
-      AppConfig().showSnackbar(context, model.message ?? '', isError: true);
-    } else {
-      Navigator.pop(context);
-      if (res.runtimeType == StartPostProgramModel) {
-        StartPostProgramModel model = res as StartPostProgramModel;
-        print("start program: ${model.response}");
-        AppConfig().showSnackbar(context, "Post Program started" ?? '');
-        Future.delayed(Duration(seconds: 2)).then((value) {
-          Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (_) => DashboardScreen()),
-                  (route) => true);
-        });
-      }
-    }
-  }
-
-  final PostProgramRepository _postProgramRepository = PostProgramRepository(
-    apiClient: ApiClient(
-      httpClient: http.Client(),
-    ),
-  );
+  // startPostProgram() async {
+  //   final res = await PostProgramService(repository: _postProgramRepository)
+  //       .startPostProgramService();
+  //
+  //   if (res.runtimeType == ErrorModel) {
+  //     ErrorModel model = res as ErrorModel;
+  //     Navigator.pop(context);
+  //     AppConfig().showSnackbar(context, model.message ?? '', isError: true);
+  //   } else {
+  //     Navigator.pop(context);
+  //     if (res.runtimeType == StartPostProgramModel) {
+  //       StartPostProgramModel model = res as StartPostProgramModel;
+  //       print("start program: ${model.response}");
+  //       AppConfig().showSnackbar(context, "Post Program started" ?? '');
+  //       Future.delayed(Duration(seconds: 2)).then((value) {
+  //         Navigator.pushAndRemoveUntil(
+  //             context,
+  //             MaterialPageRoute(builder: (_) => DashboardScreen()),
+  //                 (route) => true);
+  //       });
+  //     }
+  //   }
+  // }
+  //
+  // final PostProgramRepository _postProgramRepository = PostProgramRepository(
+  //   apiClient: ApiClient(
+  //     httpClient: http.Client(),
+  //   ),
+  // );
 
   bool _checked = false;
 
@@ -483,20 +398,26 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
   final videoPlayerController = VideoPlayerController.network(
       'https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4');
 
+  ChildDetoxModel? _childDetoxModel;
+  bool isDetoxCompleted = false;
+
+  int? totalDays;
+
   @override
   void initState() {
     super.initState();
+    getProgramData();
 
-    if (!widget.viewDay1Details) getProgramDays();
-    if (widget.viewDay1Details) {
-      selectedDay = 1;
-      getMeals();
-    }
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      commentController.addListener(() {
-        setState(() {});
-      });
-    });
+    // if (!widget.viewDay1Details) getProgramDays();
+    // if (widget.viewDay1Details) {
+    //   selectedDay = 1;
+    //   getMeals();
+    // }
+    // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    //   commentController.addListener(() {
+    //     setState(() {});
+    //   });
+    // });
     hideToolTip();
   }
 
@@ -509,106 +430,106 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
     });
   }
 
-  getMeals() async {
-    print(selectedDay);
-    statusList.clear();
-    lst.clear();
-    final result = await ProgramService(repository: repository)
-        .getMealPlanDetailsService(selectedDay.toString());
-    print("result: $result");
-
-    if (result.runtimeType == MealPlanDetailsModel) {
-      print("meal plan");
-      MealPlanDetailsModel model = result as MealPlanDetailsModel;
-      setState(() {
-        isLoading = false;
-        showShimmer = false;
-        planNotePdfLink = model.note;
-      });
-      model.data!.keys.forEach((element) {
-        print("before element $element");
-      });
-      // mealPlanData1.addAll(model.data!);
-      mealPlanData1 = Map.of(model.data!);
-      mealPlanData1.keys.forEach((element) {
-        print("key==> $element");
-      });
-
-      mealPlanData1.values.forEach((element) {
-        element.forEach((element1) {
-          print("element1.toJson(): ${element1.toJson()}");
-        });
-      });
-      print('meal list: ${mealPlanData1}');
-      // when day completed
-      if (isDayCompleted != null && isDayCompleted == true) {
-        mealPlanData1.forEach((key, value) {
-          (value).forEach((element) {
-            statusList.putIfAbsent(
-                element.itemId, () => element.status.toString().capitalize);
-          });
-        });
-        commentController.text = model.comment ?? '';
-      }
-    //   // for showing already selected data from local storage for present day
-    //   else{
-    //     if(isDayCompleted != null && isDayCompleted == false && presentDay == selectedDay){
-    //       if(_pref!.getString(AppConfig.STORE_MEAL_DATA) != null){
-    // //         'selected_meal': statusList,
-    // //          'comments': commentController.text
-    //
-    //         final localMealData = json.decode(_pref!.getString(AppConfig.STORE_MEAL_DATA)!);
-    //         // (localMealData['selected_meal'] as Map).forEach((key, value) {
-    //         //   print("$key -- $value");
-    //         // });
-    //
-    //         if(localMealData['selected_meal'] != null){
-    //           String m = localMealData['selected_meal'];
-    //           final l = m.replaceAll("{", '').replaceAll('}', '').split(',');
-    //           Map _m = {};
-    //           l.forEach((element) {
-    //             _m.putIfAbsent(int.parse(element.split(':').first.trim()), () => element.split(':').last.trim());
-    //           });
-    //           statusList.addAll(_m);
-    //         }
-    //         commentController.text = localMealData['comments'];
-    //
-    //       }
-    //     }
-    //   }
-
-
-
-      mealPlanData1.values.forEach((element) {
-        element.forEach((item) {
-          lst.add(item);
-        });
-      });
-      print(statusList);
-
-      print('mealPlanData1.values.length:${mealPlanData1.values.length}, ${lst.length}');
-    } else {
-      ErrorModel model = result as ErrorModel;
-      errorMsg = model.message ?? '';
-      Future.delayed(Duration(seconds: 0)).whenComplete(() {
-        setState(() {
-          showShimmer = false;
-          isLoading = false;
-        });
-        showAlert(context, model.status!,
-            isSingleButton: !(model.status != '401'), positiveButton: () {
-              if (model.status == '401') {
-                Navigator.pop(context);
-                Navigator.pop(context);
-              } else {
-                getMeals();
-                Navigator.pop(context);
-              }
-            });
-      });
-    }
-    print(result);
-  }
+  // getMeals() async {
+  //   print(selectedDay);
+  //   statusList.clear();
+  //   lst.clear();
+  //   final result = await ProgramService(repository: repository)
+  //       .getMealPlanDetailsService(selectedDay.toString());
+  //   print("result: $result");
+  //
+  //   if (result.runtimeType == MealPlanDetailsModel) {
+  //     print("meal plan");
+  //     MealPlanDetailsModel model = result as MealPlanDetailsModel;
+  //     setState(() {
+  //       isLoading = false;
+  //       showShimmer = false;
+  //       planNotePdfLink = model.note;
+  //     });
+  //     model.data!.keys.forEach((element) {
+  //       print("before element $element");
+  //     });
+  //     // mealPlanData1.addAll(model.data!);
+  //     mealPlanData1 = Map.of(model.data!);
+  //     mealPlanData1.keys.forEach((element) {
+  //       print("key==> $element");
+  //     });
+  //
+  //     mealPlanData1.values.forEach((element) {
+  //       element.forEach((element1) {
+  //         print("element1.toJson(): ${element1.toJson()}");
+  //       });
+  //     });
+  //     print('meal list: ${mealPlanData1}');
+  //     // when day completed
+  //     if (isDayCompleted != null && isDayCompleted == true) {
+  //       mealPlanData1.forEach((key, value) {
+  //         (value).forEach((element) {
+  //           statusList.putIfAbsent(
+  //               element.itemId, () => element.status.toString().capitalize);
+  //         });
+  //       });
+  //       commentController.text = model.comment ?? '';
+  //     }
+  //     //   // for showing already selected data from local storage for present day
+  //     //   else{
+  //     //     if(isDayCompleted != null && isDayCompleted == false && presentDay == selectedDay){
+  //     //       if(_pref!.getString(AppConfig.STORE_MEAL_DATA) != null){
+  //     // //         'selected_meal': statusList,
+  //     // //          'comments': commentController.text
+  //     //
+  //     //         final localMealData = json.decode(_pref!.getString(AppConfig.STORE_MEAL_DATA)!);
+  //     //         // (localMealData['selected_meal'] as Map).forEach((key, value) {
+  //     //         //   print("$key -- $value");
+  //     //         // });
+  //     //
+  //     //         if(localMealData['selected_meal'] != null){
+  //     //           String m = localMealData['selected_meal'];
+  //     //           final l = m.replaceAll("{", '').replaceAll('}', '').split(',');
+  //     //           Map _m = {};
+  //     //           l.forEach((element) {
+  //     //             _m.putIfAbsent(int.parse(element.split(':').first.trim()), () => element.split(':').last.trim());
+  //     //           });
+  //     //           statusList.addAll(_m);
+  //     //         }
+  //     //         commentController.text = localMealData['comments'];
+  //     //
+  //     //       }
+  //     //     }
+  //     //   }
+  //
+  //
+  //
+  //     mealPlanData1.values.forEach((element) {
+  //       element.forEach((item) {
+  //         lst.add(item);
+  //       });
+  //     });
+  //     print(statusList);
+  //
+  //     print('mealPlanData1.values.length:${mealPlanData1.values.length}, ${lst.length}');
+  //   } else {
+  //     ErrorModel model = result as ErrorModel;
+  //     errorMsg = model.message ?? '';
+  //     Future.delayed(Duration(seconds: 0)).whenComplete(() {
+  //       setState(() {
+  //         showShimmer = false;
+  //         isLoading = false;
+  //       });
+  //       showAlert(context, model.status!,
+  //           isSingleButton: !(model.status != '401'), positiveButton: () {
+  //             if (model.status == '401') {
+  //               Navigator.pop(context);
+  //               Navigator.pop(context);
+  //             } else {
+  //               getMeals();
+  //               Navigator.pop(context);
+  //             }
+  //           });
+  //     });
+  //   }
+  //   print(result);
+  // }
 
   showAlert(
       BuildContext context,
@@ -679,7 +600,6 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
     return GestureDetector(
       onTap: checkOnTapCondition(index, listData)
           ? () {
-        print(index);
         setState(() {
           showShimmer = true;
           selectedDay = int.parse(listData[index].dayNumber!);
@@ -687,7 +607,8 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
           commentController.clear();
         });
         print("isDayCompleted: $isDayCompleted");
-        getMeals();
+        getMealFromDay(selectedDay!);
+        // getMeals();
         // Navigator.push(
         //   context,
         //   MaterialPageRoute(
@@ -745,6 +666,71 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
             )),
       ),
     );
+  }
+
+  getMealFromDay(int day){
+    lst.clear();
+    statusList.clear();
+    _childDetoxModel!.details!.forEach((key, value) {
+      print("value==> $key $value");
+      DetoxHealingModel _model = value as DetoxHealingModel;
+      if(key == day.toString()){
+        mealPlanData1 = _model.data!;
+      }
+    });
+
+    mealPlanData1.values.forEach((element) {
+      element.forEach((item) {
+        lst.add(item);
+      });
+    });
+
+    print("isDayCompleted: ${isDayCompleted}");
+    if (isDayCompleted != null && isDayCompleted == true) {
+      mealPlanData1.forEach((key, value) {
+        (value).forEach((element) {
+          statusList.putIfAbsent(
+              element.itemId, () => element.status.toString().capitalize);
+        });
+      });
+
+      _childDetoxModel!.details!.forEach((key, value) {
+        if(key == selectedDay.toString()){
+          commentController.text = value.comment ?? '';
+        }
+      });
+    }
+    // else{
+    //   if(selectedDay == presentDay){
+    //     if(_pref!.getString(AppConfig.STORE_MEAL_DATA) != null && _pref!.getString(AppConfig.STORE_MEAL_DATA)!.isNotEmpty) {
+    //       final localMealData = json.decode(_pref!.getString(AppConfig.STORE_MEAL_DATA)!);
+    //
+    //       print("localMealData: $localMealData");
+    //       // (localMealData['selected_meal'] as Map).forEach((key, value) {
+    //       //   print("$key -- $value");
+    //       // });
+    //
+    //       if(localMealData['selected_meal'] != null){
+    //         String m = localMealData['selected_meal'];
+    //         final l = m.replaceAll("{", '').replaceAll('}', '').split(',');
+    //         Map _m = {};
+    //         l.forEach((element) {
+    //           _m.putIfAbsent(int.parse(element.split(':').first.trim()), () => element.split(':').last.trim());
+    //         });
+    //         statusList.addAll(_m);
+    //       }
+    //       commentController.text = localMealData['comments'];
+    //
+    //
+    //     }
+    //   }
+    // }
+
+    print(mealPlanData1);
+
+    setState(() {
+      showShimmer = false;
+    });
   }
 
   checkOnTapCondition(int index, List<ChildProgramDayModel> listData) {
@@ -807,440 +793,438 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
       return 0.7;
     }
   }
-  // getTextColor(int index, List<ChildProgramDayModel> listData) {
-  //   if(index == 0){
-  //     return MealPlanConstants().dayTextColor;
-  //   }
-  //   else if(listData[index-1].isCompleted == 1){
-  //     return MealPlanConstants().dayTextColor;
-  //   }
-  //   else if(index != listData.length-1 && listData[index+1].dayNumber == (presentDay!+1).toString()){
-  //     return 1.0;
-  //   }
-  //   else if(listData[listData.length-2].isCompleted == 1 && index == listData.length-1){
-  //     return 1.0;
-  //   }
-  //   else if(int.parse(listData[index].dayNumber!) == nextDay){
-  //     return 1.0;
-  //   }
-  //   else{
-  //     return 0.7;
-  //   }
-  // }
+
 
   bool showNoteVideo = false;
-  backgroundWidgetForPIP() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: EdgeInsets.only(top: 1.h, left: 3.w, right: 3.w),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // need to change padding
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      SizedBox(
-                        width: 2.h,
-                        child: IconButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          icon: Icon(
-                            Icons.arrow_back_ios,
-                            color: gMainColor,
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        width: 15,
-                      ),
-                      SizedBox(
-                        height: 6.h,
-                        child: const Image(
-                          image:
-                          AssetImage("assets/images/Gut welness logo.png"),
-                        ),
-                        //SvgPicture.asset("assets/images/splash_screen/Inside Logo.svg"),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // SimpleTooltip(
-                      //   borderColor: gWhiteColor,
-                      //   maxWidth: 50.w,
-                      //   ballonPadding: EdgeInsets.symmetric(
-                      //       horizontal: 0.w, vertical: 0.h),
-                      //   arrowTipDistance: 2,
-                      //   arrowLength: 10,
-                      //   arrowBaseWidth: 10,
-                      //   hideOnTooltipTap: true,
-                      //   // targetCenter: const Offset(3,4),
-                      //   tooltipTap: () {
-                      //     setState(() {
-                      //       shoppingToolTip = false;
-                      //     });
-                      //   },
-                      //   animationDuration: const Duration(seconds: 3),
-                      //   show: shoppingToolTip,
-                      //   tooltipDirection: TooltipDirection.down,
-                      //   child: Align(
-                      //     alignment: Alignment.center,
-                      //     child: GestureDetector(
-                      //       onTap: () {
-                      //           shoppingToolTip = false;
-                      //           Navigator.of(context).push(
-                      //             MaterialPageRoute(
-                      //               builder: (context) => CookKitTracking(
-                      //                 currentStage: '',
-                      //                 initialIndex: 1,
-                      //               ),
-                      //             ),
-                      //           );
-                      //       },
-                      //       child: Image(
-                      //         height: 3.h,
-                      //         image: AssetImage("assets/images/list.png"),
-                      //       ),
-                      //     ),
-                      //   ),
-                      //   content: Text(
-                      //     "Tap here for Shopping List",
-                      //     style: TextStyle(
-                      //         fontSize: PPConstants().topViewSubFontSize,
-                      //         fontFamily: MealPlanConstants().mealNameFont,
-                      //         color: gHintTextColor),
-                      //   ),
-                      // ),
-                      IconButton(
-                        icon: Icon(
-                          Icons.help_outline_rounded,
-                          color: gMainColor,
-                        ),
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (ctx) => HomeRemediesScreen()));
 
-                          // if (planNotePdfLink != null ||
-                          //     planNotePdfLink!.isNotEmpty) {
-                          //   Navigator.push(
-                          //       context,
-                          //       MaterialPageRoute(
-                          //           builder: (ctx) => MealPdf(
-                          //             pdfLink: planNotePdfLink!,
-                          //             heading: "Note",
-                          //             isVideoWidgetVisible: false,
-                          //             headCircleIcon: bsHeadPinIcon,
-                          //             topHeadColor: kBottomSheetHeadGreen,
-                          //             isSheetCloseNeeded: true,
-                          //             sheetCloseOnTap: () {
-                          //               Navigator.pop(context);
-                          //             },
-                          //           )));
-                          // } else {
-                          //   AppConfig().showSnackbar(
-                          //       context, "Note Link Not available",
-                          //       isError: true);
-                          // }
-                        },
-                      ),
-                    ],
-                  )
-                ],
+  backgroundWidgetForPIP() {
+    return IgnorePointer(
+      ignoring: widget.showBlur,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Padding(
+          //   padding: EdgeInsets.only(top: 1.h, left: 3.w, right: 3.w),
+          //   child: Column(
+          //     crossAxisAlignment: CrossAxisAlignment.start,
+          //     children: [
+          //       // need to change padding
+          //       Row(
+          //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          //         children: [
+          //           Row(
+          //             children: [
+          //               SizedBox(
+          //                 width: 2.h,
+          //                 child: IconButton(
+          //                   onPressed: () {
+          //                     Navigator.pop(context);
+          //                   },
+          //                   icon: Icon(
+          //                     Icons.arrow_back_ios,
+          //                     color: gMainColor,
+          //                   ),
+          //                 ),
+          //               ),
+          //               SizedBox(
+          //                 width: 15,
+          //               ),
+          //               SizedBox(
+          //                 height: 6.h,
+          //                 child: const Image(
+          //                   image:
+          //                   AssetImage("assets/images/Gut welness logo.png"),
+          //                 ),
+          //                 //SvgPicture.asset("assets/images/splash_screen/Inside Logo.svg"),
+          //               ),
+          //             ],
+          //           ),
+          //           Row(
+          //             mainAxisSize: MainAxisSize.min,
+          //             children: [
+          //               // SimpleTooltip(
+          //               //   borderColor: gWhiteColor,
+          //               //   maxWidth: 50.w,
+          //               //   ballonPadding: EdgeInsets.symmetric(
+          //               //       horizontal: 0.w, vertical: 0.h),
+          //               //   arrowTipDistance: 2,
+          //               //   arrowLength: 10,
+          //               //   arrowBaseWidth: 10,
+          //               //   hideOnTooltipTap: true,
+          //               //   // targetCenter: const Offset(3,4),
+          //               //   tooltipTap: () {
+          //               //     setState(() {
+          //               //       shoppingToolTip = false;
+          //               //     });
+          //               //   },
+          //               //   animationDuration: const Duration(seconds: 3),
+          //               //   show: shoppingToolTip,
+          //               //   tooltipDirection: TooltipDirection.down,
+          //               //   child: Align(
+          //               //     alignment: Alignment.center,
+          //               //     child: GestureDetector(
+          //               //       onTap: () {
+          //               //           shoppingToolTip = false;
+          //               //           Navigator.of(context).push(
+          //               //             MaterialPageRoute(
+          //               //               builder: (context) => CookKitTracking(
+          //               //                 currentStage: '',
+          //               //                 initialIndex: 1,
+          //               //               ),
+          //               //             ),
+          //               //           );
+          //               //       },
+          //               //       child: Image(
+          //               //         height: 3.h,
+          //               //         image: AssetImage("assets/images/list.png"),
+          //               //       ),
+          //               //     ),
+          //               //   ),
+          //               //   content: Text(
+          //               //     "Tap here for Shopping List",
+          //               //     style: TextStyle(
+          //               //         fontSize: PPConstants().topViewSubFontSize,
+          //               //         fontFamily: MealPlanConstants().mealNameFont,
+          //               //         color: gHintTextColor),
+          //               //   ),
+          //               // ),
+          //               IconButton(
+          //                 icon: Icon(
+          //                   Icons.help_outline_rounded,
+          //                   color: gMainColor,
+          //                 ),
+          //                 onPressed: () {
+          //                   Navigator.push(
+          //                       context,
+          //                       MaterialPageRoute(
+          //                           builder: (ctx) => HomeRemediesScreen()));
+          //
+          //                   // if (planNotePdfLink != null ||
+          //                   //     planNotePdfLink!.isNotEmpty) {
+          //                   //   Navigator.push(
+          //                   //       context,
+          //                   //       MaterialPageRoute(
+          //                   //           builder: (ctx) => MealPdf(
+          //                   //             pdfLink: planNotePdfLink!,
+          //                   //             heading: "Note",
+          //                   //             isVideoWidgetVisible: false,
+          //                   //             headCircleIcon: bsHeadPinIcon,
+          //                   //             topHeadColor: kBottomSheetHeadGreen,
+          //                   //             isSheetCloseNeeded: true,
+          //                   //             sheetCloseOnTap: () {
+          //                   //               Navigator.pop(context);
+          //                   //             },
+          //                   //           )));
+          //                   // } else {
+          //                   //   AppConfig().showSnackbar(
+          //                   //       context, "Note Link Not available",
+          //                   //       isError: true);
+          //                   // }
+          //                 },
+          //               ),
+          //             ],
+          //           )
+          //         ],
+          //       ),
+          //       SizedBox(height: 1.h),
+          Visibility(
+            visible: !widget.viewDay1Details,
+            child: SizedBox(
+              height: 4.h,
+              child: EasyScrollToIndex(
+                controller: _scrollController, // ScrollToIndexController
+                itemCount: listData.length,
+                itemWidth: 50,
+                itemHeight: 4.h,
+                scrollDirection: Axis.horizontal,
+                itemBuilder: (BuildContext context, int index) {
+                  return dayItems(index);
+                },
               ),
-              SizedBox(height: 1.h),
-              Visibility(
-                visible: !widget.viewDay1Details,
-                child: SizedBox(
-                  height: 4.h,
-                  child: EasyScrollToIndex(
-                    controller: _scrollController, // ScrollToIndexController
-                    itemCount: listData.length,
-                    itemWidth: 50,
-                    itemHeight: 4.h,
-                    scrollDirection: Axis.horizontal,
-                    itemBuilder: (BuildContext context, int index) {
-                      return dayItems(index);
-                    },
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-        // SizedBox(height: 1.h),
-        Expanded(
-          child: (isLoading)
-              ? Center(
-            child: buildCircularIndicator(),
-          )
-              : (mealPlanData1 != null)
-              ? SizedBox(
-            child: SingleChildScrollView(
-              child: (showShimmer)
-                  ? IgnorePointer(
-                child: mainView()
-              )
-                  : mainView(),
             ),
-          )
-              : SizedBox.shrink(),
-        ),
-      ],
+          ),
+          //     ],
+          //   ),
+          // ),
+          // SizedBox(height: 1.h),
+          Expanded(
+            child: (isLoading)
+                ? Center(
+              child: buildCircularIndicator(),
+            )
+                : (mealPlanData1 != null)
+                ? UnfocusWidget(
+                  child: SizedBox(
+              child: SingleChildScrollView(
+                  child: (showShimmer)
+                      ? IgnorePointer(
+                      child: Shimmer.fromColors(
+                        baseColor: Colors.grey.withOpacity(0.3),
+                        highlightColor:
+                        Colors.grey.withOpacity(0.7),
+                        child: mainView(),
+                      )
+                  )
+                      : mainView(),
+              ),
+            ),
+                )
+                : SizedBox.shrink(),
+          ),
+        ],
+      ),
     );
   }
 
   mainView(){
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 3.w),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          SizedBox(height: 2.h),
-          Text(
-            // "Day ${widget.day} Meal Plan",
-            (selectedDay == null)
-                ? "Day Meal & Yoga Plan"
-                : "Day ${selectedDay} Meal & Yoga Plan",
-            style: TextStyle(
-                fontFamily: eUser().mainHeadingFont,
-                color: eUser().mainHeadingColor,
-                fontSize:
-                eUser().mainHeadingFontSize),
-          ),
-          // not showing these when we came from slide screen
-          // Visibility(
-          //   visible: !widget.viewDay1Details,
-          //   child: SizedBox(
-          //     height: 1.h,
-          //   ),
-          // ),
-          SizedBox(height: 1.h),
-          ...groupList(),
-          Visibility(
-            visible: (statusList.isNotEmpty &&
-                statusList.values.any((element) =>
-                    element
-                        .toString()
-                        .toLowerCase()
-                        .contains(
-                        'unfollowed'))) ||
-                !widget.viewDay1Details,
-            child: IgnorePointer(
-              ignoring: isDayCompleted == true,
-              child: Container(
-                height: 15.h,
-                margin: EdgeInsets.symmetric(
-                    horizontal: 0.w, vertical: 1.h),
-                padding: EdgeInsets.symmetric(
-                    horizontal: 3.w),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius:
-                  BorderRadius.circular(5),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey
-                          .withOpacity(0.3),
-                      blurRadius: 20,
-                      offset: const Offset(2, 10),
-                    ),
-                  ],
-                ),
-                child: TextFormField(
-                  controller: commentController,
-                  cursorColor: gPrimaryColor,
-                  onEditingComplete: (){
-                    Map<String,dynamic> storeMealDataLocally = {
-                      "selected_meal": statusList.toString(),
-                      "comments": commentController.text
-                    };
-                    _pref!.setString(AppConfig.STORE_MEAL_DATA, json.encode(storeMealDataLocally));
-                  },
-                  style: TextStyle(
-                      fontFamily: "GothamBook",
-                      color: gTextColor,
-                      fontSize: 11.sp),
-                  decoration: InputDecoration(
-                    suffixIcon: commentController
-                        .text.isEmpty ||
-                        isDayCompleted != null
-                        ? SizedBox()
-                        : InkWell(
-                      onTap: () {
-                        commentController
-                            .clear();
-                      },
-                      child: const Icon(
-                        Icons.close,
-                        color: gTextColor,
-                      ),
-                    ),
-                    hintText: "Comments",
-                    border: InputBorder.none,
-                    hintStyle: TextStyle(
-                      fontFamily: "GothamBook",
-                      color: gTextColor,
-                      fontSize: 9.sp,
-                    ),
-                  ),
-                  textInputAction:
-                  TextInputAction.next,
-                  textAlign: TextAlign.start,
-                  keyboardType:
-                  TextInputType.emailAddress,
-                ),
-              ),
+    return ImageFiltered(
+      imageFilter: (widget.showBlur)
+          ? ImageFilter.blur(sigmaX: 5, sigmaY: 5)
+          : ImageFilter.blur(sigmaX: 0, sigmaY: 0),
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 3.w),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(height: 2.h),
+            Text(
+              // "Day ${widget.day} Meal Plan",
+              (selectedDay == null)
+                  ? "Day Meal & Yoga Plan"
+                  : "Day ${selectedDay} Meal & Yoga Plan",
+              style: TextStyle(
+                  fontFamily: eUser().mainHeadingFont,
+                  color: eUser().mainHeadingColor,
+                  fontSize:
+                  eUser().mainHeadingFontSize),
             ),
-          ),
-          Visibility(
-            visible: buttonVisibility(),
-            child: Center(
-              child: IntrinsicWidth(
-                child: GestureDetector(
-                  onTap:
-                  // (){
-                  //   print("statusList.length: ${statusList.length}");
-                  //   print("lst.length ${lst.length}");
-                  //
-                  // },
-                  (statusList.length !=
-                      lst.length)
-                      ? () => AppConfig()
-                      .showSnackbar(context,
-                      "Please complete the Meal Plan Status",
-                      isError: true)
-                  // : (statusList.values.any((element) => element.toString().toLowerCase() == 'unfollowed') && commentController.text.isEmpty)
-                  // ? () => AppConfig().showSnackbar(context, "Please Mention the comments why you unfollowed?", isError: true)
-                      : () {
-                    print(
-                        "this one $presentDay");
-                    for (int i = 0;
-                    i < presentDay!;
-                    i++) {
-                      print(presentDay);
-                      if (listData[i]
-                          .isCompleted ==
-                          0 &&
-                          i + 1 !=
-                              selectedDay!) {
-                        AppConfig()
-                            .showSnackbar(
-                            context,
-                            "Please Complete Day ${listData[i].dayNumber}",
-                            isError:
-                            true);
-                        break;
-                      } else if (listData[i]
-                          .isCompleted ==
-                          1) {
-                        print(
-                            "completed already");
-                      } else if (i + 1 ==
-                          presentDay ||
-                          i + 1 ==
-                              selectedDay) {
-                        print(
-                            "u can access $presentDay");
-                        sendData();
-                        break;
-                      } else {
-                        print(
-                            "u r trying else");
-                      }
-                    }
-                  },
-                  child: Container(
-                    margin: EdgeInsets.symmetric(
-                        vertical: 2.h),
-                    padding: EdgeInsets.symmetric(
-                        horizontal: 10.w,
-                        vertical: 1.h),
-                    // width:
-                    //     btnText.length > 22 ? 75.w : 60.w,
-                    // height: 5.h,
-                    decoration: BoxDecoration(
-                      color: (statusList.length ==
-                          lst.length)
-                          ? eUser().buttonColor
-                          : tableHeadingBg,
-                      borderRadius: BorderRadius
-                          .circular(eUser()
-                          .buttonBorderRadius),
-                      // border: Border.all(color: eUser().buttonBorderColor,
-                      //     width: eUser().buttonBorderWidth),
-                    ),
-                    child: Center(
-                      child: Text(
-                        btnText,
-                        // 'Proceed to Day $proceedToDay',
-                        style: TextStyle(
-                          fontFamily:
-                          eUser().buttonTextFont,
-                          color:
-                          eUser().buttonTextColor,
-                          // color: (statusList.length != lst.length) ? gPrimaryColor : gMainColor,
-                          fontSize:
-                          eUser().buttonTextSize,
+            // not showing these when we came from slide screen
+            // Visibility(
+            //   visible: !widget.viewDay1Details,
+            //   child: SizedBox(
+            //     height: 1.h,
+            //   ),
+            // ),
+            SizedBox(height: 1.h),
+            ...groupList(),
+            Visibility(
+              visible: (statusList.isNotEmpty &&
+                  statusList.values.any((element) =>
+                      element
+                          .toString()
+                          .toLowerCase()
+                          .contains(
+                          'unfollowed'))) ||
+                  !widget.viewDay1Details,
+              child: IgnorePointer(
+                ignoring: isDayCompleted == true,
+                child: Container(
+                  height: 15.h,
+                  margin: EdgeInsets.symmetric(
+                      horizontal: 0.w, vertical: 1.h),
+                  padding: EdgeInsets.symmetric(
+                      horizontal: 3.w),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius:
+                    BorderRadius.circular(5),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey
+                            .withOpacity(0.3),
+                        blurRadius: 20,
+                        offset: const Offset(2, 10),
+                      ),
+                    ],
+                  ),
+                  child: TextFormField(
+                    controller: commentController,
+                    cursorColor: gPrimaryColor,
+                    onEditingComplete: (){
+                      Map<String,dynamic> storeMealDataLocally = {
+                        "selected_meal": statusList.toString(),
+                        "comments": commentController.text
+                      };
+                      _pref!.setString(AppConfig.STORE_MEAL_DATA, json.encode(storeMealDataLocally));
+                    },
+                    style: TextStyle(
+                        fontFamily: "GothamBook",
+                        color: gTextColor,
+                        fontSize: 11.sp),
+                    decoration: InputDecoration(
+                      suffixIcon: commentController
+                          .text.isEmpty ||
+                          isDayCompleted != null
+                          ? SizedBox()
+                          : InkWell(
+                        onTap: () {
+                          commentController
+                              .clear();
+                        },
+                        child: const Icon(
+                          Icons.close,
+                          color: gTextColor,
                         ),
                       ),
+                      hintText: "Comments",
+                      border: InputBorder.none,
+                      hintStyle: TextStyle(
+                        fontFamily: "GothamBook",
+                        color: gTextColor,
+                        fontSize: 9.sp,
+                      ),
                     ),
+                    textInputAction:
+                    TextInputAction.next,
+                    textAlign: TextAlign.start,
+                    keyboardType:
+                    TextInputType.emailAddress,
                   ),
                 ),
               ),
             ),
-          ),
-          Visibility(
-            visible: (!buttonVisibility() && presentDay == selectedDay),
-            child: Center(
-              child: IntrinsicWidth(
-                child: Container(
-                  padding: EdgeInsets.all(8),
-                  margin: EdgeInsets.symmetric(vertical: 5),
-                  child: Center(
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          padding: EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                              color: gPrimaryColor, shape: BoxShape.circle),
-                          child: Center(
-                            child: Icon(
-                              Icons.done_outlined,
-                              color: gWhiteColor,
-                              size: 3.h,
-                            ),
+            Visibility(
+              // visible: buttonVisibility(),
+              child: Center(
+                child: IntrinsicWidth(
+                  child: GestureDetector(
+                    onTap:
+                    // (){
+                    //   print("statusList.length: ${statusList.length}");
+                    //   print("lst.length ${lst.length}");
+                    //
+                    // },
+                    (statusList.length !=
+                        lst.length)
+                        ? () => AppConfig()
+                        .showSnackbar(context,
+                        "Please complete the Meal Plan Status",
+                        isError: true)
+                    // : (statusList.values.any((element) => element.toString().toLowerCase() == 'unfollowed') && commentController.text.isEmpty)
+                    // ? () => AppConfig().showSnackbar(context, "Please Mention the comments why you unfollowed?", isError: true)
+                        : () {
+                      print(
+                          "this one $presentDay");
+                      for (int i = 0;
+                      i < presentDay!;
+                      i++) {
+                        print(presentDay);
+                        if (listData[i]
+                            .isCompleted ==
+                            0 &&
+                            i + 1 !=
+                                selectedDay!) {
+                          AppConfig()
+                              .showSnackbar(
+                              context,
+                              "Please Complete Day ${listData[i].dayNumber}",
+                              isError:
+                              true);
+                          break;
+                        } else if (listData[i]
+                            .isCompleted ==
+                            1) {
+                          print(
+                              "completed already");
+                          sendData();
+                        } else if (i + 1 ==
+                            presentDay ||
+                            i + 1 ==
+                                selectedDay) {
+                          print(
+                              "u can access $presentDay");
+                          sendData();
+                          break;
+                        } else {
+                          print(
+                              "u r trying else");
+                        }
+                      }
+                    },
+                    child: Container(
+                      margin: EdgeInsets.symmetric(
+                          vertical: 2.h),
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 10.w,
+                          vertical: 1.h),
+                      // width:
+                      //     btnText.length > 22 ? 75.w : 60.w,
+                      // height: 5.h,
+                      decoration: BoxDecoration(
+                        color: (statusList.length ==
+                            lst.length)
+                            ? eUser().buttonColor
+                            : tableHeadingBg,
+                        borderRadius: BorderRadius
+                            .circular(eUser()
+                            .buttonBorderRadius),
+                        // border: Border.all(color: eUser().buttonBorderColor,
+                        //     width: eUser().buttonBorderWidth),
+                      ),
+                      child: Center(
+                        child: Text(
+                          btnText,
+                          // 'Proceed to Day $proceedToDay',
+                          style: TextStyle(
+                            fontFamily:
+                            eUser().buttonTextFont,
+                            color:
+                            eUser().buttonTextColor,
+                            // color: (statusList.length != lst.length) ? gPrimaryColor : gMainColor,
+                            fontSize:
+                            eUser().buttonTextSize,
                           ),
                         ),
-                        SizedBox(width: 8,),
-                        Text(
-                          // "Day ${widget.day} Meal Plan",
-                          "Day ${selectedDay} Submitted",
-                          style: TextStyle(
-                              fontFamily: eUser().mainHeadingFont,
-                              color: gTextColor,
-                              fontSize:
-                              eUser().mainHeadingFontSize),
-                        )
-                      ],
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
-          )
+            Visibility(
+              visible: (!buttonVisibility() && ((presentDay ?? 0) >= (selectedDay ?? 1) ) && !widget.viewDay1Details),
+              child: Center(
+                child: IntrinsicWidth(
+                  child: Container(
+                    padding: EdgeInsets.all(8),
+                    margin: EdgeInsets.symmetric(vertical: 5),
+                    child: Center(
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            padding: EdgeInsets.all(5),
+                            decoration: BoxDecoration(
+                                color: gPrimaryColor, shape: BoxShape.circle),
+                            child: Center(
+                              child: Icon(
+                                Icons.done_outlined,
+                                color: gWhiteColor,
+                                size: 3.h,
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: 8,),
+                          Text(
+                            // "Day ${widget.day} Meal Plan",
+                            "Day ${selectedDay} Submitted",
+                            style: TextStyle(
+                                fontFamily: eUser().mainHeadingFont,
+                                color: gTextColor,
+                                fontSize:
+                                eUser().mainHeadingFontSize),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            )
 
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -1349,7 +1333,8 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
             height: 5.h,
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(8), topRight: Radius.circular(8)),
+                    topLeft: Radius.circular(8),
+                    topRight: Radius.circular(8)),
                 color: tableHeadingBg),
             // child: Row(
             //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1528,8 +1513,8 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                                     builder:
                                         (context) =>
                                         MealPlanRecipeDetails(
-                                          mealPlanRecipe:  ChildMealPlanDetailsModel1.fromJson(e.toJson()),
-                                          // mealPlanRecipe: e,
+                                          // mealPlanRecipe:
+                                          // e,
                                           isFromProgram:
                                           true,
                                         ),
@@ -1605,8 +1590,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                                 MaterialPageRoute(
                                   builder: (context) =>
                                       MealPlanRecipeDetails(
-                                        mealPlanRecipe:  ChildMealPlanDetailsModel1.fromJson(e.toJson()),
-                                        // mealPlanRecipe:  e,
+                                        // mealPlanRecipe: e,
                                         isFromProgram: true,
                                       ),
                                 ),
@@ -1715,32 +1699,27 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                     Visibility(
                       visible: !widget.viewDay1Details,
                       child: GestureDetector(
-                        onTap: (isDayCompleted != null && isDayCompleted == true) ? null : () {
-                          print(
-                            value.indexWhere((element) {
-                              print(element.name);
-                              print(e.name);
-                              return element.name == e.name;
-                            }),
-                          );
-                          showFollowedSheet(e);
-                          // openAlertBox(
-                          //     title: 'Did you Follow this?',
-                          //     titleNeeded: true,
-                          //     context: context,
-                          //     isContentNeeded: false,
-                          //     positiveButtonName: 'Followed',
-                          //     positiveButton: () {
-                          //       onChangedTab(0,
-                          //           id: e.itemId, title: list[0]);
-                          //       Navigator.pop(context);
-                          //     },
-                          //     negativeButtonName: 'Missed It',
-                          //     negativeButton: () {
-                          //       onChangedTab(0,
-                          //           id: e.itemId, title: list[1]);
-                          //       Navigator.pop(context);
-                          //     });
+                        onTap:  () {
+
+                          print(selectedDay);
+                          print(presentDay);
+                          if(!buttonVisibility() && ((presentDay ?? 0) >= (selectedDay ?? 1) ) && !widget.viewDay1Details){
+                            return;
+                          }
+                          else{
+                              showFollowedSheet(e);
+                          }
+
+                          // if(presentDay == selectedDay){
+                          // }
+
+                          // print(
+                          //   value.indexWhere((element) {
+                          //     print(element.name);
+                          //     print(e.name);
+                          //     return element.name == e.name;
+                          //   }),
+                          // );
                         },
                         child: (statusList.isNotEmpty &&
                             statusList.containsKey(e.itemId) &&
@@ -1840,7 +1819,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
     return _data;
   }
 
-  showFollowedSheet(ChildMealPlanDetailsModel e) {
+  showFollowedSheet(ChildMealPlanDetailsModel1 e) {
     print("eeeee:$e");
     return AppConfig().showSheet(context, showFollowWidget(e),
         bottomSheetHeight: 50.h,
@@ -1851,7 +1830,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
         });
   }
 
-  showFollowWidget(ChildMealPlanDetailsModel e) {
+  showFollowWidget(ChildMealPlanDetailsModel1 e) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.center,
@@ -2342,123 +2321,6 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
 
   List lst = [];
 
-  showDummyDataRow() {
-    return mealPlanData
-        .map(
-          (s) => DataRow(
-        cells: [
-          DataCell(
-            Text(
-              s["time"].toString(),
-              style: TextStyle(
-                height: 1.5,
-                color: gTextColor,
-                fontSize: 8.sp,
-                fontFamily: "GothamBold",
-              ),
-            ),
-          ),
-          DataCell(
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                s["id"] == 1
-                    ? GestureDetector(
-                  onTap: () {},
-                  child: Image(
-                    image: const AssetImage(
-                        "assets/images/noun-play-1832840.png"),
-                    height: 2.h,
-                  ),
-                )
-                    : const SizedBox(),
-                SizedBox(width: 2.w),
-                Expanded(
-                  child: Text(
-                    " ${s["title"].toString()}",
-                    maxLines: 3,
-                    textAlign: TextAlign.start,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      height: 1.5,
-                      color: gTextColor,
-                      fontSize: 8.sp,
-                      fontFamily: "GothamBook",
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            placeholder: true,
-          ),
-          DataCell(
-            PopupMenuButton(
-              offset: const Offset(0, 30),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(5)),
-              itemBuilder: (context) => [
-                PopupMenuItem(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(height: 0.6.h),
-                      buildDummyTabView(
-                          index: 1, title: list[0], color: gPrimaryColor),
-                      Container(
-                        margin: EdgeInsets.symmetric(vertical: 1.h),
-                        height: 1,
-                        color: gHintTextColor.withOpacity(0.3),
-                      ),
-                      buildDummyTabView(
-                          index: 2, title: list[1], color: gsecondaryColor),
-                      Container(
-                        margin: EdgeInsets.symmetric(vertical: 1.h),
-                        height: 1,
-                        color: gHintTextColor.withOpacity(0.3),
-                      ),
-                      SizedBox(height: 0.6.h),
-                    ],
-                  ),
-                ),
-              ],
-              child: Container(
-                width: 20.w,
-                padding:
-                EdgeInsets.symmetric(horizontal: 2.w, vertical: 0.2.h),
-                decoration: BoxDecoration(
-                  color: gWhiteColor,
-                  borderRadius: BorderRadius.circular(5),
-                  border: Border.all(color: gMainColor, width: 1),
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        buildDummyHeaderText(),
-                        textAlign: TextAlign.start,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                            fontFamily: kFontBook,
-                            color: buildDummyTextColor(),
-                            fontSize: 8.sp),
-                      ),
-                    ),
-                    Icon(
-                      Icons.expand_more,
-                      color: gHintTextColor,
-                      size: 2.h,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    )
-        .toList();
-  }
-
   void onChangedTab(int index, {int? id, String? title}) {
     print('$id  $title');
     setState(() {
@@ -2576,7 +2438,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
     } else if (planStatus == 4) {
       textColor = gMainColor;
     }
-    return textColor!;
+    return textColor;
   }
 
   final ProgramRepository repository = ProgramRepository(
@@ -2620,7 +2482,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
       MaterialPageRoute(
         builder: (ctx) => TrackerUI(
             proceedProgramDayModel: model,
-            from: ProgramMealType.detox.name,
+            from: ProgramMealType.healing.name,
             trackerVideoLink: widget.trackerVideoLink
         ),),);
   }
@@ -2657,7 +2519,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
     }
   }
 
-  showVideo(ChildMealPlanDetailsModel e) async {
+  showVideo(ChildMealPlanDetailsModel1 e) async {
     if (e.url!.split('.').last == "mp4") {
       setState(() {
         isEnabled = !isEnabled;
@@ -2676,7 +2538,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
     // Navigator.push(context, MaterialPageRoute(builder: (ctx)=> YogaVideoScreen(yogaDetails: e.toJson(),day: widget.day,)));
   }
 
-  oldPopup(ChildMealPlanDetailsModel e) {
+  oldPopup(ChildMealPlanDetailsModel1 e) {
     return IgnorePointer(
       ignoring: isDayCompleted == true,
       child: Container(
@@ -2795,7 +2657,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                   children: [
                     TrackerUI(
                       proceedProgramDayModel: model,
-                      from: ProgramMealType.detox.name,
+                      from: ProgramMealType.healing.name,
                     ),
                     Visibility(
                       visible: showMealVideo,
@@ -2835,7 +2697,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                 padding: const EdgeInsets.all(8.0),
                 child: TrackerUI(
                   proceedProgramDayModel: model,
-                  from: ProgramMealType.detox.name,
+                  from: ProgramMealType.healing.name,
                 ),
               )
             ],
@@ -3001,6 +2863,131 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
       return SizedBox.shrink();
     }
   }
+
+  getProgramData() async {
+    setState(() {
+      showShimmer = true;
+    });
+    // print(selectedDay);
+    // statusList.clear();
+    // lst.clear();
+    final result = await ProgramService(repository: repository)
+        .getCombinedMealService();
+    print("result: $result");
+
+    if (result.runtimeType == CombinedMealModel) {
+      print("meal plan");
+      CombinedMealModel model = result as CombinedMealModel;
+
+
+      if(model.healing != null){
+        _childDetoxModel = model.healing!.value!;
+        if(model.healing!.totalDays != null){
+          totalDays = model.healing!.totalDays ?? 5;
+        }
+      }
+
+      print('healing.values:${model.healing!.value!.details!.entries}');
+      model.healing!.value!.details!.forEach((key, value) {
+        print("day: $key");
+        print(value.toMap());
+        value.data!.forEach((k, v1) {
+          print("$k -- $v1");
+        });
+      });
+
+      storeDetails();
+
+    }
+    else {
+      ErrorModel model = result as ErrorModel;
+      print("error: ${model.message}");
+      // errorMsg = model.message ?? '';
+      // Future.delayed(Duration(seconds: 0)).whenComplete(() {
+      //   setState(() {
+      //     showShimmer = false;
+      //     isLoading = false;
+      //   });
+      //   showAlert(context, model.status!,
+      //       isSingleButton: !(model.status != '401'), positiveButton: () {
+      //         if (model.status == '401') {
+      //           Navigator.pop(context);
+      //           Navigator.pop(context);
+      //         } else {
+      //           getMeals();
+      //           Navigator.pop(context);
+      //         }
+      //       });
+      // });
+    }
+    setState(() {
+      showShimmer = false;
+    });
+    print(result);
+  }
+
+  storeDetails(){
+    presentDay = int.tryParse(_childDetoxModel!.currentDay!) ?? 1;
+    nextDay = presentDay!+1;
+    selectedDay = presentDay;
+
+
+    if(_childDetoxModel!.isDetoxCompleted != null){
+      isDetoxCompleted = (_childDetoxModel!.isDetoxCompleted == "0" || _childDetoxModel!.isDetoxCompleted == "null") ? false : true;
+    }
+
+    _childDetoxModel!.details!.forEach((key, value) {
+      print("value==> $key $value");
+      DetoxHealingModel _model = value as DetoxHealingModel;
+      listData.add(ChildProgramDayModel(
+          dayNumber: _model.programDay,
+          isCompleted: (_model.isDayCompleted != "") ? int.parse(_model.isDayCompleted!) : 0
+      ));
+    });
+
+    getMealFromDay(presentDay!);
+
+    listData.forEach((element) {
+      if(int.parse(element.dayNumber!) == presentDay){
+        isDayCompleted = element.isCompleted == 1 ? true : false;
+      }
+    });
+
+    print(isDayCompleted);
+
+
+    print("mealPlanData1: $mealPlanData1");
+
+    if (listData.last.isCompleted == 1) {
+          print("widget.postProgramStage: ${widget.transStage}");
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (!isOpened) {
+              setState(() {
+                isOpened = true;
+              });
+              buildDayCompletedClap();
+            }
+          });
+
+    }
+        for (int i = 0; i < presentDay!; i++) {
+          print(presentDay);
+          if (listData[i].isCompleted == 0 && i + 1 != selectedDay!) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              showMoreTextSheet(listData[i].dayNumber);
+            });
+            break;
+          }
+        }
+
+  }
+
+
+  final ProgramRepository progrRepository = ProgramRepository(
+    apiClient: ApiClient(
+      httpClient: http.Client(),
+    ),
+  );
 }
 
 class MealPlanData {

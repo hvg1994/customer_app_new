@@ -3,12 +3,13 @@ import 'package:gwc_customer/model/prepratory_meal_model/prep_meal_model.dart';
 import 'package:sizer/sizer.dart';
 import 'package:gwc_customer/widgets/constants.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import '../../../model/combined_meal_model/detox_nourish_model/detox_healing_common_model/child_meal_plan_details_model1.dart';
 import '../../../model/program_model/meal_plan_details_model/child_meal_plan_details_model.dart';
 import '../../../widgets/widgets.dart';
 
 class MealPlanRecipeDetails extends StatefulWidget {
   final MealSlot? meal;
-  final ChildMealPlanDetailsModel? mealPlanRecipe;
+  final ChildMealPlanDetailsModel1? mealPlanRecipe;
   final bool isFromProgram;
   const MealPlanRecipeDetails({
     Key? key,
@@ -68,7 +69,7 @@ class _MealPlanRecipeDetailsState extends State<MealPlanRecipeDetails>
 
   MealSlot? meals;
 
-  ChildMealPlanDetailsModel? mealPlanRecipes;
+  ChildMealPlanDetailsModel1? mealPlanRecipes;
 
   @override
   Widget build(BuildContext context) {
@@ -189,7 +190,7 @@ class _MealPlanRecipeDetailsState extends State<MealPlanRecipeDetails>
                                     ),
                                     SizedBox(width: 1.w),
                                     Text(
-                                      " - ${mealPlanRecipes?.cookingTime ?? ''}",
+                                      " - ${mealPlanRecipes?.cookingTime == 'null' ? '' : mealPlanRecipes?.cookingTime}",
                                       style: TextStyle(
                                         color: gHintTextColor,
                                         height: 1.3,

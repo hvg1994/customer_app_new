@@ -14,9 +14,9 @@ class AppConfig{
   factory AppConfig() => instance ??= AppConfig._();
   AppConfig._();
 
-  final String BASE_URL = "https://gwc.disol.in";
+  // final String BASE_URL = "https://gwc.disol.in";
 
-  // final String BASE_URL = "https://gutandhealth.com";
+  final String BASE_URL = "https://gutandhealth.com";
 
   final String shipRocket_AWB_URL = 'https://apiv2.shiprocket.in/v1/external';
   final String UUID = 'uuid';

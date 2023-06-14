@@ -24,6 +24,7 @@ import '../../utils/app_config.dart';
 import '../../widgets/constants.dart';
 import '../../widgets/video/normal_video.dart';
 import '../../widgets/widgets.dart';
+import '../combined_meal_plan/combined_meal_screen.dart';
 import '../prepratory plan/new/new_transition_design.dart';
 import '../prepratory plan/new/preparatory_new_screen.dart';
 import '../prepratory plan/prepratory_meal_completed_screen.dart';
@@ -31,7 +32,7 @@ import 'day_program_plans.dart';
 import 'package:http/http.dart' as http;
 
 enum ProgramMealType {
-  prepratory, program, transition
+  prepratory, detox, healing, transition
 }
 
 class ProgramPlanScreen extends StatefulWidget {
@@ -130,7 +131,7 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
             if(videoPlayerController != null) videoPlayerController!.pause();
             if(_chewieController != null) _chewieController!.pause();
 
-            if (widget.from == ProgramMealType.program.name){
+            if (widget.from == ProgramMealType.detox.name){
               showConfirmSheet();
             }
             else{
@@ -527,7 +528,7 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
                 Text(
                   (widget.from == ProgramMealType.prepratory.name)
                       ? prepText
-                      : widget.from == ProgramMealType.program.name
+                      : widget.from == ProgramMealType.detox.name
                       ? mealText
                       : transText,
                   textAlign: TextAlign.justify,
@@ -559,29 +560,52 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
                               isPrepStarted: true,
                             ));
                           }
-                          else if(widget.from == ProgramMealType.program.name){
+                          else if(widget.from == ProgramMealType.detox.name){
                             //get Normal Program day1 meals
                             final mealUrl = _pref!.getString(AppConfig().receipeVideoUrl);
                             final trackerUrl = _pref!.getString(AppConfig().trackerVideoUrl);
 
-                            gotoScreen( MealPlanScreen(
-                              receipeVideoLink: mealUrl,
-                              trackerVideoLink: trackerUrl,
-                              viewDay1Details: true,
-                            ),);
+                            gotoScreen(
+                                CombinedPrepMealTransScreen(stage: 1,
+                                  fromStartScreen: true,
+                                )
+                            );
+                            // gotoScreen( MealPlanScreen(
+                            //   receipeVideoLink: mealUrl,
+                            //   trackerVideoLink: trackerUrl,
+                            //   viewDay1Details: true,
+                            // ),);
+                          }
+                          else if(widget.from == ProgramMealType.healing.name){
+                            //get Normal Program day1 meals
+                            final mealUrl = _pref!.getString(AppConfig().receipeVideoUrl);
+                            final trackerUrl = _pref!.getString(AppConfig().trackerVideoUrl);
+
+                            _pref!.setString(AppConfig.STORE_MEAL_DATA, "");
+                            gotoScreen(
+                                CombinedPrepMealTransScreen(stage: 2,
+                                  fromStartScreen: true,
+                                )
+                            );
+                            // gotoScreen( MealPlanScreen(
+                            //   receipeVideoLink: mealUrl,
+                            //   trackerVideoLink: trackerUrl,
+                            //   viewDay1Details: true,
+                            // ),);
                           }
                           else if(widget.from == ProgramMealType.transition.name){
                             //get Transition day1 meals
                             final trackerUrl = _pref!.getString(AppConfig().trackerVideoUrl);
 
-                            gotoScreen(NewTransitionDesign(
-                              totalDays: '1',
-                              dayNumber: '1',
-                              trackerVideoLink: trackerUrl
-                              ,viewDay1Details: true,));
-                            //old screen
-                            // gotoScreen(TransitionMealPlanScreen(dayNumber: "1",
-                            //   totalDays: "1",trackerVideoLink: trackerUrl,viewDay1Details: true,));
+                            gotoScreen(CombinedPrepMealTransScreen(stage: 3,
+                              fromStartScreen: true,
+                            ));
+                            // gotoScreen(NewTransitionDesign(
+                            //   totalDays: '1',
+                            //   dayNumber: '1',
+                            //   trackerVideoLink: trackerUrl
+                            //   ,viewDay1Details: true,));
+
                           }
                         }
                       },
@@ -589,7 +613,8 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
                       child: Text("View Day1 "
                           "${(widget.from == ProgramMealType.prepratory.name) ? 'Prepratory Meal Plan'
                           : (widget.from == ProgramMealType.transition.name) ? 'Transition Meal Plan'
-                          : 'Meal Plan'} >",
+                          : (widget.from == ProgramMealType.detox.name) ? 'Detox Meal Plan'
+                          : 'Healing Meal Plan'} >",
                         style: TextStyle(
                             height: 1.5,
                             fontFamily: kFontBold,
@@ -628,8 +653,11 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
     if(widget.from == ProgramMealType.prepratory.name){
       start = "2";
     }
-    else if(widget.from == ProgramMealType.program.name){
+    else if(widget.from == ProgramMealType.detox.name){
       start = "1";
+    }
+    else if(widget.from == ProgramMealType.healing.name){
+      start = "4";
     }
     else if(widget.from == ProgramMealType.transition.name){
       start = "3";
@@ -650,11 +678,13 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
             context,
             MaterialPageRoute(
               maintainState: false,
-              builder: (context) => PreparatoryPlanScreen(dayNumber: "1", totalDays: '1',),
+              builder: (context) =>
+                  CombinedPrepMealTransScreen(stage: 0)
+                  // PreparatoryPlanScreen(dayNumber: "1", totalDays: '1',),
             ),
           );
         }
-        else if(widget.from == ProgramMealType.program.name){
+        else if(widget.from == ProgramMealType.detox.name){
           // if(widget.isPrepCompleted != null && widget.isPrepCompleted == true){
           //   Navigator.pushReplacement(
           //     context,
@@ -670,12 +700,40 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                builder: (context) => MealPlanScreen(
-                  receipeVideoLink: mealUrl,
-                  trackerVideoLink: trackerUrl,
-                ),
+                builder: (context) =>
+                    CombinedPrepMealTransScreen(stage: 1)
+                //     MealPlanScreen(
+                //   receipeVideoLink: mealUrl,
+                //   trackerVideoLink: trackerUrl,
+                // ),
               ),
             );
+          // }
+        }
+        else if(widget.from == ProgramMealType.healing.name){
+          // if(widget.isPrepCompleted != null && widget.isPrepCompleted == true){
+          //   Navigator.pushReplacement(
+          //     context,
+          //     MaterialPageRoute(
+          //       builder: (context) => const PrepratoryMealCompletedScreen(),
+          //     ),
+          //   );
+          // }
+          // else{
+          final mealUrl = _pref!.getString(AppConfig().receipeVideoUrl);
+          final trackerUrl = _pref!.getString(AppConfig().trackerVideoUrl);
+
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    CombinedPrepMealTransScreen(stage: 2)
+              //     MealPlanScreen(
+              //   receipeVideoLink: mealUrl,
+              //   trackerVideoLink: trackerUrl,
+              // ),
+            ),
+          );
           // }
         }
         else if(widget.from == ProgramMealType.transition.name){
@@ -685,11 +743,13 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
             context,
             MaterialPageRoute(
               maintainState: false,
-              builder: (context) => NewTransitionDesign(
-                  totalDays: '1',
-                  dayNumber: '1',
-                  trackerVideoLink: trackerUrl
-              ),
+              builder: (context) =>
+                  CombinedPrepMealTransScreen(stage: 3)
+              //     NewTransitionDesign(
+              //     totalDays: '1',
+              //     dayNumber: '1',
+              //     trackerVideoLink: trackerUrl
+              // ),
             ),
           );
 

@@ -3132,7 +3132,7 @@ class GutListState extends State<GutList> with SingleTickerProviderStateMixin {
             .push(
           MaterialPageRoute(
             builder: (context) => ProgramPlanScreen(
-              from: ProgramMealType.program.name,
+              from: ProgramMealType.detox.name,
               // videoLink: _gutProgramModel?.value?.startVideoUrl ?? "",
               isPrepCompleted: _prepratoryModel!.value!.isPrepCompleted,
             ),

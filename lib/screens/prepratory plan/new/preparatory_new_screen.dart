@@ -47,7 +47,6 @@ class _PreparatoryPlanScreenState extends State<PreparatoryPlanScreen>
   String? planNotePdfLink;
 
   Map<String, SubItems> slotNamesForTabs = {};
-  List subItemNames = [];
   int tabSize = 1;
 
   bool showLoading = true;

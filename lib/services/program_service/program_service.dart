@@ -18,12 +18,16 @@ class ProgramService extends ChangeNotifier{
     return await repository.getMealPlanDetailsRepo(day);
   }
 
-  Future proceedDayMealDetailsService(ProceedProgramDayModel day, List<MultipartFile> files) async{
-    return await repository.proceedDayMealDetailsRepo(day, files);
+  Future proceedDayMealDetailsService(ProceedProgramDayModel day, List<MultipartFile> files, String from) async{
+    return await repository.proceedDayMealDetailsRepo(day, files, from);
   }
 
   /// pass startProgram=1
   Future startProgramOnSwipeService(String startProgram) async{
     return await repository.startProgramOnSwipeRepo(startProgram);
+  }
+
+  Future getCombinedMealService() async{
+    return await repository.getCombinedMealRepo();
   }
 }

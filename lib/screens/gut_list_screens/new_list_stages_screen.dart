@@ -42,6 +42,7 @@ import '../appointment_screens/consultation_screens/medical_report_screen.dart';
 import '../appointment_screens/consultation_screens/upload_files.dart';
 import '../appointment_screens/doctor_calender_time_screen.dart';
 import '../appointment_screens/doctor_slots_details_screen.dart';
+import '../combined_meal_plan/combined_meal_screen.dart';
 import '../cook_kit_shipping_screens/cook_kit_tracking.dart';
 import '../evalution_form/evaluation_get_details.dart';
 import '../evalution_form/personal_details_screen.dart';
@@ -205,7 +206,7 @@ class _NewDsPageState extends State<NewDsPage> {
           errorMsg = AppConfig.networkErrorText;
         }
         else{
-          errorMsg = AppConfig.networkErrorText;
+          errorMsg = AppConfig.oopsMessage;
         }
         Future.delayed(Duration(seconds: 0)).whenComplete(
                 () => AppConfig().showSnackbar(context, errorMsg ?? '',
@@ -252,6 +253,7 @@ class _NewDsPageState extends State<NewDsPage> {
         } else if (_getDashboardDataModel.prepratory_program != null) {
           _prepratoryModel = _getDashboardDataModel.prepratory_program;
           print("_prepratoryModel: $_prepratoryModel");
+          print(_prepratoryModel!.value!.toJson());
           prepratoryMealStage = _prepratoryModel?.data ?? '';
         }
         updateNewStage(prepratoryMealStage);
@@ -602,6 +604,8 @@ class _NewDsPageState extends State<NewDsPage> {
                           print("else if1");
                           return Column(
                             children: [
+                              /// up arrow when drag
+                              /// this is not using
                               AnimatedSize(
                                 duration: const Duration(milliseconds: 500),
                                 child: SizedBox(
@@ -636,6 +640,7 @@ class _NewDsPageState extends State<NewDsPage> {
                                   ),
                                 ),
                               ),
+                              /// bottom last card
                               Visibility(
                                 visible: heightFactor != 1.0,
                                 child: Align(
@@ -695,6 +700,7 @@ class _NewDsPageState extends State<NewDsPage> {
                           );
                         }
                         else {
+                          print("else small index: $index");
                           return Visibility(
                             visible: heightFactor != 1.0,
                             child: AnimatedAlign(
@@ -923,9 +929,9 @@ class _NewDsPageState extends State<NewDsPage> {
             // },
             child: IntrinsicHeight(
               child: Container(
-                // constraints: BoxConstraints(
-                //   minHeight: 180,
-                // ),
+                constraints: BoxConstraints(
+                  minHeight: 130,
+                ),
                 width: double.maxFinite,
                 // height: MediaQuery.of(context).size.width <= 400 ? 180 : 220,
                 decoration: BoxDecoration(
@@ -1020,6 +1026,8 @@ class _NewDsPageState extends State<NewDsPage> {
                                     type)
                             ],
                           ),
+                          if(btn1Name == null && btn2Name == null && btn3Name == null)
+                            SizedBox(height: 20,)
                         ],
                       ),
                     ),
@@ -1756,11 +1764,13 @@ class _NewDsPageState extends State<NewDsPage> {
         // stageData[4].btn1Name = "View MR";
 
         if (_prepratoryModel!.value!.isPrepratoryStarted == false) {
-          stageData[5].btn1Name = "Prep Plan";
+          // stageData[5].btn1Name = "Prep Plan";
+          stageData[5].btn1Name = null;
           stageData[5].btn2Name = null;
         }
         else{
-          stageData[5].btn1Name = "Prep";
+          stageData[5].btn1Name = null;
+          // stageData[5].btn1Name = "Prep";
           stageData[5].subTitle = prepStage2SubText;
           stageData[5].btn2Color = newCurrentStageButtonColor.withOpacity(0.6);
         }
@@ -1881,14 +1891,44 @@ class _NewDsPageState extends State<NewDsPage> {
           stageData[6].btn2Color = newCurrentStageButtonColor;
         }
 
+        print("_gutProgramModel!.value!.startProgram != '0': ${_gutProgramModel!.value!.startProgram != '0'}");
+
+        print("_gutProgramModel!.value!.isDetoxCompleted != '1': ${_gutProgramModel!.value!.isDetoxCompleted != '1'}");
+
+        print(_gutProgramModel!.value!.isDetoxCompleted);
+
         /// start program text will come 1st time
         /// once started start day1, day2, day3......
-        if (_gutProgramModel!.value!.startProgram != '0'){
+        if (_gutProgramModel!.value!.startProgram != '0'
+            && _gutProgramModel!.value!.isDetoxCompleted != '1'){
           final currentday = _gutProgramModel?.value?.mealCurrentDay;
           stageData[6].btn1Name = "Continue To Day $currentday";
           stageData[6].btn2Name = null;
           stageData[6].subTitle = mealStartText;
         }
+
+        // detox phase
+        if(_gutProgramModel!.value!.isDetoxCompleted == "1"){
+          print('callinggg');
+          stageData[6].btn1Name = "Start Program";
+          stageData[6].btn2Name = null;
+          stageData[6].subTitle = healingStartText;
+        }
+
+        if (_gutProgramModel!.value!.healingStartProgram == '1'){
+          print("this also called");
+          final currentday = _gutProgramModel?.value?.healingCurrentDay;
+          stageData[6].btn1Name = "Continue To Day $currentday";
+          stageData[6].btn2Name = null;
+          stageData[6].subTitle = mealStartText;
+        }
+
+        // if (_gutProgramModel!.value!.isHealingCompleted == '1'){
+        //   print("this also called");
+        //   stageData[6].btn1Name = "Start Nourish";
+        //   stageData[6].btn2Name = null;
+        //   stageData[6].subTitle = mealTransText;
+        // }
 
 
         break;
@@ -1899,7 +1939,13 @@ class _NewDsPageState extends State<NewDsPage> {
           current = 7;
 
           final dayNumber = _transModel?.value?.currentDay ?? '';
-          stageData[6].btn1Name = "Transition Plan Day $dayNumber";
+
+          if(_transModel!.value!.isTransMealStarted == false){
+            stageData[6].btn1Name = "Start Nourish";
+          }
+          else{
+            stageData[6].btn1Name = "Transition Plan Day $dayNumber";
+          }
           stageData[6].btn2Name = null;
           stageData[6].subTitle = mealTransText;
         }
@@ -1934,6 +1980,8 @@ class _NewDsPageState extends State<NewDsPage> {
         // stageData[4].btn1Name = "View MR";
 
         stageData[6].btn1Name = "Trans Completed";
+        stageData[6].btn1Color = newCompletedStageBtnColor;
+
 
         print("_gutPostProgramModel!.isProgramFeedbackSubmitted: ${_gutPostProgramModel!.isProgramFeedbackSubmitted}");
         if (_gutPostProgramModel!.isProgramFeedbackSubmitted != "1") {
@@ -1976,6 +2024,8 @@ class _NewDsPageState extends State<NewDsPage> {
 
         final curTime = DateTime.now();
         var res = DateFormat("yyyy-MM-dd HH:mm:ss").parse("${slotDate} ${slotTime}:00");
+
+        stageData[7].subTitle = "Your consultation has been booked for $slotDate $slotTime.\n"+PpcBookedText;
 
         if(res.difference(curTime).inMinutes > 5 || res.difference(curTime).inMinutes < -15){
           stageData[7].btn1Color = newCurrentStageButtonColor.withOpacity(0.6);
@@ -2159,8 +2209,8 @@ class _NewDsPageState extends State<NewDsPage> {
                 }
               });
 
-              // add this before calling calendertimescreen for reschedule
-              // _pref!.setString(AppConfig.appointmentId , '');
+              print(model.value!.doctor!.toJson());
+
               goToScreen(DoctorCalenderTimeScreen(
                 isReschedule: true,
                 prevBookingDate: model.value!.date,
@@ -2582,6 +2632,7 @@ class _NewDsPageState extends State<NewDsPage> {
 
   showPrepratoryMealScreen({bool isFromPrepCard = false}) {
     if (_prepratoryModel != null) {
+      print(_prepratoryModel!.value!.toJson());
       print("BOOL : ${_prepratoryModel!.value!.isPrepratoryStarted}");
 
       // slide to program  if not started
@@ -2603,12 +2654,12 @@ class _NewDsPageState extends State<NewDsPage> {
           MaterialPageRoute(
               builder: (context) => (_prepratoryModel!.value!.isPrepCompleted!)
                   ? PrepratoryMealCompletedScreen()
-                  : PreparatoryPlanScreen(
-                dayNumber: _prepratoryModel!.value!.currentDay ?? '',
-                totalDays: _prepratoryModel!.value!.prep_days ?? '',
-                isPrepStarted: _prepratoryModel!.value!.isPrepratoryStarted!,
-              )
-            // ProgramPlanScreen(from: ProgramMealType.prepratory.name,)
+              //     : PreparatoryPlanScreen(
+              //   dayNumber: _prepratoryModel!.value!.currentDay ?? '',
+              //   totalDays: _prepratoryModel!.value!.prep_days ?? '',
+              //   isPrepStarted: _prepratoryModel!.value!.isPrepratoryStarted!,
+              // )
+                  : CombinedPrepMealTransScreen(stage: 0)
           ),
         ).then((value) => reloadUI());
       }
@@ -2634,11 +2685,14 @@ class _NewDsPageState extends State<NewDsPage> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => NewTransitionDesign(
-                postProgramStage: postProgramStage,
-                totalDays: _transModel!.value!.trans_days ?? '1',
-                dayNumber: _transModel?.value?.currentDay ?? '',
-                trackerVideoLink: _gutProgramModel!.value!.tracker_video_url),
+            builder: (context) =>
+                CombinedPrepMealTransScreen(stage: 3)
+                // NewTransitionDesign(
+                // postProgramStage: postProgramStage,
+                // totalDays: _transModel!.value!.trans_days ?? '1',
+                // dayNumber: _transModel?.value?.currentDay ?? '',
+                // trackerVideoLink: _gutProgramModel!.value!.tracker_video_url
+                // ),
           ),
         ).then((value) => reloadUI());
       }
@@ -2646,6 +2700,7 @@ class _NewDsPageState extends State<NewDsPage> {
   }
 
   /// when user click on meal plan if still prep not completed than
+  /// in meal slide to start need to show prep form submit
   /// in meal slide to start need to show prep form submit
   /// if already submitted than normal ui
   showProgramScreen() {
@@ -2660,12 +2715,13 @@ class _NewDsPageState extends State<NewDsPage> {
         _pref!.setString(AppConfig().trackerVideoUrl,
             _gutProgramModel!.value!.tracker_video_url!);
       }
-      if (_gutProgramModel!.value!.startProgram == '0') {
+      if (_gutProgramModel!.value!.startProgram == '0'
+          || (_gutProgramModel!.value!.healingStartProgram == '0' || _gutProgramModel!.value!.healingStartProgram == 'null')) {
         Navigator.of(context)
             .push(
           MaterialPageRoute(
             builder: (context) => ProgramPlanScreen(
-              from: ProgramMealType.program.name,
+              from: _gutProgramModel!.value!.startProgram == "1" ?  ProgramMealType.healing.name : ProgramMealType.detox.name,
               // videoLink: _gutProgramModel?.value?.startVideoUrl ?? "",
               isPrepCompleted: _prepratoryModel!.value!.isPrepCompleted,
             ),
@@ -2676,10 +2732,13 @@ class _NewDsPageState extends State<NewDsPage> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => MealPlanScreen(
-                transStage: transStage,
-                receipeVideoLink: _gutProgramModel!.value!.recipeVideo,
-                trackerVideoLink: _gutProgramModel!.value!.tracker_video_url),
+            builder: (context) =>
+                CombinedPrepMealTransScreen(stage: (_gutProgramModel!.value!.startProgram == "1" && _gutProgramModel!.value!.isDetoxCompleted == "1") ? 2 : 1)
+                // MealPlanScreen(
+                // transStage: transStage,
+                // receipeVideoLink: _gutProgramModel!.value!.recipeVideo,
+                // trackerVideoLink: _gutProgramModel!.value!.tracker_video_url
+                // ),
           ),
         ).then((value) => reloadUI());
       }

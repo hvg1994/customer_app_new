@@ -407,7 +407,7 @@ class _DoctorCalenderTimeScreenState extends State<DoctorCalenderTimeScreen> {
               ),
               SizedBox(height: 1.5.h),
               Text(
-                "${widget.doctorDetails?.experience}Yr Experience" ?? '',
+                "${widget.doctorDetails?.experience ?? ''}Yr Experience" ?? '',
                 style: TextStyle(
                     fontFamily: kFontMedium,
                     color: gWhiteColor,

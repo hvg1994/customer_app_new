@@ -117,7 +117,6 @@ class _NewTransitionDesignState extends State<NewTransitionDesign>
                   context,
                   MaterialPageRoute(
                     builder: (ctx) => TrackerUI(
-
                         from: ProgramMealType.transition.name,
                         isPreviousDaySheet: true,
                         proceedProgramDayModel: ProceedProgramDayModel(day: (int.parse(widget.dayNumber) - 1).toString()),
@@ -303,7 +302,8 @@ class _NewTransitionDesignState extends State<NewTransitionDesign>
                                       }),
                                 ),
                               );
-                            } else {
+                            }
+                            else {
                               AppConfig().showSnackbar(
                                   context, "Note Link Not available",
                                   isError: true);
@@ -1125,4 +1125,6 @@ class _NewTransitionDesignState extends State<NewTransitionDesign>
       httpClient: http.Client(),
     ),
   );
+
+
 }

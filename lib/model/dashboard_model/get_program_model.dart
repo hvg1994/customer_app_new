@@ -29,7 +29,11 @@ class Value {
   String? programId;
   String? isActive;
   String? startProgram;
+  String? healingStartProgram;
   String? mealCurrentDay;
+  String? healingCurrentDay;
+  String? isDetoxCompleted;
+  String? isHealingCompleted;
   String? createdAt;
   String? updatedAt;
   Program? program;
@@ -43,7 +47,11 @@ class Value {
         this.programId,
         this.isActive,
         this.startProgram,
+        this.healingStartProgram,
         this.mealCurrentDay,
+        this.healingCurrentDay,
+        this.isDetoxCompleted,
+        this.isHealingCompleted,
         this.createdAt,
         this.updatedAt,
         this.program});
@@ -57,13 +65,17 @@ class Value {
     recipeVideo = json['recipe_video'].toString();
     programId = json['program_id'].toString();
     isActive = json['is_active'].toString();
-    startProgram = json['start_program'].toString();
-    mealCurrentDay = json['sp_current_day'].toString();
+    startProgram = json['detox_program'].toString();
+    healingStartProgram = json['healing_program'].toString();
+    mealCurrentDay = json['detox_present_day'].toString();
+    healingCurrentDay = json['healing_present_day'].toString();
+    isDetoxCompleted = (json['is_detox_completed'] != null) ? json['is_detox_completed'].toString() : "0";
+    isHealingCompleted = (json['is_healing_completed'] != null) ? json['is_healing_completed'].toString() : "0";
     createdAt = json['created_at'].toString();
     updatedAt = json['updated_at'].toString();
-    program = json['program'] != null ? new Program.fromJson(json['program'])
-        : json['program_days'] != null
-        ? new Program.fromJson(json['program_days']) : null;
+    program = json['detox_days'] != null ? new Program.fromJson(json['detox_days'])
+        : json['healing_days'] != null
+        ? new Program.fromJson(json['healing_days']) : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -75,7 +87,8 @@ class Value {
     data['tracker_video'] = this.tracker_video_url;
     data['program_id'] = this.programId;
     data['is_active'] = this.isActive;
-    data['start_program'] = this.startProgram;
+    data['detox_program'] = this.startProgram;
+    data['healing_program'] = this.healingStartProgram;
     data['sp_current_day'] = this.mealCurrentDay;
     data['created_at'] = this.createdAt;
     data['updated_at'] = this.updatedAt;
@@ -89,6 +102,7 @@ class Value {
 class Program {
   int? id;
   String? issueId;
+  String? programId;
   String? name;
   String? noOfDays;
   String? desc;
@@ -100,6 +114,7 @@ class Program {
   Program(
       {this.id,
         this.issueId,
+        this.programId,
         this.name,
         this.noOfDays,
         this.desc,
@@ -112,6 +127,7 @@ class Program {
     print("program from json: $json");
     id = json['id'];
     issueId = json['issue_id'].toString();
+    programId = json['program_id'].toString();
     name = json['name'].toString();
     noOfDays = json['no_of_days'].toString();
     desc = json['desc'].toString();
@@ -125,6 +141,7 @@ class Program {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
     data['issue_id'] = this.issueId;
+    data['program_id'] = this.programId;
     data['name'] = this.name;
     data['no_of_days'] = this.noOfDays;
     data['desc'] = this.desc;

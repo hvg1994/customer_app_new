@@ -88,7 +88,12 @@ class ChildAppointmentDetails {
         teamMember!.add(new TeamMember.fromJson(v));
       });
     }
-    doctor = json['doctor_details'] != null ? new ChildDoctorModel.fromJson(json['doctor_details']) : null;
+    print(json['doctor_details']);
+    doctor = (json['doctor_details'] != null)
+        ? (json['doctor_details']['doctor'] != null)
+        ? new ChildDoctorModel.fromJson(json['doctor_details']['doctor'])
+        : new ChildDoctorModel.fromJson(json['doctor_details'])
+        : null;
 
   }
 
