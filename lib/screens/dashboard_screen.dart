@@ -27,6 +27,8 @@ import 'feed_screens/feeds_list.dart';
 import 'gut_list_screens/dashboard_stacked_card.dart';
 import 'gut_list_screens/new_dashboard_stages2.dart';
 import 'gut_list_screens/new_list_stages_screen.dart';
+import 'home_screens/home_screen.dart';
+import 'home_screens/new_home_screen/water_level_screen.dart';
 import 'profile_screens/call_support_method.dart';
 import 'program_plans/widget/radial/pizza.dart';
 import 'program_plans/widget/radial/syncf_pie.dart';
@@ -88,9 +90,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
           //     dayNumber: '0',
           // );
 
-          return CombinedPrepMealTransScreen(stage: 1,);
+          // return WaterLevelScreen();
+          // return CombinedPrepMealTransScreen(stage: 1,);
           // this one
           // return const LevelStatus();
+          return HomeScreens();
 
         }
       case 1:

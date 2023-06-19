@@ -113,14 +113,14 @@ class EvaluationModelFormat1{
 
   factory EvaluationModelFormat1.fromMap(Map<String, dynamic> map) {
     return EvaluationModelFormat1(
-      fname: map['fname'] as String,
-      lname: map['lname'] as String,
-      maritalStatus: map['maritalStatus'] as String,
+      fname: map['first_name'] as String,
+      lname: map['last_name'] as String,
+      maritalStatus: map['marital_status'] as String,
       phone: map['phone'] as String,
       email: map['email'] as String,
       age: map['age'] as String,
       gender: map['gender'] as String,
-      address1: map['address1'] as String,
+      address1: map['address'] as String,
       address2: map['address2'] as String,
       state: map['state'] as String,
       city: map['city'] as String,

@@ -467,226 +467,127 @@ class _NewDsPageState extends State<NewDsPage> {
           ),
         ),
         Expanded(
-          child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  Container(
-                    decoration: const BoxDecoration(
-                      image: DecorationImage(
-                        image: AssetImage(
-                            "assets/images/dashboard_stages/Mask Group 43505.png"),
-                        opacity: 0.5,
-                        fit: BoxFit.fill,
+          child: CustomScrollView(
+              slivers:[
+                SliverToBoxAdapter(child: Column(
+                  children: [
+                    Container(
+                      decoration: const BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage(
+                              "assets/images/dashboard_stages/Mask Group 43505.png"),
+                          opacity: 0.5,
+                          fit: BoxFit.fill,
+                        ),
                       ),
-                    ),
-                    child: Column(
-                      children: [
-                        SizedBox(height: 2.h),
+                      child: Column(
+                        children: [
+                          SizedBox(height: 2.h),
 
-                        SizedBox(height: 1.h),
-                        GestureDetector(
-                          onTap: handleTrackerRemedyOnTap,
-                          child: IntrinsicWidth(
-                            child: Container(
-                              // height: 3.h,
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 3.w, vertical: 0.7.h),
-                              margin: EdgeInsets.symmetric(
-                                vertical: 2.h,
-                              ),
-                              decoration: BoxDecoration(
-                                borderRadius:
-                                const BorderRadius.all(Radius.circular(20.0)),
-                                color: Colors.white,
-                                boxShadow: [
-                                  BoxShadow(
-                                      color: Colors.black.withAlpha(100),
-                                      blurRadius: 10.0),
-                                ],
-                              ),
-                              child: Row(
-                                children: [
-                                  Image.asset(
-                                    "assets/images/home_remedies.png",
-                                    height: 2.5.h,
-                                    fit: BoxFit.scaleDown,
-                                  ),
-                                  SizedBox(width: 2.w),
-                                  Text(
-                                    "Instant Remedies",
-                                    style: TextStyle(
-                                      height: 1.3,
-                                      fontFamily: eUser().userFieldLabelFont,
-                                      color: eUser().mainHeadingColor,
-                                      fontSize: bottomSheetSubHeadingSFontSize,
+                          SizedBox(height: 1.h),
+                          GestureDetector(
+                            onTap: handleTrackerRemedyOnTap,
+                            child: IntrinsicWidth(
+                              child: Container(
+                                // height: 3.h,
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 3.w, vertical: 0.7.h),
+                                margin: EdgeInsets.symmetric(
+                                  vertical: 2.h,
+                                ),
+                                decoration: BoxDecoration(
+                                  borderRadius:
+                                  const BorderRadius.all(Radius.circular(20.0)),
+                                  color: Colors.white,
+                                  boxShadow: [
+                                    BoxShadow(
+                                        color: Colors.black.withAlpha(100),
+                                        blurRadius: 10.0),
+                                  ],
+                                ),
+                                child: Row(
+                                  children: [
+                                    Image.asset(
+                                      "assets/images/home_remedies.png",
+                                      height: 2.5.h,
+                                      fit: BoxFit.scaleDown,
                                     ),
-                                  ),
-                                  // Icon(
-                                  //   Icons.arrow_forward,
-                                  //   color: gMainColor,
-                                  //   size: 10.sp,
-                                  // )
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                        Align(
-                          alignment: Alignment.topRight,
-                          child: Padding(
-                            padding: const EdgeInsets.only(right: 8.0),
-                            child: InkWell(
-                              onTap: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (_) => const NewScheduleScreen()));
-                              },
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  ImageIcon(
-                                    const AssetImage(
-                                        "assets/images/new_ds/follow_up.png"),
-                                    size: 11.sp,
-                                    color: gHintTextColor,
-                                  ),
-                                  const SizedBox(
-                                    width: 3,
-                                  ),
-                                  Text(
-                                    'Follow-up call',
-                                    style: TextStyle(
-                                      color: gHintTextColor,
-                                      fontSize: headingFont,
-                                      decoration: TextDecoration.underline,
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 1.h),
-                  ListView.builder(
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: stageData.length,
-                      itemBuilder: (_, index) {
-                        if (index < current && selected != index) {
-                          print("if");
-                          return AnimatedAlign(
-                            duration: const Duration(milliseconds: 800),
-                            heightFactor: heightFactor,
-                            alignment: Alignment.topCenter,
-                            child: bigCard(
-                              title: stageData[index].title,
-                              subText: stageData[index].subTitle,
-                              image: stageData[index].rightImage,
-                              steps: stageData[index].step,
-                              index: index,
-                              btn1Name: stageData[index].btn1Name,
-                              btn2Name: stageData[index].btn2Name,
-                              btn3Name: stageData[index].btn3Name,
-                              type: stageData[index].type,
-                              bgColor: stageData[index].bgColor,
-                              btn1Color: stageData[index].btn1Color,
-                              btn2Color: stageData[index].btn2Color,
-                              btn3Color: stageData[index].btn3Color,
-
-                            ),
-                          );
-                        }
-                        else if (index == current) {
-                          print("else if1");
-                          return Column(
-                            children: [
-                              /// up arrow when drag
-                              /// this is not using
-                              AnimatedSize(
-                                duration: const Duration(milliseconds: 500),
-                                child: SizedBox(
-                                  height: (selected == current-1 && heightFactor == 0.15) ? 0 : 200,
-                                  child: Visibility(
-                                    visible: heightFactor != 0.15,
-                                    child: Center(
-                                      child: GestureDetector(
-                                        onTap: () {
-                                          setState(() {
-                                            heightFactor = 0.15;
-                                          });
-                                        },
-                                        child: Container(
-                                          width: 50,
-                                          height: 50,
-                                          decoration: BoxDecoration(
-                                              shape: BoxShape.circle,
-                                              color: Colors.amber),
-                                          child: Center(
-                                            child: SizedBox(
-                                                width: 30,
-                                                height: 30,
-                                                child: Image.asset(
-                                                  "assets/images/dashboard_stages/up_arrow.png",
-                                                  fit: BoxFit.scaleDown,
-                                                )),
-                                          ),
-                                        ),
+                                    SizedBox(width: 2.w),
+                                    Text(
+                                      "Instant Remedies",
+                                      style: TextStyle(
+                                        height: 1.3,
+                                        fontFamily: eUser().userFieldLabelFont,
+                                        color: eUser().mainHeadingColor,
+                                        fontSize: bottomSheetSubHeadingSFontSize,
                                       ),
                                     ),
-                                  ),
+                                    // Icon(
+                                    //   Icons.arrow_forward,
+                                    //   color: gMainColor,
+                                    //   size: 10.sp,
+                                    // )
+                                  ],
                                 ),
                               ),
-                              /// bottom last card
-                              Visibility(
-                                visible: heightFactor != 1.0,
-                                child: Align(
-                                  heightFactor: 0.7,
-                                  alignment: Alignment.topRight,
-                                  child: smallCard(
-                                    stageData[index].title,
-                                    stageData[index].subTitle,
-                                    stageData[index].rightImage,
-                                    stageData[index].step,
-                                  ),
-                                ),
-                              )
-                            ],
-                          );
-                        }
-                        else if (index == selected){
-                          print("else if2");
-                          return AnimatedAlign(
-                            duration: const Duration(milliseconds: 800),
-                            heightFactor: 1,
-                            alignment: Alignment.topCenter,
-                            child: bigCard(
-                              title: stageData[index].title,
-                              subText: stageData[index].subTitle,
-                              image: stageData[index].rightImage,
-                              steps: stageData[index].step,
-                              index: index,
-                              btn1Name: stageData[index].btn1Name,
-                              btn2Name: stageData[index].btn2Name,
-                              btn3Name: stageData[index].btn3Name,
-                              type: stageData[index].type,
-                              bgColor: stageData[index].bgColor,
-                              btn1Color: stageData[index].btn1Color,
-                              btn2Color: stageData[index].btn2Color,
-                              btn3Color: stageData[index].btn3Color,
                             ),
-                          );
-                        }
-                        else if(index > selected && index <= current){
-                          print("else if3");
-                          return AnimatedAlign(
-                            duration: const Duration(milliseconds: 800),
-                            heightFactor: 0.7,
+                          ),
+                          Align(
                             alignment: Alignment.topRight,
-                            child: bigCard(
+                            child: Padding(
+                              padding: const EdgeInsets.only(right: 8.0),
+                              child: InkWell(
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (_) => const NewScheduleScreen()));
+                                },
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    ImageIcon(
+                                      const AssetImage(
+                                          "assets/images/new_ds/follow_up.png"),
+                                      size: 11.sp,
+                                      color: gHintTextColor,
+                                    ),
+                                    const SizedBox(
+                                      width: 3,
+                                    ),
+                                    Text(
+                                      'Follow-up call',
+                                      style: TextStyle(
+                                        color: gHintTextColor,
+                                        fontSize: headingFont,
+                                        decoration: TextDecoration.underline,
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 1.h),
+                    ListView.builder(
+                        physics: const NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemCount: stageData.length,
+                        itemBuilder: (_, index) {
+                          print("index---> $index $current $selected");
+
+                          if (index < current && selected != index) {
+                            print("if");
+                            return AnimatedAlign(
+                              duration: const Duration(milliseconds: 800),
+                              /// added this for click event to the yellow card
+                              /// (index+1 == current) ? 0.95
+                              heightFactor: (index+1 == current) ? 0.95 : heightFactor,
+                              alignment: Alignment.topCenter,
+                              child: bigCard(
                                 title: stageData[index].title,
                                 subText: stageData[index].subTitle,
                                 image: stageData[index].rightImage,
@@ -695,30 +596,139 @@ class _NewDsPageState extends State<NewDsPage> {
                                 btn1Name: stageData[index].btn1Name,
                                 btn2Name: stageData[index].btn2Name,
                                 btn3Name: stageData[index].btn3Name,
-                                type: stageData[index].type
-                            ),
-                          );
-                        }
-                        else {
-                          print("else small index: $index");
-                          return Visibility(
-                            visible: heightFactor != 1.0,
-                            child: AnimatedAlign(
+                                type: stageData[index].type,
+                                bgColor: stageData[index].bgColor,
+                                btn1Color: stageData[index].btn1Color,
+                                btn2Color: stageData[index].btn2Color,
+                                btn3Color: stageData[index].btn3Color,
+                              ),
+                            );
+                          }
+                          else if (index == current) {
+                            print("else if1");
+                            print("${stageData[index].title}");
+                            return Column(
+                              children: [
+                                /// up arrow when drag
+                                /// this is not using
+                                AnimatedSize(
+                                  duration: const Duration(milliseconds: 500),
+                                  child: SizedBox(
+                                    height: (selected == current-1 && heightFactor == 0.15) ? 0 : 40,
+                                    child: Visibility(
+                                      visible: heightFactor == 1.0,
+                                      child: Center(
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            setState(() {
+                                              heightFactor = 0.15;
+                                            });
+                                          },
+                                          child: Container(
+                                            width: 50,
+                                            height: 50,
+                                            decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                color: Colors.amber),
+                                            child: Center(
+                                              child: SizedBox(
+                                                  width: 30,
+                                                  height: 30,
+                                                  child: Image.asset(
+                                                    "assets/images/dashboard_stages/up_arrow.png",
+                                                    fit: BoxFit.scaleDown,
+                                                  )),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                /// bottom 1st card after yellow card
+                                Visibility(
+                                  visible: heightFactor != 1.0,
+                                  child: Align(
+                                    heightFactor: 0.7,
+                                    alignment: Alignment.topRight,
+                                    child: smallCard(
+                                      stageData[index].title,
+                                      stageData[index].subTitle,
+                                      stageData[index].rightImage,
+                                      stageData[index].step,
+                                    ),
+                                  ),
+                                )
+                              ],
+                            );
+                          }
+                          else if (index == selected){
+                            print("else if2");
+                            return AnimatedAlign(
+                              duration: const Duration(milliseconds: 800),
+                              heightFactor: 1,
+                              alignment: Alignment.topCenter,
+                              child: bigCard(
+                                title: stageData[index].title,
+                                subText: stageData[index].subTitle,
+                                image: stageData[index].rightImage,
+                                steps: stageData[index].step,
+                                index: index,
+                                btn1Name: stageData[index].btn1Name,
+                                btn2Name: stageData[index].btn2Name,
+                                btn3Name: stageData[index].btn3Name,
+                                type: stageData[index].type,
+                                bgColor: stageData[index].bgColor,
+                                btn1Color: stageData[index].btn1Color,
+                                btn2Color: stageData[index].btn2Color,
+                                btn3Color: stageData[index].btn3Color,
+                                  showCard: stageData[index].showCard
+                              ),
+                            );
+                          }
+                          else if(index > selected && index < current){
+                            print("else if3");
+                            return AnimatedAlign(
                               duration: const Duration(milliseconds: 800),
                               heightFactor: 0.7,
                               alignment: Alignment.topRight,
-                              child: smallCard(
-                                stageData[index].title,
-                                stageData[index].subTitle,
-                                stageData[index].rightImage,
-                                stageData[index].step,
+                              child: bigCard(
+                                  title: stageData[index].title,
+                                  subText: stageData[index].subTitle,
+                                  image: stageData[index].rightImage,
+                                  steps: stageData[index].step,
+                                  index: index,
+                                  btn1Name: stageData[index].btn1Name,
+                                  btn2Name: stageData[index].btn2Name,
+                                  btn3Name: stageData[index].btn3Name,
+                                  type: stageData[index].type,
+                                  showCard: stageData[index].showCard
+
                               ),
-                            ),
-                          );
-                        }
-                      })
-                ],
-              )
+                            );
+                          }
+                          else {
+                            /// last item
+                            print("else small index: $index ${stageData[index].title}");
+                            return Visibility(
+                              // visible: heightFactor != 1.0,
+                              child: AnimatedAlign(
+                                duration: const Duration(milliseconds: 800),
+                                heightFactor: 0.7,
+                                alignment: Alignment.topCenter,
+                                child: smallCard(
+                                  stageData[index].title,
+                                  stageData[index].subTitle,
+                                  stageData[index].rightImage,
+                                  stageData[index].step,
+                                ),
+                              ),
+                            );
+                          }
+                        })
+                  ],
+                ),),
+              ]
           ),
         ),
       ],
@@ -903,8 +913,9 @@ class _NewDsPageState extends State<NewDsPage> {
     Color? btn1Color,
     Color? btn2Color,
     Color? btn3Color,
+    bool? showCard
   }) {
-    print("INDEX : $index == $current");
+    print("INDEX : $index == $current  ${heightFactor}");
     return GestureDetector(
       onTap: (heightFactor == 1.0)
           ? null
@@ -930,7 +941,7 @@ class _NewDsPageState extends State<NewDsPage> {
             child: IntrinsicHeight(
               child: Container(
                 constraints: BoxConstraints(
-                  minHeight: 130,
+                  minHeight: 150,
                 ),
                 width: double.maxFinite,
                 // height: MediaQuery.of(context).size.width <= 400 ? 180 : 220,
@@ -1628,10 +1639,12 @@ class _NewDsPageState extends State<NewDsPage> {
     switch (stage) {
       case 'evaluation_done':
         current = 2;
+        stageData[0].subTitle = stageCompletedSubText;
 
         break;
       case 'pending':
         current = 2;
+        stageData[0].subTitle = stageCompletedSubText;
         break;
       case 'consultation_reschedule':
         current = 2;
@@ -1644,9 +1657,14 @@ class _NewDsPageState extends State<NewDsPage> {
         stageData[1].btn1Color = newCurrentStageButtonColor.withOpacity(0.6);
         stageData[1].btn2Name = "Reschedule";
 
+        stageData[0].subTitle = stageCompletedSubText;
+
+
         break;
       case 'appointment_booked':
         current = 2;
+
+        stageData[0].subTitle = stageCompletedSubText;
 
         stageData[1].btn1Name = "Join";
         stageData[1].btn2Name = "Reschedule";
@@ -1679,16 +1697,38 @@ class _NewDsPageState extends State<NewDsPage> {
       case 'consultation_done':
         current = 2;
 
+        stageData[0].subTitle = stageCompletedSubText;
+
         stageData[1].btn1Name = "Status";
         stageData[1].btn2Name = null;
         stageData[1].subTitle = consultationStage3SubText;
 
         break;
+      case 'consultation_waiting':
+        current = 3;
+        stageData[0].subTitle = stageCompletedSubText;
+        stageData[1].subTitle = stageCompletedSubText;
+
+        stageData[1].btn1Name = "Status";
+        // stageData[1].subTitle = consultationStage3SubText;
+        stageData[1].btn1Color = newCompletedStageBtnColor;
+        stageData[1].btn2Name = null;
+
+        stageData[2].btn1Name = "Upload Report";
+        stageData[2].subTitle = requestedReportStage1SubText;
+        stageData[2].bgColor = newCurrentStageColor;
+
+        break;
       case 'consultation_accepted':
       // no button for accepted and rejected
         current = 4;
+
+        stageData[0].subTitle = stageCompletedSubText;
+        stageData[1].subTitle = stageCompletedSubText;
+
+
         stageData[1].btn1Name = "Status";
-        stageData[1].subTitle = consultationStage3SubText;
+        // stageData[1].subTitle = consultationStage3SubText;
         stageData[1].btn2Name = null;
 
         stageData[2].btn1Name = "View User Reports";
@@ -1698,22 +1738,13 @@ class _NewDsPageState extends State<NewDsPage> {
         stageData[3].subTitle = consultationStage3SubText;
 
         break;
-      case 'consultation_waiting':
-        current = 3;
-        stageData[1].btn1Name = "Status";
-        stageData[1].subTitle = consultationStage3SubText;
-        stageData[1].btn1Color = newCompletedStageBtnColor;
-        stageData[1].btn2Name = null;
-
-        stageData[2].btn1Name = "Upload Report";
-        stageData[2].subTitle = requestedReportStage1SubText;
-        stageData[2].bgColor = newCurrentStageColor;
-
-        break;
       case 'check_user_reports':
         current = 3;
-        // stageData[1].btn1Name = "Consultation History";
-        stageData[1].subTitle = consultationStage3SubText;
+        stageData[0].subTitle = stageCompletedSubText;
+        stageData[1].subTitle = stageCompletedSubText;
+
+
+        // stageData[1].subTitle = consultationStage3SubText;
 
 
         //awaiting-> status
@@ -1723,9 +1754,12 @@ class _NewDsPageState extends State<NewDsPage> {
 
         break;
       case 'consultation_rejected':
-      // no button for accepted and rejected
-      //   stageData[1].btn1Name = "Consultation History";
-        stageData[1].subTitle = consultationStage3SubText;
+        stageData[0].subTitle = stageCompletedSubText;
+        stageData[1].subTitle = stageCompletedSubText;
+        stageData[3].subTitle = stageCompletedSubText;
+
+        // no button for accepted and rejected
+        // stageData[1].subTitle = consultationStage3SubText;
         stageData[1].btn2Name = null;
 
         current = 5;
@@ -1737,6 +1771,10 @@ class _NewDsPageState extends State<NewDsPage> {
         stageData[4].btn1Name = "View MR";
         break;
       case 'report_upload':
+        stageData[0].subTitle = stageCompletedSubText;
+        stageData[1].subTitle = stageCompletedSubText;
+        stageData[3].subTitle = stageCompletedSubText;
+
         current = 5;
         print("stageData: ${stageData[2].subTitle}");
         // stageData[0].btn1Name = null;
@@ -1751,6 +1789,11 @@ class _NewDsPageState extends State<NewDsPage> {
         break;
 
       case 'prep_meal_plan_completed':
+        stageData[0].subTitle = stageCompletedSubText;
+        stageData[1].subTitle = stageCompletedSubText;
+        stageData[3].subTitle = stageCompletedSubText;
+
+
         if(isMrRead != null && isMrRead == "0"){
           current = 5;
         }
@@ -1781,11 +1824,15 @@ class _NewDsPageState extends State<NewDsPage> {
 
         break;
       case 'meal_plan_completed':
+        stageData[0].subTitle = stageCompletedSubText;
+        stageData[1].subTitle = stageCompletedSubText;
+        stageData[3].subTitle = stageCompletedSubText;
+
         current = 6;
         stageData[1].btn1Name = "View History";
         stageData[2].btn1Name = "View User Reports";
         stageData[3].btn1Name = "Status";
-        stageData[3].subTitle = consultationStage3SubText;
+        // stageData[3].subTitle = consultationStage3SubText;
 
         // if (_prepratoryModel!.value!.isPrepratoryStarted == false) {
         //   stageData[5].btn1Name = "Start Prep";
@@ -1799,11 +1846,14 @@ class _NewDsPageState extends State<NewDsPage> {
 
       case 'shipping_packed':
         current = 6;
+        stageData[0].subTitle = stageCompletedSubText;
+        stageData[1].subTitle = stageCompletedSubText;
+        stageData[3].subTitle = stageCompletedSubText;
+
         stageData[1].btn1Name = "View History";
         stageData[2].btn1Name = "View User Reports";
         stageData[3].btn1Name = "Status";
-        stageData[3].subTitle = consultationStage3SubText;
-        // stageData[4].btn1Name = "View MR";
+        // stageData[3].subTitle = consultationStage3SubText;
 
         stageData[5].subTitle = prepStage3SubText;
         stageData[5].btn2Color = newCurrentStageButtonColor;
@@ -1812,11 +1862,14 @@ class _NewDsPageState extends State<NewDsPage> {
         break;
       case 'shipping_paused':
         current = 6;
+        stageData[0].subTitle = stageCompletedSubText;
+        stageData[1].subTitle = stageCompletedSubText;
+        stageData[3].subTitle = stageCompletedSubText;
+
         stageData[1].btn1Name = "View History";
         stageData[2].btn1Name = "View User Reports";
         stageData[3].btn1Name = "Status";
-        stageData[3].subTitle = consultationStage3SubText;
-        // stageData[4].btn1Name = "View MR";
+        // stageData[3].subTitle = consultationStage3SubText;
 
         stageData[5].subTitle = prepStage3SubText;
         stageData[5].btn2Color = newCurrentStageButtonColor;
@@ -1827,11 +1880,14 @@ class _NewDsPageState extends State<NewDsPage> {
         break;
       case 'shipping_approved':
         current = 6;
+        stageData[0].subTitle = stageCompletedSubText;
+        stageData[1].subTitle = stageCompletedSubText;
+        stageData[3].subTitle = stageCompletedSubText;
+
         stageData[1].btn1Name = "View History";
         stageData[2].btn1Name = "View User Reports";
         stageData[3].btn1Name = "Status";
-        stageData[3].subTitle = consultationStage3SubText;
-        // stageData[4].btn1Name = "View MR";
+        // stageData[3].subTitle = consultationStage3SubText;
 
         stageData[5].subTitle = prepStage3SubText;
         stageData[5].btn2Color = newCurrentStageButtonColor;
@@ -1842,11 +1898,15 @@ class _NewDsPageState extends State<NewDsPage> {
         break;
       case 'shipping_delivered':
         current = 7;
+        stageData[0].subTitle = stageCompletedSubText;
+        stageData[1].subTitle = stageCompletedSubText;
+        stageData[3].subTitle = stageCompletedSubText;
+
+
         stageData[1].btn1Name = "View History";
         stageData[2].btn1Name = "View User Reports";
         stageData[3].btn1Name = "Status";
-        stageData[3].subTitle = consultationStage3SubText;
-        // stageData[4].btn1Name = "View MR";
+        // stageData[3].subTitle = consultationStage3SubText;
 
         stageData[5].btn1Name = null;
         stageData[5].subTitle = prepStage3SubText;
@@ -1855,12 +1915,13 @@ class _NewDsPageState extends State<NewDsPage> {
 
 
         if(_prepratoryModel!.value!.isPrepratoryStarted == false){
-          stageData[6].btn1Name = "Activate";
+          stageData[6].btn1Name = "Start Prep";
         }
         else if(_prepratoryModel!.value!.isPrepratoryStarted == true){
           stageData[6].btn1Name = "Prep";
         }
-        stageData[6].btn2Name = "Start Program";
+        stageData[6].btn2Name = null;
+        // stageData[6].btn2Name = "Start Program";
         stageData[6].btn1Color = newCurrentStageButtonColor;
         stageData[6].btn2Color = newCurrentStageButtonColor.withOpacity(0.6);
 
@@ -1868,14 +1929,18 @@ class _NewDsPageState extends State<NewDsPage> {
       case 'start_program':
         current = 7;
 
+        stageData[0].subTitle = stageCompletedSubText;
+        stageData[1].subTitle = stageCompletedSubText;
+        stageData[3].subTitle = stageCompletedSubText;
+        stageData[5].subTitle = stageCompletedSubText;
+
         stageData[1].btn1Name = "View History";
         stageData[2].btn1Name = "View User Reports";
         stageData[3].btn1Name = "Status";
-        stageData[3].subTitle = consultationStage3SubText;
+        // stageData[3].subTitle = consultationStage3SubText;
 
         stageData[5].btn1Name = null;
 
-        // stageData[4].btn1Name = "View MR";
 
         stageData[5].btn2Color = null;
 
@@ -1883,12 +1948,14 @@ class _NewDsPageState extends State<NewDsPage> {
           stageData[6].btn1Name = null;
           stageData[6].btn2Name = "Prep Tracker";
           stageData[6].btn2Color = newCurrentStageButtonColor;
+          stageData[6].subTitle = prepTrackerText;
         }
 
         if(_prepratoryModel!.value!.isPrepTrackerCompleted == true){
           stageData[6].btn1Name = null;
           stageData[6].btn2Name = "Start Program";
           stageData[6].btn2Color = newCurrentStageButtonColor;
+          stageData[6].subTitle = mealStartText;
         }
 
         print("_gutProgramModel!.value!.startProgram != '0': ${_gutProgramModel!.value!.startProgram != '0'}");
@@ -1899,28 +1966,30 @@ class _NewDsPageState extends State<NewDsPage> {
 
         /// start program text will come 1st time
         /// once started start day1, day2, day3......
-        if (_gutProgramModel!.value!.startProgram != '0'
-            && _gutProgramModel!.value!.isDetoxCompleted != '1'){
+        if (_gutProgramModel!.value!.startProgram == '1'
+            && _gutProgramModel!.value!.isDetoxCompleted != '1' && _gutProgramModel!.value!.isDetoxCompleted != 'null'){
           final currentday = _gutProgramModel?.value?.mealCurrentDay;
-          stageData[6].btn1Name = "Continue To Day $currentday";
+          stageData[6].btn1Name = "Day $currentday of Detox";
           stageData[6].btn2Name = null;
-          stageData[6].subTitle = mealStartText;
+          stageData[6].subTitle = afterStartProgramText;
         }
 
-        // detox phase
-        if(_gutProgramModel!.value!.isDetoxCompleted == "1"){
+        // healing phase
+        if(_gutProgramModel!.value!.isDetoxCompleted == "1"
+            && _gutProgramModel!.value!.healingStartProgram != "1"){
           print('callinggg');
-          stageData[6].btn1Name = "Start Program";
+          stageData[6].btn1Name = "Day 1 of Healing";
           stageData[6].btn2Name = null;
-          stageData[6].subTitle = healingStartText;
+          stageData[6].subTitle = afterStartProgramText;
         }
 
-        if (_gutProgramModel!.value!.healingStartProgram == '1'){
+        if (_gutProgramModel!.value!.healingStartProgram == '1'
+            && _gutProgramModel!.value!.isDetoxCompleted == "1"){
           print("this also called");
           final currentday = _gutProgramModel?.value?.healingCurrentDay;
-          stageData[6].btn1Name = "Continue To Day $currentday";
+          stageData[6].btn1Name = "Day $currentday of Healing";
           stageData[6].btn2Name = null;
-          stageData[6].subTitle = mealStartText;
+          stageData[6].subTitle = afterStartProgramText;
         }
 
         // if (_gutProgramModel!.value!.isHealingCompleted == '1'){
@@ -1933,6 +2002,11 @@ class _NewDsPageState extends State<NewDsPage> {
 
         break;
       case 'trans_program':
+        stageData[0].subTitle = stageCompletedSubText;
+        stageData[1].subTitle = stageCompletedSubText;
+        stageData[3].subTitle = stageCompletedSubText;
+        stageData[5].subTitle = stageCompletedSubText;
+
         print("case : trans_program");
         if (_prepratoryModel!.value!.isPrepTrackerCompleted != null &&
             _prepratoryModel!.value!.isPrepTrackerCompleted == true) {
@@ -1944,7 +2018,7 @@ class _NewDsPageState extends State<NewDsPage> {
             stageData[6].btn1Name = "Start Nourish";
           }
           else{
-            stageData[6].btn1Name = "Transition Plan Day $dayNumber";
+            stageData[6].btn1Name = "Day $dayNumber of Nourish";
           }
           stageData[6].btn2Name = null;
           stageData[6].subTitle = mealTransText;
@@ -1962,8 +2036,6 @@ class _NewDsPageState extends State<NewDsPage> {
 
         stageData[6].subTitle = mealTransText;
 
-
-
         // stageData[4].btn1Name = "View MR";
 
         stageData[5].btn2Color = null;
@@ -1973,13 +2045,18 @@ class _NewDsPageState extends State<NewDsPage> {
         break;
       case 'post_program':
         current = 8;
+        stageData[0].subTitle = stageCompletedSubText;
+        stageData[1].subTitle = stageCompletedSubText;
+        stageData[3].subTitle = stageCompletedSubText;
+        stageData[5].subTitle = stageCompletedSubText;
+        stageData[6].subTitle = stageCompletedSubText;
+
         stageData[1].btn1Name = "View History";
         stageData[2].btn1Name = "View User Reports";
         stageData[3].btn1Name = "Status";
-        stageData[3].subTitle = consultationStage3SubText;
-        // stageData[4].btn1Name = "View MR";
+        // stageData[3].subTitle = consultationStage3SubText;
 
-        stageData[6].btn1Name = "Trans Completed";
+        stageData[6].btn1Name = "Nourish Completed";
         stageData[6].btn1Color = newCompletedStageBtnColor;
 
 
@@ -1999,12 +2076,17 @@ class _NewDsPageState extends State<NewDsPage> {
 
         break;
       case 'post_appointment_booked':
+        stageData[0].subTitle = stageCompletedSubText;
+        stageData[1].subTitle = stageCompletedSubText;
+        stageData[3].subTitle = stageCompletedSubText;
+        stageData[5].subTitle = stageCompletedSubText;
+        stageData[6].subTitle = stageCompletedSubText;
 
         current = 8;
         stageData[1].btn1Name = "View History";
         stageData[2].btn1Name = "View User Reports";
         stageData[3].btn1Name = "Status";
-        stageData[3].subTitle = consultationStage3SubText;
+        // stageData[3].subTitle = consultationStage3SubText;
         stageData[4].btn1Name = "View MR";
 
         stageData[5].btn1Name = "Completed";
@@ -2043,11 +2125,17 @@ class _NewDsPageState extends State<NewDsPage> {
 
         break;
       case 'post_appointment_reschedule':
+        stageData[0].subTitle = stageCompletedSubText;
+        stageData[1].subTitle = stageCompletedSubText;
+        stageData[3].subTitle = stageCompletedSubText;
+        stageData[5].subTitle = stageCompletedSubText;
+        stageData[6].subTitle = stageCompletedSubText;
+
         current = 8;
         stageData[1].btn1Name = "View History";
         stageData[2].btn1Name = "View User Reports";
         stageData[3].btn1Name = "Status";
-        stageData[3].subTitle = consultationStage3SubText;
+        // stageData[3].subTitle = consultationStage3SubText;
         stageData[4].btn1Name = "View MR";
 
         stageData[5].btn1Name = null;
@@ -2061,7 +2149,15 @@ class _NewDsPageState extends State<NewDsPage> {
 
         break;
       case 'post_appointment_done':
-        current = 9;
+        stageData[0].subTitle = stageCompletedSubText;
+        stageData[1].subTitle = stageCompletedSubText;
+        stageData[3].subTitle = stageCompletedSubText;
+        stageData[5].subTitle = stageCompletedSubText;
+        stageData[6].subTitle = stageCompletedSubText;
+        // stageData[7].subTitle = stageCompletedSubText;
+
+        current = 8;
+
         stageData[1].btn1Name = "View History";
         stageData[2].btn1Name = "View User Reports";
         stageData[4].btn1Name = "View MR";
@@ -2072,19 +2168,30 @@ class _NewDsPageState extends State<NewDsPage> {
 
         stageData[7].btn1Name = null;
         stageData[7].btn2Name = null;
-        stageData[5].btn1Name = null;
+        stageData[7].subTitle = ppcAfterConsultationText;
 
+
+
+
+        stageData[5].btn1Name = null;
 
         stageData[5].btn2Color = null;
 
 
         break;
       case 'protocol_guide':
+        stageData[0].subTitle = stageCompletedSubText;
+        stageData[1].subTitle = stageCompletedSubText;
+        stageData[3].subTitle = stageCompletedSubText;
+        stageData[5].subTitle = stageCompletedSubText;
+        stageData[6].subTitle = stageCompletedSubText;
+        stageData[7].subTitle = stageCompletedSubText;
+
         current = 9;
         stageData[1].btn1Name = "View History";
         stageData[2].btn1Name = "View User Reports";
         stageData[3].btn1Name = "Status";
-        stageData[3].subTitle = consultationStage3SubText;
+        // stageData[3].subTitle = consultationStage3SubText;
         stageData[4].btn1Name = "View MR";
 
         stageData[6].btn1Name = "Completed";
@@ -2092,8 +2199,6 @@ class _NewDsPageState extends State<NewDsPage> {
 
         stageData[5].btn2Color = null;
         stageData[5].btn1Name = null;
-
-
 
         stageData[7].btn1Name = null;
         stageData[7].btn2Name = null;
@@ -2686,7 +2791,7 @@ class _NewDsPageState extends State<NewDsPage> {
           context,
           MaterialPageRoute(
             builder: (context) =>
-                CombinedPrepMealTransScreen(stage: 3)
+                CombinedPrepMealTransScreen(stage: 3, postProgramStage: postProgramStage,)
                 // NewTransitionDesign(
                 // postProgramStage: postProgramStage,
                 // totalDays: _transModel!.value!.trans_days ?? '1',
@@ -2715,13 +2820,14 @@ class _NewDsPageState extends State<NewDsPage> {
         _pref!.setString(AppConfig().trackerVideoUrl,
             _gutProgramModel!.value!.tracker_video_url!);
       }
-      if (_gutProgramModel!.value!.startProgram == '0'
-          || (_gutProgramModel!.value!.healingStartProgram == '0' || _gutProgramModel!.value!.healingStartProgram == 'null')) {
+      if (_gutProgramModel!.value!.startProgram != '1'
+          || (_gutProgramModel!.value!.healingStartProgram == '0' || _gutProgramModel!.value!.healingStartProgram == 'null'
+              && _gutProgramModel!.value!.isDetoxCompleted == '1')) {
         Navigator.of(context)
             .push(
           MaterialPageRoute(
             builder: (context) => ProgramPlanScreen(
-              from: _gutProgramModel!.value!.startProgram == "1" ?  ProgramMealType.healing.name : ProgramMealType.detox.name,
+              from: (_gutProgramModel!.value!.startProgram == "1" && _gutProgramModel!.value!.isDetoxCompleted == "1") ?  ProgramMealType.healing.name : ProgramMealType.detox.name,
               // videoLink: _gutProgramModel?.value?.startVideoUrl ?? "",
               isPrepCompleted: _prepratoryModel!.value!.isPrepCompleted,
             ),

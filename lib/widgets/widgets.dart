@@ -178,27 +178,33 @@ SnackbarController buildSnackBar(String title, String subTitle) {
   );
 }
 
-buildAppBar(VoidCallback func,
-    {bool isBackEnable = true,
+buildAppBar(
+    VoidCallback func, {
+      bool isBackEnable = true,
       bool showNotificationIcon = false,
       VoidCallback? notificationOnTap,
       bool showHelpIcon = false,
       VoidCallback? helpOnTap,
       bool showSupportIcon = false,
       VoidCallback? supportOnTap,
-      Color? helpIconColor, String? badgeNotification}) {
+      Color? helpIconColor,
+      String? badgeNotification,
+      bool showLogo = true,
+      bool showChild = false,
+      Widget? child,
+    }) {
   return Row(
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
     children: [
       Row(
         children: [
+
           Visibility(
             visible: isBackEnable,
             child: SizedBox(
               width: 2.h,
               child: IconButton(
                 onPressed: func,
-
                 icon: Icon(
                   Icons.arrow_back_ios,
                   color: gMainColor,
@@ -209,12 +215,19 @@ buildAppBar(VoidCallback func,
           SizedBox(
             width: 15,
           ),
-          SizedBox(
-            height: 6.h,
-            child: const Image(
-              image: AssetImage("assets/images/Gut welness logo.png"),
+          Visibility(
+            visible: showLogo,
+            child: SizedBox(
+              height: 6.h,
+              child: const Image(
+                image: AssetImage("assets/images/Gut welness logo.png"),
+              ),
+              //SvgPicture.asset("assets/images/splash_screen/Inside Logo.svg"),
             ),
-            //SvgPicture.asset("assets/images/splash_screen/Inside Logo.svg"),
+          ),
+          Visibility(
+            visible: showChild,
+            child: child ?? const SizedBox(),
           ),
         ],
       ),
@@ -230,7 +243,7 @@ buildAppBar(VoidCallback func,
                   Icons.notifications,
                   color: gHintTextColor,
                 ),
-                  // child: Icon(Icons.notifications,color: gHintTextColor,)
+                // child: Icon(Icons.notifications,color: gHintTextColor,)
                 // SvgPicture.asset(
                 //   "assets/images/Notification.svg",
                 //   height: 2.5.h,
@@ -245,7 +258,6 @@ buildAppBar(VoidCallback func,
             ),
           ),
           SizedBox(
-
             width: 3.25.w,
           ),
           Visibility(
@@ -259,7 +271,6 @@ buildAppBar(VoidCallback func,
             ),
           ),
           SizedBox(
-
             width: 3.25.w,
           ),
           Visibility(

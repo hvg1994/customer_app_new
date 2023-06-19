@@ -380,12 +380,10 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
             fit: BoxFit.fitWidth,
             colorFilter: ColorFilter.mode(kPrimaryColor, BlendMode.lighten)),
       ),
-      child: UnfocusWidget(
-        child: SafeArea(
-          child: Scaffold(
-            backgroundColor: Colors.transparent,
-            body: showUI(context),
-          ),
+      child: SafeArea(
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          body: showUI(context),
         ),
       ),
     );
@@ -886,7 +884,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
               if (value!.isEmpty) {
                 return 'Please enter your Address';
               } else if (value.length < 10) {
-                AppConfig().showSnackbar(context, 'Address length should be greater than 10', isError: true,bottomPadding: 100);
+                // AppConfig().showSnackbar(context, 'Address length should be greater than 10', isError: true,bottomPadding: 100);
                 return 'Please enter your Address';
               } else {
                 return null;
@@ -970,7 +968,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                 FilteringTextInputFormatter.digitsOnly,FilteringTextInputFormatter.allow(RegExp(r'^[1-9][0-9]*'))
               ],
               textAlign: TextAlign.start,
-              keyboardType: TextInputType.number,
+              keyboardType: TextInputType.numberWithOptions(),
               maxLength: 6,
             ),
           ),
@@ -1099,9 +1097,11 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
             validator: (value) {
               if (value!.isEmpty) {
                 return 'Please enter your Weight';
-              } else if (int.tryParse(value)! < 20 ||
-                  int.tryParse(value)! > 120) {
-                return 'Please enter Valid Weight';
+              } else if(value != null){
+                if (int.parse(value) < 20 ||
+                    int.parse(value) > 120) {
+                  return 'Please enter Valid Weight';
+                }
               } else {
                 return null;
               }
@@ -2178,7 +2178,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
         );
         AppConfig().showSnackbar(context, "Please Mention Flat Details",
             isError: true, bottomPadding: 100);
-      } else if (address2Controller.text.isEmpty) {
+      } else if (address2Controller.text.isEmpty || address2Controller.text.length < 10) {
         Scrollable.ensureVisible(addresskey.currentContext!,
             duration: const Duration(milliseconds: 1000)
         );
@@ -2196,8 +2196,11 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
         Scrollable.ensureVisible(weightKey.currentContext!,
             duration: const Duration(milliseconds: 1000)
         );
-    return 'Please enter Valid Weight';
-    }
+        AppConfig()
+            .showSnackbar(context, "Please enter Valid Weight",
+            isError: true, bottomPadding: 100);
+
+      }
       else if (ft == -1 || inches == -1) {
         Scrollable.ensureVisible(heightKey.currentContext!,
             duration: const Duration(milliseconds: 1000)
@@ -2292,9 +2295,14 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
         EvaluationModelFormat1 eval1 = createFormMap();
 
         // storeToLocal
-        _pref!.setString(AppConfig.eval1, json.encode(eval1.toMap()));
+        _pref!.setString(AppConfig.eval1, jsonEncode(eval1.toMap()));
 
-        print((eval1 as EvaluationModelFormat1).toMap());
+        final json = jsonDecode(_pref!.getString(AppConfig.eval1)!);
+        // var _map = EvaluationModelFormat1.fromMap(json);
+
+        print("local map: $json");
+
+        // print((eval1 as EvaluationModelFormat1).toMap());
         print(urineColorValue);
         Navigator.push(
             context,
@@ -2323,7 +2331,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
         );
         AppConfig().showSnackbar(context, "Please Mention Flat Details",
             isError: true, bottomPadding: 100);
-      } else if (address2Controller.text.isEmpty) {
+      } else if (address2Controller.text.isEmpty || address2Controller.text.length < 10) {
         Scrollable.ensureVisible(addresskey.currentContext!,
             duration: const Duration(milliseconds: 1000)
         );
@@ -2335,13 +2343,17 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
         );
         AppConfig()
             .showSnackbar(context, "Please Mention Pincode", isError: true, bottomPadding: 100);
+
       }
       else if (int.parse(weightController.text) < 20 ||
           int.parse(weightController.text) > 120) {
         Scrollable.ensureVisible(weightKey.currentContext!,
             duration: const Duration(milliseconds: 1000)
         );
-        return 'Please enter Valid Weight';
+        AppConfig()
+            .showSnackbar(context, "Please enter Valid Weight",
+            isError: true, bottomPadding: 100);
+
       }
       else if (ft == -1 || inches == -1) {
         Scrollable.ensureVisible(heightKey.currentContext!,

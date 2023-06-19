@@ -702,6 +702,9 @@ class _UploadFilesState extends State<UploadFiles> {
                   if (!ele.path.contains(element.path)) {
                     ele.path.add(element.path);
                   }
+                  else{
+                    AppConfig().showSnackbar(context,"File Already Exist",isError: true);
+                  }
                 }
               });
             }

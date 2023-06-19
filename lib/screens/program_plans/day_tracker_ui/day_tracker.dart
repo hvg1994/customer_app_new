@@ -2313,52 +2313,55 @@ class _TrackerUIState extends State<TrackerUI> {
               ),
             ),
             SizedBox(height: 3.h),
-            GestureDetector(
-              onTap: () async {
-                final result = await FilePicker.platform
-                    .pickFiles(withReadStream: true, allowMultiple: false);
+            Visibility(
+              visible: medicalRecords.isEmpty,
+              child: GestureDetector(
+                onTap: () async {
+                  final result = await FilePicker.platform
+                      .pickFiles(withReadStream: true, allowMultiple: false);
 
-                if (result == null) return;
-                if (result.files.first.extension!.contains("png") ||
-                    result.files.first.extension!.contains("jpg") ||
-                    result.files.first.extension!.contains("jpeg")) {
-                  medicalRecords.add(result.files.first);
-                  addFilesToList(File(result.paths.first!));
-                } else {
-                  AppConfig().showSnackbar(
-                      context, "Please select png/jpg/jpeg files",
-                      isError: true);
-                }
+                  if (result == null) return;
+                  if (result.files.first.extension!.contains("png") ||
+                      result.files.first.extension!.contains("jpg") ||
+                      result.files.first.extension!.contains("jpeg")) {
+                    medicalRecords.add(result.files.first);
+                    addFilesToList(File(result.paths.first!));
+                  } else {
+                    AppConfig().showSnackbar(
+                        context, "Please select png/jpg/jpeg files",
+                        isError: true);
+                  }
 
-                setState(() {});
-              },
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(5),
-                  border: Border.all(
-                      color: gHintTextColor.withOpacity(0.3), width: 1),
-                ),
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.file_upload_outlined,
-                      color: gsecondaryColor,
-                      size: 2.5.h,
-                    ),
-                    const SizedBox(
-                      width: 4,
-                    ),
-                    Text(
-                      'Add File',
-                      style: TextStyle(
-                        fontSize: 10.sp,
+                  setState(() {});
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(5),
+                    border: Border.all(
+                        color: gHintTextColor.withOpacity(0.3), width: 1),
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.file_upload_outlined,
                         color: gsecondaryColor,
-                        fontFamily: "GothamMedium",
+                        size: 2.5.h,
                       ),
-                    )
-                  ],
+                      const SizedBox(
+                        width: 4,
+                      ),
+                      Text(
+                        'Add File',
+                        style: TextStyle(
+                          fontSize: 10.sp,
+                          color: gsecondaryColor,
+                          fontFamily: "GothamMedium",
+                        ),
+                      )
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -2445,10 +2448,23 @@ class _TrackerUIState extends State<TrackerUI> {
         : '${kb.toStringAsFixed(2)} KB';
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 1.5.h),
-      child: Image.file(
-        File(file.path.toString()),
-        width: 30.w,
-        height: 20.h,
+      child: Row(
+        children: [
+          Image.file(
+            File(file.path.toString()),
+            width: 30.w,
+            height: 20.h,
+          ),
+          GestureDetector(
+              onTap: () {
+                medicalRecords.removeAt(index);
+                setState(() {});
+              },
+              child: const Icon(
+                Icons.delete_outline_outlined,
+                color: gMainColor,
+              )),
+        ],
       ),
     );
   }

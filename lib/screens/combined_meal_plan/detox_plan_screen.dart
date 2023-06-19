@@ -48,13 +48,15 @@ class DetoxPlanScreen extends StatefulWidget {
   final String? trackerVideoLink;
   final bool viewDay1Details;
   final bool showBlur;
+  final bool isHealingStarted;
   DetoxPlanScreen(
       {Key? key,
         this.transStage,
         this.receipeVideoLink,
         this.trackerVideoLink,
         this.viewDay1Details = false,
-        this.showBlur = false
+        this.showBlur = false,
+        this.isHealingStarted = false
       })
       : super(key: key);
 
@@ -261,6 +263,7 @@ class _DetoxPlanScreenState extends State<DetoxPlanScreen> {
                     onTap: () {
                       selectedDay = int.parse(dayNumber!);
                       // getMeals();
+                      getMealFromDay(selectedDay!);
                       Navigator.pop(context);
                     },
                     child: Center(
@@ -316,7 +319,7 @@ class _DetoxPlanScreenState extends State<DetoxPlanScreen> {
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 3.w),
                   child: Text(
-                    "You Have completed the ${totalDays} days Meal Plan, Now you can proceed to Transition",
+                    "You Have completed the ${totalDays} days Meal Plan, Now you can proceed to Healing",
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       height: 1.2,
@@ -704,35 +707,44 @@ class _DetoxPlanScreenState extends State<DetoxPlanScreen> {
         }
       });
     }
-    else{
-      if(selectedDay == presentDay){
-        if(_pref!.getString(AppConfig.STORE_MEAL_DATA) != null) {
-          final localMealData = json.decode(_pref!.getString(AppConfig.STORE_MEAL_DATA)!);
-          // (localMealData['selected_meal'] as Map).forEach((key, value) {
-          //   print("$key -- $value");
-          // });
-
-          if(localMealData['selected_meal'] != null){
-            String m = localMealData['selected_meal'];
-            final l = m.replaceAll("{", '').replaceAll('}', '').split(',');
-            Map _m = {};
-            l.forEach((element) {
-              _m.putIfAbsent(int.parse(element.split(':').first.trim()), () => element.split(':').last.trim());
-            });
-            statusList.addAll(_m);
-          }
-          commentController.text = localMealData['comments'];
-
-
-        }
-      }
-    }
+    // else{
+    //   if(selectedDay == presentDay){
+    //     print("else if local data");
+    //     if(_pref!.getString(AppConfig.STORE_MEAL_DATA) != null) {
+    //       final localMealData = json.decode(_pref!.getString(AppConfig.STORE_MEAL_DATA)!);
+    //       // (localMealData['selected_meal'] as Map).forEach((key, value) {
+    //       //   print("$key -- $value");
+    //       // });
+    //
+    //       print("localMealData['day']: ${localMealData['day']}");
+    //       print("present: ${presentDay.toString()}");
+    //       if(localMealData['day'] != null){
+    //         if(localMealData['day'] == presentDay.toString()){
+    //           print(localMealData['selected_meal']);
+    //           if(localMealData['selected_meal'] != null){
+    //             String m = localMealData['selected_meal'];
+    //             final l = m.replaceAll("{", '').replaceAll('}', '').split(',');
+    //             Map _m = {};
+    //             l.forEach((element) {
+    //               _m.putIfAbsent(int.parse(element.split(':').first.trim()), () => element.split(':').last.trim());
+    //             });
+    //             statusList.addAll(_m);
+    //           }
+    //           commentController.text = localMealData['comments'];
+    //         }
+    //       }
+    //     }
+    //   }
+    // }
 
     print(mealPlanData1);
 
     setState(() {
       showShimmer = false;
     });
+
+    print(statusList.length);
+    print(lst.length);
   }
 
   checkOnTapCondition(int index, List<ChildProgramDayModel> listData) {
@@ -1045,13 +1057,14 @@ class _DetoxPlanScreenState extends State<DetoxPlanScreen> {
                     cursorColor: gPrimaryColor,
                     onEditingComplete: (){
                       Map<String,dynamic> storeMealDataLocally = {
+                        "day": presentDay.toString(),
                         "selected_meal": statusList.toString(),
                         "comments": commentController.text
                       };
                       _pref!.setString(AppConfig.STORE_MEAL_DATA, json.encode(storeMealDataLocally));
                     },
                     style: TextStyle(
-                        fontFamily: "GothamBook",
+                        fontFamily: kFontBook,
                         color: gTextColor,
                         fontSize: 11.sp),
                     decoration: InputDecoration(
@@ -2330,6 +2343,7 @@ class _DetoxPlanScreenState extends State<DetoxPlanScreen> {
       }
       print(statusList);
       Map<String,dynamic> storeMealDataLocally = {
+        "day": presentDay.toString(),
         "selected_meal": statusList.toString(),
         "comments": commentController.text
       };
@@ -2614,7 +2628,9 @@ class _DetoxPlanScreenState extends State<DetoxPlanScreen> {
       isVisible = false;
     } else if (nextDay == selectedDay) {
       isVisible = false;
-    } else {
+    } else if (presentDay != selectedDay && isDayCompleted! == true) {
+      isVisible = false;
+    }else {
       isVisible = true;
     }
     print("isVisible: $isVisible");
@@ -2927,6 +2943,7 @@ class _DetoxPlanScreenState extends State<DetoxPlanScreen> {
     selectedDay = presentDay;
 
     print("presentDay: $presentDay");
+    print("nextDay: $nextDay");
 
 
 
@@ -2961,16 +2978,18 @@ class _DetoxPlanScreenState extends State<DetoxPlanScreen> {
 
     print("mealPlanData1: $mealPlanData1");
 
-    if (listData.last.isCompleted == 1) {
-      print("widget.postProgramStage: ${widget.transStage}");
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (!isOpened) {
-          setState(() {
-            isOpened = true;
-          });
-          buildDayCompletedClap();
-        }
-      });
+    if (listData.last.isCompleted == 1 || _childDetoxModel!.isDetoxCompleted == "1") {
+      print("widget.isHealingStarted: ${widget!.isHealingStarted}");
+      if(widget!.isHealingStarted! == false){
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!isOpened) {
+            setState(() {
+              isOpened = true;
+            });
+            buildDayCompletedClap();
+          }
+        });
+      }
 
     }
     for (int i = 0; i < presentDay!; i++) {

@@ -4,6 +4,10 @@ class NewDetoxModel {
   String? data;
   int? totalDays;
   ChildDetoxModel? value;
+  /// isHealingStarted this is for showing clap sheet in detox screen
+  bool? isHealingStarted;
+  /// isNourishStarted this is for showing clap sheet in healing screen
+  // bool? isNourishStarted;
 
   NewDetoxModel({this.data, this.totalDays, this.value});
 
@@ -11,6 +15,9 @@ class NewDetoxModel {
     data = json['data'];
     totalDays = json['total_days'];
     value = json['value'] != null ? new ChildDetoxModel.fromJson(json['value']) : null;
+    isHealingStarted = json['is_healing_started'] != null  ? json['is_healing_started'].toString() == "1" ? true : false : false;
+    // isNourishStarted = json['is_nourish_started'] != null  ? json['is_nourish_started'].toString() == "1" ? true : false : false;
+
   }
 
   Map<String, dynamic> toJson() {
@@ -21,6 +28,8 @@ class NewDetoxModel {
     if (this.value != null) {
       data['value'] = this.value!.toJson();
     }
+    data['is_healing_started'] = this.isHealingStarted;
+    // data['is_nourish_started'] = this.isNourishStarted;
     return data;
   }
 }

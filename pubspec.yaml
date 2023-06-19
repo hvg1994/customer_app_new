@@ -106,6 +106,10 @@ dependencies:
   internet_connection_checker: any
   connectivity_plus: any
   data_connection_checker_nulls: ^0.0.2
+  flutter_ruler_picker: ^1.0.3
+
+
+
 
 
 

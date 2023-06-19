@@ -48,13 +48,17 @@ class HealingPlanScreen extends StatefulWidget {
   final String? trackerVideoLink;
   final bool viewDay1Details;
   final bool showBlur;
+  final bool isNourishStarted;
+  final ValueChanged<bool>? onChanged;
   const HealingPlanScreen(
       {Key? key,
       this.transStage,
       this.receipeVideoLink,
       this.trackerVideoLink,
       this.viewDay1Details = false,
-      this.showBlur = false
+      this.showBlur = false,
+        this.isNourishStarted = false,
+        this.onChanged
       })
       : super(key: key);
 
@@ -399,7 +403,7 @@ class _HealingPlanScreenState extends State<HealingPlanScreen> {
       'https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4');
 
   ChildDetoxModel? _childDetoxModel;
-  bool isDetoxCompleted = false;
+  bool isHealingCompleted = false;
 
   int? totalDays;
 
@@ -1237,6 +1241,7 @@ class _HealingPlanScreenState extends State<HealingPlanScreen> {
         builder: (_, model, __) {
           Wakelock.enable();
           print("model.isChanged: ${model.isChanged} $isEnabled");
+          widget.onChanged?.call(model.isChanged);
           if (model.isChanged) {}
           return Container(
             color: Colors.black,
@@ -1512,8 +1517,7 @@ class _HealingPlanScreenState extends State<HealingPlanScreen> {
                                     builder:
                                         (context) =>
                                         MealPlanRecipeDetails(
-                                          // mealPlanRecipe:
-                                          // e,
+                                          mealPlanRecipe: e,
                                           isFromProgram:
                                           true,
                                         ),
@@ -1589,7 +1593,7 @@ class _HealingPlanScreenState extends State<HealingPlanScreen> {
                                 MaterialPageRoute(
                                   builder: (context) =>
                                       MealPlanRecipeDetails(
-                                        // mealPlanRecipe: e,
+                                        mealPlanRecipe: e,
                                         isFromProgram: true,
                                       ),
                                 ),
@@ -2618,7 +2622,10 @@ class _HealingPlanScreenState extends State<HealingPlanScreen> {
       isVisible = false;
     } else if (nextDay == selectedDay) {
       isVisible = false;
-    } else {
+    }
+    else if (isHealingCompleted) {
+      isVisible = false;
+    }else {
       isVisible = true;
     }
     print("isVisible: $isVisible");
@@ -2931,8 +2938,8 @@ class _HealingPlanScreenState extends State<HealingPlanScreen> {
     selectedDay = presentDay;
 
 
-    if(_childDetoxModel!.isDetoxCompleted != null){
-      isDetoxCompleted = (_childDetoxModel!.isDetoxCompleted == "0" || _childDetoxModel!.isDetoxCompleted == "null") ? false : true;
+    if(_childDetoxModel!.isHealingCompleted != null){
+      isHealingCompleted = (_childDetoxModel!.isHealingCompleted == "0" || _childDetoxModel!.isHealingCompleted == "null") ? false : true;
     }
 
     _childDetoxModel!.details!.forEach((key, value) {
@@ -2957,16 +2964,18 @@ class _HealingPlanScreenState extends State<HealingPlanScreen> {
 
     print("mealPlanData1: $mealPlanData1");
 
-    if (listData.last.isCompleted == 1) {
-          print("widget.postProgramStage: ${widget.transStage}");
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (!isOpened) {
-              setState(() {
-                isOpened = true;
-              });
-              buildDayCompletedClap();
-            }
-          });
+    if (listData.last.isCompleted == 1 || _childDetoxModel!.isHealingCompleted == "1" ) {
+      print("widget.isNourishStarted: ${widget.isNourishStarted}");
+      if(widget.isNourishStarted! == false){
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!isOpened) {
+            setState(() {
+              isOpened = true;
+            });
+            buildDayCompletedClap();
+          }
+        });
+      }
 
     }
         for (int i = 0; i < presentDay!; i++) {

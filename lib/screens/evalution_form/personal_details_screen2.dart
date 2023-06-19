@@ -15,6 +15,7 @@ import '../../model/dashboard_model/report_upload_model/report_upload_model.dart
 import '../../model/evaluation_from_models/evaluation_model_format1.dart';
 import '../../services/evaluation_fome_service/evaluation_form_service.dart';
 import '../../widgets/constants.dart';
+import '../../widgets/unfocus_widget.dart';
 import '../../widgets/widgets.dart';
 import 'check_box_settings.dart';
 import 'evaluation_upload_report.dart';
@@ -168,6 +169,9 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
 
 
 
+  hideKeyboard() {
+    FocusScope.of(context).unfocus();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -199,122 +203,127 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
                 height: 4.h,
               ),
               Expanded(
-                child: Container(
-                  width: double.maxFinite,
-                  padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 3.h),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    boxShadow: [
-                      BoxShadow(
-                          blurRadius: 2, color: Colors.grey.withOpacity(0.5))
-                    ],
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(30),
-                      topRight: Radius.circular(30),
+                child: GestureDetector(
+                  onPanDown: (_) {
+                    hideKeyboard();
+                  },
+                  child: Container(
+                    width: double.maxFinite,
+                    padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 3.h),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                            blurRadius: 2, color: Colors.grey.withOpacity(0.5))
+                      ],
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(30),
+                        topRight: Radius.circular(30),
+                      ),
                     ),
-                  ),
-                  child: SingleChildScrollView(
-                    physics: const BouncingScrollPhysics(),
-                    child: Column(
-                      children: [
-                        buildHealthDetails(),
-                        buildFoodHabitsDetails(),
-                        buildLifeStyleDetails(),
-                        buildBowelDetails(),
-                        Center(
-                          child: GestureDetector(
-                            onTap: () {
-                              if(glassesOfWater.isEmpty){
-                                Scrollable.ensureVisible(glassWaterKey.currentContext!,
-                                    duration: const Duration(milliseconds: 1000)
-                                );
-                                showCustomSnack("Please select How Many glass of water do you drink a day");
-                              }
-                              else if(selectedHabitCheckBoxList.isEmpty && !habitOtherSelected){
-                                Scrollable.ensureVisible(habbitsKey.currentContext!,
-                                    duration: const Duration(milliseconds: 1000)
-                                );
-                                showCustomSnack("Please select Habits or Addiction");
-                              }
-                              else if(mealPreferenceSelected.isEmpty){
-                                Scrollable.ensureVisible(bowelMealKey.currentContext!,
-                                    duration: const Duration(milliseconds: 1000)
-                                );
-                                showCustomSnack("Please select What is your meal preference");
-                              }
-                              else if(hungerPatternSelected.isEmpty){
-                                Scrollable.ensureVisible(hungerKey.currentContext!,
-                                    duration: const Duration(milliseconds: 1000)
-                                );
-                                showCustomSnack("Please select Hunger Pattern");
-                              }
-                              else if(bowelPatternSelected.isEmpty){
-                                Scrollable.ensureVisible(bowelPatternKey.currentContext!,
-                                    duration: const Duration(milliseconds: 1000)
-                                );
-                                showCustomSnack("Please select Bowel Pattern");
-                              }
-                              else{
-                                if(formKey1.currentState!.validate()){
-                                  if(formKey2.currentState!.validate()){
-                                    if(formKey3.currentState!.validate()){
-                                      if(formKey4.currentState!.validate()){
-                                        submitFormDetails();
+                    child: SingleChildScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      child: Column(
+                        children: [
+                          buildHealthDetails(),
+                          buildFoodHabitsDetails(),
+                          buildLifeStyleDetails(),
+                          buildBowelDetails(),
+                          Center(
+                            child: GestureDetector(
+                              onTap: () {
+                                if(glassesOfWater.isEmpty){
+                                  Scrollable.ensureVisible(glassWaterKey.currentContext!,
+                                      duration: const Duration(milliseconds: 1000)
+                                  );
+                                  showCustomSnack("Please select How Many glass of water do you drink a day");
+                                }
+                                else if(selectedHabitCheckBoxList.isEmpty && !habitOtherSelected){
+                                  Scrollable.ensureVisible(habbitsKey.currentContext!,
+                                      duration: const Duration(milliseconds: 1000)
+                                  );
+                                  showCustomSnack("Please select Habits or Addiction");
+                                }
+                                else if(mealPreferenceSelected.isEmpty){
+                                  Scrollable.ensureVisible(bowelMealKey.currentContext!,
+                                      duration: const Duration(milliseconds: 1000)
+                                  );
+                                  showCustomSnack("Please select What is your meal preference");
+                                }
+                                else if(hungerPatternSelected.isEmpty){
+                                  Scrollable.ensureVisible(hungerKey.currentContext!,
+                                      duration: const Duration(milliseconds: 1000)
+                                  );
+                                  showCustomSnack("Please select Hunger Pattern");
+                                }
+                                else if(bowelPatternSelected.isEmpty){
+                                  Scrollable.ensureVisible(bowelPatternKey.currentContext!,
+                                      duration: const Duration(milliseconds: 1000)
+                                  );
+                                  showCustomSnack("Please select Bowel Pattern");
+                                }
+                                else{
+                                  if(formKey1.currentState!.validate()){
+                                    if(formKey2.currentState!.validate()){
+                                      if(formKey3.currentState!.validate()){
+                                        if(formKey4.currentState!.validate()){
+                                          submitFormDetails();
+                                        }
+                                        else{
+                                          Scrollable.ensureVisible(formKey4.currentContext!,
+                                              duration: const Duration(milliseconds: 1000)
+                                          );
+                                        }
                                       }
                                       else{
-                                        Scrollable.ensureVisible(formKey4.currentContext!,
+                                        Scrollable.ensureVisible(formKey3.currentContext!,
                                             duration: const Duration(milliseconds: 1000)
                                         );
                                       }
                                     }
                                     else{
-                                      Scrollable.ensureVisible(formKey3.currentContext!,
+                                      Scrollable.ensureVisible(formKey2.currentContext!,
                                           duration: const Duration(milliseconds: 1000)
                                       );
                                     }
                                   }
                                   else{
-                                    Scrollable.ensureVisible(formKey2.currentContext!,
+                                    Scrollable.ensureVisible(formKey1.currentContext!,
                                         duration: const Duration(milliseconds: 1000)
                                     );
                                   }
                                 }
-                                else{
-                                  Scrollable.ensureVisible(formKey1.currentContext!,
-                                      duration: const Duration(milliseconds: 1000)
-                                  );
-                                }
-                              }
-                            },
-                            child: Container(
-                              width: 40.w,
-                              height: 5.h,
-                              margin: EdgeInsets.symmetric(vertical: 4.h),
-                              padding:
-                              EdgeInsets.symmetric(vertical: 1.h, horizontal: 10.w),
-                              decoration: BoxDecoration(
-                                color: eUser().buttonColor,
-                                borderRadius: BorderRadius.circular(eUser().buttonBorderRadius),
+                              },
+                              child: Container(
+                                width: 40.w,
+                                height: 5.h,
+                                margin: EdgeInsets.symmetric(vertical: 4.h),
+                                padding:
+                                EdgeInsets.symmetric(vertical: 1.h, horizontal: 10.w),
+                                decoration: BoxDecoration(
+                                  color: eUser().buttonColor,
+                                  borderRadius: BorderRadius.circular(eUser().buttonBorderRadius),
 
-                                // border: Border.all(
-                                //     color: eUser().buttonBorderColor,
-                                //     width: eUser().buttonBorderWidth
-                                // ),
-                              ),
-                              child:Center(
-                                child: Text(
-                                  'Next',
-                                  style: TextStyle(
-                                    fontFamily: eUser().buttonTextFont,
-                                    color: eUser().buttonTextColor,
-                                    fontSize: eUser().buttonTextSize,
+                                  // border: Border.all(
+                                  //     color: eUser().buttonBorderColor,
+                                  //     width: eUser().buttonBorderWidth
+                                  // ),
+                                ),
+                                child:Center(
+                                  child: Text(
+                                    'Next',
+                                    style: TextStyle(
+                                      fontFamily: eUser().buttonTextFont,
+                                      color: eUser().buttonTextColor,
+                                      fontSize: eUser().buttonTextSize,
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),

@@ -69,8 +69,8 @@ class _LevelStatusState extends State<LevelStatus> {
             future: levelFuture,
             builder: (_, snapshot){
               return Center(
-                              child: ComingSoonWidget(imagePath: "assets/images/new_ds/coming_soon.json"),
-                            );
+                child: ComingSoonWidget(imagePath: "assets/images/new_ds/coming_soon.json"),
+              );
               // if(snapshot.connectionState == ConnectionState.done){
               //   if(snapshot.hasData){
               //     if(snapshot.data is ErrorModel){
@@ -166,32 +166,32 @@ class _LevelStatusState extends State<LevelStatus> {
               GestureDetector(
                 onTap: (selectedIndex == 0) ? null : () {
                   String stage = '';
-                    if(selectedIndex != 0){
-                      selectedIndex--;
-                      if(l[selectedIndex] is Evaluation){
-                        Evaluation e = l[selectedIndex];
-                        stage = e.evaluationStatus!;
-                      }
-                      else if(l[selectedIndex] is Consultation){
-                        Consultation c = l[selectedIndex];
-                        stage = c.consultationStatus!;
-                      }
-                      else if(l[selectedIndex] is Tracker){
-                        Tracker t = l[selectedIndex];
-                        stage = t.trackerStatus!;
-                      }
-                      else if(l[selectedIndex] is PostConsultation){
-                        PostConsultation pp = l[selectedIndex];
-                        stage = pp.consultationStatus!;
-                      }
-                      else if(l[selectedIndex] is ProtocolGuide){
-                        ProtocolGuide pg = l[selectedIndex];
-                        stage = pg.consultationStatus!;
-                      }
+                  if(selectedIndex != 0){
+                    selectedIndex--;
+                    if(l[selectedIndex] is Evaluation){
+                      Evaluation e = l[selectedIndex];
+                      stage = e.evaluationStatus!;
                     }
-                    setState(() {
-                      selectedStage = stage;
-                    });
+                    else if(l[selectedIndex] is Consultation){
+                      Consultation c = l[selectedIndex];
+                      stage = c.consultationStatus!;
+                    }
+                    else if(l[selectedIndex] is Tracker){
+                      Tracker t = l[selectedIndex];
+                      stage = t.trackerStatus!;
+                    }
+                    else if(l[selectedIndex] is PostConsultation){
+                      PostConsultation pp = l[selectedIndex];
+                      stage = pp.consultationStatus!;
+                    }
+                    else if(l[selectedIndex] is ProtocolGuide){
+                      ProtocolGuide pg = l[selectedIndex];
+                      stage = pg.consultationStatus!;
+                    }
+                  }
+                  setState(() {
+                    selectedStage = stage;
+                  });
                 },
                 child: Icon(
                   Icons.arrow_back_ios_new_outlined,
@@ -221,7 +221,7 @@ class _LevelStatusState extends State<LevelStatus> {
                     onGetText: (double value) {
                       return Text(
                         showCompletedPercent() ??
-                        "",
+                            "",
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           height: 1,
@@ -236,30 +236,30 @@ class _LevelStatusState extends State<LevelStatus> {
                 onTap: (selectedIndex == l.length-1) ? null : () {
                   print(double.parse(showCompletedPercent()!.replaceAll('%', '').replaceAll('Complete', '')));
                   print('$selectedIndex  ${l.length-1}');
-                    if(selectedIndex != l.length-1){
-                      selectedIndex++;
-                      print(l[selectedIndex] is Consultation);
-                      if(l[selectedIndex] is Consultation){
-                        Consultation c = l[selectedIndex];
-                        selectedStage = c.consultationStatus!;
-                      }
-                      else if(l[selectedIndex] is Tracker){
-                        Tracker t = l[selectedIndex];
-                        selectedStage = t.trackerStatus!;
-                      }
-                      else if(l[selectedIndex] is PostConsultation){
-                        PostConsultation pp = l[selectedIndex];
-                        selectedStage = pp.consultationStatus!;
-                      }
-                      else if(l[selectedIndex] is ProtocolGuide){
-                        ProtocolGuide pg = l[selectedIndex];
-                        selectedStage = pg.consultationStatus!;
-                      }
+                  if(selectedIndex != l.length-1){
+                    selectedIndex++;
+                    print(l[selectedIndex] is Consultation);
+                    if(l[selectedIndex] is Consultation){
+                      Consultation c = l[selectedIndex];
+                      selectedStage = c.consultationStatus!;
                     }
-                    print(selectedStage);
-                    setState(() {
+                    else if(l[selectedIndex] is Tracker){
+                      Tracker t = l[selectedIndex];
+                      selectedStage = t.trackerStatus!;
+                    }
+                    else if(l[selectedIndex] is PostConsultation){
+                      PostConsultation pp = l[selectedIndex];
+                      selectedStage = pp.consultationStatus!;
+                    }
+                    else if(l[selectedIndex] is ProtocolGuide){
+                      ProtocolGuide pg = l[selectedIndex];
+                      selectedStage = pg.consultationStatus!;
+                    }
+                  }
+                  print(selectedStage);
+                  setState(() {
 
-                    });
+                  });
 
                 },
                 child: Icon(

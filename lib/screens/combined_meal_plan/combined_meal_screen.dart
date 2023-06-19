@@ -27,7 +27,12 @@ class CombinedPrepMealTransScreen extends StatefulWidget {
   /// to know the navigation
   /// wether user came from program start screen or not
   bool fromStartScreen;
-  CombinedPrepMealTransScreen({Key? key, this.stage = 0,this.fromStartScreen = false}) : super(key: key);
+  final String? postProgramStage;
+
+  CombinedPrepMealTransScreen({Key? key, this.stage = 0,
+    this.fromStartScreen = false,
+    this.postProgramStage
+  }) : super(key: key);
 
   @override
   State<CombinedPrepMealTransScreen> createState() => _CombinedPrepMealTransScreenState();
@@ -58,6 +63,9 @@ class _CombinedPrepMealTransScreenState extends State<CombinedPrepMealTransScree
   bool isTransStarted = false;
 
   String? prepDoDontPdfLink, transDoDontPdfLink;
+
+  bool isNourishStarted = false;
+  bool isHealingStarted = false;
 
 
   String? trackerUrl;
@@ -108,6 +116,9 @@ class _CombinedPrepMealTransScreenState extends State<CombinedPrepMealTransScree
         if(model.detox!.totalDays != null){
           totalDetox = model.detox!.totalDays ?? 5;
         }
+        if(model.detox!.isHealingStarted != null){
+          isHealingStarted = model.detox!.isHealingStarted ?? false;
+        }
         if(_childDetoxModel!.isDetoxCompleted != null) isDetoxCompleted = _childDetoxModel!.isDetoxCompleted == "1";
         print("isDetoxCompleted: ${isDetoxCompleted} ${!isDetoxCompleted}");
         print("${widget.stage}");
@@ -116,6 +127,9 @@ class _CombinedPrepMealTransScreenState extends State<CombinedPrepMealTransScree
         _childHealingModel = model.healing!.value!;
         if(model.healing!.totalDays != null){
           totalHealing = model.healing!.totalDays ?? 5;
+        }
+        if(model.healing!.isNourishStarted != null){
+          isNourishStarted = model.healing!.isNourishStarted ?? false;
         }
         if(_childHealingModel!.isHealingCompleted != null) isHealingCompleted = _childHealingModel!.isHealingCompleted == "1";
       }
@@ -203,6 +217,7 @@ class _CombinedPrepMealTransScreenState extends State<CombinedPrepMealTransScree
 
   int selectedTab = 0;
 
+  bool showTabs = true;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -272,7 +287,7 @@ class _CombinedPrepMealTransScreenState extends State<CombinedPrepMealTransScree
         ),
         centerTitle: false,
         automaticallyImplyLeading: false,
-        bottom: TabBar(
+        bottom: (showTabs) ? TabBar(
           controller: _tabController,
           labelColor: gBlackColor,
           unselectedLabelColor: gHintTextColor,
@@ -289,7 +304,7 @@ class _CombinedPrepMealTransScreenState extends State<CombinedPrepMealTransScree
               selectedTab = i;
             });
           },
-        ),
+        ) : null,
       ),
       body: Column(
        children:[
@@ -511,6 +526,7 @@ class _CombinedPrepMealTransScreenState extends State<CombinedPrepMealTransScree
       showBlur: showBlur(1),
       viewDay1Details: widget.fromStartScreen,
       trackerVideoLink: trackerUrl,
+      isHealingStarted: isHealingStarted,
     );
   }
 
@@ -519,6 +535,18 @@ class _CombinedPrepMealTransScreenState extends State<CombinedPrepMealTransScree
       showBlur: showBlur(2),
       viewDay1Details: widget.fromStartScreen,
       trackerVideoLink: trackerUrl,
+      isNourishStarted: isNourishStarted,
+      onChanged: (value){
+        // if  value is false hide tabs
+          Future.delayed(Duration.zero).whenComplete(() {
+            setState(() {
+              showTabs = value;
+            });
+          });
+
+        // if true show tabs
+        print("Combined meal plan value change: $value");
+      },
     );
   }
 
@@ -536,6 +564,7 @@ class _CombinedPrepMealTransScreenState extends State<CombinedPrepMealTransScree
           viewDay1Details: widget.fromStartScreen,
           totalDays: totalNourish.toString(),
           trackerVideoLink: trackerUrl,
+          postProgramStage: widget.postProgramStage,
         ),
       ),
     );

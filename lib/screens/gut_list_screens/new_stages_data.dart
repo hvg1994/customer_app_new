@@ -2,7 +2,7 @@ import 'dart:ui';
 
 const String consultationRescheduleStageSubText = "Please reschedule to another date & time that suits you.";
 const String consultationStage2SubText = "Make sure to join your consultation within 5 minutes of your consultation time.";
-const String consultationStage3SubText = "Congrats on completing your consultation and formalities.\nYour doctor is analysing your case. Check back within 24-48 hrs for an update.";
+const String consultationStage3SubText = "Your doctor's are hard at work customizing your program. This can take 48-72 hours.We'll notify you once ready.";
 
 const String requestedReportStage1SubText = "Your doctor has requested for a few reports. Do upload them here to proceed further.";
 const String requestedReportStage2SubText = "Thanks for uploading your reports.\nYour doctor is now analyzing your case, allow us 2 working days to proceed to the next step.";
@@ -11,13 +11,19 @@ const String prepstageText = "Before your program starts we must prime your gut 
 const String prepStage2SubText = "Your kit is now ready to be shipped, schedule a date to have it delivered.";
 const String prepStage3SubText = "Your kit will be dispatched soon. Keep prepping your gut until your kit arrives.\n";
 
-const String PpcScheduleText = "Thanks for your feedback. Now please schedule your post program consultation with your doctor for a review.";
-const String PpcBookedText = "Please ensure to join within 10 minutes of your consultation time.";
+const String prepTrackerText = "Congrats on completing your preparation phase. Fill this tracker to update your doctor on your progress.";
 
 const String mealStartText = "You are now ready to start your main gut reset program.";
 const String mealTransText = "Congrats on completing your primary program. We now have to transition you back to regular food you are used to via the transition phase. Start now.";
-const String healingStartText = "You are now ready to start your Healing program.";
+// const String healingStartText = "You are now ready to start your Healing program.";
 
+const String afterStartProgramText = "Keep the momentum going!";
+const String stageCompletedSubText = "Completed";
+
+
+const String PpcScheduleText = "Thanks for your feedback. Now please schedule your post program consultation with your doctor for a review.";
+const String PpcBookedText = "Please ensure to join within 10 minutes of your consultation time.";
+const String ppcAfterConsultationText= "Hope you had a pleasant consultation. Your doctors are now preparing your gut maintenance guide. We'll notify you once this is ready.";
 
 List<DashboardStagesData> stageData = [
   DashboardStagesData(title:"Evaluation", subTitle:
@@ -65,7 +71,7 @@ List<DashboardStagesData> stageData = [
       type: StageType.prep_meal
   ),
   DashboardStagesData(title:"Gut Reset Program", subTitle:
-  "Start your main gut reset program with a 2-3 day activation period to ensure your gut is all set to accept the detox, healing & rebalancing.",
+  "Start your main gut reset program with a 2-3 day Preparation period to ensure your gut is all set to accept the detox, healing & rebalancing.",
     rightImage: "assets/images/dashboard_stages/Mask Group 43511.png",
     step: "7",
     btn1Name: "Start Program",
@@ -81,7 +87,7 @@ List<DashboardStagesData> stageData = [
   ),
   DashboardStagesData(title:"GMG Program",
       subTitle:
-  "Lorem lpsum is simply dummy text of the printing and typesetting industry.Lorem lpsum has been the industry\'s standard dummy text ever since the 1500s,when an unknown printer took a gallery of type and scrambled it to make a type specimen book.",
+  "Gut maintenance guide is your hand book to ensure a healthy gut for the years to come. We hope you are able to make the most of your learnings with us.",
     rightImage: "assets/images/dashboard_stages/Mask Group 43511.png",
     step: "9",
     btn1Name: "View GMG",
@@ -138,7 +144,7 @@ List<DashboardStagesData> defaultStageData = [
       type: StageType.prep_meal
   ),
   DashboardStagesData(title:"Gut Reset Program", subTitle:
-  "Start your main gut reset program with a 2-3 day activation period to ensure your gut is all set to accept the detox, healing & rebalancing.",
+  "Start your main gut reset program with a 2-3 day Preparation period to ensure your gut is all set to accept the detox, healing & rebalancing.",
       rightImage: "assets/images/dashboard_stages/Mask Group 43511.png",
       step: "7",
       btn1Name: "Start Program",
@@ -154,7 +160,7 @@ List<DashboardStagesData> defaultStageData = [
   ),
   DashboardStagesData(title:"GMG Program",
       subTitle:
-      "Lorem lpsum is simply dummy text of the printing and typesetting industry.Lorem lpsum has been the industry\'s standard dummy text ever since the 1500s,when an unknown printer took a gallery of type and scrambled it to make a type specimen book.",
+      "Gut maintenance guide is your hand book to ensure a healthy gut for the years to come. We hope you are able to make the most of your learnings with us.",
       rightImage: "assets/images/dashboard_stages/Mask Group 43511.png",
       step: "9",
       btn1Name: "View GMG",
@@ -188,7 +194,7 @@ class DashboardStagesData{
   Color? btn1Color;
   Color? btn2Color;
   Color? btn3Color;
-
+  bool showCard;
 
   DashboardStagesData({
     required this.title,
@@ -205,7 +211,8 @@ class DashboardStagesData{
     this.bgColor,
     this.btn1Color,
     this.btn2Color,
-    this.btn3Color
+    this.btn3Color,
+    this.showCard = true
 });
 
 }

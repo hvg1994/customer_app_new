@@ -32,7 +32,8 @@ import '../model/local_storage_dashboard_model.dart';
 import '../utils/app_config.dart';
 
 enum NotificationTypeEnum{
-  meal_plan, enquiry, report, appointment, shopping, reminder_appointment, new_appointment, doctor_requested_reports, consultation_rejected
+  meal_plan, enquiry, report, appointment, shopping, reminder_appointment, new_appointment,
+  doctor_requested_reports, consultation_rejected, mr_report
 }
 class NotificationScreen extends StatefulWidget {
   const NotificationScreen({Key? key}) : super(key: key);
@@ -346,7 +347,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
     else if(type == NotificationTypeEnum.enquiry.name){
       asset = 'assets/images/notification/pay_done.png';
     }
-    else if(type == NotificationTypeEnum.report.name){
+    else if(type == NotificationTypeEnum.report.name || type == NotificationTypeEnum.mr_report.name){
       asset = 'assets/images/notification/appoint_schedule.png';
     }
     else if(type == NotificationTypeEnum.appointment.name || type == NotificationTypeEnum.reminder_appointment.name){
@@ -376,7 +377,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
       else if(type == NotificationTypeEnum.enquiry.name){
         AppConfig().showSnackbar(context, "Already Logged In");
       }
-      else if(type == NotificationTypeEnum.report.name){
+      else if(type == NotificationTypeEnum.report.name || type == NotificationTypeEnum.mr_report.name){
         goToScreen(MedicalReportScreen(pdfLink: _localStorageDashboardModel!.mrReport!,));
       }
       else if(type == NotificationTypeEnum.appointment.name){

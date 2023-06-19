@@ -13,6 +13,8 @@ class ChildDetoxModel {
     isDetoxCompleted = json['is_detox_completed'].toString();
     isHealingCompleted = json['is_healing_completed'].toString();
 
+
+
     currentDay = json['current_day'].toString();
 
     if(json['details'] != null){
@@ -45,6 +47,8 @@ class ChildDetoxModel {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['is_detox_completed'] = this.isDetoxCompleted;
     data['is_healing_completed'] = this.isHealingCompleted;
+
+
     data['current_day'] = this.currentDay;
     if (details != null) {
       data['details'] = details!;

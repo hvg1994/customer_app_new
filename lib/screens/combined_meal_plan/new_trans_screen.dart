@@ -27,6 +27,7 @@ class NourishPlanScreen extends StatefulWidget {
   final bool viewDay1Details;
   final bool isPrepStarted;
   final String? trackerVideoLink;
+  final String? postProgramStage;
 
   const NourishPlanScreen({
     Key? key,
@@ -35,6 +36,7 @@ class NourishPlanScreen extends StatefulWidget {
     this.totalDays,
     this.isPrepStarted = false,
     this.trackerVideoLink,
+    this.postProgramStage,
     this.viewDay1Details = false,
   }) : super(key: key);
 
@@ -123,7 +125,7 @@ class _NourishPlanScreenState extends State<NourishPlanScreen>
                   builder: (ctx) => TrackerUI(
                     from: ProgramMealType.transition.name,
                     isPreviousDaySheet: true,
-                    proceedProgramDayModel: ProceedProgramDayModel(day: (presentDay).toString()),
+                    proceedProgramDayModel: ProceedProgramDayModel(day: (presentDay!-1).toString()),
                     trackerVideoLink: widget.trackerVideoLink
                   ),),);
 
@@ -137,7 +139,10 @@ class _NourishPlanScreenState extends State<NourishPlanScreen>
             }
           });
         }
-        if (_childPrepModel!.isNourishCompleted == "1") {
+        if (_childPrepModel!.isNourishCompleted == "1" &&
+            (widget.postProgramStage == null ||
+                widget.postProgramStage!.isEmpty))
+          {
           Future.delayed(Duration(seconds: 0)).then((value) {
             return buildDayCompletedClap();
           });
@@ -449,6 +454,46 @@ class _NourishPlanScreenState extends State<NourishPlanScreen>
           ),
           // btn()
           if (currentDayStatus == "0" && !widget.viewDay1Details) btn(),
+          Visibility(
+            visible: currentDayStatus == "1",
+            child: Center(
+              child: IntrinsicWidth(
+                child: Container(
+                  padding: EdgeInsets.all(8),
+                  margin: EdgeInsets.symmetric(vertical: 5),
+                  child: Center(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          padding: EdgeInsets.all(5),
+                          decoration: BoxDecoration(
+                              color: gPrimaryColor, shape: BoxShape.circle),
+                          child: Center(
+                            child: Icon(
+                              Icons.done_outlined,
+                              color: gWhiteColor,
+                              size: 3.h,
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 8,),
+                        Text(
+                          // "Day ${widget.day} Meal Plan",
+                          "Day ${presentDay} Submitted",
+                          style: TextStyle(
+                              fontFamily: eUser().mainHeadingFont,
+                              color: gTextColor,
+                              fontSize:
+                              eUser().mainHeadingFontSize),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          )
         ],
       ),
     );

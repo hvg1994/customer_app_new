@@ -736,40 +736,43 @@ class _NewTransitionDesignState extends State<NewTransitionDesign>
   }
 
   btn() {
-    return Center(
-      child: GestureDetector(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (ctx) => TrackerUI(
-                  from: ProgramMealType.transition.name,
-                  proceedProgramDayModel: ProceedProgramDayModel(day: widget.dayNumber),
-                  trackerVideoLink: widget.trackerVideoLink
-              ),),);
-          // showSymptomsTrackerSheet(context, widget.dayNumber).then((value) {
-          //   getTransitionMeals();
-          // });
-        },
-        child: Container(
-          margin: EdgeInsets.symmetric(vertical: 2.h),
-          width: 60.w,
-          height: 5.h,
-          decoration: BoxDecoration(
-            color: eUser().buttonColor,
-            borderRadius: BorderRadius.circular(eUser().buttonBorderRadius),
-            // border: Border.all(color: eUser().buttonBorderColor,
-            //     width: eUser().buttonBorderWidth),
-          ),
-          child: Center(
-            child: Text(
-              'Next',
-              // 'Proceed to Day $proceedToDay',
-              style: TextStyle(
-                fontFamily: eUser().buttonTextFont,
-                color: eUser().buttonTextColor,
-                // color: (statusList.length != lst.length) ? gPrimaryColor : gMainColor,
-                fontSize: eUser().buttonTextSize,
+    return Visibility(
+      visible: DateTime.now().hour >= 21 && DateTime.now().hour <= 0,
+      child: Center(
+        child: GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (ctx) => TrackerUI(
+                    from: ProgramMealType.transition.name,
+                    proceedProgramDayModel: ProceedProgramDayModel(day: widget.dayNumber),
+                    trackerVideoLink: widget.trackerVideoLink
+                ),),);
+            // showSymptomsTrackerSheet(context, widget.dayNumber).then((value) {
+            //   getTransitionMeals();
+            // });
+          },
+          child: Container(
+            margin: EdgeInsets.symmetric(vertical: 2.h),
+            width: 60.w,
+            height: 5.h,
+            decoration: BoxDecoration(
+              color: eUser().buttonColor,
+              borderRadius: BorderRadius.circular(eUser().buttonBorderRadius),
+              // border: Border.all(color: eUser().buttonBorderColor,
+              //     width: eUser().buttonBorderWidth),
+            ),
+            child: Center(
+              child: Text(
+                'Next',
+                // 'Proceed to Day $proceedToDay',
+                style: TextStyle(
+                  fontFamily: eUser().buttonTextFont,
+                  color: eUser().buttonTextColor,
+                  // color: (statusList.length != lst.length) ? gPrimaryColor : gMainColor,
+                  fontSize: eUser().buttonTextSize,
+                ),
               ),
             ),
           ),
