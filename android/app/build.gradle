@@ -13,12 +13,12 @@ if (flutterRoot == null) {
 
 def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
 if (flutterVersionCode == null) {
-    flutterVersionCode = '18'
+    flutterVersionCode = '21'
 }
 
 def flutterVersionName = localProperties.getProperty('flutter.versionName')
 if (flutterVersionName == null) {
-    flutterVersionName = '18.0'
+    flutterVersionName = '21.0'
 }
 
 
@@ -29,6 +29,7 @@ apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
     compileSdkVersion sdkVersion
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -64,7 +65,7 @@ android {
         applicationId "com.fembuddy.gwc_customer"
         minSdkVersion 21
         targetSdkVersion sdkVersion
-        versionCode 18
+        versionCode 21
         versionName flutterVersionName
         multiDexEnabled true
 //        ndk {

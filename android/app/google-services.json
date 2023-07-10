@@ -29,6 +29,13 @@
             {
               "client_id": "223001521272-33iuijhcoquditkb3c7cts6cqsej7909.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "223001521272-o577ppiss5ks1pg1rtrcio3rufkf4die.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.fembuddy.customer"
+              }
             }
           ]
         }
@@ -58,6 +65,13 @@
             {
               "client_id": "223001521272-33iuijhcoquditkb3c7cts6cqsej7909.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "223001521272-o577ppiss5ks1pg1rtrcio3rufkf4die.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.fembuddy.customer"
+              }
             }
           ]
         }
@@ -87,6 +101,13 @@
             {
               "client_id": "223001521272-33iuijhcoquditkb3c7cts6cqsej7909.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "223001521272-o577ppiss5ks1pg1rtrcio3rufkf4die.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.fembuddy.customer"
+              }
             }
           ]
         }
@@ -116,6 +137,49 @@
             {
               "client_id": "223001521272-33iuijhcoquditkb3c7cts6cqsej7909.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "223001521272-o577ppiss5ks1pg1rtrcio3rufkf4die.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.fembuddy.customer"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:223001521272:android:5a54df2385c7f29a49518d",
+        "android_client_info": {
+          "package_name": "com.gwc.gwc_cet"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "223001521272-33iuijhcoquditkb3c7cts6cqsej7909.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD1Rdx-sN_-shl8C1ryFm9zEGSc3EAHvb8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "223001521272-33iuijhcoquditkb3c7cts6cqsej7909.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "223001521272-o577ppiss5ks1pg1rtrcio3rufkf4die.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.fembuddy.customer"
+              }
             }
           ]
         }

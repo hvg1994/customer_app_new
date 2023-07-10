@@ -5,6 +5,7 @@ import 'package:gwc_customer/model/error_model.dart';
 import 'package:gwc_customer/model/rewards_model/reward_point_model.dart';
 import 'package:gwc_customer/repository/api_service.dart';
 import 'package:gwc_customer/repository/rewards_repository/reward_repository.dart';
+import 'package:gwc_customer/screens/profile_screens/reward/refer_and_earn_screen.dart';
 import 'package:gwc_customer/services/rewards_service/reward_service.dart';
 import 'package:gwc_customer/widgets/constants.dart';
 import 'package:gwc_customer/widgets/widgets.dart';
@@ -100,10 +101,26 @@ class _RewardScreenState extends State<RewardScreen> {
                               "Earn $rupeeSymbol 150 Each",
                               textAlign: TextAlign.center,
                               style: TextStyle(
-                                  fontFamily: kFontBold,
+                                  fontFamily: kFontMedium,
                                   color: gWhiteColor,
                                   fontSize: 11.sp),
                             ),
+                            GestureDetector(
+                                onTap: (){
+                                  Navigator.push(context,
+                                      MaterialPageRoute(builder: (_)=> ReferAndEarnScreen()
+                                      )
+                                  );
+                                },
+                                child: Text(
+                                  "Refer Now",
+                                  style: TextStyle(
+                                      fontFamily: kFontBold,
+                                      color: gWhiteColor,
+                                      fontSize: 12.sp
+                                  ),
+                                )
+                            )
                           ],
                         ),
                       ),

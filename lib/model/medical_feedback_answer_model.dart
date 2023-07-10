@@ -65,7 +65,7 @@ class Data {
     hungerPattern: json["hunger_pattern"],
     bowelPattern: json["bowel_pattern"],
     lifestyleHabits: json["lifestyle_habits"],
-    addedBy: json["added_by"],
+    addedBy: json["added_by"].toString(),
     createdAt: json["created_at"],
     updatedAt: json["updated_at"],
   );

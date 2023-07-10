@@ -113,7 +113,13 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
                   //     :
                   // (widget.from == ProgramMealType.prepratory.name)
                   //     ? startButtonWidget()
-                      : startButtonWidget()
+                      : Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      viewButtonWidget(),
+                      startButtonWidget()
+                    ],
+                  )
                 ],
               ),
             )
@@ -121,6 +127,106 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
       ),
     );
   }
+
+  viewButtonWidget(){
+    return Center(
+      child: MediaQuery(
+        data: MediaQuery.of(context).copyWith(textScaleFactor: 0.8),
+        child: GestureDetector(
+          onTap: (){
+            // if(_videoPlayerController != null) _videoPlayerController!.stop();
+            if(_chewieController != null && _chewieController!.isPlaying == true)
+            {
+              if(videoPlayerController != null) videoPlayerController!.pause();
+              if(_chewieController != null) _chewieController!.pause();
+              return;
+            }
+            else{
+              if(videoPlayerController != null) videoPlayerController!.pause();
+              if(_chewieController != null) _chewieController!.pause();
+
+              if(widget.from == ProgramMealType.prepratory.name){
+                //get Preparatory day1 meals
+                print("isPlaying: ${_chewieController!.isPlaying}");
+                gotoScreen(CombinedPrepMealTransScreen(stage: 0,
+                  fromStartScreen: true,
+                ));
+              }
+              else if(widget.from == ProgramMealType.detox.name){
+                //get Normal Program day1 meals
+                final mealUrl = _pref!.getString(AppConfig().receipeVideoUrl);
+                final trackerUrl = _pref!.getString(AppConfig().trackerVideoUrl);
+
+                gotoScreen(
+                    CombinedPrepMealTransScreen(stage: 1,
+                      fromStartScreen: true,
+                    )
+                );
+                // gotoScreen( MealPlanScreen(
+                //   receipeVideoLink: mealUrl,
+                //   trackerVideoLink: trackerUrl,
+                //   viewDay1Details: true,
+                // ),);
+              }
+              else if(widget.from == ProgramMealType.healing.name){
+                //get Normal Program day1 meals
+                final mealUrl = _pref!.getString(AppConfig().receipeVideoUrl);
+                final trackerUrl = _pref!.getString(AppConfig().trackerVideoUrl);
+
+                _pref!.setString(AppConfig.STORE_MEAL_DATA, "");
+                gotoScreen(
+                    CombinedPrepMealTransScreen(stage: 2,
+                      fromStartScreen: true,
+                    )
+                );
+                // gotoScreen( MealPlanScreen(
+                //   receipeVideoLink: mealUrl,
+                //   trackerVideoLink: trackerUrl,
+                //   viewDay1Details: true,
+                // ),);
+              }
+              else if(widget.from == ProgramMealType.transition.name){
+                //get Transition day1 meals
+                final trackerUrl = _pref!.getString(AppConfig().trackerVideoUrl);
+
+                gotoScreen(CombinedPrepMealTransScreen(stage: 3,
+                  fromStartScreen: true,
+                ));
+                // gotoScreen(NewTransitionDesign(
+                //   totalDays: '1',
+                //   dayNumber: '1',
+                //   trackerVideoLink: trackerUrl
+                //   ,viewDay1Details: true,));
+
+              }
+            }
+          },
+          child: Container(
+            width: 40.w,
+            height: 5.h,
+            padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 15.w),
+            decoration: BoxDecoration(
+              color: eUser().buttonColor,
+              borderRadius: BorderRadius.circular(eUser().buttonBorderRadius),
+              // border: Border.all(
+              //     color: eUser().buttonBorderColor,
+              //     width: eUser().buttonBorderWidth
+              // ),
+            ),
+            child: Center(child: Text(
+              'View',
+              style: TextStyle(
+                fontFamily: eUser().buttonTextFont,
+                color: eUser().buttonTextColor,
+                fontSize: eUser().buttonTextSize,
+              ),
+            )),
+          ),
+        ),
+      ),
+    );
+  }
+
 
   startButtonWidget(){
     return Center(
@@ -141,8 +247,7 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
           child: Container(
             width: 40.w,
             height: 5.h,
-            padding:
-            EdgeInsets.symmetric(vertical: 1.h, horizontal: 15.w),
+            padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 15.w),
             decoration: BoxDecoration(
               color: eUser().buttonColor,
               borderRadius: BorderRadius.circular(eUser().buttonBorderRadius),
@@ -538,92 +643,92 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
                       color: gTextColor,
                       fontSize: 10.sp),
                 ),
-                Visibility(
-                  visible: !(widget.from == ProgramMealType.prepratory.name),
-                  child: TextButton(
-                      onPressed: (){
-                        // if(_videoPlayerController != null) _videoPlayerController!.stop();
-                        if(_chewieController != null && _chewieController!.isPlaying == true)
-                        {
-                          if(videoPlayerController != null) videoPlayerController!.pause();
-                          if(_chewieController != null) _chewieController!.pause();
-                          return;
-                        }
-                        else{
-                          if(videoPlayerController != null) videoPlayerController!.pause();
-                          if(_chewieController != null) _chewieController!.pause();
-
-                          if(widget.from == ProgramMealType.prepratory.name){
-                            //get Preparatory day1 meals
-                            print("isPlaying: ${_chewieController!.isPlaying}");
-                            gotoScreen(PreparatoryPlanScreen(dayNumber: "1", totalDays: '2',viewDay1Details: true,
-                              isPrepStarted: true,
-                            ));
-                          }
-                          else if(widget.from == ProgramMealType.detox.name){
-                            //get Normal Program day1 meals
-                            final mealUrl = _pref!.getString(AppConfig().receipeVideoUrl);
-                            final trackerUrl = _pref!.getString(AppConfig().trackerVideoUrl);
-
-                            gotoScreen(
-                                CombinedPrepMealTransScreen(stage: 1,
-                                  fromStartScreen: true,
-                                )
-                            );
-                            // gotoScreen( MealPlanScreen(
-                            //   receipeVideoLink: mealUrl,
-                            //   trackerVideoLink: trackerUrl,
-                            //   viewDay1Details: true,
-                            // ),);
-                          }
-                          else if(widget.from == ProgramMealType.healing.name){
-                            //get Normal Program day1 meals
-                            final mealUrl = _pref!.getString(AppConfig().receipeVideoUrl);
-                            final trackerUrl = _pref!.getString(AppConfig().trackerVideoUrl);
-
-                            _pref!.setString(AppConfig.STORE_MEAL_DATA, "");
-                            gotoScreen(
-                                CombinedPrepMealTransScreen(stage: 2,
-                                  fromStartScreen: true,
-                                )
-                            );
-                            // gotoScreen( MealPlanScreen(
-                            //   receipeVideoLink: mealUrl,
-                            //   trackerVideoLink: trackerUrl,
-                            //   viewDay1Details: true,
-                            // ),);
-                          }
-                          else if(widget.from == ProgramMealType.transition.name){
-                            //get Transition day1 meals
-                            final trackerUrl = _pref!.getString(AppConfig().trackerVideoUrl);
-
-                            gotoScreen(CombinedPrepMealTransScreen(stage: 3,
-                              fromStartScreen: true,
-                            ));
-                            // gotoScreen(NewTransitionDesign(
-                            //   totalDays: '1',
-                            //   dayNumber: '1',
-                            //   trackerVideoLink: trackerUrl
-                            //   ,viewDay1Details: true,));
-
-                          }
-                        }
-                      },
-                      //Preparatory Meal Plan
-                      child: Text("View Day1 "
-                          "${(widget.from == ProgramMealType.prepratory.name) ? 'Prepratory Meal Plan'
-                          : (widget.from == ProgramMealType.transition.name) ? 'Transition Meal Plan'
-                          : (widget.from == ProgramMealType.detox.name) ? 'Detox Meal Plan'
-                          : 'Healing Meal Plan'} >",
-                        style: TextStyle(
-                            height: 1.5,
-                            fontFamily: kFontBold,
-                            color: gsecondaryColor,
-                            fontSize: 11.sp
-                        ),
-                      )
-                  ),
-                ),
+                // Visibility(
+                //   visible: !(widget.from == ProgramMealType.prepratory.name),
+                //   child: TextButton(
+                //       onPressed: (){
+                //         // if(_videoPlayerController != null) _videoPlayerController!.stop();
+                //         if(_chewieController != null && _chewieController!.isPlaying == true)
+                //         {
+                //           if(videoPlayerController != null) videoPlayerController!.pause();
+                //           if(_chewieController != null) _chewieController!.pause();
+                //           return;
+                //         }
+                //         else{
+                //           if(videoPlayerController != null) videoPlayerController!.pause();
+                //           if(_chewieController != null) _chewieController!.pause();
+                //
+                //           if(widget.from == ProgramMealType.prepratory.name){
+                //             //get Preparatory day1 meals
+                //             print("isPlaying: ${_chewieController!.isPlaying}");
+                //             gotoScreen(PreparatoryPlanScreen(dayNumber: "1", totalDays: '2',viewDay1Details: true,
+                //               isPrepStarted: true,
+                //             ));
+                //           }
+                //           else if(widget.from == ProgramMealType.detox.name){
+                //             //get Normal Program day1 meals
+                //             final mealUrl = _pref!.getString(AppConfig().receipeVideoUrl);
+                //             final trackerUrl = _pref!.getString(AppConfig().trackerVideoUrl);
+                //
+                //             gotoScreen(
+                //                 CombinedPrepMealTransScreen(stage: 1,
+                //                   fromStartScreen: true,
+                //                 )
+                //             );
+                //             // gotoScreen( MealPlanScreen(
+                //             //   receipeVideoLink: mealUrl,
+                //             //   trackerVideoLink: trackerUrl,
+                //             //   viewDay1Details: true,
+                //             // ),);
+                //           }
+                //           else if(widget.from == ProgramMealType.healing.name){
+                //             //get Normal Program day1 meals
+                //             final mealUrl = _pref!.getString(AppConfig().receipeVideoUrl);
+                //             final trackerUrl = _pref!.getString(AppConfig().trackerVideoUrl);
+                //
+                //             _pref!.setString(AppConfig.STORE_MEAL_DATA, "");
+                //             gotoScreen(
+                //                 CombinedPrepMealTransScreen(stage: 2,
+                //                   fromStartScreen: true,
+                //                 )
+                //             );
+                //             // gotoScreen( MealPlanScreen(
+                //             //   receipeVideoLink: mealUrl,
+                //             //   trackerVideoLink: trackerUrl,
+                //             //   viewDay1Details: true,
+                //             // ),);
+                //           }
+                //           else if(widget.from == ProgramMealType.transition.name){
+                //             //get Transition day1 meals
+                //             final trackerUrl = _pref!.getString(AppConfig().trackerVideoUrl);
+                //
+                //             gotoScreen(CombinedPrepMealTransScreen(stage: 3,
+                //               fromStartScreen: true,
+                //             ));
+                //             // gotoScreen(NewTransitionDesign(
+                //             //   totalDays: '1',
+                //             //   dayNumber: '1',
+                //             //   trackerVideoLink: trackerUrl
+                //             //   ,viewDay1Details: true,));
+                //
+                //           }
+                //         }
+                //       },
+                //       //Preparatory Meal Plan
+                //       child: Text("View Day1 "
+                //           "${(widget.from == ProgramMealType.prepratory.name) ? 'Prepratory Meal Plan'
+                //           : (widget.from == ProgramMealType.transition.name) ? 'Transition Meal Plan'
+                //           : (widget.from == ProgramMealType.detox.name) ? 'Detox Meal Plan'
+                //           : 'Healing Meal Plan'} >",
+                //         style: TextStyle(
+                //             height: 1.5,
+                //             fontFamily: kFontBold,
+                //             color: gsecondaryColor,
+                //             fontSize: 11.sp
+                //         ),
+                //       )
+                //   ),
+                // ),
               ],
             ),
           )
@@ -853,7 +958,7 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
         ),
         SizedBox(width: 2.5.h),
         Center(
-          child: Text("Once you slide,next day will be\nconsidered as Day 1 of the Program,\nAre you sure?",
+          child: Text("Once you clicked,next day will be\nconsidered as Day 1 of the Program,\nAre you sure?",
             style: TextStyle(
                 fontSize: bottomSheetHeadingFontSize,
                 fontFamily: bottomSheetHeadingFontFamily,

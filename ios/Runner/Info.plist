@@ -47,5 +47,24 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+
+	// whatsApp share plugin codes
+	<array>
+      <string>whatsapp</string>
+    </array>
+    <array>
+        <string>twitter</string>
+    </array>
+    <key>FacebookAppID</key>
+    <string>fbid</string>
+    <key>CFBundleURLTypes</key>
+    	<array>
+    		<dict>
+    			<key>CFBundleURLSchemes</key>
+    			<array>
+    				<string>343254889799245</string>
+    			</array>
+    		</dict>
+    	</array>
 </dict>
 </plist>

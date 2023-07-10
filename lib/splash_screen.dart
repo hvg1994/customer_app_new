@@ -45,6 +45,8 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'screens/notification_screen.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:open_store/open_store.dart';
+
 
 
 
@@ -56,7 +58,7 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
+class _SplashScreenState extends State<SplashScreen> with WidgetsBindingObserver {
   final PageController _pageController = PageController(initialPage: 0);
   int _currentPage = 0;
   Timer? _timer;
@@ -79,6 +81,14 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   void initState() {
+    int start = _pref!.getInt("started")!;
+    int end = DateTime.now().millisecondsSinceEpoch;
+    var totalTime = end - start;
+    print("response Time:" + (totalTime / 1000).round().toString());
+
+    print(
+        "start: $start end: ${end}  total: $totalTime");
+    WidgetsBinding.instance.addObserver(this);
     // checkNewVersion();
     getDeviceId();
     super.initState();
@@ -86,6 +96,33 @@ class _SplashScreenState extends State<SplashScreen> {
     firebaseNotif();
     // listenMessages();
   }
+
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    print("didChangeAppLifecycleState");
+    switch (state) {
+      case AppLifecycleState.resumed:
+        print("app in resumed");
+        // print("deviceId:--  $deviceId");
+        if(isAppUpdateAlertClosed){
+          getEnquiryStatus(deviceId!);
+        }
+        // show update alert if user didnot updated the app
+        break;
+      case AppLifecycleState.inactive:
+        print("app in inactive");
+        break;
+      case AppLifecycleState.paused:
+        print("app in paused");
+        break;
+      case AppLifecycleState.detached:
+        print("app in detached");
+        break;
+    }
+  }
+
+
   checkNewVersion(){
     final newVersion = NewVersion(
       // iOSId: 'com.google.Vespa',
@@ -125,16 +162,23 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future getDeviceId() async{
     final _pref = AppConfig().preferences;
-    if(_pref!.getString(AppConfig().deviceId) == null || _pref.getString(AppConfig().deviceId) != ""){
+    print(_pref!.getString(AppConfig().deviceId));
+    print(_pref!.getString(AppConfig().deviceId) == null);
+    print(_pref.getString(AppConfig().deviceId) != "");
+
+    if(_pref!.getString(AppConfig().deviceId) == null || _pref.getString(AppConfig().deviceId) == ""){
+      print("getDeviceId if");
       await AppConfig().getDeviceId().then((id) {
         print("deviceId: $id");
         if(id != null){
-          _pref!.setString(AppConfig().deviceId, id);
+          _pref.setString(AppConfig().deviceId, id);
+          deviceId = id;
           getEnquiryStatus(id);
         }
       });
     }
     else{
+      print("getDeviceId else");
       deviceId = _pref.getString(AppConfig().deviceId);
       getEnquiryStatus(deviceId!);
     }
@@ -223,9 +267,6 @@ class _SplashScreenState extends State<SplashScreen> {
   runAllAsync() async{
     await Future.wait([
       getPermission(),
-    // listenNotifications(),
-    //   /// quickblox
-    //   getSession(),
     ]);
     print("starting Application!");
   }
@@ -353,6 +394,7 @@ class _SplashScreenState extends State<SplashScreen> {
     getScreen();
   }
 
+
   getEnquiryStatus(String deviceId) async{
 
     final result = await EnquiryStatusService(repository: repository).enquiryStatusService(deviceId);
@@ -360,18 +402,25 @@ class _SplashScreenState extends State<SplashScreen> {
     print("getEnquiryStatus: $result");
     if(result.runtimeType == EnquiryStatusModel){
       EnquiryStatusModel model = result as EnquiryStatusModel;
-      if(model.errorMsg!.contains("No data found")){
-        setState(() {
-          // show login if new deviceId
-          enquiryStatus = 1;
-          isError = false;
-        });
+
+      if(model.androidVersion! > AppConfig.androidVersion){
+        showAppUpdateAlert();
+        isAppUpdateAlertClosed = false;
       }
       else{
-        setState(() {
-          enquiryStatus = model.enquiryStatus ?? 0;
-          isError = false;
-        });
+        if(model.errorMsg!.contains("No data found")){
+          setState(() {
+            // show login if new deviceId
+            enquiryStatus = 1;
+            isError = false;
+          });
+        }
+        else{
+          setState(() {
+            enquiryStatus = model.enquiryStatus ?? 0;
+            isError = false;
+          });
+        }
       }
     }
     else{
@@ -395,6 +444,9 @@ class _SplashScreenState extends State<SplashScreen> {
       isLogin = _pref.getBool(AppConfig.isLogin) ?? false;
       evalStatus = _pref.getString(AppConfig.EVAL_STATUS) ?? '';
     });
+
+
+
     print("_pref.getBool(AppConfig.isLogin): ${_pref.getBool(AppConfig.isLogin)}");
     print("isLogin: $isLogin");
     // WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
@@ -409,12 +461,18 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _timer?.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    print("-- -- build");
+    double height = MediaQuery.of(context).size.height;
+    double width = MediaQuery.of(context).size.width;
+    //I/flutter (13659): Ssamsung Mobile wdth: 384.0 * height: 781.8666666666667
+    print("Ssamsung Mobile wdth: $width * height: $height");
     return Scaffold(
       body: Stack(
         children: <Widget>[
@@ -425,12 +483,18 @@ class _SplashScreenState extends State<SplashScreen> {
                 _currentPage = page;
               });
             },
-            physics: NeverScrollableScrollPhysics(),
+            physics: const NeverScrollableScrollPhysics(),
             controller: _pageController,
             children: <Widget>[
               splashImage(),
               if(enquiryStatus != null)
-              (enquiryStatus!.isEven) ? SitBackScreen() : !isLogin ? ExistingUser() : (evalStatus!.contains("no_evaluation") || evalStatus!.contains("pending")) ? EvaluationFormScreen(isFromSplashScreen: true,) : DashboardScreen()
+              (enquiryStatus!.isEven)
+                  ? SitBackScreen()
+                  : !isLogin
+                  ? ExistingUser()
+                  : (evalStatus!.contains("no_evaluation") || evalStatus!.contains("pending"))
+                  ? EvaluationFormScreen(isFromSplashScreen: true,)
+                  : DashboardScreen()
             ],
           ),
         ],
@@ -478,4 +542,29 @@ class _SplashScreenState extends State<SplashScreen> {
         }
     );
   }
+
+  bool isAppUpdateAlertClosed = true;
+
+  showAppUpdateAlert(){
+    return openAlertBox(
+        context: context,
+        barrierDismissible: false,
+        content: AppConfig.updateAppContent,
+        titleNeeded: true,
+        title: "Update Available",
+        isSingleButton: true,
+        positiveButtonName: 'Update Now',
+        positiveButton: (){
+          OpenStore.instance.open(
+              // appStoreId: '284815942', // AppStore id of your app for iOS
+              // appStoreIdMacOS: '284815942', // AppStore id of your app for MacOS (appStoreId used as default)
+              androidAppBundleId: AppConfig.androidBundleId, // Android app bundle package name
+              // windowsProductId: '9NZTWSQNTD0S' // Microsoft store id for Widnows apps
+          );
+          isAppUpdateAlertClosed = true;
+          Navigator.pop(context);
+        }
+    );
+  }
+
 }

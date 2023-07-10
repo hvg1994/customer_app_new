@@ -44,7 +44,7 @@ openAlertBox({
                     title ?? 'Are you sure?',
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                        fontFamily: "GothamRoundedBold_21016",
+                        fontFamily: kFontBold,
                         color: gsecondaryColor,
                         fontSize: 11.sp),
                   ),
@@ -63,7 +63,7 @@ openAlertBox({
                     content ?? 'Do you want to exit an App?',
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                        fontFamily: "GothamMedium",
+                        fontFamily: kFontMedium,
                         color: gBlackColor,
                         fontSize: 11.sp),
                   ),

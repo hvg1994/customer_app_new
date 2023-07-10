@@ -1,5 +1,6 @@
 import 'package:gwc_customer/model/program_model/proceed_model/send_proceed_program_model.dart';
 import 'package:gwc_customer/repository/api_service.dart';
+import 'package:http/http.dart';
 
 class PrepratoryRepository{
   ApiClient apiClient;
@@ -21,7 +22,7 @@ class PrepratoryRepository{
     return await apiClient.getPrepratoryMealTrackDetailsApi();
   }
 
-  Future proceedDayMealDetailsRepo(ProceedProgramDayModel model) async{
-    return await apiClient.proceedTransitionDayProgramList(model);
+  Future proceedDayMealDetailsRepo(ProceedProgramDayModel model, List<MultipartFile> file) async{
+    return await apiClient.proceedTransitionDayProgramList(model, file);
   }
 }

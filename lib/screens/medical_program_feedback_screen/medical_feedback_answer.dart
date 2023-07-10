@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gwc_customer/model/error_model.dart';
 import 'package:sizer/sizer.dart';
 import 'package:http/http.dart' as http;
 
@@ -105,69 +106,87 @@ class _MedicalFeedbackAnswerState extends State<MedicalFeedbackAnswer> {
                   height: 25.h,
                 ),
               );
-            } else if (snapshot.hasData) {
-              var data = snapshot.data.data;
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(height: 2.h),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text(
-                        "Medical Feedback form ",
-                        textAlign: TextAlign.start,
-                        style: TextStyle(
-                            fontFamily: kFontMedium,
-                            color: gBlackColor,
-                            fontSize: headingFont),
-                      ),
-                      SizedBox(
-                        width: 2.w,
-                      ),
-                      Expanded(
-                        child: Container(
-                          height: 1,
-                          color: kLineColor,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Text(
-                    "I hope your detoxification process went well. Please update us on your health's development.",
-                    textAlign: TextAlign.start,
-                    style: TextStyle(
+            }
+            else if (snapshot.hasData) {
+              if(snapshot.data is ErrorModel){
+                print((snapshot.data as ErrorModel).message);
+                return Padding(
+                  padding: EdgeInsets.symmetric(vertical: 15.h),
+                  child: Center(
+                    child: Text((snapshot.data as ErrorModel).message ?? '',
+                      style: TextStyle(
+                        fontSize: 10.sp,
                         fontFamily: kFontMedium,
-                        color: gHintTextColor,
-                        fontSize: subHeadingFont),
+                        color: gsecondaryColor.withOpacity(0.2)
+                      ),
+                    ),
                   ),
-                  SizedBox(
-                    height: 2.5.h,
-                  ),
-                  buildLabelTextField(
-                      'What were the RESOLVED digestive health issues after the program? Please list them below along with the % of improvement. '),
-                  SizedBox(height: 1.h),
-                  buildContainer(data.resolvedDigestiveIssue ?? ""),
-                  SizedBox(height: 2.h),
-                  buildLabelTextField(
-                      'What were the UNRESOLVED digestive health issues after the program? Please list them below '),
-                  SizedBox(height: 1.h),
-                  buildContainer(data.unresolvedDigestiveIssue ?? ""),
-                  SizedBox(height: 2.h),
-                  buildLabelTextField(
-                      'Tell us (the current status) about your after meal preferences '),
-                  buildRadioContainer(data.mealPreferences ?? ""),
-                  buildLabelTextField(
-                      'Tell us (the current status) about your hunger pattern '),
-                  buildRadioContainer(data.hungerPattern ?? ""),
-                  buildLabelTextField(
-                      'Tell us (the current status) about your bowel pattern '),
-                  buildRadioContainer(data.bowelPattern ?? ""),
-                  buildLabelTextField(
-                      'Have your food cravings and lifestyle habits changed for the better? '),
-                  buildRadioContainer(data.lifestyleHabits ?? ""),
-                ],
-              );
+                );
+              }
+              else{
+                var data = snapshot.data.data;
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 2.h),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Medical Feedback form ",
+                          textAlign: TextAlign.start,
+                          style: TextStyle(
+                              fontFamily: kFontMedium,
+                              color: gBlackColor,
+                              fontSize: headingFont),
+                        ),
+                        SizedBox(
+                          width: 2.w,
+                        ),
+                        Expanded(
+                          child: Container(
+                            height: 1,
+                            color: kLineColor,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Text(
+                      "I hope your detoxification process went well. Please update us on your health's development.",
+                      textAlign: TextAlign.start,
+                      style: TextStyle(
+                          fontFamily: kFontMedium,
+                          color: gHintTextColor,
+                          fontSize: subHeadingFont),
+                    ),
+                    SizedBox(
+                      height: 2.5.h,
+                    ),
+                    buildLabelTextField(
+                        'What were the RESOLVED digestive health issues after the program? Please list them below along with the % of improvement. '),
+                    SizedBox(height: 1.h),
+                    buildContainer(data.resolvedDigestiveIssue ?? ""),
+                    SizedBox(height: 2.h),
+                    buildLabelTextField(
+                        'What were the UNRESOLVED digestive health issues after the program? Please list them below '),
+                    SizedBox(height: 1.h),
+                    buildContainer(data.unresolvedDigestiveIssue ?? ""),
+                    SizedBox(height: 2.h),
+                    buildLabelTextField(
+                        'Tell us (the current status) about your after meal preferences '),
+                    buildRadioContainer(data.mealPreferences ?? ""),
+                    buildLabelTextField(
+                        'Tell us (the current status) about your hunger pattern '),
+                    buildRadioContainer(data.hungerPattern ?? ""),
+                    buildLabelTextField(
+                        'Tell us (the current status) about your bowel pattern '),
+                    buildRadioContainer(data.bowelPattern ?? ""),
+                    buildLabelTextField(
+                        'Have your food cravings and lifestyle habits changed for the better? '),
+                    buildRadioContainer(data.lifestyleHabits ?? ""),
+                  ],
+                );
+              }
             }
             return Padding(
               padding: EdgeInsets.symmetric(vertical: 10.h),

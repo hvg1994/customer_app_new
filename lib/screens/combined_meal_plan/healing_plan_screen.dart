@@ -49,7 +49,7 @@ class HealingPlanScreen extends StatefulWidget {
   final bool viewDay1Details;
   final bool showBlur;
   final bool isNourishStarted;
-  final ValueChanged<bool>? onChanged;
+  final ValueSetter<bool>? onChanged;
   const HealingPlanScreen(
       {Key? key,
       this.transStage,
@@ -602,7 +602,15 @@ class _HealingPlanScreenState extends State<HealingPlanScreen> {
   bool showShimmer = false;
   dayItems(int index) {
     return GestureDetector(
-      onTap: checkOnTapCondition(index, listData)
+      onTap: (widget.viewDay1Details)
+          ? (){
+        setState(() {
+          showShimmer = true;
+          selectedDay = int.parse(listData[index].dayNumber!);
+        });
+        getMealFromDay(selectedDay!);
+      }
+          : checkOnTapCondition(index, listData)
           ? () {
         setState(() {
           showShimmer = true;
@@ -628,7 +636,7 @@ class _HealingPlanScreenState extends State<HealingPlanScreen> {
       }
           : null,
       child: Opacity(
-        opacity: getOpacity(index, listData),
+        opacity: (widget.viewDay1Details) ? 1.0 : getOpacity(index, listData),
         child: Container(
           // height: 5.h,
             decoration: BoxDecoration(
@@ -748,7 +756,7 @@ class _HealingPlanScreenState extends State<HealingPlanScreen> {
     } else if (listData[listData.length - 2].isCompleted == 1 &&
         index == listData.length - 1) {
       return true;
-    } else if (int.parse(listData[index].dayNumber!) == nextDay) {
+    } else if (int.parse(listData[index].dayNumber!) == nextDay || int.parse(listData[index].dayNumber!) == presentDay) {
       return true;
     } else if (int.parse(listData[index].dayNumber!) < presentDay! &&
         listData[index].isCompleted == 0) {
@@ -760,20 +768,26 @@ class _HealingPlanScreenState extends State<HealingPlanScreen> {
   }
 
   getOpacity(int index, List<ChildProgramDayModel> listData) {
+    print("=>>$index ${listData[index].dayNumber} $presentDay");
     if (index == 0) {
       return 1.0;
     } else if (listData[index - 1].isCompleted == 1) {
+      print("else if1");
       return 1.0;
     } else if (index != listData.length - 1 &&
         listData[index + 1].dayNumber == (presentDay! + 1).toString()) {
+      print("else if2");
       return 1.0;
     } else if (listData[listData.length - 2].isCompleted == 1 &&
         index == listData.length - 1) {
+      print("else if3");
       return 1.0;
-    } else if (int.parse(listData[index].dayNumber!) == nextDay) {
+    } else if (int.parse(listData[index].dayNumber!) == nextDay || int.parse(listData[index].dayNumber!) == presentDay) {
+      print("else if4");
       return 1.0;
     } else if (int.parse(listData[index].dayNumber!) < presentDay! &&
         listData[index].isCompleted == 0) {
+      print("else if5");
       return 1.0;
     } else {
       return 0.4;
@@ -932,7 +946,7 @@ class _HealingPlanScreenState extends State<HealingPlanScreen> {
           //       ),
           //       SizedBox(height: 1.h),
           Visibility(
-            visible: !widget.viewDay1Details,
+            // visible: !widget.viewDay1Details,
             child: SizedBox(
               height: 4.h,
               child: EasyScrollToIndex(
@@ -1241,7 +1255,9 @@ class _HealingPlanScreenState extends State<HealingPlanScreen> {
         builder: (_, model, __) {
           Wakelock.enable();
           print("model.isChanged: ${model.isChanged} $isEnabled");
+
           widget.onChanged?.call(model.isChanged);
+
           if (model.isChanged) {}
           return Container(
             color: Colors.black,
@@ -1543,7 +1559,7 @@ class _HealingPlanScreenState extends State<HealingPlanScreen> {
                                     errorWidget:
                                         (ctx, _, __) {
                                       return Image.asset(
-                                        'assets/images/meal_placeholder.png',
+                                          (e.type != 'item' && e.type != 'null') ? 'assets/images/yoga_placeholder.png' : 'assets/images/meal_placeholder.png',
                                         fit: BoxFit.fill,
                                       );
                                     },
@@ -1555,7 +1571,7 @@ class _HealingPlanScreenState extends State<HealingPlanScreen> {
                                   BorderRadius.circular(
                                       15),
                                   child: Image.asset(
-                                    'assets/images/meal_placeholder.png',
+                                    (e.type != 'item' && e.type != 'null') ? 'assets/images/yoga_placeholder.png' :'assets/images/meal_placeholder.png',
                                     fit: BoxFit.fill,
                                   ),
                                 ),
@@ -1618,7 +1634,7 @@ class _HealingPlanScreenState extends State<HealingPlanScreen> {
                                   errorWidget:
                                       (ctx, _, __) {
                                     return Image.asset(
-                                      'assets/images/meal_placeholder.png',
+                                      (e.type != 'item' && e.type != 'null') ? 'assets/images/yoga_placeholder.png' :'assets/images/meal_placeholder.png',
                                       fit: BoxFit.fill,
                                     );
                                   },
@@ -1630,7 +1646,7 @@ class _HealingPlanScreenState extends State<HealingPlanScreen> {
                                 BorderRadius.circular(
                                     15),
                                 child: Image.asset(
-                                  'assets/images/meal_placeholder.png',
+                                  (e.type != 'item' && e.type != 'null') ? 'assets/images/yoga_placeholder.png' :'assets/images/meal_placeholder.png',
                                   fit: BoxFit.fill,
                                 ),
                               ),
@@ -2964,7 +2980,7 @@ class _HealingPlanScreenState extends State<HealingPlanScreen> {
 
     print("mealPlanData1: $mealPlanData1");
 
-    if (listData.last.isCompleted == 1 || _childDetoxModel!.isHealingCompleted == "1" ) {
+    if ((listData.last.isCompleted == 1 && _childDetoxModel!.isHealingCompleted == "1") || _childDetoxModel!.isHealingCompleted == "1" ) {
       print("widget.isNourishStarted: ${widget.isNourishStarted}");
       if(widget.isNourishStarted! == false){
         WidgetsBinding.instance.addPostFrameCallback((_) {

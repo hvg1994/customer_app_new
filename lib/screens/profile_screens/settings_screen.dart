@@ -49,6 +49,7 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   final SharedPreferences _pref = AppConfig().preferences!;
 
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -247,29 +248,35 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                               profileTile("assets/images/noun-chat-5153452.png",
                                   "Chat Support", () async {
-                                    final uId =
-                                    _pref!.getString(AppConfig.KALEYRA_USER_ID);
-                                    final res = await getAccessToken(uId!);
+                                    final chatSuccessId = _pref.getString(AppConfig.KALEYRA_CHAT_SUCCESS_ID);
+                                if(chatSuccessId == null || chatSuccessId == ""){
+                                  showMessageSheet();
+                                }
+                                else{
+                                  print(_pref!.getString(AppConfig.KALEYRA_USER_ID));
+                                  final uId =
+                                  _pref!.getString(AppConfig.KALEYRA_USER_ID);
+                                  final res = await getAccessToken(uId!);
 
-                                    if (res.runtimeType != ErrorModel) {
-                                      final accessToken = _pref.getString(
-                                          AppConfig.KALEYRA_ACCESS_TOKEN);
+                                  if (res.runtimeType != ErrorModel) {
+                                    final accessToken = _pref.getString(
+                                        AppConfig.KALEYRA_ACCESS_TOKEN);
 
-                                      final chatSuccessId = _pref.getString(
-                                          AppConfig.KALEYRA_CHAT_SUCCESS_ID);
-                                      // chat
-                                      openKaleyraChat(
-                                          uId, chatSuccessId!, accessToken!);
-                                    }
-                                    else {
-                                      final result = res as ErrorModel;
-                                      print(
-                                          "get Access Token error: ${result.message}");
-                                      AppConfig().showSnackbar(
-                                          context, result.message ?? '',
-                                          isError: true, bottomPadding: 70);
-                                    }
-                                    // getChatGroupId();
+
+                                    // chat
+                                    openKaleyraChat(
+                                        uId, chatSuccessId!, accessToken!);
+                                  }
+                                  else {
+                                    final result = res as ErrorModel;
+                                    print(
+                                        "get Access Token error: ${result.message}");
+                                    AppConfig().showSnackbar(
+                                        context, result.message ?? '',
+                                        isError: true, bottomPadding: 70);
+                                  }
+                                  // getChatGroupId();
+                                }
                                   }),
                             ],
                           ),
@@ -515,6 +522,74 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ],
           );
         }
+    );
+  }
+
+  chatEmptyMessageWidget(){
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Center(
+          child: Text(
+            "Message",
+            style: TextStyle(
+                fontSize: bottomSheetHeadingFontSize,
+                fontFamily: bottomSheetHeadingFontFamily,
+                height: 1.4),
+            textAlign: TextAlign.center,
+          ),
+        ),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 15),
+          child: Divider(
+            color: kLineColor,
+            thickness: 1.2,
+          ),
+        ),
+        Center(
+          child: Text(
+            'Success Team member yet to assigned.\nPlease try after sometime',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: gTextColor,
+              fontSize: bottomSheetSubHeadingXFontSize,
+              fontFamily: bottomSheetSubHeadingMediumFont,
+              height: 1.4
+            ),
+          ),
+        ),
+        SizedBox(height: 3.h),
+        Center(
+          child: GestureDetector(
+            onTap: () => Navigator.pop(context),
+            child: Container(
+              padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 12.w),
+              decoration: BoxDecoration(
+                  color: gWhiteColor,
+                  border: Border.all(color: kLineColor, width: 0.5),
+                  borderRadius: BorderRadius.circular(5)),
+              child: Text(
+                "GotIt",
+                style: TextStyle(
+                  fontFamily: kFontMedium,
+                  color: gsecondaryColor,
+                  fontSize: 11.sp,
+                ),
+              ),
+            ),
+          ),
+        ),
+        SizedBox(height: 1.h)
+      ],
+    );
+  }
+
+  void showMessageSheet() {
+    return AppConfig().showSheet(
+      context, chatEmptyMessageWidget(),
+      bottomSheetHeight: 45.h,
+      isDismissible: true,
     );
   }
 }

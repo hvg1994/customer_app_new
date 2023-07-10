@@ -1,8 +1,10 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:gwc_customer/model/combined_meal_model/combined_meal_model.dart';
 import 'package:gwc_customer/screens/combined_meal_plan/new_prep_screen.dart';
+import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 import '../../model/combined_meal_model/detox_nourish_model/child_detox_model.dart';
 import '../../model/combined_meal_model/detox_nourish_model/child_nourish_model.dart';
@@ -12,6 +14,7 @@ import '../../model/error_model.dart';
 import '../../repository/api_service.dart';
 import '../../repository/program_repository/program_repository.dart';
 import '../../services/program_service/program_service.dart';
+import '../../services/vlc_service/check_state.dart';
 import '../../widgets/constants.dart';
 import '../../widgets/widgets.dart';
 import 'package:http/http.dart' as http;
@@ -39,6 +42,8 @@ class CombinedPrepMealTransScreen extends StatefulWidget {
 }
 
 class _CombinedPrepMealTransScreenState extends State<CombinedPrepMealTransScreen> with SingleTickerProviderStateMixin {
+
+  CheckState? _chkState;
 
   final List<Tab> myTabs = <Tab>[
     const Tab(text: 'Preparatory'),
@@ -75,6 +80,7 @@ class _CombinedPrepMealTransScreenState extends State<CombinedPrepMealTransScree
     // TODO: implement didChangeDependencies
     super.didChangeDependencies();
     getProgramData();
+    _chkState = Provider.of<CheckState>(context, listen: false);
   }
 
   getProgramData() async {
@@ -146,24 +152,24 @@ class _CombinedPrepMealTransScreenState extends State<CombinedPrepMealTransScree
       }
 
 
-      print('detox.values:${model.detox!.value!.details!.entries}');
-      model.detox!.value!.details!.forEach((key, value) {
-        print("day: $key");
-        print(value.toMap());
-        value.data!.forEach((k, v1) {
-         print("$k -- $v1");
-        });
-      });
-
-      print('healing.values:${model.healing!.value!.details!.entries}');
-      model.healing!.value!.details!.forEach((key, value) {
-        print("day: $key");
-        print(value.toMap());
-        value.data!.forEach((k, v1) {
-          print("$k -- $v1");
-        });
-      });
-      print('nourish.values:${model.nourish!.value!.data}');
+      // print('detox.values:${model.detox!.value!.details!.entries}');
+      // model.detox!.value!.details!.forEach((key, value) {
+      //   print("day: $key");
+      //   print(value.toMap());
+      //   value.data!.forEach((k, v1) {
+      //    print("$k -- $v1");
+      //   });
+      // });
+      //
+      // print('healing.values:${model.healing!.value!.details!.entries}');
+      // model.healing!.value!.details!.forEach((key, value) {
+      //   print("day: $key");
+      //   print(value.toMap());
+      //   value.data!.forEach((k, v1) {
+      //     print("$k -- $v1");
+      //   });
+      // });
+      // print('nourish.values:${model.nourish!.value!.data}');
 
     }
     else {
@@ -199,6 +205,13 @@ class _CombinedPrepMealTransScreenState extends State<CombinedPrepMealTransScree
       httpClient: http.Client(),
     ),
   );
+
+  bool getIsPortrait(){
+    final _ori = MediaQuery.of(context).orientation;
+    print(_ori.name);
+    bool isPortrait = _ori == Orientation.portrait;
+    return isPortrait;
+  }
 
   @override
   void initState() {
@@ -302,6 +315,7 @@ class _CombinedPrepMealTransScreenState extends State<CombinedPrepMealTransScree
           onTap: (i){
             setState(() {
               selectedTab = i;
+              showTabs = true;
             });
           },
         ) : null,
@@ -516,58 +530,70 @@ class _CombinedPrepMealTransScreenState extends State<CombinedPrepMealTransScree
   }
 
   prepView() {
-    return NewPrepScreen(
+    return (_childPrepModel != null ) ? NewPrepScreen(
       prepPlanDetails: _childPrepModel!,
-    );
+    ) : noData();
   }
+
+
 
   detoxView() {
-    return DetoxPlanScreen(
-      showBlur: showBlur(1),
-      viewDay1Details: widget.fromStartScreen,
+    return (_childPrepModel != null ) ? DetoxPlanScreen(
+      // showBlur: showBlur(1),
+      viewDay1Details: widget.fromStartScreen || showBlur(1),
       trackerVideoLink: trackerUrl,
       isHealingStarted: isHealingStarted,
-    );
-  }
-
-  healingView() {
-    return HealingPlanScreen(
-      showBlur: showBlur(2),
-      viewDay1Details: widget.fromStartScreen,
-      trackerVideoLink: trackerUrl,
-      isNourishStarted: isNourishStarted,
       onChanged: (value){
         // if  value is false hide tabs
-          Future.delayed(Duration.zero).whenComplete(() {
-            setState(() {
-              showTabs = value;
-            });
-          });
+        showTabs = value;
 
         // if true show tabs
         print("Combined meal plan value change: $value");
       },
-    );
+    ) : noData();
+  }
+
+  healingView() {
+    return (_childHealingModel != null )
+        ? HealingPlanScreen(
+      // showBlur: showBlur(2),
+      viewDay1Details: widget.fromStartScreen || showBlur(2),
+      trackerVideoLink: trackerUrl,
+      isNourishStarted: isNourishStarted,
+      onChanged: (value){
+        // if  value is false hide tabs
+        showTabs = value;
+
+        // if true show tabs
+        print("Combined meal plan value change: $value");
+        // SchedulerBinding.instance!.addPostFrameCallback((duration) {
+        //   setState(() {});
+        // });
+      },
+    ) : noData();
   }
 
   nourishView() {
     print("widget.fromStartScreen: ${widget.fromStartScreen}");
-    return ImageFiltered(
-      imageFilter: showBlur(3)
-          ? ImageFilter.blur(sigmaX: 5, sigmaY: 5)
-          : ImageFilter.blur(sigmaX: 0, sigmaY: 0),
+    return (_childNourishModel != null ) ? ImageFiltered(
+      imageFilter:
+      // showBlur(3)
+      //     ? ImageFilter.blur(sigmaX: 5, sigmaY: 5)
+      //     :
+      ImageFilter.blur(sigmaX: 0, sigmaY: 0),
       child: IgnorePointer(
-        ignoring: showBlur(3) ? true : false,
+        ignoring: false,
+        // ignoring: showBlur(3) ? true : false,
         child: NourishPlanScreen(
           prepPlanDetails: _childNourishModel!,
           selectedDay: int.tryParse(nourishPresentDay ?? '1') ?? 1,
-          viewDay1Details: widget.fromStartScreen,
+          viewDay1Details: widget.fromStartScreen || showBlur(3),
           totalDays: totalNourish.toString(),
           trackerVideoLink: trackerUrl,
           postProgramStage: widget.postProgramStage,
         ),
       ),
-    );
+    ) : noData();
     // return NewTransDesign(
     //   childNourishModel: _childNourishModel!,
     //     totalDays: totalNourish.toString(),
@@ -575,10 +601,20 @@ class _CombinedPrepMealTransScreenState extends State<CombinedPrepMealTransScree
     // );
   }
 
+  noData() {
+    return const Center(
+      child: Image(
+        image: AssetImage("assets/images/no_data_found.png"),
+        fit: BoxFit.scaleDown,
+      ),
+    );
+  }
+
   showBlur(int index){
     print("${!isHealingCompleted}  ${widget.stage} < ${index}}");
     print(widget.stage > index);
     print("==> ${!isHealingCompleted && widget.stage < index}");
+    print("..${!isDetoxCompleted && widget.stage != index}");
     bool show;
     switch(widget.stage){
       case 0:
@@ -604,7 +640,6 @@ class _CombinedPrepMealTransScreenState extends State<CombinedPrepMealTransScree
         }
       case 3:
         return show = false;
-        break;
     }
 
   }

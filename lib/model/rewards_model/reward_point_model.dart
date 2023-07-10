@@ -51,9 +51,9 @@ class ChildRewardList {
 
   ChildRewardList.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    patientId = json['patient_id'];
-    pointId = json['point_id'];
-    points = json['points'];
+    patientId = json['patient_id'].toString();
+    pointId = json['point_id'].toString();
+    points = json['points'].toString();
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
     rewardPoints = json['reward_points'] != null
@@ -96,7 +96,7 @@ class RewardPoints {
     id = json['id'];
     name = json['name'];
     type = json['type'];
-    point = json['point'];
+    point = json['point'].toString();
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
   }

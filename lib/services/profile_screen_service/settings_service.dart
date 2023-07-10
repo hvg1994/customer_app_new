@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 
 import '../../model/profile_model/terms_condition_model.dart';
 import '../../repository/profile_repository/settings_repo.dart';
+import '../../utils/app_config.dart';
 import '../../widgets/constants.dart';
 
 class SettingsService extends ChangeNotifier{
@@ -66,7 +67,7 @@ class SettingsService extends ChangeNotifier{
     return await repository.getAccessTokenRepo(kaleyraUID);
   }
 
-  listenForCall()
+  listenForCall() async
   {
     String eventChannelName = "callNative1";
 
@@ -78,11 +79,18 @@ class SettingsService extends ChangeNotifier{
       print('called');
       var result;
       final result1 = channel1.receiveBroadcastStream('eventChannel');
-      print("eventchannel: ${result1.asBroadcastStream().listen((event) {
+      result1.asBroadcastStream().listen((event) async {
         // ("type","onNetworkStatusChanged");
         print("event==>: $event");
 
         if(event['error'] != null){
+          // if(event['error'].toString().toLowerCase().contains("the chat i not ready to be loaded")){
+          //   final _pref = AppConfig().preferences;
+          //   final uId = _pref!.getString(AppConfig.KALEYRA_USER_ID);
+          //   await getAccessToken(uId!).then((value) {
+          //
+          //   });
+          // }
           Get.snackbar(event['status'], event['error'].toString(),
             colorText: gWhiteColor,
             snackPosition: SnackPosition.BOTTOM,
@@ -96,7 +104,31 @@ class SettingsService extends ChangeNotifier{
         // if(event['type'].toString().contains(Constants.onStatusChange)){
         //   _deviceStatus = event['status'].toString().contains("false") ? false : true;
         // }
-      })}");
+      });
+      // print("eventchannel: ${result1.asBroadcastStream().listen((event) async {
+      //   // ("type","onNetworkStatusChanged");
+      //   print("event==>: $event");
+      //
+      //   if(event['error'] != null){
+      //     if(event['error'].toString().toLowerCase().contains("the chat i not ready to be loaded")){
+      //       final _pref = AppConfig().preferences;
+      //       final uId = _pref!.getString(AppConfig.KALEYRA_USER_ID);
+      //       await getAccessToken(uId!);
+      //     }
+      //     Get.snackbar(event['status'], event['error'].toString(),
+      //       colorText: gWhiteColor,
+      //       snackPosition: SnackPosition.BOTTOM,
+      //       backgroundColor: gsecondaryColor.withOpacity(0.55),
+      //     );
+      //   }
+      //
+      //   // if(event['type'].toString().contains(Constants.onNetworkChange)){
+      //   //   _deviceNetworkStatus = event['status'];
+      //   // }
+      //   // if(event['type'].toString().contains(Constants.onStatusChange)){
+      //   //   _deviceStatus = event['status'].toString().contains("false") ? false : true;
+      //   // }
+      // })}");
       print("result1: $result1");
       notifyListeners();
       return result1;

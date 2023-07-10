@@ -16,6 +16,7 @@ import 'package:flutter/material.dart' hide ModalBottomSheetRoute;
 import 'package:flutter/services.dart';
 import 'package:flutter_sim_country_code/flutter_sim_country_code.dart';
 import 'package:gwc_customer/repository/in_memory_cache.dart';
+import 'package:gwc_customer/services/home_service/drink_water_controller.dart';
 import 'package:gwc_customer/services/internet_service/dependency_injecion.dart';
 import 'package:gwc_customer/services/local_notification_service.dart';
 import 'package:gwc_customer/splash_screen.dart';
@@ -59,20 +60,17 @@ void main() async {
     //false : enable others listeners to handle it
   });
 
-  HttpOverrides.global = new MyHttpOverrides();
+  HttpOverrides.global = MyHttpOverrides();
   AppConfig().preferences = await SharedPreferences.getInstance();
   // cacheManager();
 
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: [SystemUiOverlay.bottom]);
   SystemChrome.setSystemUIOverlayStyle(
-    const SystemUiOverlayStyle(statusBarColor: Colors.black26),
+    const SystemUiOverlayStyle(statusBarColor: Colors.white10),
   );
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]);
-  await SystemChrome.setPreferredOrientations(
-    [DeviceOrientation.portraitUp],
-  );
   //***** firebase notification ******
   await Firebase.initializeApp().then((value) {
     print("firebase initialized");
@@ -163,11 +161,6 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 //   );
 // }
 
-final EnquiryStatusRepository repository = EnquiryStatusRepository(
-  apiClient: ApiClient(
-    httpClient: http.Client(),
-  ),
-);
 
 
 class MyApp extends StatefulWidget {
@@ -185,6 +178,8 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void initState() {
+
+    _pref!.setInt("started", DateTime.now().millisecondsSinceEpoch);
     // TODO: implement initState
     super.initState();
     storeLastLogin();
@@ -199,13 +194,15 @@ class _MyAppState extends State<MyApp> {
       return  MultiProvider(
         providers: [
           ChangeNotifierProvider(create: (_) => CheckState()),
-          ChangeNotifierProvider(create: (_)=> ConsultationService())
+          ChangeNotifierProvider(create: (_)=> ConsultationService()),
+          ChangeNotifierProvider(create: (_)=> DrinkWaterController())
         ],
         child: GetMaterialApp(
             supportedLocales: [
               const Locale("en"), /// THIS IS FOR COUNTRY CODE PICKER
             ],
             // localizationsDelegates: [
+
             //   CountryLocalizations.delegate, /// THIS IS FOR COUNTRY CODE PICKER
             // ],
             debugShowCheckedModeBanner: false,
@@ -232,8 +229,6 @@ class _MyAppState extends State<MyApp> {
       print(prev);
       print('difference time: ${calculateDifference(prev)}');
       if(calculateDifference(prev) == -7){
-        final inMemoryCache = InMemoryCache();
-        inMemoryCache.cache.clear();
         _pref!.setBool(AppConfig.isLogin, false);
       }
     }

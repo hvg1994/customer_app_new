@@ -1000,7 +1000,7 @@ class _CookKitTrackingState extends State<CookKitTracking> {
       title: Text(
         title,
         style: TextStyle(
-          fontFamily: "GothamMedium",
+          fontFamily: kFontMedium,
           fontSize: 11.sp,
           color: gTextColor,
         ),
@@ -1144,21 +1144,22 @@ class _CookKitTrackingState extends State<CookKitTracking> {
           text: TextSpan(
               text: 'Estimated Delivery Date: ',
               style: TextStyle(
-                  fontFamily: "GothamRoundedBold_21016",
+                  fontFamily: kFontBold,
                   color: gPrimaryColor,
                   fontSize: 12.sp),
               children: [
                 TextSpan(
                   text: estimatedDate ?? '',
                   style: TextStyle(
-                      fontFamily: "GothamBook",
+                      fontFamily: kFontBook,
                       color: gPrimaryColor,
                       fontSize: 10.5.sp),
                 )
               ]),
         ),
       );
-    } else {
+    }
+    else {
       return Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
@@ -1168,14 +1169,14 @@ class _CookKitTrackingState extends State<CookKitTracking> {
               text: TextSpan(
                   text: 'Delivered On: ',
                   style: TextStyle(
-                      fontFamily: "GothamRoundedBold_21016",
+                      fontFamily: kFontBold,
                       color: gPrimaryColor,
                       fontSize: 12.sp),
                   children: [
                     TextSpan(
                       text: estimatedDay ?? '',
                       style: TextStyle(
-                          fontFamily: "GothamMedium",
+                          fontFamily: kFontMedium,
                           color: gMainColor,
                           fontSize: 10.5.sp),
                     )
@@ -1184,7 +1185,7 @@ class _CookKitTrackingState extends State<CookKitTracking> {
             Text(
               estimatedDate,
               style: TextStyle(
-                  fontFamily: "GothamBook",
+                  fontFamily: kFontBook,
                   color: gPrimaryColor,
                   fontSize: 10.5.sp),
             )

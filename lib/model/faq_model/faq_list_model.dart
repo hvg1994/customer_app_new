@@ -56,7 +56,7 @@ class FaqList {
     faqType = json['faq_type'];
     type = json['type'];
     answer = json['answer'];
-    isArchieved = json['is_archieved'];
+    isArchieved = json['is_archieved'].toString();
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
   }

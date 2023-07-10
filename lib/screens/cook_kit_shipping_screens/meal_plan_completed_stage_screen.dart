@@ -213,8 +213,10 @@ class _NewMealPopupScreenState extends State<NewMealPopupScreen> {
               height: 55,
               width: 40,
               decoration: BoxDecoration(
-                color: gWhiteColor,
+                color: gsecondaryColor,
                 borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                    color: kNumberCircleRed.withOpacity(0.5), width: 1),
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -227,7 +229,7 @@ class _NewMealPopupScreenState extends State<NewMealPopupScreen> {
                       height: 1.5,
                       fontFamily: kFontMedium,
                       fontSize: 11.sp,
-                      color: kNumberCircleRed,
+                      color: gWhiteColor,
                     ),
                   ),
                   Text(
@@ -237,7 +239,7 @@ class _NewMealPopupScreenState extends State<NewMealPopupScreen> {
                       height: 1.5,
                       fontFamily: kFontMedium,
                       fontSize: 08.sp,
-                      color: kNumberCircleRed,
+                      color: gWhiteColor,
                     ),
                   ),
                 ],

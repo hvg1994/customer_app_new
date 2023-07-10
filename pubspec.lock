@@ -281,6 +281,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.2+1"
+  easy_stepper:
+    dependency: "direct main"
+    description:
+      name: easy_stepper
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.2"
   fake_async:
     dependency: transitive
     description:
@@ -405,6 +412,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.0"
+  flutter_image_stack:
+    dependency: "direct main"
+    description:
+      name: flutter_image_stack
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.6"
   flutter_launcher_icons:
     dependency: "direct dev"
     description:
@@ -466,6 +480,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.3"
+  flutter_share_me:
+    dependency: "direct main"
+    description:
+      name: flutter_share_me
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.11.2"
   flutter_sim_country_code:
     dependency: "direct main"
     description:
@@ -721,6 +742,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.2"
+  open_store:
+    dependency: "direct main"
+    description:
+      name: open_store
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.5.0"
   package_info_plus:
     dependency: transitive
     description:
@@ -1146,10 +1174,24 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.1"
+  syncfusion_flutter_charts:
+    dependency: "direct main"
+    description:
+      name: syncfusion_flutter_charts
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "20.3.52"
   syncfusion_flutter_core:
     dependency: transitive
     description:
       name: syncfusion_flutter_core
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "20.3.52"
+  syncfusion_flutter_datepicker:
+    dependency: "direct main"
+    description:
+      name: syncfusion_flutter_datepicker
       url: "https://pub.dartlang.org"
     source: hosted
     version: "20.3.52"

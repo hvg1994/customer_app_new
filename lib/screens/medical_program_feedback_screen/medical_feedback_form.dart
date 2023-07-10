@@ -766,7 +766,7 @@ class _MedicalFeedbackFormState extends State<MedicalFeedbackForm> {
       //     (route) => false);
     } else {
       String result = (res as ErrorModel).message ?? '';
-      AppConfig().showSnackbar(context, result, isError: true, duration: 4);
+      // AppConfig().showSnackbar(context, result, isError: true, duration: 4);
 
       Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(

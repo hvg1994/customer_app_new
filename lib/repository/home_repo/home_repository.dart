@@ -8,4 +8,8 @@ class HomeRepository{
   Future getHomeDetailsRepo() async{
     return await apiClient.getHomeDetailsApi();
   }
+
+  Future getGraphListRepo() async{
+    return await apiClient.getGraphListApi();
+  }
 }

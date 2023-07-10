@@ -21,6 +21,7 @@ import 'package:gwc_customer/utils/app_config.dart';
 import 'package:gwc_customer/widgets/constants.dart';
 import 'package:gwc_customer/widgets/widgets.dart';
 import 'package:http/http.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 import 'package:http/http.dart' as http;
@@ -813,7 +814,6 @@ class _TrackerUIState extends State<TrackerUI> {
     buildQuestion7(),
   ];
 
-  List<PlatformFile> medicalRecords = [];
   List<File> fileFormatList = [];
   List<MultipartFile> newList = <MultipartFile>[];
 
@@ -1830,7 +1830,7 @@ class _TrackerUIState extends State<TrackerUI> {
         ? await ProgramService(repository: repository)
         .proceedDayMealDetailsService(model, newList, "healing")
         : await PrepratoryMealService(repository: prepRepository)
-        .proceedDayMealDetailsService(model);
+        .proceedDayMealDetailsService(model, newList);
 
     print("result: $result");
 
@@ -2314,25 +2314,10 @@ class _TrackerUIState extends State<TrackerUI> {
             ),
             SizedBox(height: 3.h),
             Visibility(
-              visible: medicalRecords.isEmpty,
+              visible: fileFormatList.isEmpty,
               child: GestureDetector(
                 onTap: () async {
-                  final result = await FilePicker.platform
-                      .pickFiles(withReadStream: true, allowMultiple: false);
-
-                  if (result == null) return;
-                  if (result.files.first.extension!.contains("png") ||
-                      result.files.first.extension!.contains("jpg") ||
-                      result.files.first.extension!.contains("jpeg")) {
-                    medicalRecords.add(result.files.first);
-                    addFilesToList(File(result.paths.first!));
-                  } else {
-                    AppConfig().showSnackbar(
-                        context, "Please select png/jpg/jpeg files",
-                        isError: true);
-                  }
-
-                  setState(() {});
+                  showChooserSheet(setState);
                 },
                 child: Container(
                   decoration: BoxDecoration(
@@ -2365,18 +2350,18 @@ class _TrackerUIState extends State<TrackerUI> {
                 ),
               ),
             ),
-            (medicalRecords.isEmpty)
+            (fileFormatList.isEmpty)
                 ? SizedBox()
                 : Center(
               child: SizedBox(
                 height: 27.h,
                 child: ListView.builder(
-                  itemCount: medicalRecords.length,
+                  itemCount: fileFormatList.length,
                   shrinkWrap: true,
                   scrollDirection: Axis.vertical,
                   itemBuilder: (context, index) {
-                    final file = medicalRecords[index];
-                    return buildFile(file, index);
+                    final file = fileFormatList[index];
+                    return buildFile(file, index, setState);
                   },
                 ),
               ),
@@ -2395,7 +2380,7 @@ class _TrackerUIState extends State<TrackerUI> {
                         borderRadius:
                         BorderRadius.circular(eUser().buttonBorderRadius)),
                   ),
-                  onPressed: () {
+                  onPressed: showProgress ? null: () {
                     proceed(setState);
                   },
                   child: showProgress
@@ -2419,10 +2404,141 @@ class _TrackerUIState extends State<TrackerUI> {
     });
   }
 
-  addFilesToList(File file) async {
+  showChooserSheet(Function setstate) {
+    return showModalBottomSheet(
+        backgroundColor: Colors.transparent,
+        context: context,
+        enableDrag: false,
+        builder: (ctx) {
+          return Wrap(
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                      topRight: Radius.circular(20),
+                      topLeft: Radius.circular(20)),
+                ),
+                child: Column(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 2, vertical: 4),
+                      child: Text('Choose File Source'),
+                      decoration: BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: gHintTextColor,
+                              width: 3.0,
+                            ),
+                          )),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        TextButton(
+                            onPressed: () {
+                              getImageFromCamera(setstate);
+                              Navigator.pop(context);
+                            },
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.camera_enhance_outlined,
+                                  color: gMainColor,
+                                ),
+                                Text('Camera'),
+                              ],
+                            )),
+                        Container(
+                          width: 5,
+                          height: 10,
+                          decoration: BoxDecoration(
+                              border: Border(
+                                right: BorderSide(
+                                  color: gHintTextColor,
+                                  width: 1,
+                                ),
+                              )),
+                        ),
+                        TextButton(
+                            onPressed: () {
+                              pickFromFile(setstate);
+                              Navigator.pop(context);
+                            },
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.insert_drive_file,
+                                  color: gMainColor,
+                                ),
+                                Text('File'),
+                              ],
+                            ))
+                      ],
+                    ),
+                  ],
+                ),
+              )
+            ],
+          );
+        });
+  }
+
+  void pickFromFile(Function setstate) async {
+    final result = await FilePicker.platform
+        .pickFiles(withReadStream: true, allowMultiple: false);
+
+    if (result == null) return;
+    if (result.files.first.extension!.toString().toLowerCase().contains("png") ||
+        result.files.first.extension!.toString().toLowerCase().contains("jpg") ||
+        result.files.first.extension!.toString().toLowerCase().contains("jpeg")) {
+      addFilesToList(File(result.paths.first!), setstate);
+    } else {
+      AppConfig().showSnackbar(
+          context, "Please select png/jpg/jpeg files",
+          isError: true);
+    }
+
+    setState(() {});
+  }
+
+  File? _image;
+
+  getFileSize(File file) {
+    var size = file.lengthSync();
+    num mb = num.parse((size / (1024 * 1024)).toStringAsFixed(2));
+    return mb;
+  }
+
+  Future getImageFromCamera(Function setstate) async {
+    var image = await ImagePicker.platform
+        .pickImage(source: ImageSource.camera,
+        imageQuality: 40
+    );
+
+    setstate(() {
+      _image = File(image!.path);
+      if (getFileSize(_image!) <= 12) {
+        print("filesize: ${getFileSize(_image!)}Mb");
+        addFilesToList(_image!, setstate);
+      }
+      else {
+        print("filesize: ${getFileSize(_image!)}Mb");
+
+        AppConfig()
+            .showSnackbar(context, "File size must be <12Mb", isError: true);
+      }
+    });
+    print("captured image: ${_image} ${_image!.path}");
+  }
+
+
+  addFilesToList(File file, Function setstate) async {
     print("file: ${file}");
     newList.clear();
-    setState(() {
+    setstate(() {
       fileFormatList.add(file);
     });
 
@@ -2437,15 +2553,15 @@ class _TrackerUIState extends State<TrackerUI> {
       print("newList : $newList");
     }
 
-    setState(() {});
+    setstate(() {});
   }
 
-  Widget buildFile(PlatformFile file, int index) {
-    final kb = file.size / 1024;
-    final mb = kb / 1024;
-    final size = (mb >= 1)
-        ? '${mb.toStringAsFixed(2)} MB'
-        : '${kb.toStringAsFixed(2)} KB';
+  Widget buildFile(File file, int index, Function setstate) {
+    // final kb = file.size / 1024;
+    // final mb = kb / 1024;
+    // final size = (mb >= 1)
+    //     ? '${mb.toStringAsFixed(2)} MB'
+    //     : '${kb.toStringAsFixed(2)} KB';
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 1.5.h),
       child: Row(
@@ -2457,8 +2573,8 @@ class _TrackerUIState extends State<TrackerUI> {
           ),
           GestureDetector(
               onTap: () {
-                medicalRecords.removeAt(index);
-                setState(() {});
+                fileFormatList.removeAt(index);
+                setstate(() {});
               },
               child: const Icon(
                 Icons.delete_outline_outlined,

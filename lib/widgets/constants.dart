@@ -93,10 +93,6 @@ String bottomSheetSubHeadingBoldFont = kFontBold;
 String bottomSheetSubHeadingMediumFont = kFontMedium;
 String bottomSheetSubHeadingBookFont = kFontBook;
 
-
-
-
-
 const bsHeadPinIcon = "assets/images/bs-head-pin.png";
 const bsHeadBellIcon = "assets/images/bs-head-bell.png";
 const bsHeadBulbIcon = "assets/images/bs-head-bulb.png";

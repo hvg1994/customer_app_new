@@ -6,6 +6,8 @@ class UserProfileModel {
   String? key;
   ChildUserModel? data;
   String? associatedSuccessMemberKaleyraId;
+  String? height;
+  String? weight;
 
   UserProfileModel({this.status, this.errorCode, this.key, this.data,
     this.associatedSuccessMemberKaleyraId
@@ -17,6 +19,8 @@ class UserProfileModel {
     key = json['key'];
     data = json['data'] != null ? ChildUserModel.fromJson(json['data']) : null;
     associatedSuccessMemberKaleyraId = json['associated_success_member'].toString();
+    height = json['height'];
+    weight = json['weight'];
   }
 
   Map<String, dynamic> toJson() {
@@ -27,6 +31,8 @@ class UserProfileModel {
     if (this.data != null) {
       data['data'] = this.data!.toJson();
     }
+    data['height'] = this.height;
+    data['weight'] = this.weight;
     data['associated_success_member'] = this.associatedSuccessMemberKaleyraId;
     return data;
   }

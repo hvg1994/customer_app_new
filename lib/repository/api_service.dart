@@ -51,6 +51,7 @@ import '../model/dashboard_model/shipping_approved/ship_approved_model.dart';
 import '../model/error_model.dart';
 import '../model/evaluation_from_models/get_country_details_model.dart';
 import '../model/faq_model/faq_list_model.dart';
+import '../model/home_model/graph_list_model.dart';
 import '../model/medical_feedback_answer_model.dart';
 import '../model/new_user_model/choose_your_problem/choose_your_problem_model.dart';
 import '../model/new_user_model/choose_your_problem/submit_problem_response.dart';
@@ -2364,9 +2365,10 @@ class ApiClient {
     return result;
   }
 
-  Future proceedTransitionDayProgramList(ProceedProgramDayModel model) async {
+  Future proceedTransitionDayProgramList(ProceedProgramDayModel model, List<MultipartFile> files) async {
     var url = submitTransMealTrackingUrl;
 
+    //tracking_attachment
     dynamic result;
 
     print("proceedTransitionDayProgramList path: $url");
@@ -2374,19 +2376,26 @@ class ApiClient {
     print(Map.from(model.toJson()));
     Map<String, String> m = Map.unmodifiable(model.toJson());
 
-    // print(
-    //     "model: ${json.encode(model.toJson()) == jsonEncode(model.toJson())}");
-
     try {
-      final response = await httpClient.post(
-        Uri.parse(url),
-        headers: {
-          // "Content-Type": "application/json",
-          "Authorization": getHeaderToken(),
-        },
-        body: m,
-        // body: staticData
-      );
+      var request = http.MultipartRequest('POST', Uri.parse(url));
+
+      var headers = {
+        // "Authorization": "Bearer ${AppConfig().bearerToken}",
+        "Authorization": getHeaderToken(),
+      };
+
+      request.files.addAll(files);
+      request.fields.addAll(m);
+
+      // reportList.forEach((element) async {
+      //   request.files.add(await http.MultipartFile.fromPath('files[]', element));
+      // });
+      request.headers.addAll(headers);
+
+
+      var response = await http.Response.fromStream(await request.send())
+          .timeout(Duration(seconds: 50));
+
 
       print('proceedTransitionDayProgramList Response status: ${response.statusCode}');
       print('proceedTransitionDayProgramList Response body: ${response.body}');
@@ -2824,10 +2833,10 @@ class ApiClient {
     dynamic result;
     print(inMemoryStorage.cache.containsKey(path));
 
-    if(inMemoryStorage.cache.containsKey(path)){
-      print("from cache");
-      return result = MedicalFeedbackModel.fromJson(inMemoryStorage.get(path));
-    }
+    // if(inMemoryStorage.cache.containsKey(path)){
+    //   print("from cache");
+    //   return result = MedicalFeedbackModel.fromJson(inMemoryStorage.get(path));
+    // }
 
     var headers = {
       // "Authorization": "Bearer ${AppConfig().bearerToken}",
@@ -2851,9 +2860,9 @@ class ApiClient {
 
       if (response.statusCode == 200) {
         if (json['status'].toString() != '200') {
-          result = ErrorModel.fromJson(json);
+          result = ErrorModel(status: "0", message: AppConfig.oopsMessage);
         } else {
-          inMemoryStorage.set(path, json);
+          // inMemoryStorage.set(path, json);
           result = MedicalFeedbackModel.fromJson(json);
         }
       }
@@ -2861,10 +2870,10 @@ class ApiClient {
         result = ErrorModel(status: "0", message: AppConfig.oopsMessage);
       }else {
         result = ErrorModel(
-            status: response.statusCode.toString(), message: response.body);
+            status: response.statusCode.toString(), message: AppConfig.oopsMessage);
       }
     } catch (e) {
-      result = ErrorModel(status: "0", message: e.toString());
+      result = ErrorModel(status: "0", message: AppConfig.oopsMessage);
     }
     return result;
   }
@@ -2916,6 +2925,47 @@ class ApiClient {
     }
     return result;
   }
+
+  getGraphListApi() async{
+    String url = getGraphUrl;
+    print(url);
+
+    dynamic result;
+    try{
+      final response = await httpClient.get(Uri.parse(url),
+        headers: {
+          "Authorization": getHeaderToken(),
+        },
+      ).timeout(Duration(seconds: 45));
+
+      print('getGraphListApi Url: $url');
+      print('getGraphListApi Response status: ${response.statusCode}');
+      print('getGraphListApi Response body: ${response.body}');
+
+      if(response.statusCode == 200){
+        final json = jsonDecode(response.body);
+
+        if(json['status'].toString() == '200'){
+          result = GraphListModel.fromJson(jsonDecode(response.body));
+        }
+        else{
+          result = ErrorModel.fromJson(json);
+        }
+      }
+      else if(response.statusCode == 500) {
+        result = ErrorModel(status: "0", message: AppConfig.oopsMessage);
+      }
+      else{
+        result = ErrorModel(status: response.statusCode.toString(), message: response.body);
+      }
+    }
+    catch (e) {
+      print(e);
+      result = ErrorModel(status: "", message: e.toString());
+    }
+    return result;
+  }
+
 
 
 

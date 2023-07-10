@@ -116,6 +116,9 @@ class _NourishPlanScreenState extends State<NourishPlanScreen>
 
     if (!widget.viewDay1Details) {
       if(!isPostProgramStarted){
+        // this is previousDayStatus change from cron
+        // if (previousDayStatus == "0") {
+        // this is when we change from db
         if (previousDayStatus == "0") {
           Future.delayed(Duration(seconds: 0)).then((value) {
             if (!symptomTrackerSheet) {

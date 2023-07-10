@@ -137,6 +137,8 @@ var getMedicalFeedbackDataUrl = "${AppConfig().BASE_URL}/api/getData/medical_fee
 // Neutri Delight
 var getCombinedMealUrl = "${AppConfig().BASE_URL}/api/getData/NutriDelight";
 
+/// home screen meal progress graph api
+var getGraphUrl ="${AppConfig().BASE_URL}/api/listData/progress";
 
 
 

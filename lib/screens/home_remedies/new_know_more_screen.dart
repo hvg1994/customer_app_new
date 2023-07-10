@@ -235,9 +235,7 @@ class _NewKnowMoreScreenState extends State<NewKnowMoreScreen> {
       // addUrlToVideoPlayer(a);
     }
     print("KnowMore : ${widget.knowMore}");
-    return Expanded(
-      child: buildZoomImage(widget.knowMore),
-    );
+    return buildZoomImage(widget.knowMore);
   }
 
   buildHealAtHomeDetails() {
@@ -247,9 +245,7 @@ class _NewKnowMoreScreenState extends State<NewKnowMoreScreen> {
     if (format == "mp4") {
       addUrlToVideoPlayerChewie(a);
     }
-    return Expanded(
-      child: buildZoomImage(widget.healAtHome),
-    );
+    return buildZoomImage(widget.healAtHome);
   }
 
   buildHealAnywhereDetails() {
@@ -259,9 +255,7 @@ class _NewKnowMoreScreenState extends State<NewKnowMoreScreen> {
     if (format == "mp4") {
       addUrlToVideoPlayerChewie(a);
     }
-    return  Expanded(
-      child: buildZoomImage(widget.healAnywhere),
-    );
+    return  buildZoomImage(widget.healAnywhere);
   }
 
   buildWhenToReachUsDetails() {
@@ -271,9 +265,7 @@ class _NewKnowMoreScreenState extends State<NewKnowMoreScreen> {
     if (format == "mp4") {
       addUrlToVideoPlayerChewie(a);
     }
-    return  Expanded(
-      child: buildZoomImage(widget.whenToReachUs),
-    );
+    return  buildZoomImage(widget.whenToReachUs);
   }
 
   buildZoomImage(String knowMore) {
@@ -286,7 +278,8 @@ class _NewKnowMoreScreenState extends State<NewKnowMoreScreen> {
           child: buildTestimonial(),
         ),
       );
-    } else {
+    }
+    else {
       return Padding(
         padding: EdgeInsets.only(bottom: 5.h,top: 1.h),
         child: InteractiveViewer(

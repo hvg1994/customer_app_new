@@ -9,4 +9,8 @@ class HomeService extends ChangeNotifier{
   Future getHomeDetailsService() async{
     return await repository.getHomeDetailsRepo();
   }
+
+  Future getGraphService() async{
+    return await repository.getGraphListRepo();
+  }
 }

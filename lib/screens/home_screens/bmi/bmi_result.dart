@@ -6,8 +6,14 @@ import 'package:syncfusion_flutter_gauges/gauges.dart';
 import '../../../widgets/constants.dart';
 
 class ResultPage extends StatelessWidget {
-  ResultPage({required this.result, required this.bmi, required this.comment});
-  String result, bmi, comment;
+  ResultPage({
+    Key? key,
+    required this.result,
+    required this.bmi,
+    required this.comment,
+    required this.bmr,
+  }) : super(key: key);
+  String result, bmi, comment, bmr;
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +31,30 @@ class ResultPage extends StatelessWidget {
             ),
           ),
           buildIndicator(),
-
+          SizedBox(height: 1.h),
+          RichText(
+            textAlign: TextAlign.center,
+            text: TextSpan(
+              children: <TextSpan>[
+                TextSpan(
+                  text: "Your BMR is: ",
+                  style: TextStyle(
+                    color: eUser().mainHeadingColor,
+                    fontFamily: eUser().userTextFieldFont,
+                    fontSize: eUser().userFieldLabelFontSize,
+                  ),
+                ),
+                TextSpan(
+                  text: bmr,
+                  style: TextStyle(
+                    color: eUser().mainHeadingColor,
+                    fontFamily: eUser().mainHeadingFont,
+                    fontSize: eUser().mainHeadingFontSize,
+                  ),
+                ),
+              ],
+            ),
+          ),
           // RichText(
           //   textAlign: TextAlign.center,
           //   text: TextSpan(
@@ -59,7 +88,7 @@ class ResultPage extends StatelessWidget {
           //   ),
           // ),
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 1.h),
+            padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 2.h),
             child: Text(
               "A BMI of 18.5-24.9 indicates that you are at a healthy weight for your height. By maintaining a healthy weight, you lower your risk of developing serious health problems.",
               textAlign: TextAlign.center,
@@ -106,8 +135,8 @@ class ResultPage extends StatelessWidget {
           ],
         ),
         child: SfRadialGauge(
-            // backgroundColor: gWhiteColor,
-          enableLoadingAnimation: true,
+          // backgroundColor: gWhiteColor,
+            enableLoadingAnimation: true,
             axes: <RadialAxis>[
               RadialAxis(
                   minimum: 10.0,
@@ -141,7 +170,7 @@ class ResultPage extends StatelessWidget {
                                 style: TextStyle(
                                   color: eUser().mainHeadingColor,
                                   fontFamily: eUser().mainHeadingFont,
-                                  fontSize: eUser().mainHeadingFontSize,
+                                  fontSize: eUser().buttonTextSize,
                                 ),
                               ),
                               TextSpan(
@@ -149,7 +178,7 @@ class ResultPage extends StatelessWidget {
                                 style: TextStyle(
                                   color: eUser().userTextFieldColor,
                                   fontFamily: eUser().userTextFieldFont,
-                                  fontSize: eUser().userFieldLabelFontSize,
+                                  fontSize: eUser().userTextFieldHintFontSize,
                                 ),
                               ),
                               TextSpan(
@@ -157,7 +186,7 @@ class ResultPage extends StatelessWidget {
                                 style: TextStyle(
                                   color: eUser().userTextFieldColor,
                                   fontFamily: eUser().userTextFieldHintFont,
-                                  fontSize: eUser().userFieldLabelFontSize,
+                                  fontSize: eUser().fieldSuffixTextFontSize,
                                 ),
                               )
                             ],

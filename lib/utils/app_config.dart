@@ -14,6 +14,16 @@ class AppConfig{
   factory AppConfig() => instance ??= AppConfig._();
   AppConfig._();
 
+  /// need to change this each time when we send the aab
+  static const double androidVersion = 21.0;
+
+  static const androidBundleId = "com.fembuddy.gwc_customer";
+
+  static const String androidAppURL = "https://play.google.com/store/apps/details?id=com.fembuddy.gwc_customer";
+  static const String iosAppURL = "https://play.google.com/store/apps/details?id=com.fembuddy.gwc_customer";
+
+  static const String updateAppContent = "New Version Available Please Update";
+
   // final String BASE_URL = "https://gwc.disol.in";
 
   final String BASE_URL = "https://gutandhealth.com";
@@ -70,6 +80,10 @@ class AppConfig{
   static const String USER_ID = "userId";
   static const String User_Profile ="userProfile";
   static const String User_Number = "userNumber";
+  static const String User_age = "userAge";
+  static const String User_gender = "userGender";
+  static const String User_height = "userHeight";
+  static const String User_weight = "userWeight";
   /// this is for making direct voice call to success team
   static const String KALEYRA_SUCCESS_ID = "kaleyra_success_id";
   static const String KALEYRA_ACCESS_TOKEN = "kaleyra_access_token";

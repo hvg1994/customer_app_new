@@ -49,6 +49,7 @@ class DetoxPlanScreen extends StatefulWidget {
   final bool viewDay1Details;
   final bool showBlur;
   final bool isHealingStarted;
+  final ValueSetter<bool>? onChanged;
   DetoxPlanScreen(
       {Key? key,
         this.transStage,
@@ -56,7 +57,9 @@ class DetoxPlanScreen extends StatefulWidget {
         this.trackerVideoLink,
         this.viewDay1Details = false,
         this.showBlur = false,
-        this.isHealingStarted = false
+        this.isHealingStarted = false,
+        this.onChanged
+
       })
       : super(key: key);
 
@@ -603,7 +606,15 @@ class _DetoxPlanScreenState extends State<DetoxPlanScreen> {
 
   dayItems(int index) {
     return GestureDetector(
-      onTap: checkOnTapCondition(index, listData)
+      onTap: (widget.viewDay1Details)
+          ? (){
+        setState(() {
+          showShimmer = true;
+          selectedDay = int.parse(listData[index].dayNumber!);
+        });
+        getMealFromDay(selectedDay!);
+      }
+          : checkOnTapCondition(index, listData)
           ? () {
         setState(() {
           showShimmer = true;
@@ -631,7 +642,7 @@ class _DetoxPlanScreenState extends State<DetoxPlanScreen> {
         print("disable");
       },
       child: Opacity(
-        opacity: getOpacity(index, listData),
+        opacity: (widget.viewDay1Details) ? 1.0 : getOpacity(index, listData),
         child: Container(
           // height: 5.h,
             decoration: BoxDecoration(
@@ -758,7 +769,7 @@ class _DetoxPlanScreenState extends State<DetoxPlanScreen> {
     } else if (listData[listData.length - 2].isCompleted == 1 &&
         index == listData.length - 1) {
       return true;
-    } else if (int.parse(listData[index].dayNumber!) == nextDay) {
+    } else if (int.parse(listData[index].dayNumber!) == nextDay|| int.parse(listData[index].dayNumber!) == presentDay) {
       return true;
     } else if (int.parse(listData[index].dayNumber!) < presentDay! &&
         listData[index].isCompleted == 0) {
@@ -780,7 +791,7 @@ class _DetoxPlanScreenState extends State<DetoxPlanScreen> {
     } else if (listData[listData.length - 2].isCompleted == 1 &&
         index == listData.length - 1) {
       return 1.0;
-    } else if (int.parse(listData[index].dayNumber!) == nextDay) {
+    } else if (int.parse(listData[index].dayNumber!) == nextDay || int.parse(listData[index].dayNumber!) == presentDay) {
       return 1.0;
     } else if (int.parse(listData[index].dayNumber!) < presentDay! &&
         listData[index].isCompleted == 0) {
@@ -942,7 +953,7 @@ class _DetoxPlanScreenState extends State<DetoxPlanScreen> {
           //       ),
           //       SizedBox(height: 1.h),
                 Visibility(
-                  visible: !widget.viewDay1Details,
+                  // visible: !widget.viewDay1Details,
                   child: SizedBox(
                     height: 4.h,
                     child: EasyScrollToIndex(
@@ -1005,8 +1016,8 @@ class _DetoxPlanScreenState extends State<DetoxPlanScreen> {
             Text(
               // "Day ${widget.day} Meal Plan",
               (selectedDay == null)
-                  ? "Day Meal & Yoga Plan"
-                  : "Day ${selectedDay} Meal & Yoga Plan",
+                  ? "Day Detox Plan"
+                  : "Day ${selectedDay} Detox Plan",
               style: TextStyle(
                   fontFamily: eUser().mainHeadingFont,
                   color: eUser().mainHeadingColor,
@@ -1248,6 +1259,9 @@ class _DetoxPlanScreenState extends State<DetoxPlanScreen> {
         builder: (_, model, __) {
           Wakelock.enable();
           print("model.isChanged: ${model.isChanged} $isEnabled");
+
+          widget.onChanged?.call(model.isChanged);
+
           if (model.isChanged) {}
           return Container(
             color: Colors.black,
@@ -1295,6 +1309,7 @@ class _DetoxPlanScreenState extends State<DetoxPlanScreen> {
       pipEnabled: isEnabled,
       pipExpandedHeight: double.infinity,
       onClosed: () async {
+        widget.onChanged?.call(true);
         // await _controller.stop();
         // await _controller.dispose();
         setState(() {
@@ -1550,7 +1565,7 @@ class _DetoxPlanScreenState extends State<DetoxPlanScreen> {
                                     errorWidget:
                                         (ctx, _, __) {
                                       return Image.asset(
-                                        'assets/images/meal_placeholder.png',
+                                        (e.type != 'item' && e.type != 'null') ? 'assets/images/yoga_placeholder.png' :'assets/images/meal_placeholder.png',
                                         fit: BoxFit.fill,
                                       );
                                     },
@@ -1562,7 +1577,7 @@ class _DetoxPlanScreenState extends State<DetoxPlanScreen> {
                                   BorderRadius.circular(
                                       15),
                                   child: Image.asset(
-                                    'assets/images/meal_placeholder.png',
+                                    (e.type != 'item' && e.type != 'null') ? 'assets/images/yoga_placeholder.png' :'assets/images/meal_placeholder.png',
                                     fit: BoxFit.fill,
                                   ),
                                 ),
@@ -1625,7 +1640,7 @@ class _DetoxPlanScreenState extends State<DetoxPlanScreen> {
                                   errorWidget:
                                       (ctx, _, __) {
                                     return Image.asset(
-                                      'assets/images/meal_placeholder.png',
+                                      (e.type != 'item' && e.type != 'null') ? 'assets/images/yoga_placeholder.png' :'assets/images/meal_placeholder.png',
                                       fit: BoxFit.fill,
                                     );
                                   },
@@ -1637,7 +1652,7 @@ class _DetoxPlanScreenState extends State<DetoxPlanScreen> {
                                 BorderRadius.circular(
                                     15),
                                 child: Image.asset(
-                                  'assets/images/meal_placeholder.png',
+                                  (e.type != 'item' && e.type != 'null') ? 'assets/images/yoga_placeholder.png' :'assets/images/meal_placeholder.png',
                                   fit: BoxFit.fill,
                                 ),
                               ),
@@ -2978,7 +2993,7 @@ class _DetoxPlanScreenState extends State<DetoxPlanScreen> {
 
     print("mealPlanData1: $mealPlanData1");
 
-    if (listData.last.isCompleted == 1 || _childDetoxModel!.isDetoxCompleted == "1") {
+    if ((listData.last.isCompleted == 1 && _childDetoxModel!.isDetoxCompleted == "1") || _childDetoxModel!.isDetoxCompleted == "1") {
       print("widget.isHealingStarted: ${widget!.isHealingStarted}");
       if(widget!.isHealingStarted! == false){
         WidgetsBinding.instance.addPostFrameCallback((_) {

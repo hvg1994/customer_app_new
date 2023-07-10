@@ -14,7 +14,8 @@ import '../../widgets/widgets.dart';
 
 class VideoPlayerMeedu extends StatefulWidget {
   final String videoUrl;
-  const VideoPlayerMeedu({Key? key, required this.videoUrl}) : super(key: key);
+  final bool isFullScreen;
+  const VideoPlayerMeedu({Key? key, required this.videoUrl, this.isFullScreen = false}) : super(key: key);
 
   @override
   State<VideoPlayerMeedu> createState() => _VideoPlayerMeeduState();
@@ -104,21 +105,25 @@ class _VideoPlayerMeeduState extends State<VideoPlayerMeedu> {
         autoInitialize: true,
         showOptions: false,
         autoPlay: true,
-        fullScreenByDefault: true,
+        fullScreenByDefault: false,
         hideControlsTimer: Duration(seconds: 3),
-        showControls: true);
+        showControls: true,
+      allowFullScreen: false
+    );
 
-    final _ori = MediaQuery.of(context).orientation;
-    print(_ori.name);
-    bool isPortrait = _ori == Orientation.portrait;
-    if (isPortrait) {
-      SystemChrome.setPreferredOrientations(
-          [DeviceOrientation.landscapeRight, DeviceOrientation.landscapeLeft]);
-
-      // AutoOrientation.landscapeAutoMode();
+    isPortrait = !widget.isFullScreen;
+    if(!isPortrait){
+      setLandscape();
     }
 
     setState(() {});
+  }
+
+  bool getIsPortrait(){
+    final _ori = MediaQuery.of(context).orientation;
+    print(_ori.name);
+    bool isPortrait = _ori == Orientation.portrait;
+    return isPortrait;
   }
 
   wake() async {
@@ -126,6 +131,22 @@ class _VideoPlayerMeeduState extends State<VideoPlayerMeedu> {
       Wakelock.enable();
     }
   }
+
+  bool isPortrait = false;
+
+  Widget _landscapeView() {
+    return OrientationBuilder(
+        builder: (_, orientation){
+          if(orientation == Orientation.portrait){
+            return VideoWidget();
+          }
+          else{
+            return VideoWidget();
+          }
+        }
+    );
+  }
+
 
   @override
   void dispose() async {
@@ -139,80 +160,88 @@ class _VideoPlayerMeeduState extends State<VideoPlayerMeedu> {
     super.dispose();
   }
 
-  // _init() {
-  //   _meeduPlayerController.setDataSource(
-  //     DataSource(
-  //       type: DataSourceType.network,
-  //       source: widget.videoUrl,
-  //     ),
-  //     autoplay: true,
-  //   );
-  // }
+  setPortrait(){
+      SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  }
+  setLandscape(){
+    SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeRight, DeviceOrientation.landscapeLeft]);
+  }
+
+  bool showAppBar = false;
+
+  toggleAppbar(){
+    print(showAppBar);
+   setState(() {
+     if(!isPortrait){
+       if(!showAppBar){
+         print("called: $showAppBar");
+         showAppBar = true;
+         print("called after: $showAppBar");
+
+         Future.delayed(Duration(seconds: 5)).then((v) {
+           print(v);
+           setState(() {
+             showAppBar = false;
+           });
+           print("after 100ms showAppBar changed: $showAppBar");
+         });
+       }
+     }
+     else{
+       showAppBar = true;
+     }
+   });
+
+  }
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-        child: Scaffold(
-          appBar: AppBar(
-            backgroundColor: gWhiteColor,
-            centerTitle: false,
-            automaticallyImplyLeading: false,
-            elevation: 0,
-            title: Row(
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                  child: Icon(
-                    Icons.arrow_back_ios_new_sharp,
-                    color: gsecondaryColor,
-                    size: 2.h,
-                  ),
-                ),
-                SizedBox(width: 2.w),
-                SizedBox(
-                  height: 5.h,
-                  child: const Image(
-                    image: AssetImage("assets/images/Gut welness logo.png"),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          body: SafeArea(
-            child: LayoutBuilder(
-              builder: (_, constraints) {
-                print("_chewieController: $_chewieController");
-                return Container(
-                  color: Colors.black,
-                  height: constraints.maxHeight,
-                  width: constraints.maxWidth,
-                  child: Center(
-                    child: AspectRatio(
-                      aspectRatio: constraints.maxWidth / constraints.maxHeight,
-                      child: (_chewieController == null)
-                          ? Center(
-                        child: buildCircularIndicator(),
-                      )
-                          : Chewie(
-                        controller: _chewieController!,
-                      ),
-                      // child: VlcPlayerWithControls(
-                      //   key: _key,
-                      //   controller: _controller!,
-                      //   virtualDisplay: true,
-                      //   showVolume: false,
-                      //   showVideoProgress: true,
-                      //   seekButtonIconSize: 10.sp,
-                      //   playButtonIconSize: 14.sp,
-                      //   replayButtonSize: 14.sp,
-                      //   showFullscreenBtn: true,
-                      // )
+        child: GestureDetector(
+          onPanDown: (value){
+            print("ontappp");
+            print(showAppBar);
+            if(!showAppBar){
+              toggleAppbar();
+            }
+          },
+          child: Scaffold(
+            appBar: (showAppBar) ? AppBar(
+              backgroundColor: Colors.transparent,
+              centerTitle: false,
+              automaticallyImplyLeading: false,
+              elevation: 0,
+              title: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      if(!getIsPortrait()){
+                        setPortrait();
+                      }
+                      else{
+                        Navigator.pop(context);
+                      }
+                    },
+                    child: Icon(
+                      Icons.arrow_back_ios_new_sharp,
+                      color: gsecondaryColor,
+                      size: 2.h,
                     ),
                   ),
-                );
-              },
+                  SizedBox(width: 2.w),
+                  SizedBox(
+                    height: 5.h,
+                    child: const Image(
+                      image: AssetImage("assets/images/Gut welness logo.png"),
+                    ),
+                  ),
+                ],
+              ),
+            ) : null,
+            body: SafeArea(
+              child: _landscapeView()
+              // child: VideoWidget(),
             ),
           ),
         ),
@@ -228,5 +257,41 @@ class _VideoPlayerMeeduState extends State<VideoPlayerMeedu> {
           print("isPortrait: $isPortrait");
           return (isPortrait) ? Future.value(true) : Future.value(false);
         });
+  }
+
+  VideoWidget() {
+    return LayoutBuilder(
+      builder: (_, constraints) {
+        print("_chewieController: $_chewieController");
+        return Container(
+          color: Colors.black,
+          height: constraints.maxHeight,
+          width: constraints.maxWidth,
+          child: Center(
+            child: AspectRatio(
+              aspectRatio: constraints.maxWidth / constraints.maxHeight,
+              child: (_chewieController == null)
+                  ? Center(
+                child: buildCircularIndicator(),
+              )
+                  : Chewie(
+                controller: _chewieController!,
+              ),
+              // child: VlcPlayerWithControls(
+              //   key: _key,
+              //   controller: _controller!,
+              //   virtualDisplay: true,
+              //   showVolume: false,
+              //   showVideoProgress: true,
+              //   seekButtonIconSize: 10.sp,
+              //   playButtonIconSize: 14.sp,
+              //   replayButtonSize: 14.sp,
+              //   showFullscreenBtn: true,
+              // )
+            ),
+          ),
+        );
+      },
+    );
   }
 }

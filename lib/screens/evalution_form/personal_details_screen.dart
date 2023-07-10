@@ -65,6 +65,8 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
   final addresskey = GlobalKey<FormState>();
   final pincodeKey = GlobalKey<FormState>();
 
+  final _healthkey1 = GlobalKey<FormState>();
+
   final cityKey = GlobalKey<FormState>();
   final stateKey = GlobalKey<FormState>();
   final countryKey = GlobalKey<FormState>();
@@ -1163,7 +1165,10 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                     if (value!.isEmpty &&
                         selectedHealthCheckBox1
                             .any((element) => element.contains("Other:"))) {
-                      AppConfig().showSnackbar(context, "Please Mention Other Details with minimum 2 characters", bottomPadding: 100);
+                      Scrollable.ensureVisible(_healthkey1.currentContext!,
+                          duration: const Duration(milliseconds: 1000)
+                      );
+                      AppConfig().showSnackbar(context, "Please Mention Other Details with minimum 2 characters", bottomPadding: 100, isError: true);
 
                       return 'Please Mention Other Details with minimum 2 characters';
                     } else {
@@ -1180,6 +1185,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
             ],
           ),
           SizedBox(
+            key: _healthkey1,
             height: 2.h,
           ),
           // health checkbox2
@@ -1617,8 +1623,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                     cursorColor: kPrimaryColor,
                     validator: (value) {
                       if (value!.isEmpty && urinSmellOtherSelected) {
-                        AppConfig().showSnackbar(context, "Please select the details about urine smell", bottomPadding: 100);
-
+                        AppConfig().showSnackbar(context, "Please select the details about urine smell", bottomPadding: 100, isError: true);
                         return 'Please select the details about urine smell';
                       } else {
                         return null;
@@ -2162,10 +2167,15 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
   }
 
   checkFields(BuildContext context) {
+    print("****");
+    print(urineColorValue.toLowerCase().contains("other"));
+    print(urineColorValue.toLowerCase().contains("other") && urinColorController.text.isEmpty);
     print(formKey1.currentState!.validate());
 
     if (formKey1.currentState!.validate() &&
-        formKey2.currentState!.validate()) {
+        formKey2.currentState!.validate())
+    {
+      print("if");
       if(maritalStatus == ""){
         Scrollable.ensureVisible(maritalKey.currentContext!,
             duration: const Duration(milliseconds: 1000)
@@ -2234,7 +2244,16 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
         AppConfig().showSnackbar(
             context, "Please Select Tongue Coating Details",
             isError: true, bottomPadding: 100);
-      } else if (urinationValue.isEmpty) {
+      }
+      else if (tongueCoatingRadio.toLowerCase().contains("other") && tongueCoatingController.text.isEmpty) {
+        Scrollable.ensureVisible(tongueKey.currentContext!,
+            duration: const Duration(milliseconds: 1000)
+        );
+        AppConfig().showSnackbar(
+            context, "Please Mention Details",
+            isError: true, bottomPadding: 100);
+      }
+      else if (urinationValue.isEmpty) {
         // else if(urinFrequencyList.every((element) => element.value == false)){
         Scrollable.ensureVisible(urinIncreasedKey.currentContext!,
             duration: const Duration(milliseconds: 1000)
@@ -2242,35 +2261,65 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
         AppConfig().showSnackbar(
             context, "Please Select Frequency of Urination",
             isError: true, bottomPadding: 100);
-      } else if (urineColorValue.isEmpty) {
+      }
+      else if (urineColorValue.isEmpty) {
         // else if(urinColorList.every((element) => element.value == false) && !urinColorOtherSelected){
         Scrollable.ensureVisible(urineColorKey.currentContext!,
             duration: const Duration(milliseconds: 1000)
         );
         AppConfig()
             .showSnackbar(context, "Please Select Urine Color", isError: true, bottomPadding: 100);
-      } else if (urinSmellList.every((element) => element.value == false) &&
+      }
+      else if (urineColorValue.toLowerCase().contains("other") && urinColorController.text.isEmpty) {
+        Scrollable.ensureVisible(urineColorKey.currentContext!,
+            duration: const Duration(milliseconds: 1000)
+        );
+        AppConfig().showSnackbar(
+            context, "Please Mention Details",
+            isError: true, bottomPadding: 100);
+      }
+      else if (urinSmellList.every((element) => element.value == false) &&
           !urinSmellOtherSelected) {
         Scrollable.ensureVisible(urineSmellkey.currentContext!,
             duration: const Duration(milliseconds: 1000)
         );
         AppConfig().showSnackbar(context, "Please Select Atleast 1 Urine Smell",
             isError: true, bottomPadding: 100);
-      } else if (urineLookLikeValue.isEmpty) {
+      }
+      else if (urinSmellList.any((element) => element.title == "Other") && urinSmellController.text.isEmpty) {
+        Scrollable.ensureVisible(urineSmellkey.currentContext!,
+            duration: const Duration(milliseconds: 1000)
+        );
+        AppConfig().showSnackbar(
+            context, "Please Mention Details",
+            isError: true, bottomPadding: 100);
+      }
+
+      else if (urineLookLikeValue.isEmpty) {
         Scrollable.ensureVisible(urineLooksKey.currentContext!,
             duration: const Duration(milliseconds: 1000)
         );
         // else if(urinLooksList.every((element) => element.value == false) && !urinLooksLikeOtherSelected){
         AppConfig().showSnackbar(context, "Please Select Urine Looks List",
             isError: true, bottomPadding: 100);
-      } else if (selectedStoolMatch.isEmpty) {
+      }
+      else if (urineLookLikeValue.toLowerCase().contains("other") && urinLooksLikeController.text.isEmpty) {
+        Scrollable.ensureVisible(urineLooksKey.currentContext!,
+            duration: const Duration(milliseconds: 1000)
+        );
+        AppConfig().showSnackbar(
+            context, "Please Mention Details",
+            isError: true, bottomPadding: 100);
+      }
+      else if (selectedStoolMatch.isEmpty) {
         Scrollable.ensureVisible(stoolTypeKey.currentContext!,
             duration: const Duration(milliseconds: 1000)
         );
         AppConfig().showSnackbar(
             context, "Please Select Closest match to your stool",
             isError: true, bottomPadding: 100);
-      } else if (medicalInterventionsDoneBeforeList
+      }
+      else if (medicalInterventionsDoneBeforeList
           .every((element) => element.value == false) &&
           medicalInterventionsOtherSelected == false) {
         Scrollable.ensureVisible(medicalIntervenKey.currentContext!,
@@ -2280,9 +2329,14 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
             context, "Please Select Atleast 1 Medication Intervention",
             isError: true, bottomPadding: 100);
       }
-      // else if (medicalRecords.isEmpty) {
-      //   AppConfig().showSnackbar(context, "Please Upload Medical Records");
-      // }
+      else if (medicalInterventionsOtherSelected == true && medicalInterventionsDoneController.text.isEmpty) {
+        Scrollable.ensureVisible(medicalIntervenKey.currentContext!,
+            duration: const Duration(milliseconds: 1000)
+        );
+        AppConfig().showSnackbar(
+            context, "Please Mention Details",
+            isError: true, bottomPadding: 100);
+      }
       else {
         if (ft != -1 && inches != -1) {
           heightText = '$ft.$inches';
@@ -2318,7 +2372,8 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
             ));
       }
     }
-    else {
+    else  {
+      print("else");
       if(maritalStatus == ""){
         Scrollable.ensureVisible(maritalKey.currentContext!,
             duration: const Duration(milliseconds: 1000)
@@ -2343,7 +2398,6 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
         );
         AppConfig()
             .showSnackbar(context, "Please Mention Pincode", isError: true, bottomPadding: 100);
-
       }
       else if (int.parse(weightController.text) < 20 ||
           int.parse(weightController.text) > 120) {
@@ -2388,7 +2442,16 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
         AppConfig().showSnackbar(
             context, "Please Select Tongue Coating Details",
             isError: true, bottomPadding: 100);
-      } else if (urinationValue.isEmpty) {
+      }
+      else if (tongueCoatingRadio.toLowerCase().contains("other") && tongueCoatingController.text.isEmpty) {
+        Scrollable.ensureVisible(tongueKey.currentContext!,
+            duration: const Duration(milliseconds: 1000)
+        );
+        AppConfig().showSnackbar(
+            context, "Please Mention Details",
+            isError: true, bottomPadding: 100);
+      }
+      else if (urinationValue.isEmpty) {
         // else if(urinFrequencyList.every((element) => element.value == false)){
         Scrollable.ensureVisible(urinIncreasedKey.currentContext!,
             duration: const Duration(milliseconds: 1000)
@@ -2396,36 +2459,66 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
         AppConfig().showSnackbar(
             context, "Please Select Frequency of Urination",
             isError: true, bottomPadding: 100);
-      } else if (urineColorValue.isEmpty) {
+      }
+      else if (urineColorValue.isEmpty) {
         // else if(urinColorList.every((element) => element.value == false) && !urinColorOtherSelected){
         Scrollable.ensureVisible(urineColorKey.currentContext!,
             duration: const Duration(milliseconds: 1000)
         );
         AppConfig()
             .showSnackbar(context, "Please Select Urine Color", isError: true, bottomPadding: 100);
-      } else if (urinSmellList.every((element) => element.value == false) &&
+      }
+      else if (urineColorValue.toLowerCase().contains("other") && urinColorController.text.isEmpty) {
+        Scrollable.ensureVisible(urineColorKey.currentContext!,
+            duration: const Duration(milliseconds: 1000)
+        );
+        AppConfig().showSnackbar(
+            context, "Please Mention Details",
+            isError: true, bottomPadding: 100);
+      }
+      else if (urinSmellList.every((element) => element.value == false) &&
           !urinSmellOtherSelected) {
         Scrollable.ensureVisible(urineSmellkey.currentContext!,
             duration: const Duration(milliseconds: 1000)
         );
         AppConfig().showSnackbar(context, "Please Select Atleast 1 Urine Smell",
             isError: true, bottomPadding: 100);
-      } else if (urineLookLikeValue.isEmpty) {
+      }
+      else if (urinSmellList.any((element) => element.title == "Other") && urinSmellController.text.isEmpty) {
+        Scrollable.ensureVisible(urineSmellkey.currentContext!,
+            duration: const Duration(milliseconds: 1000)
+        );
+        AppConfig().showSnackbar(
+            context, "Please Mention Details",
+            isError: true, bottomPadding: 100);
+      }
+
+      else if (urineLookLikeValue.isEmpty) {
         Scrollable.ensureVisible(urineLooksKey.currentContext!,
             duration: const Duration(milliseconds: 1000)
         );
         // else if(urinLooksList.every((element) => element.value == false) && !urinLooksLikeOtherSelected){
         AppConfig().showSnackbar(context, "Please Select Urine Looks List",
             isError: true, bottomPadding: 100);
-      } else if (selectedStoolMatch.isEmpty) {
+      }
+      else if (urineLookLikeValue.toLowerCase().contains("other") && urinLooksLikeController.text.isEmpty) {
+        Scrollable.ensureVisible(urineLooksKey.currentContext!,
+            duration: const Duration(milliseconds: 1000)
+        );
+        AppConfig().showSnackbar(
+            context, "Please Mention Details",
+            isError: true, bottomPadding: 100);
+      }
+      else if (selectedStoolMatch.isEmpty) {
         Scrollable.ensureVisible(stoolTypeKey.currentContext!,
             duration: const Duration(milliseconds: 1000)
         );
         AppConfig().showSnackbar(
             context, "Please Select Closest match to your stool",
             isError: true, bottomPadding: 100);
-      } else if (medicalInterventionsDoneBeforeList
-              .every((element) => element.value == false) &&
+      }
+      else if (medicalInterventionsDoneBeforeList
+          .every((element) => element.value == false) &&
           medicalInterventionsOtherSelected == false) {
         Scrollable.ensureVisible(medicalIntervenKey.currentContext!,
             duration: const Duration(milliseconds: 1000)
@@ -2433,6 +2526,48 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
         AppConfig().showSnackbar(
             context, "Please Select Atleast 1 Medication Intervention",
             isError: true, bottomPadding: 100);
+      }
+      else if (medicalInterventionsOtherSelected == true && medicalInterventionsDoneController.text.isEmpty) {
+        Scrollable.ensureVisible(medicalIntervenKey.currentContext!,
+            duration: const Duration(milliseconds: 1000)
+        );
+        AppConfig().showSnackbar(
+            context, "Please Mention Details",
+            isError: true, bottomPadding: 100);
+      }
+      else {
+        if (ft != -1 && inches != -1) {
+          heightText = '$ft.$inches';
+          print(heightText);
+        }
+        formKey1.currentState!.save();
+        formKey2.currentState!.save();
+
+        addSelectedValuesToList();
+        EvaluationModelFormat1 eval1 = createFormMap();
+
+        // storeToLocal
+        _pref!.setString(AppConfig.eval1, jsonEncode(eval1.toMap()));
+
+        final json = jsonDecode(_pref!.getString(AppConfig.eval1)!);
+        // var _map = EvaluationModelFormat1.fromMap(json);
+
+        print("local map: $json");
+
+        // print((eval1 as EvaluationModelFormat1).toMap());
+        print(urineColorValue);
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              // builder: (ctx) => EvaluationUploadReport(
+              //     evaluationModelFormat1: eval1,
+              // )
+                builder: (ctx) => PersonalDetailsScreen2(
+                  evaluationModelFormat1: eval1,
+                  // medicalReportList:
+                  //     medicalRecords.map((e) => e.path).toList()
+                )
+            ));
       }
     }
   }

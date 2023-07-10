@@ -121,5 +121,22 @@
 
        <!--  Services for the plugin  -->
            <service android:name="me.sithiramunasinghe.flutter.flutter_radio_player_nf.core.StreamingCore"/>
+
+<!--       whatsAppShare package  -->
+       <meta-data
+           android:name="com.facebook.sdk.ApplicationId"
+           android:value="343254889799245" />
+
+       <provider
+           android:name="com.facebook.FacebookContentProvider"
+           android:authorities="com.facebook.app.FacebookContentProvider343254889799245"
+           android:exported="false" />
+<!--       end whatsApp Share package -->
+
     </application>
+
+<!--    WhatsApp share-->
+    <queries>
+        <package android:name="com.whatsapp" />
+    </queries>
 </manifest>

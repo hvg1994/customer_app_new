@@ -2,14 +2,18 @@ import 'dart:ui';
 
 const String consultationRescheduleStageSubText = "Please reschedule to another date & time that suits you.";
 const String consultationStage2SubText = "Make sure to join your consultation within 5 minutes of your consultation time.";
-const String consultationStage3SubText = "Your doctor's are hard at work customizing your program. This can take 48-72 hours.We'll notify you once ready.";
+const String consultationStage3SubText = "Your doctor's are hard at work customizing your program. This can take 48-72 hours. We'll notify you once ready.";
 
 const String requestedReportStage1SubText = "Your doctor has requested for a few reports. Do upload them here to proceed further.";
 const String requestedReportStage2SubText = "Thanks for uploading your reports.\nYour doctor is now analyzing your case, allow us 2 working days to proceed to the next step.";
+const String requestedReportStage3SubText = "View all your reports related to program here.";
 
 const String prepstageText = "Before your program starts we must prime your gut for the detox & healing it will undergo, Start preparing your gut now\nWhile we customize your plan & kit for your program over the next 2-3 days.";
 const String prepStage2SubText = "Your kit is now ready to be shipped, schedule a date to have it delivered.";
 const String prepStage3SubText = "Your kit will be dispatched soon. Keep prepping your gut until your kit arrives.\n";
+
+const String shippingProcess1 = "Your kit is being processed & will be delivered on or as close to";
+const String shippingProcess2 = "Please allow 1-2 days of variance.";
 
 const String prepTrackerText = "Congrats on completing your preparation phase. Fill this tracker to update your doctor on your progress.";
 
@@ -63,7 +67,7 @@ List<DashboardStagesData> stageData = [
       type: StageType.medical_report
   ),
   DashboardStagesData(title:"Customizing Your Plan",
-      subTitle: "The Plan and kit is being customized for your Program over the next 2-3 days. You can track the kit once Meal Plan is ready.",
+      subTitle: "Your program is being customized & created, we will notify you once this is ready. (Approx 48 hours).",
     rightImage: "assets/images/dashboard_stages/Mask Group 43509.png",
     step: "6",
     btn1Name: "Prep",
@@ -136,7 +140,7 @@ List<DashboardStagesData> defaultStageData = [
       type: StageType.medical_report
   ),
   DashboardStagesData(title:"Customizing Your Plan",
-      subTitle: "The Plan and kit is being customized for your Program over the next 2-3 days. You can track the kit once Meal Plan is ready.",
+      subTitle: "Your program is being customized & created, we will notify you once this is ready. (Approx 48 hours).",
       rightImage: "assets/images/dashboard_stages/Mask Group 43509.png",
       step: "6",
       btn1Name: "Prep",
@@ -170,8 +174,6 @@ List<DashboardStagesData> defaultStageData = [
   ),
 
 ];
-
-
 
 updateStageData(){
  stageData = defaultStageData;

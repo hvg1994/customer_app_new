@@ -687,10 +687,10 @@ class _UploadFilesState extends State<UploadFiles> {
 
     _files.forEach((element) {
       print(element.path.split('.').last);
-      if (element.path.split('.').last.contains("pdf") ||
-          element.path.split('.').last.contains("png") ||
-          element.path.split('.').last.contains("jpg") ||
-          element.path.split('.').last.contains("jpeg")) {
+      if (element.path.split('.').last.toLowerCase().contains("pdf") ||
+          element.path.split('.').last.toLowerCase().contains("png") ||
+          element.path.split('.').last.toLowerCase().contains("jpg") ||
+          element.path.split('.').last.toLowerCase().contains("jpeg")) {
         if (getFileSize(element) <= 12) {
           print("filesize: ${getFileSize(File(result.paths.first!))}Mb");
           // files.add(result.files.first);

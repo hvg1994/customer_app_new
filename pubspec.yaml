@@ -107,6 +107,12 @@ dependencies:
   connectivity_plus: any
   data_connection_checker_nulls: ^0.0.2
   flutter_ruler_picker: ^1.0.3
+  syncfusion_flutter_charts: any
+  open_store: ^0.5.0
+  syncfusion_flutter_datepicker: any
+  flutter_image_stack: any
+  easy_stepper: any
+  flutter_share_me: ^0.11.0
 
 
 

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
@@ -198,7 +199,6 @@ buildAppBar(
     children: [
       Row(
         children: [
-
           Visibility(
             visible: isBackEnable,
             child: SizedBox(
@@ -661,5 +661,54 @@ buildCustomBadge({required Widget child}) {
         ),
       ),
     ],
+  );
+}
+
+Widget landscapeView(ChewieController controller) {
+  return OrientationBuilder(
+      builder: (_, orientation){
+        if(orientation == Orientation.portrait){
+          return VideoWidget(controller);
+        }
+        else{
+          return VideoWidget(controller);
+        }
+      }
+  );
+}
+
+VideoWidget(ChewieController controller) {
+  return LayoutBuilder(
+    builder: (_, constraints) {
+      print("_chewieController: $controller");
+      return Container(
+        color: Colors.black,
+        height: constraints.maxHeight,
+        width: constraints.maxWidth,
+        child: Center(
+          child: AspectRatio(
+            aspectRatio: constraints.maxWidth / constraints.maxHeight,
+            child: (controller == null)
+                ? Center(
+              child: buildCircularIndicator(),
+            )
+                : Chewie(
+              controller: controller!,
+            ),
+            // child: VlcPlayerWithControls(
+            //   key: _key,
+            //   controller: _controller!,
+            //   virtualDisplay: true,
+            //   showVolume: false,
+            //   showVideoProgress: true,
+            //   seekButtonIconSize: 10.sp,
+            //   playButtonIconSize: 14.sp,
+            //   replayButtonSize: 14.sp,
+            //   showFullscreenBtn: true,
+            // )
+          ),
+        ),
+      );
+    },
   );
 }

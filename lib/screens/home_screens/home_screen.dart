@@ -9,7 +9,9 @@ import '../../widgets/constants.dart';
 import '../../widgets/widgets.dart';
 import '../notification_screen.dart';
 import 'bmi/bmi_calculate.dart';
+import 'meal_plan_progress.dart';
 import 'new_home_screen/water_level_screen.dart';
+import 'new_screens/fertility_screen.dart';
 
 class HomeScreens extends StatefulWidget {
   const HomeScreens({Key? key}) : super(key: key);
@@ -453,7 +455,7 @@ class _HomeScreensState extends State<HomeScreens> {
                               context,
                               MaterialPageRoute(
                                 builder: (context) {
-                                  return const WaterLevelScreen();
+                                  return WaterLevelScreen();
                                 },
                               ),
                             );
@@ -602,6 +604,44 @@ class _HomeScreensState extends State<HomeScreens> {
                           fontSize: eUser().buttonTextSize,
                         ),
                       ),
+                      IntrinsicWidth(
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) {
+                                  return MealPlanProgress();
+                                },
+                              ),
+                            );
+                          },
+                          child: Container(
+                            margin: EdgeInsets.only(top: 1.h),
+                            padding: EdgeInsets.symmetric(
+                                vertical: 1.h, horizontal: 5.w),
+                            decoration: BoxDecoration(
+                              color: kNumberCircleRed,
+                              borderRadius: BorderRadius.circular(
+                                  eUser().buttonBorderRadius),
+                              // border: Border.all(
+                              //     color: eUser().buttonBorderColor,
+                              //     width: eUser().buttonBorderWidth
+                              // ),
+                            ),
+                            child: Center(
+                              child: Text(
+                                'START',
+                                style: TextStyle(
+                                  fontFamily: eUser().buttonTextFont,
+                                  color: eUser().buttonTextColor,
+                                  fontSize: eUser().resendOtpFontSize,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -634,7 +674,7 @@ class _HomeScreensState extends State<HomeScreens> {
                         ),
                         SizedBox(height: 1.h),
                         Text(
-                          "Lets click start to calculate your BMI",
+                          "Fertility Tracker",
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             color: eUser().threeBounceIndicatorColor,
@@ -645,7 +685,16 @@ class _HomeScreensState extends State<HomeScreens> {
                         IntrinsicWidth(
                           child: GestureDetector(
                             // onTap: (showLoginProgress) ? null : () {
-                            onTap: () {},
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) {
+                                    return FertilityScreen();
+                                  },
+                                ),
+                              );
+                            },
                             child: Container(
                               margin: EdgeInsets.only(top: 1.h),
                               padding: EdgeInsets.symmetric(

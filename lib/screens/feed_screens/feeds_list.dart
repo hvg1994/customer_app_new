@@ -150,6 +150,10 @@ class _FeedsListState extends State<FeedsList> {
                       } else {
                         final model = snapshot.data as AboutProgramModel;
                         List<FeedsListModel> list = model.data?.feedsList ?? [];
+                        print("list.length:${list.length}");
+                        list.forEach((element) {
+                          print(element.feed!.thumbnail);
+                        });
                         if (list.isEmpty) {
                           return const Center(
                             child: Text("NO Feeds"),
@@ -305,7 +309,9 @@ class _FeedsListState extends State<FeedsList> {
                                                         builder: (ct) =>
                                                             VideoPlayerMeedu(
                                                                 videoUrl:
-                                                                "${list[index].image}"),
+                                                                "${list[index].image}",
+                                                              isFullScreen: true,
+                                                            ),
                                                       ),
                                                     );
                                                   },
@@ -635,7 +641,7 @@ class _FeedsListState extends State<FeedsList> {
                               if (format == "mp4") {}
                               final String subText =
                                   "${list[index].feed?.description}";
-                              return (list[index].feed?.isFeed == "0")
+                              return (list[index].feed?.isFeed == "2")
                                   ? Container(
                                 height: 17.h,
                                 margin:
@@ -762,8 +768,9 @@ class _FeedsListState extends State<FeedsList> {
                                                       MaterialPageRoute(
                                                         builder: (ct) =>
                                                             VideoPlayerMeedu(
-                                                                videoUrl:
-                                                                "${list[index].image}"),
+                                                                videoUrl: "${list[index].image}",
+                                                              isFullScreen: true,
+                                                            ),
                                                       ),
                                                     );
                                                   },

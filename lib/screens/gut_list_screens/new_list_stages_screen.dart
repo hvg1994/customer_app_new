@@ -89,7 +89,7 @@ class _NewDsPageState extends State<NewDsPage> {
   /// need to add the current stage 1-8
   int current = 1;
 
-  double heightFactor = 0.15;
+  double heightFactor = 0.20;
 
   // final CategoriesScroller categoriesScroller = const CategoriesScroller();
   // ScrollController controller = ScrollController();
@@ -341,14 +341,17 @@ class _NewDsPageState extends State<NewDsPage> {
         .getUserProfileService();
     if (profile.runtimeType == UserProfileModel) {
       UserProfileModel model1 = profile as UserProfileModel;
-      _pref!.setString(
-          AppConfig.User_Name, model1.data?.name ?? model1.data?.fname ?? '');
+      _pref!.setString(AppConfig.User_Name, model1.data?.name ?? model1.data?.fname ?? '');
       _pref!.setInt(AppConfig.USER_ID, model1.data?.id ?? -1);
       _pref!.setString(AppConfig.QB_USERNAME, model1.data!.qbUsername ?? '');
       _pref!
           .setString(AppConfig.QB_CURRENT_USERID, model1.data!.qbUserId ?? '');
       _pref!
           .setString(AppConfig.KALEYRA_USER_ID, model1.data!.kaleyraUID ?? '');
+      _pref!.setString(AppConfig.User_age,model1.data?.age ?? "");
+      _pref!.setString(AppConfig.User_gender,model1.data?.gender ?? "");
+      _pref!.setString(AppConfig.User_height,model1.height ?? "");
+      _pref!.setString(AppConfig.User_weight,model1.weight ?? "");
 
       if (_pref!.getString(AppConfig.KALEYRA_ACCESS_TOKEN) == null) {
         await LoginWithOtpService(repository: loginOtpRepository)
@@ -614,14 +617,14 @@ class _NewDsPageState extends State<NewDsPage> {
                                 AnimatedSize(
                                   duration: const Duration(milliseconds: 500),
                                   child: SizedBox(
-                                    height: (selected == current-1 && heightFactor == 0.15) ? 0 : 40,
+                                    height: (selected == current-1 && heightFactor == 0.20) ? 0 : 40,
                                     child: Visibility(
                                       visible: heightFactor == 1.0,
                                       child: Center(
                                         child: GestureDetector(
                                           onTap: () {
                                             setState(() {
-                                              heightFactor = 0.15;
+                                              heightFactor = 0.20;
                                             });
                                           },
                                           child: Container(
@@ -1670,29 +1673,30 @@ class _NewDsPageState extends State<NewDsPage> {
         stageData[1].btn2Name = "Reschedule";
         final model = _getAppointmentDetailsModel;
 
-        final bookingDate = model!.value!.date!;
-        final bookingTime = model.value!.slotStartTime!;
+        if(model!.value!.date != null&& model.value!.slotStartTime != null){
+          final bookingDate = model!.value!.date;
+          final bookingTime = model.value!.slotStartTime!;
 
-        final curTime = DateTime.now();
-        var res = DateFormat("yyyy-MM-dd HH:mm:ss").parse("${bookingDate} ${bookingTime}:00");
+          final curTime = DateTime.now();
+          var res = DateFormat("yyyy-MM-dd HH:mm:ss").parse("${bookingDate} ${bookingTime}:00");
 
-        if(res.difference(curTime).inMinutes > 5 || res.difference(curTime).inMinutes < -15){
-          stageData[1].btn1Color = newCurrentStageButtonColor.withOpacity(0.6);
-          print("res.difference(curTime).inMinutes: ${res.difference(curTime).inMinutes}");
-          print(res.difference(curTime).inMinutes < -15);
+          if(res.difference(curTime).inMinutes > 5 || res.difference(curTime).inMinutes < -15){
+            stageData[1].btn1Color = newCurrentStageButtonColor.withOpacity(0.6);
+            print("res.difference(curTime).inMinutes: ${res.difference(curTime).inMinutes}");
+            print(res.difference(curTime).inMinutes < -15);
 
-          if(res.difference(curTime).inMinutes < -15){
-            stageData[1].subTitle = "You missed your scheduled slot at $bookingDate:$bookingTime  \n$consultationRescheduleStageSubText";
+            if(res.difference(curTime).inMinutes < -15){
+              stageData[1].subTitle = "You missed your scheduled slot at $bookingDate:$bookingTime  \n$consultationRescheduleStageSubText";
+            }
+            else if(res.difference(curTime).inMinutes > 5){
+              stageData[1].subTitle = "Your consultation has been booked for $bookingDate:$bookingTime \n$consultationStage2SubText";
+            }
           }
-          else if(res.difference(curTime).inMinutes > 5){
+          else{
+            stageData[1].btn1Color = newCurrentStageButtonColor;
             stageData[1].subTitle = "Your consultation has been booked for $bookingDate:$bookingTime \n$consultationStage2SubText";
           }
         }
-        else{
-          stageData[1].btn1Color = newCurrentStageButtonColor;
-          stageData[1].subTitle = "Your consultation has been booked for $bookingDate:$bookingTime \n$consultationStage2SubText";
-        }
-
         break;
       case 'consultation_done':
         current = 2;
@@ -1774,6 +1778,8 @@ class _NewDsPageState extends State<NewDsPage> {
         stageData[0].subTitle = stageCompletedSubText;
         stageData[1].subTitle = stageCompletedSubText;
         stageData[3].subTitle = stageCompletedSubText;
+        stageData[2].subTitle = requestedReportStage3SubText;
+
 
         current = 5;
         print("stageData: ${stageData[2].subTitle}");
@@ -1802,9 +1808,10 @@ class _NewDsPageState extends State<NewDsPage> {
         }
         stageData[1].btn1Name = "Status";
         stageData[2].btn1Name = "View User Reports";
-        stageData[3].btn1Name = "Status";
-        stageData[3].subTitle = consultationStage3SubText;
-        // stageData[4].btn1Name = "View MR";
+        stageData[2].subTitle = requestedReportStage3SubText;
+
+        // stageData[3].btn1Name = "Status";
+        // stageData[3].subTitle = consultationStage3SubText;
 
         if (_prepratoryModel!.value!.isPrepratoryStarted == false) {
           // stageData[5].btn1Name = "Prep Plan";
@@ -1817,6 +1824,10 @@ class _NewDsPageState extends State<NewDsPage> {
           stageData[5].subTitle = prepStage2SubText;
           stageData[5].btn2Color = newCurrentStageButtonColor.withOpacity(0.6);
         }
+
+        stageData[3].subTitle = stageCompletedSubText;
+        stageData[3].btn1Name = null;
+
 
         if(stage == "shipping_delivered"){
           stageData[5].btn1Name = null;
@@ -1831,7 +1842,8 @@ class _NewDsPageState extends State<NewDsPage> {
         current = 6;
         stageData[1].btn1Name = "View History";
         stageData[2].btn1Name = "View User Reports";
-        stageData[3].btn1Name = "Status";
+        stageData[2].subTitle = requestedReportStage3SubText;
+        // stageData[3].btn1Name = "Status";
         // stageData[3].subTitle = consultationStage3SubText;
 
         // if (_prepratoryModel!.value!.isPrepratoryStarted == false) {
@@ -1852,10 +1864,16 @@ class _NewDsPageState extends State<NewDsPage> {
 
         stageData[1].btn1Name = "View History";
         stageData[2].btn1Name = "View User Reports";
-        stageData[3].btn1Name = "Status";
+        stageData[2].subTitle = requestedReportStage3SubText;
+
+        // stageData[3].btn1Name = "Status";
         // stageData[3].subTitle = consultationStage3SubText;
 
-        stageData[5].subTitle = prepStage3SubText;
+        stageData[5].title = "Kit Under Process";
+        final _consultationHistory = _gutDataModel!.historyWithMrValue!.consultationHistory;
+        stageData[5].subTitle = "$shippingProcess1 ${_consultationHistory?.shippingDeliveryDate}." + '\n' + shippingProcess2;
+
+        // stageData[5].subTitle = prepStage3SubText;
         stageData[5].btn2Color = newCurrentStageButtonColor;
         stageData[5].btn2Name = "Track Kit";
 
@@ -1868,10 +1886,17 @@ class _NewDsPageState extends State<NewDsPage> {
 
         stageData[1].btn1Name = "View History";
         stageData[2].btn1Name = "View User Reports";
-        stageData[3].btn1Name = "Status";
+        stageData[2].subTitle = requestedReportStage3SubText;
+
+        // stageData[3].btn1Name = "Status";
         // stageData[3].subTitle = consultationStage3SubText;
 
-        stageData[5].subTitle = prepStage3SubText;
+
+        stageData[5].title = "Kit Under Process";
+        final _consultationHistory = _gutDataModel!.historyWithMrValue!.consultationHistory;
+        stageData[5].subTitle = "$shippingProcess1 ${_consultationHistory?.shippingDeliveryDate}." + '\n' + shippingProcess2;
+
+        // stageData[5].subTitle = prepStage3SubText;
         stageData[5].btn2Color = newCurrentStageButtonColor;
         stageData[5].btn2Name = "Track Kit";
 
@@ -1886,10 +1911,16 @@ class _NewDsPageState extends State<NewDsPage> {
 
         stageData[1].btn1Name = "View History";
         stageData[2].btn1Name = "View User Reports";
-        stageData[3].btn1Name = "Status";
+        stageData[2].subTitle = requestedReportStage3SubText;
+
+        // stageData[3].btn1Name = "Status";
         // stageData[3].subTitle = consultationStage3SubText;
 
-        stageData[5].subTitle = prepStage3SubText;
+        stageData[5].title = "Kit Under Process";
+        final _consultationHistory = _gutDataModel!.historyWithMrValue!.consultationHistory;
+        stageData[5].subTitle = "$shippingProcess1 ${_consultationHistory?.shippingDeliveryDate}." + '\n' + shippingProcess2;
+
+        // stageData[5].subTitle = prepStage3SubText;
         stageData[5].btn2Color = newCurrentStageButtonColor;
         stageData[5].btn2Name = "Track Kit";
 
@@ -1905,11 +1936,18 @@ class _NewDsPageState extends State<NewDsPage> {
 
         stageData[1].btn1Name = "View History";
         stageData[2].btn1Name = "View User Reports";
-        stageData[3].btn1Name = "Status";
+        stageData[2].subTitle = requestedReportStage3SubText;
+
+        // stageData[3].btn1Name = "Status";
         // stageData[3].subTitle = consultationStage3SubText;
 
+        stageData[5].title = "Kit Under Process";
+
+        // final _consultationHistory = _gutDataModel!.historyWithMrValue!.consultationHistory;
+        // stageData[5].subTitle = "$shippingProcess1${_consultationHistory?.shippingDeliveryDate}" + '\n' + shippingProcess2;
+
         stageData[5].btn1Name = null;
-        stageData[5].subTitle = prepStage3SubText;
+        // stageData[5].subTitle = prepStage3SubText;
         stageData[5].btn2Color = newCurrentStageButtonColor;
         stageData[5].btn2Name = "Track Kit";
 
@@ -1936,7 +1974,9 @@ class _NewDsPageState extends State<NewDsPage> {
 
         stageData[1].btn1Name = "View History";
         stageData[2].btn1Name = "View User Reports";
-        stageData[3].btn1Name = "Status";
+        stageData[2].subTitle = requestedReportStage3SubText;
+
+        // stageData[3].btn1Name = "Status";
         // stageData[3].subTitle = consultationStage3SubText;
 
         stageData[5].btn1Name = null;
@@ -2016,12 +2056,13 @@ class _NewDsPageState extends State<NewDsPage> {
 
           if(_transModel!.value!.isTransMealStarted == false){
             stageData[6].btn1Name = "Start Nourish";
+            stageData[6].subTitle = mealTransText;
           }
           else{
             stageData[6].btn1Name = "Day $dayNumber of Nourish";
+            stageData[6].subTitle = afterStartProgramText;
           }
           stageData[6].btn2Name = null;
-          stageData[6].subTitle = mealTransText;
         }
         // else {
         //   current = 6;
@@ -2029,12 +2070,12 @@ class _NewDsPageState extends State<NewDsPage> {
         // }
         stageData[1].btn1Name = "View History";
         stageData[2].btn1Name = "View User Reports";
-        stageData[3].btn1Name = "Status";
-        stageData[3].subTitle = consultationStage3SubText;
+        stageData[2].subTitle = requestedReportStage3SubText;
+
+        // stageData[3].btn1Name = "Status";
+        // stageData[3].subTitle = consultationStage3SubText;
 
         stageData[5].btn1Name = null;
-
-        stageData[6].subTitle = mealTransText;
 
         // stageData[4].btn1Name = "View MR";
 
@@ -2053,10 +2094,12 @@ class _NewDsPageState extends State<NewDsPage> {
 
         stageData[1].btn1Name = "View History";
         stageData[2].btn1Name = "View User Reports";
-        stageData[3].btn1Name = "Status";
+        stageData[2].subTitle = requestedReportStage3SubText;
+
+        // stageData[3].btn1Name = "Status";
         // stageData[3].subTitle = consultationStage3SubText;
 
-        stageData[6].btn1Name = "Nourish Completed";
+        stageData[6].btn1Name = "Completed";
         stageData[6].btn1Color = newCompletedStageBtnColor;
 
 
@@ -2085,7 +2128,9 @@ class _NewDsPageState extends State<NewDsPage> {
         current = 8;
         stageData[1].btn1Name = "View History";
         stageData[2].btn1Name = "View User Reports";
-        stageData[3].btn1Name = "Status";
+        stageData[2].subTitle = requestedReportStage3SubText;
+
+        // stageData[3].btn1Name = "Status";
         // stageData[3].subTitle = consultationStage3SubText;
         stageData[4].btn1Name = "View MR";
 
@@ -2134,7 +2179,9 @@ class _NewDsPageState extends State<NewDsPage> {
         current = 8;
         stageData[1].btn1Name = "View History";
         stageData[2].btn1Name = "View User Reports";
-        stageData[3].btn1Name = "Status";
+        stageData[2].subTitle = requestedReportStage3SubText;
+
+        // stageData[3].btn1Name = "Status";
         // stageData[3].subTitle = consultationStage3SubText;
         stageData[4].btn1Name = "View MR";
 
@@ -2160,6 +2207,8 @@ class _NewDsPageState extends State<NewDsPage> {
 
         stageData[1].btn1Name = "View History";
         stageData[2].btn1Name = "View User Reports";
+        stageData[2].subTitle = requestedReportStage3SubText;
+
         stageData[4].btn1Name = "View MR";
 
         stageData[6].btn1Name = "Completed";
@@ -2190,7 +2239,9 @@ class _NewDsPageState extends State<NewDsPage> {
         current = 9;
         stageData[1].btn1Name = "View History";
         stageData[2].btn1Name = "View User Reports";
-        stageData[3].btn1Name = "Status";
+        stageData[2].subTitle = requestedReportStage3SubText;
+
+        // stageData[3].btn1Name = "Status";
         // stageData[3].subTitle = consultationStage3SubText;
         stageData[4].btn1Name = "View MR";
 

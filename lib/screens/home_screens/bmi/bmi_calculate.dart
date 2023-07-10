@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_ruler_picker/flutter_ruler_picker.dart';
 import 'package:gwc_customer/screens/home_screens/bmi/weight_slider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
 import '../../../utils/app_config.dart';
 import '../../../widgets/constants.dart';
@@ -18,12 +19,42 @@ class BMICalculate extends StatefulWidget {
 }
 
 class _BMICalculateState extends State<BMICalculate> {
-  Gender? selectedGender;
-  int height = 180;
-  int weight = 60;
-  int age = 18;
+  String selectedGender = "";
+  int height = 0;
+  int weight = 0;
+  int age = 0;
+
+  List gender = ["male", "female"];
 
   RulerPickerController? _rulerPickerController;
+
+  final SharedPreferences _pref = AppConfig().preferences!;
+
+  @override
+  void initState() {
+    super.initState();
+    getHeightInCm();
+    weight = int.parse(_pref.getString(AppConfig.User_weight) ?? '');
+    age = int.parse(_pref.getString(AppConfig.User_age) ?? "");
+    selectedGender = (_pref.getString(AppConfig.User_gender) ?? '');
+    print("weight: ${_pref.getString(AppConfig.User_weight)}");
+    print("Gender: ${_pref.getString(AppConfig.User_gender)}");
+    print("age: ${_pref.getString(AppConfig.User_age)}");
+  }
+
+  getHeightInCm() {
+    var a = _pref.getString(AppConfig.User_height);
+    print(a);
+    var b = a?.split(".");
+    double feet = double.parse("${b?.first}");
+    double inches = double.parse("${b?.last}");
+
+    height = (feet * 30.48).toInt() + (inches * 2.54).toInt();
+
+    // print("${((feet * 12) + inches)* 2.54}");
+
+    print("height : $height");
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +66,7 @@ class _BMICalculateState extends State<BMICalculate> {
               Padding(
                 padding: EdgeInsets.only(left: 2.w, bottom: 1.h, top: 1.h),
                 child: buildAppBar(
-                  () {
+                      () {
                     Navigator.pop(context);
                   },
                   showNotificationIcon: false,
@@ -43,7 +74,7 @@ class _BMICalculateState extends State<BMICalculate> {
                   showLogo: false,
                   showChild: true,
                   child: Text(
-                    "BMI Calculator",
+                    "BMI & BMR Calculator",
                     textAlign: TextAlign.start,
                     style: TextStyle(
                       color: eUser().mainHeadingColor,
@@ -60,7 +91,7 @@ class _BMICalculateState extends State<BMICalculate> {
                     child: GestureDetector(
                       onTap: () {
                         setState(() {
-                          selectedGender = Gender.male;
+                          selectedGender = gender[0];
                         });
                       },
                       child: Container(
@@ -69,7 +100,7 @@ class _BMICalculateState extends State<BMICalculate> {
                         decoration: BoxDecoration(
                             color: gWhiteColor,
                             borderRadius: BorderRadius.circular(10.0),
-                            border: selectedGender == Gender.male
+                            border: selectedGender == gender[0]
                                 ? Border.all(color: gBlackColor, width: 2)
                                 : Border.all(color: kLineColor, width: 1)),
                         child: Column(
@@ -77,23 +108,23 @@ class _BMICalculateState extends State<BMICalculate> {
                           children: [
                             Icon(Icons.male_sharp,
                                 size: 8.h,
-                                color: selectedGender == Gender.male
+                                color: selectedGender == gender[0]
                                     ? gMainColor
                                     : gHintTextColor),
                             SizedBox(height: 2.h),
                             Text(
                               "Male",
-                              style: selectedGender == Gender.male
+                              style: selectedGender == gender[0]
                                   ? TextStyle(
-                                      color: eUser().mainHeadingColor,
-                                      fontFamily: eUser().mainHeadingFont,
-                                      fontSize: eUser().userFieldLabelFontSize,
-                                    )
+                                color: eUser().mainHeadingColor,
+                                fontFamily: eUser().mainHeadingFont,
+                                fontSize: eUser().userFieldLabelFontSize,
+                              )
                                   : TextStyle(
-                                      color: eUser().mainHeadingColor,
-                                      fontFamily: eUser().userTextFieldFont,
-                                      fontSize: eUser().userFieldLabelFontSize,
-                                    ),
+                                color: eUser().mainHeadingColor,
+                                fontFamily: eUser().userTextFieldFont,
+                                fontSize: eUser().userFieldLabelFontSize,
+                              ),
                             ),
                           ],
                         ),
@@ -105,7 +136,7 @@ class _BMICalculateState extends State<BMICalculate> {
                     child: GestureDetector(
                       onTap: () {
                         setState(() {
-                          selectedGender = Gender.female;
+                          selectedGender = gender[1];
                         });
                       },
                       child: Container(
@@ -114,7 +145,7 @@ class _BMICalculateState extends State<BMICalculate> {
                         decoration: BoxDecoration(
                             color: gWhiteColor,
                             borderRadius: BorderRadius.circular(10.0),
-                            border: selectedGender == Gender.female
+                            border: selectedGender == gender[1]
                                 ? Border.all(color: gBlackColor, width: 2)
                                 : Border.all(color: kLineColor, width: 1)),
                         child: Column(
@@ -122,23 +153,23 @@ class _BMICalculateState extends State<BMICalculate> {
                           children: [
                             Icon(Icons.female_sharp,
                                 size: 8.h,
-                                color: selectedGender == Gender.female
+                                color: selectedGender == gender[1]
                                     ? kBigCircleBorderRed
                                     : gHintTextColor),
                             SizedBox(height: 2.h),
                             Text(
                               "Female",
-                              style: selectedGender == Gender.female
+                              style: selectedGender == gender[1]
                                   ? TextStyle(
-                                      color: eUser().mainHeadingColor,
-                                      fontFamily: eUser().mainHeadingFont,
-                                      fontSize: eUser().userFieldLabelFontSize,
-                                    )
+                                color: eUser().mainHeadingColor,
+                                fontFamily: eUser().mainHeadingFont,
+                                fontSize: eUser().userFieldLabelFontSize,
+                              )
                                   : TextStyle(
-                                      color: eUser().mainHeadingColor,
-                                      fontFamily: eUser().userTextFieldFont,
-                                      fontSize: eUser().userFieldLabelFontSize,
-                                    ),
+                                color: eUser().mainHeadingColor,
+                                fontFamily: eUser().userTextFieldFont,
+                                fontSize: eUser().userFieldLabelFontSize,
+                              ),
                             ),
                           ],
                         ),
@@ -195,7 +226,7 @@ class _BMICalculateState extends State<BMICalculate> {
                     ),
                     Container(
                       margin:
-                          EdgeInsets.symmetric(horizontal: 3.w, vertical: 1.h),
+                      EdgeInsets.symmetric(horizontal: 3.w, vertical: 1.h),
                       padding: EdgeInsets.symmetric(horizontal: 3.w),
                       decoration: BoxDecoration(
                         color: kBigCircleBg,
@@ -325,23 +356,23 @@ class _BMICalculateState extends State<BMICalculate> {
                                   ),
                                   LayoutBuilder(
                                     builder: (context, constraints) =>
-                                        constraints.isTight
-                                            ? Container()
-                                            : WeightSlider(
-                                                minValue: 30,
-                                                maxValue: 110,
-                                                width: constraints.maxWidth,
-                                                value: weight,
-                                                onChanged: (val) => setState(
-                                                    () => weight = val),
-                                                scrollController:
-                                                    ScrollController(
-                                                  initialScrollOffset:
-                                                      (weight - 30) *
-                                                          constraints.maxWidth /
-                                                          3,
-                                                ),
-                                              ),
+                                    constraints.isTight
+                                        ? Container()
+                                        : WeightSlider(
+                                      minValue: 30,
+                                      maxValue: 110,
+                                      width: constraints.maxWidth,
+                                      value: weight,
+                                      onChanged: (val) => setState(
+                                              () => weight = val),
+                                      scrollController:
+                                      ScrollController(
+                                        initialScrollOffset:
+                                        (weight - 30) *
+                                            constraints.maxWidth /
+                                            3,
+                                      ),
+                                    ),
                                   ),
                                 ],
                               ),
@@ -405,7 +436,7 @@ class _BMICalculateState extends State<BMICalculate> {
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
                               buildAgeIcon(
-                                () {
+                                    () {
                                   setState(() {
                                     age--;
                                   });
@@ -421,7 +452,7 @@ class _BMICalculateState extends State<BMICalculate> {
                                 ),
                               ),
                               buildAgeIcon(
-                                () {
+                                    () {
                                   setState(() {
                                     age++;
                                   });
@@ -439,13 +470,18 @@ class _BMICalculateState extends State<BMICalculate> {
               IntrinsicWidth(
                 child: GestureDetector(
                   onTap: () {
-                    CalculateBmi calc =
-                        CalculateBmi(height: height, weight: weight);
+                    CalculateBmi calc = CalculateBmi(
+                      height: height,
+                      weight: weight,
+                      gender: selectedGender,
+                      age: age,
+                    );
                     showSymptomsTrackerSheet(
                       context,
-                      calc.calulate(),
+                      calc.calculate(),
                       calc.getComment(),
                       calc.getResult(),
+                      calc.calculateBmr(),
                     );
                     // Navigator.push(
                     //   context,
@@ -463,11 +499,11 @@ class _BMICalculateState extends State<BMICalculate> {
                   child: Container(
                     margin: EdgeInsets.symmetric(vertical: 5.h),
                     padding:
-                        EdgeInsets.symmetric(vertical: 1.h, horizontal: 8.w),
+                    EdgeInsets.symmetric(vertical: 1.h, horizontal: 8.w),
                     decoration: BoxDecoration(
                       color: kNumberCircleRed,
                       borderRadius:
-                          BorderRadius.circular(eUser().buttonBorderRadius),
+                      BorderRadius.circular(eUser().buttonBorderRadius),
                       // border: Border.all(
                       //     color: eUser().buttonBorderColor,
                       //     width: eUser().buttonBorderWidth
@@ -509,7 +545,7 @@ class _BMICalculateState extends State<BMICalculate> {
   }
 
   showSymptomsTrackerSheet(
-      BuildContext context, String bmi, String comment, String result) {
+      BuildContext context, String bmi, String comment, String result,String bmr) {
     return AppConfig().showSheet(
       context,
       SizedBox(
@@ -517,11 +553,15 @@ class _BMICalculateState extends State<BMICalculate> {
           bmi: bmi,
           comment: comment,
           result: result,
+          bmr: bmr,
         ),
       ),
       circleIcon: bsHeadPinIcon,
-      bottomSheetHeight: 70.h,
+      bottomSheetHeight: 80.h,
       isSheetCloseNeeded: true,
+      sheetCloseOnTap: (){
+        Navigator.pop(context);
+      }
     );
   }
 }

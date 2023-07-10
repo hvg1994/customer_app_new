@@ -1510,6 +1510,10 @@ class _ExistingUserState extends State<ExistingUser> {
 
       _pref.setString(AppConfig.User_Profile,model1.data?.profile ?? "");
       _pref.setString(AppConfig.User_Number,model1.data?.phone ?? "");
+      _pref.setString(AppConfig.User_age,model1.data?.age ?? "");
+      _pref.setString(AppConfig.User_gender,model1.data?.gender ?? "");
+      _pref.setString(AppConfig.User_height,model1.height ?? "");
+      _pref.setString(AppConfig.User_weight,model1.weight ?? "");
 
       print("pref id: ${_pref.getInt(AppConfig.USER_ID)}");
       print("_currentUser: ${_pref.getString(AppConfig.User_Name)}");

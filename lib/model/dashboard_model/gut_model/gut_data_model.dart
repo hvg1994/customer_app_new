@@ -89,12 +89,14 @@ class ConsultationHistory {
   String? consultationStartTime;
   String? consultationEndTime;
   AppointDoctor? appointDoctor;
+  String? shippingDeliveryDate;
 
   ConsultationHistory(
       {this.consultationDate,
         this.consultationStartTime,
         this.consultationEndTime,
-        this.appointDoctor});
+        this.appointDoctor,
+      this.shippingDeliveryDate});
 
   ConsultationHistory.fromJson(Map<String, dynamic> json) {
     consultationDate = json['consultation_date'].toString();
@@ -103,6 +105,7 @@ class ConsultationHistory {
     if (json['Appoint_Doctor'] != null) {
         appointDoctor = AppointDoctor.fromJson(json['Appoint_Doctor']);
     }
+    shippingDeliveryDate = json['shipping_delivery_date'].toString();
   }
 
   Map<String, dynamic> toJson() {
@@ -113,6 +116,7 @@ class ConsultationHistory {
     if (this.appointDoctor != null) {
       data['Appoint_Doctor'] = this.appointDoctor!.toJson();
     }
+    data['shipping_delivery_date'] = this.shippingDeliveryDate;
     return data;
   }
 }
