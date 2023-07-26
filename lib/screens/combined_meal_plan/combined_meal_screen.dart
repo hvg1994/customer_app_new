@@ -1,7 +1,30 @@
+/*
+Now we r showing all day meals to user
+if any restriction to blur upcoming stages than use showblur() function
+for showblur() we need to pass 1,2,3 to make blur we nr not added 0 for this
+
+for making blur we r using ImageFiltered() widget
+
+Api's used->
+NutriDelight
+var getCombinedMealUrl = "${AppConfig().BASE_URL}/api/getData/NutriDelight";
+
+prep treacker api->
+var submitPrepratoryMealTrackUrl = "${AppConfig().BASE_URL}/api/submitForm/prep_meal_submit";
+var getPrepratoryMealTrackUrl = "${AppConfig().BASE_URL}/api/getDataList/tracking_prep_meal";
+
+Detox & Healing tracsubmitTransMealTrackingUrlker url :->
+
+var  = "${AppConfig().BASE_URL}/api/submitData/trans_meal_tracking";
+
+
+ */
+
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter/services.dart';
 import 'package:gwc_customer/model/combined_meal_model/combined_meal_model.dart';
 import 'package:gwc_customer/screens/combined_meal_plan/new_prep_screen.dart';
 import 'package:provider/provider.dart';
@@ -24,12 +47,18 @@ import '../prepratory plan/new/dos_donts_program_screen.dart';
 import 'detox_plan_screen.dart';
 import 'healing_plan_screen.dart';
 import 'new_trans_screen.dart';
+import 'package:flutter_windowmanager/flutter_windowmanager.dart';
 
 class CombinedPrepMealTransScreen extends StatefulWidget {
-  int stage;
+  /// stage by default 0
+  /// 0 -> prep 1 ->detox
+  /// 2 -> Healing 3 -> Nourish
+  final int stage;
   /// to know the navigation
-  /// wether user came from program start screen or not
-  bool fromStartScreen;
+  /// whether user came from program start screen or not
+  final bool fromStartScreen;
+  /// pass this value after healing completed
+  /// this is used for NourishPlanScreen
   final String? postProgramStage;
 
   CombinedPrepMealTransScreen({Key? key, this.stage = 0,
@@ -57,6 +86,7 @@ class _CombinedPrepMealTransScreenState extends State<CombinedPrepMealTransScree
   bool showProgress = false;
   //******* prep stage items ****************
 
+  int? prepTotalDays;
   ChildPrepModel? _childPrepModel;
   bool isPrepTrackerSubmitted = false;
 
@@ -101,6 +131,7 @@ class _CombinedPrepMealTransScreenState extends State<CombinedPrepMealTransScree
       trackerUrl = model.tracker_video_url;
 
       print('prep.values:${model.prep!.childPrepModel!.details}');
+      prepTotalDays = model.prep!.totalDays;
       _childPrepModel = model.prep!.childPrepModel;
 
       if(_childPrepModel!.doDontPdfLink != null) {
@@ -151,26 +182,6 @@ class _CombinedPrepMealTransScreenState extends State<CombinedPrepMealTransScree
         nourishPresentDay = model.nourish!.value!.currentDay;
       }
 
-
-      // print('detox.values:${model.detox!.value!.details!.entries}');
-      // model.detox!.value!.details!.forEach((key, value) {
-      //   print("day: $key");
-      //   print(value.toMap());
-      //   value.data!.forEach((k, v1) {
-      //    print("$k -- $v1");
-      //   });
-      // });
-      //
-      // print('healing.values:${model.healing!.value!.details!.entries}');
-      // model.healing!.value!.details!.forEach((key, value) {
-      //   print("day: $key");
-      //   print(value.toMap());
-      //   value.data!.forEach((k, v1) {
-      //     print("$k -- $v1");
-      //   });
-      // });
-      // print('nourish.values:${model.nourish!.value!.data}');
-
     }
     else {
       ErrorModel model = result as ErrorModel;
@@ -216,6 +227,10 @@ class _CombinedPrepMealTransScreenState extends State<CombinedPrepMealTransScree
   @override
   void initState() {
     super.initState();
+    Future.delayed(Duration.zero, () async { //to run async code in initState
+      await FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_SECURE);
+      //enables secure mode for app, disables screenshot, screen recording
+    });
     _tabController = TabController(vsync: this, length: myTabs.length,
         initialIndex: widget.stage);
 
@@ -238,10 +253,19 @@ class _CombinedPrepMealTransScreenState extends State<CombinedPrepMealTransScree
         backgroundColor: newDashboardGreenButtonColor.withOpacity(0.6),
         title: buildAppBar(
               () {
-            Navigator.pop(context);
+                final _ori = MediaQuery.of(context).orientation;
+                print(_ori.name);
+                bool isPortrait = _ori == Orientation.portrait;
+                if (!isPortrait) {
+                  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+                }
+                else{
+                  Navigator.pop(context);
+                }
           },
         ),
         actions: [
+          // we r showing respective screen on click of help(?) icon
           IconButton(
             icon: Icon(
               Icons.help_outline_rounded,
@@ -300,25 +324,52 @@ class _CombinedPrepMealTransScreenState extends State<CombinedPrepMealTransScree
         ),
         centerTitle: false,
         automaticallyImplyLeading: false,
-        bottom: (showTabs) ? TabBar(
-          controller: _tabController,
-          labelColor: gBlackColor,
-          unselectedLabelColor: gHintTextColor,
-          isScrollable: true,
-          indicatorColor: gPrimaryColor,
-          indicatorPadding: EdgeInsets.symmetric(horizontal: 2.w),
-          unselectedLabelStyle: TextStyle(
-              fontFamily: kFontBook, color: gHintTextColor, fontSize: 9.sp),
-          labelStyle: TextStyle(
-              fontFamily: kFontMedium, color: gBlackColor, fontSize: 11.sp),
-          tabs: myTabs,
-          onTap: (i){
-            setState(() {
-              selectedTab = i;
-              showTabs = true;
-            });
-          },
-        ) : null,
+        bottom:  TabBar(
+        controller: _tabController,
+        labelColor: gBlackColor,
+        unselectedLabelColor: gHintTextColor,
+        isScrollable: true,
+        indicatorColor: gPrimaryColor,
+        indicatorPadding: EdgeInsets.symmetric(horizontal: 2.w),
+        unselectedLabelStyle: TextStyle(
+            fontFamily: kFontBook, color: gHintTextColor, fontSize: 9.sp),
+        labelStyle: TextStyle(
+            fontFamily: kFontMedium, color: gBlackColor, fontSize: 11.sp),
+        tabs: myTabs,
+        onTap: (i){
+          setState(() {
+            selectedTab = i;
+            showTabs = true;
+          });
+        },
+      )
+        // bottom: PreferredSize(preferredSize: Size(0, 0),
+        // child: Consumer<CheckState>(
+        //   builder: (_, data, __){
+        //     if(data.isChanged){
+        //       return TabBar(
+        //         controller: _tabController,
+        //         labelColor: gBlackColor,
+        //         unselectedLabelColor: gHintTextColor,
+        //         isScrollable: true,
+        //         indicatorColor: gPrimaryColor,
+        //         indicatorPadding: EdgeInsets.symmetric(horizontal: 2.w),
+        //         unselectedLabelStyle: TextStyle(
+        //             fontFamily: kFontBook, color: gHintTextColor, fontSize: 9.sp),
+        //         labelStyle: TextStyle(
+        //             fontFamily: kFontMedium, color: gBlackColor, fontSize: 11.sp),
+        //         tabs: myTabs,
+        //         onTap: (i){
+        //           setState(() {
+        //             selectedTab = i;
+        //             showTabs = true;
+        //           });
+        //         },
+        //       );
+        //     }
+        //     return SizedBox();
+        //   },
+        // ),),
       ),
       body: Column(
        children:[
@@ -350,6 +401,7 @@ class _CombinedPrepMealTransScreenState extends State<CombinedPrepMealTransScree
             padding: EdgeInsets.only(top: 0.5.h, left: 3.w),
             child: buildAppBar(
                     () {
+
                   Navigator.pop(context);
                 },
                 showHelpIcon: true,
@@ -532,10 +584,9 @@ class _CombinedPrepMealTransScreenState extends State<CombinedPrepMealTransScree
   prepView() {
     return (_childPrepModel != null ) ? NewPrepScreen(
       prepPlanDetails: _childPrepModel!,
+      totalDays: prepTotalDays!,
     ) : noData();
   }
-
-
 
   detoxView() {
     return (_childPrepModel != null ) ? DetoxPlanScreen(

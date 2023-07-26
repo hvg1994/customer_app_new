@@ -5,7 +5,7 @@ class GetUserScheduleSlotsForService{
 
   GetUserScheduleSlotsForService({required this.repository}) : assert(repository != null);
 
-  Future getShoppingDetailsListService() async{
+  Future getSlotsDaysForScheduleService() async{
     return await repository.getSlotsDaysForScheduleRepo();
   }
 

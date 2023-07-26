@@ -1,3 +1,23 @@
+/*
+Api's used->
+var getCombinedMealUrl = "${AppConfig().BASE_URL}/api/getData/NutriDelight";
+
+when we came from startscreen or if already day submitted than we r hiding the submit button
+
+if already data submitted than we r showing day submitted text
+
+calling trackerwidget here so we need to pass the selected values
+
+this screen is called in combinedmealplan screen under detox tab
+
+we r showing the day number from the details object in response
+
+for tracker we r sending the selected followed/unfollwed to the trackerui
+
+for showing completed clap we using buildDayCompletedClap() function
+
+ */
+
 import 'dart:convert';
 import 'dart:ui';
 
@@ -43,14 +63,23 @@ import '../program_plans/meal_pdf.dart';
 import '../program_plans/program_start_screen.dart';
 
 class DetoxPlanScreen extends StatefulWidget {
+  /// this one not using
   final String? transStage;
+  /// both receipeVideoLink,trackerVideoLink are used for showing video
+  ///
   final String? receipeVideoLink;
   final String? trackerVideoLink;
+  /// used when we came from start program screen
   final bool viewDay1Details;
+  /// from this we are making events touch to ignore
+  /// when came from start screen or for upcoming stages
   final bool showBlur;
+
+  /// from this variable we r showing clap sheet
+  /// when it becomes true
   final bool isHealingStarted;
   final ValueSetter<bool>? onChanged;
-  DetoxPlanScreen(
+  const DetoxPlanScreen(
       {Key? key,
         this.transStage,
         this.receipeVideoLink,
@@ -211,34 +240,7 @@ class _DetoxPlanScreenState extends State<DetoxPlanScreen> {
     }
   }
 
-  // buildDays(ProgramDayModel model) {
-  //   listData = model.data!;
-  //   print("listData.last.isCompleted: ${listData.last.isCompleted}");
-  //   // this is for bottomsheet
-  //   if (listData.last.isCompleted == 1) {
-  //     print("widget.postProgramStage: ${widget.transStage}");
-  //     if (widget.transStage == null || widget.transStage!.isEmpty) {
-  //       WidgetsBinding.instance.addPostFrameCallback((_) {
-  //         if (!isOpened) {
-  //           setState(() {
-  //             isOpened = true;
-  //           });
-  //           buildDayCompletedClap();
-  //         }
-  //       });
-  //     }
-  //   }
-  //   for (int i = 0; i < presentDay!; i++) {
-  //     print(presentDay);
-  //     if (listData[i].isCompleted == 0 && i + 1 != selectedDay!) {
-  //       WidgetsBinding.instance.addPostFrameCallback((_) {
-  //         showMoreTextSheet(listData[i].dayNumber);
-  //       });
-  //       break;
-  //     }
-  //   }
-  // }
-
+  /// this will be showing when user not submitted previous day data and tracker
   showMoreTextSheet(String? dayNumber) {
     return AppConfig().showSheet(
       context,
@@ -301,6 +303,7 @@ class _DetoxPlanScreenState extends State<DetoxPlanScreen> {
     );
   }
 
+  /// this is called when isHealingcompleted becomes true
   buildDayCompletedClap() {
     return AppConfig().showSheet(
         context,
@@ -368,36 +371,6 @@ class _DetoxPlanScreenState extends State<DetoxPlanScreen> {
         bottomSheetHeight: 60.h);
   }
 
-  // startPostProgram() async {
-  //   final res = await PostProgramService(repository: _postProgramRepository)
-  //       .startPostProgramService();
-  //
-  //   if (res.runtimeType == ErrorModel) {
-  //     ErrorModel model = res as ErrorModel;
-  //     Navigator.pop(context);
-  //     AppConfig().showSnackbar(context, model.message ?? '', isError: true);
-  //   } else {
-  //     Navigator.pop(context);
-  //     if (res.runtimeType == StartPostProgramModel) {
-  //       StartPostProgramModel model = res as StartPostProgramModel;
-  //       print("start program: ${model.response}");
-  //       AppConfig().showSnackbar(context, "Post Program started" ?? '');
-  //       Future.delayed(Duration(seconds: 2)).then((value) {
-  //         Navigator.pushAndRemoveUntil(
-  //             context,
-  //             MaterialPageRoute(builder: (_) => DashboardScreen()),
-  //                 (route) => true);
-  //       });
-  //     }
-  //   }
-  // }
-  //
-  // final PostProgramRepository _postProgramRepository = PostProgramRepository(
-  //   apiClient: ApiClient(
-  //     httpClient: http.Client(),
-  //   ),
-  // );
-
   bool _checked = false;
 
   // video player code
@@ -413,7 +386,6 @@ class _DetoxPlanScreenState extends State<DetoxPlanScreen> {
   void initState() {
     super.initState();
     getProgramData();
-
 
     // if (!widget.viewDay1Details) getProgramDays();
     // if (widget.viewDay1Details) {
@@ -538,28 +510,6 @@ class _DetoxPlanScreenState extends State<DetoxPlanScreen> {
   //   print(result);
   // }
 
-  showAlert(
-      BuildContext context,
-      String status, {
-        bool isSingleButton = true,
-        required VoidCallback positiveButton,
-      }) {
-    return openAlertBox(
-        context: context,
-        barrierDismissible: false,
-        content: errorMsg,
-        titleNeeded: false,
-        isSingleButton: isSingleButton,
-        positiveButtonName: (status == '401') ? 'Go Back' : 'Retry',
-        positiveButton: positiveButton,
-        negativeButton: isSingleButton
-            ? null
-            : () {
-          Navigator.pop(context);
-          Navigator.pop(context);
-        },
-        negativeButtonName: isSingleButton ? null : 'Go Back');
-  }
 
   @override
   void dispose() async {
@@ -604,6 +554,8 @@ class _DetoxPlanScreenState extends State<DetoxPlanScreen> {
 
   bool showShimmer = false;
 
+  /// this is used to get all the days
+  /// we r showing days from the list not from the total_days
   dayItems(int index) {
     return GestureDetector(
       onTap: (widget.viewDay1Details)
@@ -686,6 +638,7 @@ class _DetoxPlanScreenState extends State<DetoxPlanScreen> {
     );
   }
 
+  /// this is called when onclick of days
   getMealFromDay(int day){
     lst.clear();
     statusList.clear();
@@ -1015,14 +968,21 @@ class _DetoxPlanScreenState extends State<DetoxPlanScreen> {
             SizedBox(height: 2.h),
             Text(
               // "Day ${widget.day} Meal Plan",
-              (selectedDay == null)
-                  ? "Day Detox Plan"
+              (selectedDay == null || presentDay == 0)
+                  ? "Detox Plan"
                   : "Day ${selectedDay} Detox Plan",
               style: TextStyle(
                   fontFamily: eUser().mainHeadingFont,
                   color: eUser().mainHeadingColor,
                   fontSize:
                   eUser().mainHeadingFontSize),
+            ),
+            Text(
+              (presentDay == 0) ? 'Your Detox will start from tomorrow' : 'Day ${presentDay} of Day ${totalDays}',
+              style: TextStyle(
+                  fontFamily: kFontMedium,
+                  color: eUser().mainHeadingColor,
+                  fontSize: 10.sp),
             ),
             // not showing these when we came from slide screen
             // Visibility(
@@ -1033,7 +993,7 @@ class _DetoxPlanScreenState extends State<DetoxPlanScreen> {
             // ),
             SizedBox(height: 1.h),
             ...groupList(),
-            Visibility(
+            if(presentDay != 0)Visibility(
               visible: (statusList.isNotEmpty &&
                   statusList.values.any((element) =>
                       element
@@ -1110,7 +1070,7 @@ class _DetoxPlanScreenState extends State<DetoxPlanScreen> {
                 ),
               ),
             ),
-            Visibility(
+            if(presentDay != 0) Visibility(
               visible: buttonVisibility(),
               child: Center(
                 child: IntrinsicWidth(
@@ -1337,116 +1297,7 @@ class _DetoxPlanScreenState extends State<DetoxPlanScreen> {
     );
   }
 
-  buildMealPlan() {
-    return Container(
-      width: double.maxFinite,
-      margin: EdgeInsets.symmetric(horizontal: 2.w, vertical: 2.h),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.3),
-            blurRadius: 20,
-            offset: const Offset(2, 10),
-          ),
-        ],
-      ),
-      child: Stack(
-        children: [
-          Container(
-            height: 5.h,
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(8),
-                    topRight: Radius.circular(8)),
-                color: tableHeadingBg),
-            // child: Row(
-            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //   children: [
-            //     Container(
-            //       margin: EdgeInsets.only(left:10),
-            //       child: Text(
-            //         'Time',
-            //         style: TextStyle(
-            //           color: gWhiteColor,
-            //           fontSize: 11.sp,
-            //           fontFamily: "GothamMedium",
-            //         ),
-            //       ),
-            //     ),
-            //     Text(
-            //       'Meal/Yoga',
-            //       style: TextStyle(
-            //         color: gWhiteColor,
-            //         fontSize: 11.sp,
-            //         fontFamily: "GothamMedium",
-            //       ),
-            //     ),
-            //     Container(
-            //       margin: EdgeInsets.only(right:10),
-            //       child: Text(
-            //         'Status',
-            //         style: TextStyle(
-            //           color: gWhiteColor,
-            //           fontSize: 11.sp,
-            //           fontFamily: "GothamMedium",
-            //         ),
-            //       ),
-            //     ),
-            //   ],
-            // ),
-          ),
-          DataTable(
-            headingTextStyle: TextStyle(
-              color: gWhiteColor,
-              fontSize: 5.sp,
-              fontFamily: "GothamMedium",
-            ),
-            headingRowHeight: 5.h,
-            horizontalMargin: 2.w,
-            // columnSpacing: 60,
-            dataRowHeight: getRowHeight(),
-            // headingRowColor: MaterialStateProperty.all(const Color(0xffE06666)),
-            columns: <DataColumn>[
-              DataColumn(
-                label: Text(
-                  ' Time',
-                  style: TextStyle(
-                    color: eUser().userFieldLabelColor,
-                    fontSize: 11.sp,
-                    fontFamily: kFontBold,
-                  ),
-                ),
-              ),
-              DataColumn(
-                label: Text(
-                  'Meal/Yoga',
-                  style: TextStyle(
-                    color: eUser().userFieldLabelColor,
-                    fontSize: 11.sp,
-                    fontFamily: kFontBold,
-                  ),
-                ),
-              ),
-              DataColumn(
-                label: Text(
-                  ' Status',
-                  style: TextStyle(
-                    color: eUser().userFieldLabelColor,
-                    fontSize: 11.sp,
-                    fontFamily: kFontBold,
-                  ),
-                ),
-              ),
-            ],
-            rows: dataRowWidget(),
-          ),
-        ],
-      ),
-    );
-  }
-
+  /// meals view
   groupList() {
     List<Column> _data = [];
 
@@ -1842,6 +1693,7 @@ class _DetoxPlanScreenState extends State<DetoxPlanScreen> {
     return _data;
   }
 
+  /// followed and unfollowed sheet
   showFollowedSheet(ChildMealPlanDetailsModel1 e) {
     print("eeeee:$e");
     return AppConfig().showSheet(context, showFollowWidget(e),
@@ -1852,7 +1704,7 @@ class _DetoxPlanScreenState extends State<DetoxPlanScreen> {
           Navigator.pop(context);
         });
   }
-
+  // followed and unfollowed sheet view
   showFollowWidget(ChildMealPlanDetailsModel1 e) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1945,401 +1797,9 @@ class _DetoxPlanScreenState extends State<DetoxPlanScreen> {
     );
   }
 
-  showDataRow() {
-    return mealPlanData1.entries.map((e) {
-      return DataRow(cells: [
-        DataCell(
-          Text(
-            'e.mealTime.toString()',
-            style: TextStyle(
-              height: 1.5,
-              color: gTextColor,
-              fontSize: 8.sp,
-              fontFamily: "GothamBold",
-            ),
-          ),
-        ),
-        DataCell(
-          GestureDetector(
-            // onTap: e.url == null ? null : e.type == 'item' ? () => showPdf(e.url!) : () => showVideo(e),
-            child: Row(
-              children: [
-                'e.type' == 'yoga'
-                    ? GestureDetector(
-                  onTap: () {},
-                  child: Image(
-                    image: const AssetImage(
-                        "assets/images/noun-play-1832840.png"),
-                    height: 2.h,
-                  ),
-                )
-                    : const SizedBox(),
-                if ('e.type ' == 'yoga') SizedBox(width: 2.w),
-                Expanded(
-                  child: Text(
-                    "e.name.toString()",
-                    maxLines: 3,
-                    textAlign: TextAlign.start,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      height: 1.5,
-                      color: gTextColor,
-                      fontSize: 8.sp,
-                      fontFamily: "GothamBook",
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          placeholder: true,
-        ),
-        DataCell(
-          // (widget.isCompleted == null) ?
-            Theme(
-              data: Theme.of(context).copyWith(
-                highlightColor: Colors.transparent,
-                splashColor: Colors.transparent,
-              ),
-              child: oldPopup(e.value.first),
-            )
-          // : Text(e.status ?? '',
-          //     textAlign: TextAlign.start,
-          //     style: TextStyle(
-          //       fontFamily: "GothamBook",
-          //       color: gTextColor,
-          //       fontSize: 8.sp,
-          //     ),
-          //   ),
-        ),
-        // DataCell(
-        //   Text(
-        //     e.key.toString(),
-        //     style: TextStyle(
-        //       height: 1.5,
-        //       color: gTextColor,
-        //       fontSize: 8.sp,
-        //       fontFamily: "GothamBold",
-        //     ),
-        //   ),
-        // ),
-        // DataCell(
-        //   ListView.builder(
-        //       shrinkWrap: true,
-        //       itemCount: e.value.length,
-        //       itemBuilder: (_, index){
-        //         return GestureDetector(
-        //           onTap: e.value[index].url == null ? null : e.value[index].url == 'item' ? () => showPdf(e.value[index].url!) : () => showVideo(e.value[index]),
-        //           child: Row(
-        //             mainAxisSize: MainAxisSize.min,
-        //             children: [
-        //               e.value[index].type == 'yoga'
-        //                   ? GestureDetector(
-        //                 onTap: () {},
-        //                 child: Image(
-        //                   image: const AssetImage(
-        //                       "assets/images/noun-play-1832840.png"),
-        //                   height: 2.h,
-        //                 ),
-        //               )
-        //                   : const SizedBox(),
-        //               if(e.value[index].type == 'yoga') SizedBox(width: 2.w),
-        //               Expanded(
-        //                 child: Text(
-        //                   "${e.value.map((value) => value.name)}",
-        //                   // " ${e.name.toString()}",
-        //                   maxLines: 3,
-        //                   textAlign: TextAlign.start,
-        //                   overflow: TextOverflow.ellipsis,
-        //                   style: TextStyle(
-        //                     height: 1.5,
-        //                     color: gTextColor,
-        //                     fontSize: 8.sp,
-        //                     fontFamily: "GothamBook",
-        //                   ),
-        //                 ),
-        //               ),
-        //             ],
-        //           ),
-        //         );
-        //       }
-        //   ),
-        //   placeholder: true,
-        // ),
-        // DataCell(
-        //     Theme(
-        //       data: Theme.of(context).copyWith(
-        //         highlightColor: Colors.transparent,
-        //         splashColor: Colors.transparent,
-        //       ),
-        //       child: oldPopup(e.value[0]),
-        //     )
-        //   // (widget.isCompleted == null) ?
-        //   //   ListView.builder(
-        //   //     shrinkWrap: true,
-        //   //       itemBuilder: (_, index){
-        //   //         return ;
-        //   //       }
-        //   //   )
-        //   // : Text(e.status ?? '',
-        //   //     textAlign: TextAlign.start,
-        //   //     style: TextStyle(
-        //   //       fontFamily: "GothamBook",
-        //   //       color: gTextColor,
-        //   //       fontSize: 8.sp,
-        //   //     ),
-        //   //   ),
-        // ),
-      ]);
-    });
-    return shoppingData!
-        .map((e) => DataRow(
-      cells: [
-        DataCell(
-          Text(
-            e.mealTime.toString(),
-            style: TextStyle(
-              height: 1.5,
-              color: gTextColor,
-              fontSize: 8.sp,
-              fontFamily: "GothamBold",
-            ),
-          ),
-        ),
-        DataCell(
-          GestureDetector(
-            onTap: e.url == null
-                ? null
-                : e.type == 'item'
-                ? () => showPdf(e.url!, e.name)
-                : () => showVideo(e),
-            child: Row(
-              children: [
-                e.type == 'yoga'
-                    ? GestureDetector(
-                  onTap: () {},
-                  child: Image(
-                    image: const AssetImage(
-                        "assets/images/noun-play-1832840.png"),
-                    height: 2.h,
-                  ),
-                )
-                    : const SizedBox(),
-                if (e.type == 'yoga') SizedBox(width: 2.w),
-                Expanded(
-                  child: Text(
-                    " ${e.name.toString()}",
-                    maxLines: 3,
-                    textAlign: TextAlign.start,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      height: 1.5,
-                      color: gTextColor,
-                      fontSize: 8.sp,
-                      fontFamily: "GothamBook",
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          placeholder: true,
-        ),
-        DataCell(
-          // (widget.isCompleted == null) ?
-            Theme(
-              data: Theme.of(context).copyWith(
-                highlightColor: Colors.transparent,
-                splashColor: Colors.transparent,
-              ),
-              child: oldPopup(e),
-            )
-          // : Text(e.status ?? '',
-          //     textAlign: TextAlign.start,
-          //     style: TextStyle(
-          //       fontFamily: "GothamBook",
-          //       color: gTextColor,
-          //       fontSize: 8.sp,
-          //     ),
-          //   ),
-        ),
-      ],
-    ))
-        .toList();
-  }
-
-  List<DataRow> dataRowWidget() {
-    List<DataRow> _data = [];
-    mealPlanData1.forEach((dayTime, value) {
-      _data.add(DataRow(cells: [
-        DataCell(
-          Text(
-            dayTime,
-            style: TextStyle(
-              height: 1.5,
-              color: gTextColor,
-              fontSize: 8.sp,
-              fontFamily: kFontMedium,
-            ),
-          ),
-        ),
-        DataCell(
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              ...value
-                  .map((e) => GestureDetector(
-                onTap: e.url == null
-                    ? null
-                    : e.type == 'item'
-                    ? () => showPdf(e.url!, e.name)
-                    : () => showVideo(e),
-                child: Row(
-                  children: [
-                    e.type == 'yoga'
-                        ? GestureDetector(
-                      onTap: () {},
-                      child: Image(
-                        image: const AssetImage(
-                            "assets/images/noun-play-1832840.png"),
-                        height: 2.h,
-                      ),
-                    )
-                        : const SizedBox(),
-                    if (e.type == 'yoga') SizedBox(width: 2.w),
-                    Expanded(
-                      child: Text(
-                        " ${e.name.toString()}",
-                        maxLines: 3,
-                        textAlign: TextAlign.start,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          height: 1.5,
-                          color: gTextColor,
-                          fontSize: 8.sp,
-                          fontFamily: kFontMedium,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ))
-                  .toList()
-            ],
-          ),
-          placeholder: true,
-        ),
-        DataCell(
-          // (widget.isCompleted == null) ?
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              // shrinkWrap: true,
-              children: [
-                ...value.map((e) {
-                  return Theme(
-                    data: Theme.of(context).copyWith(
-                      highlightColor: Colors.transparent,
-                      splashColor: Colors.transparent,
-                    ),
-                    child: oldPopup(e),
-                  );
-                }).toList()
-              ],
-            )
-          // : Text(e.status ?? '',
-          //     textAlign: TextAlign.start,
-          //     style: TextStyle(
-          //       fontFamily: "GothamBook",
-          //       color: gTextColor,
-          //       fontSize: 8.sp,
-          //     ),
-          //   ),
-        ),
-      ]));
-    });
-    return _data;
-  }
-
-  showDataRow1() {
-    return shoppingData!
-        .map((e) => DataRow(
-      cells: [
-        DataCell(
-          Text(
-            e.mealTime.toString(),
-            style: TextStyle(
-              height: 1.5,
-              color: gTextColor,
-              fontSize: 8.sp,
-              fontFamily: "GothamBold",
-            ),
-          ),
-        ),
-        DataCell(
-          GestureDetector(
-            onTap: e.url == null
-                ? null
-                : e.type == 'item'
-                ? () => showPdf(e.url!, e.name)
-                : () => showVideo(e),
-            child: Row(
-              children: [
-                e.type == 'yoga'
-                    ? GestureDetector(
-                  onTap: () {},
-                  child: Image(
-                    image: const AssetImage(
-                        "assets/images/noun-play-1832840.png"),
-                    height: 2.h,
-                  ),
-                )
-                    : const SizedBox(),
-                if (e.type == 'yoga') SizedBox(width: 2.w),
-                Expanded(
-                  child: Text(
-                    " ${e.name.toString()}",
-                    maxLines: 3,
-                    textAlign: TextAlign.start,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      height: 1.5,
-                      color: gTextColor,
-                      fontSize: 8.sp,
-                      fontFamily: "GothamBook",
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          placeholder: true,
-        ),
-        DataCell(
-          // (widget.isCompleted == null) ?
-            Theme(
-              data: Theme.of(context).copyWith(
-                highlightColor: Colors.transparent,
-                splashColor: Colors.transparent,
-              ),
-              child: oldPopup(e),
-            )
-          // : Text(e.status ?? '',
-          //     textAlign: TextAlign.start,
-          //     style: TextStyle(
-          //       fontFamily: "GothamBook",
-          //       color: gTextColor,
-          //       fontSize: 8.sp,
-          //     ),
-          //   ),
-        ),
-      ],
-    ))
-        .toList();
-  }
-
+  /// in this param we r adding followed and unfollwed selected values with id
+  /// based on that we r showing in ui
+  /// we need to pass this param to the api
   Map statusList = {};
 
   List lst = [];
@@ -2615,7 +2075,7 @@ class _DetoxPlanScreenState extends State<DetoxPlanScreen> {
                     textAlign: TextAlign.start,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                        fontFamily: "GothamBook",
+                        fontFamily: kFontBook,
                         color: statusList.isEmpty
                             ? textColor
                             : getTextColor(e.itemId!) ?? textColor,
@@ -2993,9 +2453,12 @@ class _DetoxPlanScreenState extends State<DetoxPlanScreen> {
 
     print("mealPlanData1: $mealPlanData1");
 
-    if ((listData.last.isCompleted == 1 && _childDetoxModel!.isDetoxCompleted == "1") || _childDetoxModel!.isDetoxCompleted == "1") {
-      print("widget.isHealingStarted: ${widget!.isHealingStarted}");
-      if(widget!.isHealingStarted! == false){
+    /// made || instead of &&
+    /// if && -> than clap will get after isDetoxCompleted becomes 1-> this will happpens from cron or when button clicked
+    /// if || -> than clap will show once last day has completed
+    ///
+    if ((listData.last.isCompleted == 1 || _childDetoxModel!.isDetoxCompleted == "1") || _childDetoxModel!.isDetoxCompleted == "1") {
+      if(widget.isHealingStarted == false){
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (!isOpened) {
             setState(() {

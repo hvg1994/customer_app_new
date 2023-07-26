@@ -1,4 +1,6 @@
-import 'dart:convert';
+/*
+This screen will be base class which will holds bottom sheet
+ */
 
 import 'package:flutter/material.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
@@ -10,7 +12,6 @@ import 'package:gwc_customer/screens/prepratory%20plan/new/new_transition_design
 import 'package:gwc_customer/screens/prepratory%20plan/new/preparatory_new_screen.dart';
 import 'package:gwc_customer/screens/profile_screens/settings_screen.dart';
 import 'package:gwc_customer/screens/program_plans/program_start_screen.dart';
-import 'package:gwc_customer/screens/program_plans/widget/radial/radial_meal.dart';
 import 'package:gwc_customer/screens/testimonial_list_screen/testimonial_list_screen.dart';
 import 'package:gwc_customer/widgets/exit_widget.dart';
 import 'package:sizer/sizer.dart';
@@ -18,16 +19,9 @@ import 'package:gwc_customer/screens/home_screens/level_status.dart';
 import '../model/evaluation_from_models/evaluation_model_format1.dart';
 import '../utils/app_config.dart';
 import '../widgets/constants.dart';
-import '../widgets/video/normal_video.dart';
-import 'combined_meal_plan/combined_meal_screen.dart';
-import 'combined_meal_plan/new_prep_screen.dart';
-import 'evalution_form/evaluation_upload_report.dart';
 import 'feed_screens/feeds_list.dart';
-import 'gut_list_screens/dashboard_stacked_card.dart';
-import 'gut_list_screens/new_dashboard_stages2.dart';
 import 'gut_list_screens/new_list_stages_screen.dart';
 import 'home_screens/home_screen.dart';
-import 'home_screens/new_home_screen/water_level_screen.dart';
 import 'profile_screens/call_support_method.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -45,6 +39,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   final int save_prev_index = 2;
 
+  /// this param is used to show FAB
+  /// when this false than we r not showing FAB
   bool showFab = true;
 
   // void _onItemTapped(int index) {
@@ -91,7 +87,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           // return CombinedPrepMealTransScreen(stage: 1,);
           // this one
           return const LevelStatus();
-          return HomeScreens();
+          // return HomeScreens();
 
         }
       case 1:
@@ -144,6 +140,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   AppConfig.KALEYRA_CHAT_SUCCESS_ID);
               print("chatSuccessId: $chatSuccessId");
               print("chatToken: $accessToken");
+
+              // when successId is null or empty than hiding FAB
               if(chatSuccessId == ""){
                 setState(() {
                   showFab = false;
@@ -256,6 +254,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   }
 
+  /// on back button press if we r in other index except 2
+  /// than we r moving to 2nd index
   Future<bool> _onWillPop() {
     print('back pressed');
     print("_bottomNavIndex: $_bottomNavIndex");

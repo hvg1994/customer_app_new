@@ -1,3 +1,7 @@
+/*
+this file is used as common functions for the call support methods
+ */
+
 import 'package:gwc_customer/services/profile_screen_service/settings_service.dart';
 import 'package:gwc_customer/utils/app_config.dart';
 

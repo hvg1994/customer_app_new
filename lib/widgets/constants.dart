@@ -77,6 +77,11 @@ double headingFont = 12.sp;
 double subHeadingFont = 10.sp;
 double questionFont = 10.sp;
 
+double smTextFontSize = 8.5.sp;
+double smText9FontSize = 9.sp;
+
+
+
 
 
 const kBottomSheetHeadYellow = Color(0xffFFE281);
@@ -98,6 +103,44 @@ const bsHeadBellIcon = "assets/images/bs-head-bell.png";
 const bsHeadBulbIcon = "assets/images/bs-head-bulb.png";
 const bsHeadStarsIcon = "assets/images/bs-head-stars.png";
 
+TextStyle mainTextField() {
+  return TextStyle(
+    fontFamily: kFontMedium,
+    color: gTextColor,
+    fontSize: subHeadingFont,
+  );
+}
+
+TextStyle listMainHeading() {
+  return TextStyle(
+    fontFamily: kFontBold,
+    color: gTextColor,
+    fontSize: headingFont,
+  );
+}
+
+TextStyle listSubHeading() {
+  return TextStyle(
+    fontFamily: kFontMedium,
+    color: gTextColor,
+    fontSize: subHeadingFont,
+  );
+}
+TextStyle otherText() {
+  return TextStyle(
+    fontFamily: kFontBook,
+    color: gHintTextColor,
+    fontSize: smTextFontSize,
+  );
+}
+
+TextStyle otherText9({Color? fontColor}) {
+  return TextStyle(
+    fontFamily: kFontBook,
+    color: fontColor ?? gTextColor,
+    fontSize: smText9FontSize,
+  );
+}
 
 // existing user
 class eUser{
@@ -234,4 +277,22 @@ class MealPlanConstants{
   var benifitsFont = kFontBook;
   double benifitsFontSize = 10.sp;
 
+}
+
+buildTimeDate({DateTime? dateTime}) {
+  DateTime date = dateTime ?? DateTime.now();
+  String amPm = 'AM';
+  if (date.hour >= 12) {
+    amPm = 'PM';
+  }
+  String hour = date.hour.toString();
+  if (date.hour > 12) {
+    hour = (date.hour - 12).toString();
+  }
+
+  String minute = date.minute.toString();
+  if (date.minute < 10) {
+    minute = '0${date.minute}';
+  }
+  return "$hour : $minute $amPm";
 }

@@ -1,4 +1,17 @@
 // ignore_for_file: deprecated_member_use
+
+/*
+roleId 1-> means its doctor
+roleId 2-> means its doctor
+roleId 3-> means its success
+
+we r using WidgetsBindingObserver to observe the screen lifecycle to monitor for the
+kaleyra video call
+
+so when
+Api's used->
+
+ */
 import 'package:flutter/foundation.dart';
 import 'package:gwc_customer/model/consultation_model/appointment_booking/child_doctor_model.dart';
 import 'package:intl/intl.dart';
@@ -35,15 +48,16 @@ class DoctorSlotsDetailsScreen extends StatefulWidget {
   final String bookingDate;
   final String bookingTime;
 
-  /// this parameter will be called from gutlist screen
+  /// this parameter will be called from dashboard screen
   final bool isFromDashboard;
 
-  /// this parameter will be called from gutlist screen
+  /// this parameter will be called from dashboard screen
   final Map? dashboardValueMap;
 
   /// this is for post program
   /// when this all other parameters will null
   final bool isPostProgram;
+
   const DoctorSlotsDetailsScreen(
       {Key? key,
         this.data,
@@ -82,6 +96,7 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen>
     // TODO: implement initState
     super.initState();
     print("initstate");
+    // need to call this to get observe screen lifecycle
     WidgetsBinding.instance.addObserver(this);
 
     if (widget.isFromDashboard) {
@@ -94,6 +109,7 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen>
     if (!widget.isPostProgram && !widget.isFromDashboard) {
       widget.data?.team?.teamMember?.forEach((element) {
         if (element.user != null) {
+          // roleId 2-> means its doctor
           if (element.user!.roleId == "2") {
             doctorNames.add('Dr. ${element.user!.name}' ?? '');
             doctorName = 'Dr. ${element.user!.name}';
@@ -111,6 +127,9 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen>
       }
     }
     ChildAppointmentDetails? model;
+    /*
+    this is used to show the doctor name, experience, image
+     */
     if (widget.isFromDashboard || widget.isPostProgram) {
       if (widget.isPostProgram) {
         if (widget.data?.team?.teamMember == null) {
@@ -143,7 +162,8 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen>
           kaleyraUID = _pref?.getString(AppConfig.KALEYRA_USER_ID) ?? '';
           getAccessToken(kaleyraUID);
         }
-      } else {
+      }
+      else {
         model = ChildAppointmentDetails.fromJson(
             Map.from(widget.dashboardValueMap!));
         _childDoctorModel = model.doctor;
@@ -166,13 +186,7 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen>
     print("doctorName: $doctorName");
   }
 
-  @override
-  void didChangeDependencies() {
-    // TODO: implement didChangeDependencies
-    super.didChangeDependencies();
-    print("didChangeDependencies");
-  }
-
+/// getAccessToken is used for to get from kaleyra
   Future getAccessToken(String kaleyraId) async {
     print("getAccessToken: $kaleyraId");
     final res = await ConsultationService(repository: _consultationRepository)
@@ -198,15 +212,10 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen>
     return '$hour:$minute';
   }
 
-  @override
-  void didUpdateWidget(covariant DoctorSlotsDetailsScreen oldWidget) {
-    // TODO: implement didUpdateWidget
-    super.didUpdateWidget(oldWidget);
-    print("didUpdate");
-  }
 
   @override
   void dispose() {
+    // here we need to dispose the observer else app will gets lag
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
@@ -737,6 +746,9 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen>
     );
   }
 
+  /// this used for kaleyra video
+  /// when call ends w r going back
+  /// we r using ConsultationService to monitor the call events
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     print("didChangeAppLifecycleState");
@@ -744,8 +756,7 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen>
       case AppLifecycleState.resumed:
         print("app in resumed");
         if (Provider.of<ConsultationService>(context, listen: false)
-            .callEvent ==
-            "onCallEnded") {
+            .callEvent == "onCallEnded") {
           Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(
@@ -766,6 +777,7 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen>
     }
   }
 
+  /// this popup we r showing when user will click on join before scheduled time
   showJoinPopup() {
     return AppConfig().showSheet(
       context,
@@ -827,69 +839,6 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen>
       bottomSheetHeight: 45.h,
       isDismissible: true,
     );
-    return showDialog(
-        context: context,
-        builder: (_) {
-          return Dialog(
-            shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    "You're early to the appointment! \nPlease join 5 minutes before the scheduled time for a successful admission.",
-                    style: TextStyle(
-                        fontFamily: kFontMedium,
-                        fontSize: 10.5.sp,
-                        height: 1.3,
-                        color: gTextColor),
-                    textAlign: TextAlign.center,
-                  ),
-                  SizedBox(
-                    height: 1.h,
-                  ),
-                  MediaQuery(
-                    data:
-                    MediaQuery.of(context).copyWith(textScaleFactor: 0.75),
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      child: Container(
-                        width: 40.w,
-                        height: 4.h,
-                        margin: EdgeInsets.symmetric(vertical: 4.h),
-                        padding: EdgeInsets.symmetric(
-                            vertical: 1.h, horizontal: 10.w),
-                        decoration: BoxDecoration(
-                          color: eUser().buttonColor,
-                          borderRadius:
-                          BorderRadius.circular(eUser().buttonBorderRadius),
-                          // border: Border.all(
-                          //     color: eUser().buttonBorderColor,
-                          //     width: eUser().buttonBorderWidth
-                          // ),
-                        ),
-                        child: Center(
-                          child: Text(
-                            'Go Back',
-                            style: TextStyle(
-                              fontFamily: eUser().buttonTextFont,
-                              color: eUser().buttonTextColor,
-                              fontSize: eUser().buttonTextSize,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        });
   }
 
   void getEvaluationReport() {
@@ -909,20 +858,8 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen>
     ),
   );
 
-  getChatGroupId() async {
-    final res =
-    await ChatService(repository: chatRepository).getChatGroupIdService();
-    String? chatGroupId;
-    if (res.runtimeType == GetChatGroupIdModel) {
-      GetChatGroupIdModel model = res as GetChatGroupIdModel;
-      _pref!.setString(AppConfig.GROUP_ID, model.group ?? '');
-    } else {
-      ErrorModel model = res as ErrorModel;
-      AppConfig()
-          .showSnackbar(context, model.message.toString(), isError: true);
-    }
-  }
 
+  // we r not using zoom
   void launchZoomUrl() async {
     if (kDebugMode) {
       print(widget.data?.patientName);

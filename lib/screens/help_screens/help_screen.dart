@@ -40,7 +40,8 @@ class _HelpScreenState extends State<HelpScreen> {
         "image": "assets/images/help_screens/$i.png"
       });
     }
-    SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive, overlays: [SystemUiOverlay.bottom]);
+    // setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
     animatePageview();
   }
 

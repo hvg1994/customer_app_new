@@ -1,3 +1,17 @@
+/*
+we hiding 2nd video player which is for about program video
+
+we r storing the pdf about program pdf in local using [getCachedPdfViewer]
+
+from getCachedPdfViewer we r checking data is null or not -
+*  if null than fetching from Network else fetching from file
+
+Api used->
+var getAboutProgramUrl = "${AppConfig().BASE_URL}/api/list/welcome_screen";
+
+
+ */
+
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -387,7 +401,6 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
                                 );
                               }
                               else{
-
                                 print("from: file ${snapFile.data}");
                                 return SfPdfViewer.file(
                                   snapFile.data as File,
@@ -539,71 +552,6 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
         ),
       );
     }
-    // else if(_abtProgramPlayerController != null){
-    //   return Listener(
-    //     onPointerDown: (_) async{
-    //       print("pressed");
-    //       if(_videoPlayerController != null){
-    //         if(await _videoPlayerController!.isPlaying() == true){
-    //           _videoPlayerController!.pause();
-    //           // _abtProgramPlayerController!.play();
-    //         }
-    //       }
-    //     },
-    //     child: AspectRatio(
-    //       aspectRatio: 16/9,
-    //       child: Container(
-    //         decoration: BoxDecoration(
-    //           borderRadius: BorderRadius.circular(5),
-    //           border: Border.all(color: gPrimaryColor, width: 1),
-    //           // boxShadow: [
-    //           //   BoxShadow(
-    //           //     color: Colors.grey.withOpacity(0.3),
-    //           //     blurRadius: 20,
-    //           //     offset: const Offset(2, 10),
-    //           //   ),
-    //           // ],
-    //         ),
-    //         child: ClipRRect(
-    //           borderRadius: BorderRadius.circular(5),
-    //           child: Center(
-    //             child: VlcPlayerWithControls(
-    //               key: _abtProgramVideoKey,
-    //               controller: _abtProgramPlayerController!,
-    //               showVolume: false,
-    //               showVideoProgress: false,
-    //               seekButtonIconSize: 10.sp,
-    //               playButtonIconSize: 14.sp,
-    //               replayButtonSize: 10.sp,
-    //             ),
-    //             // child: VlcPlayer(
-    //             //   controller: _videoPlayerController!,
-    //             //   aspectRatio: 16 / 9,
-    //             //   virtualDisplay: false,
-    //             //   placeholder: Center(child: CircularProgressIndicator()),
-    //             // ),
-    //           ),
-    //         ),
-    //         // child: Stack(
-    //         //   children: <Widget>[
-    //         //     ClipRRect(
-    //         //       borderRadius: BorderRadius.circular(5),
-    //         //       child: Center(
-    //         //         child: VlcPlayer(
-    //         //           controller: _videoPlayerController!,
-    //         //           aspectRatio: 16 / 9,
-    //         //           virtualDisplay: false,
-    //         //           placeholder: Center(child: CircularProgressIndicator()),
-    //         //         ),
-    //         //       ),
-    //         //     ),
-    //         //     ControlsOverlay(controller: _videoPlayerController,)
-    //         //   ],
-    //         // ),
-    //       ),
-    //     ),
-    //   );
-    // }
     else {
       return SizedBox.shrink();
     }
@@ -673,71 +621,6 @@ class _AboutTheProgramState extends State<AboutTheProgram> {
         ),
       );
     }
-    // if(_videoPlayerController != null){
-    //   return Listener(
-    //     onPointerDown: (_) async{
-    //       print("pressed");
-    //       if(_abtProgramPlayerController != null){
-    //         if(await _abtProgramPlayerController!.isPlaying() == true){
-    //           _abtProgramPlayerController!.pause();
-    //           // _abtProgramPlayerController!.play();
-    //         }
-    //       }
-    //     },
-    //     child: AspectRatio(
-    //       aspectRatio: 16/9,
-    //       child: Container(
-    //         decoration: BoxDecoration(
-    //           borderRadius: BorderRadius.circular(5),
-    //           border: Border.all(color: gPrimaryColor, width: 1),
-    //           // boxShadow: [
-    //           //   BoxShadow(
-    //           //     color: Colors.grey.withOpacity(0.3),
-    //           //     blurRadius: 20,
-    //           //     offset: const Offset(2, 10),
-    //           //   ),
-    //           // ],
-    //         ),
-    //         child: ClipRRect(
-    //           borderRadius: BorderRadius.circular(5),
-    //           child: Center(
-    //             child: VlcPlayerWithControls(
-    //               key: _key,
-    //               controller: _videoPlayerController!,
-    //               showVolume: false,
-    //               showVideoProgress: false,
-    //               seekButtonIconSize: 10.sp,
-    //               playButtonIconSize: 14.sp,
-    //               replayButtonSize: 10.sp,
-    //             ),
-    //             // child: VlcPlayer(
-    //             //   controller: _videoPlayerController!,
-    //             //   aspectRatio: 16 / 9,
-    //             //   virtualDisplay: false,
-    //             //   placeholder: Center(child: CircularProgressIndicator()),
-    //             // ),
-    //           ),
-    //         ),
-    //         // child: Stack(
-    //         //   children: <Widget>[
-    //         //     ClipRRect(
-    //         //       borderRadius: BorderRadius.circular(5),
-    //         //       child: Center(
-    //         //         child: VlcPlayer(
-    //         //           controller: _videoPlayerController!,
-    //         //           aspectRatio: 16 / 9,
-    //         //           virtualDisplay: false,
-    //         //           placeholder: Center(child: CircularProgressIndicator()),
-    //         //         ),
-    //         //       ),
-    //         //     ),
-    //         //     ControlsOverlay(controller: _videoPlayerController,)
-    //         //   ],
-    //         // ),
-    //       ),
-    //     ),
-    //   );
-    // }
     else {
       return SizedBox.shrink();
     }

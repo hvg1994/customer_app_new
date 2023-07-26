@@ -1,3 +1,9 @@
+/*
+this screen we r using when postprogram consultation booked
+
+when we go for join screen than we r calling this screen
+ */
+
 import 'package:flutter/material.dart';
 import 'package:gwc_customer/model/error_model.dart';
 import 'package:sizer/sizer.dart';

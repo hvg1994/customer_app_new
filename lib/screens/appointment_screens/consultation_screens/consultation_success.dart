@@ -1,3 +1,7 @@
+/*
+we r using this screen in old ui's
+ */
+
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 

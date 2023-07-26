@@ -1,3 +1,17 @@
+/*
+
+this screen will call when dashboard stage is post_program
+
+this screen will be accessed till postprogram.isProgramFeedbackSubmitted becomes 1
+APi used for submit medical feedback
+
+var submitMedicalFeedbackFormUrl = "${AppConfig().BASE_URL}/api/submitForm/medical_feedback";
+
+once medical feedback submitetd we r showing card screen instead of finafeedbackscreen
+
+
+ */
+
 import 'package:flutter/material.dart';
 import 'package:gwc_customer/model/error_model.dart';
 import 'package:gwc_customer/model/new_user_model/register/register_model.dart';
@@ -10,6 +24,7 @@ import 'package:gwc_customer/widgets/unfocus_widget.dart';
 import 'package:gwc_customer/widgets/widgets.dart';
 import 'package:sizer/sizer.dart';
 import 'package:http/http.dart' as http;
+import 'card_selection.dart';
 import 'final_feedback_form.dart';
 
 class MedicalFeedbackForm extends StatefulWidget {
@@ -768,9 +783,17 @@ class _MedicalFeedbackFormState extends State<MedicalFeedbackForm> {
       String result = (res as ErrorModel).message ?? '';
       // AppConfig().showSnackbar(context, result, isError: true, duration: 4);
 
+      // Navigator.of(context).pushAndRemoveUntil(
+      //     MaterialPageRoute(
+      //       builder: (context) => const FinalFeedbackForm(),
+      //     ),
+      //         (route) => route.isFirst
+      // );
       Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(
-            builder: (context) => const FinalFeedbackForm(),
+            builder: (context) => const TCardPage(
+              programContinuesdStatus: 1,
+            )
           ),
               (route) => route.isFirst
       );

@@ -1,5 +1,15 @@
-import 'dart:convert';
+/*
+we r taking details from this screen
+uploading to api in upload report screen
 
+here we r using cityname api to get city and state from pincode
+for that used api: "http://www.postalpincode.in/api/pincode/"
+
+here we need to pass pincode for that api
+
+ */
+
+import 'dart:convert';
 import 'package:dropdown_button2/custom_dropdown_button2.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
@@ -542,46 +552,50 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
             height: 3.h,
           ),
           buildLabelTextField("First Name:", fontSize: questionFont, key: fnameKey),
-          TextFormField(
-            textCapitalization: TextCapitalization.words,
-            controller: fnameController,
-            cursorColor: kPrimaryColor,
-            validator: (value) {
-              if (value!.isEmpty || !RegExp(r"^[a-z A-Z]").hasMatch(value)) {
-                AppConfig().showSnackbar(
-                    context, "Please enter your First Name",
-                    isError: true, bottomPadding: 100);
-                return 'Please enter your First Name';
-              } else {
-                return null;
-              }
-            },
-            decoration: CommonDecoration.buildTextInputDecoration(
-                "Your answer", fnameController),
-            textInputAction: TextInputAction.next,
-            textAlign: TextAlign.start,
-            keyboardType: TextInputType.name,
+          IgnorePointer(
+            child: TextFormField(
+              textCapitalization: TextCapitalization.words,
+              controller: fnameController,
+              cursorColor: kPrimaryColor,
+              validator: (value) {
+                if (value!.isEmpty || !RegExp(r"^[a-z A-Z]").hasMatch(value)) {
+                  AppConfig().showSnackbar(
+                      context, "Please enter your First Name",
+                      isError: true, bottomPadding: 100);
+                  return 'Please enter your First Name';
+                } else {
+                  return null;
+                }
+              },
+              decoration: CommonDecoration.buildTextInputDecoration(
+                  "Your answer", fnameController),
+              textInputAction: TextInputAction.next,
+              textAlign: TextAlign.start,
+              keyboardType: TextInputType.name,
+            ),
           ),
           SizedBox(
             height: 2.h,
           ),
           buildLabelTextField("Last Name:", fontSize: questionFont, key: lNameKey),
-          TextFormField(
-            textCapitalization: TextCapitalization.words,
-            controller: lnameController,
-            cursorColor: kPrimaryColor,
-            validator: (value) {
-              if (value!.isEmpty || !RegExp(r"^[a-z A-Z]").hasMatch(value)) {
-                return 'Please enter your Last Name';
-              } else {
-                return null;
-              }
-            },
-            decoration: CommonDecoration.buildTextInputDecoration(
-                "Your answer", lnameController),
-            textInputAction: TextInputAction.next,
-            textAlign: TextAlign.start,
-            keyboardType: TextInputType.name,
+          IgnorePointer(
+            child: TextFormField(
+              textCapitalization: TextCapitalization.words,
+              controller: lnameController,
+              cursorColor: kPrimaryColor,
+              validator: (value) {
+                if (value!.isEmpty || !RegExp(r"^[a-z A-Z]").hasMatch(value)) {
+                  return 'Please enter your Last Name';
+                } else {
+                  return null;
+                }
+              },
+              decoration: CommonDecoration.buildTextInputDecoration(
+                  "Your answer", lnameController),
+              textInputAction: TextInputAction.next,
+              textAlign: TextAlign.start,
+              keyboardType: TextInputType.name,
+            ),
           ),
           SizedBox(
             height: 2.h,
@@ -693,116 +707,100 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
           //     fontFamily: "PoppinsSemiBold",
           //   ),
           // ),
-          TextFormField(
-            controller: mobileController,
-            cursorColor: kPrimaryColor,
-            validator: (value) {
-              if (value!.isEmpty) {
-                return 'Please enter your Phone Number';
-              } else if (!isPhone(value)) {
-                return 'Please enter valid Mobile Number';
-              } else {
-                return null;
-              }
-            },
-            decoration: CommonDecoration.buildTextInputDecoration(
-                "Your answer", mobileController),
-            textInputAction: TextInputAction.next,
-            textAlign: TextAlign.start,
-            keyboardType: TextInputType.number,
+          IgnorePointer(
+            child: TextFormField(
+              readOnly: true,
+              controller: mobileController,
+              cursorColor: kPrimaryColor,
+              validator: (value) {
+                if (value!.isEmpty) {
+                  return 'Please enter your Phone Number';
+                } else if (!isPhone(value)) {
+                  return 'Please enter valid Mobile Number';
+                } else {
+                  return null;
+                }
+              },
+              decoration: CommonDecoration.buildTextInputDecoration(
+                  "Your answer", mobileController),
+              textInputAction: TextInputAction.next,
+              textAlign: TextAlign.start,
+              keyboardType: TextInputType.number,
+            ),
           ),
           SizedBox(
             height: 2.h,
           ),
           buildLabelTextField('Email ID -', fontSize: questionFont, key: emailKey),
-          TextFormField(
-            controller: emailController,
-            cursorColor: kPrimaryColor,
-            validator: (value) {
-              if (value!.isEmpty || !RegExp(r"^[a-z A-Z]").hasMatch(value)) {
-                return 'Please enter your Email ID';
-              } else if (!RegExp(r"^[a-z A-Z]").hasMatch(value)) {
-                return 'Please enter your valid Email ID';
-              } else {
-                return null;
-              }
-            },
-            decoration: CommonDecoration.buildTextInputDecoration(
-                "Your answer", emailController),
-            textInputAction: TextInputAction.next,
-            textAlign: TextAlign.start,
-            keyboardType: TextInputType.emailAddress,
+          IgnorePointer(
+            child: TextFormField(
+              readOnly: true,
+              controller: emailController,
+              cursorColor: kPrimaryColor,
+              validator: (value) {
+                if (value!.isEmpty || !RegExp(r"^[a-z A-Z]").hasMatch(value)) {
+                  return 'Please enter your Email ID';
+                } else if (!RegExp(r"^[a-z A-Z]").hasMatch(value)) {
+                  return 'Please enter your valid Email ID';
+                } else {
+                  return null;
+                }
+              },
+              decoration: CommonDecoration.buildTextInputDecoration(
+                  "Your answer", emailController),
+              textInputAction: TextInputAction.next,
+              textAlign: TextAlign.start,
+              keyboardType: TextInputType.emailAddress,
+            ),
           ),
           SizedBox(
             height: 2.h,
           ),
           buildLabelTextField('Age', fontSize: questionFont, key: ageKey),
-          TextFormField(
-            controller: ageController,
-            cursorColor: kPrimaryColor,
-            validator: (value) {
-              if (value!.isEmpty) {
-                return 'Please enter your Age';
-              }  else if(int.parse(value) < 10){
-                return 'Age should be Greater than 10';
-              }
-              else if(int.parse(value) >= 100){
-                return 'Age should be Lesser than 100';
-              }
-              else {
-                return null;
-              }
-            },
-            decoration: CommonDecoration.buildTextInputDecoration(
-                "Your answer", ageController),
-            textInputAction: TextInputAction.next,
-            maxLength: 2,
-            inputFormatters:[
-              LengthLimitingTextInputFormatter(2),
-            ],
-            textAlign: TextAlign.start,
-            keyboardType: TextInputType.number,
+          IgnorePointer(
+            child: TextFormField(
+              readOnly: true,
+              controller: ageController,
+              cursorColor: kPrimaryColor,
+              validator: (value) {
+                if (value!.isEmpty) {
+                  return 'Please enter your Age';
+                }  else if(int.parse(value) < 10){
+                  return 'Age should be Greater than 10';
+                }
+                else if(int.parse(value) >= 100){
+                  return 'Age should be Lesser than 100';
+                }
+                else {
+                  return null;
+                }
+              },
+              decoration: CommonDecoration.buildTextInputDecoration(
+                  "Your answer", ageController),
+              textInputAction: TextInputAction.next,
+              maxLength: 2,
+              inputFormatters:[
+                LengthLimitingTextInputFormatter(2),
+              ],
+              textAlign: TextAlign.start,
+              keyboardType: TextInputType.number,
+            ),
           ),
           SizedBox(
             height: 2.h,
           ),
           buildLabelTextField('Gender:', fontSize: questionFont, key: genderKey),
-          Row(
-            children: [
-              GestureDetector(
-                onTap: (){
-                  setState(() => gender = "Male");
-                },
-                child: Row(
-                children: [
-                  Radio(
-                    value: "Male",
-                    activeColor: kPrimaryColor,
-                    groupValue: gender,
-                    onChanged: (value) {
-                      setState(() {
-                        gender = value as String;
-                      });
-                    },
-                  ),
-                  Text('Male',
-                    style: buildTextStyle(color: gender == "Male" ? kTextColor : gHintTextColor,
-                        fontFamily: gender == "Male" ? kFontMedium : kFontBook
-                    ),
-                  ),
-                ],
-              )),
-              SizedBox(
-                width: 3.w,
-              ),
-              GestureDetector(
-                onTap: (){
-                  setState(() => gender = "Female");
-                },
-                child: Row(
+          IgnorePointer(
+            child: Row(
+              children: [
+                GestureDetector(
+                  onTap: (){
+                    setState(() => gender = "Male");
+                  },
+                  child: Row(
                   children: [
                     Radio(
-                      value: "Female",
+                      value: "Male",
                       activeColor: kPrimaryColor,
                       groupValue: gender,
                       onChanged: (value) {
@@ -811,43 +809,70 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                         });
                       },
                     ),
-                    Text(
-                      'Female',
-                      style: buildTextStyle(color: gender == "Female" ? kTextColor : gHintTextColor,
-                          fontFamily: gender == "Female" ? kFontMedium : kFontBook
+                    Text('Male',
+                      style: buildTextStyle(color: gender == "Male" ? kTextColor : gHintTextColor,
+                          fontFamily: gender == "Male" ? kFontMedium : kFontBook
                       ),
                     ),
                   ],
+                )),
+                SizedBox(
+                  width: 3.w,
                 ),
-              ),
-              SizedBox(
-                width: 3.w,
-              ),
-              GestureDetector(
-                onTap: (){
-                  setState(() => gender = "Other");
-                },
-                child: Row(
-                  children: [
-                    Radio(
-                        value: "Other",
-                        groupValue: gender,
+                GestureDetector(
+                  onTap: (){
+                    setState(() => gender = "Female");
+                  },
+                  child: Row(
+                    children: [
+                      Radio(
+                        value: "Female",
                         activeColor: kPrimaryColor,
+                        groupValue: gender,
                         onChanged: (value) {
                           setState(() {
                             gender = value as String;
                           });
-                        }),
-                    Text(
-                      "Other",
-                      style: buildTextStyle(color: gender == "Other" ? kTextColor : gHintTextColor,
-                          fontFamily: gender == "Other" ? kFontMedium : kFontBook
+                        },
                       ),
-                    ),
-                  ],
+                      Text(
+                        'Female',
+                        style: buildTextStyle(color: gender == "Female" ? kTextColor : gHintTextColor,
+                            fontFamily: gender == "Female" ? kFontMedium : kFontBook
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+                SizedBox(
+                  width: 3.w,
+                ),
+                GestureDetector(
+                  onTap: (){
+                    setState(() => gender = "Other");
+                  },
+                  child: Row(
+                    children: [
+                      Radio(
+                          value: "Other",
+                          groupValue: gender,
+                          activeColor: kPrimaryColor,
+                          onChanged: (value) {
+                            setState(() {
+                              gender = value as String;
+                            });
+                          }),
+                      Text(
+                        "Other",
+                        style: buildTextStyle(color: gender == "Other" ? kTextColor : gHintTextColor,
+                            fontFamily: gender == "Other" ? kFontMedium : kFontBook
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
           SizedBox(
             height: 2.h,

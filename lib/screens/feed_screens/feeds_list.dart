@@ -1,3 +1,15 @@
+/*
+Feed api:
+var getAboutProgramUrl = "${AppConfig().BASE_URL}/api/list/welcome_screen";
+
+in the feed api
+if feed?.isFeed == "1" than adding to feed list
+else if isFeed == "2" added to podcast list
+
+to differentiate mp4, and other format we r checking format field
+
+ */
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gwc_customer/model/error_model.dart';

@@ -1,3 +1,13 @@
+/*
+we r showing Mr report from the link using syncfusion pdf viewer
+
+we need the report link from the dashboard screen
+
+once we open we need to call this api when isMrread is false
+var mrReadUrl = "/api/getData/is_mr_report_read";
+
+ */
+
 import 'package:flutter/material.dart';
 import 'package:gwc_customer/model/error_model.dart';
 import 'package:sizer/sizer.dart';
@@ -12,7 +22,9 @@ import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:http/http.dart' as http;
 
 class MedicalReportScreen extends StatelessWidget {
+  /// this is used to show the mr card on top when newly uploaded
   final String isMrRead;
+
   final String pdfLink;
   MedicalReportScreen({Key? key, required this.pdfLink, this.isMrRead = "1"}) : super(key: key);
   late GutDataService _gutDataService;

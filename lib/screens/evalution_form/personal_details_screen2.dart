@@ -1,28 +1,25 @@
-import 'dart:convert';
+/*
 
+ */
+
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:gwc_customer/model/evaluation_from_models/get_evaluation_model/child_get_evaluation_data_model.dart';
-import 'package:gwc_customer/screens/dashboard_screen.dart';
 import 'package:sizer/sizer.dart';
-import 'package:get/get.dart';
-import 'package:http/http.dart' as http;
 import '../../../model/error_model.dart';
 import '../../../model/evaluation_from_models/evaluation_model_format2.dart';
-import '../../../repository/api_service.dart';
-import '../../../repository/evaluation_form_repository/evanluation_form_repo.dart';
 import '../../../utils/app_config.dart';
-import '../../model/dashboard_model/report_upload_model/report_upload_model.dart';
 import '../../model/evaluation_from_models/evaluation_model_format1.dart';
-import '../../services/evaluation_fome_service/evaluation_form_service.dart';
 import '../../widgets/constants.dart';
-import '../../widgets/unfocus_widget.dart';
 import '../../widgets/widgets.dart';
 import 'check_box_settings.dart';
 import 'evaluation_upload_report.dart';
 
 class PersonalDetailsScreen2 extends StatefulWidget {
+  /// taking all the previous screen details
   final EvaluationModelFormat1? evaluationModelFormat1;
   // final List? medicalReportList;
+
   /// this is called when showData is true
   final ChildGetEvaluationDataModel? childGetEvaluationDataModel;
   const PersonalDetailsScreen2({Key? key,
@@ -47,9 +44,6 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
   final bowelMealKey = GlobalKey<FormState>();
   final hungerKey = GlobalKey<FormState>();
   final bowelPatternKey = GlobalKey<FormState>();
-
-
-
 
   final String otherText = "Other";
   TextEditingController digestionController = TextEditingController();
@@ -131,6 +125,8 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
     super.initState();
   }
 
+  /// this added to get stored data
+  /// but not added
   void storeData() {
     final model = widget.childGetEvaluationDataModel;
     print('store');
@@ -166,8 +162,6 @@ class _PersonalDetailsScreenState2 extends State<PersonalDetailsScreen2> {
     bowelPatternSelected = model?.bowelPattern ?? '';
     bowelPatternController.text = model?.bowelPatternOther ?? '';
   }
-
-
 
   hideKeyboard() {
     FocusScope.of(context).unfocus();

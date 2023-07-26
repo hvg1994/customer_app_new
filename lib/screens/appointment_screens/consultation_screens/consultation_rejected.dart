@@ -1,3 +1,9 @@
+/*
+In the new dashboard screen design we r not showing this screen.
+
+if we need to show image with error text we can reuse this ui
+ */
+
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 

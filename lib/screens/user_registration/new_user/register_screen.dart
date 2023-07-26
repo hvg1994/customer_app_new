@@ -1,14 +1,21 @@
+/*
+Api used ->
+var registerUserUrl = "${AppConfig().BASE_URL}/api/register";
+
+Need to pass the
+device Id, FcmToken to the api along with those fields data
+
+ */
+
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:get/utils.dart';
 import 'package:gwc_customer/screens/user_registration/new_user/sit_back_screen.dart';
 import 'package:gwc_customer/widgets/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
 import 'package:http/http.dart' as http;
-
 import '../../../model/error_model.dart';
 import '../../../model/new_user_model/register/register_model.dart';
 import '../../../repository/api_service.dart';

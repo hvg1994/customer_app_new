@@ -31,10 +31,13 @@ import 'package:gwc_customer/screens/cook_kit_shipping_screens/cook_kit_tracking
 import '../model/local_storage_dashboard_model.dart';
 import '../utils/app_config.dart';
 
+/// enum for each stages we get in Notification api
 enum NotificationTypeEnum{
   meal_plan, enquiry, report, appointment, shopping, reminder_appointment, new_appointment,
   doctor_requested_reports, consultation_rejected, mr_report
 }
+
+
 class NotificationScreen extends StatefulWidget {
   const NotificationScreen({Key? key}) : super(key: key);
 

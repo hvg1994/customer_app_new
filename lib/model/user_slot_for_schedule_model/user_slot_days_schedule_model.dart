@@ -38,7 +38,7 @@ class ChildUserSlotDaysForScheduleModel {
   String? slot;
   String? date;
   String? status;
-  String? booked;
+  bool? booked;
   int? day;
 
   ChildUserSlotDaysForScheduleModel({this.slot, this.date, this.status, this.booked, this.day});
@@ -47,7 +47,7 @@ class ChildUserSlotDaysForScheduleModel {
     slot = json['slot'];
     date = json['date'];
     status = json['status'];
-    booked = json['booked'];
+    booked = (json['booked'] == null || json['booked'] != "1") ? false : true;
     day = json['day'];
   }
 

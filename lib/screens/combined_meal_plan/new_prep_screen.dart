@@ -1,23 +1,43 @@
+/*
+This screen is called from CombinedMealPlan Screen
+under prep tab
+
+we r showing the tracker button when
+* isPreptrackerCompleted parameter will becomes false
+* post dinner will come based on the time
+
+isPreptrackerCompleted will taken from dashboard api
+once we got we r storing that in sharedpreferences
+
+we r accessing in this screen using "AppConfig.isPrepTrackerCompleted" key
+
+
+
+ */
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../model/combined_meal_model/new_prep_model.dart';
+import '../../utils/app_config.dart';
 import '../../widgets/constants.dart';
 import '../prepratory plan/new/meal_plan_recipe_details.dart';
+import '../prepratory plan/prepratory_meal_completed_screen.dart';
 
 class NewPrepScreen extends StatefulWidget {
   final ChildPrepModel prepPlanDetails;
   final int selectedDay;
-  String? totalDays;
+  final int? totalDays;
+
+  /// this will be used when we came from start program screen
   final bool viewDay1Details;
-  final bool showBlur;
+
   NewPrepScreen({Key? key, required this.prepPlanDetails,
     this.selectedDay = 1,
     this.viewDay1Details = false,
     this.totalDays,
-    this.showBlur = false
   }) : super(key: key);
 
   @override
@@ -43,13 +63,76 @@ class _NewPrepScreenState extends State<NewPrepScreen> with TickerProviderStateM
 
   int? presentDay;
 
+  int? totalDays;
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    if(widget.totalDays != null){
+      totalDays = widget.totalDays;
+    }
     getPrepItemsAndStore(widget.prepPlanDetails);
-
+    getInitialIndex();
+    // selectedItemName = slotNamesForTabs.values.first.subItems!.keys.first;
   }
+
+  int selectedIndex = 0;
+
+  bool showPrepTrackerBtn = false;
+  final _pref = AppConfig().preferences;
+  late bool isPrepTrackerCompleted = _pref?.getBool(AppConfig.isPrepTrackerCompleted) ?? false;
+
+  getInitialIndex() {
+    // print("HOur : $selectedIndex ${DateTime.now().hour}");
+    // print("HOur : $selectedIndex : ${DateTime.now().hour >= DateTime.now().hour}");
+    if (DateTime.now().hour >= 0 && DateTime.now().hour <= 7) {
+      print(
+          "Early Morning : ${DateTime.now().hour >= 7}");
+      selectedIndex = 0;
+    } else if (DateTime.now().hour >= 7 && DateTime.now().hour <= 10) {
+      print(
+          "Breakfast : ${DateTime.now().hour <= 7}");
+      selectedIndex = 1;
+    } else if (DateTime.now().hour >= 10 && DateTime.now().hour <= 12) {
+      print(
+          "Mid Day : ${DateTime.now().hour <= 10}");
+      selectedIndex = 2;
+    }
+    else if (DateTime.now().hour > 12 && DateTime.now().hour <= 14) {
+      print("Lunch : ${DateTime.now().hour <= 11}");
+      selectedIndex = 3;
+    }
+    else if (DateTime.now().hour > 14 && DateTime.now().hour <= 18) {
+      print(
+          "Evening : ${DateTime.now().hour <= 13}");
+      selectedIndex = 4;
+    } else if (DateTime.now().hour > 18 && DateTime.now().hour <= 21) {
+      print(
+          "Dinner : ${DateTime.now().hour <= 18}");
+      selectedIndex = 5;
+    } else if (DateTime.now().hour > 21 && DateTime.now().hour <= 0) {
+      print(
+          "Post Dinner : ${DateTime.now().hour <= 21}");
+
+
+      if(totalDays != null && presentDay != null){
+        if(totalDays == presentDay){
+          showPrepTrackerBtn = true;
+        }
+      }
+      selectedIndex = 6;
+    }
+    setState(() {
+      selectedSlot = slotNamesForTabs.keys.elementAt(selectedIndex);
+      selectedItemName = slotNamesForTabs[selectedSlot]!.subItems!.keys.first;
+    });
+    print("selectedSlot: $selectedSlot");
+    print("selectedItemName: $selectedItemName");
+    _tabController!.animateTo(selectedIndex);
+  }
+
+
 
   void getPrepItemsAndStore(ChildPrepModel childPrepModel) {
     _childPrepModel = childPrepModel;
@@ -61,8 +144,9 @@ class _NewPrepScreenState extends State<NewPrepScreen> with TickerProviderStateM
       print(slotNamesForTabs);
 
       if(slotNamesForTabs.isNotEmpty){
-        selectedSlot = slotNamesForTabs.keys.first;
-        selectedItemName = slotNamesForTabs.values.first.subItems!.keys.first;
+        selectedIndex = 0;
+        // selectedSlot = slotNamesForTabs.keys.first;
+        // selectedItemName = slotNamesForTabs.values.first.subItems!.keys.first;
       }
       tabSize = slotNamesForTabs.length;
 
@@ -94,7 +178,7 @@ class _NewPrepScreenState extends State<NewPrepScreen> with TickerProviderStateM
             Padding(
               padding: EdgeInsets.only(left: 3.w),
               child: Text(
-                'Day ${presentDay} of Day ${2}',
+                  (presentDay == 0) ? 'Your Prep will start from tomorrow' : 'Day ${presentDay} of Day ${totalDays}',
                 style: TextStyle(
                     fontFamily: kFontMedium,
                     color: eUser().mainHeadingColor,
@@ -154,6 +238,7 @@ class _NewPrepScreenState extends State<NewPrepScreen> with TickerProviderStateM
                           // print(slotNamesForTabs.keys.elementAt(index));
                           selectedSlot =
                               slotNamesForTabs.keys.elementAt(index);
+                          selectedIndex = index;
                           setState(() {
                             selectedItemName = slotNamesForTabs[selectedSlot]!.subItems!.keys.first;
                             print(selectedItemName);
@@ -183,12 +268,15 @@ class _NewPrepScreenState extends State<NewPrepScreen> with TickerProviderStateM
                       .toList(),
                 ],
               ),
-            )
+            ),
+            // btn()
+            if(showPrepTrackerBtn && !isPrepTrackerCompleted) btn()
           ],
         ),
       ),
     );
   }
+
 
   buildTabView(SubItems mealNames) {
     List<MealSlot> meals = [];
@@ -273,6 +361,44 @@ class _NewPrepScreenState extends State<NewPrepScreen> with TickerProviderStateM
       ],
     );
   }
+  btn() {
+    return Center(
+      child: GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => PrepratoryMealCompletedScreen()
+            ),
+          );
+        },
+        child: Container(
+          margin: EdgeInsets.symmetric(vertical: 2.h),
+          width: 60.w,
+          height: 5.h,
+          decoration: BoxDecoration(
+            color: eUser().buttonColor,
+            borderRadius: BorderRadius.circular(eUser().buttonBorderRadius),
+            // border: Border.all(color: eUser().buttonBorderColor,
+            //     width: eUser().buttonBorderWidth),
+          ),
+          child: Center(
+            child: Text(
+              'Prep Tracker',
+              // 'Proceed to Day $proceedToDay',
+              style: TextStyle(
+                fontFamily: eUser().buttonTextFont,
+                color: eUser().buttonTextColor,
+                // color: (statusList.length != lst.length) ? gPrimaryColor : gMainColor,
+                fontSize: eUser().buttonTextSize,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
 
   buildReceipeDetails(MealSlot? meal) {
     return Stack(

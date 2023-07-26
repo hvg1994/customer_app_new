@@ -140,7 +140,54 @@ var getCombinedMealUrl = "${AppConfig().BASE_URL}/api/getData/NutriDelight";
 /// home screen meal progress graph api
 var getGraphUrl ="${AppConfig().BASE_URL}/api/listData/progress";
 
+// *************** uvdesk apis *****************
+/*
+1. list of tickets - https://fembuddy.uvdesk.com/en/api/tickets.json?page=1
+2. Ticket details - https://fembuddy.uvdesk.com/en/api/ticket/3.json
+3. Threads list - https://fembuddy.uvdesk.com/en/api/ticket/2026155/threads.json
+4. Create ticket - https://fembuddy.uvdesk.com/en/api/tickets.json  (type - int, name, from, reply, subject)
+5. send a reply - https://fembuddy.uvdesk.com/en/api/ticket/2026552/threads.json (threadType, reply)
 
+ */
+
+const String uvDesk_baseUrl = "https://fembuddy.uvdesk.com/en/api";
+
+// old admin token 040561E3F817A9F9BAA36C50CFF8D0EF41072040561E3F817A9F9BAA36C50CFF8D0EF
+/// for getting ticket list/details/ ticket details
+String agentToken = "Bearer 8A07DDBDF6672807F8B4D261E5673500599238A07DDBDF6672807F8B4D261E5673500";
+
+// old agent token 478CBD3B1BD2E2062AE52C0D39D36FF248787478CBD3B1BD2E2062AE52C0D39D36FF2
+
+/// for create/reply ticket we need to use this token
+String adminToken = "Bearer 8E63BC73D879BC04717ECBCCE59BADE4424488E63BC73D879BC04717ECBCCE59BADE4";
+// https://fembuddy.uvdesk.com/en/api/tickets.json?customer=1795084
+/// to get the ticket list from customer
+const String ticketListByCustomerId = "/tickets.json?customer=";
+
+
+/// this is to create ticket, get list
+/// for create make post call
+/// for get list make get call
+const String ticketListApiPath = "/tickets.json";
+
+const String myProfileApiPath = "/me.json";
+
+/// need to pass increment id -> /ticket/{increment_id}.json
+const String ticketDetailsPath = "/ticket/";
+
+/// this is used to get reply details and also for give reply
+/// use post to add reply
+/// use get to get details
+/// need to pass increment id -> /ticket/{ticketid}/thread.json
+
+const String ticketReplyPath = "/ticket/";
+
+getTicketReplyPath(String id){
+  return '${ticketReplyPath+id}/threads.json';
+}
+
+
+// ************** end of uvdesk api ********
 
 
 //  old apis

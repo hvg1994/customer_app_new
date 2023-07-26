@@ -13,7 +13,7 @@ import 'package:lottie/lottie.dart';
 import 'package:sizer/sizer.dart';
 import 'dart:math' as math;
 import 'package:http/http.dart' as http;
-import 'package:liquid_progress_indicator/liquid_progress_indicator.dart';
+import 'package:liquid_progress_indicator_v2/liquid_progress_indicator.dart';
 import 'package:gwc_customer/model/error_model.dart';
 
 import 'pp_redeem_rewards_popuop.dart';

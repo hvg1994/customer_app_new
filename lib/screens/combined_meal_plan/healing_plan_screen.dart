@@ -1,3 +1,19 @@
+/*
+Healing plan
+
+this screen is called in combinedmealplan screen under healing tab
+
+we r showing the day number from the details object in response
+
+for tracker we r sending the selected followed/unfollwed to the trackerui
+
+for showing completed clap we using buildDayCompletedClap() function
+
+Api used:
+/api/getData/NutriDelight
+
+ */
+
 import 'dart:convert';
 import 'dart:ui';
 
@@ -238,6 +254,7 @@ class _HealingPlanScreenState extends State<HealingPlanScreen> {
   //   }
   // }
 
+  /// this is used to show the alert when previous day tracker and meal data not submitted
   showMoreTextSheet(String? dayNumber) {
     return AppConfig().showSheet(
       context,
@@ -299,6 +316,7 @@ class _HealingPlanScreenState extends State<HealingPlanScreen> {
     );
   }
 
+  /// used to show when user completed last day or when isHealingCompleted param becomes true
   buildDayCompletedClap() {
     return AppConfig().showSheet(
         context,
@@ -1003,14 +1021,15 @@ class _HealingPlanScreenState extends State<HealingPlanScreen> {
         padding: EdgeInsets.symmetric(horizontal: 3.w),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
             SizedBox(height: 2.h),
             Text(
               // "Day ${widget.day} Meal Plan",
-              (selectedDay == null)
-                  ? "Day Meal & Yoga Plan"
-                  : "Day ${selectedDay} Meal & Yoga Plan",
+              (selectedDay == null || presentDay == 0)
+                  ? "Healing Plan"
+                  : "Day ${selectedDay} Healing Plan",
               style: TextStyle(
                   fontFamily: eUser().mainHeadingFont,
                   color: eUser().mainHeadingColor,
@@ -1026,7 +1045,15 @@ class _HealingPlanScreenState extends State<HealingPlanScreen> {
             // ),
             SizedBox(height: 1.h),
             ...groupList(),
-            Visibility(
+            if(presentDay == 0 && selectedDay == 0)
+              Center(child: Text(
+                (presentDay == 0) ? 'Your Healing will start from tomorrow' : 'Day ${presentDay} of Day ${totalDays}',
+                style: TextStyle(
+                    fontFamily: kFontMedium,
+                    color: eUser().mainHeadingColor,
+                    fontSize: 10.sp),
+              ),),
+            if(presentDay != 0)Visibility(
               visible: (statusList.isNotEmpty &&
                   statusList.values.any((element) =>
                       element
@@ -1102,7 +1129,7 @@ class _HealingPlanScreenState extends State<HealingPlanScreen> {
                 ),
               ),
             ),
-            Visibility(
+            if (presentDay != 0)Visibility(
               visible: buttonVisibility(),
               child: Center(
                 child: IntrinsicWidth(
@@ -2980,9 +3007,13 @@ class _HealingPlanScreenState extends State<HealingPlanScreen> {
 
     print("mealPlanData1: $mealPlanData1");
 
-    if ((listData.last.isCompleted == 1 && _childDetoxModel!.isHealingCompleted == "1") || _childDetoxModel!.isHealingCompleted == "1" ) {
+    /// made || instead of &&
+    /// if && -> than clap will get after isHealingCompleted becomes 1-> this will happpens from cron or when button clicked
+    /// if || -> than clap will show once last day has completed
+    ///
+    if ((listData.last.isCompleted == 1 || _childDetoxModel!.isHealingCompleted == "1") || _childDetoxModel!.isHealingCompleted == "1" ) {
       print("widget.isNourishStarted: ${widget.isNourishStarted}");
-      if(widget.isNourishStarted! == false){
+      if(widget.isNourishStarted == false){
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (!isOpened) {
             setState(() {
@@ -2994,7 +3025,8 @@ class _HealingPlanScreenState extends State<HealingPlanScreen> {
       }
 
     }
-        for (int i = 0; i < presentDay!; i++) {
+
+    for (int i = 0; i < presentDay!; i++) {
           print(presentDay);
           if (listData[i].isCompleted == 0 && i + 1 != selectedDay!) {
             WidgetsBinding.instance.addPostFrameCallback((_) {

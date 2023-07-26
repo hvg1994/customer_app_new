@@ -1,3 +1,8 @@
+/*
+In the new Dashboard design we r not using this screen
+ */
+
+
 import 'dart:convert';
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:easy_scroll_to_index/easy_scroll_to_index.dart';
@@ -227,7 +232,6 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
       // model.data!.forEach((element) {
       //   print('${element.dayNumber} -- ${element.color}');
       // });
-      _pref!.setInt(AppConfig.STORE_LENGTH, model.data!.length);
       if (!widget.viewDay1Details) {
         presentDay = int.tryParse(model.presentDay!);
         nextDay = int.tryParse(model.presentDay!)! + 1;

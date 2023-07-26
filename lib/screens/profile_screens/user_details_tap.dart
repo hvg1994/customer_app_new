@@ -1,3 +1,10 @@
+/*
+in this ui we r showing profile, my reports, evaluation and feed back in
+same screen using tabbar
+
+Now this screen was not using
+ */
+
 import 'package:flutter/material.dart';
 import 'package:gwc_customer/screens/evalution_form/evaluation_get_details.dart';
 import 'package:sizer/sizer.dart';

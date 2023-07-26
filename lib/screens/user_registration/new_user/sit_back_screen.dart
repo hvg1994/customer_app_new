@@ -1,3 +1,8 @@
+/*
+this screen we r showing once user has submit enquiry form
+once accepted login screen will show
+ */
+
 import 'package:flutter/material.dart';
 import 'package:gwc_customer/screens/user_registration/existing_user.dart';
 import 'package:gwc_customer/screens/user_registration/new_user/about_the_program.dart';
@@ -64,7 +69,7 @@ class _SitBackScreenState extends State<SitBackScreen> {
                       // "Congratulations on your initiative towards a healthy gut! Our team will reach out to you soon. . .",
                       style: TextStyle(
                           height: 1.5,
-                          fontFamily: "GothamRoundedBook_21018",
+                          fontFamily: kFontBook,
                           color: gTextColor,
                           fontSize: 12.sp),
                     ),

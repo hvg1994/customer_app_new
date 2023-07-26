@@ -1,6 +1,9 @@
+/*
+we r getting value from new_list-stages screen
+ */
+
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import '../../../model/dashboard_model/gut_model/gut_data_model.dart';
 import '../../../widgets/constants.dart';
 import '../../../widgets/widgets.dart';

@@ -1,3 +1,11 @@
+/*
+Api used:
+getshopping list--
+var shoppingListApiUrl = "${AppConfig().BASE_URL}/api/getData/get_shopping_list";
+
+
+ */
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';

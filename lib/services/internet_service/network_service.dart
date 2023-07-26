@@ -1,6 +1,5 @@
 import 'package:data_connection_checker_nulls/data_connection_checker_nulls.dart';
 import 'package:get/get.dart';
-
 import 'network_error_item.dart';
 
 class NetworkStatusService extends GetxService {

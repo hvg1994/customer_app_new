@@ -2,21 +2,18 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:gwc_customer/screens/evalution_form/personal_details_screen2.dart';
 import 'package:gwc_customer/utils/app_config.dart';
 import 'package:gwc_customer/widgets/exit_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
-
-import '../../model/evaluation_from_models/evaluation_model_format1.dart';
-import '../../model/evaluation_from_models/evaluation_model_format2.dart';
 import '../../widgets/constants.dart';
 import '../../widgets/widgets.dart';
-import 'evaluation_upload_report.dart';
 import 'personal_details_screen.dart';
 
+
 class EvaluationFormScreen extends StatefulWidget {
+  /// isFromSplashScreen is used to handle back button press event
+  /// if false than we will do pop else we r showing bottom sheet
   final bool isFromSplashScreen;
   const EvaluationFormScreen({Key? key, this.isFromSplashScreen = false}) : super(key: key);
 

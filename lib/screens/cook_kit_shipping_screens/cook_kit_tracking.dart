@@ -1,6 +1,24 @@
+/*
+
+for tracker we r using shiprocket Api
+
+Api's Used:
+var shippingApiLoginUrl = "${AppConfig().shipRocket_AWB_URL}/auth/login";
+
+to access shiprocket api we need to get token using above login url
+
+var shippingApiUrl = "${AppConfig().shipRocket_AWB_URL}/courier/track/awb";
+
+above api will give the track details
+
+if currentstage is meal_plan_completed we r showing NewMealPopupScreen() screen
+
+
+
+ */
+
 import 'dart:async';
 import 'dart:typed_data';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -21,15 +39,18 @@ import '../../../services/shipping_service/ship_track_service.dart';
 import '../../../widgets/stepper/another_stepper.dart';
 import '../../../widgets/stepper/stepper_data.dart';
 import '../../../widgets/widgets.dart';
-import '../../model/ship_track_model/shopping_model/child_get_shopping_model.dart';
 import '../../utils/app_config.dart';
 import '../../widgets/constants.dart';
 
-import '../prepratory plan/prepratory_plan_screen.dart';
 
 class CookKitTracking extends StatefulWidget {
+  /// to show the respctive design for some stages
   final String currentStage;
   final String? awb_number;
+
+  /// to select tabs inistailly
+  /// by default 0 -> tracker
+  /// 1-> shopping list
   final int initialIndex;
   const CookKitTracking(
       {Key? key,

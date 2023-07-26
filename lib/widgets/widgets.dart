@@ -193,7 +193,11 @@ buildAppBar(
       bool showLogo = true,
       bool showChild = false,
       Widget? child,
-    }) {
+      /// customAction is true than pass action
+      bool customAction = false,
+      List<Widget>? actions
+    })  {
+
   return Row(
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
     children: [
@@ -233,7 +237,7 @@ buildAppBar(
       ),
       Row(
         mainAxisSize: MainAxisSize.min,
-        children: [
+        children: (customAction) ? actions ?? [] : [
           Visibility(
             visible: showNotificationIcon,
             child: GestureDetector(

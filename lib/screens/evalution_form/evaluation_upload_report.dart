@@ -1,3 +1,19 @@
+/*
+this is to upload the reports if they have any
+
+here they can skip
+ot if they have any report they can add
+while submit 2 options are there
+all uploaded/ not all uploaded
+
+while uploading we will pass last 2 screen data from here
+so we r taking evaluationModelFormat1, evaluationModelFormat2 these 2 params
+
+Api used: POST
+var submitEvaluationFormUrl = "${AppConfig().BASE_URL}/api/submitForm/evaluation_form";
+
+ */
+
 import 'dart:io';
 import 'package:get/get.dart';
 
@@ -13,8 +29,8 @@ import 'package:gwc_customer/screens/evalution_form/personal_details_screen2.dar
 import 'package:gwc_customer/services/new_user_service/about_program_service.dart';
 import 'package:gwc_customer/utils/app_config.dart';
 import 'package:gwc_customer/widgets/constants.dart';
-import 'package:gwc_customer/widgets/vlc_player/vlc_player_with_controls.dart';
 import 'package:gwc_customer/widgets/widgets.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:sizer/sizer.dart';
 import 'package:wakelock/wakelock.dart';
 import 'package:video_player/video_player.dart';
@@ -46,6 +62,7 @@ class _EvaluationUploadReportState extends State<EvaluationUploadReport> {
   dynamic padding = EdgeInsets.symmetric(vertical: 1.h, horizontal: 5.w);
 
   List<PlatformFile> medicalRecords = [];
+  List<File> _finalFiles = [];
   List item = [];
 
   @override
@@ -200,34 +217,7 @@ class _EvaluationUploadReportState extends State<EvaluationUploadReport> {
                 padding: EdgeInsets.symmetric(horizontal: 5.w),
                 child: GestureDetector(
                   onTap: () async {
-                    final result = await FilePicker.platform
-                        .pickFiles(withReadStream: true, allowMultiple: false);
-
-                    if (result == null) return;
-                    if (result.files.first.extension!.contains("pdf") ||
-                        result.files.first.extension!.contains("png") ||
-                        result.files.first.extension!.contains("jpg") ||
-                        result.files.first.extension!.contains("jpeg")
-                    ) {
-                      var path2 = result.files.single.path;
-                      if (!item.contains(path2)) {
-                        item.add(path2);
-                        File file = File(path2 ?? "");
-                        setState(() {
-                          medicalRecords.add(result.files.first);
-
-                        });
-                      } else {
-                        // Scaffold.of(globalkey2.currentContext??context)
-                        AppConfig().showSnackbar(context,"File Already Exist",isError: true);
-
-                      }
-                    } else {
-                      AppConfig().showSnackbar(
-                          context, "Please select png/jpg/Pdf files",
-                          isError: true);
-                    }
-                    setState(() {});
+                    showChooserSheet();
                   },
                   child: Container(
                     margin: EdgeInsets.symmetric(
@@ -269,14 +259,14 @@ class _EvaluationUploadReportState extends State<EvaluationUploadReport> {
               SizedBox(
                 height: 0.5.h,
               ),
-              if(medicalRecords.isNotEmpty)
+              if(_finalFiles.isNotEmpty)
                 ListView.builder(
-                  itemCount: medicalRecords.length,
+                  itemCount: _finalFiles.length,
                   shrinkWrap: true,
                   scrollDirection: Axis.vertical,
                   physics: ScrollPhysics(),
                   itemBuilder: (context, index) {
-                    final file = medicalRecords[index];
+                    final file = _finalFiles[index];
                     return buildFile(file, index);
                   },
                 ),
@@ -411,13 +401,173 @@ class _EvaluationUploadReportState extends State<EvaluationUploadReport> {
     );
   }
 
+  showChooserSheet() {
+    return showModalBottomSheet(
+        backgroundColor: Colors.transparent,
+        context: context,
+        enableDrag: false,
+        builder: (ctx) {
+          return Wrap(
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                      topRight: Radius.circular(20),
+                      topLeft: Radius.circular(20)),
+                ),
+                child: Column(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 2, vertical: 4),
+                      child: Text(
+                        'Choose Profile Pic',
+                        style: TextStyle(
+                          color: gTextColor,
+                          fontFamily: kFontMedium,
+                          fontSize: 12.sp,
+                        ),
+                      ),
+                      decoration: BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: gHintTextColor,
+                              width: 3.0,
+                            ),
+                          )),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        TextButton(
+                            onPressed: () {
+                              getImageFromCamera();
+                              Navigator.pop(context);
+                            },
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.camera_enhance_outlined,
+                                  color: gMainColor,
+                                ),
+                                Text(
+                                  'Camera',
+                                  style: TextStyle(
+                                    color: gTextColor,
+                                    fontFamily: kFontMedium,
+                                    fontSize: 10.sp,
+                                  ),
+                                ),
+                              ],
+                            )),
+                        Container(
+                          width: 5,
+                          height: 10,
+                          decoration: BoxDecoration(
+                              border: Border(
+                                right: BorderSide(
+                                  color: gHintTextColor,
+                                  width: 1,
+                                ),
+                              )),
+                        ),
+                        TextButton(
+                            onPressed: () {
+                              pickFromFile();
+                              Navigator.pop(context);
+                            },
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.photo_library,
+                                  color: gMainColor,
+                                ),
+                                Text(
+                                  'Gallery',
+                                  style: TextStyle(
+                                    color: gTextColor,
+                                    fontFamily: kFontMedium,
+                                    fontSize: 10.sp,
+                                  ),
+                                ),
+                              ],
+                            ))
+                      ],
+                    ),
+                  ],
+                ),
+              )
+            ],
+          );
+        });
+  }
 
-  Widget buildFile(PlatformFile file, int index) {
-    final kb = file.size / 1024;
-    final mb = kb / 1024;
-    final size = (mb >= 1)
-        ? '${mb.toStringAsFixed(2)} MB'
-        : '${kb.toStringAsFixed(2)} KB';
+  File? _image;
+
+  Future getImageFromCamera() async {
+    var image = await ImagePicker()
+        .pickImage(source: ImageSource.camera, imageQuality: 50);
+
+    setState(() {
+      _image = File(image!.path);
+      if (getFileSize(_image!) <= 12) {
+        print("filesize: ${getFileSize(_image!)}Mb");
+        // addFilesToList(_image!);
+      _finalFiles.add(_image!);
+      } else {
+        print("filesize: ${getFileSize(_image!)}Mb");
+
+        AppConfig()
+            .showSnackbar(context, "File size must be <12Mb", isError: true);
+      }
+    });
+    print("captured image: $_image");
+  }
+
+  getFileSize(File file) {
+    var size = file.lengthSync();
+    num mb = num.parse((size / (1024 * 1024)).toStringAsFixed(2));
+    return mb;
+  }
+
+  void pickFromFile() async{
+    final result = await FilePicker.platform
+        .pickFiles(withReadStream: true, allowMultiple: false);
+
+    if (result == null) return;
+    if (result.files.first.extension!.contains("pdf") ||
+        result.files.first.extension!.contains("png") ||
+        result.files.first.extension!.contains("jpg") ||
+        result.files.first.extension!.contains("jpeg")
+    ) {
+      var path2 = result.files.single.path;
+
+      if (!item.contains(path2)) {
+        item.add(path2);
+        File file = File(path2 ?? "");
+        setState(() {
+          medicalRecords.add(result.files.first);
+          _finalFiles.add(file);
+        });
+      } else {
+        // Scaffold.of(globalkey2.currentContext??context)
+        AppConfig().showSnackbar(context,"File Already Exist",isError: true);
+
+      }
+    }
+    else {
+      AppConfig().showSnackbar(
+          context, "Please select png/jpg/Pdf files",
+          isError: true);
+    }
+    setState(() {});
+  }
+
+
+
+  Widget buildFile(File file, int index) {
     return buildRecordList(file, index: index);
 
     // return Wrap(
@@ -437,7 +587,7 @@ class _EvaluationUploadReportState extends State<EvaluationUploadReport> {
     // );
   }
 
-  buildRecordList(PlatformFile filename, {int? index}) {
+  buildRecordList(File filename, {int? index}) {
     return ListTile(
       shape: Border(
           bottom: BorderSide()
@@ -448,7 +598,7 @@ class _EvaluationUploadReportState extends State<EvaluationUploadReport> {
           child: Image.file(File(filename.path!))
       ),
       title: Text(
-        filename.name.split("/").last,
+        filename.path.split("/").last,
         textAlign: TextAlign.start,
         maxLines: 2,
         overflow: TextOverflow.ellipsis,
@@ -461,6 +611,7 @@ class _EvaluationUploadReportState extends State<EvaluationUploadReport> {
           onTap: () {
             medicalRecords.removeAt(index!);
             item.removeAt(index!);
+            _finalFiles.removeAt(index);
             setState(() {});
           },
           child: const Icon(
@@ -742,14 +893,6 @@ class _EvaluationUploadReportState extends State<EvaluationUploadReport> {
                   finalMap.addAll(widget.evaluationModelFormat2.toMap().cast());
 
                   callApi(finalMap, medicalRecords.map((e) => e.path).toList());
-                  // Navigator.push(
-                  //     context,
-                  //     MaterialPageRoute(
-                  //         builder: (ctx) => PersonalDetailsScreen2(
-                  //             evaluationModelFormat1: model,
-                  //             medicalReportList:
-                  //             medicalRecords.map((e) => e.path).toList())
-                  //     ));
                 },
                 child: Container(
                   width: 35.w,
@@ -759,10 +902,6 @@ class _EvaluationUploadReportState extends State<EvaluationUploadReport> {
                   decoration: BoxDecoration(
                     color: eUser().buttonColor,
                     borderRadius: BorderRadius.circular(eUser().buttonBorderRadius),
-                    // border: Border.all(
-                    //     color: eUser().buttonBorderColor,
-                    //     width: eUser().buttonBorderWidth
-                    // ),
                   ),
                   child: Center(
                     child: Text(

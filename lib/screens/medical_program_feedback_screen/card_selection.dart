@@ -1,3 +1,14 @@
+/*
+we have put card height to 80.h
+if any problem in ui need to change that
+
+submit final Program feedback Api:
+
+var submitProgramFeedbackFormUrl = "${AppConfig().BASE_URL}/api/submitForm/program_feedback";
+
+ */
+
+
 import 'dart:io';
 import 'package:gwc_customer/model/error_model.dart';
 import 'package:gwc_customer/model/new_user_model/register/register_model.dart';
@@ -380,7 +391,7 @@ class _TCardPageState extends State<TCardPage> {
                 TCard(
                   cards: cards,
                   lockYAxis: true,
-                  size:  Size(double.maxFinite, 70.h),
+                  size:  Size(double.maxFinite, 80.h),
                   delaySlideFor: 300,
                   controller: _controller,
                   onForward: (index, info) {

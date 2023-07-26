@@ -1,13 +1,20 @@
+/*
+  we r using only meal parameter to diaply all the meal recipe
+
+other 2 params not using now
+
+ */
+
 import 'package:flutter/material.dart';
 import 'package:gwc_customer/model/prepratory_meal_model/prep_meal_model.dart';
 import 'package:sizer/sizer.dart';
 import 'package:gwc_customer/widgets/constants.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../model/combined_meal_model/detox_nourish_model/detox_healing_common_model/child_meal_plan_details_model1.dart';
-import '../../../model/program_model/meal_plan_details_model/child_meal_plan_details_model.dart';
 import '../../../widgets/widgets.dart';
 
 class MealPlanRecipeDetails extends StatefulWidget {
+  /// we r using only meal parameter to diaply all the meal recipe
   final MealSlot? meal;
   final ChildMealPlanDetailsModel1? mealPlanRecipe;
   final bool isFromProgram;

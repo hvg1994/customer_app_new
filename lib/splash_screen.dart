@@ -4,11 +4,14 @@
 3. else status: 1 => than we need to check for is already login or not
  if not login need to show existing user screen else
 4. Need to check for evaluation status(EVAL_STATUS) which will be stored when user login
-if already login we will get from local storage else its null
+if already logged in, we will get from local storage else its null
 5. if eval status is there than we are showing dashboard screen else evaluation screen
 
 API's used in this screen:
-1. EnquiryStatus API
+1. EnquiryStatus API  -> /api/form/check_enquiry_status
+
+
+6. Added Push notification events in this screen
  */
 
 import 'dart:async';
@@ -46,9 +49,6 @@ import 'screens/notification_screen.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:open_store/open_store.dart';
-
-
-
 
 
 class SplashScreen extends StatefulWidget {
@@ -185,11 +185,10 @@ class _SplashScreenState extends State<SplashScreen> with WidgetsBindingObserver
 
     // this is for getting the state and city name
     // this was not using currently
+    // if we need country code picker on login uncomment this
     String? n = await FlutterSimCountryCode.simCountryCode;
     print("country: $n");
     if(n!= null) _pref!.setString(AppConfig.countryCode, n);
-    // print("country_code:${n}");
-
   }
   late FirebaseMessaging messaging;
 
@@ -226,6 +225,9 @@ class _SplashScreenState extends State<SplashScreen> with WidgetsBindingObserver
           print(message.notification!.title);
           print(message.notification!.body);
           print("message.data11 ${message.data}");
+
+          //  ********* message format ***********
+
           //message.data11 {notification_type: shopping, tag_id: ,
           // body: Your shopping list has been uploaded. Enjoy!, title: Shopping List, user: user}
           // W/dy.gwc_custome(31771): Reducing the number of considered missed Gc histogram windows from 150 to 100
@@ -244,6 +246,8 @@ class _SplashScreenState extends State<SplashScreen> with WidgetsBindingObserver
           print(message.notification!.body);
           print(message.toMap());
           print("message.data22 ${message.data['notification_type']}");
+
+          // this is for kaleyra chat onclick of notification opening kaleyra chat
           if(message.data != null){
             if(message.data['notification_type'] == 'new_chat'){
               final uId = _pref!.getString(AppConfig.KALEYRA_USER_ID);
@@ -255,13 +259,9 @@ class _SplashScreenState extends State<SplashScreen> with WidgetsBindingObserver
               await openKaleyraChat(uId!, chatSuccessId!, accessToken!);
             }
           }
-
-
         }
       },
     );
-    // FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-
   }
 
   runAllAsync() async{
@@ -351,6 +351,8 @@ class _SplashScreenState extends State<SplashScreen> with WidgetsBindingObserver
     );
   }
 
+  /// this is for Firebase Messaging part
+  ///
   Future getPermission() async{
     // await Firebase.initializeApp();
     messaging = FirebaseMessaging.instance;
@@ -359,6 +361,7 @@ class _SplashScreenState extends State<SplashScreen> with WidgetsBindingObserver
     print("fcm: $fcmToken");
     _pref!.setString(AppConfig.FCM_TOKEN, fcmToken!);
 
+    /// for quickblox uncomment these 2 line
     // QuickBloxRepository().init(AppConfig.QB_APP_ID, AppConfig.QB_AUTH_KEY, AppConfig.QB_AUTH_SECRET, AppConfig.QB_ACCOUNT_KEY);
     //
     // QuickBloxRepository().initSubscription(fcmToken);
@@ -444,8 +447,6 @@ class _SplashScreenState extends State<SplashScreen> with WidgetsBindingObserver
       isLogin = _pref.getBool(AppConfig.isLogin) ?? false;
       evalStatus = _pref.getString(AppConfig.EVAL_STATUS) ?? '';
     });
-
-
 
     print("_pref.getBool(AppConfig.isLogin): ${_pref.getBool(AppConfig.isLogin)}");
     print("isLogin: $isLogin");

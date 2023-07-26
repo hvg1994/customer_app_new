@@ -1,3 +1,11 @@
+/*
+To show the submitted evaluation details
+
+Api: GET
+var getEvaluationDataUrl = "${AppConfig().BASE_URL}/api/getData/get_evaluation_data";
+
+ */
+
 import 'dart:convert';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';

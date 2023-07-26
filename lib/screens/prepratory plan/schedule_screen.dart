@@ -1,3 +1,19 @@
+/*
+Follow Up calls:
+
+Api's used:
+
+Get SlotsDates Api which showing in list
+var getUserSlotDaysForScheduleUrl = "${AppConfig().BASE_URL}/api/getData/user_slot_days";
+
+Get Slots Api which calling in dialog
+var getFollowUpSlotUrl = "${AppConfig().BASE_URL}/api/getData/followup_slots/";
+
+Submit selected slot api
+var submitSlotSelectedUrl = "${AppConfig().BASE_URL}/api/submitForm/follow_up_book";
+
+ */
+
 import 'package:flutter/material.dart';
 import 'package:gwc_customer/model/consultation_model/appointment_slot_model.dart';
 import 'package:gwc_customer/model/consultation_model/child_slots_model.dart';
@@ -13,6 +29,7 @@ import 'package:sizer/sizer.dart';
 import 'package:intl/intl.dart';
 import '../../repository/api_service.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 class NewScheduleScreen extends StatefulWidget {
   const NewScheduleScreen({Key? key}) : super(key: key);
@@ -40,7 +57,7 @@ class _NewScheduleScreenState extends State<NewScheduleScreen> {
   }
 
   getSlotDates() {
-    getSlotDaysListFuture = GetUserScheduleSlotsForService(repository: repository).getShoppingDetailsListService();
+    getSlotDaysListFuture = GetUserScheduleSlotsForService(repository: repository).getSlotsDaysForScheduleService();
   }
 
   getSlotFuture(String date){
@@ -79,8 +96,15 @@ class _NewScheduleScreenState extends State<NewScheduleScreen> {
                               shrinkWrap: true,
                               itemCount: res.data?.length ?? 0,
                               itemBuilder: (_, index){
-                                return slotListTile(res.data![index].date!,
-                                    "Your Day ${res.data![index].day} Follow Up Call , Please book your timings", res.data?[index].slot ?? '', res.data?[index].date ?? '');
+                                return slotListTile(res.data![index].slot ?? '',
+                                    // "Your ${index+1}${getDayOfMonthSuffix(index+1)} Follow Up Call , Please book your timings",
+                                    (res.data?[index].booked == false || getIsSlotCompleted(res.data?[index].date ?? '') == true)
+                                        ? "Book your ${index+1}${getDayOfMonthSuffix(index+1)} follow-up call"
+                                        : "Slot booked at ${res.data?[index].date}/${res.data![index].slot ?? ''}\nYour doctor will give you a call at this time",
+                                    res.data?[index].date ?? '',
+                                  isSlotBooked: res.data?[index].booked ?? false ,
+                                  isDayCompleted: getIsSlotCompleted(res.data?[index].date ?? '')
+                                );
                               }
                           );
                         }
@@ -110,8 +134,19 @@ class _NewScheduleScreenState extends State<NewScheduleScreen> {
   }
 
 
+  final today = DateTime.now();
 
-  slotListTile(String dateText, String middleText, String daySlotNumber, String date){
+  getIsSlotCompleted(String date){
+    print("days: ${today.difference(DateFormat('dd-MM-yyyy').parse(date)).inDays}");
+    if(today.difference(DateFormat('dd-MM-yyyy').parse(date)).inDays > 0){
+      return true;
+    }
+    else{
+      return false;
+    }
+  }
+
+  slotListTile(String slotTime, String middleText,String date, {bool isSlotBooked = false, bool isDayCompleted = false}){
     return SizedBox(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -128,7 +163,7 @@ class _NewScheduleScreenState extends State<NewScheduleScreen> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(Icons.calendar_month),
-                        Text(daySlotNumber,
+                        Text(date,
                           style: TextStyle(
                             fontFamily:
                             kFontBold,
@@ -140,14 +175,46 @@ class _NewScheduleScreenState extends State<NewScheduleScreen> {
                     ),
                     GestureDetector(
                       onTap: () async {
-                        if(date.isEmpty){
-                          AppConfig().showSnackbar(context, "date getting empty", isError: true);
-                        }
-                        else{
-                          showScheduleDialog(date);
+                        if(!isDayCompleted){
+                          if(!isSlotBooked){
+                            if(date.isEmpty){
+                              AppConfig().showSnackbar(context, "date getting empty", isError: true);
+                            }
+                            else{
+                              showScheduleDialog(date);
+                            }
+                          }
+                          else{
+                            AppConfig().showSnackbar(context, "Slot Booked Already", isError: true);
+                          }
                         }
                       },
-                      child: Text("Schedule",
+                      child: (isDayCompleted) ? Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            padding: EdgeInsets.all(2),
+                            decoration: BoxDecoration(
+                                color: gPrimaryColor, shape: BoxShape.circle),
+                            child: Center(
+                              child: Icon(
+                                Icons.done_outlined,
+                                color: gWhiteColor,
+                                size: 8.sp,
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: 2,),
+                          Text(
+                            // "Day ${widget.day} Meal Plan",
+                            "Completed",
+                            style: TextStyle(
+                                fontFamily: kFontBook,
+                                color: gTextColor,
+                                fontSize: 10.sp),
+                          )
+                        ],
+                      ) :  Text((isSlotBooked) ? "Already Booked" : "Schedule",
                         style: TextStyle(
                           fontFamily: kFontBook,
                           color: gsecondaryColor,
@@ -159,17 +226,19 @@ class _NewScheduleScreenState extends State<NewScheduleScreen> {
                     )
                   ],
                 ),
-                SizedBox(
-                  height: 10,
-                ),
-                Text(dateText,
-                  style: TextStyle(
-                    fontFamily:
-                    kFontMedium,
-                    color: gTextColor,
-                    fontSize: 10.sp,
-                  ),
-                ),
+                // if(slotTime.isNotEmpty)
+                //   SizedBox(
+                //   height: 10,
+                //   ),
+                // if(slotTime.isNotEmpty)
+                //   Text("Booked Slot: $slotTime",
+                //   style: TextStyle(
+                //     fontFamily:
+                //     kFontMedium,
+                //     color: gTextColor,
+                //     fontSize: 10.sp,
+                //   ),
+                // ),
                 SizedBox(
                   height: 8,
                 ),
@@ -251,6 +320,7 @@ class _NewScheduleScreenState extends State<NewScheduleScreen> {
                   else if(snap.data.runtimeType == SlotModel){
                     final model = snap.data as SlotModel;
                     followUpSlots = model.data;
+                    blockedSlot = "";
                     followUpSlots!.values!.forEach((e){
                       if(e.isBooked == "1"){
                         blockedSlot = e.slot!;
@@ -277,7 +347,9 @@ class _NewScheduleScreenState extends State<NewScheduleScreen> {
                             alignment: WrapAlignment.start,
                             runAlignment: WrapAlignment.start,
                             children: [
-                              ...followUpSlots!.values.map((e) => slotChip(e.slot!, '',isSelected: selectedSlot.contains(e.slot!), setstate: setState, isBlocked: blockedSlot.contains(e.slot!)))
+                              ...followUpSlots!.values.map((e) => slotChip(e.slot!, '',
+                                  isSelected: selectedSlot.contains(e.slot!),
+                                  setstate: setState, isBlocked: blockedSlot.contains(e.slot!)))
                             ],
                           ),
                         ),

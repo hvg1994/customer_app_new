@@ -218,6 +218,7 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
+  /// if user has loggedIn than making auto logout after 7 days
   void storeLastLogin() {
     if(_pref!.getInt(AppConfig.last_login) == null){
       _pref!.setInt(AppConfig.last_login, DateTime.now().millisecondsSinceEpoch);

@@ -1,6 +1,14 @@
+/*
+Api used:
+var rewardPointsUrl = "${AppConfig().BASE_URL}/api/getDataList/get_user_reward_points";
+
+Onclick of Refer Now on Tap we r showing refer & earn screen
+added ui design api integration not implemented
+
+ */
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/physics.dart';
 import 'package:gwc_customer/model/error_model.dart';
 import 'package:gwc_customer/model/rewards_model/reward_point_model.dart';
 import 'package:gwc_customer/repository/api_service.dart';
@@ -185,12 +193,10 @@ class _RewardScreenState extends State<RewardScreen> {
                                                   ),
                                                 )
                                                     :Card(
-                                                  // child: customListTile('12', 'anlnana;kd', '12 Nov 2022'),
                                                   elevation: 5,
                                                   child: ListView.separated(
                                                     physics: NeverScrollableScrollPhysics(),
                                                     shrinkWrap: true,
-                                                    // itemCount: rewardList.length,
                                                     itemCount: model.rewardList?.length ?? 0,
                                                     itemBuilder: (_, index){
                                                       return customListTile(
@@ -198,11 +204,6 @@ class _RewardScreenState extends State<RewardScreen> {
                                                           model.rewardList?[index].rewardPoints?.name ?? '',
                                                           model.rewardList?[index].createdAt ?? '',
                                                       );
-                                                      // return customListTile(
-                                                      //     rewardList[index]['amount'].toString(),
-                                                      //     rewardList[index]['name'],
-                                                      //     rewardList[index]['time']
-                                                      // );
                                                     },
                                                     separatorBuilder: (_, index){
                                                       if(model.rewardList != null && model.rewardList!.isNotEmpty){

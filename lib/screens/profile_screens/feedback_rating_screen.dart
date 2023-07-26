@@ -1,3 +1,17 @@
+/*
+  we r using smooth_star_rating_null_safety package to show the rating bar
+
+  Api used for submit feedback
+  var submitFeedbackUrl = "${AppConfig().BASE_URL}/api/submitForm/feedback";
+
+here we need to pass
+ 'rating' : rating.toString(),
+ 'feedback' : feedbackController.text
+
+ and files which is optional
+
+ */
+
 import 'dart:io';
 import 'package:async/async.dart';
 import 'package:file_picker/file_picker.dart';

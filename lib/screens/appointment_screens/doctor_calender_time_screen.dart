@@ -1,3 +1,18 @@
+/*
+Api used: -
+to get slots
+var getAppointmentSlotsListUrl = "${AppConfig().BASE_URL}/api/getData/slots/";
+
+submit selected slots
+var bookAppointmentUrl = "${AppConfig().BASE_URL}/api/getData/book";
+ we need to pass ->
+ date, slotTime,
+ if reschedule we need to pass appointmentId,
+ if isPostprogram  we need to pass isPostProgram which we get from constructor
+
+
+ */
+
 import 'package:date_picker_timeline/date_picker_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -22,15 +37,22 @@ import 'package:http/http.dart' as http;
 import 'package:gwc_customer/widgets/dart_extensions.dart';
 
 class DoctorCalenderTimeScreen extends StatefulWidget {
+  /// this is used when we r doing Reschedule consultation
   final bool isReschedule;
+
+  /// need to pass prevBookingDate, prevBookingTime whenever we r doing reschedule
   final String? prevBookingDate;
   final String? prevBookingTime;
+
+  /// doctor pic, doctor details, doctor name will be used to show those details in top of the screen
   final String? doctorPic;
   final ChildDoctorModel? doctorDetails;
   final String? doctorName;
+
   /// this is for post program
   /// when this all other parameters will null
   final bool isPostProgram;
+
   const DoctorCalenderTimeScreen({Key? key,
     this.isReschedule = false,
     this.prevBookingDate,
@@ -51,15 +73,15 @@ class _DoctorCalenderTimeScreenState extends State<DoctorCalenderTimeScreen> {
   final pageController = PageController();
   double rating = 5.0;
 
-  List<String> list = ["09:00", "11:00", "02:00", "04:00"];
-
   final SharedPreferences _pref = AppConfig().preferences!;
+
   /// this is for slot selection
   String isSelected = "";
   String selectedTimeSlotFullName = "";
 
   Map<String, ChildSlotModel>? slotList = {};
 
+  /// we r showing the start date from next day
   DateTime selectedDate = DateTime.now().add(const Duration(days: 1));
 
   bool isLoading = false;
@@ -112,6 +134,7 @@ class _DoctorCalenderTimeScreenState extends State<DoctorCalenderTimeScreen> {
     }
   }
 
+  /// getTime will be used to split the time which is in string format to show in hour:min
   getTime(){
     print("isReschedule" + widget.isReschedule.toString());
     if(widget.prevBookingTime != null){
@@ -158,17 +181,6 @@ class _DoctorCalenderTimeScreenState extends State<DoctorCalenderTimeScreen> {
         SizedBox(height: 2.h),
         (!widget.isReschedule) ? buildDoctor() : buildDoctorExpList(),
         SizedBox(height: 1.h),
-        // Row(
-        //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        //   children: [
-        //     buildDoctorDetails(
-        //         "Patient", "10K", "assets/images/Patient.svg"),
-        //     buildDoctorDetails("Experience", "12 Years",
-        //         "assets/images/Experences.svg"),
-        //     buildDoctorDetails(
-        //         "Rating", "4.5", "assets/images/star.svg"),
-        //   ],
-        // ),
         SizedBox(
           height: 2.h,
         ),

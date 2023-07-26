@@ -1,41 +1,35 @@
-import 'package:flutter/foundation.dart';
+/*
+Api's used
+
+logout:
+var logOutUrl = "${AppConfig().BASE_URL}/api/logout";
+
+ */
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:gwc_customer/model/error_model.dart';
 import 'package:gwc_customer/model/profile_model/logout_model.dart';
-import 'package:gwc_customer/screens/appointment_screens/consultation_screens/upload_files.dart';
-import 'package:gwc_customer/screens/chat_support/message_screen.dart';
-import 'package:gwc_customer/screens/evalution_form/personal_details_screen.dart';
 import 'package:gwc_customer/screens/help_screens/help_screen.dart';
 import 'package:gwc_customer/screens/notification_screen.dart';
-import 'package:gwc_customer/screens/prepratory%20plan/prepratory_plan_screen.dart';
 import 'package:gwc_customer/screens/profile_screens/call_support_method.dart';
 import 'package:gwc_customer/screens/profile_screens/faq_screens/faq_screen.dart';
 import 'package:gwc_customer/screens/profile_screens/reward/reward_screen.dart';
 import 'package:gwc_customer/screens/profile_screens/terms_conditions_screen.dart';
-import 'package:gwc_customer/screens/profile_screens/user_details_tap.dart';
 import 'package:gwc_customer/screens/user_registration/existing_user.dart';
 import 'package:gwc_customer/widgets/constants.dart';
-import 'package:gwc_customer/widgets/open_alert_box.dart';
-import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
 import 'package:http/http.dart' as http;
-import '../../model/message_model/get_chat_groupid_model.dart';
 import '../../repository/api_service.dart';
-import '../../repository/chat_repository/message_repo.dart';
 import '../../repository/login_otp_repository.dart';
-import '../../services/chat_service/chat_service.dart';
 import '../../services/login_otp_service.dart';
-import '../../splash_screen.dart';
 import '../../utils/app_config.dart';
 import '../../widgets/widgets.dart';
 import '../evalution_form/evaluation_form_screen.dart';
-import '../evalution_form/evaluation_upload_report.dart';
 import '../gut_list_screens/new_stages_data.dart';
-import 'feedback_rating_screen.dart';
+import '../uvdesk/ticket_list.dart';
 import 'my_profile_details.dart';
 
 
@@ -278,6 +272,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   // getChatGroupId();
                                 }
                                   }),
+                              profileTile(
+                                  "assets/images/support.png", "Raise a Ticket", () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) => const TicketListScreen(),
+                                  ),
+                                );
+                              }),
                             ],
                           ),
                         ),
@@ -409,6 +411,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     });
   }
 
+  // clearing some details in local storage
   clearAllUserDetails(){
     _pref.setBool(AppConfig.isLogin, false);
     _pref.remove(AppConfig().BEARER_TOKEN);
@@ -426,15 +429,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
     updateStageData();
   }
 
-
-  final MessageRepository chatRepository = MessageRepository(
-    apiClient: ApiClient(
-      httpClient: http.Client(),
-    ),
-  );
-
   bool showLogoutProgress = false;
 
+  /// we r showing in stateful builder so this parameter will be used
+  /// when we get setstate we will assign to this parameter based on that logout progress is used
   var logoutProgressState;
 
   logoutWidget() {

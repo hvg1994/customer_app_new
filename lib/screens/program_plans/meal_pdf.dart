@@ -1,3 +1,11 @@
+/*
+This screen is called whenever we need to show the pdfviewer
+using syncfusion_flutter_pdfviewer package
+
+if there is a video link than we r showing video on top of ui
+for video we r using chewie package
+ */
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gwc_customer/widgets/video/normal_video.dart';
@@ -14,10 +22,21 @@ class MealPdf extends StatefulWidget {
   final String pdfLink;
   final String? mealVideoLink;
   final String? videoName;
-  final Color? topHeadColor;
-  final String? headCircleIcon;
+
+  /// pass true if mealVideoLink is not empty
   final bool isVideoWidgetVisible;
+
+  /// By default topHeadColor is [kBottomSheetHeadYellow]
+  final Color? topHeadColor;
+
+  /// By default headCircleIcon is [bsHeadBellIcon]
+  final String? headCircleIcon;
+
+
+  /// if this is true than pass sheetCloseOnTap parameter
   final bool isSheetCloseNeeded;
+
+  /// its null is isSheetCloseNeeded is false
   VoidCallback? sheetCloseOnTap;
   MealPdf({Key? key, required this.pdfLink, this.heading, this.mealVideoLink,
     this.topHeadColor, this.headCircleIcon, this.isVideoWidgetVisible = true,

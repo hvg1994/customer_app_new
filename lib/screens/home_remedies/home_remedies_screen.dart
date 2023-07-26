@@ -1,3 +1,13 @@
+/*
+Api used:
+var homeRemediesUrl = "${AppConfig().BASE_URL}/api/list/home_remedies";
+
+if element.isGeneral == "0" than general
+if element.isGeneral == "1" than program phase
+
+
+ */
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:gwc_customer/model/home_remedy_model/home_remedies_model.dart';

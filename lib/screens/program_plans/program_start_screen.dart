@@ -1,3 +1,14 @@
+/*
+
+this screen will be called when program start
+
+there is a 2 step verification to start
+
+there is a 2 buttons 1. view 2. start
+
+
+ */
+
 import 'package:video_player/video_player.dart';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
@@ -237,12 +248,13 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
             if(videoPlayerController != null) videoPlayerController!.pause();
             if(_chewieController != null) _chewieController!.pause();
 
-            if (widget.from == ProgramMealType.detox.name){
-              showConfirmSheet();
-            }
-            else{
-              startProgram();
-            }
+            showConfirmSheet();
+            // if (widget.from == ProgramMealType.detox.name){
+            //   showConfirmSheet();
+            // }
+            // else{
+            //   startProgram();
+            // }
           },
           child: Container(
             width: 40.w,
@@ -958,13 +970,18 @@ class _ProgramPlanScreenState extends State<ProgramPlanScreen> {
         ),
         SizedBox(width: 2.5.h),
         Center(
-          child: Text("Once you clicked,next day will be\nconsidered as Day 1 of the Program,\nAre you sure?",
-            style: TextStyle(
-                fontSize: bottomSheetHeadingFontSize,
-                fontFamily: bottomSheetHeadingFontFamily,
-                height: 1.65
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text("Once you tap yes, tomorrow will be considered the 1st day of your "
+                "${(widget.from == ProgramMealType.prepratory.name) ? ProgramMealType.prepratory.name : widget.from == ProgramMealType.detox.name ? ProgramMealType.detox.name : widget.from == ProgramMealType.healing.name ? ProgramMealType.healing.name : ProgramMealType.transition.name}."
+                "\nAre you sure?",
+              style: TextStyle(
+                  fontSize: bottomSheetHeadingFontSize,
+                  fontFamily: bottomSheetHeadingFontFamily,
+                  height: 1.65
+              ),
+              textAlign: TextAlign.center,
             ),
-            textAlign: TextAlign.center,
           ),
         ),
         SizedBox(height: 2.5.h),

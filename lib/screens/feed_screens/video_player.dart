@@ -1,3 +1,8 @@
+/*
+we r using chewie video player
+we need to pass url and is fullscreen if open as full screen
+ */
+
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -15,7 +20,10 @@ import '../../widgets/widgets.dart';
 class VideoPlayerMeedu extends StatefulWidget {
   final String videoUrl;
   final bool isFullScreen;
-  const VideoPlayerMeedu({Key? key, required this.videoUrl, this.isFullScreen = false}) : super(key: key);
+  const VideoPlayerMeedu({Key? key,
+    required this.videoUrl,
+    this.isFullScreen = false
+  }) : super(key: key);
 
   @override
   State<VideoPlayerMeedu> createState() => _VideoPlayerMeeduState();
@@ -95,6 +103,7 @@ class _VideoPlayerMeeduState extends State<VideoPlayerMeedu> {
   VideoPlayerController? videoPlayerController;
   ChewieController? _chewieController;
 
+  /// initialize videoplayer when opens
   initVideoChewieView(String url) {
     print("init url: $url");
 
@@ -112,6 +121,7 @@ class _VideoPlayerMeeduState extends State<VideoPlayerMeedu> {
     );
 
     isPortrait = !widget.isFullScreen;
+    // setting to fullscreen mode
     if(!isPortrait){
       setLandscape();
     }

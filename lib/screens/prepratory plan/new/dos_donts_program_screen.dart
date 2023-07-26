@@ -1,3 +1,13 @@
+/*
+this screen will be called from combinedmealplan screen when stage becomes 0/3
+
+we r passing the url from that screen
+
+this screen will need to show the pdf using pdf viewer
+used syncfusion pdf viewer;
+
+ */
+
 import 'package:flutter/material.dart';
 import 'package:gwc_customer/widgets/widgets.dart';
 import 'package:sizer/sizer.dart';

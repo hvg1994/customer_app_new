@@ -91,6 +91,7 @@ class AppConfig{
 
   static const String KALEYRA_CHAT_SUCCESS_ID = 'kaleyra_chat_success_id';
 
+  static const IS_ALL_USER_DATA_AVAILABLE = "is_all_user_data_available";
 
 
 
@@ -101,18 +102,11 @@ class AppConfig{
   static const String notification_channelId = 'high_importance_channel';
   static const String notification_channelName = 'pushnotificationappchannel';
 
-
-
-
-  /// this is for showing text in meal plan screen proceed to day text
-  static const String STORE_LENGTH = 'ChildProgramDayModel_Length';
-
   static const String STORE_MEAL_DATA = 'meal_data';
-
 
   final String deviceId = "deviceId";
   final String registerOTP = "R_OTP";
-  String bearerToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiM2Q4ZTI5ZWUzODUyMGExNDI1ODJlMTg1ZjcwMDc3MDJjNjcwMTJjYWI4NDM5NDE5MmM0OGMwNWQ2MzY5YjgwZDJlN2JkYTUzOThmNjZlNzYiLCJpYXQiOjE2NjMzMDk2NDYuNDQxNDU5LCJuYmYiOjE2NjMzMDk2NDYuNDQxNDYyLCJleHAiOjE2OTQ4NDU2NDYuNDM4NjkxLCJzdWIiOiI1NCIsInNjb3BlcyI6W119.z902_OuP_C5c8kAUlMcVmoWaxV_efjpxQIC78Pfh2KciFOazqbX5O2xN8Bld_NurPn4u1_p_mzYcbGCFOrwnIYPtIWtOzeq7TqfZ1g64peCdGij6dntuWFR2aFEAuxUxQ4ZdOW1iNazSkmhKPQq7NBTTii3cbfJaZh8suMDApW8uC7imh2a55vFVAvykfwkC-Nnb4UlbhiunoVKXeyIkUPBlUzlt-CvrYBjOTgbd-UTVCEX2hbTCnSHatLuPFv1CpeZkCnb4SGJZgeqbE8AsBl9snTvMQ_lXSwhMla-AJjQS0oCWYJJrxe_n3tj8MvFLo9HGQORMmXYrUMFMjEX9kQCFb6I_gmwvU5yvCYNjgNuZCO99dLX-HBAFiXopScnYhpSlUu2EQbC5d5OT7nrYuGK0Vq8FTFNTQJ1rYS3jKOMERUilxnAqHoakHCOVGqdSCZ8zb5DWn_dYxpFD4bfSaU_GZbXXtuv9pRmoEP_XZygkJJNp_85N2f0g_nV3uEQ6-Xsx-7IFs0MA6KNFRyT0N6cH1y-JGRc_2PTkSpVTvVWh2oDkmCdf1hfheLAA1ZWMB3Y6ck-kDYa4MN7YyOJbEUFW7AIrSUWfLVmQNZhz88ZDw5N8RaOQ0FQP6tvBjaRT_Uj2kyyGzYHFdMUeYsnmzdRhDzji_KU87jF82XIMPCA";
+
   late String bearer = '';
 
   static String slotErrorText = "Slots Not Available Please select different day";
@@ -125,11 +119,11 @@ class AppConfig{
 
   String emptyStringMsg = 'Please mention atleast 2 characters';
 
-
   final String program_days = "no_of_days";
 
-
   static String appointmentId = "appoint_id";
+
+  static String isPrepTrackerCompleted = "isPrepTrackerSubmitted";
 
   static String eval1 = "eval1";
   static String eval2 = "eval2";
@@ -279,6 +273,15 @@ class AppConfig{
         ],
       ),
     );
+  }
+
+  static Color fromHex(String hexString) {
+    final buffer = StringBuffer();
+    print("hexString:  $hexString");
+    if (hexString.length == 6 || hexString.length == 7) buffer.write('ff');
+    buffer.write(hexString.replaceFirst('#', ''));
+    print("buffer.toString(): ${buffer.toString()} ");
+    return Color(int.parse(buffer.toString(), radix: 16));
   }
 
   // List<ShipmentTrackActivities> trackingList = [

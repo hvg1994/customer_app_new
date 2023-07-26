@@ -1,3 +1,7 @@
+/*
+now r showing coming soon ui
+ */
+
 import 'package:flutter/material.dart';
 import 'package:gwc_customer/model/error_model.dart';
 import 'package:gwc_customer/screens/appointment_screens/consultation_screens/medical_report_details.dart';
@@ -54,7 +58,7 @@ class _LevelStatusState extends State<LevelStatus> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    getHomeData();
+    // getHomeData();
   }
 
   getHomeData() async{

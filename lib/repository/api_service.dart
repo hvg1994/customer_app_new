@@ -1,3 +1,5 @@
+
+
 import 'dart:convert';
 import 'dart:io';
 import 'package:crypto/crypto.dart';
@@ -61,6 +63,9 @@ import '../model/profile_model/user_profile/user_profile_model.dart';
 import '../model/program_model/meal_plan_details_model/meal_plan_details_model.dart';
 import '../model/ship_track_model/shipping_track_model.dart';
 import '../model/success_message_model.dart';
+import '../model/uvdesk_model/get_ticket_list_model.dart';
+import '../model/uvdesk_model/get_ticket_threads_list_model.dart';
+import '../model/uvdesk_model/ticket_details_model.dart';
 import '../utils/api_urls.dart';
 import '../utils/app_config.dart';
 import 'package:gwc_customer/model/home_model/home_model.dart';
@@ -603,10 +608,6 @@ class ApiClient {
       // ).timeout(Duration(seconds: 45));
 
       var request = http.MultipartRequest('POST', Uri.parse(path));
-      var headers = {
-        "Authorization": "Bearer ${AppConfig().bearerToken}",
-        // "Authorization": getHeaderToken(),
-      };
 
       request.fields.addAll(param);
       request.persistentConnection = false;
@@ -1012,6 +1013,7 @@ class ApiClient {
         },
       ).timeout(const Duration(seconds: 45));
 
+      print("getUploadedReportListApi Url:"+ getUserReportListUrl);
       print("getUploadedReportListApi response code:" +
           response.statusCode.toString());
       print("getUploadedReportListApi response body:" + response.body);
@@ -2202,8 +2204,11 @@ class ApiClient {
     // production or sandbox
     final environment = "sandbox";
     final region = "eu";
+
     // testing api key: ak_live_c1ef0ed161003e0a2b419d20
     // final endPoint = "https://cs.${environment}.${region}.bandyer.com";
+
+
     /// live endpoint
     final endPoint = "https://api.in.bandyer.com";
     
@@ -2966,6 +2971,271 @@ class ApiClient {
     return result;
   }
 
+  getTicketListApi() async{
+    String url = uvDesk_baseUrl+'$ticketListApiPath';
+    print(url);
+
+    dynamic result;
+    try{
+      final response = await httpClient.get(Uri.parse(url),
+        headers: {
+          "Authorization": agentToken,
+        },
+      ).timeout(Duration(seconds: 45));
+
+      print('getTicketListApi Url: $url');
+      print('getTicketListApi Response status: ${response.statusCode}');
+      print('getTicketListApi Response body: ${response.body}');
+
+      if(response.statusCode == 200){
+        final json = jsonDecode(response.body);
+        result = GetTicketListModel.fromJson(jsonDecode(response.body));
+      }
+      else if(response.statusCode == 500) {
+        result = ErrorModel(status: "0", message: AppConfig.oopsMessage);
+      }
+      else{
+        result = ErrorModel(status: response.statusCode.toString(), message: response.body);
+      }
+    }
+    catch (e) {
+      print(e);
+      result = ErrorModel(status: "", message: e.toString());
+    }
+    return result;
+  }
+
+  /// id -> ticketId
+  getTicketDetailsApi(String id) async{
+    String url = uvDesk_baseUrl+'${ticketDetailsPath+id}/threads.json';
+    print(url);
+
+    dynamic result;
+    try{
+      final response = await httpClient.get(Uri.parse(url),
+        headers: {
+          "Authorization": agentToken,
+        },
+      ).timeout(Duration(seconds: 45));
+
+      print('getTicketDetailsApi Url: $url');
+      print('getTicketDetailsApi Response status: ${response.statusCode}');
+      print('getTicketDetailsApi Response body: ${response.body}');
+
+      if(response.statusCode == 200){
+        final json = jsonDecode(response.body);
+        result = ThreadsListModel.fromJson(jsonDecode(response.body));
+      }
+      else if(response.statusCode == 500) {
+        result = ErrorModel(status: "0", message: AppConfig.oopsMessage);
+      }
+      else{
+        result = ErrorModel(status: response.statusCode.toString(), message: response.body);
+      }
+    }
+    catch (e) {
+      print(e);
+      result = ErrorModel(status: "", message: e.toString());
+    }
+    return result;
+  }
+
+  /// params needed
+  /*
+Parameter	    Type	  Required	    Description
+type	       integer	true	        1|2|3|4|5|6 for open|pending|resolved|closed|Spam|Answered repectively
+name	        string	true	         ticket name
+from	        string	true	        email address
+reply	        string	true	        reply content
+subject     	string	true	        ticket subject
+customFields	array	  false	        custom fields (if present) could be provided
+actAsType	    string	false       	admin can actAsType customer, agent
+actAsEmail	  string	false        	provide when acting as agent
+attachments[]   files   false
+   */
+  createTicketApi(Map data, {List<File>? attachments}) async{
+    String url = uvDesk_baseUrl+'$ticketListApiPath';
+    print(url);
+
+    dynamic result;
+    var headers = {
+    "Authorization": adminToken,
+    };
+    try{
+
+      var request = http.MultipartRequest('POST', Uri.parse(url));
+
+      request.headers.addAll(headers);
+      request.fields.addAll(Map.from(data));
+      request.persistentConnection = false;
+
+      if(attachments != null) {
+        for(int i =0; i < attachments.length; i++){
+          request.files.add(await http.MultipartFile.fromPath('attachments[$i]', attachments[i].path));
+        }
+      };
+
+      // print("attachment .length: ${attachments!.length}");
+
+      print("request.files.length: ${request.files.length}");
+
+
+      var response = await http.Response.fromStream(await request.send())
+          .timeout(Duration(seconds: 45));
+
+      print('createTicketApi Url: $url');
+      print('createTicketApi Response status: ${response.statusCode}');
+      print('createTicketApi Response body: ${response.body}');
+
+      if(response.statusCode == 200){
+        final json = jsonDecode(response.body);
+        result = TicketdetailsModel.fromJson(jsonDecode(response.body));
+      }
+      else if(response.statusCode == 500) {
+        result = ErrorModel(status: "0", message: AppConfig.oopsMessage);
+      }
+      else{
+        result = ErrorModel(status: response.statusCode.toString(), message: response.body);
+      }
+    }
+    catch (e) {
+      print(e);
+      result = ErrorModel(status: "", message: e.toString());
+    }
+    return result;
+  }
+
+  /// it will give
+  getTicketListByCustomerIdApi(String customerId, String statusId) async{
+    String url = uvDesk_baseUrl+ticketListByCustomerId+customerId+"&status=$statusId";
+    print(url);
+
+    dynamic result;
+    try{
+      final response = await httpClient.get(Uri.parse(url),
+        headers: {
+          "Authorization": agentToken,
+        },
+      ).timeout(Duration(seconds: 45));
+
+      print('getTicketListByCustomerIdApi Url: $url');
+      print('getTicketListByCustomerIdApi Response status: ${response.statusCode}');
+      print('getTicketListByCustomerIdApi Response body: ${response.body}');
+
+      if(response.statusCode == 200){
+        final json = jsonDecode(response.body);
+        result = GetTicketListModel.fromJson(json);
+
+      }
+      else if(response.statusCode == 500) {
+        result = ErrorModel(status: "0", message: AppConfig.oopsMessage);
+      }
+      else{
+        result = ErrorModel(status: response.statusCode.toString(), message: response.body);
+      }
+    }
+    catch (e) {
+      print("error: ${e.toString()}");
+      result = ErrorModel(status: "", message: e.toString());
+    }
+    return result;
+  }
+
+
+  sendReplyApi(String ticketId, Map data, {List<File>? attachments}) async{
+    String url = uvDesk_baseUrl+getTicketReplyPath(ticketId);
+    print(url);
+    print(data);
+
+    dynamic result;
+    var headers = {
+      "Authorization": adminToken,
+    };
+    try{
+      var request = http.MultipartRequest('POST', Uri.parse(url));
+
+      request.headers.addAll(headers);
+      request.fields.addAll(Map.from(data));
+      request.persistentConnection = false;
+
+      if(attachments != null) {
+        for(int i =0; i < attachments.length; i++){
+          request.files.add(await http.MultipartFile.fromPath('attachments[$i]', attachments[i].path));
+        }
+        print("attachment .length: ${attachments.length}");
+      };
+
+
+      print("request.files.length: ${request.files.length}");
+
+
+      var response = await http.Response.fromStream(await request.send())
+          .timeout(Duration(seconds: 45));
+
+      print('createTicketApi Url: $url');
+      print('createTicketApi Response status: ${response.statusCode}');
+      print('createTicketApi Response body: ${response.body}');
+
+      if(response.statusCode == 200){
+        final json = jsonDecode(response.body);
+        result = TicketdetailsModel.fromJson(jsonDecode(response.body));
+      }
+      else if(response.statusCode == 500) {
+        result = ErrorModel(status: "0", message: AppConfig.oopsMessage);
+      }
+      else{
+        result = ErrorModel(status: response.statusCode.toString(), message: response.body);
+      }
+    }
+    catch (e) {
+      print(e);
+      result = ErrorModel(status: "", message: e.toString());
+    }
+    return result;
+  }
+
+
+  /// api/ticket/{ticket id}.json
+  reOpenTicketApi(String ticketId) async{
+    String url = uvDesk_baseUrl+ticketReplyPath+ticketId+".json";
+    print(url);
+
+    Map body = {
+      "editType": "status",
+      "value": "1"
+    };
+
+    dynamic result;
+    try{
+      final response = await httpClient.patch(Uri.parse(url),
+        headers: {
+          "Authorization": adminToken,
+        },
+        body: Map.from(body)
+      ).timeout(Duration(seconds: 45));
+
+      print('reOpenTicketApi Url: $url');
+      print('reOpenTicketApi Response status: ${response.statusCode}');
+      print('reOpenTicketApi Response body: ${response.body}');
+
+      if(response.statusCode == 200){
+        final json = jsonDecode(response.body);
+        result = GetTicketListModel.fromJson(json);
+
+      }
+      else if(response.statusCode == 500) {
+        result = ErrorModel(status: "0", message: AppConfig.oopsMessage);
+      }
+      else{
+        result = ErrorModel(status: response.statusCode.toString(), message: response.body);
+      }
+    }
+    catch (e) {
+      print("error: ${e.toString()}");
+      result = ErrorModel(status: "", message: e.toString());
+    }
+    return result;
+  }
 
 
 

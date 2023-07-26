@@ -8,8 +8,7 @@ class AboutProgramRepository{
   AboutProgramRepository({required this.apiClient}) : assert(apiClient != null);
 
   Future serverAboutProgramRepo() async{
-    return await apiClient.
-    serverGetAboutProgramDetails();
+    return await apiClient.serverGetAboutProgramDetails();
   }
 
 }

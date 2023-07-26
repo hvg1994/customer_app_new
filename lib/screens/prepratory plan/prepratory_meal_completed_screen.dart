@@ -1,3 +1,20 @@
+/*
+here we r showing both submit and get tracket
+
+Api used:
+var getPrepratoryMealTrackUrl = "${AppConfig().BASE_URL}/api/getDataList/tracking_prep_meal";
+
+we r hitting this api
+if there is a success response than we r hiding submit button by using param showDetails
+
+and adding all the details to raio button
+
+if there is no data than user needs to submit the tracker by using api
+
+var submitPrepratoryMealTrackUrl = "${AppConfig().BASE_URL}/api/submitForm/prep_meal_submit";
+
+ */
+
 import 'package:flutter/material.dart';
 import 'package:gwc_customer/model/error_model.dart';
 import 'package:gwc_customer/repository/api_service.dart';

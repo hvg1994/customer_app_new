@@ -1,3 +1,8 @@
+/*
+  Api used:
+  var termsConditionUrl = "${AppConfig().BASE_URL}/api/list/terms_and_conditions";
+
+ */
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';

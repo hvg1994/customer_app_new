@@ -18,6 +18,8 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 0.0.1+1
 
 environment:
+#  sdk: '>=3.0.0 <4.0.0'
+
   sdk: ">=2.16.2 <3.0.0"
 
 # Dependencies specify other packages that your package needs in order to work.
@@ -57,7 +59,7 @@ dependencies:
   shared_preferences: any
 #  flutter_zoom_sdk: ^1.1.0+4
   im_animations: ^0.1.2
-  syncfusion_flutter_pdfviewer: 20.3.52
+  syncfusion_flutter_pdfviewer: any
   image_picker: any
   jwt_decode: ^0.3.1
   pip_view: ^0.9.7
@@ -81,7 +83,7 @@ dependencies:
   readmore: any
   easy_scroll_to_index: any
   stories_for_flutter: ^1.2.0
-  liquid_progress_indicator: ^0.4.0
+  liquid_progress_indicator_v2: ^0.5.0
   crypto: any
   shimmer: any
   simple_tooltip: any
@@ -113,10 +115,15 @@ dependencies:
   flutter_image_stack: any
   easy_stepper: any
   flutter_share_me: ^0.11.0
+  flutter_widget_from_html: any
+#  for screenshot disable
+  flutter_windowmanager: any
 
 
 
 
+dependency_overrides:
+  intl: any
 
 
 
@@ -139,6 +146,7 @@ flutter_icons:
   android: "ic_launcher"
   ios: true
   image_path: "assets/images/ic_launcher.png"
+
 
 
 # For information on the generic Dart part of this file, see the

@@ -1,3 +1,37 @@
+/*
+
+doctor requested reports will be come when doctor requested after consultation
+
+we r made 2 ui from this screen for upload doctor requested report and listing all reports
+
+isFromSettings will divide the screen into those parts
+
+for upload requested reports:-
+* we have divided the prescription and other reports
+if prescription they can view and download file
+if they need to upload than from other section they need to upload
+
+its mandatory to upload in other section if prescription is there
+else others are not mandatory
+
+iis mandatory to upload the each report like x-ray, blood...
+all these are multi upload
+
+Api's used:-
+
+// to list all the requested reports
+var doctorRequestedReportListUrl = "${AppConfig().BASE_URL}/api/getData/requested_reports_list/doctor_requested_reports";
+
+// to send all the files
+var submitDoctorRequestedReportUrl = "${AppConfig().BASE_URL}/api/submitForm/requested_user_report";
+
+// this to display all the uploaded reports
+var getUserReportListUrl = "${AppConfig().BASE_URL}/api/getData/user_reports_list";
+
+
+
+ */
+
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -26,9 +60,10 @@ import '../../../widgets/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:async/async.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:path/path.dart' show basename;
 
 class UploadFiles extends StatefulWidget {
-  bool isFromSettings;
+  final bool isFromSettings;
   UploadFiles({Key? key, this.isFromSettings = false}) : super(key: key);
 
   @override
@@ -39,6 +74,8 @@ class _UploadFilesState extends State<UploadFiles> {
   final _pref = AppConfig().preferences;
   List<PlatformFile> files = [];
   List<File> fileFormatList = [];
+
+  /// this is used for sending to the api
   List<MultipartFile> newList = <MultipartFile>[];
 
   List<ChildReportListModel> doctorRequestedReports = [];
@@ -570,26 +607,6 @@ class _UploadFilesState extends State<UploadFiles> {
     ),
   );
 
-  // showChooser() {
-  //   return showDialog(
-  //     context: context,
-  //     builder: (context) => AlertDialog(
-  //         content: Text("Choose File Source"),
-  //         actions: [
-  //           ElevatedButton(
-  //             child: Text("Camera"),
-  //             onPressed: () => Navigator.pop(context, ImageSource.camera),
-  //           ),
-  //           ElevatedButton(
-  //             child: Text("File"),
-  //             onPressed: () => Navigator.pop(context, ImageSource.gallery),
-  //           ),
-  //         ]
-  //     ),
-  //   );
-  // }
-
-  // string type will be used when we call from requested report
   showChooserSheet({String? type}) {
     return showModalBottomSheet(
         backgroundColor: Colors.transparent,
@@ -1137,7 +1154,8 @@ class _UploadFilesState extends State<UploadFiles> {
                       dense: true,
                       // contentPadding: EdgeInsets.only(left: 0.0, right: 0.0),
                       title: Text(
-                        "Others",
+                          (doctorRequestedReports.any((element) => element.reportType ==
+                              "prescription")) ? 'Prescription & Others' : "Others",
                         style: TextStyle(
                             fontSize: 10.sp,
                             fontFamily: kFontBold,
@@ -1210,7 +1228,34 @@ class _UploadFilesState extends State<UploadFiles> {
     }
     print("selectedFiles: $selectedFiles");
     print("selectedFilesId: $selectedFilesId");
-    submitDoctorRequestedReport(selectedFiles, selectedFilesId);
+
+    if(doctorRequestedReports.any((element) => element.reportType == "prescription") && otherFilesObject.isEmpty){
+      AppConfig().showSnackbar(
+          context, "Please Upload Prescription report under Other section",
+          isError: true);
+    }
+    else{
+      reportsObject.forEach((element) {
+        print("11: ${element.path.isEmpty}");
+        print("ele: ${element.name}");
+      });
+      if(reportsObject.any((element) => element.path.isEmpty && element.name.toLowerCase() != "prescription")){
+        AppConfig().showSnackbar(
+            context, "Please Upload All the Files",
+            isError: true);
+      }
+      else{
+        submitDoctorRequestedReport(selectedFiles, selectedFilesId);
+      }
+    }
+
+    // if(selectedFiles.isNotEmpty){
+    // }
+    // else{
+    //   AppConfig().showSnackbar(
+    //       context, "Please add all the files",
+    //       isError: true);
+    // }
   }
   // Stream sendStream() async* {
   //   for (int i = 0; i < reportsObject.length; i++) {
@@ -1499,7 +1544,14 @@ class _UploadFilesState extends State<UploadFiles> {
                         .last.split(',');
                       return GestureDetector(
                         onTap: () async {
-                          final url = doctorRequestedReports[index].report.toString().split('/').first+reportNameList[i];
+                          var origin = Uri.parse(doctorRequestedReports[index].report.toString()).origin;
+                          var path = Uri.parse(doctorRequestedReports[index].report.toString()).path;
+                          var dir = path.substring(0, path.lastIndexOf('/')) + "/";
+                          print("dir: $dir");
+                          print("origin: ${Uri.parse(doctorRequestedReports[index].report.toString()).origin}");
+                          print("path: ${Uri.parse(doctorRequestedReports[index].report.toString()).path}");
+
+                          final url = origin+dir+reportNameList[i];
                           if (url != null || url.isNotEmpty) {
                             print("URL : $url");
                             if (url.toLowerCase().contains(".jpg") ||
@@ -1510,7 +1562,8 @@ class _UploadFilesState extends State<UploadFiles> {
                                   MaterialPageRoute(
                                       builder: (ctx) =>
                                           CustomPhotoViewer(url: url)));
-                            } else {
+                            }
+                            else {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(

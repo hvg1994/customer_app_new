@@ -1,6 +1,28 @@
+/*
+Api's used
+
+Get profile api calling in initstate
+var getUserProfileUrl = "${AppConfig().BASE_URL}/api/user";
+
+which is used to show the data
+
+update api:
+var updateUserProfileUrl = "${AppConfig().BASE_URL}/api/submitForm/update_user_profile";
+
+update profile api from that we can update fname, lname, age, gender, profile pic
+
+but now we r updating only profile pic
+
+from this screen we r navigating to evaluation report screen, my reports, feedback screen
+
+for my reports we need to pass isFromSetting as true
+
+if its false than in report screen it will show upload file ui
+
+ */
+
 import 'dart:io';
 import 'dart:typed_data';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
@@ -34,6 +56,7 @@ class MyProfileDetails extends StatefulWidget {
 }
 
 class _MyProfileDetailsState extends State<MyProfileDetails> {
+
   bool photoError = false;
   String profile = '';
   TextEditingController fnameController = TextEditingController();
@@ -87,8 +110,6 @@ class _MyProfileDetailsState extends State<MyProfileDetails> {
 
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width;
-    double height = MediaQuery.of(context).size.height;
     return SafeArea(
       child: Scaffold(
         body: SingleChildScrollView(
@@ -414,289 +435,11 @@ class _MyProfileDetailsState extends State<MyProfileDetails> {
             ],
           ),
         ),
-        // SizedBox(
-        //   height: height * 0.70,
-        //   child: FutureBuilder(
-        //     future: getProfileDetails,
-        //     builder: (_, snapshot) {
-        //       if (snapshot.hasData) {
-        //         if (snapshot.data.runtimeType == UserProfileModel) {
-        //           UserProfileModel data = snapshot.data as UserProfileModel;
-        //           ChildUserModel? subData = data.data;
-        //           return LayoutBuilder(
-        //             builder: (context, constraints) {
-        //               return Stack(
-        //                 fit: StackFit.expand,
-        //                 children: [
-        //                   Positioned(
-        //                     bottom: 0,
-        //                     left: 0,
-        //                     right: 0,
-        //                     top: 11.h,
-        //                     child: Container(
-        //                       padding:
-        //                           EdgeInsets.symmetric(horizontal: 3.w),
-        //                       margin: EdgeInsets.symmetric(horizontal: 2.w),
-        //                       decoration: BoxDecoration(
-        //                         color: Colors.white,
-        //                         borderRadius: BorderRadius.circular(10),
-        //                         boxShadow: [
-        //                           BoxShadow(
-        //                             color: Colors.grey.withOpacity(0.3),
-        //                             blurRadius: 20,
-        //                             offset: const Offset(2, 10),
-        //                           ),
-        //                         ],
-        //                       ),
-        //                       child: SingleChildScrollView(
-        //                         child: Column(
-        //                           crossAxisAlignment:
-        //                               CrossAxisAlignment.start,
-        //                           children: [
-        //                             (!isEdit)
-        //                                 ? InkWell(
-        //                                     onTap: () {
-        //                                       toggleEdit();
-        //                                       if (isEdit) {
-        //                                         setState(() {
-        //                                           ChildUserModel data =
-        //                                               subData!;
-        //                                           print(
-        //                                               "${data.name}, ${data.age}");
-        //                                           fnameController.text =
-        //                                               data.fname ?? '';
-        //                                           lnameController.text =
-        //                                               data.lname ?? '';
-        //                                           ageController.text =
-        //                                               data.age ?? '';
-        //                                           genderController.text =
-        //                                               data.gender!;
-        //                                           emailController.text =
-        //                                               data.email!;
-        //                                           mobileController.text =
-        //                                               data.phone!;
-        //                                         });
-        //                                       }
-        //                                       // Navigator.of(context).push(
-        //                                       //   MaterialPageRoute(
-        //                                       //     builder: (context) =>
-        //                                       //     const RegisterScreen(),
-        //                                       //   ),
-        //                                       // );
-        //                                     },
-        //                                     child: Padding(
-        //                                       padding: EdgeInsets.only(
-        //                                           top: 2.h, right: 3.w),
-        //                                       child: Align(
-        //                                         alignment:
-        //                                             Alignment.topRight,
-        //                                         child: SvgPicture.asset(
-        //                                           "assets/images/Icon feather-edit.svg",
-        //                                           color: Colors.grey,
-        //                                           fit: BoxFit.contain,
-        //                                         ),
-        //                                       ),
-        //                                     ))
-        //                                 : Padding(
-        //                                     padding: EdgeInsets.only(
-        //                                         top: 2.h, right: 3.w),
-        //                                     child: Align(
-        //                                       alignment: Alignment.topRight,
-        //                                       child: Row(
-        //                                         mainAxisSize:
-        //                                             MainAxisSize.min,
-        //                                         children: [
-        //                                           GestureDetector(
-        //                                               onTap: () {
-        //                                                 toggleEdit();
-        //                                                 _image = null;
-        //                                               },
-        //                                               child: Icon(
-        //                                                   Icons.clear)),
-        //                                           SizedBox(
-        //                                             width: 10,
-        //                                           ),
-        //                                           GestureDetector(
-        //                                               onTap: () async {
-        //                                                 if (int.parse(ageController
-        //                                                             .text) <
-        //                                                         10 ||
-        //                                                     int.parse(ageController
-        //                                                             .text) >
-        //                                                         100) {
-        //                                                   AppConfig()
-        //                                                       .showSnackbar(
-        //                                                           context,
-        //                                                           "Age Should be Greater than 10 and less than 100",
-        //                                                           isError:
-        //                                                               true);
-        //                                                 } else {
-        //                                                   var file;
-        //                                                   if (_image !=
-        //                                                       null) {
-        //                                                     file = await http
-        //                                                             .MultipartFile
-        //                                                         .fromPath(
-        //                                                             "photo",
-        //                                                             _image!
-        //                                                                 .path);
-        //                                                   }
-        //                                                   SendUserModel user = SendUserModel(
-        //                                                       fname:
-        //                                                           fnameController
-        //                                                               .text,
-        //                                                       lname:
-        //                                                           lnameController
-        //                                                               .text,
-        //                                                       age: ageController
-        //                                                           .text,
-        //                                                       gender:
-        //                                                           genderController
-        //                                                               .text,
-        //                                                       email: subData!
-        //                                                           .email,
-        //                                                       phone: subData
-        //                                                           .phone,
-        //                                                       profile: (_image !=
-        //                                                                   null &&
-        //                                                               file !=
-        //                                                                   null)
-        //                                                           ? file
-        //                                                           : null);
-        //                                                   updateProfileData(
-        //                                                       user.toJson());
-        //                                                 }
-        //
-        //                                                 // toggleEdit();
-        //                                               },
-        //                                               child:
-        //                                                   Icon(Icons.check))
-        //                                         ],
-        //                                       ),
-        //                                     ),
-        //                                   ),
-        //                             SizedBox(
-        //                               height: 4.h,
-        //                             ),
-        //                             profileTile(
-        //                                 "First Name: ",
-        //                                 subData?.fname ??
-        //                                     "Gut-Wellness Club",
-        //                                 controller: fnameController),
-        //                             Container(
-        //                               height: 1,
-        //                               color: Colors.grey,
-        //                             ),
-        //                             profileTile(
-        //                                 "Last Name: ",
-        //                                 subData?.lname ??
-        //                                     "Gut-Wellness Club",
-        //                                 controller: lnameController),
-        //                             Container(
-        //                               height: 1,
-        //                               color: Colors.grey,
-        //                             ),
-        //                             profileTile("Age: ", subData?.age ?? '',
-        //                                 controller: ageController,
-        //                                 maxLength: 2),
-        //                             Container(
-        //                               height: 1,
-        //                               color: Colors.grey,
-        //                             ),
-        //                             profileTile(
-        //                                 "Gender: ", subData?.gender ?? "",
-        //                                 controller: genderController),
-        //                             Container(
-        //                               height: 1,
-        //                               color: Colors.grey,
-        //                             ),
-        //                             profileTile(
-        //                                 "Email: ", subData?.email ?? ''),
-        //                             Container(
-        //                               height: 1,
-        //                               color: Colors.grey,
-        //                             ),
-        //                             profileTile("Mobile Number: ",
-        //                                 subData?.phone ?? ''),
-        //                             Container(
-        //                               height: 1,
-        //                               color: Colors.grey,
-        //                             ),
-        //                           ],
-        //                         ),
-        //                       ),
-        //                     ),
-        //                   ),
-        //                   Positioned(
-        //                     top: 5.h,
-        //                     left: 0,
-        //                     right: 0,
-        //                     child: Center(
-        //                         child: CircleAvatar(
-        //                       radius: 6.h,
-        //                       backgroundColor: Colors.black26,
-        //                       backgroundImage:
-        //                           // (subData!.profile == null || photoError) ? ExactAssetImage(
-        //                           //     "assets/images/cheerful.png") :
-        //                           (_image != null)
-        //                               ? FileImage(_image!)
-        //                               : CachedNetworkImageProvider(
-        //                                   subData!.profile!,
-        //                                   errorListener: () {
-        //                                   print("image error");
-        //                                   setState(() => photoError = true);
-        //                                 }) as ImageProvider,
-        //                       child: Stack(
-        //                           //  overflow: Overflow.visible,
-        //                           clipBehavior: Clip.none,
-        //                           children: [
-        //                             Visibility(
-        //                               visible: isEdit,
-        //                               child: GestureDetector(
-        //                                 onTap: showChooserSheet,
-        //                                 child: Align(
-        //                                   alignment: Alignment.bottomRight,
-        //                                   child: CircleAvatar(
-        //                                     radius: 11,
-        //                                     backgroundColor: gPrimaryColor
-        //                                         .withOpacity(0.9),
-        //                                     child: Padding(
-        //                                       padding:
-        //                                           const EdgeInsets.all(4.0),
-        //                                       child: Icon(
-        //                                         CupertinoIcons.camera,
-        //                                         color: gWhiteColor,
-        //                                         size: 14,
-        //                                       ),
-        //                                     ),
-        //                                   ),
-        //                                 ),
-        //                               ),
-        //                             ),
-        //                           ]),
-        //                     )),
-        //                   ),
-        //                 ],
-        //               );
-        //             },
-        //           );
-        //         } else {
-        //           ErrorModel data = snapshot.data as ErrorModel;
-        //           // AppConfig().showSnackbar(context, data.message ?? 'Unauthenticated', isError: true);
-        //           errorDisplayLayout();
-        //         }
-        //       } else if (snapshot.hasError) {
-        //         // AppConfig().showSnackbar(context, snapshot.error.toString(), isError: true);
-        //         errorDisplayLayout();
-        //       }
-        //       return buildCircularIndicator();
-        //     },
-        //   ),
-        // ),
       ),
     );
   }
 
+  /// this method is for showing common Circle image for reports
   buildButtons(String title, String image, func) {
     return GestureDetector(
       onTap: func,
@@ -748,30 +491,31 @@ class _MyProfileDetailsState extends State<MyProfileDetails> {
             ),
           ),
           SizedBox(height: 1.h),
-          (isEdit && controller != null)
-              ? TextField(
-            controller: controller,
-            readOnly: !isEdit,
-            decoration: InputDecoration(
-                contentPadding: EdgeInsets.all(0.0),
-                isDense: true,
-                counterText: ""
-              // border: InputBorde,
-            ),
-            minLines: 1,
-            maxLines: 1,
-            maxLength: maxLength,
-            // onSaved: (String value) {
-            //   // This optional block of code can be used to run
-            //   // code when the user saves the form.
-            // },
-            // validator: (value) {
-            //   if(value!.isEmpty){
-            //     return 'Name filed can\'t be empty';
-            //   }
-            // },
-          )
-              : Column(
+          // (isEdit && controller != null)
+          //     ? TextField(
+          //   controller: controller,
+          //   readOnly: !isEdit,
+          //   decoration: InputDecoration(
+          //       contentPadding: EdgeInsets.all(0.0),
+          //       isDense: true,
+          //       counterText: ""
+          //     // border: InputBorde,
+          //   ),
+          //   minLines: 1,
+          //   maxLines: 1,
+          //   maxLength: maxLength,
+          //   // onSaved: (String value) {
+          //   //   // This optional block of code can be used to run
+          //   //   // code when the user saves the form.
+          //   // },
+          //   // validator: (value) {
+          //   //   if(value!.isEmpty){
+          //   //     return 'Name filed can\'t be empty';
+          //   //   }
+          //   // },
+          // )
+          //     :
+          Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
@@ -810,90 +554,93 @@ class _MyProfileDetailsState extends State<MyProfileDetails> {
             ),
           ),
           SizedBox(height: 1.h),
-          (isEdit)
-              ? Row(
-            children: [
-              GestureDetector(
-                  onTap: (){
-                    setState(() => genderSelected = "Male");
-                  },
-                  child: Row(
-                    children: [
-                      Radio(
-                        value: "Male",
-                        activeColor: kPrimaryColor,
-                        groupValue: genderSelected,
-                        onChanged: (value) {
-                          setState(() {
-                            genderSelected = value as String;
-                          });
-                        },
-                      ),
-                      Text('Male',
-                        style: buildTextStyle(color: genderSelected == "Male" ? kTextColor : gHintTextColor,
-                            fontFamily: genderSelected == "Male" ? kFontMedium : kFontBook
-                        ),
-                      ),
-                    ],
-                  )),
-              SizedBox(
-                width: 3.w,
-              ),
-              GestureDetector(
-                onTap: (){
-                  setState(() => genderSelected = "Female");
-                },
-                child: Row(
-                  children: [
-                    Radio(
-                      value: "Female",
-                      activeColor: kPrimaryColor,
-                      groupValue: genderSelected,
-                      onChanged: (value) {
-                        setState(() {
-                          genderSelected = value as String;
-                        });
-                      },
-                    ),
-                    Text(
-                      'Female',
-                      style: buildTextStyle(color: genderSelected == "Female" ? kTextColor : gHintTextColor,
-                          fontFamily: genderSelected == "Female" ? kFontMedium : kFontBook
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(
-                width: 3.w,
-              ),
-              GestureDetector(
-                onTap: (){
-                  setState(() => genderSelected = "Other");
-                },
-                child: Row(
-                  children: [
-                    Radio(
-                        value: "Other",
-                        groupValue: genderSelected,
-                        activeColor: kPrimaryColor,
-                        onChanged: (value) {
-                          setState(() {
-                            genderSelected = value as String;
-                          });
-                        }),
-                    Text(
-                      "Other",
-                      style: buildTextStyle(color: genderSelected == "Other" ? kTextColor : gHintTextColor,
-                          fontFamily: genderSelected == "Other" ? kFontMedium : kFontBook
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          )
-              : Column(
+          /// commented the edit for gender
+          /// if we need edit than uncomment this
+          // (isEdit)
+          //     ? Row(
+          //   children: [
+          //     GestureDetector(
+          //         onTap: (){
+          //           setState(() => genderSelected = "Male");
+          //         },
+          //         child: Row(
+          //           children: [
+          //             Radio(
+          //               value: "Male",
+          //               activeColor: kPrimaryColor,
+          //               groupValue: genderSelected,
+          //               onChanged: (value) {
+          //                 setState(() {
+          //                   genderSelected = value as String;
+          //                 });
+          //               },
+          //             ),
+          //             Text('Male',
+          //               style: buildTextStyle(color: genderSelected == "Male" ? kTextColor : gHintTextColor,
+          //                   fontFamily: genderSelected == "Male" ? kFontMedium : kFontBook
+          //               ),
+          //             ),
+          //           ],
+          //         )),
+          //     SizedBox(
+          //       width: 3.w,
+          //     ),
+          //     GestureDetector(
+          //       onTap: (){
+          //         setState(() => genderSelected = "Female");
+          //       },
+          //       child: Row(
+          //         children: [
+          //           Radio(
+          //             value: "Female",
+          //             activeColor: kPrimaryColor,
+          //             groupValue: genderSelected,
+          //             onChanged: (value) {
+          //               setState(() {
+          //                 genderSelected = value as String;
+          //               });
+          //             },
+          //           ),
+          //           Text(
+          //             'Female',
+          //             style: buildTextStyle(color: genderSelected == "Female" ? kTextColor : gHintTextColor,
+          //                 fontFamily: genderSelected == "Female" ? kFontMedium : kFontBook
+          //             ),
+          //           ),
+          //         ],
+          //       ),
+          //     ),
+          //     SizedBox(
+          //       width: 3.w,
+          //     ),
+          //     GestureDetector(
+          //       onTap: (){
+          //         setState(() => genderSelected = "Other");
+          //       },
+          //       child: Row(
+          //         children: [
+          //           Radio(
+          //               value: "Other",
+          //               groupValue: genderSelected,
+          //               activeColor: kPrimaryColor,
+          //               onChanged: (value) {
+          //                 setState(() {
+          //                   genderSelected = value as String;
+          //                 });
+          //               }),
+          //           Text(
+          //             "Other",
+          //             style: buildTextStyle(color: genderSelected == "Other" ? kTextColor : gHintTextColor,
+          //                 fontFamily: genderSelected == "Other" ? kFontMedium : kFontBook
+          //             ),
+          //           ),
+          //         ],
+          //       ),
+          //     ),
+          //   ],
+          // )
+          //     :
+          Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(

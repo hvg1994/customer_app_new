@@ -5,10 +5,12 @@ class RewardService{
 
   RewardService({required this.repository}) : assert(repository != null);
 
+  /// to get the list and points of each rewards
   Future getRewardService() async{
     return await repository.getRewardRepo();
   }
 
+  /// this function not using
   Future getRewardStagesService() async{
     return await repository.getRewardStagesRepo();
   }
