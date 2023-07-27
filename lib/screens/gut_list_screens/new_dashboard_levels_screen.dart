@@ -706,7 +706,7 @@ class _NewDashboardLevelsScreenState extends State<NewDashboardLevelsScreen> {
       });
       print("isPressed: $isPressed");
       final res = await ShipTrackService(repository: shipTrackRepository)
-          .sendSippingApproveStatusService(status);
+          .sendShippingApproveStatusService(status);
 
       if (res.runtimeType == ShippingApproveModel) {
         ShippingApproveModel model = res as ShippingApproveModel;

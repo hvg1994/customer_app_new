@@ -15,8 +15,10 @@ class AppConfig{
   AppConfig._();
 
   /// need to change this each time when we send the aab
-  static const double androidVersion = 21.0;
+  static const double androidVersion = 22.0;
 
+  /// passing this when there is a difference in old apk and new apk version
+  /// it will open playstore
   static const androidBundleId = "com.fembuddy.gwc_customer";
 
   static const String androidAppURL = "https://play.google.com/store/apps/details?id=com.fembuddy.gwc_customer";
@@ -63,7 +65,7 @@ class AppConfig{
 
 
   final String trackerVideoUrl = "tracker_meal_video";
-  final String receipeVideoUrl = "reciepe_meal_video";
+  final String receipeVideoUrl = "recipe_meal_video";
 
   /// to getlocal dashboard data which used in notification screen
   static const String LOCAL_DASHBOARD_DATA = "local_dashboard_data";

@@ -330,7 +330,7 @@ class _NewMealPopupScreenState extends State<NewMealPopupScreen> {
       isSubmitted = true;
     });
     final res = await ShipTrackService(repository: shipTrackRepository)
-        .sendSippingApproveStatusService(status, selectedDate: DateFormat("dd/MM/yyyy").format(selectedDate));
+        .sendShippingApproveStatusService(status, selectedDate: DateFormat("dd/MM/yyyy").format(selectedDate));
 
     if (res.runtimeType == ShippingApproveModel) {
       ShippingApproveModel model = res as ShippingApproveModel;

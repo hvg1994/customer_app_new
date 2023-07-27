@@ -124,6 +124,7 @@ dependencies:
 
 dependency_overrides:
   intl: any
+  package_info_plus: any
 
 
 

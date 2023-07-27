@@ -45,6 +45,7 @@ enum ThreadType{
   reply,forward,note
 }
 
+/// when we need to pass from customer than need to pass customer and also need to pass ActAsEmail
 enum ActAsType{
   customer,agent
 }

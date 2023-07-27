@@ -1811,7 +1811,7 @@ class _NewDsPageState extends State<NewDsPage> {
       });
       print("isPressed: $isPressed");
       final res = await ShipTrackService(repository: shipTrackRepository)
-          .sendSippingApproveStatusService(status);
+          .sendShippingApproveStatusService(status);
 
       if (res.runtimeType == ShippingApproveModel) {
         ShippingApproveModel model = res as ShippingApproveModel;

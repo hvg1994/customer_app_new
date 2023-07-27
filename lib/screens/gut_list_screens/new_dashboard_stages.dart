@@ -1051,7 +1051,7 @@ class GutListState extends State<GutList> {
         isPressed = true;
       });
       print("isPressed: $isPressed");
-      final res = await ShipTrackService(repository: shipTrackRepository).sendSippingApproveStatusService(status);
+      final res = await ShipTrackService(repository: shipTrackRepository).sendShippingApproveStatusService(status);
 
       if(res.runtimeType == ShippingApproveModel){
         ShippingApproveModel model = res as ShippingApproveModel;

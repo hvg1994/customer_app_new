@@ -74,6 +74,8 @@ class LocalNotificationService {
     }
   }
 
+  /// this function is not using now
+  /// it will helps when quickblox package used
   void showQBNotification(RemoteMessage message) {
     print("Notification Message: ${message.toMap()}");
     AndroidNotificationChannel channel = const AndroidNotificationChannel(

@@ -17,7 +17,7 @@ class ShipTrackService{
     return await repository.getShoppingDetailsListRepo();
   }
 
-  Future sendSippingApproveStatusService(String approveStatus, {String? selectedDate}) async{
+  Future sendShippingApproveStatusService(String approveStatus, {String? selectedDate}) async{
     return await repository.sendSippingApproveStatusRepo(approveStatus, selectedDate!);
   }
 
