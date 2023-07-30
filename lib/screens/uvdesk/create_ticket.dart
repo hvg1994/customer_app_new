@@ -28,15 +28,23 @@ class CreateTicket extends StatefulWidget {
 class _CreateTicketState extends State<CreateTicket> {
   bool showProgress = false;
 
+  final nameController = TextEditingController();
+  final emailController = TextEditingController();
   final titleController = TextEditingController();
   final descriptionController = TextEditingController();
 
   late UvDeskService _uvDeskService = UvDeskService(uvDeskRepo: repository);
 
+  final _pref = AppConfig().preferences;
+
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    nameController.text = _pref?.getString(AppConfig.User_Name) ?? '';
+    emailController.text = _pref?.getString(AppConfig.User_Email) ?? '';
+
     Future.delayed(Duration.zero).whenComplete(() {
       titleController.addListener(() {
         setState(() {});
@@ -87,6 +95,132 @@ class _CreateTicketState extends State<CreateTicket> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    SizedBox(height: 4.h),
+                    Stack(
+                      children: [
+                        Container(
+                          height: 6.h,
+                          margin:
+                          EdgeInsets.symmetric(horizontal: 0.w, vertical: 1.h),
+                          padding: EdgeInsets.only(
+                              left: 5.w, top: 0.6.h, bottom: 0.5.h, right: 0.w),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(15),
+                            border: Border.all(
+                              color: gGreyColor.withOpacity(0.3),
+                            ),
+                          ),
+                          child: TextFormField(
+                            controller: nameController,
+                            cursorColor: gPrimaryColor,
+                            style: mainTextField(),
+                            readOnly: true,
+                            decoration: InputDecoration(
+                              suffixIcon: nameController.text.isEmpty
+                                  ? const SizedBox()
+                                  : InkWell(
+                                onTap: () {
+                                  nameController.clear();
+                                },
+                                child: Icon(
+                                  Icons.close,
+                                  color: gTextColor,
+                                  size: 2.h,
+                                ),
+                              ),
+                              hintText: "",
+                              border: InputBorder.none,
+                              hintStyle: mainTextField(),
+                            ),
+                            textInputAction: TextInputAction.next,
+                            textAlign: TextAlign.start,
+                            keyboardType: TextInputType.emailAddress,
+                          ),
+                        ),
+                        Positioned(
+                          left: 6.w,
+                          child: Container(
+                            padding: const EdgeInsets.all(5),
+                            decoration: BoxDecoration(
+                              color: kNumberCirclePurple,
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                            child: Text(
+                              "Name",
+                              style: TextStyle(
+                                fontSize: smTextFontSize,
+                                color: gWhiteColor,
+                                fontFamily: kFontMedium,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 4.h),
+                    Stack(
+                      children: [
+                        Container(
+                          height: 6.h,
+                          margin:
+                          EdgeInsets.symmetric(horizontal: 0.w, vertical: 1.h),
+                          padding: EdgeInsets.only(
+                              left: 5.w, top: 0.6.h, bottom: 0.5.h, right: 0.w),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(15),
+                            border: Border.all(
+                              color: gGreyColor.withOpacity(0.3),
+                            ),
+                          ),
+                          child: TextFormField(
+                            controller: emailController,
+                            cursorColor: gPrimaryColor,
+                            style: mainTextField(),
+                            readOnly: true,
+                            decoration: InputDecoration(
+                              suffixIcon: emailController.text.isEmpty
+                                  ? const SizedBox()
+                                  : InkWell(
+                                onTap: () {
+                                  emailController.clear();
+                                },
+                                child: Icon(
+                                  Icons.close,
+                                  color: gTextColor,
+                                  size: 2.h,
+                                ),
+                              ),
+                              hintText: "",
+                              border: InputBorder.none,
+                              hintStyle: mainTextField(),
+                            ),
+                            textInputAction: TextInputAction.next,
+                            textAlign: TextAlign.start,
+                            keyboardType: TextInputType.emailAddress,
+                          ),
+                        ),
+                        Positioned(
+                          left: 6.w,
+                          child: Container(
+                            padding: const EdgeInsets.all(5),
+                            decoration: BoxDecoration(
+                              color: kNumberCirclePurple,
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                            child: Text(
+                              "Email",
+                              style: TextStyle(
+                                fontSize: smTextFontSize,
+                                color: gWhiteColor,
+                                fontFamily: kFontMedium,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                     SizedBox(height: 4.h),
                     Stack(
                       children: [
@@ -369,7 +503,7 @@ class _CreateTicketState extends State<CreateTicket> {
                 if(titleController.text.isEmpty){
                   AppConfig().showSnackbar(context, "Please Mention Title", isError: true);
                 }
-                else if(titleController.text.isEmpty){
+                else if(descriptionController.text.isEmpty){
                   AppConfig().showSnackbar(context, "Please Mention Description", isError: true);
                 }
                 else{
@@ -416,11 +550,13 @@ class _CreateTicketState extends State<CreateTicket> {
       showProgress = true;
     });
     Map data = {
-      'type': "${TicketStatusType.open.index+1}",
-      'name': "test with",
-      'from': "abc@gmail.com",
-      'reply': descriptionController.text,
+      //'type': "${TicketStatusType.open.index+1}",
+      'name': nameController.text,
+      'from': emailController.text,
+      'message': descriptionController.text,
       'subject': titleController.text,
+    'actAsType':"customer",
+    'actAsEmail':emailController.text
     };
 
     final res = await _uvDeskService.createTicketService(data, attachments: fileFormatList.isNotEmpty ? fileFormatList : null);

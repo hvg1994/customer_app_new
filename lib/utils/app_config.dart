@@ -81,6 +81,7 @@ class AppConfig{
   static const String User_Name = "userName";
   static const String USER_ID = "userId";
   static const String User_Profile ="userProfile";
+  static const String User_Email ="user_email";
   static const String User_Number = "userNumber";
   static const String User_age = "userAge";
   static const String User_gender = "userGender";

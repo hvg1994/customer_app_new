@@ -722,6 +722,8 @@ class _NewDsPageState extends State<NewDsPage> {
       _pref!.setString(
           AppConfig.User_Name, model1.data?.name ?? model1.data?.fname ?? '');
       _pref!.setInt(AppConfig.USER_ID, model1.data?.id ?? -1);
+      _pref!.setString(AppConfig.User_Email,model1.data?.email ?? "");
+
       _pref!
           .setString(AppConfig.KALEYRA_USER_ID, model1.data!.kaleyraUID ?? '');
       _pref!.setString(AppConfig.User_age, model1.data?.age ?? "");

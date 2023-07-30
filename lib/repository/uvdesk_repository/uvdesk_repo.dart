@@ -7,8 +7,8 @@ class UvDeskRepo {
 
   UvDeskRepo({required this.apiClient}) : assert(apiClient != null);
 
-  Future getTicketListRepo() async{
-    return await apiClient.getTicketListApi();
+  Future getTicketListRepo(String email) async{
+    return await apiClient.getTicketListApi(email);
   }
 
   Future getTicketDetailsByIdRepo(String id) async{
@@ -22,6 +22,8 @@ class UvDeskRepo {
   Future getTicketsByCustomerIdRepo(String customerId, String statusId) async{
     return await apiClient.getTicketListByCustomerIdApi(customerId, statusId);
   }
+
+
 
   Future sendReplyRepo(String ticketId, Map data, {List<File>? attachments}) async{
     return await apiClient.sendReplyApi(ticketId, data, attachments: attachments);

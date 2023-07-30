@@ -150,16 +150,24 @@ var getGraphUrl ="${AppConfig().BASE_URL}/api/listData/progress";
 
  */
 
-const String uvDesk_baseUrl = "https://fembuddy.uvdesk.com/en/api";
+// new url
+const String uvDesk_baseUrl = "https://uvteam.disol.in/public/api/v1/";
+
+// old url
+// const String uvDesk_baseUrl = "https://fembuddy.uvdesk.com/en/api";
 
 // old admin token 040561E3F817A9F9BAA36C50CFF8D0EF41072040561E3F817A9F9BAA36C50CFF8D0EF
 /// for getting ticket list/details/ ticket details
-String agentToken = "Bearer 8A07DDBDF6672807F8B4D261E5673500599238A07DDBDF6672807F8B4D261E5673500";
+// String agentToken = "Bearer 8A07DDBDF6672807F8B4D261E5673500599238A07DDBDF6672807F8B4D261E5673500";
+
+/// using same token for new domain  (uvteam.disol.in)
+String agentToken = "Bearer HBTCAEHAAAOTTVECVMNJGLWYVXVN3GBJUR0XVZNOJTO4N1Y4LD7LT3LE4PVONODF";
+
 
 // old agent token 478CBD3B1BD2E2062AE52C0D39D36FF248787478CBD3B1BD2E2062AE52C0D39D36FF2
 
 /// for create/reply ticket we need to use this token
-String adminToken = "Bearer 8E63BC73D879BC04717ECBCCE59BADE4424488E63BC73D879BC04717ECBCCE59BADE4";
+// String adminToken = "Bearer 8E63BC73D879BC04717ECBCCE59BADE4424488E63BC73D879BC04717ECBCCE59BADE4";
 // https://fembuddy.uvdesk.com/en/api/tickets.json?customer=1795084
 /// to get the ticket list from customer
 const String ticketListByCustomerId = "/tickets.json?customer=";
@@ -168,22 +176,25 @@ const String ticketListByCustomerId = "/tickets.json?customer=";
 /// this is to create ticket, get list
 /// for create make post call
 /// for get list make get call
-const String ticketListApiPath = "/tickets.json";
+const String ticketListApiPath = "tickets";
 
 const String myProfileApiPath = "/me.json";
 
 /// need to pass increment id -> /ticket/{increment_id}.json
-const String ticketDetailsPath = "/ticket/";
+const String ticketDetailsPath = "ticket/";
+
+/// POST
+const String createTicketPath = "ticket";
 
 /// this is used to get reply details and also for give reply
 /// use post to add reply
 /// use get to get details
 /// need to pass increment id -> /ticket/{ticketid}/thread.json
 
-const String ticketReplyPath = "/ticket/";
+const String ticketReplyPath = "ticket/";
 
 getTicketReplyPath(String id){
-  return '${ticketReplyPath+id}/threads.json';
+  return '${ticketReplyPath+id}/thread';
 }
 
 

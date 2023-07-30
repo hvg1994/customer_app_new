@@ -65,6 +65,7 @@ import '../model/ship_track_model/shipping_track_model.dart';
 import '../model/success_message_model.dart';
 import '../model/uvdesk_model/get_ticket_list_model.dart';
 import '../model/uvdesk_model/get_ticket_threads_list_model.dart';
+import '../model/uvdesk_model/new_ticket_details_model.dart';
 import '../model/uvdesk_model/ticket_details_model.dart';
 import '../utils/api_urls.dart';
 import '../utils/app_config.dart';
@@ -1130,6 +1131,8 @@ class ApiClient {
     else{
       m.putIfAbsent("meal_plan_type", () => 2.toString());
     }
+
+    print("meal_plan_type: $m");
     // print(
     //     "model: ${json.encode(model.toJson()) == jsonEncode(model.toJson())}");
 
@@ -2971,9 +2974,15 @@ class ApiClient {
     return result;
   }
 
-  getTicketListApi() async{
-    String url = uvDesk_baseUrl+'$ticketListApiPath';
+  getTicketListApi(String email) async{
+    String url = uvDesk_baseUrl+ticketListApiPath+'?actAsType=customer&actAsEmail=$email';
     print(url);
+
+    Map queryParam = {
+      "actAsType":"customer",
+      "actAsEmail": email
+    };
+
 
     dynamic result;
     try{
@@ -3007,7 +3016,7 @@ class ApiClient {
 
   /// id -> ticketId
   getTicketDetailsApi(String id) async{
-    String url = uvDesk_baseUrl+'${ticketDetailsPath+id}/threads.json';
+    String url = uvDesk_baseUrl+'${ticketDetailsPath+id}';
     print(url);
 
     dynamic result;
@@ -3024,7 +3033,7 @@ class ApiClient {
 
       if(response.statusCode == 200){
         final json = jsonDecode(response.body);
-        result = ThreadsListModel.fromJson(jsonDecode(response.body));
+        result = NewTicketDetailsModel.fromJson(jsonDecode(response.body));
       }
       else if(response.statusCode == 500) {
         result = ErrorModel(status: "0", message: AppConfig.oopsMessage);
@@ -3054,12 +3063,13 @@ actAsEmail	  string	false        	provide when acting as agent
 attachments[]   files   false
    */
   createTicketApi(Map data, {List<File>? attachments}) async{
-    String url = uvDesk_baseUrl+'$ticketListApiPath';
+    String url = uvDesk_baseUrl+'$createTicketPath';
     print(url);
 
     dynamic result;
     var headers = {
-    "Authorization": adminToken,
+    // "Authorization": adminToken,
+      "Authorization": agentToken,
     };
     try{
 
@@ -3149,7 +3159,8 @@ attachments[]   files   false
 
     dynamic result;
     var headers = {
-      "Authorization": adminToken,
+      // "Authorization": adminToken,
+      "Authorization": agentToken,
     };
     try{
       var request = http.MultipartRequest('POST', Uri.parse(url));
@@ -3172,9 +3183,9 @@ attachments[]   files   false
       var response = await http.Response.fromStream(await request.send())
           .timeout(Duration(seconds: 45));
 
-      print('createTicketApi Url: $url');
-      print('createTicketApi Response status: ${response.statusCode}');
-      print('createTicketApi Response body: ${response.body}');
+      print('reply Url: $url');
+      print('reply Response status: ${response.statusCode}');
+      print('reply Response body: ${response.body}');
 
       if(response.statusCode == 200){
         final json = jsonDecode(response.body);
@@ -3209,7 +3220,8 @@ attachments[]   files   false
     try{
       final response = await httpClient.patch(Uri.parse(url),
         headers: {
-          "Authorization": adminToken,
+          // "Authorization": adminToken,
+          "Authorization": agentToken,
         },
         body: Map.from(body)
       ).timeout(Duration(seconds: 45));

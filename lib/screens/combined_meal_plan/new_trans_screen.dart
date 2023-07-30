@@ -181,7 +181,7 @@ class _NourishPlanScreenState extends State<NourishPlanScreen>
             }
           });
         }
-        if ((presentDay == totalDays && _childPrepModel!.currentDayStatus == "1") &&
+        if ((presentDay == totalDays && _childPrepModel!.currentDayStatus == "1" || _childPrepModel!.isNourishCompleted == "1") &&
             (widget.postProgramStage == null ||
                 widget.postProgramStage!.isEmpty))
         {
@@ -547,7 +547,7 @@ class _NourishPlanScreenState extends State<NourishPlanScreen>
               ),
               // btn(),
               //&& showTrackerBtn
-              if (currentDayStatus == "0" && !widget.viewDay1Details ) btn(),
+              if (currentDayStatus == "0" && !widget.viewDay1Details && showTrackerBtn) btn(),
               Visibility(
                 visible: currentDayStatus == "1",
                 child: Center(
@@ -930,12 +930,13 @@ class _NourishPlanScreenState extends State<NourishPlanScreen>
     return Center(
       child: GestureDetector(
         onTap: () {
+          print("(presentDay).toString(): ${(presentDay).toString()}");
           Navigator.push(
             context,
             MaterialPageRoute(
               builder: (ctx) => TrackerUI(
                   from: ProgramMealType.transition.name,
-                  proceedProgramDayModel: ProceedProgramDayModel(day: (presentDay).toString()),
+                  proceedProgramDayModel: ProceedProgramDayModel(day: (presentDay == 0 ? 1 : presentDay).toString()),
                   trackerVideoLink: widget.trackerVideoLink
               ),),);
         },

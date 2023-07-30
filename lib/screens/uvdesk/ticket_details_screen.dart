@@ -29,7 +29,7 @@ import 'package:sizer/sizer.dart';
 import 'package:grouped_list/grouped_list.dart';
 import '../../../model/error_model.dart';
 import '../../../widgets/widgets.dart';
-import '../../model/uvdesk_model/get_ticket_threads_list_model.dart';
+import '../../model/uvdesk_model/new_ticket_details_model.dart';
 import '../../repository/api_service.dart';
 import '../../repository/uvdesk_repository/uvdesk_repo.dart';
 import '../../services/uvdesk_service/uv_desk_service.dart';
@@ -67,8 +67,8 @@ class _TicketChatScreenState extends State<TicketChatScreen>
   bool showProgress = false;
   bool isLoading = false;
 
-  ThreadsListModel? threadsListModel;
-  List<Thread>? threadList;
+  NewTicketDetailsModel? threadsListModel;
+  List<Threads>? threadList;
 
   late final UvDeskService _uvDeskService = UvDeskService(uvDeskRepo: repository);
 
@@ -98,11 +98,11 @@ class _TicketChatScreenState extends State<TicketChatScreen>
     await _uvDeskService.getTicketDetailsByIdService(widget.ticketId);
     print("result: $result");
 
-    if (result.runtimeType == ThreadsListModel) {
+    if (result.runtimeType == NewTicketDetailsModel) {
       print("Threads List");
-      ThreadsListModel model = result as ThreadsListModel;
+      NewTicketDetailsModel model = result as NewTicketDetailsModel;
       threadsListModel = model;
-      threadList = model.threads;
+      threadList = model.ticket!.threads;
       print("threads List : $threadList");
     } else {
       ErrorModel model = result as ErrorModel;
@@ -231,7 +231,7 @@ class _TicketChatScreenState extends State<TicketChatScreen>
                         thumbColor: gMainColor,
                         child: showProgress
                             ? buildCircularIndicator()
-                            : buildMessageList(threadsListModel!.threads),
+                            : buildMessageList(threadsListModel!.ticket!.threads!),
                         // StreamBuilder(
                         //   stream: _uvDeskService.stream.asBroadcastStream(),
                         //   builder: (_, snapshot) {
@@ -427,22 +427,22 @@ class _TicketChatScreenState extends State<TicketChatScreen>
     );
   }
 
-  buildMessageList(List<Thread> threads) {
-    return GroupedListView<Thread, DateTime>(
+  buildMessageList(List<Threads> threads) {
+    return GroupedListView<Threads, DateTime>(
       elements: threads,
-      order: GroupedListOrder.DESC,
+      order: GroupedListOrder.ASC,
       reverse: false,
       floatingHeader: true,
       useStickyGroupSeparators: true,
       padding: EdgeInsets.symmetric(horizontal: 2.w),
       keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-      groupBy: (Thread message) {
+      groupBy: (Threads message) {
         // final f = DateFormat(message.formatedCreatedAt.toString());
         // DateTime d = DateTime.parse(message.formatedCreatedAt.toString());
         return DateTime(2023, 7, 17);
       },
       // padding: EdgeInsets.symmetric(horizontal: 0.w),
-      groupHeaderBuilder: (Thread message) => Row(
+      groupHeaderBuilder: (Threads message) => Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
@@ -466,7 +466,7 @@ class _TicketChatScreenState extends State<TicketChatScreen>
           ),
         ],
       ),
-      itemBuilder: (context, Thread message) => Row(
+      itemBuilder: (context, Threads message) => Row(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -479,7 +479,7 @@ class _TicketChatScreenState extends State<TicketChatScreen>
               padding: const EdgeInsets.only(top: 15),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: message.userType == "agent"
+                crossAxisAlignment: message.createdBy == "agent"
                     ? CrossAxisAlignment.start
                     : CrossAxisAlignment.end,
                 children: [
@@ -494,13 +494,13 @@ class _TicketChatScreenState extends State<TicketChatScreen>
                           maxWidth: 65.w,
                           minWidth: 0
                       ),
-                      margin: message.userType == "agent"
+                      margin: message.createdBy == "agent"
                           ? EdgeInsets.only(
                           top: 0.5.h, bottom: 0.5.h, left: 5, right: 20.w)
                           : EdgeInsets.only(
                           top: 0.5.h, bottom: 0.5.h, right: 5, left: 20.w),
                       decoration: BoxDecoration(
-                          color: message.userType == "agent"
+                          color: message.createdBy == "agent"
                               ? (message.cc != null) ? kNumberCircleRed : gWhiteColor
                               : gsecondaryColor,
                           boxShadow: [
@@ -514,20 +514,20 @@ class _TicketChatScreenState extends State<TicketChatScreen>
                           borderRadius: BorderRadius.only(
                               topLeft: Radius.circular(18),
                               topRight: Radius.circular(18),
-                              bottomLeft:  message.userType == "agent"
+                              bottomLeft:  message.createdBy == "agent"
                                   ? Radius.circular(0)
                                   : Radius.circular(18),
-                              bottomRight:  message.userType == "agent"
+                              bottomRight:  message.createdBy == "agent"
                                   ? Radius.circular(18)
                                   : Radius.circular(0))),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          if(message.userType == "agent")
+                          if(message.createdBy == "agent")
                             IntrinsicWidth(
                               child: Align(
                                 alignment: Alignment.centerLeft,
-                                child: HtmlWidget((message.fullname != null) ? "${message.fullname}" : "",
+                                child: HtmlWidget((message.user!.name != null) ? "${message.user?.name}" : "",
                                   textStyle: TextStyle(
                                       fontSize: smTextFontSize,
                                       color: gHintTextColor,
@@ -537,16 +537,16 @@ class _TicketChatScreenState extends State<TicketChatScreen>
                                 ),
                               ),
                             ),
-                          if(message.userType == "agent")
+                          if(message.createdBy == "agent")
                             SizedBox(
                               height: 1.h,
                             ),
                           Align(
                             alignment: Alignment.topLeft,
                             child: SizedBox(
-                              child: HtmlWidget(message.reply ?? "",
+                              child: HtmlWidget(message.message ?? "",
                                 textStyle: TextStyle(
-                                  color: message.userType == "agent"
+                                  color: message.createdBy == "agent"
                                       ? (message.cc != null) ? gWhiteColor : gTextColor
                                       : gWhiteColor,
                                 ),
@@ -741,11 +741,11 @@ class _TicketChatScreenState extends State<TicketChatScreen>
     print("---------Send reply---------");
 
     Map m = {
-      'reply': commentController.text,
+      'message': commentController.text,
       'threadType': ThreadType.reply.name,
       'actAsType': ActAsType.customer.name,
       'actAsEmail': widget.email,
-      'status': (TicketStatusType.Answered.index+1).toString()
+      // 'status': (TicketStatusType.Answered.index+1).toString()
     };
 
     final result = await _uvDeskService.sendReplyService(widget.ticketId, m, attachments: null);

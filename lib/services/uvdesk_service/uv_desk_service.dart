@@ -10,8 +10,8 @@ class UvDeskService extends ChangeNotifier{
   UvDeskService({required this.uvDeskRepo})
       : assert(uvDeskRepo != null);
 
-  Future getTicketListService() async{
-    return await uvDeskRepo.getTicketListRepo();
+  Future getTicketListService(String email) async{
+    return await uvDeskRepo.getTicketListRepo(email);
   }
 
   Future getTicketDetailsByIdService(String id) async{
@@ -36,9 +36,9 @@ class UvDeskService extends ChangeNotifier{
 
 }
 
-///  1|2|3|4|5|6 for open|pending|resolved|closed|Spam|Answered
+///  1|2|3|4|5|6 for open,pending,answered,resolved,closed,spam
 enum TicketStatusType {
-  open,pending,resolved,closed,Spam,Answered
+  open,pending,answered,resolved,closed,spam
 }
 
 enum ThreadType{

@@ -149,82 +149,71 @@ Map<String, dynamic> toJson() {
 
 class Tickets {
   int? id;
-  int? incrementId;
   String? subject;
-  int? name;
-  String? isStarred;
-  bool? isAgentView;
-  bool? isTrashed;
-  String? source;
-  String? group;
-  // Group? group;
-  Team? team;
-  Priority? priority;
+  bool? isCustomerView;
   Status? status;
-  String? type;
-  int? timestamp;
+  String? source;
+  bool? isStarred;
+  Group? group;
+  Type? type;
+  Priority? priority;
   String? formatedCreatedAt;
   String? totalThreads;
   Agent? agent;
   Customer? customer;
-  int? hasAttachments;
-  CreatedAt? createdAt;
-  CreatedAt? updatedAt;
-  String? lastThreadUserType;
-  String? isTicketFollowUpApplied;
-  String? lastReplyAgentTime;
 
-  Tickets({this.id, this.incrementId, this.subject, this.name, this.isStarred, this.isAgentView, this.isTrashed, this.source, this.group, this.team, this.priority, this.status, this.type, this.timestamp, this.formatedCreatedAt, this.totalThreads, this.agent, this.customer, this.hasAttachments, this.createdAt, this.updatedAt, this.lastThreadUserType, this.isTicketFollowUpApplied, this.lastReplyAgentTime});
+  Tickets({this.id,
+    this.subject,
+    this.isCustomerView,
+    this.status,
+    this.source,
+    this.isStarred,
+    this.group,
+    this.type,
+    this.priority,
+    this.formatedCreatedAt,
+    this.totalThreads,
+    this.agent,
+    this.customer});
 
   Tickets.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    incrementId = json['incrementId'];
     subject = json['subject'];
-    name = json['name'];
-    isStarred = json['isStarred'].toString();
-    isAgentView = json['isAgentView'];
-    isTrashed = json['isTrashed'];
+    isCustomerView = json['isCustomerView'];
+    status =
+    json['status'] != null ? new Status.fromJson(json['status']) : null;
     source = json['source'];
-    group = (json['group'] != null) ? json['group'] : null;
-    // group = (json['group'] != null) ? Group.fromJson(json['group']) : null;
-    team = (json['team'] != null) ? Team.FromJson(json['team']) : null;
-    priority = json['priority'] != null ? new Priority.fromJson(json['priority']) : null;
-    status = json['status'] != null ? new Status.fromJson(json['status']) : null;
-    type = json['type'];
-    timestamp = json['timestamp'];
+    isStarred = json['isStarred'];
+    group = json['group'] != null ? Group.fromJson(json['group']) : null;
+    type = json['type'] != null ? new Type.fromJson(json['type']) : null;
+    priority = json['priority'] != null
+        ? new Priority.fromJson(json['priority'])
+        : null;
     formatedCreatedAt = json['formatedCreatedAt'];
     totalThreads = json['totalThreads'];
     agent = json['agent'] != null ? new Agent.fromJson(json['agent']) : null;
-    customer = json['customer'] != null ? new Customer.fromJson(json['customer']) : null;
-    hasAttachments = json['hasAttachments'];
-    createdAt = json['createdAt'] != null ? new CreatedAt.fromJson(json['createdAt']) : null;
-    updatedAt = json['updatedAt'] != null ? new CreatedAt.fromJson(json['updatedAt']) : null;
-    lastThreadUserType = json['lastThreadUserType'];
-    isTicketFollowUpApplied = json['isTicketFollowUpApplied'].toString();
-    lastReplyAgentTime = json['lastReplyAgentTime'];
+    customer = json['customer'] != null
+        ? new Customer.fromJson(json['customer'])
+        : null;
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
-    data['incrementId'] = this.incrementId;
     data['subject'] = this.subject;
-    data['name'] = this.name;
-    data['isStarred'] = this.isStarred;
-    data['isAgentView'] = this.isAgentView;
-    data['isTrashed'] = this.isTrashed;
-    data['source'] = this.source;
-    data['group'] = this.group;
-    // data['group'] = this.group?.toJson();
-    data['team'] = this.team?.toJson();
-    if (this.priority != null) {
-      data['priority'] = this.priority!.toJson();
-    }
+    data['isCustomerView'] = this.isCustomerView;
     if (this.status != null) {
       data['status'] = this.status!.toJson();
     }
-    data['type'] = this.type;
-    data['timestamp'] = this.timestamp;
+    data['source'] = this.source;
+    data['isStarred'] = this.isStarred;
+    data['group'] = this.group;
+    if (this.type != null) {
+      data['type'] = this.type!.toJson();
+    }
+    if (this.priority != null) {
+      data['priority'] = this.priority!.toJson();
+    }
     data['formatedCreatedAt'] = this.formatedCreatedAt;
     data['totalThreads'] = this.totalThreads;
     if (this.agent != null) {
@@ -233,16 +222,6 @@ class Tickets {
     if (this.customer != null) {
       data['customer'] = this.customer!.toJson();
     }
-    data['hasAttachments'] = this.hasAttachments;
-    if (this.createdAt != null) {
-      data['createdAt'] = this.createdAt!.toJson();
-    }
-    if (this.updatedAt != null) {
-      data['updatedAt'] = this.updatedAt!.toJson();
-    }
-    data['lastThreadUserType'] = this.lastThreadUserType;
-    data['isTicketFollowUpApplied'] = this.isTicketFollowUpApplied;
-    data['lastReplyAgentTime'] = this.lastReplyAgentTime;
     return data;
   }
 }
@@ -283,9 +262,9 @@ class Status {
 
   Status.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    name = json['name'];
+    name = json['name'] ?? json['code'] ?? '';
     description = json['description'];
-    color = json['color'];
+    color = json['color'] ?? json['colorCode'];
     sortOrder = json['sortOrder'];
   }
 

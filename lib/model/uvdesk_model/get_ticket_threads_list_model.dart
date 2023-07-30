@@ -1,5 +1,7 @@
+import 'package:gwc_customer/model/uvdesk_model/ticket_details_model.dart';
+
 class ThreadsListModel {
-  List<Thread> threads;
+  List<Ticket>? threads;
   Pagination? pagination;
 
   ThreadsListModel({
@@ -10,12 +12,12 @@ class ThreadsListModel {
   factory ThreadsListModel.fromJson(Map<String, dynamic> json) =>
       ThreadsListModel(
         threads:
-            List<Thread>.from(json["threads"].map((x) => Thread.fromJson(x))),
+            List<Ticket>.from(json["tickets"].map((x) => Ticket.fromJson(x))),
         pagination: Pagination.fromJson(json["pagination"]),
       );
 
   Map<String, dynamic> toJson() => {
-        "threads": List<dynamic>.from(threads.map((x) => x.toJson())),
+        "tickets": List<dynamic>.from(threads!.map((x) => x.toJson())),
         "pagination": pagination?.toJson(),
       };
 }

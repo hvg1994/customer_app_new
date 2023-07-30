@@ -1013,6 +1013,7 @@ class _ExistingUserState extends State<ExistingUser> {
       _pref.setString(AppConfig.QB_CURRENT_USERID, model1.data!.qbUserId ?? '');
       _pref.setString(AppConfig.KALEYRA_USER_ID, model1.data!.kaleyraUID ?? '');
 
+      _pref.setString(AppConfig.User_Email,model1.data?.email ?? "");
       _pref.setString(AppConfig.User_Profile,model1.data?.profile ?? "");
       _pref.setString(AppConfig.User_Number,model1.data?.phone ?? "");
       _pref.setString(AppConfig.User_age,model1.data?.age ?? "");

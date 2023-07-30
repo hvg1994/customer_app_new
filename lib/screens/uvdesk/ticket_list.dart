@@ -8,6 +8,7 @@
  */
 
 import 'package:flutter/material.dart';
+import 'package:gwc_customer/model/uvdesk_model/get_ticket_threads_list_model.dart';
 import 'package:gwc_customer/screens/uvdesk/ticket_details_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:sizer/sizer.dart';
@@ -39,6 +40,10 @@ class _TicketListScreenState extends State<TicketListScreen> {
 
   final ScrollController _scrollController = ScrollController();
 
+  final _pref = AppConfig().preferences;
+
+  late String email = _pref?.getString(AppConfig.User_Email) ?? '';
+
   // String customerId = "1795084";
   String customerId = "3229";
 
@@ -50,14 +55,14 @@ class _TicketListScreenState extends State<TicketListScreen> {
     // getTickets();
   }
 
-  getTickets() async{
-    callProgressStateOnBuild(true);
-    final res = await _uvDeskService.getTicketListService();
-
-    if(res.runtimeType == ErrorModel){
-
-    }
-  }
+  // getTickets() async{
+  //   callProgressStateOnBuild(true);
+  //   final res = await _uvDeskService.getTicketListService();
+  //
+  //   if(res.runtimeType == ErrorModel){
+  //
+  //   }
+  // }
   
   callProgressStateOnBuild(bool value){
     Future.delayed(Duration.zero).whenComplete(() {
@@ -141,19 +146,20 @@ class _TicketListScreenState extends State<TicketListScreen> {
             Expanded(
                 child: TabBarView(
                   children: [
-                    showRespectiveTabView(context, (TicketStatusType.open.index+1).toString()),
-                    showRespectiveTabView(context, (TicketStatusType.Answered.index+1).toString()),
-                    showRespectiveTabView(context, (TicketStatusType.resolved.index+1).toString()),
-                    showRespectiveTabView(context, (TicketStatusType.closed.index+1).toString()),
+                    showRespectiveTabView(context, TicketStatusType.open),
+                    showRespectiveTabView(context, TicketStatusType.answered),
+                    showRespectiveTabView(context, TicketStatusType.resolved),
+                    showRespectiveTabView(context, TicketStatusType.closed),
                   ],))
           ],
         )
     );
   }
 
-  showRespectiveTabView(BuildContext context, String statusId){
+  showRespectiveTabView(BuildContext context, TicketStatusType type){
     return FutureBuilder(
-      future: _uvDeskService.getTicketsByCustomerIdService(customerId, statusId),
+      // future: _uvDeskService.getTicketsByCustomerIdService(customerId, statusId),
+      future: _uvDeskService.getTicketListService(email),
       builder: (_, snap){
         if(snap.connectionState == ConnectionState.waiting){
           return Center(
@@ -172,7 +178,7 @@ class _TicketListScreenState extends State<TicketListScreen> {
             }
             else{
               GetTicketListModel _model = snap.data as GetTicketListModel;
-              return buildUI(context, _model);
+              return buildUI(context, _model, type);
             }
           }
           else if(snap.hasError){
@@ -190,9 +196,9 @@ class _TicketListScreenState extends State<TicketListScreen> {
     );
   }
 
-  Widget buildUI(BuildContext context, GetTicketListModel model) {
+  Widget buildUI(BuildContext context, GetTicketListModel model, TicketStatusType type) {
     Labels? labels = model.labels;
-    List<Tickets> tickets = model.tickets ?? [];
+    List<Tickets> tickets = model.tickets?.where((element) => element.status!.name == type.name) .toList() ?? [];
     int _totalLabels = -1;
 
     if(labels != null){
@@ -211,11 +217,11 @@ class _TicketListScreenState extends State<TicketListScreen> {
       );
     }
     else{
-      return showList(tickets);
+      return showList(tickets, type);
     }
   }
   
-  showList(List<Tickets> tickets){
+  showList(List<Tickets> tickets, TicketStatusType type){
     if(tickets.isEmpty){
       return const Center(
         child: Image(
@@ -262,27 +268,27 @@ class _TicketListScreenState extends State<TicketListScreen> {
                       style: listMainHeading(),
                     )
                         : const SizedBox(),
-                    SizedBox(height: 0.3.h),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Replied By : ",
-                          style: otherText9(),
-                        ),
-                        Expanded(
-                          child: Text(
-                            currentTicket.lastThreadUserType ?? "",
-                            style: listSubHeading(),
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 0.3.h),
-                    Text(
-                      currentTicket.lastReplyAgentTime ?? '',
-                      style: otherText9(),
-                    ),
+                    // SizedBox(height: 0.3.h),
+                    // Row(
+                    //   crossAxisAlignment: CrossAxisAlignment.start,
+                    //   children: [
+                    //     Text(
+                    //       "Replied By : ",
+                    //       style: otherText9(),
+                    //     ),
+                    //     Expanded(
+                    //       child: Text(
+                    //         currentTicket.lastThreadUserType ?? "",
+                    //         style: listSubHeading(),
+                    //       ),
+                    //     ),
+                    //   ],
+                    // ),
+                    // SizedBox(height: 0.3.h),
+                    // Text(
+                    //   currentTicket.lastReplyAgentTime ?? '',
+                    //   style: otherText9(),
+                    // ),
                     SizedBox(height: 0.5.h),
                     Row(
                       children: [
@@ -294,19 +300,19 @@ class _TicketListScreenState extends State<TicketListScreen> {
                           overflow: TextOverflow.ellipsis,
                         ),
                         SizedBox(width: 3.w),
-                        currentTicket.status?.name == "Open"
+                        currentTicket.status?.name == "open"
                             ? Image(
                           image: const AssetImage(
                               "assets/images/dashboard_stages/open_ticket.png"),
                           height: 2.h,
                         )
-                            : currentTicket.status?.name == "Resolved"
+                            : currentTicket.status?.name == "resolved"
                             ? Image(
                           image: const AssetImage(
                               "assets/images/dashboard_stages/resolved.png"),
                           height: 2.h,
                         )
-                            : currentTicket.status?.name == "Closed"
+                            : currentTicket.status?.name == "closed"
                             ? Image(
                           image: const AssetImage(
                               "assets/images/dashboard_stages/closed.png"),
