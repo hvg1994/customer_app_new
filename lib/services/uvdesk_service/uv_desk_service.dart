@@ -2,16 +2,50 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart';
+import '../../model/uvdesk_model/get_ticket_list_model.dart';
 import '../../repository/uvdesk_repository/uvdesk_repo.dart';
 
 class UvDeskService extends ChangeNotifier{
   late final UvDeskRepo uvDeskRepo;
 
-  UvDeskService({required this.uvDeskRepo})
-      : assert(uvDeskRepo != null);
+  int perPage = 10;
+  int start = 0;
 
-  Future getTicketListService(String email) async{
-    return await uvDeskRepo.getTicketListRepo(email);
+  bool hasMore = false;
+
+  List<Tickets> _allTickets = [];
+  List<Tickets> get allTickets => _allTickets;
+
+  List<Tickets> _fetchedTickets = [];
+  List<Tickets> get fetchedTickets => _fetchedTickets;
+
+  setAllTickets(List<Tickets> tickets){
+    _allTickets.addAll(tickets);
+  }
+
+  getLoadedTickets(){
+    if(_fetchedTickets.length != _allTickets.length){
+      if(start+perPage >= _allTickets.length){
+        _fetchedTickets.addAll(_allTickets.getRange(start, _allTickets.length));
+        start = start + (_allTickets.length-start);
+      }
+      else{
+        _fetchedTickets.addAll(_allTickets.getRange(start, perPage));
+        start = start + perPage;
+      }
+      hasMore = true;
+    }
+    else{
+      hasMore = false;
+    }
+    notifyListeners();
+  }
+
+
+  UvDeskService({required this.uvDeskRepo});
+
+  Future getTicketListService(String email, int index) async{
+    return await uvDeskRepo.getTicketListRepo(email, index);
   }
 
   Future getTicketDetailsByIdService(String id) async{
@@ -33,6 +67,9 @@ class UvDeskService extends ChangeNotifier{
   Future reOpenTicketService(String ticketId) async{
     return await uvDeskRepo.reOpenTicketRepo(ticketId);
   }
+
+
+
 
 }
 

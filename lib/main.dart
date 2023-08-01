@@ -195,7 +195,7 @@ class _MyAppState extends State<MyApp> {
         providers: [
           ChangeNotifierProvider(create: (_) => CheckState()),
           ChangeNotifierProvider(create: (_)=> ConsultationService()),
-          ChangeNotifierProvider(create: (_)=> DrinkWaterController())
+          ChangeNotifierProvider(create: (_)=> DrinkWaterController()),
         ],
         child: GetMaterialApp(
             supportedLocales: [

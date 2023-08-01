@@ -2607,6 +2607,33 @@ class _NewDsPageState extends State<NewDsPage> {
         stageData[5].btn2Color = null;
 
         break;
+      case 'gmg_submitted':
+        stageData[0].subTitle = stageCompletedSubText;
+        stageData[1].subTitle = stageCompletedSubText;
+        stageData[3].subTitle = stageCompletedSubText;
+        stageData[5].subTitle = stageCompletedSubText;
+        stageData[6].subTitle = stageCompletedSubText;
+        stageData[7].subTitle = stageCompletedSubText;
+
+        current = 9;
+        stageData[1].btn1Name = "View History";
+        stageData[2].btn1Name = "View User Reports";
+        stageData[2].subTitle = requestedReportStage3SubText;
+
+        // stageData[3].btn1Name = "Status";
+        // stageData[3].subTitle = consultationStage3SubText;
+        stageData[4].btn1Name = "View MR";
+
+        stageData[6].btn1Name = "Completed";
+        stageData[6].btn1Color = newCompletedStageBtnColor;
+
+        stageData[5].btn2Color = null;
+        stageData[5].btn1Name = null;
+
+        stageData[7].btn1Name = null;
+        stageData[7].btn2Name = null;
+
+        break;
       case 'protocol_guide':
         print("Protcol guide called");
         stageData[0].subTitle = stageCompletedSubText;
@@ -3105,7 +3132,7 @@ class _NewDsPageState extends State<NewDsPage> {
       // showing gmg and wnd report
       case StageType.gmg:
         if (buttonId == 1) {
-          if (postProgramStage == "protocol_guide") {
+          if (postProgramStage == "protocol_guide" || postProgramStage == 'gmg_submitted') {
             if (_postConsultationAppointment!.value != null) {
               if (_postConsultationAppointment!.value!.gmgPdfUrl != null &&
                   _postConsultationAppointment!.value!.gmgPdfUrl!.isNotEmpty) {
@@ -3128,7 +3155,7 @@ class _NewDsPageState extends State<NewDsPage> {
           }
         }
         else if (buttonId == 2) {
-          if (postProgramStage == "protocol_guide") {
+          if (postProgramStage == "protocol_guide" || postProgramStage == 'gmg_submitted') {
             if (_postConsultationAppointment!.value != null) {
               if (_postConsultationAppointment!.value!.programEndReportUser !=
                       null &&

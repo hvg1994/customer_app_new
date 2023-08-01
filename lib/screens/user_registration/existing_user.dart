@@ -903,6 +903,8 @@ class _ExistingUserState extends State<ExistingUser> {
       print("model.userEvaluationStatus: ${model.userEvaluationStatus}");
 
       _pref.setString(AppConfig.EVAL_STATUS, model.userEvaluationStatus!);
+      _pref.setString(AppConfig.UV_AGENT_ID,model.uvAgentId ?? "");
+
       storeBearerToken(model.accessToken ?? '');
       _pref.setString(AppConfig.User_Name, model.currentUser ?? '');
       _pref.setString(AppConfig.KALEYRA_USER_ID, model.kaleyraUserId ?? '');
@@ -1020,6 +1022,7 @@ class _ExistingUserState extends State<ExistingUser> {
       _pref.setString(AppConfig.User_gender,model1.data?.gender ?? "");
       _pref.setString(AppConfig.User_height,model1.height ?? "");
       _pref.setString(AppConfig.User_weight,model1.weight ?? "");
+
 
     }
   }

@@ -92,6 +92,9 @@ class AppConfig{
   static const String KALEYRA_ACCESS_TOKEN = "kaleyra_access_token";
   static const String KALEYRA_USER_ID = 'kaleyra_uid';
 
+  static const String UV_AGENT_ID ="uv_agent_id";
+
+
   static const String KALEYRA_CHAT_SUCCESS_ID = 'kaleyra_chat_success_id';
 
   static const IS_ALL_USER_DATA_AVAILABLE = "is_all_user_data_available";

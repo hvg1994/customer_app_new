@@ -37,6 +37,8 @@ class _CreateTicketState extends State<CreateTicket> {
 
   final _pref = AppConfig().preferences;
 
+  late String _agentId = _pref?.getString(AppConfig.UV_AGENT_ID) ?? '';
+
 
   @override
   void initState() {
@@ -556,7 +558,8 @@ class _CreateTicketState extends State<CreateTicket> {
       'message': descriptionController.text,
       'subject': titleController.text,
     'actAsType':"customer",
-    'actAsEmail':emailController.text
+    'actAsEmail':emailController.text,
+      'agent_id': _agentId
     };
 
     final res = await _uvDeskService.createTicketService(data, attachments: fileFormatList.isNotEmpty ? fileFormatList : null);

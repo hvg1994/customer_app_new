@@ -7,8 +7,8 @@ class UvDeskRepo {
 
   UvDeskRepo({required this.apiClient}) : assert(apiClient != null);
 
-  Future getTicketListRepo(String email) async{
-    return await apiClient.getTicketListApi(email);
+  Future getTicketListRepo(String email, int index) async{
+    return await apiClient.getTicketListApi(email, index);
   }
 
   Future getTicketDetailsByIdRepo(String id) async{
