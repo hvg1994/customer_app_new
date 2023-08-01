@@ -266,7 +266,7 @@ class Threads {
   String? createdAt;
   String? updatedAt;
   User? user;
-  List<dynamic>? attachments;
+  List<Attachments>? attachments;
 
   Threads(
       {this.id,
@@ -297,7 +297,10 @@ class Threads {
     updatedAt = json['updatedAt'];
     user = json['user'] != null ? new User.fromJson(json['user']) : null;
     if (json['attachments'] != null) {
-      attachments = List<dynamic>.from(json["attachments"].map((x) => x));
+      attachments = <Attachments>[];
+      json['attachments'].forEach((v) {
+        attachments!.add(new Attachments.fromJson(v));
+      });
     }
   }
 
@@ -320,6 +323,43 @@ class Threads {
     if (this.attachments != null) {
       data['attachments'] = this.attachments!.map((v) => v.toJson()).toList();
     }
+    return data;
+  }
+}
+
+class Attachments {
+  int? id;
+  String? name;
+  String? path;
+  String? relativePath;
+  String? iconURL;
+  String? downloadURL;
+
+  Attachments(
+      {this.id,
+        this.name,
+        this.path,
+        this.relativePath,
+        this.iconURL,
+        this.downloadURL});
+
+  Attachments.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    name = json['name'];
+    path = json['path'];
+    relativePath = json['relativePath'];
+    iconURL = json['iconURL'];
+    downloadURL = json['downloadURL'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['name'] = this.name;
+    data['path'] = this.path;
+    data['relativePath'] = this.relativePath;
+    data['iconURL'] = this.iconURL;
+    data['downloadURL'] = this.downloadURL;
     return data;
   }
 }

@@ -2975,7 +2975,7 @@ class ApiClient {
   }
 
   getTicketListApi(String email) async{
-    String url = uvDesk_baseUrl+ticketListApiPath+'?actAsType=customer&actAsEmail=$email';
+    String url = uvDesk_baseUrl+ticketListApiPath+'?actAsType=customer&actAsEmail=akshay@gmail.com';
     print(url);
 
     Map queryParam = {

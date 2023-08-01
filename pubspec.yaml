@@ -118,6 +118,7 @@ dependencies:
   flutter_widget_from_html: any
 #  for screenshot disable
   flutter_windowmanager: any
+  lazy_loading_list: any
 
 
 

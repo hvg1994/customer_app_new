@@ -20,10 +20,15 @@ status:3  -> value: 1|2|3|4|5|6 for open|pending|resolved|closed|Spam|Answered r
 
  */
 
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
+import 'package:flutter_widget_from_html/flutter_widget_from_html.dart' hide ImageSource;
 import 'package:gwc_customer/screens/uvdesk/ticket_pop_up_menu.dart';
 import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:sizer/sizer.dart';
 import 'package:grouped_list/grouped_list.dart';
@@ -35,6 +40,7 @@ import '../../repository/uvdesk_repository/uvdesk_repo.dart';
 import '../../services/uvdesk_service/uv_desk_service.dart';
 import '../../utils/app_config.dart';
 import '../../widgets/constants.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class TicketChatScreen extends StatefulWidget {
   final String userName;
@@ -74,6 +80,7 @@ class _TicketChatScreenState extends State<TicketChatScreen>
 
   final ScrollController _scrollController = ScrollController();
 
+  final String imageBaseUrl = "https://uvteam.disol.in/public";
   @override
   void initState() {
     super.initState();
@@ -319,7 +326,20 @@ class _TicketChatScreenState extends State<TicketChatScreen>
   Widget _buildEnterMessageRow() {
     return SafeArea(
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
+          if(fileFormatList.isNotEmpty)
+            Flexible(child: SizedBox(
+              height: 70,
+              child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  shrinkWrap: true,
+                  itemCount: fileFormatList.length,
+                  itemBuilder: (_, index){
+                    return _imageListView(fileFormatList[index], index);
+                  }
+              ),
+            )),
           Row(
             children: [
               Expanded(
@@ -359,7 +379,9 @@ class _TicketChatScreenState extends State<TicketChatScreen>
                           ),
                         ),
                         suffixIcon: InkWell(
-                          onTap: () {},
+                          onTap: () {
+                            showChooserSheet();
+                          },
                           child: const Icon(
                             Icons.attach_file_sharp,
                             color: gBlackColor,
@@ -424,6 +446,34 @@ class _TicketChatScreenState extends State<TicketChatScreen>
           ),
         ],
       ),
+    );
+  }
+
+  _imageListView(File loc, int index){
+    return Stack(
+      children: [
+        Container(
+          height: 65,
+          width: 80,
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: FileImage(loc)
+            )
+          ),
+        ),
+        Positioned(
+          top: 2,
+            right: 2,
+            child: IconButton(
+              icon: Icon(Icons.close),
+              onPressed: (){
+                setState(() {
+                  fileFormatList.removeAt(index);
+                });
+              },
+            )
+        )
+      ],
     );
   }
 
@@ -543,7 +593,32 @@ class _TicketChatScreenState extends State<TicketChatScreen>
                             ),
                           Align(
                             alignment: Alignment.topLeft,
-                            child: SizedBox(
+                            child:(message.attachments != null && message.attachments!.isNotEmpty) ? Column(
+                              children: [
+                                ...message.attachments!.map((e) => Container(
+                                  constraints: BoxConstraints(
+                                    maxHeight: 120,
+                                  ),
+                                  decoration: BoxDecoration(
+                                      image: DecorationImage(
+                                          image: NetworkImage(
+                                              imageBaseUrl+e.relativePath!
+                                          ),
+                                        fit: BoxFit.fill
+                                      )
+                                  ),
+                                  // child: Image.network(imageBaseUrl+e.relativePath! ?? ''),
+                                )),
+                                HtmlWidget(message.message ?? '',
+                                  textStyle: TextStyle(
+                                    color: message.createdBy == "agent"
+                                        ? (message.cc != null) ? gWhiteColor : gTextColor
+                                        : gWhiteColor,
+                                  ),
+                                )
+                              ],
+                            ) :
+                            SizedBox(
                               child: HtmlWidget(message.message ?? "",
                                 textStyle: TextStyle(
                                   color: message.createdBy == "agent"
@@ -748,7 +823,7 @@ class _TicketChatScreenState extends State<TicketChatScreen>
       // 'status': (TicketStatusType.Answered.index+1).toString()
     };
 
-    final result = await _uvDeskService.sendReplyService(widget.ticketId, m, attachments: null);
+    final result = await _uvDeskService.sendReplyService(widget.ticketId, m, attachments: fileFormatList);
 
     if (result.runtimeType != ErrorModel) {
       // SentReplyModel model = result as SentReplyModel;
@@ -757,6 +832,7 @@ class _TicketChatScreenState extends State<TicketChatScreen>
       });
       // GwcApi().showSnackBar(context, model.message!, isError: true);
       commentController.clear();
+      fileFormatList.clear();
       getThreadsList();
     } else {
       setState(() {
@@ -771,6 +847,237 @@ class _TicketChatScreenState extends State<TicketChatScreen>
       // );
     }
   }
+
+  /*
+  Attachment codes
+   */
+
+  showChooserSheet() {
+    return showModalBottomSheet(
+        backgroundColor: Colors.transparent,
+        context: context,
+        enableDrag: false,
+        builder: (ctx) {
+          return Wrap(
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                      topRight: Radius.circular(20),
+                      topLeft: Radius.circular(20)),
+                ),
+                child: Column(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 2, vertical: 4),
+                      child: Text('Choose File Source'),
+                      decoration: BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: gHintTextColor,
+                              width: 3.0,
+                            ),
+                          )),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        TextButton(
+                            onPressed: () {
+                              getImageFromCamera();
+                              Navigator.pop(context);
+                            },
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.camera_enhance_outlined,
+                                  color: gMainColor,
+                                ),
+                                Text('Camera'),
+                              ],
+                            )),
+                        Container(
+                          width: 5,
+                          height: 10,
+                          decoration: BoxDecoration(
+                              border: Border(
+                                right: BorderSide(
+                                  color: gHintTextColor,
+                                  width: 1,
+                                ),
+                              )),
+                        ),
+                        TextButton(
+                            onPressed: () {
+                              pickFromFile();
+                              Navigator.pop(context);
+                            },
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.insert_drive_file,
+                                  color: gMainColor,
+                                ),
+                                Text('File'),
+                              ],
+                            ))
+                      ],
+                    ),
+                  ],
+                ),
+              )
+            ],
+          );
+        });
+  }
+
+  getFileSize(File file) {
+    var size = file.lengthSync();
+    num mb = num.parse((size / (1024 * 1024)).toStringAsFixed(2));
+    return mb;
+  }
+
+  List<MultipartFile> newList = <MultipartFile>[];
+  List<File> fileFormatList = [];
+
+
+  void pickFromFile() async {
+    final result = await FilePicker.platform.pickFiles(
+      withReadStream: true,
+      type: FileType.any,
+      // allowedExtensions: ['pdf', 'jpg', 'png', 'jpeg'],
+      allowMultiple: true,
+    );
+    if (result == null) return;
+
+    /// if allowMultiple: true
+    List<File> _files = result.paths.map((path) => File(path!)).toList();
+
+    _files.forEach((element) {
+      print(element.path.split('.').last);
+      if (element.path.split('.').last.toLowerCase().contains("pdf") ||
+          element.path.split('.').last.toLowerCase().contains("png") ||
+          element.path.split('.').last.toLowerCase().contains("jpg") ||
+          element.path.split('.').last.toLowerCase().contains("jpeg")) {
+        if (getFileSize(element) <= 12) {
+          print("filesize: ${getFileSize(File(result.paths.first!))}Mb");
+          print(element.path);
+          addFilesToList(element);
+          // addToMultipartList();
+        } else {
+          AppConfig()
+              .showSnackbar(context, "File size must be <12Mb", isError: true);
+        }
+      } else {
+        AppConfig().showSnackbar(context, "Please select png/jpg/Pdf files",
+            isError: true);
+      }
+    });
+
+    /// single file select for this  allowMultiple should be false allowMultiple: false
+    // if (result.files.first.extension!.contains("pdf") ||
+    //     result.files.first.extension!.contains("png") ||
+    //     result.files.first.extension!.contains("jpg") ||
+    //     result.files.first.extension!.contains("jpeg")) {
+    //   if (getFileSize(File(result.paths.first!)) <= 12) {
+    //     print("filesize: ${getFileSize(File(result.paths.first!))}Mb");
+    //     files.add(result.files.first);
+    //     // addFilesToList(File(result.paths.first!));
+    //     if (type != null) {
+    //       if (reportsObject.isNotEmpty) {
+    //         reportsObject.forEach((element) {
+    //           if (element.id.toString().contains(type)) {
+    //             element.path.add(result.paths.first!);
+    //           }
+    //         });
+    //       }
+    //       if (type == "others") {
+    //         otherFilesObject.add(result.paths.first ?? '');
+    //       }
+    //       print("otherFilesObject: $otherFilesObject");
+    //     }
+    //   }
+    //   else {
+    //     AppConfig()
+    //         .showSnackbar(context, "File size must be <12Mb", isError: true);
+    //   }
+    // }
+    // else {
+    //   AppConfig().showSnackbar(context, "Please select png/jpg/Pdf files",
+    //       isError: true);
+    // }
+    setState(() {});
+  }
+
+  addFilesToList(File file) async {
+    print("contains: ${fileFormatList.any((element) => element.path == file.path)}");
+
+    if(!fileFormatList.any((element) => element.path == file.path)){
+      fileFormatList.add(file);
+    }
+    setState(() {});
+  }
+
+  addToMultipartList() async{
+    print("addToMultipartList");
+    newList.clear();
+
+    // for (int i = 0; i < fileFormatList.length; i++) {
+    //   var length = await fileFormatList[i].length();
+    //   print("cleard: $i");
+    //   print("newList for: ${newList.length} ${fileFormatList.length}");
+    //   var stream =
+    //   http.ByteStream(DelegatingStream.typed(fileFormatList[i].openRead()));
+    //   var multipartFile = http.MultipartFile("attachments[]", stream, length,
+    //       filename: fileFormatList[i].path);
+    //   newList.add(multipartFile);
+    //   print("newList after: ${newList.length}");
+    // }
+
+    print("fileFormatList: ${fileFormatList.length}");
+
+    print("newList: ${newList.length}");
+  }
+
+  File? _image;
+
+  Future getImageFromCamera({String? type}) async {
+    var image = await ImagePicker.platform
+        .pickImage(source: ImageSource.camera, imageQuality: 40);
+
+    setState(() {
+      _image = File(image!.path);
+      if (getFileSize(_image!) <= 12) {
+        print("filesize: ${getFileSize(_image!)}Mb");
+
+        addFilesToList(_image!);
+
+      } else {
+        print("filesize: ${getFileSize(_image!)}Mb");
+
+        AppConfig()
+            .showSnackbar(context, "File size must be <12Mb", isError: true);
+      }
+    });
+    print("captured image: ${_image} ${_image!.path}");
+  }
+
+  isExists(File file) {
+    fileFormatList.map((element) {
+      if(element.absolute.path == file.absolute.path){
+        print("found :: path exists file: ${file.path} ele: ${element.path}");
+        return true;
+      }
+      else{
+        print("found :: path not exists file: ${file.path} ele: ${element.path}");
+        return false;
+      }
+    });
+  }
+
 }
 
 class Message {
