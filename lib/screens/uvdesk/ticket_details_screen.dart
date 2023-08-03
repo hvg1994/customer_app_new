@@ -80,7 +80,7 @@ class _TicketChatScreenState extends State<TicketChatScreen>
 
   final ScrollController _scrollController = ScrollController();
 
-  final String imageBaseUrl = "https://uvteam.disol.in/public";
+  final String imageBaseUrl = "https://support.gutandhealth.com/public";
   @override
   void initState() {
     super.initState();
@@ -820,7 +820,7 @@ class _TicketChatScreenState extends State<TicketChatScreen>
       'threadType': ThreadType.reply.name,
       'actAsType': ActAsType.customer.name,
       'actAsEmail': widget.email,
-      // 'status': (TicketStatusType.Answered.index+1).toString()
+      'status_id': (TicketStatusType.answered.index+1).toString()
     };
 
     final result = await _uvDeskService.sendReplyService(widget.ticketId, m, attachments: fileFormatList);

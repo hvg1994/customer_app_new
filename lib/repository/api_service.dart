@@ -80,6 +80,9 @@ class ApiClient {
 
   final _prefs = AppConfig().preferences;
 
+  late String agentToken = "Bearer ${_prefs?.getString(AppConfig.UV_API_ACCESS_TOKEN)}";
+
+
   String getHeaderToken() {
     if (_prefs != null) {
       final token = _prefs!.getString(AppConfig().BEARER_TOKEN);
@@ -2989,6 +2992,7 @@ class ApiClient {
     };
 
     print("agentToken : $agentToken");
+    print(_prefs!.getString(AppConfig.UV_API_ACCESS_TOKEN));
     print("uvSuccesId : ${_prefs?.getString(AppConfig.UV_SUCCESS_ID)}");
 
 

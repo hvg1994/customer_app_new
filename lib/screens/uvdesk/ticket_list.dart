@@ -67,6 +67,9 @@ class _TicketListScreenState extends State<TicketListScreen>
           _scrollController.offset) {
         _uvDesk!.getLoadedTickets();
       }
+      else{
+
+      }
     });
     // getTickets();
   }
@@ -305,7 +308,7 @@ class _TicketListScreenState extends State<TicketListScreen>
   }
 
   int start = 0;
-  int perLoad = 4;
+  int perLoad = 10;
   //
   List<Tickets> _allTickets = [];
   List<Tickets> _fetchedTickets = [];
@@ -315,14 +318,20 @@ class _TicketListScreenState extends State<TicketListScreen>
     _allTickets.clear();
     Labels? labels = model.labels;
     List<Tickets> tickets = model.tickets?.toList() ?? [];
-    _uvDeskService.setAllTickets(tickets);
+
+    _allTickets.addAll(tickets);
+
+    if(_fetchedTickets.length != tickets.length)
+      _fetchedTickets.addAll(tickets.getRange(start, perLoad));
+
+    // _uvDeskService.setAllTickets(tickets);
     // _allTickets.addAll(tickets);
 
     print("_allTickets.leng: ${_allTickets.length}");
     print("_allTickets.leng: ${tickets.length}");
     print("_allTickets.leng: ${_fetchedTickets.length}");
 
-    _uvDeskService.getLoadedTickets();
+    // _uvDeskService.getLoadedTickets();
 
     // if(_fetchedTickets.length != _allTickets.length){
     //   if(start+perLoad > _allTickets.length){
@@ -352,7 +361,7 @@ class _TicketListScreenState extends State<TicketListScreen>
         ),
       );
     } else {
-      return showList(tickets, type);
+      return showList(_fetchedTickets, type);
     }
   }
 

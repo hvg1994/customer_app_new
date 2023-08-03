@@ -163,7 +163,7 @@ const String uvDesk_baseUrl = "https://support.gutandhealth.com/public/api/v1/";
 
 /// using same token for new domain  (uvteam.disol.in)
 final _pref = AppConfig().preferences;
-String agentToken = "Bearer ${_pref?.getString(AppConfig.UV_API_ACCESS_TOKEN)}";
+// String agentToken = "Bearer ${_pref?.getString(AppConfig.UV_API_ACCESS_TOKEN)}";
     // "Bearer HBTCAEHAAAOTTVECVMNJGLWYVXVN3GBJUR0XVZNOJTO4N1Y4LD7LT3LE4PVONODF";
 
 

@@ -10,6 +10,7 @@ class UvDeskService extends ChangeNotifier{
 
   int perPage = 10;
   int start = 0;
+  late int end = perPage;
 
   bool hasMore = false;
 

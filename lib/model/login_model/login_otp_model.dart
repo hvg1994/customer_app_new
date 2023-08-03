@@ -44,7 +44,7 @@ class LoginOtpModel {
     associatedSuccessMemberKaleyraId = json['associated_success_member'].toString();
     uvAgentId = json['uv_user_id'].toString();
     uvSuccessId = json['uv_success_id'].toString();
-    uvApiAccessToken = json['uv_api_access_token'].toString();
+    uvApiAccessToken = json['uv_api_access_token'] ?? '';
 
   }
 
