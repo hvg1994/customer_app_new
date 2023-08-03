@@ -37,7 +37,7 @@ class _CreateTicketState extends State<CreateTicket> {
 
   final _pref = AppConfig().preferences;
 
-  late String _agentId = _pref?.getString(AppConfig.UV_AGENT_ID) ?? '';
+  late String _agentId = _pref?.getString(AppConfig.UV_SUCCESS_ID) ?? '';
 
 
   @override

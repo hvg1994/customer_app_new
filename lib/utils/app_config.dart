@@ -93,6 +93,8 @@ class AppConfig{
   static const String KALEYRA_USER_ID = 'kaleyra_uid';
 
   static const String UV_AGENT_ID ="uv_agent_id";
+  static const String UV_SUCCESS_ID ="uv_success_id";
+  static const String UV_API_ACCESS_TOKEN ="uv_api_access_token";
 
 
   static const String KALEYRA_CHAT_SUCCESS_ID = 'kaleyra_chat_success_id';

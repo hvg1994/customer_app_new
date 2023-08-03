@@ -2980,13 +2980,16 @@ class ApiClient {
   //4- resolved
   //5- closed
   getTicketListApi(String email, int index) async{
-    String url = uvDesk_baseUrl+ticketListApiPath+'?actAsType=customer&actAsEmail=akshay@gmail.com&status=$index';
+    String url = uvDesk_baseUrl+ticketListApiPath+'?actAsType=customer&actAsEmail=$email&status=$index';
     print(url);
 
     Map queryParam = {
       "actAsType":"customer",
       "actAsEmail": email
     };
+
+    print("agentToken : $agentToken");
+    print("uvSuccesId : ${_prefs?.getString(AppConfig.UV_SUCCESS_ID)}");
 
 
     dynamic result;
@@ -3076,6 +3079,10 @@ attachments[]   files   false
     // "Authorization": adminToken,
       "Authorization": agentToken,
     };
+
+    print("Details : $data");
+    print("agentToken : $agentToken");
+
     try{
 
       var request = http.MultipartRequest('POST', Uri.parse(url));

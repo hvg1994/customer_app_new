@@ -151,7 +151,8 @@ var getGraphUrl ="${AppConfig().BASE_URL}/api/listData/progress";
  */
 
 // new url
-const String uvDesk_baseUrl = "https://uvteam.disol.in/public/api/v1/";
+const String uvDesk_baseUrl = "https://support.gutandhealth.com/public/api/v1/";
+    // "https://uvteam.disol.in/public/api/v1/";
 
 // old url
 // const String uvDesk_baseUrl = "https://fembuddy.uvdesk.com/en/api";
@@ -161,7 +162,9 @@ const String uvDesk_baseUrl = "https://uvteam.disol.in/public/api/v1/";
 // String agentToken = "Bearer 8A07DDBDF6672807F8B4D261E5673500599238A07DDBDF6672807F8B4D261E5673500";
 
 /// using same token for new domain  (uvteam.disol.in)
-String agentToken = "Bearer HBTCAEHAAAOTTVECVMNJGLWYVXVN3GBJUR0XVZNOJTO4N1Y4LD7LT3LE4PVONODF";
+final _pref = AppConfig().preferences;
+String agentToken = "Bearer ${_pref?.getString(AppConfig.UV_API_ACCESS_TOKEN)}";
+    // "Bearer HBTCAEHAAAOTTVECVMNJGLWYVXVN3GBJUR0XVZNOJTO4N1Y4LD7LT3LE4PVONODF";
 
 
 // old agent token 478CBD3B1BD2E2062AE52C0D39D36FF248787478CBD3B1BD2E2062AE52C0D39D36FF2

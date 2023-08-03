@@ -904,6 +904,8 @@ class _ExistingUserState extends State<ExistingUser> {
 
       _pref.setString(AppConfig.EVAL_STATUS, model.userEvaluationStatus!);
       _pref.setString(AppConfig.UV_AGENT_ID,model.uvAgentId ?? "");
+      _pref.setString(AppConfig.UV_SUCCESS_ID,model.uvSuccessId ?? "");
+      _pref.setString(AppConfig.UV_API_ACCESS_TOKEN,model.uvApiAccessToken ?? "");
 
       storeBearerToken(model.accessToken ?? '');
       _pref.setString(AppConfig.User_Name, model.currentUser ?? '');
