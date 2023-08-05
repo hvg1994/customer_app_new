@@ -19,6 +19,7 @@ import 'package:gwc_customer/repository/in_memory_cache.dart';
 import 'package:gwc_customer/services/home_service/drink_water_controller.dart';
 import 'package:gwc_customer/services/internet_service/dependency_injecion.dart';
 import 'package:gwc_customer/services/local_notification_service.dart';
+import 'package:gwc_customer/services/uvdesk_service/uv_desk_service.dart';
 import 'package:gwc_customer/splash_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -196,6 +197,7 @@ class _MyAppState extends State<MyApp> {
           ChangeNotifierProvider(create: (_) => CheckState()),
           ChangeNotifierProvider(create: (_)=> ConsultationService()),
           ChangeNotifierProvider(create: (_)=> DrinkWaterController()),
+          ChangeNotifierProvider(create: (_)=> UvDeskService()),
         ],
         child: GetMaterialApp(
             supportedLocales: [

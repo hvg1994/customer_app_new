@@ -36,9 +36,9 @@ class _TicketListScreenState extends State<TicketListScreen>
     with SingleTickerProviderStateMixin {
   late UvDeskService _uvDeskService = UvDeskService(uvDeskRepo: repository);
 
-  bool isLoading = false;
+  UvDeskService? _uvDeskProvider;
 
-  UvDeskService? _uvDesk;
+  bool isLoading = false;
 
   final ScrollController _scrollController = ScrollController();
 
@@ -56,23 +56,28 @@ class _TicketListScreenState extends State<TicketListScreen>
     // TODO: implement initState
     super.initState();
 
+    _uvDeskProvider = Provider.of<UvDeskService>(context, listen: false);
     _tabController = TabController(length: 4, vsync: this);
 
     getTicketListBasedOnIndex(1);
     _scrollController.addListener(() {
       print("scroll offset");
-      print(_scrollController.position.maxScrollExtent ==
-          _scrollController.offset);
+      // if(Scrollable.ensureVisible(_progressKey.currentContext!) == true){
+      //   _uvDeskProvider!.setProgress(true);
+      // }
+
       if (_scrollController.position.maxScrollExtent ==
           _scrollController.offset) {
-        _uvDesk!.getLoadedTickets();
+        Future.delayed(Duration(seconds: 2)).whenComplete(() => _uvDeskProvider!.getLoadedTickets());
       }
       else{
-
+        print("maxScroll: ${_scrollController.position.maxScrollExtent}");
       }
+
     });
     // getTickets();
   }
+
 
   @override
   void didChangeDependencies() {
@@ -90,22 +95,22 @@ class _TicketListScreenState extends State<TicketListScreen>
     switch (_tabController!.index) {
       case 0:
         // start = 0;
-        _fetchedTickets.clear();
+        _uvDeskProvider!.clearFetchedTickets();
         getTicketListBasedOnIndex(1);
         break;
       case 1:
         // start = 0;
-        _fetchedTickets.clear();
+        _uvDeskProvider!.clearFetchedTickets();
         getTicketListBasedOnIndex(3);
         break;
       case 2:
         // start = 0;
-        _fetchedTickets.clear();
+        _uvDeskProvider!.clearFetchedTickets();
         getTicketListBasedOnIndex(4);
         break;
       case 3:
         // start = 0;
-        _fetchedTickets.clear();
+        _uvDeskProvider!.clearFetchedTickets();
         getTicketListBasedOnIndex(5);
         break;
     }
@@ -115,6 +120,7 @@ class _TicketListScreenState extends State<TicketListScreen>
   GetTicketListModel? _model;
 
   getTicketListBasedOnIndex(int index) async {
+    _uvDeskProvider!.clearAllTickets();
     Future.delayed(Duration.zero).whenComplete(() {
       setState(() {
         showLoading = true;
@@ -126,6 +132,9 @@ class _TicketListScreenState extends State<TicketListScreen>
       GetTicketListModel model = res as GetTicketListModel;
 
       _model = model;
+      List<Tickets> tickets = model.tickets?.toList() ?? [];
+      _uvDeskProvider!.setAllTickets(tickets);
+
     } else {
       ErrorModel model = res as ErrorModel;
       print("error: ${model.message}");
@@ -145,22 +154,22 @@ class _TicketListScreenState extends State<TicketListScreen>
   }
 
   bool _hasMore = true;
-  _loadMore() {
-    if (_fetchedTickets.length != _allTickets.length) {
-      if (start + perLoad > _allTickets.length) {
-        _fetchedTickets.addAll(_allTickets.getRange(start, _allTickets.length));
-        start = start + (_allTickets.length - start);
-      } else {
-        _fetchedTickets.addAll(_allTickets.getRange(start, perLoad));
-        start = start + perLoad;
-      }
-    } else {
-      _hasMore = false;
-    }
-    Future.delayed(Duration.zero).whenComplete(() {
-      setState(() {});
-    });
-  }
+  // _loadMore() {
+  //   if (_fetchedTickets.length != _allTickets.length) {
+  //     if (start + perLoad > _allTickets.length) {
+  //       _fetchedTickets.addAll(_allTickets.getRange(start, _allTickets.length));
+  //       start = start + (_allTickets.length - start);
+  //     } else {
+  //       _fetchedTickets.addAll(_allTickets.getRange(start, perLoad));
+  //       start = start + perLoad;
+  //     }
+  //   } else {
+  //     _hasMore = false;
+  //   }
+  //   Future.delayed(Duration.zero).whenComplete(() {
+  //     setState(() {});
+  //   });
+  // }
   // getTickets() async{
   //   callProgressStateOnBuild(true);
   //   final res = await _uvDeskService.getTicketListService();
@@ -307,29 +316,31 @@ class _TicketListScreenState extends State<TicketListScreen>
     // );
   }
 
-  int start = 0;
-  int perLoad = 10;
-  //
-  List<Tickets> _allTickets = [];
-  List<Tickets> _fetchedTickets = [];
+  // int start = 0;
+  // int perLoad = 10;
+  // //
+  // List<Tickets> _allTickets = [];
+  // List<Tickets> _fetchedTickets = [];
 
   Widget buildUI(
       BuildContext context, GetTicketListModel model, TicketStatusType type) {
-    _allTickets.clear();
+
+    _uvDeskProvider!.clearAllTickets();
     Labels? labels = model.labels;
     List<Tickets> tickets = model.tickets?.toList() ?? [];
 
-    _allTickets.addAll(tickets);
+    // _allTickets.addAll(tickets);
+    //
+    // if(_fetchedTickets.length != tickets.length) {
+    //   _fetchedTickets.addAll(tickets.getRange(start, perLoad));
+    // }
 
-    if(_fetchedTickets.length != tickets.length)
-      _fetchedTickets.addAll(tickets.getRange(start, perLoad));
-
-    // _uvDeskService.setAllTickets(tickets);
+    _uvDeskProvider!.setAllTickets(tickets);
     // _allTickets.addAll(tickets);
 
-    print("_allTickets.leng: ${_allTickets.length}");
-    print("_allTickets.leng: ${tickets.length}");
-    print("_allTickets.leng: ${_fetchedTickets.length}");
+    // print("_allTickets.leng: ${_allTickets.length}");
+    // print("_allTickets.leng: ${tickets.length}");
+    // print("_allTickets.leng: ${_fetchedTickets.length}");
 
     // _uvDeskService.getLoadedTickets();
 
@@ -361,232 +372,251 @@ class _TicketListScreenState extends State<TicketListScreen>
         ),
       );
     } else {
-      return showList(_fetchedTickets, type);
+      return showList(_uvDeskService.fetchedTickets, type);
     }
   }
 
+
   showList(List<Tickets> tickets, TicketStatusType type) {
-    if (tickets.isEmpty) {
-      return const Center(
-        child: Image(
-          image: AssetImage("assets/images/no_data_found.png"),
-          fit: BoxFit.scaleDown,
-        ),
-      );
-    } else {
-      return ListView.separated(
-        shrinkWrap: true,
-        controller: _scrollController,
-        itemCount: tickets.length,
-        itemBuilder: (context, index) {
-          print("$index  -- ${tickets.length}");
-          if (index < tickets.length) {
-            Tickets currentTicket = tickets[index];
-            return LazyLoadingList(
-                initialSizeOfItems: 4,
-                loadMore: () => Center(
-                      child: buildThreeBounceIndicator(),
-                    ),
-                child: Material(
-                  child: InkWell(
-                      onTap: () {
-                        _onPressTicket(currentTicket);
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  currentTicket.id.toString(),
-                                  style: otherText9(),
-                                ),
-                                Text(
-                                  currentTicket.formatedCreatedAt ?? '',
-                                  style: otherText9(),
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 0.3.h),
-                            (currentTicket.subject != null)
-                                ? Text(
+    // if (tickets.isEmpty) {
+    //   return const Center(
+    //     child: Image(
+    //       image: AssetImage("assets/images/no_data_found.png"),
+    //       fit: BoxFit.scaleDown,
+    //     ),
+    //   );
+    // }
+    // else {
+      return Consumer<UvDeskService>(
+        builder: (_, snap, __){
+          if(snap.fetchedTickets.isNotEmpty){
+            return ListView.separated(
+              shrinkWrap: true,
+              controller: _scrollController,
+              itemCount: snap.hasMore ? snap.fetchedTickets.length+1 : snap.fetchedTickets.length,
+              itemBuilder: (context, index) {
+                print("$index  -- ${snap.fetchedTickets.length}");
+                if (index < snap.fetchedTickets.length) {
+                  Tickets currentTicket = snap.fetchedTickets[index];
+                  return LazyLoadingList(
+                      initialSizeOfItems: 4,
+                      loadMore: () => Center(
+                        child: buildThreeBounceIndicator(),
+                      ),
+                      child: Material(
+                        child: InkWell(
+                            onTap: () {
+                              _onPressTicket(currentTicket);
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 12),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        currentTicket.id.toString(),
+                                        style: otherText9(),
+                                      ),
+                                      Text(
+                                        currentTicket.formatedCreatedAt ?? '',
+                                        style: otherText9(),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(height: 0.3.h),
+                                  (currentTicket.subject != null)
+                                      ? Text(
                                     currentTicket.subject ?? '',
                                     style: listMainHeading(),
                                   )
-                                : const SizedBox(),
-                            // SizedBox(height: 0.3.h),
-                            // Row(
-                            //   crossAxisAlignment: CrossAxisAlignment.start,
-                            //   children: [
-                            //     Text(
-                            //       "Replied By : ",
-                            //       style: otherText9(),
-                            //     ),
-                            //     Expanded(
-                            //       child: Text(
-                            //         currentTicket.lastThreadUserType ?? "",
-                            //         style: listSubHeading(),
-                            //       ),
-                            //     ),
-                            //   ],
-                            // ),
-                            // SizedBox(height: 0.3.h),
-                            // Text(
-                            //   currentTicket.lastReplyAgentTime ?? '',
-                            //   style: otherText9(),
-                            // ),
-                            SizedBox(height: 0.5.h),
-                            Row(
-                              children: [
-                                Text(
-                                  currentTicket.customer?.name ?? '',
-                                  style: listSubHeading(),
-                                  maxLines: 2,
-                                  softWrap: true,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                SizedBox(width: 3.w),
-                                currentTicket.status?.name == "open"
-                                    ? Image(
+                                      : const SizedBox(),
+                                  // SizedBox(height: 0.3.h),
+                                  // Row(
+                                  //   crossAxisAlignment: CrossAxisAlignment.start,
+                                  //   children: [
+                                  //     Text(
+                                  //       "Replied By : ",
+                                  //       style: otherText9(),
+                                  //     ),
+                                  //     Expanded(
+                                  //       child: Text(
+                                  //         currentTicket.lastThreadUserType ?? "",
+                                  //         style: listSubHeading(),
+                                  //       ),
+                                  //     ),
+                                  //   ],
+                                  // ),
+                                  // SizedBox(height: 0.3.h),
+                                  // Text(
+                                  //   currentTicket.lastReplyAgentTime ?? '',
+                                  //   style: otherText9(),
+                                  // ),
+                                  SizedBox(height: 0.5.h),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        currentTicket.customer?.name ?? '',
+                                        style: listSubHeading(),
+                                        maxLines: 2,
+                                        softWrap: true,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      SizedBox(width: 3.w),
+                                      currentTicket.status?.name == "open"
+                                          ? Image(
                                         image: const AssetImage(
                                             "assets/images/dashboard_stages/open_ticket.png"),
                                         height: 2.h,
                                       )
-                                    : currentTicket.status?.name == "resolved"
-                                        ? Image(
-                                            image: const AssetImage(
-                                                "assets/images/dashboard_stages/resolved.png"),
-                                            height: 2.h,
-                                          )
-                                        : currentTicket.status?.name == "closed"
-                                            ? Image(
-                                                image: const AssetImage(
-                                                    "assets/images/dashboard_stages/closed.png"),
-                                                height: 2.h,
-                                              )
-                                            : const SizedBox(),
-                                SizedBox(width: 1.w),
-                                Text(
-                                  currentTicket.status?.name ?? '',
-                                  style: otherText(),
-                                ),
-                                SizedBox(width: 2.w),
-                                Icon(
-                                  Icons.circle,
-                                  size: 12,
-                                  color: currentTicket.priority?.name == "Low"
-                                      ? kBottomSheetHeadGreen
-                                      : currentTicket.priority?.name == "High"
-                                          ? kNumberCircleRed
-                                          : gWhiteColor,
-                                  // AppConfig.fromHex(
-                                  //     currentTicket.priority!.color ?? ''),
-                                ),
-                              ],
-                            ),
-                            // Container(
-                            //   height: 1,
-                            //   margin: EdgeInsets.symmetric(vertical: 1.5.h),
-                            //   color: Colors.grey.withOpacity(0.3),
-                            // ),
-                          ],
+                                          : currentTicket.status?.name == "resolved"
+                                          ? Image(
+                                        image: const AssetImage(
+                                            "assets/images/dashboard_stages/resolved.png"),
+                                        height: 2.h,
+                                      )
+                                          : currentTicket.status?.name == "closed"
+                                          ? Image(
+                                        image: const AssetImage(
+                                            "assets/images/dashboard_stages/closed.png"),
+                                        height: 2.h,
+                                      )
+                                          : const SizedBox(),
+                                      SizedBox(width: 1.w),
+                                      Text(
+                                        currentTicket.status?.name ?? '',
+                                        style: otherText(),
+                                      ),
+                                      SizedBox(width: 2.w),
+                                      Icon(
+                                        Icons.circle,
+                                        size: 12,
+                                        color: currentTicket.priority?.name == "Low"
+                                            ? kBottomSheetHeadGreen
+                                            : currentTicket.priority?.name == "High"
+                                            ? kNumberCircleRed
+                                            : gWhiteColor,
+                                        // AppConfig.fromHex(
+                                        //     currentTicket.priority!.color ?? ''),
+                                      ),
+                                    ],
+                                  ),
+                                  // Container(
+                                  //   height: 1,
+                                  //   margin: EdgeInsets.symmetric(vertical: 1.5.h),
+                                  //   color: Colors.grey.withOpacity(0.3),
+                                  // ),
+                                ],
+                              ),
+                            )
+                          // child: Container(
+                          //   padding: const EdgeInsets.symmetric(horizontal: 12),
+                          //   child: Column(
+                          //     mainAxisAlignment: MainAxisAlignment.start,
+                          //     crossAxisAlignment: CrossAxisAlignment.start,
+                          //     children: [
+                          //       const SizedBox(
+                          //         height: 12,
+                          //       ),
+                          //       Text(
+                          //         currentTicket.subject ?? '',
+                          //         style: TextStyle(
+                          //           fontSize: 12.sp,
+                          //           fontFamily: kFontBold,
+                          //         ),
+                          //         maxLines: 2,
+                          //         softWrap: true,
+                          //         overflow: TextOverflow.ellipsis,
+                          //       ),
+                          //       const SizedBox(
+                          //         height: 6,
+                          //       ),
+                          //       Text((currentTicket.group != null)
+                          //           ? currentTicket.group!.name ?? ''
+                          //           : ' '),
+                          //       const SizedBox(
+                          //         height: 2,
+                          //       ),
+                          //       Row(
+                          //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          //         children: [
+                          //           Text(currentTicket.formatedCreatedAt ?? ''),
+                          //           Row(
+                          //             children: [
+                          //               Icon(
+                          //                 Icons.circle,
+                          //                 size: 12,
+                          //                 color: AppConfig.fromHex(
+                          //                     currentTicket.priority!.color ?? ''),
+                          //               ),
+                          //               Icon(
+                          //                 (currentTicket.isStarred != null || currentTicket.isStarred == 'true')
+                          //                     ? Icons.star_outlined
+                          //                     : Icons.star_border,
+                          //                 size: 24,
+                          //                 color: (currentTicket.isStarred != null || currentTicket.isStarred == 'true')
+                          //                     ? Colors.yellow
+                          //                     : Colors.grey,
+                          //               ),
+                          //               // Icon(
+                          //               //   Utils.getSourceIcon(currentTicket.source),
+                          //               //   size: 24,
+                          //               //   color: Colors.grey,
+                          //               // )
+                          //             ],
+                          //           )
+                          //         ],
+                          //       ),
+                          //       const SizedBox(
+                          //         height: 8,
+                          //       )
+                          //     ],
+                          //   ),
+                          // ),
                         ),
-                      )
-                      // child: Container(
-                      //   padding: const EdgeInsets.symmetric(horizontal: 12),
-                      //   child: Column(
-                      //     mainAxisAlignment: MainAxisAlignment.start,
-                      //     crossAxisAlignment: CrossAxisAlignment.start,
-                      //     children: [
-                      //       const SizedBox(
-                      //         height: 12,
-                      //       ),
-                      //       Text(
-                      //         currentTicket.subject ?? '',
-                      //         style: TextStyle(
-                      //           fontSize: 12.sp,
-                      //           fontFamily: kFontBold,
-                      //         ),
-                      //         maxLines: 2,
-                      //         softWrap: true,
-                      //         overflow: TextOverflow.ellipsis,
-                      //       ),
-                      //       const SizedBox(
-                      //         height: 6,
-                      //       ),
-                      //       Text((currentTicket.group != null)
-                      //           ? currentTicket.group!.name ?? ''
-                      //           : ' '),
-                      //       const SizedBox(
-                      //         height: 2,
-                      //       ),
-                      //       Row(
-                      //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      //         children: [
-                      //           Text(currentTicket.formatedCreatedAt ?? ''),
-                      //           Row(
-                      //             children: [
-                      //               Icon(
-                      //                 Icons.circle,
-                      //                 size: 12,
-                      //                 color: AppConfig.fromHex(
-                      //                     currentTicket.priority!.color ?? ''),
-                      //               ),
-                      //               Icon(
-                      //                 (currentTicket.isStarred != null || currentTicket.isStarred == 'true')
-                      //                     ? Icons.star_outlined
-                      //                     : Icons.star_border,
-                      //                 size: 24,
-                      //                 color: (currentTicket.isStarred != null || currentTicket.isStarred == 'true')
-                      //                     ? Colors.yellow
-                      //                     : Colors.grey,
-                      //               ),
-                      //               // Icon(
-                      //               //   Utils.getSourceIcon(currentTicket.source),
-                      //               //   size: 24,
-                      //               //   color: Colors.grey,
-                      //               // )
-                      //             ],
-                      //           )
-                      //         ],
-                      //       ),
-                      //       const SizedBox(
-                      //         height: 8,
-                      //       )
-                      //     ],
-                      //   ),
-                      // ),
                       ),
-                ),
-                index: index,
-                hasMore: true);
-          } else {
-            print("else");
-            return (_hasMore)
-                ? Padding(
-                    padding: EdgeInsets.symmetric(vertical: 10),
+                      index: index,
+                      hasMore: true);
+                }
+                else {
+                  print("else");
+                  print("Offset: ${_scrollController.offset}");
+                  return (snap.hasMore)
+                      ? Padding(
+                    padding: EdgeInsets.symmetric(vertical: 20),
                     child: Center(
-                      child: buildCircularIndicator(),
+                      child: buildThreeBounceIndicator(color: gsecondaryColor),
                     ),
                   )
-                : SizedBox();
+                      : SizedBox();
+                }
+              },
+              separatorBuilder: (BuildContext context, int index) {
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: const Divider(
+                    height: 1,
+                    color: Colors.grey,
+                  ),
+                );
+              },
+            );
           }
-        },
-        separatorBuilder: (BuildContext context, int index) {
-          return Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: const Divider(
-              height: 1,
-              color: Colors.grey,
-            ),
-          );
+          else{
+            return const Center(
+              child: Image(
+                image: AssetImage("assets/images/no_data_found.png"),
+                fit: BoxFit.scaleDown,
+              ),
+            );
+          }
+          return SizedBox();
         },
       );
-    }
+    // }
   }
 
   final UvDeskRepo repository = UvDeskRepo(
