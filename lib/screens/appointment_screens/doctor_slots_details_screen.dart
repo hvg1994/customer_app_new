@@ -538,7 +538,8 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen>
                                               widget.dashboardValueMap!));
                                           kaleyraurl = model.kaleyraJoinurl;
                                         }
-                                      } else {
+                                      }
+                                      else {
                                         kaleyraurl =
                                             widget.data?.kaleyraJoinurl;
                                       }
@@ -893,6 +894,7 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen>
       throw "Could not launch ${zoomUrl}";
   }
 
+  /// THIS IS FOR IOS MOBILE
   Future launchInBrowser(String? kaleyraurl) async{
     if (await canLaunchUrl(Uri.parse(kaleyraurl ?? ''))) {
       await launch(kaleyraurl ?? '');
