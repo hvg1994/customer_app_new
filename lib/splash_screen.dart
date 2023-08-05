@@ -200,7 +200,7 @@ class _SplashScreenState extends State<SplashScreen> with WidgetsBindingObserver
     );
     _notificationsPlugin.initialize(
       initializationSettings,
-      onSelectNotification: onClickedNotifications
+      // onSelectNotification: onClickedNotifications
       // onSelectNotification: (payload) async {
       //   print('payload: $payload');
       //   onNotifications.add(payload);

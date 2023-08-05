@@ -25,6 +25,7 @@ class EvaluationModelFormat2{
   String? hungerOther;
   String bowelPattern;
   String? bowelPatterOther;
+  String? part;
 
   EvaluationModelFormat2(
       {
@@ -51,7 +52,9 @@ class EvaluationModelFormat2{
       required this.hunger,
       this.hungerOther,
       required this.bowelPattern,
-      this.bowelPatterOther});
+      this.bowelPatterOther,
+        this.part,
+      });
 
   Map<String, dynamic> toMap() {
     final Map<String, String> data = new Map<String, String>();
@@ -80,6 +83,7 @@ class EvaluationModelFormat2{
     if(hungerOther!.isNotEmpty) data['hunger_pattern_other'] = this.hungerOther!;
     data['bowel_pattern'] = this.bowelPattern;
     if(bowelPatterOther!.isNotEmpty) data['bowel_pattern_other'] = this.bowelPatterOther!;
+    data['part'] = this.part!;
     return data;
   }
 
@@ -109,6 +113,7 @@ class EvaluationModelFormat2{
       hungerOther: map['hungerOther'] as String,
       bowelPattern: map['bowelPattern'] as String,
       bowelPatterOther: map['bowelPatterOther'] as String,
+      part : map['part'] as String
     );
   }
 

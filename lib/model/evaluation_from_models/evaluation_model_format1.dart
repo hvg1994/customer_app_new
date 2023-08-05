@@ -33,6 +33,7 @@ class EvaluationModelFormat1{
   String medication;
   String holistic;
   String? allReportsUploaded;
+  String? part;
 
   EvaluationModelFormat1(
       {
@@ -69,7 +70,8 @@ class EvaluationModelFormat1{
       this.medical_interventions_other,
       required this.medication,
       required this.holistic,
-        this.allReportsUploaded
+        this.allReportsUploaded,
+        this.part,
       }) ;
 
   Map<String, dynamic> toMap() {
@@ -108,6 +110,7 @@ class EvaluationModelFormat1{
     data['any_medication_consume_at_moment'] = this.medication;
     data['any_therapies_have_done_before'] = this.holistic;
     if(allReportsUploaded != null) data['all_report_uploaded'] = this.allReportsUploaded;
+    data['part'] = this.part;
     return data;
   }
 
@@ -147,6 +150,7 @@ class EvaluationModelFormat1{
       medication: map['medication'] as String,
       holistic: map['holistic'] as String,
       allReportsUploaded: map['allReportsUploaded'] as String,
+      part: map['part'] as String
     );
   }
 

@@ -47,7 +47,7 @@ import '../prepratory plan/new/dos_donts_program_screen.dart';
 import 'detox_plan_screen.dart';
 import 'healing_plan_screen.dart';
 import 'new_trans_screen.dart';
-import 'package:flutter_windowmanager/flutter_windowmanager.dart';
+ import 'package:flutter_windowmanager/flutter_windowmanager.dart';
 
 class CombinedPrepMealTransScreen extends StatefulWidget {
   /// stage by default 0

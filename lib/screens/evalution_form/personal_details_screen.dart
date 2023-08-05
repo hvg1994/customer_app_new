@@ -26,6 +26,7 @@ import 'package:sizer/sizer.dart';
 import 'package:http/http.dart' as http;
 import '../../../utils/app_config.dart';
 import '../../model/country_model.dart';
+import '../../model/dashboard_model/report_upload_model/report_upload_model.dart';
 import '../../model/error_model.dart';
 import '../../model/evaluation_from_models/evaluation_model_format1.dart';
 import '../../model/evaluation_from_models/get_country_details_model.dart';
@@ -43,7 +44,8 @@ import 'package:gwc_customer/widgets/dart_extensions.dart';
 
 class PersonalDetailsScreen extends StatefulWidget {
   final EdgeInsetsGeometry? padding;
-  const PersonalDetailsScreen({Key? key, this.padding})
+  final bool showData;
+  const PersonalDetailsScreen({Key? key, this.padding, this.showData = false})
       : super(key: key);
 
   @override
@@ -96,9 +98,6 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
   final medicalIntervenKey = GlobalKey<FormState>();
   final medicationKey = GlobalKey<FormState>();
   final holisticKey = GlobalKey<FormState>();
-
-
-
 
   TextEditingController fnameController = TextEditingController();
   TextEditingController lnameController = TextEditingController();
@@ -365,7 +364,10 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
     pinCodeController.addListener(() {
       setState(() {});
     });
-
+    if (widget.showData) {
+      _getEvaluationDataFuture = EvaluationFormService(repository: repository)
+          .getEvaluationDataService();
+    }
     scrollController = ScrollController();
   }
 
@@ -386,16 +388,41 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        image: DecorationImage(
-            image: const AssetImage("assets/images/eval_bg.png"),
-            fit: BoxFit.fitWidth,
-            colorFilter: ColorFilter.mode(kPrimaryColor, BlendMode.lighten)),
-      ),
+      decoration: widget.showData
+          ? BoxDecoration(color: gWhiteColor)
+          : const BoxDecoration(
+              image: DecorationImage(
+                  image: const AssetImage("assets/images/eval_bg.png"),
+                  fit: BoxFit.fitWidth,
+                  colorFilter:
+                      ColorFilter.mode(kPrimaryColor, BlendMode.lighten)),
+            ),
       child: SafeArea(
         child: Scaffold(
           backgroundColor: Colors.transparent,
-          body: showUI(context),
+          body: widget.showData
+              ? FutureBuilder(
+                  future: _getEvaluationDataFuture,
+                  builder: (_, snapshot) {
+                    if (snapshot.hasData) {
+                      print(snapshot.data);
+                      print(snapshot.data.runtimeType);
+                      if (snapshot.data.runtimeType == GetEvaluationDataModel) {
+                        GetEvaluationDataModel model =
+                            snapshot.data as GetEvaluationDataModel;
+                        ChildGetEvaluationDataModel? model1 = model.data;
+                        storeDetails(model1!);
+                        return showUI(context, model: model1);
+                      } else {
+                        ErrorModel model = snapshot.data as ErrorModel;
+                        print(model.message);
+                      }
+                    } else if (snapshot.hasError) {
+                      print("snapshot.error: ${snapshot.error}");
+                    }
+                    return buildCircularIndicator();
+                  })
+              : showUI(context),
         ),
       ),
     );
@@ -403,11 +430,13 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
 
   /// for showData ChildGetEvaluationDataModel? model this is mandatory
   showUI(BuildContext context, {ChildGetEvaluationDataModel? model}) {
-    return GestureDetector(
-      onPanDown: (_) {
-        hideKeyboard();
-      },
-      child: Column(
+    return widget.showData
+        ? buildEvaluationForm()
+        : GestureDetector(
+            onPanDown: (_) {
+              hideKeyboard();
+            },
+            child: Column(
               children: [
                 SizedBox(height: 1.h),
                 Padding(
@@ -433,7 +462,8 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                         color: Colors.white,
                         boxShadow: [
                           BoxShadow(
-                              blurRadius: 2, color: Colors.grey.withOpacity(0.5))
+                              blurRadius: 2,
+                              color: Colors.grey.withOpacity(0.5))
                         ],
                         borderRadius: const BorderRadius.only(
                           topLeft: Radius.circular(30),
@@ -444,7 +474,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                 ),
               ],
             ),
-    );
+          );
   }
 
   ScrollController? scrollController;
@@ -467,32 +497,57 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
             // buildSleepDetails(),
             // buildLifeStyleDetails(),
             // buildGutTypeDetails(),
-            Center(
+            IntrinsicWidth(
               child: GestureDetector(
-                onTap: () {
-                    checkFields(context);
-                },
+                onTap: widget.showData
+                    ? () {
+                        EvaluationModelFormat1 eval1 = createFormMap();
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (ctx) => PersonalDetailsScreen2(
+                              evaluationModelFormat1: eval1,
+                              showData: true,
+                            ),
+                          ),
+                        );
+                      }
+                    : () {
+                        checkFields(context);
+                      },
                 child: Container(
-                  width: 40.w,
-                  height: 5.h,
+                  // width: 40.w,
+                  // height: 5.h,
                   padding:
-                  EdgeInsets.symmetric(vertical: 1.h, horizontal: 15.w),
+                      EdgeInsets.symmetric(vertical: 1.5.h, horizontal: 10.w),
                   decoration: BoxDecoration(
                     color: eUser().buttonColor,
-                    borderRadius: BorderRadius.circular(eUser().buttonBorderRadius),
+                    borderRadius:
+                        BorderRadius.circular(eUser().buttonBorderRadius),
                     // border: Border.all(
                     //     color: eUser().buttonBorderColor,
                     //     width: eUser().buttonBorderWidth
                     // ),
                   ),
-                  child: Center(child: Text(
-                    'Next',
-                    style: TextStyle(
-                      fontFamily: eUser().buttonTextFont,
-                      color: eUser().buttonTextColor,
-                      fontSize: eUser().buttonTextSize,
-                    ),
-                  )),
+                  child: widget.showData ? Center(
+                    child: Text(
+                       "Next" ,
+                      style: TextStyle(
+                        fontFamily: eUser().buttonTextFont,
+                        color: eUser().buttonTextColor,
+                        fontSize: eUser().buttonTextSize,
+                      ),
+                    ),) : isSubmitPressed
+                      ? buildThreeBounceIndicator(color: gWhiteColor)
+                      : Center(
+                          child: Text(
+                           'Submit',
+                          style: TextStyle(
+                            fontFamily: eUser().buttonTextFont,
+                            color: eUser().buttonTextColor,
+                            fontSize: eUser().buttonTextSize,
+                          ),
+                        ),),
                 ),
               ),
             ),
@@ -505,341 +560,177 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
   buildPersonalDetails() {
     return Form(
       key: formKey1,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(
-                height: 1.5.h,
-              ),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    "Personal Details",
-                    textAlign: TextAlign.start,
-                    style: TextStyle(
-                        fontFamily: kFontBold,
-                        color: gBlackColor,
-                        fontSize: headingFont
-                    ),
-                  ),
-                  SizedBox(
-                    width: 2.w,
-                  ),
-                  Expanded(
-                    child: Container(
-                      height: 1,
-                      color: kLineColor,
-                    ),
-                  ),
-                ],
-              ),
-              // Text(
-              //   "Let Us Know You Better",
-              //   textAlign: TextAlign.start,
-              //   style: TextStyle(
-              //       fontFamily: kFontMedium,
-              //       color: gHintTextColor,
-              //       fontSize: subHeadingFont
-              //   ),
-              // ),
-            ],
-          ),
-          SizedBox(
-            height: 3.h,
-          ),
-          buildLabelTextField("First Name:", fontSize: questionFont, key: fnameKey),
-          IgnorePointer(
-            child: TextFormField(
-              textCapitalization: TextCapitalization.words,
-              controller: fnameController,
-              cursorColor: kPrimaryColor,
-              validator: (value) {
-                if (value!.isEmpty || !RegExp(r"^[a-z A-Z]").hasMatch(value)) {
-                  AppConfig().showSnackbar(
-                      context, "Please enter your First Name",
-                      isError: true, bottomPadding: 100);
-                  return 'Please enter your First Name';
-                } else {
-                  return null;
-                }
-              },
-              decoration: CommonDecoration.buildTextInputDecoration(
-                  "Your answer", fnameController),
-              textInputAction: TextInputAction.next,
-              textAlign: TextAlign.start,
-              keyboardType: TextInputType.name,
-            ),
-          ),
-          SizedBox(
-            height: 2.h,
-          ),
-          buildLabelTextField("Last Name:", fontSize: questionFont, key: lNameKey),
-          IgnorePointer(
-            child: TextFormField(
-              textCapitalization: TextCapitalization.words,
-              controller: lnameController,
-              cursorColor: kPrimaryColor,
-              validator: (value) {
-                if (value!.isEmpty || !RegExp(r"^[a-z A-Z]").hasMatch(value)) {
-                  return 'Please enter your Last Name';
-                } else {
-                  return null;
-                }
-              },
-              decoration: CommonDecoration.buildTextInputDecoration(
-                  "Your answer", lnameController),
-              textInputAction: TextInputAction.next,
-              textAlign: TextAlign.start,
-              keyboardType: TextInputType.name,
-            ),
-          ),
-          SizedBox(
-            height: 2.h,
-          ),
-          buildLabelTextField('Marital Status:', fontSize: questionFont, key: maritalKey),
-          // Text(
-          //   'Marital Status:*',
-          //   style: TextStyle(
-          //     fontSize: 9.sp,
-          //     color: kTextColor,
-          //     fontFamily: "PoppinsSemiBold",
-          //   ),
-          // ),
-          Row(
-            children: [
-              GestureDetector(
-                onTap: (){
-                  setState(() => maritalStatus = "Single");
-                },
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
+      child: IgnorePointer(
+        ignoring: widget.showData,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                  height: 1.5.h,
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Radio(
-                      value: "Single",
-                      activeColor: kPrimaryColor,
-                      groupValue: maritalStatus,
-                      onChanged: (value) {
-                        setState(() {
-                          maritalStatus = value as String;
-                        });
-                      },
-                    ),
                     Text(
-                      'Single',
-                      style: buildTextStyle(color: maritalStatus == "Single" ? kTextColor : gHintTextColor,
-                          fontFamily: maritalStatus == "Single" ? kFontMedium : kFontBook
+                      "Personal Details",
+                      textAlign: TextAlign.start,
+                      style: TextStyle(
+                          fontFamily: kFontBold,
+                          color: gBlackColor,
+                          fontSize: headingFont),
+                    ),
+                    SizedBox(
+                      width: 2.w,
+                    ),
+                    Expanded(
+                      child: Container(
+                        height: 1,
+                        color: kLineColor,
                       ),
                     ),
                   ],
                 ),
-              ),
-              SizedBox(
-                width: 3.w,
-              ),
-              GestureDetector(
-                onTap: (){
-                  setState(() => maritalStatus = "Married");
+                // Text(
+                //   "Let Us Know You Better",
+                //   textAlign: TextAlign.start,
+                //   style: TextStyle(
+                //       fontFamily: kFontMedium,
+                //       color: gHintTextColor,
+                //       fontSize: subHeadingFont
+                //   ),
+                // ),
+              ],
+            ),
+            SizedBox(
+              height: 3.h,
+            ),
+            buildLabelTextField("First Name:",
+                fontSize: questionFont, key: fnameKey),
+            IgnorePointer(
+              child: TextFormField(
+                textCapitalization: TextCapitalization.words,
+                controller: fnameController,
+                cursorColor: kPrimaryColor,
+                validator: (value) {
+                  if (value!.isEmpty ||
+                      !RegExp(r"^[a-z A-Z]").hasMatch(value)) {
+                    AppConfig().showSnackbar(
+                        context, "Please enter your First Name",
+                        isError: true, bottomPadding: 100);
+                    return 'Please enter your First Name';
+                  } else {
+                    return null;
+                  }
                 },
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Radio(
-                      value: "Married",
-                      activeColor: kPrimaryColor,
-                      groupValue: maritalStatus,
-                      onChanged: (value) {
-                        setState(() {
-                          maritalStatus = value as String;
-                        });
-                      },
-                    ),
-                    Text(
-                      'Married',
-                      style: buildTextStyle(color: maritalStatus == "Married" ? kTextColor : gHintTextColor,
-                          fontFamily: maritalStatus == "Married" ? kFontMedium : kFontBook
-                      ),
-                    ),
-                  ],
-                ),
+                decoration: CommonDecoration.buildTextInputDecoration(
+                    "Your answer", fnameController),
+                textInputAction: TextInputAction.next,
+                textAlign: TextAlign.start,
+                keyboardType: TextInputType.name,
               ),
-              SizedBox(
-                width: 3.w,
-              ),
-              GestureDetector(
-                onTap: (){
-                  setState(() => maritalStatus = "Separated");
+            ),
+            SizedBox(
+              height: 2.h,
+            ),
+            buildLabelTextField("Last Name:",
+                fontSize: questionFont, key: lNameKey),
+            IgnorePointer(
+              child: TextFormField(
+                textCapitalization: TextCapitalization.words,
+                controller: lnameController,
+                cursorColor: kPrimaryColor,
+                validator: (value) {
+                  if (value!.isEmpty ||
+                      !RegExp(r"^[a-z A-Z]").hasMatch(value)) {
+                    return 'Please enter your Last Name';
+                  } else {
+                    return null;
+                  }
                 },
-                child: Row(
-                  children: [
-                    Radio(
-                        value: "Separated",
-                        groupValue: maritalStatus,
+                decoration: CommonDecoration.buildTextInputDecoration(
+                    "Your answer", lnameController),
+                textInputAction: TextInputAction.next,
+                textAlign: TextAlign.start,
+                keyboardType: TextInputType.name,
+              ),
+            ),
+            SizedBox(
+              height: 2.h,
+            ),
+            buildLabelTextField('Marital Status:',
+                fontSize: questionFont, key: maritalKey),
+            // Text(
+            //   'Marital Status:*',
+            //   style: TextStyle(
+            //     fontSize: 9.sp,
+            //     color: kTextColor,
+            //     fontFamily: "PoppinsSemiBold",
+            //   ),
+            // ),
+            Row(
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    setState(() => maritalStatus = "Single");
+                  },
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Radio(
+                        value: "Single",
                         activeColor: kPrimaryColor,
+                        groupValue: maritalStatus,
                         onChanged: (value) {
                           setState(() {
                             maritalStatus = value as String;
                           });
-                        }),
-                    Text(
-                      "Separated",
-                      style: buildTextStyle(color: maritalStatus == "Separated" ? kTextColor : gHintTextColor,
-                          fontFamily: maritalStatus == "Separated" ? kFontMedium : kFontBook
+                        },
                       ),
-                    ),
-                  ],
+                      Text(
+                        'Single',
+                        style: buildTextStyle(
+                            color: maritalStatus == "Single"
+                                ? kTextColor
+                                : gHintTextColor,
+                            fontFamily: maritalStatus == "Single"
+                                ? kFontMedium
+                                : kFontBook),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 2.h,
-          ),
-          buildLabelTextField('Phone Number', fontSize: questionFont, key: phoneKey),
-          // Text(
-          //   'Phone Number*',
-          //   style: TextStyle(
-          //     fontSize: 9.sp,
-          //     color: kTextColor,
-          //     fontFamily: "PoppinsSemiBold",
-          //   ),
-          // ),
-          IgnorePointer(
-            child: TextFormField(
-              readOnly: true,
-              controller: mobileController,
-              cursorColor: kPrimaryColor,
-              validator: (value) {
-                if (value!.isEmpty) {
-                  return 'Please enter your Phone Number';
-                } else if (!isPhone(value)) {
-                  return 'Please enter valid Mobile Number';
-                } else {
-                  return null;
-                }
-              },
-              decoration: CommonDecoration.buildTextInputDecoration(
-                  "Your answer", mobileController),
-              textInputAction: TextInputAction.next,
-              textAlign: TextAlign.start,
-              keyboardType: TextInputType.number,
-            ),
-          ),
-          SizedBox(
-            height: 2.h,
-          ),
-          buildLabelTextField('Email ID -', fontSize: questionFont, key: emailKey),
-          IgnorePointer(
-            child: TextFormField(
-              readOnly: true,
-              controller: emailController,
-              cursorColor: kPrimaryColor,
-              validator: (value) {
-                if (value!.isEmpty || !RegExp(r"^[a-z A-Z]").hasMatch(value)) {
-                  return 'Please enter your Email ID';
-                } else if (!RegExp(r"^[a-z A-Z]").hasMatch(value)) {
-                  return 'Please enter your valid Email ID';
-                } else {
-                  return null;
-                }
-              },
-              decoration: CommonDecoration.buildTextInputDecoration(
-                  "Your answer", emailController),
-              textInputAction: TextInputAction.next,
-              textAlign: TextAlign.start,
-              keyboardType: TextInputType.emailAddress,
-            ),
-          ),
-          SizedBox(
-            height: 2.h,
-          ),
-          buildLabelTextField('Age', fontSize: questionFont, key: ageKey),
-          IgnorePointer(
-            child: TextFormField(
-              readOnly: true,
-              controller: ageController,
-              cursorColor: kPrimaryColor,
-              validator: (value) {
-                if (value!.isEmpty) {
-                  return 'Please enter your Age';
-                }  else if(int.parse(value) < 10){
-                  return 'Age should be Greater than 10';
-                }
-                else if(int.parse(value) >= 100){
-                  return 'Age should be Lesser than 100';
-                }
-                else {
-                  return null;
-                }
-              },
-              decoration: CommonDecoration.buildTextInputDecoration(
-                  "Your answer", ageController),
-              textInputAction: TextInputAction.next,
-              maxLength: 2,
-              inputFormatters:[
-                LengthLimitingTextInputFormatter(2),
-              ],
-              textAlign: TextAlign.start,
-              keyboardType: TextInputType.number,
-            ),
-          ),
-          SizedBox(
-            height: 2.h,
-          ),
-          buildLabelTextField('Gender:', fontSize: questionFont, key: genderKey),
-          IgnorePointer(
-            child: Row(
-              children: [
-                GestureDetector(
-                  onTap: (){
-                    setState(() => gender = "Male");
-                  },
-                  child: Row(
-                  children: [
-                    Radio(
-                      value: "Male",
-                      activeColor: kPrimaryColor,
-                      groupValue: gender,
-                      onChanged: (value) {
-                        setState(() {
-                          gender = value as String;
-                        });
-                      },
-                    ),
-                    Text('Male',
-                      style: buildTextStyle(color: gender == "Male" ? kTextColor : gHintTextColor,
-                          fontFamily: gender == "Male" ? kFontMedium : kFontBook
-                      ),
-                    ),
-                  ],
-                )),
                 SizedBox(
                   width: 3.w,
                 ),
                 GestureDetector(
-                  onTap: (){
-                    setState(() => gender = "Female");
+                  onTap: () {
+                    setState(() => maritalStatus = "Married");
                   },
                   child: Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Radio(
-                        value: "Female",
+                        value: "Married",
                         activeColor: kPrimaryColor,
-                        groupValue: gender,
+                        groupValue: maritalStatus,
                         onChanged: (value) {
                           setState(() {
-                            gender = value as String;
+                            maritalStatus = value as String;
                           });
                         },
                       ),
                       Text(
-                        'Female',
-                        style: buildTextStyle(color: gender == "Female" ? kTextColor : gHintTextColor,
-                            fontFamily: gender == "Female" ? kFontMedium : kFontBook
-                        ),
+                        'Married',
+                        style: buildTextStyle(
+                            color: maritalStatus == "Married"
+                                ? kTextColor
+                                : gHintTextColor,
+                            fontFamily: maritalStatus == "Married"
+                                ? kFontMedium
+                                : kFontBook),
                       ),
                     ],
                   ),
@@ -848,233 +739,434 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                   width: 3.w,
                 ),
                 GestureDetector(
-                  onTap: (){
-                    setState(() => gender = "Other");
+                  onTap: () {
+                    setState(() => maritalStatus = "Separated");
                   },
                   child: Row(
                     children: [
                       Radio(
-                          value: "Other",
-                          groupValue: gender,
+                          value: "Separated",
+                          groupValue: maritalStatus,
                           activeColor: kPrimaryColor,
                           onChanged: (value) {
                             setState(() {
-                              gender = value as String;
+                              maritalStatus = value as String;
                             });
                           }),
                       Text(
-                        "Other",
-                        style: buildTextStyle(color: gender == "Other" ? kTextColor : gHintTextColor,
-                            fontFamily: gender == "Other" ? kFontMedium : kFontBook
-                        ),
+                        "Separated",
+                        style: buildTextStyle(
+                            color: maritalStatus == "Separated"
+                                ? kTextColor
+                                : gHintTextColor,
+                            fontFamily: maritalStatus == "Separated"
+                                ? kFontMedium
+                                : kFontBook),
                       ),
                     ],
                   ),
                 ),
               ],
             ),
-          ),
-          SizedBox(
-            height: 2.h,
-          ),
-          buildLabelTextField('Flat/House Number', fontSize: questionFont, key: flatKey),
-          TextFormField(
-            textCapitalization: TextCapitalization.sentences,
-            controller: address1Controller,
-            cursorColor: kPrimaryColor,
-            validator: (value) {
-              if (value!.isEmpty) {
-                return 'Please enter your Flat/House Number';
-              } else {
-                return null;
-              }
-            },
-            decoration: CommonDecoration.buildTextInputDecoration(
-                "Flat/House Number", address1Controller),
-            textInputAction: TextInputAction.next,
-            textAlign: TextAlign.start,
-            // keyboardType: TextInputType.number,
-            inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[0-9/]")),],
-            // inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-          ),
-          SizedBox(
-            height: 2.h,
-          ),
-          buildLabelTextField(
-              'Full Postal Address To Deliver Your Ready To Cook Kit', fontSize: questionFont, key: addresskey),
-          TextFormField(
-            textCapitalization: TextCapitalization.sentences,
-            controller: address2Controller,
-            cursorColor: kPrimaryColor,
-            // autovalidateMode: AutovalidateMode.onUserInteraction,
-            validator: (value) {
-              if (value!.isEmpty) {
-                return 'Please enter your Address';
-              } else if (value.length < 10) {
-                // AppConfig().showSnackbar(context, 'Address length should be greater than 10', isError: true,bottomPadding: 100);
-                return 'Please enter your Address';
-              } else {
-                return null;
-              }
-            },
-            decoration: CommonDecoration.buildTextInputDecoration(
-                "Enter your Postal Address", address2Controller),
-            textInputAction: TextInputAction.next,
-            textAlign: TextAlign.start,
-            keyboardType: TextInputType.streetAddress,
-          ),
-          SizedBox(
-            height: 2.h,
-          ),
-          buildLabelTextField('Pin Code', fontSize: questionFont, key: pincodeKey),
-          FocusScope(
-            onFocusChange: (value) {
-              print(value);
-              if (cityController.text.isEmpty) {
-                if (!value) {
-                  print("editing");
-                  String code = _pref?.getString(AppConfig.countryCode) ?? '';
-                  if (pinCodeController.text.length < 6) {
-                    AppConfig()
-                        .showSnackbar(context, 'Pincode should be 6 digits', bottomPadding: 100);
+            SizedBox(
+              height: 2.h,
+            ),
+            buildLabelTextField('Phone Number',
+                fontSize: questionFont, key: phoneKey),
+            // Text(
+            //   'Phone Number*',
+            //   style: TextStyle(
+            //     fontSize: 9.sp,
+            //     color: kTextColor,
+            //     fontFamily: "PoppinsSemiBold",
+            //   ),
+            // ),
+            IgnorePointer(
+              child: TextFormField(
+                readOnly: true,
+                controller: mobileController,
+                cursorColor: kPrimaryColor,
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return 'Please enter your Phone Number';
+                  } else if (!isPhone(value)) {
+                    return 'Please enter valid Mobile Number';
                   } else {
-                    fetchCountry(pinCodeController.text, 'IN');
+                    return null;
                   }
-                }
-              }
-            },
-            child: TextFormField(
-              autovalidateMode: AutovalidateMode.onUserInteraction,
-              controller: pinCodeController,
+                },
+                decoration: CommonDecoration.buildTextInputDecoration(
+                    "Your answer", mobileController),
+                textInputAction: TextInputAction.next,
+                textAlign: TextAlign.start,
+                keyboardType: TextInputType.number,
+              ),
+            ),
+            SizedBox(
+              height: 2.h,
+            ),
+            buildLabelTextField('Email ID -',
+                fontSize: questionFont, key: emailKey),
+            IgnorePointer(
+              child: TextFormField(
+                readOnly: true,
+                controller: emailController,
+                cursorColor: kPrimaryColor,
+                validator: (value) {
+                  if (value!.isEmpty ||
+                      !RegExp(r"^[a-z A-Z]").hasMatch(value)) {
+                    return 'Please enter your Email ID';
+                  } else if (!RegExp(r"^[a-z A-Z]").hasMatch(value)) {
+                    return 'Please enter your valid Email ID';
+                  } else {
+                    return null;
+                  }
+                },
+                decoration: CommonDecoration.buildTextInputDecoration(
+                    "Your answer", emailController),
+                textInputAction: TextInputAction.next,
+                textAlign: TextAlign.start,
+                keyboardType: TextInputType.emailAddress,
+              ),
+            ),
+            SizedBox(
+              height: 2.h,
+            ),
+            buildLabelTextField('Age', fontSize: questionFont, key: ageKey),
+            IgnorePointer(
+              child: TextFormField(
+                readOnly: true,
+                controller: ageController,
+                cursorColor: kPrimaryColor,
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return 'Please enter your Age';
+                  } else if (int.parse(value) < 10) {
+                    return 'Age should be Greater than 10';
+                  } else if (int.parse(value) >= 100) {
+                    return 'Age should be Lesser than 100';
+                  } else {
+                    return null;
+                  }
+                },
+                decoration: CommonDecoration.buildTextInputDecoration(
+                    "Your answer", ageController),
+                textInputAction: TextInputAction.next,
+                maxLength: 2,
+                inputFormatters: [
+                  LengthLimitingTextInputFormatter(2),
+                ],
+                textAlign: TextAlign.start,
+                keyboardType: TextInputType.number,
+              ),
+            ),
+            SizedBox(
+              height: 2.h,
+            ),
+            buildLabelTextField('Gender:',
+                fontSize: questionFont, key: genderKey),
+            IgnorePointer(
+              child: Row(
+                children: [
+                  GestureDetector(
+                      onTap: () {
+                        setState(() => gender = "Male");
+                      },
+                      child: Row(
+                        children: [
+                          Radio(
+                            value: "Male",
+                            activeColor: kPrimaryColor,
+                            groupValue: gender,
+                            onChanged: (value) {
+                              setState(() {
+                                gender = value as String;
+                              });
+                            },
+                          ),
+                          Text(
+                            'Male',
+                            style: buildTextStyle(
+                                color: gender == "Male"
+                                    ? kTextColor
+                                    : gHintTextColor,
+                                fontFamily:
+                                    gender == "Male" ? kFontMedium : kFontBook),
+                          ),
+                        ],
+                      )),
+                  SizedBox(
+                    width: 3.w,
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      setState(() => gender = "Female");
+                    },
+                    child: Row(
+                      children: [
+                        Radio(
+                          value: "Female",
+                          activeColor: kPrimaryColor,
+                          groupValue: gender,
+                          onChanged: (value) {
+                            setState(() {
+                              gender = value as String;
+                            });
+                          },
+                        ),
+                        Text(
+                          'Female',
+                          style: buildTextStyle(
+                              color: gender == "Female"
+                                  ? kTextColor
+                                  : gHintTextColor,
+                              fontFamily:
+                                  gender == "Female" ? kFontMedium : kFontBook),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    width: 3.w,
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      setState(() => gender = "Other");
+                    },
+                    child: Row(
+                      children: [
+                        Radio(
+                            value: "Other",
+                            groupValue: gender,
+                            activeColor: kPrimaryColor,
+                            onChanged: (value) {
+                              setState(() {
+                                gender = value as String;
+                              });
+                            }),
+                        Text(
+                          "Other",
+                          style: buildTextStyle(
+                              color: gender == "Other"
+                                  ? kTextColor
+                                  : gHintTextColor,
+                              fontFamily:
+                                  gender == "Other" ? kFontMedium : kFontBook),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(
+              height: 2.h,
+            ),
+            buildLabelTextField('Flat/House Number',
+                fontSize: questionFont, key: flatKey),
+            TextFormField(
+              textCapitalization: TextCapitalization.sentences,
+              controller: address1Controller,
               cursorColor: kPrimaryColor,
               validator: (value) {
                 if (value!.isEmpty) {
-                  return 'Please enter your Pin Code';
-                } else if (value.length > 7) {
-                  return 'Please enter your valid Pin Code';
+                  return 'Please enter your Flat/House Number';
                 } else {
                   return null;
                 }
               },
-              onFieldSubmitted: (value) {
-                if (cityController.text.isEmpty) {
-                  String code =
-                      _pref?.getString(AppConfig.countryCode) ?? 'IN';
-                  if (code.isNotEmpty && code == 'IN') {
-                    fetchCountry(value, 'IN');
-                  }
-                  FocusManager.instance.primaryFocus?.unfocus();
+              decoration: CommonDecoration.buildTextInputDecoration(
+                  "Flat/House Number", address1Controller),
+              textInputAction: TextInputAction.next,
+              textAlign: TextAlign.start,
+              // keyboardType: TextInputType.number,
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(RegExp("[0-9/]")),
+              ],
+              // inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            ),
+            SizedBox(
+              height: 2.h,
+            ),
+            buildLabelTextField(
+                'Full Postal Address To Deliver Your Ready To Cook Kit',
+                fontSize: questionFont,
+                key: addresskey),
+            TextFormField(
+              textCapitalization: TextCapitalization.sentences,
+              controller: address2Controller,
+              cursorColor: kPrimaryColor,
+              // autovalidateMode: AutovalidateMode.onUserInteraction,
+              validator: (value) {
+                if (value!.isEmpty) {
+                  return 'Please enter your Address';
+                } else if (value.length < 10) {
+                  // AppConfig().showSnackbar(context, 'Address length should be greater than 10', isError: true,bottomPadding: 100);
+                  return 'Please enter your Address';
+                } else {
+                  return null;
                 }
               },
               decoration: CommonDecoration.buildTextInputDecoration(
-                "Your answer",
-                pinCodeController,
-                suffixIcon: (pinCodeController.text.length != 6)
-                    ? null
-                    : GestureDetector(
-                        onTap: () {
-                          String code =
-                              _pref?.getString(AppConfig.countryCode) ?? '';
-                          print('code: $code');
-                          // if (code.isNotEmpty && code == 'IN') {
-                          //   fetchCountry(pinCodeController.text, code);
-                          // }
-                          fetchCountry(pinCodeController.text, 'IN');
-
-                          FocusManager.instance.primaryFocus?.unfocus();
-                        },
-                        child: Icon(
-                          Icons.keyboard_arrow_right,
-                          color: gMainColor,
-                          size: 22,
-                        ),
-                      ),
-              ),
+                  "Enter your Postal Address", address2Controller),
               textInputAction: TextInputAction.next,
-              inputFormatters: [
-                FilteringTextInputFormatter.digitsOnly,FilteringTextInputFormatter.allow(RegExp(r'^[1-9][0-9]*'))
-              ],
               textAlign: TextAlign.start,
-              keyboardType: TextInputType.numberWithOptions(),
-              maxLength: 6,
+              keyboardType: TextInputType.streetAddress,
             ),
-          ),
-          SizedBox(
-            height: 2.h,
-          ),
-          buildLabelTextField('City', fontSize: questionFont, key: cityKey),
-          TextFormField(
-            textCapitalization: TextCapitalization.sentences,
-            controller: cityController,
-            cursorColor: kPrimaryColor,
-            validator: (value) {
-              if (value!.isEmpty ||
-                  !RegExp(r"^[a-z A-Z]").hasMatch(value)) {
-                return 'Please Enter City';
-              } else if (!RegExp(r"^[a-z A-Z]").hasMatch(value)) {
-                return 'Please Enter City';
-              } else {
-                return null;
-              }
-            },
-            decoration: CommonDecoration.buildTextInputDecoration(
-                "Please Select City", cityController),
-            textInputAction: TextInputAction.next,
-            textAlign: TextAlign.start,
-            keyboardType: TextInputType.streetAddress,
-          ),
-          SizedBox(
-            height: 2.h,
-          ),
-          buildLabelTextField('State', fontSize: questionFont, key: stateKey),
-          TextFormField(
-            textCapitalization: TextCapitalization.sentences,
-            controller: stateController,
-            cursorColor: kPrimaryColor,
-            validator: (value) {
-              if (value!.isEmpty ||
-                  !RegExp(r"^[a-z A-Z]").hasMatch(value)) {
-                return 'Please Enter State';
-              } else if (!RegExp(r"^[a-z A-Z]").hasMatch(value)) {
-                return 'Please Enter State';
-              } else {
-                return null;
-              }
-            },
-            decoration: CommonDecoration.buildTextInputDecoration(
-                "Please Select State", stateController),
-            textInputAction: TextInputAction.next,
-            textAlign: TextAlign.start,
-            keyboardType: TextInputType.streetAddress,
-          ),
-          SizedBox(
-            height: 2.h,
-          ),
-          buildLabelTextField('Country', fontSize: questionFont, key: countryKey),
-          TextFormField(
-            textCapitalization: TextCapitalization.sentences,
-            controller: countryController,
-            cursorColor: kPrimaryColor,
-            validator: (value) {
-              if (value!.isEmpty ||
-                  !RegExp(r"^[a-z A-Z]").hasMatch(value)) {
-                return 'Please Enter Country';
-              } else if (!RegExp(r"^[a-z A-Z]").hasMatch(value)) {
-                return 'Please Enter Country';
-              } else {
-                return null;
-              }
-            },
-            decoration: CommonDecoration.buildTextInputDecoration(
-                "Please Select Country", countryController),
-            textInputAction: TextInputAction.next,
-            textAlign: TextAlign.start,
-            keyboardType: TextInputType.streetAddress,
-          ),
-          SizedBox(
-            height: 5.h,
-          ),
-        ],
+            SizedBox(
+              height: 2.h,
+            ),
+            buildLabelTextField('Pin Code',
+                fontSize: questionFont, key: pincodeKey),
+            FocusScope(
+              onFocusChange: (value) {
+                print(value);
+                if (cityController.text.isEmpty) {
+                  if (!value) {
+                    print("editing");
+                    String code = _pref?.getString(AppConfig.countryCode) ?? '';
+                    if (pinCodeController.text.length < 6) {
+                      AppConfig().showSnackbar(
+                          context, 'Pincode should be 6 digits',
+                          bottomPadding: 100);
+                    } else {
+                      fetchCountry(pinCodeController.text, 'IN');
+                    }
+                  }
+                }
+              },
+              child: TextFormField(
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                controller: pinCodeController,
+                cursorColor: kPrimaryColor,
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return 'Please enter your Pin Code';
+                  } else if (value.length > 7) {
+                    return 'Please enter your valid Pin Code';
+                  } else {
+                    return null;
+                  }
+                },
+                onFieldSubmitted: (value) {
+                  if (cityController.text.isEmpty) {
+                    String code =
+                        _pref?.getString(AppConfig.countryCode) ?? 'IN';
+                    if (code.isNotEmpty && code == 'IN') {
+                      fetchCountry(value, 'IN');
+                    }
+                    FocusManager.instance.primaryFocus?.unfocus();
+                  }
+                },
+                decoration: CommonDecoration.buildTextInputDecoration(
+                  "Your answer",
+                  pinCodeController,
+                  suffixIcon: (pinCodeController.text.length != 6)
+                      ? null
+                      : GestureDetector(
+                          onTap: () {
+                            String code =
+                                _pref?.getString(AppConfig.countryCode) ?? '';
+                            print('code: $code');
+                            // if (code.isNotEmpty && code == 'IN') {
+                            //   fetchCountry(pinCodeController.text, code);
+                            // }
+                            fetchCountry(pinCodeController.text, 'IN');
+
+                            FocusManager.instance.primaryFocus?.unfocus();
+                          },
+                          child: Icon(
+                            Icons.keyboard_arrow_right,
+                            color: gMainColor,
+                            size: 22,
+                          ),
+                        ),
+                ),
+                textInputAction: TextInputAction.next,
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly,
+                  FilteringTextInputFormatter.allow(RegExp(r'^[1-9][0-9]*'))
+                ],
+                textAlign: TextAlign.start,
+                keyboardType: TextInputType.numberWithOptions(),
+                maxLength: 6,
+              ),
+            ),
+            SizedBox(
+              height: 2.h,
+            ),
+            buildLabelTextField('City', fontSize: questionFont, key: cityKey),
+            TextFormField(
+              textCapitalization: TextCapitalization.sentences,
+              controller: cityController,
+              cursorColor: kPrimaryColor,
+              validator: (value) {
+                if (value!.isEmpty || !RegExp(r"^[a-z A-Z]").hasMatch(value)) {
+                  return 'Please Enter City';
+                } else if (!RegExp(r"^[a-z A-Z]").hasMatch(value)) {
+                  return 'Please Enter City';
+                } else {
+                  return null;
+                }
+              },
+              decoration: CommonDecoration.buildTextInputDecoration(
+                  "Please Select City", cityController),
+              textInputAction: TextInputAction.next,
+              textAlign: TextAlign.start,
+              keyboardType: TextInputType.streetAddress,
+            ),
+            SizedBox(
+              height: 2.h,
+            ),
+            buildLabelTextField('State', fontSize: questionFont, key: stateKey),
+            TextFormField(
+              textCapitalization: TextCapitalization.sentences,
+              controller: stateController,
+              cursorColor: kPrimaryColor,
+              validator: (value) {
+                if (value!.isEmpty || !RegExp(r"^[a-z A-Z]").hasMatch(value)) {
+                  return 'Please Enter State';
+                } else if (!RegExp(r"^[a-z A-Z]").hasMatch(value)) {
+                  return 'Please Enter State';
+                } else {
+                  return null;
+                }
+              },
+              decoration: CommonDecoration.buildTextInputDecoration(
+                  "Please Select State", stateController),
+              textInputAction: TextInputAction.next,
+              textAlign: TextAlign.start,
+              keyboardType: TextInputType.streetAddress,
+            ),
+            SizedBox(
+              height: 2.h,
+            ),
+            buildLabelTextField('Country',
+                fontSize: questionFont, key: countryKey),
+            TextFormField(
+              textCapitalization: TextCapitalization.sentences,
+              controller: countryController,
+              cursorColor: kPrimaryColor,
+              validator: (value) {
+                if (value!.isEmpty || !RegExp(r"^[a-z A-Z]").hasMatch(value)) {
+                  return 'Please Enter Country';
+                } else if (!RegExp(r"^[a-z A-Z]").hasMatch(value)) {
+                  return 'Please Enter Country';
+                } else {
+                  return null;
+                }
+              },
+              decoration: CommonDecoration.buildTextInputDecoration(
+                  "Please Select Country", countryController),
+              textInputAction: TextInputAction.next,
+              textAlign: TextAlign.start,
+              keyboardType: TextInputType.streetAddress,
+            ),
+            SizedBox(
+              height: 5.h,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -1082,1086 +1174,1194 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
   buildHealthDetails() {
     return Form(
       key: formKey2,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    "Health",
-                    textAlign: TextAlign.start,
-                    style: TextStyle(
-                        fontFamily: kFontBold,
-                        color: gBlackColor,
-                        fontSize: headingFont
-                    ),
-                  ),
-                  SizedBox(
-                    width: 2.w,
-                  ),
-                  Expanded(
-                    child: Container(
-                      height: 1,
-                      color: kLineColor,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 3.h,
-          ),
-          buildLabelTextField('Weight In Kgs', fontSize: questionFont, key: weightKey),
-          TextFormField(
-            controller: weightController,
-            cursorColor: kPrimaryColor,
-            maxLength: 3,
-            validator: (value) {
-              if (value!.isEmpty) {
-                return 'Please enter your Weight';
-              } else if(value != null){
-                if (int.parse(value) < 20 ||
-                    int.parse(value) > 120) {
-                  return 'Please enter Valid Weight';
-                }
-              } else {
-                return null;
-              }
-            },
-            decoration: CommonDecoration.buildTextInputDecoration(
-                "Your answer", weightController),
-            textInputAction: TextInputAction.next,
-            textAlign: TextAlign.start,
-            keyboardType: TextInputType.number,
-            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-          ),
-          SizedBox(
-            height: 2.h,
-          ),
-          buildLabelTextField('Height In Feet & Inches', fontSize: questionFont, key: heightKey),
-          showDropdown(),
-          SizedBox(
-            height: 2.h,
-          ),
-          buildLabelTextField(
-              'Brief Paragraph About Your Current Complaints & What You Are Looking To Heal Here', fontSize: questionFont, key: afterHeightKey),
-          TextFormField(
-            textCapitalization: TextCapitalization.sentences,
-            controller: healController,
-            cursorColor: kPrimaryColor,
-            validator: (value) {
-              if (value!.isEmpty) {
-                return 'Please enter Heal';
-              } else if (value.length < 2) {
-                return emptyStringMsg;
-              } else {
-                return null;
-              }
-            },
-            decoration: CommonDecoration.buildTextInputDecoration(
-                "Your answer", healController),
-            textInputAction: TextInputAction.next,
-            textAlign: TextAlign.start,
-            keyboardType: TextInputType.text,
-          ),
-          SizedBox(
-            height: 2.h,
-          ),
-          buildLabelTextField('Please check all that apply to you.', fontSize: questionFont, key: health1Key),
-          ListView(
-            shrinkWrap: true,
-            physics: const BouncingScrollPhysics(),
-            children: [
-              ...healthCheckBox1
-                  .map((e) => buildHealthCheckBox(e, 'health1'))
-                  .toList(),
-              Visibility(
-                visible: selectedHealthCheckBox1.any((element) => element.contains("Other:")),
-                child: TextFormField(
-                  textCapitalization: TextCapitalization.sentences,
-                  controller: checkbox1OtherController,
-                  cursorColor: kPrimaryColor,
-                  validator: (value) {
-                    if (value!.isEmpty &&
-                        selectedHealthCheckBox1
-                            .any((element) => element.contains("Other:"))) {
-                      Scrollable.ensureVisible(_healthkey1.currentContext!,
-                          duration: const Duration(milliseconds: 1000)
-                      );
-                      AppConfig().showSnackbar(context, "Please Mention Other Details with minimum 2 characters", bottomPadding: 100, isError: true);
-
-                      return 'Please Mention Other Details with minimum 2 characters';
-                    } else {
-                      return null;
-                    }
-                  },
-                  decoration: CommonDecoration.buildTextInputDecoration(
-                      "Your answer", checkbox1OtherController),
-                  textInputAction: TextInputAction.next,
-                  textAlign: TextAlign.start,
-                  keyboardType: TextInputType.text,
-                ),
-              ),
-            ],
-          ),
-          SizedBox(
-            key: _healthkey1,
-            height: 2.h,
-          ),
-          // health checkbox2
-          buildLabelTextField('Please check all of the boxes that apply to you.', fontSize: questionFont, key: health2Key),
-          ListView(
-            shrinkWrap: true,
-            physics: const BouncingScrollPhysics(),
-            children: [
-              ...healthCheckBox2
-                  .map((e) => buildHealthCheckBox(e, 'health2'))
-                  .toList(),
-              SizedBox(
-                height: 1.h,
-              ),
-              buildLabelTextField('Tongue Coating', key: tongueKey),
-              SizedBox(
-                height: 1.h,
-              ),
-              Column(
-                children: [
-                  GestureDetector(
-                    onTap: (){
-                      setState(() => tongueCoatingRadio = "clear");
-                    },
-                    child: Row(
-                      children: [
-                        Radio(
-                            value: "clear",
-                            groupValue: tongueCoatingRadio,
-                            activeColor: kPrimaryColor,
-                            onChanged: (value) {
-                              setState(() {
-                                tongueCoatingRadio = value as String;
-                              });
-                            }),
-                        Text(
-                          "Clear",
-                          style: buildTextStyle(
-                              color: tongueCoatingRadio == "clear" ? kTextColor : gHintTextColor,
-                              fontFamily: tongueCoatingRadio == "clear" ? kFontMedium : kFontBook
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: (){
-                      setState(() => tongueCoatingRadio = "Coated with white layer");
-                    },
-                    child: Row(
-                      children: [
-                        Radio(
-                            value: "Coated with white layer",
-                            groupValue: tongueCoatingRadio,
-                            activeColor: kPrimaryColor,
-                            onChanged: (value) {
-                              setState(() {
-                                tongueCoatingRadio = value as String;
-                              });
-                            }),
-                        Text(
-                          "Coated with white layer",
-                          style: buildTextStyle(
-                              color: tongueCoatingRadio == "Coated with white layer" ? kTextColor : gHintTextColor,
-                              fontFamily: tongueCoatingRadio == "Coated with white layer" ? kFontMedium : kFontBook
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: (){
-                      setState(() => tongueCoatingRadio = "Coated with yellow layer");
-                    },
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Radio(
-                            value: "Coated with yellow layer",
-                            groupValue: tongueCoatingRadio,
-                            activeColor: kPrimaryColor,
-                            onChanged: (value) {
-                              setState(() {
-                                tongueCoatingRadio = value as String;
-                              });
-                            }),
-                        Text(
-                          "Coated with yellow layer",
-                          style: buildTextStyle(
-                              color: tongueCoatingRadio == "Coated with yellow layer" ? kTextColor : gHintTextColor,
-                              fontFamily: tongueCoatingRadio == "Coated with yellow layer" ? kFontMedium : kFontBook
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: (){
-                      setState(() => tongueCoatingRadio = "Coated with black layer");
-                    },
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Radio(
-                            value: "Coated with black layer",
-                            groupValue: tongueCoatingRadio,
-                            activeColor: kPrimaryColor,
-                            onChanged: (value) {
-                              setState(() {
-                                tongueCoatingRadio = value as String;
-                              });
-                            }),
-                        Text(
-                          "Coated with black layer",
-                          style: buildTextStyle(
-                              color: tongueCoatingRadio == "Coated with black layer" ? kTextColor : gHintTextColor,
-                              fontFamily: tongueCoatingRadio == "Coated with black layer" ? kFontMedium : kFontBook
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: (){
-                      setState(() => tongueCoatingRadio = "other");
-                    },
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Radio(
-                            value: "other",
-                            groupValue: tongueCoatingRadio,
-                            activeColor: kPrimaryColor,
-                            onChanged: (value) {
-                              setState(() {
-                                tongueCoatingRadio = value as String;
-                              });
-                            }),
-                        Text(
-                          "Other:",
-                          style: buildTextStyle(
-                              color: tongueCoatingRadio == "other" ? kTextColor : gHintTextColor,
-                              fontFamily: tongueCoatingRadio == "other" ? kFontMedium : kFontBook
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              Visibility(
-                visible: tongueCoatingRadio=="other",
-                child: TextFormField(
-                  textCapitalization: TextCapitalization.sentences,
-                  controller: tongueCoatingController,
-                  cursorColor: kPrimaryColor,
-                  validator: (value) {
-                    if (value!.isEmpty &&
-                        tongueCoatingRadio.toLowerCase().contains("other")) {
-                      AppConfig().showSnackbar(
-                          context, "Please enter the tongue coating details",
-                          isError: true, bottomPadding: 100);
-                      return 'Please enter the tongue coating details';
-                    } else {
-                      return null;
-                    }
-                  },
-                  decoration: CommonDecoration.buildTextInputDecoration(
-                      "Your answer", tongueCoatingController),
-                  textInputAction: TextInputAction.next,
-                  textAlign: TextAlign.start,
-                  keyboardType: TextInputType.text,
-                ),
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 2.h,
-          ),
-          buildLabelTextField(
-              "Has Frequency Of Urination Increased Or Decreased In The Recent Past?", fontSize: questionFont, key: urinIncreasedKey),
-          Row(
-            children: [
-              GestureDetector(
-                onTap: (){
-                  setState(() {
-                    urinationValue = "Increased";
-                  });
-                },
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
+      child: IgnorePointer(
+        ignoring: widget.showData,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Radio(
-                      value: "Increased",
-                      activeColor: kPrimaryColor,
-                      groupValue: urinationValue,
-                      onChanged: (value) {
-                        setState(() {
-                          urinationValue = value as String;
-                        });
-                      },
-                    ),
-                    Text('Increased',
-                        style: buildTextStyle(
-                            color: urinationValue == "Increased" ? kTextColor : gHintTextColor,
-                            fontFamily: urinationValue == "Increased" ? kFontMedium : kFontBook
-                        )
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(
-                width: 3.w,
-              ),
-              GestureDetector(
-                onTap: (){
-                  setState(() {
-                    urinationValue = "Decreased";
-                  });
-                },
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Radio(
-                      value: "Decreased",
-                      activeColor: kPrimaryColor,
-                      groupValue: urinationValue,
-                      onChanged: (value) {
-                        setState(() {
-                          urinationValue = value as String;
-                        });
-                      },
-                    ),
                     Text(
-                      'Decreased',
-                      style: buildTextStyle(
-                          color: urinationValue == "Decreased" ? kTextColor : gHintTextColor,
-                          fontFamily: urinationValue == "Decreased" ? kFontMedium : kFontBook
+                      "Health",
+                      textAlign: TextAlign.start,
+                      style: TextStyle(
+                          fontFamily: kFontBold,
+                          color: gBlackColor,
+                          fontSize: headingFont),
+                    ),
+                    SizedBox(
+                      width: 2.w,
+                    ),
+                    Expanded(
+                      child: Container(
+                        height: 1,
+                        color: kLineColor,
                       ),
                     ),
                   ],
                 ),
-              ),
-              SizedBox(
-                width: 3.w,
-              ),
-              InkWell(
-                onTap: (){
-                  setState(() {
-                    urinationValue = "No Change";
-                  });
-                },
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
+              ],
+            ),
+            SizedBox(
+              height: 3.h,
+            ),
+            buildLabelTextField('Weight In Kgs',
+                fontSize: questionFont, key: weightKey),
+            TextFormField(
+              controller: weightController,
+              cursorColor: kPrimaryColor,
+              maxLength: 3,
+              validator: (value) {
+                if (value!.isEmpty) {
+                  return 'Please enter your Weight';
+                } else if (value != null) {
+                  if (int.parse(value) < 20 || int.parse(value) > 120) {
+                    return 'Please enter Valid Weight';
+                  }
+                } else {
+                  return null;
+                }
+              },
+              decoration: CommonDecoration.buildTextInputDecoration(
+                  "Your answer", weightController),
+              textInputAction: TextInputAction.next,
+              textAlign: TextAlign.start,
+              keyboardType: TextInputType.number,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            ),
+            SizedBox(
+              height: 2.h,
+            ),
+            buildLabelTextField('Height In Feet & Inches',
+                fontSize: questionFont, key: heightKey),
+            showDropdown(),
+            SizedBox(
+              height: 2.h,
+            ),
+            buildLabelTextField(
+                'Brief Paragraph About Your Current Complaints & What You Are Looking To Heal Here',
+                fontSize: questionFont,
+                key: afterHeightKey),
+            TextFormField(
+              textCapitalization: TextCapitalization.sentences,
+              controller: healController,
+              cursorColor: kPrimaryColor,
+              validator: (value) {
+                if (value!.isEmpty) {
+                  return 'Please enter Heal';
+                } else if (value.length < 2) {
+                  return emptyStringMsg;
+                } else {
+                  return null;
+                }
+              },
+              decoration: CommonDecoration.buildTextInputDecoration(
+                  "Your answer", healController),
+              textInputAction: TextInputAction.next,
+              textAlign: TextAlign.start,
+              keyboardType: TextInputType.text,
+            ),
+            SizedBox(
+              height: 2.h,
+            ),
+            buildLabelTextField('Please check all that apply to you.',
+                fontSize: questionFont, key: health1Key),
+            ListView(
+              shrinkWrap: true,
+              physics: const BouncingScrollPhysics(),
+              children: [
+                ...healthCheckBox1
+                    .map((e) => buildHealthCheckBox(e, 'health1'))
+                    .toList(),
+                Visibility(
+                  visible: selectedHealthCheckBox1
+                      .any((element) => element.contains("Other:")),
+                  child: TextFormField(
+                    textCapitalization: TextCapitalization.sentences,
+                    controller: checkbox1OtherController,
+                    cursorColor: kPrimaryColor,
+                    validator: (value) {
+                      if (value!.isEmpty &&
+                          selectedHealthCheckBox1
+                              .any((element) => element.contains("Other:"))) {
+                        Scrollable.ensureVisible(_healthkey1.currentContext!,
+                            duration: const Duration(milliseconds: 1000));
+                        AppConfig().showSnackbar(context,
+                            "Please Mention Other Details with minimum 2 characters",
+                            bottomPadding: 100, isError: true);
+
+                        return 'Please Mention Other Details with minimum 2 characters';
+                      } else {
+                        return null;
+                      }
+                    },
+                    decoration: CommonDecoration.buildTextInputDecoration(
+                        "Your answer", checkbox1OtherController),
+                    textInputAction: TextInputAction.next,
+                    textAlign: TextAlign.start,
+                    keyboardType: TextInputType.text,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(
+              key: _healthkey1,
+              height: 2.h,
+            ),
+            // health checkbox2
+            buildLabelTextField(
+                'Please check all of the boxes that apply to you.',
+                fontSize: questionFont,
+                key: health2Key),
+            ListView(
+              shrinkWrap: true,
+              physics: const BouncingScrollPhysics(),
+              children: [
+                ...healthCheckBox2
+                    .map((e) => buildHealthCheckBox(e, 'health2'))
+                    .toList(),
+                SizedBox(
+                  height: 1.h,
+                ),
+                buildLabelTextField('Tongue Coating', key: tongueKey),
+                SizedBox(
+                  height: 1.h,
+                ),
+                Column(
                   children: [
-                    Radio(
-                        value: "No Change",
-                        groupValue: urinationValue,
+                    GestureDetector(
+                      onTap: () {
+                        setState(() => tongueCoatingRadio = "clear");
+                      },
+                      child: Row(
+                        children: [
+                          Radio(
+                              value: "clear",
+                              groupValue: tongueCoatingRadio,
+                              activeColor: kPrimaryColor,
+                              onChanged: (value) {
+                                setState(() {
+                                  tongueCoatingRadio = value as String;
+                                });
+                              }),
+                          Text(
+                            "Clear",
+                            style: buildTextStyle(
+                                color: tongueCoatingRadio == "clear"
+                                    ? kTextColor
+                                    : gHintTextColor,
+                                fontFamily: tongueCoatingRadio == "clear"
+                                    ? kFontMedium
+                                    : kFontBook),
+                          ),
+                        ],
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        setState(() =>
+                            tongueCoatingRadio = "Coated with white layer");
+                      },
+                      child: Row(
+                        children: [
+                          Radio(
+                              value: "Coated with white layer",
+                              groupValue: tongueCoatingRadio,
+                              activeColor: kPrimaryColor,
+                              onChanged: (value) {
+                                setState(() {
+                                  tongueCoatingRadio = value as String;
+                                });
+                              }),
+                          Text(
+                            "Coated with white layer",
+                            style: buildTextStyle(
+                                color: tongueCoatingRadio ==
+                                        "Coated with white layer"
+                                    ? kTextColor
+                                    : gHintTextColor,
+                                fontFamily: tongueCoatingRadio ==
+                                        "Coated with white layer"
+                                    ? kFontMedium
+                                    : kFontBook),
+                          ),
+                        ],
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        setState(() =>
+                            tongueCoatingRadio = "Coated with yellow layer");
+                      },
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Radio(
+                              value: "Coated with yellow layer",
+                              groupValue: tongueCoatingRadio,
+                              activeColor: kPrimaryColor,
+                              onChanged: (value) {
+                                setState(() {
+                                  tongueCoatingRadio = value as String;
+                                });
+                              }),
+                          Text(
+                            "Coated with yellow layer",
+                            style: buildTextStyle(
+                                color: tongueCoatingRadio ==
+                                        "Coated with yellow layer"
+                                    ? kTextColor
+                                    : gHintTextColor,
+                                fontFamily: tongueCoatingRadio ==
+                                        "Coated with yellow layer"
+                                    ? kFontMedium
+                                    : kFontBook),
+                          ),
+                        ],
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        setState(() =>
+                            tongueCoatingRadio = "Coated with black layer");
+                      },
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Radio(
+                              value: "Coated with black layer",
+                              groupValue: tongueCoatingRadio,
+                              activeColor: kPrimaryColor,
+                              onChanged: (value) {
+                                setState(() {
+                                  tongueCoatingRadio = value as String;
+                                });
+                              }),
+                          Text(
+                            "Coated with black layer",
+                            style: buildTextStyle(
+                                color: tongueCoatingRadio ==
+                                        "Coated with black layer"
+                                    ? kTextColor
+                                    : gHintTextColor,
+                                fontFamily: tongueCoatingRadio ==
+                                        "Coated with black layer"
+                                    ? kFontMedium
+                                    : kFontBook),
+                          ),
+                        ],
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        setState(() => tongueCoatingRadio = "other");
+                      },
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Radio(
+                              value: "other",
+                              groupValue: tongueCoatingRadio,
+                              activeColor: kPrimaryColor,
+                              onChanged: (value) {
+                                setState(() {
+                                  tongueCoatingRadio = value as String;
+                                });
+                              }),
+                          Text(
+                            "Other:",
+                            style: buildTextStyle(
+                                color: tongueCoatingRadio == "other"
+                                    ? kTextColor
+                                    : gHintTextColor,
+                                fontFamily: tongueCoatingRadio == "other"
+                                    ? kFontMedium
+                                    : kFontBook),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                Visibility(
+                  visible: tongueCoatingRadio == "other",
+                  child: TextFormField(
+                    textCapitalization: TextCapitalization.sentences,
+                    controller: tongueCoatingController,
+                    cursorColor: kPrimaryColor,
+                    validator: (value) {
+                      if (value!.isEmpty &&
+                          tongueCoatingRadio.toLowerCase().contains("other")) {
+                        AppConfig().showSnackbar(
+                            context, "Please enter the tongue coating details",
+                            isError: true, bottomPadding: 100);
+                        return 'Please enter the tongue coating details';
+                      } else {
+                        return null;
+                      }
+                    },
+                    decoration: CommonDecoration.buildTextInputDecoration(
+                        "Your answer", tongueCoatingController),
+                    textInputAction: TextInputAction.next,
+                    textAlign: TextAlign.start,
+                    keyboardType: TextInputType.text,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 2.h,
+            ),
+            buildLabelTextField(
+                "Has Frequency Of Urination Increased Or Decreased In The Recent Past?",
+                fontSize: questionFont,
+                key: urinIncreasedKey),
+            Row(
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      urinationValue = "Increased";
+                    });
+                  },
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Radio(
+                        value: "Increased",
                         activeColor: kPrimaryColor,
+                        groupValue: urinationValue,
                         onChanged: (value) {
                           setState(() {
                             urinationValue = value as String;
                           });
-                        }),
-                    Text(
-                      "No Change",
-                      style: buildTextStyle(
-                          color: urinationValue == "No Change" ? kTextColor : gHintTextColor,
-                          fontFamily: urinationValue == "No Change" ? kFontMedium : kFontBook
+                        },
                       ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          // Wrap(
-          //   // mainAxisSize: MainAxisSize.min,
-          //   children: [
-          //     ...urinFrequencyList.map(buildWrapingCheckBox).toList()
-          //   ],
-          // ),
-          buildLabelTextField("Urine Color", fontSize: questionFont, key: urineColorKey),
-          buildUrineColorRadioButton(),
-          // ListView(
-          //   shrinkWrap: true,
-          //   physics: const BouncingScrollPhysics(),
-          //   children: [
-          //     Wrap(
-          //       children: [
-          //         ...urinColorList.map(buildWrapingCheckBox).toList(),
-          //       ],
-          //     ),
-          //     Padding(
-          //       padding: const EdgeInsets.symmetric(horizontal: 8),
-          //       child: Row(
-          //         mainAxisSize: MainAxisSize.min,
-          //         children: [
-          //           SizedBox(
-          //             width: 20,
-          //             child: Checkbox(
-          //               activeColor: kPrimaryColor,
-          //               value: urinColorOtherSelected,
-          //               onChanged: (v) {
-          //                 setState(() {
-          //                   urinColorOtherSelected = v!;
-          //                   if(urinColorOtherSelected){
-          //                     selectedUrinColorList.add(otherText);
-          //                   }
-          //                   else{
-          //                     selectedUrinColorList.remove(otherText);
-          //                   }
-          //                 });
-          //               },
-          //             ),
-          //           ),
-          //           const SizedBox(
-          //             width: 4,
-          //           ),
-          //           Text(
-          //             'Other:',
-          //             style: buildTextStyle(),
-          //           ),
-          //         ],
-          //       ),
-          //     ),
-          //     Padding(
-          //       padding: const EdgeInsets.symmetric(horizontal: 8),
-          //       child: TextFormField(
-          //         controller: urinColorController,
-          //         cursorColor: kPrimaryColor,
-          //         validator: (value) {
-          //           if (value!.isEmpty && urinColorOtherSelected) {
-          //             return 'Please enter the details about Urin Color';
-          //           } else {
-          //             return null;
-          //           }
-          //         },
-          //         decoration: CommonDecoration.buildTextInputDecoration(
-          //             "Your answer", urinColorController),
-          //         textInputAction: TextInputAction.next,
-          //         textAlign: TextAlign.start,
-          //         keyboardType: TextInputType.text,
-          //       ),
-          //     ),
-          //   ],
-          // ),
-          Visibility(
-            visible: urineColorValue == "Other",
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: TextFormField(
-                textCapitalization: TextCapitalization.sentences,
-                controller: urinColorController,
-                cursorColor: kPrimaryColor,
-                validator: (value) {
-                  if (value!.isEmpty &&
-                      urineColorValue.toLowerCase().contains('other')) {
-                    AppConfig().showSnackbar(
-                        context, "Please enter the details about Urine Color",
-                        isError: true, bottomPadding: 100);
-                    return 'Please enter the details about Urine Color';
-                  } else {
-                    return null;
-                  }
-                },
-                decoration: CommonDecoration.buildTextInputDecoration(
-                    "Your answer", urinColorController),
-                textInputAction: TextInputAction.next,
-                textAlign: TextAlign.start,
-                keyboardType: TextInputType.text,
-              ),
-            ),
-          ),
-          SizedBox(
-            height: 2.h,
-          ),
-          buildLabelTextField("Urine Smell", fontSize: questionFont, key: urineSmellkey),
-          SizedBox(
-            height: 1.h,
-          ),
-          ListView(
-            shrinkWrap: true,
-            physics: const BouncingScrollPhysics(),
-            children: [
-              Wrap(
-                children: [
-                  ...urinSmellList
-                      .map((e) => buildHealthCheckBox(e, 'smell'))
-                      .toList(),
-                ],
-              ),
-              SizedBox(
-                child: CheckboxListTile(
-                  dense: true,
-                  contentPadding: EdgeInsets.symmetric(horizontal: 5),
-                  controlAffinity: ListTileControlAffinity.leading,
-                  title: Transform.translate(
-                    offset: const Offset(-10, 0),
-                    child: Text(
-                      'Other:',
-                      style: buildTextStyle(
-                          color: urinSmellOtherSelected ? kTextColor : gHintTextColor,
-                          fontFamily: urinSmellOtherSelected ? kFontMedium : kFontBook
-                      ),
-                    ),
+                      Text('Increased',
+                          style: buildTextStyle(
+                              color: urinationValue == "Increased"
+                                  ? kTextColor
+                                  : gHintTextColor,
+                              fontFamily: urinationValue == "Increased"
+                                  ? kFontMedium
+                                  : kFontBook)),
+                    ],
                   ),
-                  activeColor: kPrimaryColor,
-                  value: urinSmellOtherSelected,
-                  onChanged: (v) {
+                ),
+                SizedBox(
+                  width: 3.w,
+                ),
+                GestureDetector(
+                  onTap: () {
                     setState(() {
-                      urinSmellOtherSelected = v!;
-                      if (urinSmellOtherSelected) {
-                        // selectedUrinSmellList.clear();
-                        // urinSmellList.forEach((element) {
-                        //   element.value = false;
-                        // });
-                        selectedUrinSmellList.add(otherText);
-                      } else
-                      {
-                        selectedUrinSmellList.remove(otherText);
-                      }
-                      print(selectedUrinSmellList);
+                      urinationValue = "Decreased";
                     });
                   },
-                ),
-              ),
-              Visibility(
-                visible: urinSmellOtherSelected,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: TextFormField(
-                    textCapitalization: TextCapitalization.sentences,
-                    controller: urinSmellController,
-                    cursorColor: kPrimaryColor,
-                    validator: (value) {
-                      if (value!.isEmpty && urinSmellOtherSelected) {
-                        AppConfig().showSnackbar(context, "Please select the details about urine smell", bottomPadding: 100, isError: true);
-                        return 'Please select the details about urine smell';
-                      } else {
-                        return null;
-                      }
-                    },
-                    decoration: CommonDecoration.buildTextInputDecoration(
-                        "Your answer", urinSmellController),
-                    textInputAction: TextInputAction.next,
-                    textAlign: TextAlign.start,
-                    keyboardType: TextInputType.text,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Radio(
+                        value: "Decreased",
+                        activeColor: kPrimaryColor,
+                        groupValue: urinationValue,
+                        onChanged: (value) {
+                          setState(() {
+                            urinationValue = value as String;
+                          });
+                        },
+                      ),
+                      Text(
+                        'Decreased',
+                        style: buildTextStyle(
+                            color: urinationValue == "Decreased"
+                                ? kTextColor
+                                : gHintTextColor,
+                            fontFamily: urinationValue == "Decreased"
+                                ? kFontMedium
+                                : kFontBook),
+                      ),
+                    ],
                   ),
                 ),
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 2.h,
-          ),
-          buildLabelTextField("What Does Your Urine Look Like?", fontSize: questionFont, key: urineLooksKey),
-          buildUrineLookRadioButton(),
-          // ListView(
-          //   shrinkWrap: true,
-          //   physics: const BouncingScrollPhysics(),
-          //   children: [
-          //     Wrap(
-          //       children: [
-          //         ...urinLooksList.map(buildHealthCheckBox).toList(),
-          //       ],
-          //     ),
-          //     ListTile(
-          //       minLeadingWidth: 0,
-          //       leading: SizedBox(
-          //         width: 20,
-          //         child: Checkbox(
-          //           activeColor: kPrimaryColor,
-          //           value: urinLooksLikeOtherSelected,
-          //           onChanged: (v) {
-          //             setState(() {
-          //               urinLooksLikeOtherSelected = v!;
-          //               if(urinLooksLikeOtherSelected){
-          //                 selectedUrinLooksList.add(otherText);
-          //               }
-          //               else{
-          //                 selectedUrinLooksList.remove(otherText);
-          //               }
-          //             });
-          //           },
-          //         ),
-          //       ),
-          //       title: Text(
-          //         'Other:',
-          //         style: buildTextStyle(),
-          //       ),
-          //     ),
-          //     Padding(
-          //       padding: const EdgeInsets.symmetric(horizontal: 8),
-          //       child: TextFormField(
-          //         controller: urinLooksLikeController,
-          //         cursorColor: kPrimaryColor,
-          //         validator: (value) {
-          //           if (value!.isEmpty && urinLooksLikeOtherSelected) {
-          //             return 'Please enter how Urin Looks';
-          //           } else {
-          //             return null;
-          //           }
-          //         },
-          //         decoration: CommonDecoration.buildTextInputDecoration(
-          //             "Your answer", urinLooksLikeController),
-          //         textInputAction: TextInputAction.next,
-          //         textAlign: TextAlign.start,
-          //         keyboardType: TextInputType.text,
-          //       ),
-          //     ),
-          //   ],
-          // ),
-          Visibility(
-            visible: urineLookLikeValue == "Other",
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: TextFormField(
-                textCapitalization: TextCapitalization.sentences,
-                controller: urinLooksLikeController,
-                cursorColor: kPrimaryColor,
-                validator: (value) {
-                  if (value!.isEmpty &&
-                      urineLookLikeValue.toLowerCase().contains('other')) {
-                    AppConfig().showSnackbar(
-                        context, "Please enter how Urine Looks",
-                        isError: true, bottomPadding: 100);
-                    return 'Please enter how Urine Looks';
-                  } else {
-                    return null;
-                  }
-                },
-                decoration: CommonDecoration.buildTextInputDecoration(
-                    "Your answer", urinLooksLikeController),
-                textInputAction: TextInputAction.next,
-                textAlign: TextAlign.start,
-                keyboardType: TextInputType.text,
+                SizedBox(
+                  width: 3.w,
+                ),
+                InkWell(
+                  onTap: () {
+                    setState(() {
+                      urinationValue = "No Change";
+                    });
+                  },
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Radio(
+                          value: "No Change",
+                          groupValue: urinationValue,
+                          activeColor: kPrimaryColor,
+                          onChanged: (value) {
+                            setState(() {
+                              urinationValue = value as String;
+                            });
+                          }),
+                      Text(
+                        "No Change",
+                        style: buildTextStyle(
+                            color: urinationValue == "No Change"
+                                ? kTextColor
+                                : gHintTextColor,
+                            fontFamily: urinationValue == "No Change"
+                                ? kFontMedium
+                                : kFontBook),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            // Wrap(
+            //   // mainAxisSize: MainAxisSize.min,
+            //   children: [
+            //     ...urinFrequencyList.map(buildWrapingCheckBox).toList()
+            //   ],
+            // ),
+            buildLabelTextField("Urine Color",
+                fontSize: questionFont, key: urineColorKey),
+            buildUrineColorRadioButton(),
+            // ListView(
+            //   shrinkWrap: true,
+            //   physics: const BouncingScrollPhysics(),
+            //   children: [
+            //     Wrap(
+            //       children: [
+            //         ...urinColorList.map(buildWrapingCheckBox).toList(),
+            //       ],
+            //     ),
+            //     Padding(
+            //       padding: const EdgeInsets.symmetric(horizontal: 8),
+            //       child: Row(
+            //         mainAxisSize: MainAxisSize.min,
+            //         children: [
+            //           SizedBox(
+            //             width: 20,
+            //             child: Checkbox(
+            //               activeColor: kPrimaryColor,
+            //               value: urinColorOtherSelected,
+            //               onChanged: (v) {
+            //                 setState(() {
+            //                   urinColorOtherSelected = v!;
+            //                   if(urinColorOtherSelected){
+            //                     selectedUrinColorList.add(otherText);
+            //                   }
+            //                   else{
+            //                     selectedUrinColorList.remove(otherText);
+            //                   }
+            //                 });
+            //               },
+            //             ),
+            //           ),
+            //           const SizedBox(
+            //             width: 4,
+            //           ),
+            //           Text(
+            //             'Other:',
+            //             style: buildTextStyle(),
+            //           ),
+            //         ],
+            //       ),
+            //     ),
+            //     Padding(
+            //       padding: const EdgeInsets.symmetric(horizontal: 8),
+            //       child: TextFormField(
+            //         controller: urinColorController,
+            //         cursorColor: kPrimaryColor,
+            //         validator: (value) {
+            //           if (value!.isEmpty && urinColorOtherSelected) {
+            //             return 'Please enter the details about Urin Color';
+            //           } else {
+            //             return null;
+            //           }
+            //         },
+            //         decoration: CommonDecoration.buildTextInputDecoration(
+            //             "Your answer", urinColorController),
+            //         textInputAction: TextInputAction.next,
+            //         textAlign: TextAlign.start,
+            //         keyboardType: TextInputType.text,
+            //       ),
+            //     ),
+            //   ],
+            // ),
+            Visibility(
+              visible: urineColorValue == "Other",
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: TextFormField(
+                  textCapitalization: TextCapitalization.sentences,
+                  controller: urinColorController,
+                  cursorColor: kPrimaryColor,
+                  validator: (value) {
+                    if (value!.isEmpty &&
+                        urineColorValue.toLowerCase().contains('other')) {
+                      AppConfig().showSnackbar(
+                          context, "Please enter the details about Urine Color",
+                          isError: true, bottomPadding: 100);
+                      return 'Please enter the details about Urine Color';
+                    } else {
+                      return null;
+                    }
+                  },
+                  decoration: CommonDecoration.buildTextInputDecoration(
+                      "Your answer", urinColorController),
+                  textInputAction: TextInputAction.next,
+                  textAlign: TextAlign.start,
+                  keyboardType: TextInputType.text,
+                ),
               ),
             ),
-          ),
-          SizedBox(
-            height: 2.h,
-          ),
-          buildLabelTextField("Which one is the closest match to your stool?", fontSize: questionFont, key: stoolTypeKey),
-          ListView(
-            shrinkWrap: true,
-            physics: const BouncingScrollPhysics(),
-            children: [
-              SizedBox(
-                height: 18.h,
-                child: const Image(
-                  image: AssetImage("assets/images/stool_image.png"),
-                  fit: BoxFit.fill,
+            SizedBox(
+              height: 2.h,
+            ),
+            buildLabelTextField("Urine Smell",
+                fontSize: questionFont, key: urineSmellkey),
+            SizedBox(
+              height: 1.h,
+            ),
+            ListView(
+              shrinkWrap: true,
+              physics: const BouncingScrollPhysics(),
+              children: [
+                Wrap(
+                  children: [
+                    ...urinSmellList
+                        .map((e) => buildHealthCheckBox(e, 'smell'))
+                        .toList(),
+                  ],
                 ),
-              ),
-              SizedBox(
-                height: 1.h,
-              ),
-              Column(
-                children: [
-                  GestureDetector(
-                    onTap: (){
-                      setState(() {
-                        selectedStoolMatch = "Seperate hard lumps";
-                      });
-                    },
-                    child: Row(
-                      children: [
-                        Radio(
-                            value: "Seperate hard lumps",
-                            groupValue: selectedStoolMatch,
-                            activeColor: kPrimaryColor,
-                            onChanged: (value) {
-                              setState(() {
-                                selectedStoolMatch = value as String;
-                              });
-                            }),
-                        Text(
-                          "Seperate hard lumps",
-                          style: buildTextStyle(color: selectedStoolMatch == "Seperate hard lumps" ? kTextColor : gHintTextColor,
-                              fontFamily: selectedStoolMatch == "Seperate hard lumps" ? kFontMedium : kFontBook
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: (){
-                      setState(() {
-                        selectedStoolMatch = "Lumpy & sausage like";
-                      });
-                    },
-                    child: Row(
-                      children: [
-                        Radio(
-                            value: "Lumpy & sausage like",
-                            groupValue: selectedStoolMatch,
-                            activeColor: kPrimaryColor,
-                            onChanged: (value) {
-                              setState(() {
-                                selectedStoolMatch = value as String;
-                              });
-                            }),
-                        Text(
-                          "Lumpy & sausage like",
-                          style: buildTextStyle(color: selectedStoolMatch == "Lumpy & sausage like" ? kTextColor : gHintTextColor,
-                              fontFamily: selectedStoolMatch == "Lumpy & sausage like" ? kFontMedium : kFontBook
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: (){
-                      setState(() {
-                        selectedStoolMatch = "Sausage shape with cracks on the surface";
-                      });
-                    },
-                    child: Row(
-                      children: [
-                        Radio(
-                            value: "Sausage shape with cracks on the surface",
-                            groupValue: selectedStoolMatch,
-                            activeColor: kPrimaryColor,
-                            onChanged: (value) {
-                              setState(() {
-                                selectedStoolMatch = value as String;
-                              });
-                            }),
-                        Text(
-                          "Sausage shape with cracks on the surface",
-                          style: buildTextStyle(color: selectedStoolMatch == "Sausage shape with cracks on the surface" ? kTextColor : gHintTextColor,
-                              fontFamily: selectedStoolMatch == "Sausage shape with cracks on the surface" ? kFontMedium : kFontBook
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: (){
-                      setState(() {
-                        selectedStoolMatch = "Smooth, soft sausage or snake";
-                      });
-                    },
-                    child: Row(
-                      children: [
-                        Radio(
-                            value: "Smooth, soft sausage or snake",
-                            groupValue: selectedStoolMatch,
-                            activeColor: kPrimaryColor,
-                            onChanged: (value) {
-                              setState(() {
-                                selectedStoolMatch = value as String;
-                              });
-                            }),
-                        Text(
-                          "Smooth, soft sausage or snake",
-                          style: buildTextStyle(color: selectedStoolMatch == "Smooth, soft sausage or snake" ? kTextColor : gHintTextColor,
-                              fontFamily: selectedStoolMatch == "Smooth, soft sausage or snake" ? kFontMedium : kFontBook
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: (){
-                      setState(() {
-                        selectedStoolMatch = "Soft blobs with clear cut edges";
-                      });
-                    },
-                    child: Row(
-                      children: [
-                        Radio(
-                            value: "Soft blobs with clear cut edges",
-                            groupValue: selectedStoolMatch,
-                            activeColor: kPrimaryColor,
-                            onChanged: (value) {
-                              setState(() {
-                                selectedStoolMatch = value as String;
-                              });
-                            }),
-                        Text(
-                          "Soft blobs with clear cut edges",
-                          style: buildTextStyle(color: selectedStoolMatch == "Soft blobs with clear cut edges" ? kTextColor : gHintTextColor,
-                              fontFamily: selectedStoolMatch == "Soft blobs with clear cut edges" ? kFontMedium : kFontBook
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: (){
-                      setState(() {
-                        selectedStoolMatch = "Mostly consistency with ragged edges";
-                      });
-                    },
-                    child: Row(
-                      children: [
-                        Radio(
-                            value: "Mostly consistency with ragged edges",
-                            groupValue: selectedStoolMatch,
-                            activeColor: kPrimaryColor,
-                            onChanged: (value) {
-                              setState(() {
-                                selectedStoolMatch = value as String;
-                              });
-                            }),
-                        Text(
-                          "Mostly consistency with ragged edges",
-                          style: buildTextStyle(color: selectedStoolMatch == "Mostly consistency with ragged edges" ? kTextColor : gHintTextColor,
-                              fontFamily: selectedStoolMatch == "Mostly consistency with ragged edges" ? kFontMedium : kFontBook
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: (){
-                      setState(() {
-                        selectedStoolMatch = "Liquid consistency with no solid pieces";
-                      });
-                    },
-                    child: Row(
-                      children: [
-                        Radio(
-                            value: "Liquid consistency with no solid pieces",
-                            groupValue: selectedStoolMatch,
-                            activeColor: kPrimaryColor,
-                            onChanged: (value) {
-                              setState(() {
-                                selectedStoolMatch = value as String;
-                              });
-                            }),
-                        Text(
-                          "liquid consistency with no solid pieces",
-                          style: buildTextStyle(color: selectedStoolMatch == "liquid consistency with no solid pieces" ? kTextColor : gHintTextColor,
-                              fontFamily: selectedStoolMatch == "liquid consistency with no solid pieces" ? kFontMedium : kFontBook
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 2.h,
-          ),
-          buildLabelTextField("Medical Interventions Done Before", fontSize: questionFont, key: medicalIntervenKey),
-          ListView(
-            shrinkWrap: true,
-            physics: const BouncingScrollPhysics(),
-            children: [
-              Wrap(
-                children: [
-                  ...medicalInterventionsDoneBeforeList
-                      .map((e) => buildHealthCheckBox(e, 'interventions'))
-                      .toList(),
-                ],
-              ),
-              SizedBox(
-                child: CheckboxListTile(
-                  dense: true,
-                  contentPadding: EdgeInsets.symmetric(horizontal: 5),
-                  controlAffinity: ListTileControlAffinity.leading,
+                SizedBox(
+                  child: CheckboxListTile(
+                    dense: true,
+                    contentPadding: EdgeInsets.symmetric(horizontal: 5),
+                    controlAffinity: ListTileControlAffinity.leading,
                     title: Transform.translate(
                       offset: const Offset(-10, 0),
                       child: Text(
                         'Other:',
-                        style: buildTextStyle(color: medicalInterventionsOtherSelected ? kTextColor : gHintTextColor,
-                            fontFamily: medicalInterventionsOtherSelected ? kFontMedium : kFontBook
-                        ),
+                        style: buildTextStyle(
+                            color: urinSmellOtherSelected
+                                ? kTextColor
+                                : gHintTextColor,
+                            fontFamily: urinSmellOtherSelected
+                                ? kFontMedium
+                                : kFontBook),
+                      ),
+                    ),
+                    activeColor: kPrimaryColor,
+                    value: urinSmellOtherSelected,
+                    onChanged: (v) {
+                      setState(() {
+                        urinSmellOtherSelected = v!;
+                        if (urinSmellOtherSelected) {
+                          // selectedUrinSmellList.clear();
+                          // urinSmellList.forEach((element) {
+                          //   element.value = false;
+                          // });
+                          selectedUrinSmellList.add(otherText);
+                        } else {
+                          selectedUrinSmellList.remove(otherText);
+                        }
+                        print(selectedUrinSmellList);
+                      });
+                    },
+                  ),
+                ),
+                Visibility(
+                  visible: urinSmellOtherSelected,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: TextFormField(
+                      textCapitalization: TextCapitalization.sentences,
+                      controller: urinSmellController,
+                      cursorColor: kPrimaryColor,
+                      validator: (value) {
+                        if (value!.isEmpty && urinSmellOtherSelected) {
+                          AppConfig().showSnackbar(context,
+                              "Please select the details about urine smell",
+                              bottomPadding: 100, isError: true);
+                          return 'Please select the details about urine smell';
+                        } else {
+                          return null;
+                        }
+                      },
+                      decoration: CommonDecoration.buildTextInputDecoration(
+                          "Your answer", urinSmellController),
+                      textInputAction: TextInputAction.next,
+                      textAlign: TextAlign.start,
+                      keyboardType: TextInputType.text,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 2.h,
+            ),
+            buildLabelTextField("What Does Your Urine Look Like?",
+                fontSize: questionFont, key: urineLooksKey),
+            buildUrineLookRadioButton(),
+            // ListView(
+            //   shrinkWrap: true,
+            //   physics: const BouncingScrollPhysics(),
+            //   children: [
+            //     Wrap(
+            //       children: [
+            //         ...urinLooksList.map(buildHealthCheckBox).toList(),
+            //       ],
+            //     ),
+            //     ListTile(
+            //       minLeadingWidth: 0,
+            //       leading: SizedBox(
+            //         width: 20,
+            //         child: Checkbox(
+            //           activeColor: kPrimaryColor,
+            //           value: urinLooksLikeOtherSelected,
+            //           onChanged: (v) {
+            //             setState(() {
+            //               urinLooksLikeOtherSelected = v!;
+            //               if(urinLooksLikeOtherSelected){
+            //                 selectedUrinLooksList.add(otherText);
+            //               }
+            //               else{
+            //                 selectedUrinLooksList.remove(otherText);
+            //               }
+            //             });
+            //           },
+            //         ),
+            //       ),
+            //       title: Text(
+            //         'Other:',
+            //         style: buildTextStyle(),
+            //       ),
+            //     ),
+            //     Padding(
+            //       padding: const EdgeInsets.symmetric(horizontal: 8),
+            //       child: TextFormField(
+            //         controller: urinLooksLikeController,
+            //         cursorColor: kPrimaryColor,
+            //         validator: (value) {
+            //           if (value!.isEmpty && urinLooksLikeOtherSelected) {
+            //             return 'Please enter how Urin Looks';
+            //           } else {
+            //             return null;
+            //           }
+            //         },
+            //         decoration: CommonDecoration.buildTextInputDecoration(
+            //             "Your answer", urinLooksLikeController),
+            //         textInputAction: TextInputAction.next,
+            //         textAlign: TextAlign.start,
+            //         keyboardType: TextInputType.text,
+            //       ),
+            //     ),
+            //   ],
+            // ),
+            Visibility(
+              visible: urineLookLikeValue == "Other",
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: TextFormField(
+                  textCapitalization: TextCapitalization.sentences,
+                  controller: urinLooksLikeController,
+                  cursorColor: kPrimaryColor,
+                  validator: (value) {
+                    if (value!.isEmpty &&
+                        urineLookLikeValue.toLowerCase().contains('other')) {
+                      AppConfig().showSnackbar(
+                          context, "Please enter how Urine Looks",
+                          isError: true, bottomPadding: 100);
+                      return 'Please enter how Urine Looks';
+                    } else {
+                      return null;
+                    }
+                  },
+                  decoration: CommonDecoration.buildTextInputDecoration(
+                      "Your answer", urinLooksLikeController),
+                  textInputAction: TextInputAction.next,
+                  textAlign: TextAlign.start,
+                  keyboardType: TextInputType.text,
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 2.h,
+            ),
+            buildLabelTextField("Which one is the closest match to your stool?",
+                fontSize: questionFont, key: stoolTypeKey),
+            ListView(
+              shrinkWrap: true,
+              physics: const BouncingScrollPhysics(),
+              children: [
+                SizedBox(
+                  height: 18.h,
+                  child: const Image(
+                    image: AssetImage("assets/images/stool_image.png"),
+                    fit: BoxFit.fill,
+                  ),
+                ),
+                SizedBox(
+                  height: 1.h,
+                ),
+                Column(
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          selectedStoolMatch = "Seperate hard lumps";
+                        });
+                      },
+                      child: Row(
+                        children: [
+                          Radio(
+                              value: "Seperate hard lumps",
+                              groupValue: selectedStoolMatch,
+                              activeColor: kPrimaryColor,
+                              onChanged: (value) {
+                                setState(() {
+                                  selectedStoolMatch = value as String;
+                                });
+                              }),
+                          Text(
+                            "Seperate hard lumps",
+                            style: buildTextStyle(
+                                color:
+                                    selectedStoolMatch == "Seperate hard lumps"
+                                        ? kTextColor
+                                        : gHintTextColor,
+                                fontFamily:
+                                    selectedStoolMatch == "Seperate hard lumps"
+                                        ? kFontMedium
+                                        : kFontBook),
+                          ),
+                        ],
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          selectedStoolMatch = "Lumpy & sausage like";
+                        });
+                      },
+                      child: Row(
+                        children: [
+                          Radio(
+                              value: "Lumpy & sausage like",
+                              groupValue: selectedStoolMatch,
+                              activeColor: kPrimaryColor,
+                              onChanged: (value) {
+                                setState(() {
+                                  selectedStoolMatch = value as String;
+                                });
+                              }),
+                          Text(
+                            "Lumpy & sausage like",
+                            style: buildTextStyle(
+                                color:
+                                    selectedStoolMatch == "Lumpy & sausage like"
+                                        ? kTextColor
+                                        : gHintTextColor,
+                                fontFamily:
+                                    selectedStoolMatch == "Lumpy & sausage like"
+                                        ? kFontMedium
+                                        : kFontBook),
+                          ),
+                        ],
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          selectedStoolMatch =
+                              "Sausage shape with cracks on the surface";
+                        });
+                      },
+                      child: Row(
+                        children: [
+                          Radio(
+                              value: "Sausage shape with cracks on the surface",
+                              groupValue: selectedStoolMatch,
+                              activeColor: kPrimaryColor,
+                              onChanged: (value) {
+                                setState(() {
+                                  selectedStoolMatch = value as String;
+                                });
+                              }),
+                          Text(
+                            "Sausage shape with cracks on the surface",
+                            style: buildTextStyle(
+                                color: selectedStoolMatch ==
+                                        "Sausage shape with cracks on the surface"
+                                    ? kTextColor
+                                    : gHintTextColor,
+                                fontFamily: selectedStoolMatch ==
+                                        "Sausage shape with cracks on the surface"
+                                    ? kFontMedium
+                                    : kFontBook),
+                          ),
+                        ],
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          selectedStoolMatch = "Smooth, soft sausage or snake";
+                        });
+                      },
+                      child: Row(
+                        children: [
+                          Radio(
+                              value: "Smooth, soft sausage or snake",
+                              groupValue: selectedStoolMatch,
+                              activeColor: kPrimaryColor,
+                              onChanged: (value) {
+                                setState(() {
+                                  selectedStoolMatch = value as String;
+                                });
+                              }),
+                          Text(
+                            "Smooth, soft sausage or snake",
+                            style: buildTextStyle(
+                                color: selectedStoolMatch ==
+                                        "Smooth, soft sausage or snake"
+                                    ? kTextColor
+                                    : gHintTextColor,
+                                fontFamily: selectedStoolMatch ==
+                                        "Smooth, soft sausage or snake"
+                                    ? kFontMedium
+                                    : kFontBook),
+                          ),
+                        ],
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          selectedStoolMatch =
+                              "Soft blobs with clear cut edges";
+                        });
+                      },
+                      child: Row(
+                        children: [
+                          Radio(
+                              value: "Soft blobs with clear cut edges",
+                              groupValue: selectedStoolMatch,
+                              activeColor: kPrimaryColor,
+                              onChanged: (value) {
+                                setState(() {
+                                  selectedStoolMatch = value as String;
+                                });
+                              }),
+                          Text(
+                            "Soft blobs with clear cut edges",
+                            style: buildTextStyle(
+                                color: selectedStoolMatch ==
+                                        "Soft blobs with clear cut edges"
+                                    ? kTextColor
+                                    : gHintTextColor,
+                                fontFamily: selectedStoolMatch ==
+                                        "Soft blobs with clear cut edges"
+                                    ? kFontMedium
+                                    : kFontBook),
+                          ),
+                        ],
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          selectedStoolMatch =
+                              "Mostly consistency with ragged edges";
+                        });
+                      },
+                      child: Row(
+                        children: [
+                          Radio(
+                              value: "Mostly consistency with ragged edges",
+                              groupValue: selectedStoolMatch,
+                              activeColor: kPrimaryColor,
+                              onChanged: (value) {
+                                setState(() {
+                                  selectedStoolMatch = value as String;
+                                });
+                              }),
+                          Text(
+                            "Mostly consistency with ragged edges",
+                            style: buildTextStyle(
+                                color: selectedStoolMatch ==
+                                        "Mostly consistency with ragged edges"
+                                    ? kTextColor
+                                    : gHintTextColor,
+                                fontFamily: selectedStoolMatch ==
+                                        "Mostly consistency with ragged edges"
+                                    ? kFontMedium
+                                    : kFontBook),
+                          ),
+                        ],
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          selectedStoolMatch =
+                              "Liquid consistency with no solid pieces";
+                        });
+                      },
+                      child: Row(
+                        children: [
+                          Radio(
+                              value: "Liquid consistency with no solid pieces",
+                              groupValue: selectedStoolMatch,
+                              activeColor: kPrimaryColor,
+                              onChanged: (value) {
+                                setState(() {
+                                  selectedStoolMatch = value as String;
+                                });
+                              }),
+                          Text(
+                            "liquid consistency with no solid pieces",
+                            style: buildTextStyle(
+                                color: selectedStoolMatch ==
+                                        "liquid consistency with no solid pieces"
+                                    ? kTextColor
+                                    : gHintTextColor,
+                                fontFamily: selectedStoolMatch ==
+                                        "liquid consistency with no solid pieces"
+                                    ? kFontMedium
+                                    : kFontBook),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 2.h,
+            ),
+            buildLabelTextField("Medical Interventions Done Before",
+                fontSize: questionFont, key: medicalIntervenKey),
+            ListView(
+              shrinkWrap: true,
+              physics: const BouncingScrollPhysics(),
+              children: [
+                Wrap(
+                  children: [
+                    ...medicalInterventionsDoneBeforeList
+                        .map((e) => buildHealthCheckBox(e, 'interventions'))
+                        .toList(),
+                  ],
+                ),
+                SizedBox(
+                  child: CheckboxListTile(
+                    dense: true,
+                    contentPadding: EdgeInsets.symmetric(horizontal: 5),
+                    controlAffinity: ListTileControlAffinity.leading,
+                    title: Transform.translate(
+                      offset: const Offset(-10, 0),
+                      child: Text(
+                        'Other:',
+                        style: buildTextStyle(
+                            color: medicalInterventionsOtherSelected
+                                ? kTextColor
+                                : gHintTextColor,
+                            fontFamily: medicalInterventionsOtherSelected
+                                ? kFontMedium
+                                : kFontBook),
                       ),
                     ),
                     activeColor: kPrimaryColor,
                     value: medicalInterventionsOtherSelected,
-                  onChanged: (v) {
-                    setState(() {
-                      medicalInterventionsOtherSelected = v!;
-                      if (medicalInterventionsOtherSelected) {
-                        // new code
-                        if(medicalInterventionsDoneBeforeList.last.value == true){
-                          selectedmedicalInterventionsDoneBeforeList.clear();
-                          medicalInterventionsDoneBeforeList.last.value = false;
+                    onChanged: (v) {
+                      setState(() {
+                        medicalInterventionsOtherSelected = v!;
+                        if (medicalInterventionsOtherSelected) {
+                          // new code
+                          if (medicalInterventionsDoneBeforeList.last.value ==
+                              true) {
+                            selectedmedicalInterventionsDoneBeforeList.clear();
+                            medicalInterventionsDoneBeforeList.last.value =
+                                false;
+                          }
+
+                          // old code
+                          // selectedmedicalInterventionsDoneBeforeList
+                          //     .add(otherText);
+                          // selectedmedicalInterventionsDoneBeforeList.clear();
+                          // medicalInterventionsDoneBeforeList
+                          //     .forEach((element) {
+                          //   element.value = false;
+                          // });
+                          selectedmedicalInterventionsDoneBeforeList
+                              .add(otherText);
+                        } else {
+                          selectedmedicalInterventionsDoneBeforeList
+                              .remove(otherText);
                         }
 
-                        // old code
-                        // selectedmedicalInterventionsDoneBeforeList
-                        //     .add(otherText);
-                        // selectedmedicalInterventionsDoneBeforeList.clear();
-                        // medicalInterventionsDoneBeforeList
-                        //     .forEach((element) {
-                        //   element.value = false;
-                        // });
-                        selectedmedicalInterventionsDoneBeforeList
-                            .add(otherText);
-                      }
-                      else {
-                        selectedmedicalInterventionsDoneBeforeList
-                            .remove(otherText);
-                      }
-
-                      print(selectedmedicalInterventionsDoneBeforeList);
-                    });
-                  },
-                ),
-              ),
-              Visibility(
-                visible: medicalInterventionsOtherSelected,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: TextFormField(
-                    textCapitalization: TextCapitalization.sentences,
-                    controller: medicalInterventionsDoneController,
-                    cursorColor: kPrimaryColor,
-                    validator: (value) {
-                      if (value!.isEmpty && medicalInterventionsOtherSelected) {
-                        return 'Please enter Medical Interventions';
-                      } else {
-                        return null;
-                      }
+                        print(selectedmedicalInterventionsDoneBeforeList);
+                      });
                     },
-                    decoration: CommonDecoration.buildTextInputDecoration(
-                        "Your answer", medicalInterventionsDoneController),
-                    textInputAction: TextInputAction.next,
-                    textAlign: TextAlign.start,
-                    keyboardType: TextInputType.text,
                   ),
                 ),
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 2.h,
-          ),
-          buildLabelTextField(
-              'Any Medications/Supplements/Inhalers/Contraceptives You Consume At The Moment', fontSize: questionFont),
-          TextFormField(
-            textCapitalization: TextCapitalization.sentences,
-            controller: medicationsController,
-            cursorColor: kPrimaryColor,
-            validator: (value) {
-              if (value!.isEmpty) {
-                return 'Please mention Any Medications Taken before';
-              } else if (value.length < 2) {
-                return emptyStringMsg;
-              } else {
-                return null;
-              }
-            },
-            decoration: CommonDecoration.buildTextInputDecoration(
-                "Your answer", medicationsController),
-            textInputAction: TextInputAction.next,
-            textAlign: TextAlign.start,
-            keyboardType: TextInputType.name,
-          ),
-          SizedBox(
-            height: 2.h,
-          ),
-          buildLabelTextField(
-              'Holistic/Alternative Therapies You Have Been Through & When (Ayurveda, Homeopathy) ', fontSize: questionFont),
-          TextFormField(
-            textCapitalization: TextCapitalization.sentences,
-            controller: holisticController,
-            cursorColor: kPrimaryColor,
-            validator: (value) {
-              if (value!.isEmpty) {
-                return 'Please mention the Therapy taken';
-              } else if (value.length < 2) {
-                return emptyStringMsg;
-              } else {
-                return null;
-              }
-            },
-            decoration: CommonDecoration.buildTextInputDecoration(
-                "Your answer", holisticController),
-            textInputAction: TextInputAction.done,
-            textAlign: TextAlign.start,
-            keyboardType: TextInputType.name,
-          ),
-          // SizedBox(
-          //   height: 2.h,
-          // ),
-          // buildLabelTextField(
-          //     "Please Upload Any & All Medical Records That Might Be Helpful To Evaluate Your Condition Better"),
-          // SizedBox(
-          //   height: 1.h,
-          // ),
-          // GestureDetector(
-          //   onTap: () async {
-          //     final result = await FilePicker.platform
-          //         .pickFiles(withReadStream: true, allowMultiple: false);
-          //
-          //     if (result == null) return;
-          //     if (result.files.first.extension!.contains("pdf") ||
-          //         result.files.first.extension!.contains("png") ||
-          //         result.files.first.extension!.contains("jpg")) {
-          //       medicalRecords.add(result.files.first);
-          //     } else {
-          //       AppConfig().showSnackbar(
-          //           context, "Please select png/jpg/Pdf files",
-          //           isError: true);
-          //     }
-          //     setState(() {});
-          //   },
-          //   child: Container(
-          //     decoration: BoxDecoration(
-          //       borderRadius: BorderRadius.circular(8),
-          //       border: Border.all(color: gMainColor, width: 1),
-          //     ),
-          //     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          //     child: Row(
-          //       mainAxisSize: MainAxisSize.min,
-          //       children: [
-          //         const Icon(
-          //           Icons.file_upload_outlined,
-          //           color: gMainColor,
-          //         ),
-          //         const SizedBox(
-          //           width: 4,
-          //         ),
-          //         Text(
-          //           'Add File',
-          //           style: TextStyle(
-          //             fontSize: 10.sp,
-          //             color: gMainColor,
-          //             fontFamily: "PoppinsRegular",
-          //           ),
-          //         )
-          //       ],
-          //     ),
-          //   ),
-          // ),
-          // (medicalRecords.isEmpty)
-          //         ? Container()
-          //         : SizedBox(
-          //             width: double.maxFinite,
-          //             child: ListView.builder(
-          //               itemCount: medicalRecords.length,
-          //               shrinkWrap: true,
-          //               itemBuilder: (context, index) {
-          //                 final file = medicalRecords[index];
-          //                 return buildFile(file, index);
-          //               },
-          //             ),
-          //           ),
-          SizedBox(
-            height: 5.h,
-          ),
-        ],
+                Visibility(
+                  visible: medicalInterventionsOtherSelected,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: TextFormField(
+                      textCapitalization: TextCapitalization.sentences,
+                      controller: medicalInterventionsDoneController,
+                      cursorColor: kPrimaryColor,
+                      validator: (value) {
+                        if (value!.isEmpty &&
+                            medicalInterventionsOtherSelected) {
+                          return 'Please enter Medical Interventions';
+                        } else {
+                          return null;
+                        }
+                      },
+                      decoration: CommonDecoration.buildTextInputDecoration(
+                          "Your answer", medicalInterventionsDoneController),
+                      textInputAction: TextInputAction.next,
+                      textAlign: TextAlign.start,
+                      keyboardType: TextInputType.text,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 2.h,
+            ),
+            buildLabelTextField(
+                'Any Medications/Supplements/Inhalers/Contraceptives You Consume At The Moment',
+                fontSize: questionFont),
+            TextFormField(
+              textCapitalization: TextCapitalization.sentences,
+              controller: medicationsController,
+              cursorColor: kPrimaryColor,
+              validator: (value) {
+                if (value!.isEmpty) {
+                  return 'Please mention Any Medications Taken before';
+                } else if (value.length < 2) {
+                  return emptyStringMsg;
+                } else {
+                  return null;
+                }
+              },
+              decoration: CommonDecoration.buildTextInputDecoration(
+                  "Your answer", medicationsController),
+              textInputAction: TextInputAction.next,
+              textAlign: TextAlign.start,
+              keyboardType: TextInputType.name,
+            ),
+            SizedBox(
+              height: 2.h,
+            ),
+            buildLabelTextField(
+                'Holistic/Alternative Therapies You Have Been Through & When (Ayurveda, Homeopathy) ',
+                fontSize: questionFont),
+            TextFormField(
+              textCapitalization: TextCapitalization.sentences,
+              controller: holisticController,
+              cursorColor: kPrimaryColor,
+              validator: (value) {
+                if (value!.isEmpty) {
+                  return 'Please mention the Therapy taken';
+                } else if (value.length < 2) {
+                  return emptyStringMsg;
+                } else {
+                  return null;
+                }
+              },
+              decoration: CommonDecoration.buildTextInputDecoration(
+                  "Your answer", holisticController),
+              textInputAction: TextInputAction.done,
+              textAlign: TextAlign.start,
+              keyboardType: TextInputType.name,
+            ),
+            // SizedBox(
+            //   height: 2.h,
+            // ),
+            // buildLabelTextField(
+            //     "Please Upload Any & All Medical Records That Might Be Helpful To Evaluate Your Condition Better"),
+            // SizedBox(
+            //   height: 1.h,
+            // ),
+            // GestureDetector(
+            //   onTap: () async {
+            //     final result = await FilePicker.platform
+            //         .pickFiles(withReadStream: true, allowMultiple: false);
+            //
+            //     if (result == null) return;
+            //     if (result.files.first.extension!.contains("pdf") ||
+            //         result.files.first.extension!.contains("png") ||
+            //         result.files.first.extension!.contains("jpg")) {
+            //       medicalRecords.add(result.files.first);
+            //     } else {
+            //       AppConfig().showSnackbar(
+            //           context, "Please select png/jpg/Pdf files",
+            //           isError: true);
+            //     }
+            //     setState(() {});
+            //   },
+            //   child: Container(
+            //     decoration: BoxDecoration(
+            //       borderRadius: BorderRadius.circular(8),
+            //       border: Border.all(color: gMainColor, width: 1),
+            //     ),
+            //     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            //     child: Row(
+            //       mainAxisSize: MainAxisSize.min,
+            //       children: [
+            //         const Icon(
+            //           Icons.file_upload_outlined,
+            //           color: gMainColor,
+            //         ),
+            //         const SizedBox(
+            //           width: 4,
+            //         ),
+            //         Text(
+            //           'Add File',
+            //           style: TextStyle(
+            //             fontSize: 10.sp,
+            //             color: gMainColor,
+            //             fontFamily: "PoppinsRegular",
+            //           ),
+            //         )
+            //       ],
+            //     ),
+            //   ),
+            // ),
+            // (medicalRecords.isEmpty)
+            //         ? Container()
+            //         : SizedBox(
+            //             width: double.maxFinite,
+            //             child: ListView.builder(
+            //               itemCount: medicalRecords.length,
+            //               shrinkWrap: true,
+            //               itemBuilder: (context, index) {
+            //                 final file = medicalRecords[index];
+            //                 return buildFile(file, index);
+            //               },
+            //             ),
+            //           ),
+            SizedBox(
+              height: 5.h,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -2194,175 +2394,138 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
   checkFields(BuildContext context) {
     print("****");
     print(urineColorValue.toLowerCase().contains("other"));
-    print(urineColorValue.toLowerCase().contains("other") && urinColorController.text.isEmpty);
+    print(urineColorValue.toLowerCase().contains("other") &&
+        urinColorController.text.isEmpty);
     print(formKey1.currentState!.validate());
 
     if (formKey1.currentState!.validate() &&
-        formKey2.currentState!.validate())
-    {
+        formKey2.currentState!.validate()) {
       print("if");
-      if(maritalStatus == ""){
+      if (maritalStatus == "") {
         Scrollable.ensureVisible(maritalKey.currentContext!,
-            duration: const Duration(milliseconds: 1000)
-        );
-        AppConfig().showSnackbar(context, "Please Select Marital Status", isError: true, bottomPadding: 100);
-      }
-      else if (address1Controller.text.isEmpty) {
+            duration: const Duration(milliseconds: 1000));
+        AppConfig().showSnackbar(context, "Please Select Marital Status",
+            isError: true, bottomPadding: 100);
+      } else if (address1Controller.text.isEmpty) {
         Scrollable.ensureVisible(flatKey.currentContext!,
-            duration: const Duration(milliseconds: 1000)
-        );
+            duration: const Duration(milliseconds: 1000));
         AppConfig().showSnackbar(context, "Please Mention Flat Details",
             isError: true, bottomPadding: 100);
-      } else if (address2Controller.text.isEmpty || address2Controller.text.length < 10) {
+      } else if (address2Controller.text.isEmpty ||
+          address2Controller.text.length < 10) {
         Scrollable.ensureVisible(addresskey.currentContext!,
-            duration: const Duration(milliseconds: 1000)
-        );
-        AppConfig()
-            .showSnackbar(context, "Please Postal Address", isError: true, bottomPadding: 100);
+            duration: const Duration(milliseconds: 1000));
+        AppConfig().showSnackbar(context, "Please Postal Address",
+            isError: true, bottomPadding: 100);
       } else if (pinCodeController.text.isEmpty) {
         Scrollable.ensureVisible(pincodeKey.currentContext!,
-            duration: const Duration(milliseconds: 1000)
-        );
-        AppConfig()
-            .showSnackbar(context, "Please Mention Pincode", isError: true, bottomPadding: 100);
-      }
-      else if (int.parse(weightController.text) < 20 ||
+            duration: const Duration(milliseconds: 1000));
+        AppConfig().showSnackbar(context, "Please Mention Pincode",
+            isError: true, bottomPadding: 100);
+      } else if (int.parse(weightController.text) < 20 ||
           int.parse(weightController.text) > 120) {
         Scrollable.ensureVisible(weightKey.currentContext!,
-            duration: const Duration(milliseconds: 1000)
-        );
-        AppConfig()
-            .showSnackbar(context, "Please enter Valid Weight",
+            duration: const Duration(milliseconds: 1000));
+        AppConfig().showSnackbar(context, "Please enter Valid Weight",
             isError: true, bottomPadding: 100);
-
-      }
-      else if (ft == -1 || inches == -1) {
+      } else if (ft == -1 || inches == -1) {
         Scrollable.ensureVisible(heightKey.currentContext!,
-            duration: const Duration(milliseconds: 1000)
-        );
-        AppConfig()
-            .showSnackbar(context, "Please Select Height", isError: true, bottomPadding: 100);
+            duration: const Duration(milliseconds: 1000));
+        AppConfig().showSnackbar(context, "Please Select Height",
+            isError: true, bottomPadding: 100);
       } else if (healController.text.isEmpty) {
         Scrollable.ensureVisible(afterHeightKey.currentContext!,
-            duration: const Duration(milliseconds: 1000)
-        );
+            duration: const Duration(milliseconds: 1000));
         AppConfig().showSnackbar(context, "Please Mention your heal complaints",
             isError: true, bottomPadding: 100);
       } else if (healthCheckBox1.every((element) => element.value == false)) {
         Scrollable.ensureVisible(health1Key.currentContext!,
-            duration: const Duration(milliseconds: 1000)
-        );
+            duration: const Duration(milliseconds: 1000));
         AppConfig().showSnackbar(
             context, "Please Select Atleast 1 option from HealthList1",
             isError: true, bottomPadding: 100);
       } else if (healthCheckBox2.every((element) => element.value == false)) {
         Scrollable.ensureVisible(health2Key.currentContext!,
-            duration: const Duration(milliseconds: 1000)
-        );
+            duration: const Duration(milliseconds: 1000));
         AppConfig().showSnackbar(
             context, "Please Select Atleast 1 option from HealthList2",
             isError: true, bottomPadding: 100);
       } else if (tongueCoatingRadio.isEmpty) {
         Scrollable.ensureVisible(tongueKey.currentContext!,
-            duration: const Duration(milliseconds: 1000)
-        );
+            duration: const Duration(milliseconds: 1000));
         AppConfig().showSnackbar(
             context, "Please Select Tongue Coating Details",
             isError: true, bottomPadding: 100);
-      }
-      else if (tongueCoatingRadio.toLowerCase().contains("other") && tongueCoatingController.text.isEmpty) {
+      } else if (tongueCoatingRadio.toLowerCase().contains("other") &&
+          tongueCoatingController.text.isEmpty) {
         Scrollable.ensureVisible(tongueKey.currentContext!,
-            duration: const Duration(milliseconds: 1000)
-        );
-        AppConfig().showSnackbar(
-            context, "Please Mention Details",
+            duration: const Duration(milliseconds: 1000));
+        AppConfig().showSnackbar(context, "Please Mention Details",
             isError: true, bottomPadding: 100);
-      }
-      else if (urinationValue.isEmpty) {
+      } else if (urinationValue.isEmpty) {
         // else if(urinFrequencyList.every((element) => element.value == false)){
         Scrollable.ensureVisible(urinIncreasedKey.currentContext!,
-            duration: const Duration(milliseconds: 1000)
-        );
+            duration: const Duration(milliseconds: 1000));
         AppConfig().showSnackbar(
             context, "Please Select Frequency of Urination",
             isError: true, bottomPadding: 100);
-      }
-      else if (urineColorValue.isEmpty) {
+      } else if (urineColorValue.isEmpty) {
         // else if(urinColorList.every((element) => element.value == false) && !urinColorOtherSelected){
         Scrollable.ensureVisible(urineColorKey.currentContext!,
-            duration: const Duration(milliseconds: 1000)
-        );
-        AppConfig()
-            .showSnackbar(context, "Please Select Urine Color", isError: true, bottomPadding: 100);
-      }
-      else if (urineColorValue.toLowerCase().contains("other") && urinColorController.text.isEmpty) {
-        Scrollable.ensureVisible(urineColorKey.currentContext!,
-            duration: const Duration(milliseconds: 1000)
-        );
-        AppConfig().showSnackbar(
-            context, "Please Mention Details",
+            duration: const Duration(milliseconds: 1000));
+        AppConfig().showSnackbar(context, "Please Select Urine Color",
             isError: true, bottomPadding: 100);
-      }
-      else if (urinSmellList.every((element) => element.value == false) &&
+      } else if (urineColorValue.toLowerCase().contains("other") &&
+          urinColorController.text.isEmpty) {
+        Scrollable.ensureVisible(urineColorKey.currentContext!,
+            duration: const Duration(milliseconds: 1000));
+        AppConfig().showSnackbar(context, "Please Mention Details",
+            isError: true, bottomPadding: 100);
+      } else if (urinSmellList.every((element) => element.value == false) &&
           !urinSmellOtherSelected) {
         Scrollable.ensureVisible(urineSmellkey.currentContext!,
-            duration: const Duration(milliseconds: 1000)
-        );
+            duration: const Duration(milliseconds: 1000));
         AppConfig().showSnackbar(context, "Please Select Atleast 1 Urine Smell",
             isError: true, bottomPadding: 100);
-      }
-      else if (urinSmellList.any((element) => element.title == "Other") && urinSmellController.text.isEmpty) {
+      } else if (urinSmellList.any((element) => element.title == "Other") &&
+          urinSmellController.text.isEmpty) {
         Scrollable.ensureVisible(urineSmellkey.currentContext!,
-            duration: const Duration(milliseconds: 1000)
-        );
-        AppConfig().showSnackbar(
-            context, "Please Mention Details",
+            duration: const Duration(milliseconds: 1000));
+        AppConfig().showSnackbar(context, "Please Mention Details",
             isError: true, bottomPadding: 100);
-      }
-
-      else if (urineLookLikeValue.isEmpty) {
+      } else if (urineLookLikeValue.isEmpty) {
         Scrollable.ensureVisible(urineLooksKey.currentContext!,
-            duration: const Duration(milliseconds: 1000)
-        );
+            duration: const Duration(milliseconds: 1000));
         // else if(urinLooksList.every((element) => element.value == false) && !urinLooksLikeOtherSelected){
         AppConfig().showSnackbar(context, "Please Select Urine Looks List",
             isError: true, bottomPadding: 100);
-      }
-      else if (urineLookLikeValue.toLowerCase().contains("other") && urinLooksLikeController.text.isEmpty) {
+      } else if (urineLookLikeValue.toLowerCase().contains("other") &&
+          urinLooksLikeController.text.isEmpty) {
         Scrollable.ensureVisible(urineLooksKey.currentContext!,
-            duration: const Duration(milliseconds: 1000)
-        );
-        AppConfig().showSnackbar(
-            context, "Please Mention Details",
+            duration: const Duration(milliseconds: 1000));
+        AppConfig().showSnackbar(context, "Please Mention Details",
             isError: true, bottomPadding: 100);
-      }
-      else if (selectedStoolMatch.isEmpty) {
+      } else if (selectedStoolMatch.isEmpty) {
         Scrollable.ensureVisible(stoolTypeKey.currentContext!,
-            duration: const Duration(milliseconds: 1000)
-        );
+            duration: const Duration(milliseconds: 1000));
         AppConfig().showSnackbar(
             context, "Please Select Closest match to your stool",
             isError: true, bottomPadding: 100);
-      }
-      else if (medicalInterventionsDoneBeforeList
-          .every((element) => element.value == false) &&
+      } else if (medicalInterventionsDoneBeforeList
+              .every((element) => element.value == false) &&
           medicalInterventionsOtherSelected == false) {
         Scrollable.ensureVisible(medicalIntervenKey.currentContext!,
-            duration: const Duration(milliseconds: 1000)
-        );
+            duration: const Duration(milliseconds: 1000));
         AppConfig().showSnackbar(
             context, "Please Select Atleast 1 Medication Intervention",
             isError: true, bottomPadding: 100);
-      }
-      else if (medicalInterventionsOtherSelected == true && medicalInterventionsDoneController.text.isEmpty) {
+      } else if (medicalInterventionsOtherSelected == true &&
+          medicalInterventionsDoneController.text.isEmpty) {
         Scrollable.ensureVisible(medicalIntervenKey.currentContext!,
-            duration: const Duration(milliseconds: 1000)
-        );
-        AppConfig().showSnackbar(
-            context, "Please Mention Details",
+            duration: const Duration(milliseconds: 1000));
+        AppConfig().showSnackbar(context, "Please Mention Details",
             isError: true, bottomPadding: 100);
-      }
-      else {
+      } else {
         if (ft != -1 && inches != -1) {
           heightText = '$ft.$inches';
           print(heightText);
@@ -2383,184 +2546,149 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
 
         // print((eval1 as EvaluationModelFormat1).toMap());
         print(urineColorValue);
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                // builder: (ctx) => EvaluationUploadReport(
-                //     evaluationModelFormat1: eval1,
-                // )
-                builder: (ctx) => PersonalDetailsScreen2(
-                    evaluationModelFormat1: eval1,
-                    // medicalReportList:
-                    //     medicalRecords.map((e) => e.path).toList()
-                )
-            ));
+        Map finalMap = {};
+        finalMap.addAll(eval1.toMap().cast());
+
+        callApi(finalMap, null);
+        // Navigator.push(
+        //     context,
+        //     MaterialPageRoute(
+        //         // builder: (ctx) => EvaluationUploadReport(
+        //         //     evaluationModelFormat1: eval1,
+        //         // )
+        //         builder: (ctx) => PersonalDetailsScreen2(
+        //               evaluationModelFormat1: eval1,
+        //               // medicalReportList:
+        //               //     medicalRecords.map((e) => e.path).toList()
+        //             )));
       }
-    }
-    else  {
+    } else {
       print("else");
-      if(maritalStatus == ""){
+      if (maritalStatus == "") {
         Scrollable.ensureVisible(maritalKey.currentContext!,
-            duration: const Duration(milliseconds: 1000)
-        );
-        AppConfig().showSnackbar(context, "Please Select Marital Status", isError: true, bottomPadding: 100);
-      }
-      else if (address1Controller.text.isEmpty) {
+            duration: const Duration(milliseconds: 1000));
+        AppConfig().showSnackbar(context, "Please Select Marital Status",
+            isError: true, bottomPadding: 100);
+      } else if (address1Controller.text.isEmpty) {
         Scrollable.ensureVisible(flatKey.currentContext!,
-            duration: const Duration(milliseconds: 1000)
-        );
+            duration: const Duration(milliseconds: 1000));
         AppConfig().showSnackbar(context, "Please Mention Flat Details",
             isError: true, bottomPadding: 100);
-      } else if (address2Controller.text.isEmpty || address2Controller.text.length < 10) {
+      } else if (address2Controller.text.isEmpty ||
+          address2Controller.text.length < 10) {
         Scrollable.ensureVisible(addresskey.currentContext!,
-            duration: const Duration(milliseconds: 1000)
-        );
-        AppConfig()
-            .showSnackbar(context, "Please Postal Address", isError: true, bottomPadding: 100);
+            duration: const Duration(milliseconds: 1000));
+        AppConfig().showSnackbar(context, "Please Postal Address",
+            isError: true, bottomPadding: 100);
       } else if (pinCodeController.text.isEmpty) {
         Scrollable.ensureVisible(pincodeKey.currentContext!,
-            duration: const Duration(milliseconds: 1000)
-        );
-        AppConfig()
-            .showSnackbar(context, "Please Mention Pincode", isError: true, bottomPadding: 100);
-      }
-      else if (int.parse(weightController.text) < 20 ||
+            duration: const Duration(milliseconds: 1000));
+        AppConfig().showSnackbar(context, "Please Mention Pincode",
+            isError: true, bottomPadding: 100);
+      } else if (int.parse(weightController.text) < 20 ||
           int.parse(weightController.text) > 120) {
         Scrollable.ensureVisible(weightKey.currentContext!,
-            duration: const Duration(milliseconds: 1000)
-        );
-        AppConfig()
-            .showSnackbar(context, "Please enter Valid Weight",
+            duration: const Duration(milliseconds: 1000));
+        AppConfig().showSnackbar(context, "Please enter Valid Weight",
             isError: true, bottomPadding: 100);
-
-      }
-      else if (ft == -1 || inches == -1) {
+      } else if (ft == -1 || inches == -1) {
         Scrollable.ensureVisible(heightKey.currentContext!,
-            duration: const Duration(milliseconds: 1000)
-        );
-        AppConfig()
-            .showSnackbar(context, "Please Select Height", isError: true, bottomPadding: 100);
+            duration: const Duration(milliseconds: 1000));
+        AppConfig().showSnackbar(context, "Please Select Height",
+            isError: true, bottomPadding: 100);
       } else if (healController.text.isEmpty) {
         Scrollable.ensureVisible(afterHeightKey.currentContext!,
-            duration: const Duration(milliseconds: 1000)
-        );
+            duration: const Duration(milliseconds: 1000));
         AppConfig().showSnackbar(context, "Please Mention your heal complaints",
             isError: true, bottomPadding: 100);
       } else if (healthCheckBox1.every((element) => element.value == false)) {
         Scrollable.ensureVisible(health1Key.currentContext!,
-            duration: const Duration(milliseconds: 1000)
-        );
+            duration: const Duration(milliseconds: 1000));
         AppConfig().showSnackbar(
             context, "Please Select Atleast 1 option from HealthList1",
             isError: true, bottomPadding: 100);
       } else if (healthCheckBox2.every((element) => element.value == false)) {
         Scrollable.ensureVisible(health2Key.currentContext!,
-            duration: const Duration(milliseconds: 1000)
-        );
+            duration: const Duration(milliseconds: 1000));
         AppConfig().showSnackbar(
             context, "Please Select Atleast 1 option from HealthList2",
             isError: true, bottomPadding: 100);
       } else if (tongueCoatingRadio.isEmpty) {
         Scrollable.ensureVisible(tongueKey.currentContext!,
-            duration: const Duration(milliseconds: 1000)
-        );
+            duration: const Duration(milliseconds: 1000));
         AppConfig().showSnackbar(
             context, "Please Select Tongue Coating Details",
             isError: true, bottomPadding: 100);
-      }
-      else if (tongueCoatingRadio.toLowerCase().contains("other") && tongueCoatingController.text.isEmpty) {
+      } else if (tongueCoatingRadio.toLowerCase().contains("other") &&
+          tongueCoatingController.text.isEmpty) {
         Scrollable.ensureVisible(tongueKey.currentContext!,
-            duration: const Duration(milliseconds: 1000)
-        );
-        AppConfig().showSnackbar(
-            context, "Please Mention Details",
+            duration: const Duration(milliseconds: 1000));
+        AppConfig().showSnackbar(context, "Please Mention Details",
             isError: true, bottomPadding: 100);
-      }
-      else if (urinationValue.isEmpty) {
+      } else if (urinationValue.isEmpty) {
         // else if(urinFrequencyList.every((element) => element.value == false)){
         Scrollable.ensureVisible(urinIncreasedKey.currentContext!,
-            duration: const Duration(milliseconds: 1000)
-        );
+            duration: const Duration(milliseconds: 1000));
         AppConfig().showSnackbar(
             context, "Please Select Frequency of Urination",
             isError: true, bottomPadding: 100);
-      }
-      else if (urineColorValue.isEmpty) {
+      } else if (urineColorValue.isEmpty) {
         // else if(urinColorList.every((element) => element.value == false) && !urinColorOtherSelected){
         Scrollable.ensureVisible(urineColorKey.currentContext!,
-            duration: const Duration(milliseconds: 1000)
-        );
-        AppConfig()
-            .showSnackbar(context, "Please Select Urine Color", isError: true, bottomPadding: 100);
-      }
-      else if (urineColorValue.toLowerCase().contains("other") && urinColorController.text.isEmpty) {
-        Scrollable.ensureVisible(urineColorKey.currentContext!,
-            duration: const Duration(milliseconds: 1000)
-        );
-        AppConfig().showSnackbar(
-            context, "Please Mention Details",
+            duration: const Duration(milliseconds: 1000));
+        AppConfig().showSnackbar(context, "Please Select Urine Color",
             isError: true, bottomPadding: 100);
-      }
-      else if (urinSmellList.every((element) => element.value == false) &&
+      } else if (urineColorValue.toLowerCase().contains("other") &&
+          urinColorController.text.isEmpty) {
+        Scrollable.ensureVisible(urineColorKey.currentContext!,
+            duration: const Duration(milliseconds: 1000));
+        AppConfig().showSnackbar(context, "Please Mention Details",
+            isError: true, bottomPadding: 100);
+      } else if (urinSmellList.every((element) => element.value == false) &&
           !urinSmellOtherSelected) {
         Scrollable.ensureVisible(urineSmellkey.currentContext!,
-            duration: const Duration(milliseconds: 1000)
-        );
+            duration: const Duration(milliseconds: 1000));
         AppConfig().showSnackbar(context, "Please Select Atleast 1 Urine Smell",
             isError: true, bottomPadding: 100);
-      }
-      else if (urinSmellList.any((element) => element.title == "Other") && urinSmellController.text.isEmpty) {
+      } else if (urinSmellList.any((element) => element.title == "Other") &&
+          urinSmellController.text.isEmpty) {
         Scrollable.ensureVisible(urineSmellkey.currentContext!,
-            duration: const Duration(milliseconds: 1000)
-        );
-        AppConfig().showSnackbar(
-            context, "Please Mention Details",
+            duration: const Duration(milliseconds: 1000));
+        AppConfig().showSnackbar(context, "Please Mention Details",
             isError: true, bottomPadding: 100);
-      }
-
-      else if (urineLookLikeValue.isEmpty) {
+      } else if (urineLookLikeValue.isEmpty) {
         Scrollable.ensureVisible(urineLooksKey.currentContext!,
-            duration: const Duration(milliseconds: 1000)
-        );
+            duration: const Duration(milliseconds: 1000));
         // else if(urinLooksList.every((element) => element.value == false) && !urinLooksLikeOtherSelected){
         AppConfig().showSnackbar(context, "Please Select Urine Looks List",
             isError: true, bottomPadding: 100);
-      }
-      else if (urineLookLikeValue.toLowerCase().contains("other") && urinLooksLikeController.text.isEmpty) {
+      } else if (urineLookLikeValue.toLowerCase().contains("other") &&
+          urinLooksLikeController.text.isEmpty) {
         Scrollable.ensureVisible(urineLooksKey.currentContext!,
-            duration: const Duration(milliseconds: 1000)
-        );
-        AppConfig().showSnackbar(
-            context, "Please Mention Details",
+            duration: const Duration(milliseconds: 1000));
+        AppConfig().showSnackbar(context, "Please Mention Details",
             isError: true, bottomPadding: 100);
-      }
-      else if (selectedStoolMatch.isEmpty) {
+      } else if (selectedStoolMatch.isEmpty) {
         Scrollable.ensureVisible(stoolTypeKey.currentContext!,
-            duration: const Duration(milliseconds: 1000)
-        );
+            duration: const Duration(milliseconds: 1000));
         AppConfig().showSnackbar(
             context, "Please Select Closest match to your stool",
             isError: true, bottomPadding: 100);
-      }
-      else if (medicalInterventionsDoneBeforeList
-          .every((element) => element.value == false) &&
+      } else if (medicalInterventionsDoneBeforeList
+              .every((element) => element.value == false) &&
           medicalInterventionsOtherSelected == false) {
         Scrollable.ensureVisible(medicalIntervenKey.currentContext!,
-            duration: const Duration(milliseconds: 1000)
-        );
+            duration: const Duration(milliseconds: 1000));
         AppConfig().showSnackbar(
             context, "Please Select Atleast 1 Medication Intervention",
             isError: true, bottomPadding: 100);
-      }
-      else if (medicalInterventionsOtherSelected == true && medicalInterventionsDoneController.text.isEmpty) {
+      } else if (medicalInterventionsOtherSelected == true &&
+          medicalInterventionsDoneController.text.isEmpty) {
         Scrollable.ensureVisible(medicalIntervenKey.currentContext!,
-            duration: const Duration(milliseconds: 1000)
-        );
-        AppConfig().showSnackbar(
-            context, "Please Mention Details",
+            duration: const Duration(milliseconds: 1000));
+        AppConfig().showSnackbar(context, "Please Mention Details",
             isError: true, bottomPadding: 100);
-      }
-      else {
+      } else {
         if (ft != -1 && inches != -1) {
           heightText = '$ft.$inches';
           print(heightText);
@@ -2581,18 +2709,11 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
 
         // print((eval1 as EvaluationModelFormat1).toMap());
         print(urineColorValue);
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-              // builder: (ctx) => EvaluationUploadReport(
-              //     evaluationModelFormat1: eval1,
-              // )
-                builder: (ctx) => PersonalDetailsScreen2(
-                  evaluationModelFormat1: eval1,
-                  // medicalReportList:
-                  //     medicalRecords.map((e) => e.path).toList()
-                )
-            ));
+
+        Map finalMap = {};
+        finalMap.addAll(eval1.toMap().cast());
+
+        callApi(finalMap, null);
       }
     }
   }
@@ -2641,8 +2762,63 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
           : '',
       medication: medicationsController.text,
       holistic: holisticController.text,
+      part: "1",
     );
   }
+
+  bool isSubmitPressed = false;
+
+  void callApi(Map form, List? medicalReports) async {
+    setState(() {
+      isSubmitPressed = true;
+    });
+    final res = await EvaluationFormService(repository: evalRepository)
+        .submitEvaluationFormService(form, medicalReports);
+    print("eval form response" + res.runtimeType.toString());
+    if (res.runtimeType == ReportUploadModel) {
+      ReportUploadModel result = res;
+      setState(() {
+        isSubmitPressed = false;
+      });
+      _pref!.setString(AppConfig.EVAL_STATUS, "evaluation_done");
+      // AppConfig().showSnackbar(context, result.message ?? '');
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          // builder: (ctx) => EvaluationUploadReport(
+          //     evaluationModelFormat1: eval1,
+          // )
+          builder: (ctx) => PersonalDetailsScreen2(
+              // evaluationModelFormat1: eval1,
+              // medicalReportList:
+              //     medicalRecords.map((e) => e.path).toList()
+              ),
+        ),
+      );
+      // Navigator.of(context).pushAndRemoveUntil(
+      //   MaterialPageRoute(
+      //       builder: (context) =>
+      //       const DashboardScreen()
+      //   ), (route) {
+      //     print("route.currentResult:${route.currentResult}");
+      //     print(route.isFirst);
+      //   return route.isFirst;
+      // }
+      // );
+    } else {
+      ErrorModel result = res;
+      AppConfig().showSnackbar(context, result.message ?? '', isError: true);
+      setState(() {
+        isSubmitPressed = false;
+      });
+    }
+  }
+
+  final EvaluationFormRepository evalRepository = EvaluationFormRepository(
+    apiClient: ApiClient(
+      httpClient: http.Client(),
+    ),
+  );
 
   List<String> lst = List.generate(8, (index) => '${index + 1}').toList();
   List<String> lst1 = List.generate(12, (index) => '${index}').toList();
@@ -2703,22 +2879,23 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
     );
   }
 
-
   buildHealthCheckBox(CheckBoxSettings healthCheckBox, String from) {
     return IntrinsicWidth(
       child: CheckboxListTile(
-          contentPadding: EdgeInsets.symmetric(horizontal: 5),
-          controlAffinity: ListTileControlAffinity.leading,
-          title: Transform.translate(
-            offset: const Offset(-10, 0),
-            child: Text(
-              healthCheckBox.title.toString(),
-              style: buildTextStyle(color: healthCheckBox.value == true ? kTextColor : gHintTextColor,
-                  fontFamily: healthCheckBox.value == true ? kFontMedium : kFontBook
-              ),
-            ),
+        contentPadding: EdgeInsets.symmetric(horizontal: 5),
+        controlAffinity: ListTileControlAffinity.leading,
+        title: Transform.translate(
+          offset: const Offset(-10, 0),
+          child: Text(
+            healthCheckBox.title.toString(),
+            style: buildTextStyle(
+                color:
+                    healthCheckBox.value == true ? kTextColor : gHintTextColor,
+                fontFamily:
+                    healthCheckBox.value == true ? kFontMedium : kFontBook),
           ),
-          dense: true,
+        ),
+        dense: true,
         activeColor: kPrimaryColor,
         value: healthCheckBox.value,
         onChanged: (v) {
@@ -2736,7 +2913,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
             //   });
             // }
             // else
-              if (healthCheckBox.title == healthCheckBox1[12].title) {
+            if (healthCheckBox.title == healthCheckBox1[12].title) {
               print(" else if");
               setState(() {
                 selectedHealthCheckBox1.clear();
@@ -2746,8 +2923,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                 selectedHealthCheckBox1.add(healthCheckBox.title!);
                 healthCheckBox.value = v;
               });
-            }
-            else {
+            } else {
               print("else");
               // if (selectedHealthCheckBox1
               //     .contains(healthCheckBox1[13].title)) {
@@ -2758,8 +2934,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
               //   });
               // }
               // else
-                if (selectedHealthCheckBox1
-                  .contains(healthCheckBox1[12].title)) {
+              if (selectedHealthCheckBox1.contains(healthCheckBox1[12].title)) {
                 print("else if");
 
                 setState(() {
@@ -2772,8 +2947,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                   selectedHealthCheckBox1.add(healthCheckBox.title!);
                   healthCheckBox.value = v;
                 });
-              }
-              else {
+              } else {
                 setState(() {
                   selectedHealthCheckBox1.remove(healthCheckBox.title!);
                   healthCheckBox.value = v;
@@ -2781,8 +2955,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
               }
             }
             print(selectedHealthCheckBox1);
-          }
-          else if (from == 'health2') {
+          } else if (from == 'health2') {
             if (healthCheckBox.title == healthCheckBox2.last.title) {
               print("if");
               setState(() {
@@ -2800,8 +2973,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                   healthCheckBox.value = v;
                 }
               });
-            }
-            else {
+            } else {
               // print("else");
               if (v == true) {
                 // print("if");
@@ -2810,7 +2982,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                       .contains(healthCheckBox2.last.title)) {
                     // print("if");
                     selectedHealthCheckBox2.removeWhere(
-                            (element) => element == healthCheckBox2.last.title);
+                        (element) => element == healthCheckBox2.last.title);
                     healthCheckBox2.forEach((element) {
                       if (element.title == healthCheckBox2.last.title) {
                         element.value = false;
@@ -2820,8 +2992,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                   selectedHealthCheckBox2.add(healthCheckBox.title!);
                   healthCheckBox.value = v;
                 });
-              }
-              else {
+              } else {
                 setState(() {
                   selectedHealthCheckBox2.remove(healthCheckBox.title!);
                   healthCheckBox.value = v;
@@ -2829,8 +3000,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
               }
             }
             print(selectedHealthCheckBox2);
-          }
-          else if (from == 'smell') {
+          } else if (from == 'smell') {
             // if (urinSmellOtherSelected) {
             //   if (v == true) {
             //     setState(() {
@@ -2843,22 +3013,20 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
             // }
             // else
             // {
-              if (v == true) {
-                setState(() {
-                  selectedUrinSmellList.add(healthCheckBox.title);
-                  healthCheckBox.value = v;
-                });
-              }
-              else {
-                setState(() {
-                  selectedUrinSmellList.remove(healthCheckBox.title);
-                  healthCheckBox.value = v;
-                });
-              }
+            if (v == true) {
+              setState(() {
+                selectedUrinSmellList.add(healthCheckBox.title);
+                healthCheckBox.value = v;
+              });
+            } else {
+              setState(() {
+                selectedUrinSmellList.remove(healthCheckBox.title);
+                healthCheckBox.value = v;
+              });
+            }
             // }
             print(selectedUrinSmellList);
-          }
-          else if (from == 'interventions') {
+          } else if (from == 'interventions') {
             // if (medicalInterventionsOtherSelected) {
             //   if (v == true) {
             //     setState(() {
@@ -2871,26 +3039,29 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
             //   }
             // }
             // else
-              if (healthCheckBox.title == medicalInterventionsDoneBeforeList.last.title) {
+            if (healthCheckBox.title ==
+                medicalInterventionsDoneBeforeList.last.title) {
               print("if");
               setState(() {
                 selectedmedicalInterventionsDoneBeforeList.clear();
                 medicalInterventionsOtherSelected = false;
                 medicalInterventionsDoneBeforeList.forEach((element) {
-                  if (element.title != medicalInterventionsDoneBeforeList.last.title) {
+                  if (element.title !=
+                      medicalInterventionsDoneBeforeList.last.title) {
                     element.value = false;
                   }
                 });
                 if (v == true) {
-                  selectedmedicalInterventionsDoneBeforeList.add(healthCheckBox.title!);
+                  selectedmedicalInterventionsDoneBeforeList
+                      .add(healthCheckBox.title!);
                   healthCheckBox.value = v;
                 } else {
-                  selectedmedicalInterventionsDoneBeforeList.remove(healthCheckBox.title!);
+                  selectedmedicalInterventionsDoneBeforeList
+                      .remove(healthCheckBox.title!);
                   healthCheckBox.value = v;
                 }
               });
-            }
-            else {
+            } else {
               if (selectedmedicalInterventionsDoneBeforeList
                   .contains(medicalInterventionsDoneBeforeList.last.title)) {
                 print("else if");
@@ -2906,9 +3077,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                       .add(healthCheckBox.title);
                   healthCheckBox.value = v;
                 });
-              }
-
-              else {
+              } else {
                 setState(() {
                   selectedmedicalInterventionsDoneBeforeList
                       .remove(healthCheckBox.title);
@@ -3532,15 +3701,15 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                 ),
               ),
             ),
-           GestureDetector(
-                    onTap: () {
-                      medicalRecords.removeAt(index!);
-                      setState(() {});
-                    },
-                    child: const Icon(
-                      Icons.delete_outline_outlined,
-                      color: gMainColor,
-                    )),
+            GestureDetector(
+                onTap: () {
+                  medicalRecords.removeAt(index!);
+                  setState(() {});
+                },
+                child: const Icon(
+                  Icons.delete_outline_outlined,
+                  color: gMainColor,
+                )),
           ],
         ),
       ),
@@ -3603,8 +3772,8 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
       setState(() {
         _ignoreFields = false;
       });
-      AppConfig()
-          .showSnackbar(context, "Please Enter Valid Pincode", isError: true, bottomPadding: 100);
+      AppConfig().showSnackbar(context, "Please Enter Valid Pincode",
+          isError: true, bottomPadding: 100);
     }
     Navigator.pop(context);
   }
@@ -3682,8 +3851,8 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
         Row(
           children: [
             GestureDetector(
-              onTap: (){
-                setState(() => urineColorValue = "Clear" );
+              onTap: () {
+                setState(() => urineColorValue = "Clear");
               },
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -3700,10 +3869,12 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                   ),
                   Text('Clear',
                       style: buildTextStyle(
-                          color: urineColorValue == "Clear" ? kTextColor : gHintTextColor,
-                          fontFamily: urineColorValue == "Clear" ? kFontMedium : kFontBook
-                      )
-                  ),
+                          color: urineColorValue == "Clear"
+                              ? kTextColor
+                              : gHintTextColor,
+                          fontFamily: urineColorValue == "Clear"
+                              ? kFontMedium
+                              : kFontBook)),
                 ],
               ),
             ),
@@ -3711,8 +3882,8 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
               width: 3.w,
             ),
             GestureDetector(
-              onTap: (){
-                setState(() => urineColorValue = "Pale Yellow" );
+              onTap: () {
+                setState(() => urineColorValue = "Pale Yellow");
               },
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -3730,9 +3901,12 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                   Text(
                     'Pale Yellow',
                     style: buildTextStyle(
-                        color: urineColorValue == "Pale Yellow" ? kTextColor : gHintTextColor,
-                        fontFamily: urineColorValue == "Pale Yellow" ? kFontMedium : kFontBook
-                    ),
+                        color: urineColorValue == "Pale Yellow"
+                            ? kTextColor
+                            : gHintTextColor,
+                        fontFamily: urineColorValue == "Pale Yellow"
+                            ? kFontMedium
+                            : kFontBook),
                   ),
                 ],
               ),
@@ -3741,8 +3915,8 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
               width: 3.w,
             ),
             GestureDetector(
-              onTap: (){
-                setState(() => urineColorValue = "Red" );
+              onTap: () {
+                setState(() => urineColorValue = "Red");
               },
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -3759,9 +3933,11 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                   Text(
                     "Red",
                     style: buildTextStyle(
-                        color: urineColorValue == "Red" ? kTextColor : gHintTextColor,
-                        fontFamily: urineColorValue == "Red" ? kFontMedium : kFontBook
-                    ),
+                        color: urineColorValue == "Red"
+                            ? kTextColor
+                            : gHintTextColor,
+                        fontFamily:
+                            urineColorValue == "Red" ? kFontMedium : kFontBook),
                   ),
                 ],
               ),
@@ -3771,8 +3947,8 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
         Row(
           children: [
             GestureDetector(
-              onTap: (){
-                setState(() => urineColorValue = "Black" );
+              onTap: () {
+                setState(() => urineColorValue = "Black");
               },
               child: Row(
                 children: [
@@ -3786,11 +3962,15 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                       });
                     },
                   ),
-                  Text('Black',
+                  Text(
+                    'Black',
                     style: buildTextStyle(
-                        color: urineColorValue == "Black" ? kTextColor : gHintTextColor,
-                        fontFamily: urineColorValue == "Black" ? kFontMedium : kFontBook
-                    ),
+                        color: urineColorValue == "Black"
+                            ? kTextColor
+                            : gHintTextColor,
+                        fontFamily: urineColorValue == "Black"
+                            ? kFontMedium
+                            : kFontBook),
                   ),
                 ],
               ),
@@ -3799,8 +3979,8 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
               width: 3.w,
             ),
             GestureDetector(
-              onTap: (){
-                setState(() => urineColorValue = "Yellow" );
+              onTap: () {
+                setState(() => urineColorValue = "Yellow");
               },
               child: Row(
                 children: [
@@ -3817,9 +3997,12 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                   Text(
                     'Yellow',
                     style: buildTextStyle(
-                        color: urineColorValue == "Yellow" ? kTextColor : gHintTextColor,
-                        fontFamily: urineColorValue == "Yellow" ? kFontMedium : kFontBook
-                    ),
+                        color: urineColorValue == "Yellow"
+                            ? kTextColor
+                            : gHintTextColor,
+                        fontFamily: urineColorValue == "Yellow"
+                            ? kFontMedium
+                            : kFontBook),
                   ),
                 ],
               ),
@@ -3828,8 +4011,8 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
               width: 3.w,
             ),
             GestureDetector(
-              onTap: (){
-                setState(() => urineColorValue = "Other" );
+              onTap: () {
+                setState(() => urineColorValue = "Other");
               },
               child: Row(
                 children: [
@@ -3845,9 +4028,12 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                   Text(
                     "Other",
                     style: buildTextStyle(
-                        color: urineColorValue == "Other" ? kTextColor : gHintTextColor,
-                        fontFamily: urineColorValue == "Other" ? kFontMedium : kFontBook
-                    ),
+                        color: urineColorValue == "Other"
+                            ? kTextColor
+                            : gHintTextColor,
+                        fontFamily: urineColorValue == "Other"
+                            ? kFontMedium
+                            : kFontBook),
                   ),
                 ],
               ),
@@ -3862,7 +4048,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
     return Column(
       children: [
         GestureDetector(
-          onTap: (){
+          onTap: () {
             setState(() {
               urineLookLikeValue = "Clear/Transparent";
             });
@@ -3881,15 +4067,18 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
               Text(
                 "Clear/Transparent",
                 style: buildTextStyle(
-                    color: urineLookLikeValue == "Clear/Transparent" ? kTextColor : gHintTextColor,
-                    fontFamily: urineLookLikeValue == "Clear/Transparent" ? kFontMedium : kFontBook
-                ),
+                    color: urineLookLikeValue == "Clear/Transparent"
+                        ? kTextColor
+                        : gHintTextColor,
+                    fontFamily: urineLookLikeValue == "Clear/Transparent"
+                        ? kFontMedium
+                        : kFontBook),
               ),
             ],
           ),
         ),
         GestureDetector(
-          onTap: (){
+          onTap: () {
             setState(() {
               urineLookLikeValue = "Foggy/cloudy";
             });
@@ -3908,15 +4097,18 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
               Text(
                 "Foggy/cloudy",
                 style: buildTextStyle(
-                    color: urineLookLikeValue == "Foggy/cloudy" ? kTextColor : gHintTextColor,
-                    fontFamily: urineLookLikeValue == "Foggy/cloudy" ? kFontMedium : kFontBook
-                ),
+                    color: urineLookLikeValue == "Foggy/cloudy"
+                        ? kTextColor
+                        : gHintTextColor,
+                    fontFamily: urineLookLikeValue == "Foggy/cloudy"
+                        ? kFontMedium
+                        : kFontBook),
               ),
             ],
           ),
         ),
         GestureDetector(
-          onTap: (){
+          onTap: () {
             setState(() {
               urineLookLikeValue = "Other";
             });
@@ -3935,9 +4127,12 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
               Text(
                 "Other",
                 style: buildTextStyle(
-                    color: urineLookLikeValue == "Other" ? kTextColor : gHintTextColor,
-                    fontFamily: urineLookLikeValue == "Other" ? kFontMedium : kFontBook
-                ),
+                    color: urineLookLikeValue == "Other"
+                        ? kTextColor
+                        : gHintTextColor,
+                    fontFamily: urineLookLikeValue == "Other"
+                        ? kFontMedium
+                        : kFontBook),
               ),
             ],
           ),
@@ -3945,7 +4140,6 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
       ],
     );
   }
-
 }
 
 /*
