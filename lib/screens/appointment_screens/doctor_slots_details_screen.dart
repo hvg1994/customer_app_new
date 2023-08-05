@@ -557,11 +557,18 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen>
                                       if (kaleyraUID.isNotEmpty ||
                                           kaleyraurl != null ||
                                           accessToken.isNotEmpty) {
-                                        Provider.of<ConsultationService>(
-                                            context,
-                                            listen: false)
-                                            .joinWithKaleyra(kaleyraUID,
-                                            kaleyraurl!, accessToken);
+
+                                        if(Platform.isIOS){
+                                          launchInBrowser(kaleyraurl);
+                                        }
+                                        else if(Platform.isAndroid){
+                                          Provider.of<ConsultationService>(
+                                              context,
+                                              listen: false)
+                                              .joinWithKaleyra(kaleyraUID,
+                                              kaleyraurl!, accessToken);
+                                        }
+
                                       } else {
                                         AppConfig().showSnackbar(context,
                                             "Uid/accessToken/join url not found");
@@ -885,4 +892,14 @@ class _DoctorSlotsDetailsScreenState extends State<DoctorSlotsDetailsScreen>
       // can't launch url, there is some error
       throw "Could not launch ${zoomUrl}";
   }
+
+  Future launchInBrowser(String? kaleyraurl) async{
+    if (await canLaunchUrl(Uri.parse(kaleyraurl ?? ''))) {
+      await launch(kaleyraurl ?? '');
+    } else
+    // can't launch url, there is some error
+    throw "Could not launch ${kaleyraurl}";
+  }
+
+
 }
