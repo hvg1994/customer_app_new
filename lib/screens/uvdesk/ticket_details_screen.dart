@@ -24,7 +24,8 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_widget_from_html/flutter_widget_from_html.dart' hide ImageSource;
+import 'package:flutter_widget_from_html/flutter_widget_from_html.dart'
+    hide ImageSource;
 import 'package:gwc_customer/screens/uvdesk/ticket_pop_up_menu.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
@@ -42,23 +43,26 @@ import '../../utils/app_config.dart';
 import '../../widgets/constants.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
+import 'attachments_view_screen.dart';
+
 class TicketChatScreen extends StatefulWidget {
   final String userName;
   final String thumbNail;
   final String ticketId;
   final String subject;
   final String email;
+
   /// ticketStatus is to show/hide textfield and reopen ticket option
   final int ticketStatus;
-  const TicketChatScreen({
-    Key? key,
-    required this.userName,
-    required this.thumbNail,
-    required this.ticketId,
-    required this.subject,
-    required this.email,
-    required this.ticketStatus
-  }) : super(key: key);
+  const TicketChatScreen(
+      {Key? key,
+      required this.userName,
+      required this.thumbNail,
+      required this.ticketId,
+      required this.subject,
+      required this.email,
+      required this.ticketStatus})
+      : super(key: key);
 
   @override
   State<TicketChatScreen> createState() => _TicketChatScreenState();
@@ -76,7 +80,8 @@ class _TicketChatScreenState extends State<TicketChatScreen>
   NewTicketDetailsModel? threadsListModel;
   List<Threads>? threadList;
 
-  late final UvDeskService _uvDeskService = UvDeskService(uvDeskRepo: repository);
+  late final UvDeskService _uvDeskService =
+      UvDeskService(uvDeskRepo: repository);
 
   final ScrollController _scrollController = ScrollController();
 
@@ -91,7 +96,7 @@ class _TicketChatScreenState extends State<TicketChatScreen>
   }
 
   @override
-  void dispose(){
+  void dispose() {
     commentController.removeListener(() {});
     super.dispose();
   }
@@ -102,7 +107,7 @@ class _TicketChatScreenState extends State<TicketChatScreen>
     });
     callProgressStateOnBuild(true);
     final result =
-    await _uvDeskService.getTicketDetailsByIdService(widget.ticketId);
+        await _uvDeskService.getTicketDetailsByIdService(widget.ticketId);
     print("result: $result");
 
     if (result.runtimeType == NewTicketDetailsModel) {
@@ -156,21 +161,21 @@ class _TicketChatScreenState extends State<TicketChatScreen>
                   ),
                   widget.thumbNail.isEmpty
                       ? CircleAvatar(
-                    radius: 2.h,
-                    backgroundColor: kNumberCircleRed,
-                    child: Text(
-                      getInitials(widget.userName, 2),
-                      style: TextStyle(
-                        fontSize: 8.sp,
-                        fontFamily: kFontBold,
-                        color: gWhiteColor,
-                      ),
-                    ),
-                  )
+                          radius: 2.h,
+                          backgroundColor: kNumberCircleRed,
+                          child: Text(
+                            getInitials(widget.userName, 2),
+                            style: TextStyle(
+                              fontSize: 8.sp,
+                              fontFamily: kFontBold,
+                              color: gWhiteColor,
+                            ),
+                          ),
+                        )
                       : CircleAvatar(
-                    radius: 2.h,
-                    backgroundImage: NetworkImage(widget.thumbNail),
-                  ),
+                          radius: 2.h,
+                          backgroundImage: NetworkImage(widget.thumbNail),
+                        ),
                   SizedBox(width: 2.w),
                   Expanded(
                     child: Column(
@@ -194,16 +199,18 @@ class _TicketChatScreenState extends State<TicketChatScreen>
                           widget.subject,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontSize: smTextFontSize,
-                              color: gHintTextColor,
-                              fontFamily: kFontBook,
-                            ),
+                          style: TextStyle(
+                            fontSize: smTextFontSize,
+                            color: gHintTextColor,
+                            fontFamily: kFontBook,
+                          ),
                         ),
                       ],
                     ),
                   ),
-                  TicketPopUpMenu(ticketId: widget.ticketId,ticketStatus: widget.ticketStatus )
+                  TicketPopUpMenu(
+                      ticketId: widget.ticketId,
+                      ticketStatus: widget.ticketStatus)
                   // popupMenu()
                 ],
               ),
@@ -238,7 +245,8 @@ class _TicketChatScreenState extends State<TicketChatScreen>
                         thumbColor: gMainColor,
                         child: showProgress
                             ? buildCircularIndicator()
-                            : buildMessageList(threadsListModel!.ticket!.threads!),
+                            : buildMessageList(
+                                threadsListModel!.ticket!.threads!),
                         // StreamBuilder(
                         //   stream: _uvDeskService.stream.asBroadcastStream(),
                         //   builder: (_, snapshot) {
@@ -257,7 +265,7 @@ class _TicketChatScreenState extends State<TicketChatScreen>
                         // ),
                       ),
                     ),
-                    if(widget.ticketStatus != 4) _buildEnterMessageRow(),
+                    if (widget.ticketStatus != 4) _buildEnterMessageRow(),
                   ],
                 ),
               ),
@@ -268,11 +276,10 @@ class _TicketChatScreenState extends State<TicketChatScreen>
     );
   }
 
-  popupMenu(){
+  popupMenu() {
     return PopupMenuButton(
       offset: const Offset(0, 30),
-      shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(5)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
       itemBuilder: (context) => [
         PopupMenuItem(
           child: Column(
@@ -280,7 +287,10 @@ class _TicketChatScreenState extends State<TicketChatScreen>
             children: [
               SizedBox(height: 0.6.h),
               buildDummyTabView(
-                  index: 1, title: "ReOpen Ticket", isEnabled: (widget.ticketStatus == 4 || widget.ticketStatus == 3)),
+                  index: 1,
+                  title: "ReOpen Ticket",
+                  isEnabled:
+                      (widget.ticketStatus == 4 || widget.ticketStatus == 3)),
               SizedBox(height: 0.6.h),
             ],
           ),
@@ -294,14 +304,14 @@ class _TicketChatScreenState extends State<TicketChatScreen>
     );
   }
 
-  Widget buildDummyTabView({required int index,required String title,
-    bool isEnabled = true
-  }) {
+  Widget buildDummyTabView(
+      {required int index, required String title, bool isEnabled = true}) {
     return GestureDetector(
-      onTap: isEnabled ?
-          () {
-        Navigator.pop(context);
-      } : null,
+      onTap: isEnabled
+          ? () {
+              Navigator.pop(context);
+            }
+          : null,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -328,17 +338,17 @@ class _TicketChatScreenState extends State<TicketChatScreen>
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if(fileFormatList.isNotEmpty)
-            Flexible(child: SizedBox(
+          if (fileFormatList.isNotEmpty)
+            Flexible(
+                child: SizedBox(
               height: 70,
               child: ListView.builder(
                   scrollDirection: Axis.horizontal,
                   shrinkWrap: true,
                   itemCount: fileFormatList.length,
-                  itemBuilder: (_, index){
+                  itemBuilder: (_, index) {
                     return _imageListView(fileFormatList[index], index);
-                  }
-              ),
+                  }),
             )),
           Row(
             children: [
@@ -404,44 +414,44 @@ class _TicketChatScreenState extends State<TicketChatScreen>
               SizedBox(width: 2.w),
               commentController.text.toString().isEmpty
                   ? Container(
-                width: 0,
-              )
+                      width: 0,
+                    )
                   : GestureDetector(
-                onTap: () {
-                  sendReply();
-                  // final message = Message(
-                  //     text: commentController.text.toString(),
-                  //     date: DateTime.now(),
-                  //     sendMe: true,
-                  //     image:
-                  //         "assets/images/closeup-content-attractive-indian-business-lady.png");
-                  setState(() {
-                    // messages.add(message);
-                  });
-                  commentController.clear();
-                },
-                child: Container(
-                  margin: EdgeInsets.only(right: 2.w),
-                  padding: const EdgeInsets.only(
-                      left: 8, right: 5, top: 5, bottom: 6),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(1),
-                        blurRadius: 10,
-                        offset: const Offset(2, 5),
+                      onTap: () {
+                        sendReply();
+                        // final message = Message(
+                        //     text: commentController.text.toString(),
+                        //     date: DateTime.now(),
+                        //     sendMe: true,
+                        //     image:
+                        //         "assets/images/closeup-content-attractive-indian-business-lady.png");
+                        setState(() {
+                          // messages.add(message);
+                        });
+                        commentController.clear();
+                      },
+                      child: Container(
+                        margin: EdgeInsets.only(right: 2.w),
+                        padding: const EdgeInsets.only(
+                            left: 8, right: 5, top: 5, bottom: 6),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(1),
+                              blurRadius: 10,
+                              offset: const Offset(2, 5),
+                            ),
+                          ],
+                          color: gsecondaryColor,
+                        ),
+                        child: Icon(
+                          Icons.send,
+                          color: gWhiteColor,
+                          size: 2.5.h,
+                        ),
                       ),
-                    ],
-                    color: gsecondaryColor,
-                  ),
-                  child: Icon(
-                    Icons.send,
-                    color: gWhiteColor,
-                    size: 2.5.h,
-                  ),
-                ),
-              ),
+                    ),
             ],
           ),
         ],
@@ -449,30 +459,26 @@ class _TicketChatScreenState extends State<TicketChatScreen>
     );
   }
 
-  _imageListView(File loc, int index){
+  _imageListView(File loc, int index) {
     return Stack(
       children: [
         Container(
           height: 65,
           width: 80,
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: FileImage(loc)
-            )
-          ),
+          decoration:
+              BoxDecoration(image: DecorationImage(image: FileImage(loc))),
         ),
         Positioned(
-          top: 2,
+            top: 2,
             right: 2,
             child: IconButton(
               icon: Icon(Icons.close),
-              onPressed: (){
+              onPressed: () {
                 setState(() {
                   fileFormatList.removeAt(index);
                 });
               },
-            )
-        )
+            ))
       ],
     );
   }
@@ -536,105 +542,106 @@ class _TicketChatScreenState extends State<TicketChatScreen>
                   FittedBox(
                     fit: BoxFit.fitWidth,
                     child: Container(
+                      width: double.maxFinite,
                       padding: EdgeInsets.only(
-                          left: 3.5.w, right: 3.5.w,
-                          bottom: 1.5.h, top: 1.5.h
-                      ),
-                      constraints: BoxConstraints(
-                          maxWidth: 65.w,
-                          minWidth: 0
-                      ),
+                          left: 3.5.w, right: 3.5.w, bottom: 1.5.h, top: 1.5.h),
+                      constraints: BoxConstraints(maxWidth: 65.w, minWidth: 0),
                       margin: message.createdBy == "agent"
                           ? EdgeInsets.only(
-                          top: 0.5.h, bottom: 0.5.h, left: 5, right: 20.w)
+                              top: 0.5.h, bottom: 0.5.h, left: 5, right: 20.w)
                           : EdgeInsets.only(
-                          top: 0.5.h, bottom: 0.5.h, right: 5, left: 20.w),
+                              top: 0.5.h, bottom: 0.5.h, right: 5, left: 20.w),
                       decoration: BoxDecoration(
                           color: message.createdBy == "agent"
-                              ? (message.cc != null) ? kNumberCircleRed : gWhiteColor
+                              ? (message.cc != null)
+                                  ? kNumberCircleRed
+                                  : gWhiteColor
                               : gsecondaryColor,
                           boxShadow: [
                             BoxShadow(
                                 blurRadius: 1.0,
                                 color: Colors.grey.withAlpha(60),
                                 spreadRadius: 1.0,
-                                offset: Offset(0.0, 1.0)
-                            )
+                                offset: Offset(0.0, 1.0))
                           ],
                           borderRadius: BorderRadius.only(
                               topLeft: Radius.circular(18),
                               topRight: Radius.circular(18),
-                              bottomLeft:  message.createdBy == "agent"
+                              bottomLeft: message.createdBy == "agent"
                                   ? Radius.circular(0)
                                   : Radius.circular(18),
-                              bottomRight:  message.createdBy == "agent"
+                              bottomRight: message.createdBy == "agent"
                                   ? Radius.circular(18)
                                   : Radius.circular(0))),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          if(message.createdBy == "agent")
+                          if (message.createdBy == "agent")
                             IntrinsicWidth(
                               child: Align(
                                 alignment: Alignment.centerLeft,
-                                child: HtmlWidget((message.user!.name != null) ? "${message.user?.name}" : "",
+                                child: HtmlWidget(
+                                  (message.user!.name != null)
+                                      ? "${message.user?.name}"
+                                      : "",
                                   textStyle: TextStyle(
                                       fontSize: smTextFontSize,
                                       color: gHintTextColor,
-                                      fontFamily: kFontBold
-                                  ),
-
+                                      fontFamily: kFontBold),
                                 ),
                               ),
                             ),
-                          if(message.createdBy == "agent")
+                          if (message.createdBy == "agent")
                             SizedBox(
                               height: 1.h,
                             ),
-                          Align(
-                            alignment: Alignment.topLeft,
-                            child:(message.attachments != null && message.attachments!.isNotEmpty) ? Column(
-                              children: [
-                                ...message.attachments!.map((e) => Container(
-                                  constraints: BoxConstraints(
-                                    maxHeight: 120,
-                                  ),
-                                  decoration: BoxDecoration(
-                                      image: DecorationImage(
+                          ...message.attachments!.map(
+                            (e) => (message.attachments != null &&
+                                    message.attachments!.isNotEmpty)
+                                ? InkWell(
+                                    onTap: () {
+                                      buildAttachmentView(
+                                          imageBaseUrl + e.relativePath!);
+                                    },
+                                    child: Padding(
+                                      padding:  EdgeInsets.symmetric(vertical: 1.h),
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(10.0),
+                                        child: Image(
                                           image: NetworkImage(
-                                              imageBaseUrl+e.relativePath!
-                                          ),
-                                        fit: BoxFit.fill
-                                      )
-                                  ),
-                                  // child: Image.network(imageBaseUrl+e.relativePath! ?? ''),
-                                )),
-                                HtmlWidget(message.message ?? '',
-                                  textStyle: TextStyle(
-                                    color: message.createdBy == "agent"
-                                        ? (message.cc != null) ? gWhiteColor : gTextColor
-                                        : gWhiteColor,
-                                  ),
-                                )
-                              ],
-                            ) :
-                            SizedBox(
-                              child: HtmlWidget(message.message ?? "",
-                                textStyle: TextStyle(
-                                  color: message.createdBy == "agent"
-                                      ? (message.cc != null) ? gWhiteColor : gTextColor
-                                      : gWhiteColor,
-                                ),
-                              ),
+                                              imageBaseUrl + e.relativePath!),
+                                          fit: BoxFit.contain,
+                                          height: 15.h,
+                                        ),
+                                      ),
+                                    )
+                                    // child: Align(
+                                    //   alignment: Alignment.topLeft,
+                                    //   child: Container(
+                                    //     constraints: const BoxConstraints(
+                                    //       maxHeight: 120,maxWidth: 70,
+                                    //     ),
+                                    //     decoration: BoxDecoration(
+                                    //         image: DecorationImage(
+                                    //             image: NetworkImage(
+                                    //                 imageBaseUrl +
+                                    //                     e.relativePath!),
+                                    //             fit: BoxFit.contain)),
+                                    //     // child: Image.network(imageBaseUrl+e.relativePath! ?? ''),
+                                    //   ),
+                                    // ),
+                                  )
+                                : const SizedBox(),
+                          ),
+                          HtmlWidget(
+                            message.message ?? "",
+                            textStyle: TextStyle(
+                              color: message.createdBy == "agent"
+                                  ? (message.cc != null)
+                                      ? gWhiteColor
+                                      : gTextColor
+                                  : gWhiteColor,
                             ),
-                            // Text(
-                            //   message.reply ?? '',
-                            //   style: TextStyle(
-                            //       fontFamily: "GothamBook",
-                            //       height: 1.5,
-                            //       color: gBlackColor,
-                            //       fontSize: 10.sp),
-                            // ),
                           ),
                           // Align(
                           //   alignment: Alignment.bottomRight,
@@ -652,7 +659,6 @@ class _TicketChatScreenState extends State<TicketChatScreen>
                       ),
                     ),
                   ),
-
                 ],
               ),
             ),
@@ -674,9 +680,9 @@ class _TicketChatScreenState extends State<TicketChatScreen>
 
     timeStamp ??= 0;
     DateTime messageTime =
-    DateTime.fromMicrosecondsSinceEpoch(timeStamp * 1000);
+        DateTime.fromMicrosecondsSinceEpoch(timeStamp * 1000);
     DateTime messageDate =
-    DateTime(messageTime.year, messageTime.month, messageTime.day);
+        DateTime(messageTime.year, messageTime.month, messageTime.day);
 
     if (today == messageDate) {
       completedDate = "Today";
@@ -820,10 +826,11 @@ class _TicketChatScreenState extends State<TicketChatScreen>
       'threadType': ThreadType.reply.name,
       'actAsType': ActAsType.customer.name,
       'actAsEmail': widget.email,
-      'status_id': (TicketStatusType.answered.index+1).toString()
+      'status_id': (TicketStatusType.answered.index + 1).toString()
     };
 
-    final result = await _uvDeskService.sendReplyService(widget.ticketId, m, attachments: fileFormatList);
+    final result = await _uvDeskService.sendReplyService(widget.ticketId, m,
+        attachments: fileFormatList);
 
     if (result.runtimeType != ErrorModel) {
       // SentReplyModel model = result as SentReplyModel;
@@ -874,11 +881,11 @@ class _TicketChatScreenState extends State<TicketChatScreen>
                       child: Text('Choose File Source'),
                       decoration: BoxDecoration(
                           border: Border(
-                            bottom: BorderSide(
-                              color: gHintTextColor,
-                              width: 3.0,
-                            ),
-                          )),
+                        bottom: BorderSide(
+                          color: gHintTextColor,
+                          width: 3.0,
+                        ),
+                      )),
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -903,11 +910,11 @@ class _TicketChatScreenState extends State<TicketChatScreen>
                           height: 10,
                           decoration: BoxDecoration(
                               border: Border(
-                                right: BorderSide(
-                                  color: gHintTextColor,
-                                  width: 1,
-                                ),
-                              )),
+                            right: BorderSide(
+                              color: gHintTextColor,
+                              width: 1,
+                            ),
+                          )),
                         ),
                         TextButton(
                             onPressed: () {
@@ -942,7 +949,6 @@ class _TicketChatScreenState extends State<TicketChatScreen>
 
   List<MultipartFile> newList = <MultipartFile>[];
   List<File> fileFormatList = [];
-
 
   void pickFromFile() async {
     final result = await FilePicker.platform.pickFiles(
@@ -1013,15 +1019,16 @@ class _TicketChatScreenState extends State<TicketChatScreen>
   }
 
   addFilesToList(File file) async {
-    print("contains: ${fileFormatList.any((element) => element.path == file.path)}");
+    print(
+        "contains: ${fileFormatList.any((element) => element.path == file.path)}");
 
-    if(!fileFormatList.any((element) => element.path == file.path)){
+    if (!fileFormatList.any((element) => element.path == file.path)) {
       fileFormatList.add(file);
     }
     setState(() {});
   }
 
-  addToMultipartList() async{
+  addToMultipartList() async {
     print("addToMultipartList");
     newList.clear();
 
@@ -1054,7 +1061,6 @@ class _TicketChatScreenState extends State<TicketChatScreen>
         print("filesize: ${getFileSize(_image!)}Mb");
 
         addFilesToList(_image!);
-
       } else {
         print("filesize: ${getFileSize(_image!)}Mb");
 
@@ -1067,17 +1073,34 @@ class _TicketChatScreenState extends State<TicketChatScreen>
 
   isExists(File file) {
     fileFormatList.map((element) {
-      if(element.absolute.path == file.absolute.path){
+      if (element.absolute.path == file.absolute.path) {
         print("found :: path exists file: ${file.path} ele: ${element.path}");
         return true;
-      }
-      else{
-        print("found :: path not exists file: ${file.path} ele: ${element.path}");
+      } else {
+        print(
+            "found :: path not exists file: ${file.path} ele: ${element.path}");
         return false;
       }
     });
   }
 
+  Future buildAttachmentView(String attachmentUrl) {
+    return showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.transparent,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(
+            Radius.circular(15.0.sp),
+          ),
+        ),
+        contentPadding: EdgeInsets.only(top: 1.h),
+        content: AttachmentsViewScreen(
+          attachmentUrl: attachmentUrl,
+        ),
+      ),
+    );
+  }
 }
 
 class Message {
@@ -1088,7 +1111,7 @@ class Message {
 
   Message(
       {required this.text,
-        required this.date,
-        required this.sendMe,
-        required this.image});
+      required this.date,
+      required this.sendMe,
+      required this.image});
 }

@@ -68,16 +68,14 @@ class _TicketListScreenState extends State<TicketListScreen>
 
       if (_scrollController.position.maxScrollExtent ==
           _scrollController.offset) {
-        Future.delayed(Duration(seconds: 2)).whenComplete(() => _uvDeskProvider!.getLoadedTickets());
-      }
-      else{
+        Future.delayed(Duration(seconds: 2))
+            .whenComplete(() => _uvDeskProvider!.getLoadedTickets());
+      } else {
         print("maxScroll: ${_scrollController.position.maxScrollExtent}");
       }
-
     });
     // getTickets();
   }
-
 
   @override
   void didChangeDependencies() {
@@ -134,7 +132,6 @@ class _TicketListScreenState extends State<TicketListScreen>
       _model = model;
       List<Tickets> tickets = model.tickets?.toList() ?? [];
       _uvDeskProvider!.setAllTickets(tickets);
-
     } else {
       ErrorModel model = res as ErrorModel;
       print("error: ${model.message}");
@@ -194,7 +191,9 @@ class _TicketListScreenState extends State<TicketListScreen>
         children: [
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 1.h),
-            child: buildAppBar(() {}, customAction: true, actions: [
+            child: buildAppBar(() {
+              Navigator.pop(context);
+            }, customAction: true, actions: [
               GestureDetector(
                 child: Icon(
                   Icons.add,
@@ -220,50 +219,46 @@ class _TicketListScreenState extends State<TicketListScreen>
 
   showTabsView(BuildContext context) {
     return DefaultTabController(
-        length: 4,
-        child: Column(
-          children: [
-            TabBar(
+      length: 4,
+      child: Column(
+        children: [
+          TabBar(
+            controller: _tabController,
+            labelColor: eUser().userFieldLabelColor,
+            unselectedLabelColor: eUser().userTextFieldColor,
+            padding: EdgeInsets.symmetric(horizontal: 3.w),
+            isScrollable: true,
+            indicatorColor: gsecondaryColor,
+            labelStyle: TextStyle(
+                fontFamily: kFontMedium, color: gPrimaryColor, fontSize: 12.sp),
+            unselectedLabelStyle: TextStyle(
+                fontFamily: kFontBook, color: gHintTextColor, fontSize: 10.sp),
+            labelPadding:
+                EdgeInsets.only(right: 10.w, left: 2.w, top: 1.h, bottom: 1.h),
+            indicatorPadding: EdgeInsets.only(right: 7.w),
+            tabs: const [
+              Text('Open'),
+              Text('Answered'),
+              Text('Resolved'),
+              Text('Closed'),
+            ],
+          ),
+          const SizedBox(
+            height: 12,
+          ),
+          Expanded(
+            child: TabBarView(
               controller: _tabController,
-              labelColor: eUser().userFieldLabelColor,
-              unselectedLabelColor: eUser().userTextFieldColor,
-              padding: EdgeInsets.symmetric(horizontal: 3.w),
-              isScrollable: true,
-              indicatorColor: gsecondaryColor,
-              labelStyle: TextStyle(
-                  fontFamily: kFontMedium,
-                  color: gPrimaryColor,
-                  fontSize: 12.sp),
-              unselectedLabelStyle: TextStyle(
-                  fontFamily: kFontBook,
-                  color: gHintTextColor,
-                  fontSize: 10.sp),
-              labelPadding: EdgeInsets.only(
-                  right: 10.w, left: 2.w, top: 1.h, bottom: 1.h),
-              indicatorPadding: EdgeInsets.only(right: 7.w),
-              tabs: const [
-                Text('Open'),
-                Text('Answered'),
-                Text('Resolved'),
-                Text('Closed'),
+              children: [
+                showRespectiveTabView(context, TicketStatusType.open),
+                showRespectiveTabView(context, TicketStatusType.answered),
+                showRespectiveTabView(context, TicketStatusType.resolved),
+                showRespectiveTabView(context, TicketStatusType.closed),
               ],
             ),
-            const SizedBox(
-              height: 12,
-            ),
-            Expanded(
-              child: TabBarView(
-                controller: _tabController,
-                children: [
-                  showRespectiveTabView(context, TicketStatusType.open),
-                  showRespectiveTabView(context, TicketStatusType.answered),
-                  showRespectiveTabView(context, TicketStatusType.resolved),
-                  showRespectiveTabView(context, TicketStatusType.closed),
-                ],
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -273,7 +268,7 @@ class _TicketListScreenState extends State<TicketListScreen>
         child: buildCircularIndicator(),
       );
     } else {
-      return buildUI(context, _model!, type);
+      return buildUI(context, type);
     }
     // return
     //
@@ -323,11 +318,10 @@ class _TicketListScreenState extends State<TicketListScreen>
   // List<Tickets> _fetchedTickets = [];
 
   Widget buildUI(
-      BuildContext context, GetTicketListModel model, TicketStatusType type) {
-
-    _uvDeskProvider!.clearAllTickets();
-    Labels? labels = model.labels;
-    List<Tickets> tickets = model.tickets?.toList() ?? [];
+      BuildContext context, TicketStatusType type) {
+     _uvDeskProvider!.clearAllTickets();
+    Labels? labels = _model?.labels;
+    List<Tickets> tickets = _model?.tickets?.toList() ?? [];
 
     // _allTickets.addAll(tickets);
     //
@@ -376,7 +370,6 @@ class _TicketListScreenState extends State<TicketListScreen>
     }
   }
 
-
   showList(List<Tickets> tickets, TicketStatusType type) {
     // if (tickets.isEmpty) {
     //   return const Center(
@@ -387,131 +380,138 @@ class _TicketListScreenState extends State<TicketListScreen>
     //   );
     // }
     // else {
-      return Consumer<UvDeskService>(
-        builder: (_, snap, __){
-          if(snap.fetchedTickets.isNotEmpty){
-            return ListView.separated(
-              shrinkWrap: true,
-              controller: _scrollController,
-              itemCount: snap.hasMore ? snap.fetchedTickets.length+1 : snap.fetchedTickets.length,
-              itemBuilder: (context, index) {
-                print("$index  -- ${snap.fetchedTickets.length}");
-                if (index < snap.fetchedTickets.length) {
-                  Tickets currentTicket = snap.fetchedTickets[index];
-                  return LazyLoadingList(
-                      initialSizeOfItems: 4,
-                      loadMore: () => Center(
-                        child: buildThreeBounceIndicator(),
-                      ),
-                      child: Material(
-                        child: InkWell(
-                            onTap: () {
-                              _onPressTicket(currentTicket);
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 12),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        currentTicket.id.toString(),
-                                        style: otherText9(),
-                                      ),
-                                      Text(
-                                        currentTicket.formatedCreatedAt ?? '',
-                                        style: otherText9(),
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(height: 0.3.h),
-                                  (currentTicket.subject != null)
-                                      ? Text(
-                                    currentTicket.subject ?? '',
-                                    style: listMainHeading(),
-                                  )
-                                      : const SizedBox(),
-                                  // SizedBox(height: 0.3.h),
-                                  // Row(
-                                  //   crossAxisAlignment: CrossAxisAlignment.start,
-                                  //   children: [
-                                  //     Text(
-                                  //       "Replied By : ",
-                                  //       style: otherText9(),
-                                  //     ),
-                                  //     Expanded(
-                                  //       child: Text(
-                                  //         currentTicket.lastThreadUserType ?? "",
-                                  //         style: listSubHeading(),
-                                  //       ),
-                                  //     ),
-                                  //   ],
-                                  // ),
-                                  // SizedBox(height: 0.3.h),
-                                  // Text(
-                                  //   currentTicket.lastReplyAgentTime ?? '',
-                                  //   style: otherText9(),
-                                  // ),
-                                  SizedBox(height: 0.5.h),
-                                  Row(
-                                    children: [
-                                      Text(
-                                        currentTicket.customer?.name ?? '',
-                                        style: listSubHeading(),
-                                        maxLines: 2,
-                                        softWrap: true,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                      SizedBox(width: 3.w),
-                                      currentTicket.status?.name == "open"
-                                          ? Image(
-                                        image: const AssetImage(
-                                            "assets/images/dashboard_stages/open_ticket.png"),
-                                        height: 2.h,
+    return Consumer<UvDeskService>(
+      builder: (_, snap, __) {
+        if (snap.fetchedTickets.isNotEmpty) {
+          return ListView.separated(
+            shrinkWrap: true,
+            controller: _scrollController,
+            itemCount: snap.hasMore
+                ? snap.fetchedTickets.length + 1
+                : snap.fetchedTickets.length,
+            itemBuilder: (context, index) {
+              print("$index  -- ${snap.fetchedTickets.length}");
+              if (index < snap.fetchedTickets.length) {
+                Tickets currentTicket = snap.fetchedTickets[index];
+                return LazyLoadingList(
+                    initialSizeOfItems: 4,
+                    loadMore: () => Center(
+                          child: buildThreeBounceIndicator(),
+                        ),
+                    child: Material(
+                      child: InkWell(
+                          onTap: () {
+                            _onPressTicket(currentTicket);
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 12),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      currentTicket.id.toString(),
+                                      style: otherText9(),
+                                    ),
+                                    Text(
+                                      currentTicket.formatedCreatedAt ?? '',
+                                      style: otherText9(),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 0.3.h),
+                                (currentTicket.subject != null)
+                                    ? Text(
+                                        currentTicket.subject ?? '',
+                                        style: listMainHeading(),
                                       )
-                                          : currentTicket.status?.name == "resolved"
-                                          ? Image(
-                                        image: const AssetImage(
-                                            "assets/images/dashboard_stages/resolved.png"),
-                                        height: 2.h,
-                                      )
-                                          : currentTicket.status?.name == "closed"
-                                          ? Image(
-                                        image: const AssetImage(
-                                            "assets/images/dashboard_stages/closed.png"),
-                                        height: 2.h,
-                                      )
-                                          : const SizedBox(),
-                                      SizedBox(width: 1.w),
-                                      Text(
-                                        currentTicket.status?.name ?? '',
-                                        style: otherText(),
-                                      ),
-                                      SizedBox(width: 2.w),
-                                      Icon(
-                                        Icons.circle,
-                                        size: 12,
-                                        color: currentTicket.priority?.name == "Low"
-                                            ? kBottomSheetHeadGreen
-                                            : currentTicket.priority?.name == "High"
-                                            ? kNumberCircleRed
-                                            : gWhiteColor,
-                                        // AppConfig.fromHex(
-                                        //     currentTicket.priority!.color ?? ''),
-                                      ),
-                                    ],
-                                  ),
-                                  // Container(
-                                  //   height: 1,
-                                  //   margin: EdgeInsets.symmetric(vertical: 1.5.h),
-                                  //   color: Colors.grey.withOpacity(0.3),
-                                  // ),
-                                ],
-                              ),
-                            )
+                                    : const SizedBox(),
+                                // SizedBox(height: 0.3.h),
+                                // Row(
+                                //   crossAxisAlignment: CrossAxisAlignment.start,
+                                //   children: [
+                                //     Text(
+                                //       "Replied By : ",
+                                //       style: otherText9(),
+                                //     ),
+                                //     Expanded(
+                                //       child: Text(
+                                //         currentTicket.lastThreadUserType ?? "",
+                                //         style: listSubHeading(),
+                                //       ),
+                                //     ),
+                                //   ],
+                                // ),
+                                // SizedBox(height: 0.3.h),
+                                // Text(
+                                //   currentTicket.lastReplyAgentTime ?? '',
+                                //   style: otherText9(),
+                                // ),
+                                SizedBox(height: 0.5.h),
+                                Row(
+                                  children: [
+                                    Text(
+                                      currentTicket.customer?.name ?? '',
+                                      style: listSubHeading(),
+                                      maxLines: 2,
+                                      softWrap: true,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    SizedBox(width: 3.w),
+                                    currentTicket.status?.name == "open"
+                                        ? Image(
+                                            image: const AssetImage(
+                                                "assets/images/dashboard_stages/open_ticket.png"),
+                                            height: 2.h,
+                                          )
+                                        : currentTicket.status?.name ==
+                                                "resolved"
+                                            ? Image(
+                                                image: const AssetImage(
+                                                    "assets/images/dashboard_stages/resolved.png"),
+                                                height: 2.h,
+                                              )
+                                            : currentTicket.status?.name ==
+                                                    "closed"
+                                                ? Image(
+                                                    image: const AssetImage(
+                                                        "assets/images/dashboard_stages/closed.png"),
+                                                    height: 2.h,
+                                                  )
+                                                : const SizedBox(),
+                                    SizedBox(width: 1.w),
+                                    Text(
+                                      currentTicket.status?.name ?? '',
+                                      style: otherText(),
+                                    ),
+                                    SizedBox(width: 2.w),
+                                    Icon(
+                                      Icons.circle,
+                                      size: 12,
+                                      color:
+                                          currentTicket.priority?.name == "Low"
+                                              ? kBottomSheetHeadGreen
+                                              : currentTicket.priority?.name ==
+                                                      "High"
+                                                  ? kNumberCircleRed
+                                                  : gWhiteColor,
+                                      // AppConfig.fromHex(
+                                      //     currentTicket.priority!.color ?? ''),
+                                    ),
+                                  ],
+                                ),
+                                // Container(
+                                //   height: 1,
+                                //   margin: EdgeInsets.symmetric(vertical: 1.5.h),
+                                //   color: Colors.grey.withOpacity(0.3),
+                                // ),
+                              ],
+                            ),
+                          )
                           // child: Container(
                           //   padding: const EdgeInsets.symmetric(horizontal: 12),
                           //   child: Column(
@@ -576,46 +576,45 @@ class _TicketListScreenState extends State<TicketListScreen>
                           //     ],
                           //   ),
                           // ),
-                        ),
-                      ),
-                      index: index,
-                      hasMore: true);
-                }
-                else {
-                  print("else");
-                  print("Offset: ${_scrollController.offset}");
-                  return (snap.hasMore)
-                      ? Padding(
-                    padding: EdgeInsets.symmetric(vertical: 20),
-                    child: Center(
-                      child: buildThreeBounceIndicator(color: gsecondaryColor),
+                          ),
                     ),
-                  )
-                      : SizedBox();
-                }
-              },
-              separatorBuilder: (BuildContext context, int index) {
-                return Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: const Divider(
-                    height: 1,
-                    color: Colors.grey,
-                  ),
-                );
-              },
-            );
-          }
-          else{
-            return const Center(
-              child: Image(
-                image: AssetImage("assets/images/no_data_found.png"),
-                fit: BoxFit.scaleDown,
-              ),
-            );
-          }
-          return SizedBox();
-        },
-      );
+                    index: index,
+                    hasMore: true);
+              } else {
+                print("else");
+                print("Offset: ${_scrollController.offset}");
+                return (snap.hasMore)
+                    ? Padding(
+                        padding: EdgeInsets.symmetric(vertical: 20),
+                        child: Center(
+                          child:
+                              buildThreeBounceIndicator(color: gsecondaryColor),
+                        ),
+                      )
+                    : SizedBox();
+              }
+            },
+            separatorBuilder: (BuildContext context, int index) {
+              return Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: const Divider(
+                  height: 1,
+                  color: Colors.grey,
+                ),
+              );
+            },
+          );
+        } else {
+          return const Center(
+            child: Image(
+              image: AssetImage("assets/images/no_data_found.png"),
+              fit: BoxFit.scaleDown,
+            ),
+          );
+        }
+        return SizedBox();
+      },
+    );
     // }
   }
 
