@@ -24,6 +24,7 @@ import 'demo/meal_plan_demo.dart';
 import 'feed_screens/feeds_list.dart';
 import 'gut_list_screens/new_list_stages_screen.dart';
 import 'home_screens/home_screen.dart';
+import 'home_screens/new_home_screen/water_level_screen.dart';
 import 'profile_screens/call_support_method.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -85,11 +86,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
           //     dayNumber: '0',
           // );
 
-          // return WaterLevelScreen();
+           // return WaterLevelScreen();
           // return CombinedPrepMealTransScreen(stage: 1,);
           // this one
-          // return const TrackerUI(from: 'detox',);
-           return HomeScreens();
+          return const LevelStatus();
+           return const HomeScreens();
 
         }
       case 1:

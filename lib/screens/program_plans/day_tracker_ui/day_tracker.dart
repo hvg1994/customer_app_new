@@ -1149,10 +1149,10 @@ class _TrackerUIState extends State<TrackerUI> {
 
     final result = (ProgramMealType.detox.name == widget.from)
         ? await ProgramService(repository: repository)
-            .proceedDayMealDetailsService(model, newList, "detox")
+            .proceedDayMealDetailsService(model, newList, "detox",mandatoryList)
         : (ProgramMealType.healing.name == widget.from)
             ? await ProgramService(repository: repository)
-                .proceedDayMealDetailsService(model, newList, "healing")
+                .proceedDayMealDetailsService(model, newList, "healing",mandatoryList)
             : await PrepratoryMealService(repository: prepRepository)
                 .proceedDayMealDetailsService(model, newList, mandatoryList);
 
@@ -1918,7 +1918,8 @@ class _TrackerUIState extends State<TrackerUI> {
             .toString()
             .toLowerCase()
             .contains("jpeg")) {
-      isMandatory ? addFilesToMandatoryList(File(result.paths.first!), setstate) :
+      isMandatory ?
+      addFilesToMandatoryList(File(result.paths.first!), setstate) :
       addFilesToList(File(result.paths.first!), setstate);
     } else {
       AppConfig().showSnackbar(context, "Please select png/jpg/jpeg files",
@@ -1968,7 +1969,7 @@ class _TrackerUIState extends State<TrackerUI> {
       http.ByteStream(DelegatingStream.typed(mandatoryFileFormatList[i].openRead()));
       var length = await mandatoryFileFormatList[i].length();
       var multipartFile = http.MultipartFile(
-          "tracking_attachment", stream, length,
+          "tongue_image", stream, length,
           filename: mandatoryFileFormatList[i].path);
       mandatoryList.add(multipartFile);
       print("mandatoryList : $mandatoryList");

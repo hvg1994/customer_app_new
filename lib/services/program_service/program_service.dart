@@ -18,8 +18,8 @@ class ProgramService extends ChangeNotifier{
     return await repository.getMealPlanDetailsRepo(day);
   }
 
-  Future proceedDayMealDetailsService(ProceedProgramDayModel day, List<MultipartFile> files, String from) async{
-    return await repository.proceedDayMealDetailsRepo(day, files, from);
+  Future proceedDayMealDetailsService(ProceedProgramDayModel day, List<MultipartFile> files, String from,List<MultipartFile> mandatoryFile,) async{
+    return await repository.proceedDayMealDetailsRepo(day, files, from,mandatoryFile);
   }
 
   /// pass startProgram=1

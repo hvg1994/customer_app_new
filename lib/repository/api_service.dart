@@ -1118,7 +1118,7 @@ class ApiClient {
     return result;
   }
 
-  Future proceedDayProgramList(ProceedProgramDayModel model, List<MultipartFile> files, String from) async {
+  Future proceedDayProgramList(ProceedProgramDayModel model, List<MultipartFile> files, String from,List<MultipartFile> mandatoryFile,) async {
     var url = submitDayPlanDetailsUrl;
 
     dynamic result;
@@ -1148,6 +1148,7 @@ class ApiClient {
       };
 
       request.files.addAll(files);
+      request.files.addAll(mandatoryFile);
       request.fields.addAll(m);
 
       // reportList.forEach((element) async {
@@ -2395,11 +2396,8 @@ class ApiClient {
         "Authorization": getHeaderToken(),
       };
 
-      List<MultipartFile> allFiles = files + mandatoryFile;
-
-
-
-      request.files.addAll(allFiles);
+      request.files.addAll(files);
+      request.files.addAll(mandatoryFile);
       request.fields.addAll(m);
 
       // reportList.forEach((element) async {
