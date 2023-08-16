@@ -23,8 +23,8 @@ class PrepratoryMealService extends ChangeNotifier{
     return await repository.getPrepratoryMealTrackDetailsRepo();
   }
 
-  Future proceedDayMealDetailsService(ProceedProgramDayModel day, List<MultipartFile> file) async{
-    return await repository.proceedDayMealDetailsRepo(day, file);
+  Future proceedDayMealDetailsService(ProceedProgramDayModel day, List<MultipartFile> file,List<MultipartFile> mandatoryFile) async{
+    return await repository.proceedDayMealDetailsRepo(day, file,mandatoryFile);
   }
 
 }

@@ -22,7 +22,7 @@ class PrepratoryRepository{
     return await apiClient.getPrepratoryMealTrackDetailsApi();
   }
 
-  Future proceedDayMealDetailsRepo(ProceedProgramDayModel model, List<MultipartFile> file) async{
-    return await apiClient.proceedTransitionDayProgramList(model, file);
+  Future proceedDayMealDetailsRepo(ProceedProgramDayModel model, List<MultipartFile> file,List<MultipartFile> mandatoryFile) async{
+    return await apiClient.proceedTransitionDayProgramList(model, file,mandatoryFile);
   }
 }

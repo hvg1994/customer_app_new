@@ -3,6 +3,7 @@ import 'package:async/async.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:gwc_customer/screens/uvdesk/ticket_list.dart';
 import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sizer/sizer.dart';
@@ -75,7 +76,7 @@ class _CreateTicketState extends State<CreateTicket> {
           children: [
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 5, vertical: 1.h),
-              child: buildAppBar(() { }),
+              child: buildAppBar(() {Navigator.pop(context); }),
             ),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 1.h),
@@ -569,7 +570,13 @@ class _CreateTicketState extends State<CreateTicket> {
 
     }
     else{
-      Navigator.pop(context, true);
+      Navigator.push(context,
+          MaterialPageRoute(builder: (_) => const TicketListScreen()))
+          .then((value) {
+        if (true) {
+          setState(() {});
+        }
+      });
     }
 
     setState((){

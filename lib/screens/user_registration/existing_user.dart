@@ -906,7 +906,8 @@ class _ExistingUserState extends State<ExistingUser> {
       _pref.setString(AppConfig.UV_SUCCESS_ID,model.uvSuccessId ?? "");
       _pref.setString(AppConfig.UV_API_ACCESS_TOKEN,model.uvApiAccessToken ?? "");
 
-      print("uv_token: ${model.uvApiAccessToken}");
+      print("uv_token: ${_pref.getString(AppConfig.UV_API_ACCESS_TOKEN)}");
+      print("uv_success_id: ${_pref.getString(AppConfig.UV_SUCCESS_ID)}");
 
       storeBearerToken(model.accessToken ?? '');
       _pref.setString(AppConfig.User_Name, model.currentUser ?? '');

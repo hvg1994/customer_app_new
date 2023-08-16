@@ -1357,6 +1357,7 @@ class _NewDsPageState extends State<NewDsPage> {
                           ),
                           Row(
                             mainAxisSize: MainAxisSize.min,
+
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
                               if (btn1Name != null)
@@ -1407,9 +1408,12 @@ class _NewDsPageState extends State<NewDsPage> {
                       ),
                     ),
                     SizedBox(width: 3.w),
-                    Image.asset(
-                      image,
-                      height: 7.h,
+                    Padding(
+                      padding:  EdgeInsets.only(top: 3.h),
+                      child: Image.asset(
+                        image,
+                        height: 7.h,
+                      ),
                     ),
                   ],
                 ),

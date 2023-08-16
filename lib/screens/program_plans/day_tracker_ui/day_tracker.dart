@@ -48,14 +48,13 @@ class TrackerUI extends StatefulWidget {
 
   /// from is used for maintaining api url for meal and transition
   final String from;
-  const TrackerUI(
-      {Key? key,
-        this.proceedProgramDayModel,
-        required this.from,
-        this.trackerVideoLink,
-        this.isPreviousDaySheet = false,
-      })
-      : super(key: key);
+  const TrackerUI({
+    Key? key,
+    this.proceedProgramDayModel,
+    required this.from,
+    this.trackerVideoLink,
+    this.isPreviousDaySheet = false,
+  }) : super(key: key);
 
   @override
   State<TrackerUI> createState() => _TrackerUIState();
@@ -133,6 +132,9 @@ class _TrackerUIState extends State<TrackerUI> {
   List<File> fileFormatList = [];
   List<MultipartFile> newList = <MultipartFile>[];
 
+  List<File> mandatoryFileFormatList = [];
+  List<MultipartFile> mandatoryList = <MultipartFile>[];
+
   final symptomsCheckBox1 = <CheckBoxSettings>[
     CheckBoxSettings(title: "Aches, pain, and soreness"),
     CheckBoxSettings(title: "Nausea"),
@@ -171,14 +173,14 @@ class _TrackerUIState extends State<TrackerUI> {
   final symptomsCheckBox2 = <CheckBoxSettings>[
     CheckBoxSettings(
         title:
-        "Satisfactory release of Solid waste matter / Gas from stomach and or Urine"),
+            "Satisfactory release of Solid waste matter / Gas from stomach and or Urine"),
     CheckBoxSettings(title: "Lightness in the Chest / Abdomen"),
     CheckBoxSettings(title: "Odour free burps"),
     CheckBoxSettings(title: "Freshness in the Mouth"),
     CheckBoxSettings(title: "Easily getting hungry, thirsty, or both"),
     CheckBoxSettings(
         title:
-        "Clear tongue/Sense (absence of discharges from sense organs such as the skin's sweat or perspiration, the ears, the nose, the tongue, and the eyes)"),
+            "Clear tongue/Sense (absence of discharges from sense organs such as the skin's sweat or perspiration, the ears, the nose, the tongue, and the eyes)"),
     CheckBoxSettings(title: "Odour free breath"),
     CheckBoxSettings(title: "No Body odour"),
     CheckBoxSettings(title: "Weight loss"),
@@ -189,7 +191,7 @@ class _TrackerUIState extends State<TrackerUI> {
     CheckBoxSettings(title: "Feeling of internal wellbeing and happiness"),
     CheckBoxSettings(
         title:
-        "Reduced / Absence of Detox related Recovery symptoms as mentioned in the previous question"),
+            "Reduced / Absence of Detox related Recovery symptoms as mentioned in the previous question"),
     CheckBoxSettings(title: "None of the above"),
   ];
 
@@ -297,7 +299,7 @@ class _TrackerUIState extends State<TrackerUI> {
                     child: Container(
                       width: double.maxFinite,
                       padding:
-                      EdgeInsets.symmetric(vertical: 2.h, horizontal: 5.w),
+                          EdgeInsets.symmetric(vertical: 2.h, horizontal: 5.w),
                       decoration: const BoxDecoration(
                         color: gBackgroundColor,
                         // borderRadius: BorderRadius.only(
@@ -319,35 +321,35 @@ class _TrackerUIState extends State<TrackerUI> {
                           SizedBox(height: 1.h),
                           Expanded(
                               child: Stack(
-                                children: [
-                                  PageView.builder(
-                                      itemCount: 7,
-                                      physics: NeverScrollableScrollPhysics(),
-                                      controller: _pageController,
-                                      itemBuilder: (context, index) {
-                                        return pages[index];
-                                      }),
-                                  Visibility(
-                                    visible: showMealVideo,
-                                    child: Positioned(child: Center(
-                                        child: buildMealVideo(onTap: () async {
-                                          setState(() {
-                                            showMealVideo = false;
-                                          });
-                                          if (await Wakelock.enabled == true) {
-                                            Wakelock.disable();
-                                          }
-                                          if (_sheetVideoController != null)
-                                            _sheetVideoController!.dispose();
-                                          if (_sheetChewieController != null)
-                                            _sheetChewieController!.dispose();
+                            children: [
+                              PageView.builder(
+                                  itemCount: 7,
+                                  physics: NeverScrollableScrollPhysics(),
+                                  controller: _pageController,
+                                  itemBuilder: (context, index) {
+                                    return pages[index];
+                                  }),
+                              Visibility(
+                                visible: showMealVideo,
+                                child: Positioned(child: Center(
+                                    child: buildMealVideo(onTap: () async {
+                                  setState(() {
+                                    showMealVideo = false;
+                                  });
+                                  if (await Wakelock.enabled == true) {
+                                    Wakelock.disable();
+                                  }
+                                  if (_sheetVideoController != null)
+                                    _sheetVideoController!.dispose();
+                                  if (_sheetChewieController != null)
+                                    _sheetChewieController!.dispose();
 
-                                          // await _mealPlayerController!.stopRendererScanning();
-                                          // await _mealPlayerController!.dispose();
-                                        }))),
-                                  )
-                                ],
-                              )),
+                                  // await _mealPlayerController!.stopRendererScanning();
+                                  // await _mealPlayerController!.dispose();
+                                }))),
+                              )
+                            ],
+                          )),
                         ],
                       ),
                     ),
@@ -385,7 +387,7 @@ class _TrackerUIState extends State<TrackerUI> {
                 child: GestureDetector(
                     onTap: () {
                       Navigator.pop(context);
-                      if(widget.isPreviousDaySheet){
+                      if (widget.isPreviousDaySheet) {
                         Navigator.pop(context);
                       }
                     },
@@ -406,52 +408,52 @@ class _TrackerUIState extends State<TrackerUI> {
       backgroundWidget: backgroundWidgetForPIP(),
       pipWidget: isEnabled
           ? Consumer<CheckState>(
-        builder: (_, model, __) {
-          Wakelock.enable();
-          print("model.isChanged: ${model.isChanged} $isEnabled");
-          if (model.isChanged) {}
-          return Container(
-            color: Colors.black,
-            child: Center(
-                child: Chewie(
-                  controller: _yogaChewieController!,
-                )),
-          );
-          // return VlcPlayerWithControls(
-          //   key: _key,
-          //   controller: _controller!,
-          //   showVolume: false,
-          //   showVideoProgress: !model.isChanged,
-          //   seekButtonIconSize: 10.sp,
-          //   playButtonIconSize: 14.sp,
-          //   replayButtonSize: 14.sp,
-          //   showFullscreenBtn: true,
-          // );
-        },
-      )
-      //     ? FutureBuilder(
-      //   future: _initializeVideoPlayerFuture,
-      //   builder: (context, snapshot) {
-      //     if (snapshot.connectionState == ConnectionState.done) {
-      //       // If the VideoPlayerController has finished initialization, use
-      //       // the data it provides to limit the aspect ratio of the video.
-      //       return VlcPlayer(
-      //         controller: _videoPlayerController,
-      //         aspectRatio: 16 / 9,
-      //         placeholder: Center(child: CircularProgressIndicator()),
-      //       );
-      //     } else {
-      //       // If the VideoPlayerController is still initializing, show a
-      //       // loading spinner.
-      //       return const Center(
-      //         child: CircularProgressIndicator(),
-      //       );
-      //     }
-      //   },
-      // )
-      //     ? Container(
-      //   color: Colors.pink,
-      // )
+              builder: (_, model, __) {
+                Wakelock.enable();
+                print("model.isChanged: ${model.isChanged} $isEnabled");
+                if (model.isChanged) {}
+                return Container(
+                  color: Colors.black,
+                  child: Center(
+                      child: Chewie(
+                    controller: _yogaChewieController!,
+                  )),
+                );
+                // return VlcPlayerWithControls(
+                //   key: _key,
+                //   controller: _controller!,
+                //   showVolume: false,
+                //   showVideoProgress: !model.isChanged,
+                //   seekButtonIconSize: 10.sp,
+                //   playButtonIconSize: 14.sp,
+                //   replayButtonSize: 14.sp,
+                //   showFullscreenBtn: true,
+                // );
+              },
+            )
+          //     ? FutureBuilder(
+          //   future: _initializeVideoPlayerFuture,
+          //   builder: (context, snapshot) {
+          //     if (snapshot.connectionState == ConnectionState.done) {
+          //       // If the VideoPlayerController has finished initialization, use
+          //       // the data it provides to limit the aspect ratio of the video.
+          //       return VlcPlayer(
+          //         controller: _videoPlayerController,
+          //         aspectRatio: 16 / 9,
+          //         placeholder: Center(child: CircularProgressIndicator()),
+          //       );
+          //     } else {
+          //       // If the VideoPlayerController is still initializing, show a
+          //       // loading spinner.
+          //       return const Center(
+          //         child: CircularProgressIndicator(),
+          //       );
+          //     }
+          //   },
+          // )
+          //     ? Container(
+          //   color: Colors.pink,
+          // )
           : const SizedBox(),
       pipEnabled: isEnabled,
       pipExpandedHeight: double.infinity,
@@ -576,7 +578,7 @@ class _TrackerUIState extends State<TrackerUI> {
               padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 5.w),
               shape: RoundedRectangleBorder(
                   borderRadius:
-                  BorderRadius.circular(eUser().buttonBorderRadius)),
+                      BorderRadius.circular(eUser().buttonBorderRadius)),
             ),
             onPressed: func,
             child: Center(
@@ -648,7 +650,9 @@ class _TrackerUIState extends State<TrackerUI> {
           SizedBox(
             height: 1.h,
           ),
-          ...symptomsCheckBox1.map((e) => buildHealthCheckBox(e, '1', (){})).toList(),
+          ...symptomsCheckBox1
+              .map((e) => buildHealthCheckBox(e, '1', () {}))
+              .toList(),
           SizedBox(
             height: 1.h,
           ),
@@ -658,7 +662,9 @@ class _TrackerUIState extends State<TrackerUI> {
           SizedBox(
             height: 2.h,
           ),
-          ...symptomsCheckBox2.map((e) => buildHealthCheckBox(e, '2', (){})).toList(),
+          ...symptomsCheckBox2
+              .map((e) => buildHealthCheckBox(e, '2', () {}))
+              .toList(),
           SizedBox(
             height: 2.h,
           ),
@@ -820,10 +826,10 @@ class _TrackerUIState extends State<TrackerUI> {
                   primary: eUser().buttonColor,
                   onSurface: eUser().buttonTextColor,
                   padding:
-                  EdgeInsets.symmetric(vertical: 1.h, horizontal: 10.w),
+                      EdgeInsets.symmetric(vertical: 1.h, horizontal: 10.w),
                   shape: RoundedRectangleBorder(
                       borderRadius:
-                      BorderRadius.circular(eUser().buttonBorderRadius)),
+                          BorderRadius.circular(eUser().buttonBorderRadius)),
                 ),
                 onPressed: () {
                   if (formKey.currentState!.validate()) {
@@ -887,7 +893,8 @@ class _TrackerUIState extends State<TrackerUI> {
     );
   }
 
-  buildHealthCheckBox(CheckBoxSettings healthCheckBox, String from, Function setstate) {
+  buildHealthCheckBox(
+      CheckBoxSettings healthCheckBox, String from, Function setstate) {
     return IntrinsicWidth(
       child: CheckboxListTile(
         visualDensity: VisualDensity(vertical: -3), // to compact
@@ -898,11 +905,10 @@ class _TrackerUIState extends State<TrackerUI> {
           child: Text(
             healthCheckBox.title.toString(),
             style: buildTextStyle(
-                color: healthCheckBox.value == true
-                    ? kTextColor
-                    : gHintTextColor,
+                color:
+                    healthCheckBox.value == true ? kTextColor : gHintTextColor,
                 fontFamily:
-                healthCheckBox.value == true ? kFontMedium : kFontBook),
+                    healthCheckBox.value == true ? kFontMedium : kFontBook),
           ),
         ),
         dense: true,
@@ -918,13 +924,12 @@ class _TrackerUIState extends State<TrackerUI> {
                 symptomsCheckBox1.forEach((element) {
                   element.value = false;
                 });
-                if(v == true){
+                if (v == true) {
                   selectedSymptoms1.add(healthCheckBox.title!);
                 }
                 healthCheckBox.value = v;
               });
-            }
-            else {
+            } else {
               print("else");
               if (selectedSymptoms1.contains(symptomsCheckBox1.last.title)) {
                 print("if");
@@ -973,7 +978,7 @@ class _TrackerUIState extends State<TrackerUI> {
                       .contains(symptomsCheckBox2.last.title)) {
                     // print("if");
                     selectedSymptoms2.removeWhere(
-                            (element) => element == symptomsCheckBox2.last.title);
+                        (element) => element == symptomsCheckBox2.last.title);
                     symptomsCheckBox2.forEach((element) {
                       element.value = false;
                     });
@@ -1069,7 +1074,7 @@ class _TrackerUIState extends State<TrackerUI> {
                         .contains(symptomsCheckBox2.last.title)) {
                       // print("if");
                       selectedSymptoms2.removeWhere(
-                              (element) => element == symptomsCheckBox2.last.title);
+                          (element) => element == symptomsCheckBox2.last.title);
                       symptomsCheckBox2.forEach((element) {
                         element.value = false;
                       });
@@ -1106,49 +1111,50 @@ class _TrackerUIState extends State<TrackerUI> {
 
     ProceedProgramDayModel? model;
     print("day => ${widget.proceedProgramDayModel!.day}");
-    model = (ProgramMealType.detox.name == widget.from
-        || ProgramMealType.healing.name == widget.from)
+    model = (ProgramMealType.detox.name == widget.from ||
+            ProgramMealType.healing.name == widget.from)
         ? ProceedProgramDayModel(
-        patientMealTracking:
-        widget.proceedProgramDayModel!.patientMealTracking,
-        comment: widget.proceedProgramDayModel!.comment,
-        userProgramStatusTracking: '1',
-        day: widget.proceedProgramDayModel!.day,
-        missedAnyThingRadio: widget
-            .proceedProgramDayModel!.patientMealTracking!
-            .any((element) => element.status == 'unfollowed')
-            ? missedAnything[0]
-            : missedAnything[1],
-        // didUMiss: mealPlanMissedController.text,
-        didUMiss: widget.proceedProgramDayModel!.comment,
-        withdrawalSymptoms: selectedSymptoms1.join(','),
-        detoxification: selectedSymptoms2.join(','),
-        haveAnyOtherWorries: worriesController.text,
-        eatSomthingOther: eatSomethingController.text,
-        completedCalmMoveModules: selectedCalmModule,
-        hadAMedicalExamMedications: anyMedicationsController.text)
+            patientMealTracking:
+                widget.proceedProgramDayModel!.patientMealTracking,
+            comment: widget.proceedProgramDayModel!.comment,
+            userProgramStatusTracking: '1',
+            day: widget.proceedProgramDayModel!.day,
+            missedAnyThingRadio: widget
+                    .proceedProgramDayModel!.patientMealTracking!
+                    .any((element) => element.status == 'unfollowed')
+                ? missedAnything[0]
+                : missedAnything[1],
+            // didUMiss: mealPlanMissedController.text,
+            didUMiss: widget.proceedProgramDayModel!.comment,
+            withdrawalSymptoms: selectedSymptoms1.join(','),
+            detoxification: selectedSymptoms2.join(','),
+            haveAnyOtherWorries: worriesController.text,
+            eatSomthingOther: eatSomethingController.text,
+            completedCalmMoveModules: selectedCalmModule,
+            hadAMedicalExamMedications: anyMedicationsController.text)
         : ProceedProgramDayModel(
-        day: widget.proceedProgramDayModel!.day,
-        userProgramStatusTracking: '1',
+            day: widget.proceedProgramDayModel!.day,
+            userProgramStatusTracking: '1',
 
-        //missedAnyThingRadio: selectedMissedAnything,
-        // didUMiss: mealPlanMissedController.text,
-        //didUMiss: "",
-        withdrawalSymptoms: selectedSymptoms1.join(','),
-        detoxification: selectedSymptoms2.join(','),
-        haveAnyOtherWorries: worriesController.text,
-        eatSomthingOther: eatSomethingController.text,
-        completedCalmMoveModules: selectedCalmModule,
-        hadAMedicalExamMedications: anyMedicationsController.text,);
+            //missedAnyThingRadio: selectedMissedAnything,
+            // didUMiss: mealPlanMissedController.text,
+            //didUMiss: "",
+            withdrawalSymptoms: selectedSymptoms1.join(','),
+            detoxification: selectedSymptoms2.join(','),
+            haveAnyOtherWorries: worriesController.text,
+            eatSomthingOther: eatSomethingController.text,
+            completedCalmMoveModules: selectedCalmModule,
+            hadAMedicalExamMedications: anyMedicationsController.text,
+          );
 
     final result = (ProgramMealType.detox.name == widget.from)
         ? await ProgramService(repository: repository)
-        .proceedDayMealDetailsService(model, newList, "detox")
+            .proceedDayMealDetailsService(model, newList, "detox")
         : (ProgramMealType.healing.name == widget.from)
-        ? await ProgramService(repository: repository)
-        .proceedDayMealDetailsService(model, newList, "healing")
-        : await PrepratoryMealService(repository: prepRepository)
-        .proceedDayMealDetailsService(model, newList);
+            ? await ProgramService(repository: repository)
+                .proceedDayMealDetailsService(model, newList, "healing")
+            : await PrepratoryMealService(repository: prepRepository)
+                .proceedDayMealDetailsService(model, newList, mandatoryList);
 
     print("result: $result");
 
@@ -1161,31 +1167,30 @@ class _TrackerUIState extends State<TrackerUI> {
 
       (ProgramMealType.detox.name == widget.from)
           ? Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (_) =>
-              CombinedPrepMealTransScreen(stage: 1)
-              // MealPlanScreen()
-          ),
+              context,
+              MaterialPageRoute(
+                  builder: (_) => CombinedPrepMealTransScreen(stage: 1)
+                  // MealPlanScreen()
+                  ),
               (route) => route.isFirst)
           : (ProgramMealType.healing.name == widget.from)
-          ? Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (_) =>
-              CombinedPrepMealTransScreen(stage: 2)
-            // MealPlanScreen()
-          ),
-              (route) => route.isFirst)
-          : Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(
-            builder: (context) =>
-                CombinedPrepMealTransScreen(stage: 3)
-                // NewTransitionDesign(
-                // totalDays: '', dayNumber: '', trackerVideoLink: trackerUrl),
-          ),
-              (route) => route.isFirst);
-    }
-    else {
+              ? Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) => CombinedPrepMealTransScreen(stage: 2)
+                      // MealPlanScreen()
+                      ),
+                  (route) => route.isFirst)
+              : Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          CombinedPrepMealTransScreen(stage: 3)
+                      // NewTransitionDesign(
+                      // totalDays: '', dayNumber: '', trackerVideoLink: trackerUrl),
+                      ),
+                  (route) => route.isFirst);
+    } else {
       setstate(() {
         showProgress = false;
       });
@@ -1288,14 +1293,13 @@ class _TrackerUIState extends State<TrackerUI> {
               if (selectedSymptoms1.isNotEmpty) {
                 _pageController
                     .nextPage(
-                    duration: const Duration(milliseconds: 300),
-                    curve: Curves.linear)
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.linear)
                     .then((value) {
                   Scrollable.ensureVisible(question2.currentContext!,
                       duration: const Duration(milliseconds: 200));
                 });
-              }
-              else {
+              } else {
                 Get.snackbar(
                   "",
                   'Please select withdrawal symptoms',
@@ -1333,8 +1337,8 @@ class _TrackerUIState extends State<TrackerUI> {
               if (selectedSymptoms2.isNotEmpty) {
                 _pageController
                     .nextPage(
-                    duration: const Duration(milliseconds: 300),
-                    curve: Curves.linear)
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.linear)
                     .then((value) {
                   Scrollable.ensureVisible(question3.currentContext!,
                       duration: const Duration(milliseconds: 200));
@@ -1612,6 +1616,8 @@ class _TrackerUIState extends State<TrackerUI> {
     });
   }
 
+  final weightKey = GlobalKey<FormState>();
+
   buildQuestion7() {
     return StatefulBuilder(builder: (_, setState) {
       return SingleChildScrollView(
@@ -1619,6 +1625,61 @@ class _TrackerUIState extends State<TrackerUI> {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            SizedBox(height: 2.h),
+            buildLabelTextField('Please take a picture of your tongue & upload here',
+                fontSize: questionFont, key: weightKey),
+            SizedBox(height: 3.h),
+            Visibility(
+              visible: mandatoryFileFormatList.isEmpty,
+              child: GestureDetector(
+                onTap: () async {
+                  showChooserSheet(setState,isMandatory: true);
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(5),
+                    border: Border.all(
+                        color: gHintTextColor.withOpacity(0.3), width: 1),
+                  ),
+                  padding:
+                  const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.file_upload_outlined,
+                        color: gsecondaryColor,
+                        size: 2.5.h,
+                      ),
+                      const SizedBox(
+                        width: 4,
+                      ),
+                      Text(
+                        'Add File',
+                        style: TextStyle(
+                          fontSize: 10.sp,
+                          color: gsecondaryColor,
+                          fontFamily: "GothamMedium",
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            (mandatoryFileFormatList.isEmpty)
+                ? SizedBox()
+                : ListView.builder(
+              itemCount: mandatoryFileFormatList.length,
+              shrinkWrap: true,
+              scrollDirection: Axis.vertical,
+              physics: ScrollPhysics(),
+              itemBuilder: (context, index) {
+                final file = mandatoryFileFormatList[index];
+                return buildMandatoryFileList(file,index,setState);
+              },
+            ),
+            SizedBox(height: 2.h),
             SizedBox(height: 2.h),
             Text(
               "Any image you would like to share with your doctor?",
@@ -1643,7 +1704,8 @@ class _TrackerUIState extends State<TrackerUI> {
                     border: Border.all(
                         color: gHintTextColor.withOpacity(0.3), width: 1),
                   ),
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -1671,19 +1733,19 @@ class _TrackerUIState extends State<TrackerUI> {
             (fileFormatList.isEmpty)
                 ? SizedBox()
                 : Center(
-              child: SizedBox(
-                height: 27.h,
-                child: ListView.builder(
-                  itemCount: fileFormatList.length,
-                  shrinkWrap: true,
-                  scrollDirection: Axis.vertical,
-                  itemBuilder: (context, index) {
-                    final file = fileFormatList[index];
-                    return buildFile(file, index, setState);
-                  },
-                ),
-              ),
-            ),
+                    child: SizedBox(
+                      height: 27.h,
+                      child: ListView.builder(
+                        itemCount: fileFormatList.length,
+                        shrinkWrap: true,
+                        scrollDirection: Axis.vertical,
+                        itemBuilder: (context, index) {
+                          final file = fileFormatList[index];
+                          return buildFile(file, index, setState);
+                        },
+                      ),
+                    ),
+                  ),
             SizedBox(height: 2.h),
             IntrinsicWidth(
               child: Padding(
@@ -1693,26 +1755,34 @@ class _TrackerUIState extends State<TrackerUI> {
                     primary: eUser().buttonColor,
                     onSurface: eUser().buttonTextColor,
                     padding:
-                    EdgeInsets.symmetric(vertical: 1.h, horizontal: 5.w),
+                        EdgeInsets.symmetric(vertical: 1.h, horizontal: 5.w),
                     shape: RoundedRectangleBorder(
                         borderRadius:
-                        BorderRadius.circular(eUser().buttonBorderRadius)),
+                            BorderRadius.circular(eUser().buttonBorderRadius)),
                   ),
-                  onPressed: showProgress ? null: () {
-                    proceed(setState);
-                  },
+                  onPressed: showProgress
+                      ? null
+                      : () {
+                          if (mandatoryFileFormatList.isEmpty) {
+                            AppConfig().showSnackbar(
+                                context, "Please Upload Image",
+                                isError: true, bottomPadding: 100);
+                          } else {
+                            proceed(setState);
+                          }
+                        },
                   child: showProgress
                       ? buildThreeBounceIndicator(color: gWhiteColor)
                       : Center(
-                    child: Text(
-                      "Submit",
-                      style: TextStyle(
-                        fontFamily: eUser().buttonTextFont,
-                        color: eUser().buttonTextColor,
-                        fontSize: eUser().buttonTextSize,
-                      ),
-                    ),
-                  ),
+                          child: Text(
+                            "Submit",
+                            style: TextStyle(
+                              fontFamily: eUser().buttonTextFont,
+                              color: eUser().buttonTextColor,
+                              fontSize: eUser().buttonTextSize,
+                            ),
+                          ),
+                        ),
                 ),
               ),
             ),
@@ -1722,7 +1792,34 @@ class _TrackerUIState extends State<TrackerUI> {
     });
   }
 
-  showChooserSheet(Function setstate) {
+  buildMandatoryFileList(File filename,  index,Function setstate) {
+    return ListTile(
+      shape: Border(bottom: BorderSide()),
+      leading: SizedBox(
+          width: 30, height: 30, child: Image.file(File(filename.path))),
+      title: Text(
+        filename.path.split("/").last,
+        textAlign: TextAlign.start,
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+        style: TextStyle(
+          fontFamily: kFontBold,
+          fontSize: 11.sp,
+        ),
+      ),
+      trailing: GestureDetector(
+          onTap: () {
+            mandatoryFileFormatList.removeAt(index);
+            setstate(() {});
+          },
+          child: const Icon(
+            Icons.delete_outline_outlined,
+            color: gMainColor,
+          )),
+    );
+  }
+
+  showChooserSheet(Function setstate, {bool isMandatory = false}) {
     return showModalBottomSheet(
         backgroundColor: Colors.transparent,
         context: context,
@@ -1744,18 +1841,18 @@ class _TrackerUIState extends State<TrackerUI> {
                       child: Text('Choose File Source'),
                       decoration: BoxDecoration(
                           border: Border(
-                            bottom: BorderSide(
-                              color: gHintTextColor,
-                              width: 3.0,
-                            ),
-                          )),
+                        bottom: BorderSide(
+                          color: gHintTextColor,
+                          width: 3.0,
+                        ),
+                      )),
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         TextButton(
                             onPressed: () {
-                              getImageFromCamera(setstate);
+                              getImageFromCamera(setstate,isMandatory: isMandatory);
                               Navigator.pop(context);
                             },
                             child: Row(
@@ -1773,15 +1870,15 @@ class _TrackerUIState extends State<TrackerUI> {
                           height: 10,
                           decoration: BoxDecoration(
                               border: Border(
-                                right: BorderSide(
-                                  color: gHintTextColor,
-                                  width: 1,
-                                ),
-                              )),
+                            right: BorderSide(
+                              color: gHintTextColor,
+                              width: 1,
+                            ),
+                          )),
                         ),
                         TextButton(
                             onPressed: () {
-                              pickFromFile(setstate);
+                              pickFromFile(setstate,isMandatory: isMandatory);
                               Navigator.pop(context);
                             },
                             child: Row(
@@ -1804,18 +1901,27 @@ class _TrackerUIState extends State<TrackerUI> {
         });
   }
 
-  void pickFromFile(Function setstate) async {
+  void pickFromFile(Function setstate,{bool isMandatory = false}) async {
     final result = await FilePicker.platform
         .pickFiles(withReadStream: true, allowMultiple: false);
 
     if (result == null) return;
-    if (result.files.first.extension!.toString().toLowerCase().contains("png") ||
-        result.files.first.extension!.toString().toLowerCase().contains("jpg") ||
-        result.files.first.extension!.toString().toLowerCase().contains("jpeg")) {
+    if (result.files.first.extension!
+            .toString()
+            .toLowerCase()
+            .contains("png") ||
+        result.files.first.extension!
+            .toString()
+            .toLowerCase()
+            .contains("jpg") ||
+        result.files.first.extension!
+            .toString()
+            .toLowerCase()
+            .contains("jpeg")) {
+      isMandatory ? addFilesToMandatoryList(File(result.paths.first!), setstate) :
       addFilesToList(File(result.paths.first!), setstate);
     } else {
-      AppConfig().showSnackbar(
-          context, "Please select png/jpg/jpeg files",
+      AppConfig().showSnackbar(context, "Please select png/jpg/jpeg files",
           isError: true);
     }
 
@@ -1830,19 +1936,17 @@ class _TrackerUIState extends State<TrackerUI> {
     return mb;
   }
 
-  Future getImageFromCamera(Function setstate) async {
+  Future getImageFromCamera(Function setstate,{bool isMandatory = false}) async {
     var image = await ImagePicker.platform
-        .pickImage(source: ImageSource.camera,
-        imageQuality: 40
-    );
+        .pickImage(source: ImageSource.camera, imageQuality: 40);
 
     setstate(() {
       _image = File(image!.path);
       if (getFileSize(_image!) <= 12) {
         print("filesize: ${getFileSize(_image!)}Mb");
-        addFilesToList(_image!, setstate);
-      }
-      else {
+        isMandatory ? addFilesToMandatoryList(_image!, setstate) :  addFilesToList(_image!, setstate);
+
+      } else {
         print("filesize: ${getFileSize(_image!)}Mb");
 
         AppConfig()
@@ -1852,6 +1956,26 @@ class _TrackerUIState extends State<TrackerUI> {
     print("captured image: ${_image} ${_image!.path}");
   }
 
+  addFilesToMandatoryList(File file, Function setstate) async {
+    print("file: ${file}");
+    mandatoryList.clear();
+    setstate(() {
+      mandatoryFileFormatList.add(file);
+    });
+
+    for (int i = 0; i < mandatoryFileFormatList.length; i++) {
+      var stream =
+      http.ByteStream(DelegatingStream.typed(mandatoryFileFormatList[i].openRead()));
+      var length = await mandatoryFileFormatList[i].length();
+      var multipartFile = http.MultipartFile(
+          "tracking_attachment", stream, length,
+          filename: mandatoryFileFormatList[i].path);
+      mandatoryList.add(multipartFile);
+      print("mandatoryList : $mandatoryList");
+    }
+
+    setstate(() {});
+  }
 
   addFilesToList(File file, Function setstate) async {
     print("file: ${file}");
@@ -1862,7 +1986,7 @@ class _TrackerUIState extends State<TrackerUI> {
 
     for (int i = 0; i < fileFormatList.length; i++) {
       var stream =
-      http.ByteStream(DelegatingStream.typed(fileFormatList[i].openRead()));
+          http.ByteStream(DelegatingStream.typed(fileFormatList[i].openRead()));
       var length = await fileFormatList[i].length();
       var multipartFile = http.MultipartFile(
           "tracking_attachment", stream, length,
@@ -1908,24 +2032,24 @@ class _TrackerUIState extends State<TrackerUI> {
       onTap: onTap,
       child: Card(
           child: Row(children: [
-            Image.asset(
-              "assets/images/meal_placeholder.png",
-              height: 35,
-              width: 40,
-            ),
-            Expanded(
-                child: Text(
-                  videoName ?? "Symptom Tracker.mp4",
-                  style: TextStyle(fontFamily: kFontBook),
-                )),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Image.asset(
-                "assets/images/arrow_for_video.png",
-                height: 35,
-              ),
-            )
-          ])),
+        Image.asset(
+          "assets/images/meal_placeholder.png",
+          height: 35,
+          width: 40,
+        ),
+        Expanded(
+            child: Text(
+          videoName ?? "Symptom Tracker.mp4",
+          style: TextStyle(fontFamily: kFontBook),
+        )),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Image.asset(
+            "assets/images/arrow_for_video.png",
+            height: 35,
+          ),
+        )
+      ])),
     );
   }
 
@@ -1996,20 +2120,20 @@ class _TrackerUIState extends State<TrackerUI> {
                 borderRadius: BorderRadius.circular(5),
                 child: Center(
                     child: OverlayVideo(
-                      controller: _sheetChewieController!,
-                      isControlsVisible: false,
-                    )),
+                  controller: _sheetChewieController!,
+                  isControlsVisible: false,
+                )),
               ),
             ),
           ),
           Center(
               child: IconButton(
-                icon: Icon(
-                  Icons.cancel_outlined,
-                  color: gsecondaryColor,
-                ),
-                onPressed: onTap,
-              ))
+            icon: Icon(
+              Icons.cancel_outlined,
+              color: gsecondaryColor,
+            ),
+            onPressed: onTap,
+          ))
         ],
       );
     }

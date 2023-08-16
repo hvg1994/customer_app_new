@@ -2376,7 +2376,7 @@ class ApiClient {
     return result;
   }
 
-  Future proceedTransitionDayProgramList(ProceedProgramDayModel model, List<MultipartFile> files) async {
+  Future proceedTransitionDayProgramList(ProceedProgramDayModel model, List<MultipartFile> files,List<MultipartFile> mandatoryFile) async {
     var url = submitTransMealTrackingUrl;
 
     //tracking_attachment
@@ -2395,7 +2395,11 @@ class ApiClient {
         "Authorization": getHeaderToken(),
       };
 
-      request.files.addAll(files);
+      List<MultipartFile> allFiles = files + mandatoryFile;
+
+
+
+      request.files.addAll(allFiles);
       request.fields.addAll(m);
 
       // reportList.forEach((element) async {
@@ -3099,7 +3103,7 @@ attachments[]   files   false
         for(int i =0; i < attachments.length; i++){
           request.files.add(await http.MultipartFile.fromPath('attachments[$i]', attachments[i].path));
         }
-      };
+      }
 
       // print("attachment .length: ${attachments!.length}");
 

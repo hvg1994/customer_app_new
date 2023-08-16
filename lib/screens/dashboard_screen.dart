@@ -11,6 +11,7 @@ import 'package:gwc_customer/screens/gut_list_screens/new_dashboard_levels_scree
 import 'package:gwc_customer/screens/prepratory%20plan/new/new_transition_design.dart';
 import 'package:gwc_customer/screens/prepratory%20plan/new/preparatory_new_screen.dart';
 import 'package:gwc_customer/screens/profile_screens/settings_screen.dart';
+import 'package:gwc_customer/screens/program_plans/day_tracker_ui/day_tracker.dart';
 import 'package:gwc_customer/screens/program_plans/program_start_screen.dart';
 import 'package:gwc_customer/screens/testimonial_list_screen/testimonial_list_screen.dart';
 import 'package:gwc_customer/widgets/exit_widget.dart';
@@ -19,6 +20,7 @@ import 'package:gwc_customer/screens/home_screens/level_status.dart';
 import '../model/evaluation_from_models/evaluation_model_format1.dart';
 import '../utils/app_config.dart';
 import '../widgets/constants.dart';
+import 'demo/meal_plan_demo.dart';
 import 'feed_screens/feeds_list.dart';
 import 'gut_list_screens/new_list_stages_screen.dart';
 import 'home_screens/home_screen.dart';
@@ -86,7 +88,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           // return WaterLevelScreen();
           // return CombinedPrepMealTransScreen(stage: 1,);
           // this one
-          return const LevelStatus();
+          return const TrackerUI(from: 'detox',);
           // return HomeScreens();
 
         }
