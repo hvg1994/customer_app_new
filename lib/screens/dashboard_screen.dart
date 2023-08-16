@@ -88,8 +88,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
           // return WaterLevelScreen();
           // return CombinedPrepMealTransScreen(stage: 1,);
           // this one
-          return const TrackerUI(from: 'detox',);
-          // return HomeScreens();
+          // return const TrackerUI(from: 'detox',);
+           return HomeScreens();
 
         }
       case 1:
